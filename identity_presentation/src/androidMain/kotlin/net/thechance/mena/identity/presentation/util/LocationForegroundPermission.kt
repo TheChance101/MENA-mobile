@@ -9,8 +9,8 @@ import net.thechance.mena.identity.presentation.util.permissionHandler.Permissio
 
 internal class LocationForegroundPermission(
     private val context: Context,
+) : PermissionController {
 
-    ) : PermissionController {
     override fun getPermissionState(): PermissionState {
         if (fineLocationPermissions.isEmpty()) return PermissionState.GRANTED
         val allGranted = fineLocationPermissions.all {

@@ -16,17 +16,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,7 +35,6 @@ import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_direction
-import mena.faith_presentation.generated.resources.ic_islamic_pattern
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
 import mena.faith_presentation.generated.resources.qibla_direction
@@ -47,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -100,20 +100,18 @@ private fun Content(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Theme.colorScheme.background.surface)
+                .background(color = Theme.colorScheme.background.surface),
         ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_islamic_pattern),
-                contentDescription = "ic_islamic_pattern",
-                modifier = Modifier
-                    .align(Alignment.BottomStart),
-                contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(Theme.colorScheme.secondary.secondary)
+
+            IslamicPattern(
+                modifier = Modifier.align(Alignment.BottomStart)
             )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = Theme.spacing._16),
+                    .padding(horizontal = Theme.spacing._16)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -214,21 +212,21 @@ private fun TextAngleToQiblah(
         ) {
             Text(
                 text = qiblahDirection,
-                style = Theme.typography.title.small,
+                style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.End,
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = "°N",
-                style = Theme.typography.title.small,
+                text = " °N",
+                style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier.weight(1f)
             )
         }
         Text(
             text = stringResource(Res.string.device_angle_to_qiblah),
-            style = Theme.typography.title.small,
+            style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -239,7 +237,7 @@ private fun TextAngleToQiblah(
 private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
     Box(
         modifier = Modifier
-            .size(270.dp)
+            .size(264.dp)
             .graphicsLayer {
                 rotationZ = compassBearing + qiblahDirection
             },

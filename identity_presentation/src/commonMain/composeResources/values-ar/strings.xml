@@ -53,6 +53,13 @@
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
     <string name="profile_invite_friends_icon_content_description">أيقونة دعوة الأصدقاء</string>
 
+    <string name="share_profile_title">شارك ملفك الشخصي</string>
+    <string name="share_profile_description">استخدم رمز الاستجابة السريعة لمشاركة ملفك الشخصي مع الآخرين</string>
+    <string name="share_profile_qr_code">رمز الاستجابة السريعة للملف الشخصي</string>
+    <string name="share_icon_content_description">أيقونة المشاركة</string>
+    <string name="link_icon_content_description">أيقونة الرابط</string>
+    <string name="download_icon_content_description">أيقونة التنزيل</string>
+
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
     <string name="enable_location_permission_button">تفعيل إذن الموقع</string>

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -17,7 +18,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class HomeViewModel(
     @Provided private val repository: ReelsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeUiEffect>(HomeScreenState()),
     HomeInteractionListener {
 
@@ -25,19 +26,16 @@ internal class HomeViewModel(
         getFeedReels()
     }
 
-    fun toggleReelLike(reelId: String) {
+    fun addReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
-            block = { repository.toggleReelLike(reelId) },
+            block = { repository.addReelLike(reelId) },
             onError = { error ->
                 updateLikesOnUi(reelId)
                 updateState { copy(error = error) }
             },
-            dispatcher = ioDispatcher,
-            scope = viewModelScope,
-            onSuccess = { updatedReel ->
-                updateReelInPagingData(reelId) { updatedReel.toUiState() }
-            }
+            dispatcher = defaultDispatcher,
+            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
         )
     }
 
@@ -48,6 +46,18 @@ internal class HomeViewModel(
                 likesCount = if (reel.isLiked) reel.likesCount - 1 else reel.likesCount + 1
             )
         }
+    }
+
+    fun removeReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { repository.removeReelLike(reelId) },
+            onError = { error ->
+                updateLikesOnUi(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+        )
     }
 
     private fun updateReelInPagingData(reelId: String, transform: (ReelUiState) -> ReelUiState) {
@@ -69,7 +79,7 @@ internal class HomeViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -96,12 +106,24 @@ internal class HomeViewModel(
         sendEffect(HomeUiEffect.NavigateToReelDetails(reelId))
     }
 
-    override fun onClickLike(reelId: String) {
-        toggleReelLike(reelId)
+    override fun onClickLike(reelId: String, isLiked: Boolean) {
+        if (isLiked) {
+            removeReelLike(reelId)
+        } else {
+            addReelLike(reelId)
+        }
     }
 
     override fun onClickRetry() {
         updateState { copy(error = null) }
         getFeedReels()
+    }
+
+    override fun onClickExpandDescription(reelId: String) {
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
+            }
     }
 }

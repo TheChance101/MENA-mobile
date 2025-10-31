@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.PagingData
+import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.best_dukans_around_you
 import mena.dukan_presentation.generated.resources.editor_pick_dukans
@@ -37,17 +39,12 @@ import net.thechance.mena.dukan.presentation.screen.main.components.categorySect
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.util.pagination.LoadMoreOnScroll
-import net.thechance.mena.dukan.presentation.util.pagination.Pager
-import net.thechance.mena.dukan.presentation.util.pagination.PagingConfig
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewBestNearestDukanPagingSource
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewEditorPickDukanItemsListPagingSource
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
-import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -96,8 +93,6 @@ fun MainScreen(
     MainContent(
         listener = viewModel,
         state = state.value,
-        editorPickDukanPager = viewModel.editorPickDukanPager,
-        bestNearestDukanPager = viewModel.bestNearestDukanPager
     )
 }
 
@@ -105,16 +100,17 @@ fun MainScreen(
 private fun MainContent(
     listener: MainInteractionListener,
     state: MainScreenUiState,
-    editorPickDukanPager: Pager<Int, MainScreenUiState.EditorPickDukanUiState>,
-    bestNearestDukanPager: Pager<Int, MainScreenUiState.BestNearestDukanUiState>
 ) {
+    val dukans = state.editorPickDukans.collectAsLazyPagingItems()
+    val bestNearestDukan = state.bestNearestDukans.collectAsLazyPagingItems()
 
     AnimatedContent(
-        targetState = state.isConnected
+        targetState = state.isConnected,
+        transitionSpec = { fadeTransitionSpec() }
     ) { isConnected ->
         if (!isConnected) {
             NoInternetContent(
-                onRetry = listener::onRetryButtonClicked,
+                onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
             )
             return@AnimatedContent
@@ -130,11 +126,8 @@ private fun MainContent(
             },
             snakeBar = { ManageDukanSnackbar(state.snackBarState, listener) }
         ) {
-            val mainListState = rememberLazyListState()
-            mainListState.LoadMoreOnScroll(editorPickDukanPager)
-            LazyColumn(
-                state = mainListState
-            ) {
+
+            LazyColumn {
                 item {
                     Text(
                         text = stringResource(Res.string.what_do_you_need),
@@ -148,28 +141,28 @@ private fun MainContent(
 
                     CategorySection(
                         categories = state.categories,
-                        onCategoryClick = listener::onCategorySelectedClick,
-                        onViewMoreClick = listener::onViewMoreButtonClick,
+                        onCategoryClick = listener::onCategorySelectedClicked,
+                        onViewMoreClick = listener::onViewMoreClicked,
                     )
                 }
 
-                item {
-                    Text(
-                        text = stringResource(Res.string.best_dukans_around_you),
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(
-                            start = Theme.spacing._16,
-                            top = Theme.spacing._16
+                if (bestNearestDukan.itemCount > 0) {
+                    item {
+                        Text(
+                            text = stringResource(Res.string.best_dukans_around_you),
+                            style = Theme.typography.title.small,
+                            color = Theme.colorScheme.shadePrimary,
+                            modifier = Modifier.padding(
+                                start = Theme.spacing._16,
+                                top = Theme.spacing._16
+                            )
                         )
-                    )
 
-                    BestNearestDukanSection(
-                        state = state,
-                        onDukanClick = listener::onNearestDukanClick,
-                        pager = bestNearestDukanPager,
-                        modifier = Modifier
-                    )
+                        BestNearestDukanSection(
+                            dukans = bestNearestDukan,
+                            onDukanClick = listener::onNearestDukanClicked,
+                        )
+                    }
                 }
 
                 item {
@@ -185,12 +178,11 @@ private fun MainContent(
                     )
                 }
                 editorPickDukanItems(
-                    state = state,
-                    onDukanClick = listener::onEditorPickDukanClick
+                    dukans = dukans,
+                    onDukanClick = listener::onEditorPickDukanClicked
                 )
             }
         }
-
     }
 }
 
@@ -235,17 +227,9 @@ private fun MainScreenPreview() {
                 listener = PreviewMainScreenInteractionListener,
                 state = MainScreenUiState(
                     categories = fakeCategories(),
-                    bestNearestDukans = PagingData(items = fakeBestNearestDuknas()),
-                    editorPickDukans = PagingData(items = fakeDukans())
+                    bestNearestDukans = flowOf(PagingData.from(fakeBestNearestDuknas())),
+                    editorPickDukans = flowOf(PagingData.from(fakeDukans()))
                 ),
-                editorPickDukanPager = Pager(
-                    config = PagingConfig(),
-                    pagingSourceFactory = { PreviewEditorPickDukanItemsListPagingSource }
-                ),
-                bestNearestDukanPager = Pager(
-                    config = PagingConfig(),
-                    pagingSourceFactory = { PreviewBestNearestDukanPagingSource }
-                )
             )
         }
     }

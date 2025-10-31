@@ -6,7 +6,6 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
 
 class ProfileScreenViewModel(
@@ -47,20 +46,15 @@ class ProfileScreenViewModel(
         }
     }
 
-    private fun onUserInfoError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false,
-                errorMessage = null
-            )
-        }
+    private fun onUserInfoError(throwable: Throwable) {
+        updateState { copy(isLoading = false, errorMessage = null) }
     }
 
     override fun onEditProfileInfoClicked() =
         sendNewEffect(createNavigateToEditProfileEffect())
 
     override fun onShareClicked() =
-        sendNewEffect(createNavigateToEditProfileEffect())
+        updateState { copy(showShareProfileDialog = true) }
 
     override fun onInviteFriendsClicked() =
         updateState { copy(showShareBottomSheet = true) }
@@ -91,6 +85,10 @@ class ProfileScreenViewModel(
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
+
+    override fun onDismissShareProfileDialog() {
+        updateState { copy(showShareProfileDialog = false) }
+    }
 
     override fun onDismissThemeDialog() =
         updateState { copy(showThemeDialog = false) }

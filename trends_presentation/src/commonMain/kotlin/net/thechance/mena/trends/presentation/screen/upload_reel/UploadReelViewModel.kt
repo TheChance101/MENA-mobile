@@ -1,14 +1,18 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
+import co.touchlab.kermit.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
+import net.thechance.mena.trends.domain.exception.MaxFileDurationExceededException
+import net.thechance.mena.trends.domain.exception.MaxFileSizeExceededException
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.domain.validation.VideoValidator
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.UploadReelErrorState
 import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.util.formatBytes
 import org.koin.android.annotation.KoinViewModel
@@ -77,6 +81,7 @@ internal class UploadReelViewModel(
 
     private fun onValidationError(errorState: ErrorState) {
         updateState { copy(errorState = errorState) }
+        sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
     }
 
     private fun uploadTrend() {
@@ -201,7 +206,7 @@ internal class UploadReelViewModel(
             onSuccess = { updateState { UploadReelScreenState() } },
             onError = { errorState ->
                 updateState { copy(errorState = errorState) }
-                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState = errorState))
+                sendEffect(UploadReelScreenEffect.ShowErrorSnackbar(errorState =errorState))
             },
             dispatcher = defaultDispatcher
         )
@@ -209,5 +214,26 @@ internal class UploadReelViewModel(
 
     override fun onClickRetryUpload() {
         uploadTrend()
+    }
+
+    override suspend fun mapExceptionToErrorState(
+        throwable: Throwable,
+        onError: suspend (ErrorState) -> Unit
+    ) {
+        when (throwable) {
+            is MaxFileSizeExceededException -> UploadReelErrorState.FileTooLarge
+            is MaxFileDurationExceededException -> UploadReelErrorState.DurationTooLarge
+            else -> {
+                super.mapExceptionToErrorState(throwable, onError)
+                return
+            }
+        }.let { errorState ->
+            Logger.e(TAG) { errorState.toString() }
+            onError(errorState)
+        }
+    }
+
+    private companion object {
+        const val TAG = "UploadReelErrorState"
     }
 }

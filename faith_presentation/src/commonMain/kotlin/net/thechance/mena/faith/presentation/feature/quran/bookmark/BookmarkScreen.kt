@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,9 +13,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import app.cash.paging.PagingData
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
@@ -23,6 +26,7 @@ import mena.faith_presentation.generated.resources.empty_state_bookmark_descript
 import mena.faith_presentation.generated.resources.empty_state_bookmark_image
 import mena.faith_presentation.generated.resources.empty_state_bookmark_title
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -86,11 +90,19 @@ private fun Content(
                 .padding(horizontal = Theme.spacing._16),
         ) {
             AnimatedVisibility(
-                visible = bookmarks.isEmpty() && uiState.isLoading.not(),
+                visible = bookmarks.isEmpty() && bookmarks.loadState.refresh !is LoadState.Loading,
                 enter = fadeIn(tween()),
                 exit = fadeOut(tween()),
             ) {
                 EmptyBookmarkState(listener::onBackClick)
+            }
+
+            AnimatedVisibility(
+                visible = bookmarks.loadState.refresh is LoadState.Loading,
+                enter = fadeIn(tween()),
+                exit = fadeOut(tween()),
+            ) {
+                LoadingView()
             }
 
             AnimatedVisibility(
@@ -122,6 +134,16 @@ private fun EmptyBookmarkState(onStartTilawahClick: () -> Unit) {
             .padding(bottom = Theme.spacing._16),
         onClickButton = onStartTilawahClick
     )
+}
+
+@Composable
+private fun LoadingView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        DotsProgressIndicator()
+    }
 }
 
 @Composable

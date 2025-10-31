@@ -6,7 +6,7 @@ import com.attafitamim.krop.core.images.ImageSrc
 import org.maplibre.compose.camera.CameraPosition
 
 interface CreateDukanInteractionListener {
-    fun onButtonClicked()
+    fun onNextOrCreateClicked()
     fun onBackClicked()
     fun onColorClicked(color: CreateDukanUiState.ColorUiState)
     fun onStyleClicked(style: CreateDukanUiState.Style)
@@ -17,7 +17,7 @@ interface CreateDukanInteractionListener {
     fun onCategoryClicked(category: CreateDukanUiState.DukanCategoryUiState): Boolean
     fun onCategoryEnabled(category: CreateDukanUiState.DukanCategoryUiState): Boolean
 
-    fun onCLickNext()
+    fun onNextClicked()
     fun onImageCrop(image: ImageBitmap)
     fun onCancelCrop()
     fun onMapClicked(

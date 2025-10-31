@@ -19,7 +19,7 @@ import org.koin.core.annotation.Provided
 internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
     @Provided private val reelsRepository: ReelsRepository,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
@@ -36,7 +36,7 @@ internal class UserReelViewModel(
             },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 
@@ -45,6 +45,32 @@ internal class UserReelViewModel(
             scope = viewModelScope,
             loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
+    }
+
+
+    fun addReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { reelsRepository.addReelLike(reelId) },
+            onError = { error ->
+                onLikeClickFailed(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() } }
+        )
+    }
+
+    fun removeReelLike(reelId: String) {
+        tryToExecute(
+            onStart = { updateLikesOnUi(reelId) },
+            block = { reelsRepository.removeReelLike(reelId) },
+            onError = { error ->
+                onLikeClickFailed(reelId)
+                updateState { copy(error = error) }
+            },
+            dispatcher = defaultDispatcher,
+        )
     }
 
     override fun onClickDescription(isCollapsed: Boolean) {
@@ -61,24 +87,16 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.addReelView(reelId) },
             onError = { error -> updateState { copy(error = error) } },
-            dispatcher = ioDispatcher,
+            dispatcher = defaultDispatcher
         )
     }
 
-    override fun onClickLike(reelId: String) {
-        tryToExecute(
-            onStart = { updateLikesOnUi(reelId) },
-            block = { reelsRepository.toggleReelLike(reelId) },
-            onError = { error ->
-                onLikeClickFailed(reelId)
-                updateState { copy(error = error) }
-            },
-            dispatcher = ioDispatcher,
-            scope = viewModelScope,
-            onSuccess = { updatedReel ->
-                updateReelInPagingData(reelId) { updatedReel.toUserReelUiState() }
-            }
-        )
+    override fun onClickLike(reelId: String, isLiked: Boolean) {
+        if (isLiked) {
+            removeReelLike(reelId)
+        } else {
+            addReelLike(reelId)
+        }
     }
 
     private fun onLikeClickFailed(reelId: String) {
@@ -126,7 +144,7 @@ internal class UserReelViewModel(
             block = { reelsRepository.deleteReelById(userReelArgs.realId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
-            dispatcher = ioDispatcher
+            dispatcher = defaultDispatcher
         )
     }
 

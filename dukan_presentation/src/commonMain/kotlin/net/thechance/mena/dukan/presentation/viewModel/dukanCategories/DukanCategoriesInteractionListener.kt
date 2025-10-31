@@ -4,4 +4,5 @@ interface DukanCategoriesInteractionListener {
     fun onBackClicked()
     fun onCategoryClicked(categoryName: String, categoryId: String)
     fun onDismissSnackBar()
+    fun onRetryClicked()
 }

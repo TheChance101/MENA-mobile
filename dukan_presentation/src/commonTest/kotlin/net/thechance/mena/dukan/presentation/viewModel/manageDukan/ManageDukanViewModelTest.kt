@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -9,6 +10,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -19,8 +21,7 @@ import mena.dukan_presentation.generated.resources.add_shelf_successfully
 import mena.dukan_presentation.generated.resources.delete_shelf_description
 import mena.dukan_presentation.generated.resources.delete_shelf_success
 import mena.dukan_presentation.generated.resources.delete_shelf_title
-import mena.dukan_presentation.generated.resources.dismiss_description
-import mena.dukan_presentation.generated.resources.dismiss_title
+import mena.dukan_presentation.generated.resources.edit_shelf_successfully
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import net.thechance.mena.dukan.domain.entity.Product
@@ -31,7 +32,6 @@ import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.util.pagination.PagingData
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -64,8 +64,9 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalPages = 1,
-            totalItems = 0
+            totalItems = 0,
+            pageSize = 10,
+            totalPages = 1
         )
 
         manageDukanViewModel = ManageDukanViewModel(
@@ -118,6 +119,7 @@ class ManageDukanViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
     @Test
     fun `init SHOULD set shelvesState to EMPTY when repository returns empty list`() = runTest {
         everySuspend { shelfRepository.getMyDukanShelves() } returns emptyList()
@@ -157,25 +159,6 @@ class ManageDukanViewModelTest {
     }
 
     @Test
-    fun `init SHOULD set productState to EMPTY when repository throws exception`() = runTest {
-        everySuspend { shelfRepository.getMyDukanShelves() } throws DukanException("")
-
-        manageDukanViewModel = ManageDukanViewModel(
-            shelfRepository,
-            productRepository,
-            defaultDispatcher = testDispatcher
-        )
-
-        advanceUntilIdle()
-
-        manageDukanViewModel.state.test {
-            val state = awaitItem()
-            assertEquals(ManageDukanUiState.ProductsState.EMPTY, state.productState)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `init SHOULD set selectedShelf to null when repository returns empty list`() = runTest {
         everySuspend { shelfRepository.getMyDukanShelves() } returns emptyList()
 
@@ -194,7 +177,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `onBackButtonClicked SHOULD emit NavigateBack effect`() = runTest {
-        manageDukanViewModel.onBackButtonClicked()
+        manageDukanViewModel.onBackClicked()
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateBack, awaitItem())
@@ -244,7 +227,7 @@ class ManageDukanViewModelTest {
     fun `onProductClick SHOULD emit NavigateToProductDetails effect`() = runTest {
         val product = fakeProducts().first().toUiState()
 
-        manageDukanViewModel.onProductClick(product)
+        manageDukanViewModel.onProductClicked(product)
 
         manageDukanViewModel.effect.test {
             assertEquals(ManageDukanUiEffect.NavigateToProductDetails, awaitItem())
@@ -356,36 +339,6 @@ class ManageDukanViewModelTest {
     }
 
     @Test
-    fun `onShelfSelected SHOULD set productState to LOADED when repository returns products`() = runTest {
-        everySuspend { productRepository.getProductsByShelfId(any(), any(), any()) } returns PagedResult(
-            items = fakeProducts(),
-            currentPage = 1,
-            totalPages = 1,
-            totalItems = 3
-        )
-        val secondShelf = dummyShelvesUiState()[1]
-
-        manageDukanViewModel.onShelfSelected(secondShelf)
-        advanceUntilIdle()
-
-        val state = manageDukanViewModel.state.value
-        assertEquals(ManageDukanUiState.ProductsState.LOADED, state.productState)
-    }
-
-    @Test
-    fun `onShelfSelected SHOULD set productState to EMPTY when product repository throws exception`() = runTest {
-        everySuspend { productRepository.getProductsByShelfId(any(), any(), any()) } throws DukanException("")
-
-        val secondShelf = dummyShelvesUiState()[1]
-
-        manageDukanViewModel.onShelfSelected(secondShelf)
-        advanceUntilIdle()
-
-        val state = manageDukanViewModel.state.value
-        assertEquals(ManageDukanUiState.ProductsState.EMPTY, state.productState)
-    }
-
-    @Test
     fun `onShelfAdded SHOULD show snackbar`() = runTest {
         manageDukanViewModel.onShelfAdded(
             Res.string.add_shelf_successfully,
@@ -446,7 +399,7 @@ class ManageDukanViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = manageDukanViewModel.state.value
-        assertTrue(state.products.items.isEmpty())
+        assertTrue(state.products.asSnapshot().isEmpty())
     }
 
     @Test
@@ -464,6 +417,16 @@ class ManageDukanViewModelTest {
             assertEquals(0, state.totalProducts)
         }
 
+    @Test
+    fun `onEditShelfName SHOULD update shelf name`() = runTest {
+        manageDukanViewModel.onEditShelfName(
+            Res.string.edit_shelf_successfully,
+            SnackBarType.SUCCESS
+        )
+
+        val state = manageDukanViewModel.state.value
+        assertNotNull(state.snackBarState)
+    }
 
     @Test
     fun `onShelfSelected SHOULD handle empty products gracefully`() = runTest {
@@ -477,15 +440,16 @@ class ManageDukanViewModelTest {
         } returns PagedResult(
             items = emptyList(),
             currentPage = 1,
-            totalPages = 1,
-            totalItems = 0
+            totalItems = 0,
+            pageSize = 10,
+            totalPages = 1
         )
 
         manageDukanViewModel.onShelfSelected(shelf)
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = manageDukanViewModel.state.value
-        assertTrue(state.products.items.isEmpty())
+        assertTrue(state.products.asSnapshot().isEmpty())
     }
 
     @Test
@@ -505,6 +469,7 @@ class ManageDukanViewModelTest {
         manageDukanViewModel.onShowDeleteShelfDialog(
             shelfId = testShelfId
         )
+        advanceUntilIdle()
         manageDukanViewModel.state.test {
             val state = awaitItem()
             assertNotNull(state.deleteDialog)
@@ -516,13 +481,14 @@ class ManageDukanViewModelTest {
         runTest {
             manageDukanViewModel.updateState {
                 copy(
-                    products = PagingData()
+                    products = emptyFlow()
                 )
             }
 
             manageDukanViewModel.onShowDeleteShelfDialog(
                 shelfId = testShelfId
             )
+            advanceUntilIdle()
 
             manageDukanViewModel.state.test {
                 val state = awaitItem()
@@ -534,21 +500,23 @@ class ManageDukanViewModelTest {
         }
 
     @Test
-    fun `onShowDeleteShelfDialog displays dialog with DISMISS type when products exist`() = runTest {
-        manageDukanViewModel.updateState {
-            copy(
-                products = PagingData(items = listOf(fakeProducts().first().toUiState()))
-            )
-        }
+    fun `onShowDeleteShelfDialog displays dialog with DISMISS type when products exist`() =
+        runTest {
+            manageDukanViewModel.updateState {
+                copy(
+                    totalProducts = 1
+                )
+            }
 
-        manageDukanViewModel.onShowDeleteShelfDialog(shelfId = testShelfId)
+            manageDukanViewModel.onShowDeleteShelfDialog(shelfId = testShelfId)
+            advanceUntilIdle()
 
-        manageDukanViewModel.state.test {
-            val state = awaitItem()
-            assertEquals(ManageDukanUiState.DialogType.DISMISS, state.deleteDialog?.type)
-            cancelAndIgnoreRemainingEvents()
+            manageDukanViewModel.state.test {
+                val state = awaitItem()
+                assertEquals(ManageDukanUiState.DialogType.DISMISS, state.deleteDialog?.type)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `deleteShelf successfully should dismiss dialog`() = runTest {

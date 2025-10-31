@@ -4,6 +4,8 @@ import net.thechance.mena.dukan.presentation.viewModel.manageShelf.ManageShelfIn
 
 object PreviewManageShelfInteractionListener: ManageShelfInteractionListener {
     override fun onBackClicked() {}
-
     override fun onDeleteClicked() {}
+    override fun onShelfNameChange(name: String) {}
+    override fun onSaveClicked() {}
+    override fun onDismissSnackBar() {}
 }

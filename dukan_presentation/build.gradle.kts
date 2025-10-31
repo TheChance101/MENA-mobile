@@ -26,6 +26,7 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "DukanPresentation"
             isStatic = true
+            freeCompilerArgs += listOf("-Xbinary=bundleId=net.thechance.mena.dukan.presentation")
         }
     }
 
@@ -62,6 +63,7 @@ kotlin {
             implementation(libs.krop.extensions.filekit)
             implementation(libs.krop.core)
             implementation(libs.navigation.compose)
+            implementation(libs.androidx.paging.compose)
 
             // maps
             implementation(libs.maplibre.compose)
@@ -75,6 +77,7 @@ kotlin {
             implementation(kotlin("test-annotations-common"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mokkery.core)
+            implementation(libs.androidx.paging.testing)
         }
     }
 }

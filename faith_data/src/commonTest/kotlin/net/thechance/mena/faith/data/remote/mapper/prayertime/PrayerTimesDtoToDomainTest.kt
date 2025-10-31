@@ -4,6 +4,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
+import net.thechance.mena.faith.data.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.repository.getFakePrayerTimesDto
 import net.thechance.mena.faith.data.repository.getPrayerTimesFakeData
 import net.thechance.mena.faith.domain.entity.PrayerTime
@@ -16,17 +17,15 @@ class PrayerTimesDtoToDomainTest {
 
     @Test
     fun `toDomain should return list of PrayerTime when PrayerTimesDto is valid`() = runTest {
-        //When
-        val result = fakePrayerTimesDto.toDomain(timeZone)
-        //Then
+        val result = fakePrayerTimesDto.toDomain()
+
         assertThat(result).isEqualTo(fakePrayerTimes)
     }
 
     @Test
     fun `toDomain should return data with defaults when data has nulls`() = runTest {
-        //When
-        val result = fakePrayerTimesDtoWithNulls.toDomain(timeZone)
-        //Then
+        val result = fakePrayerTimesDtoWithNulls.toDomain()
+
         assertThat(result).isEqualTo(fakePrayerTimesWithDefaults)
 
     }
@@ -43,26 +42,8 @@ class PrayerTimesDtoToDomainTest {
             maghrib = null,
             isha = null,
             hijriDate = null,
-            hijriDateFormat = null,
-            hijriReadableDate = null,
-            hijriDay = null,
-            hijriDayName = null,
-            hijriDayArabicName = null,
-            hijriMonth = null,
-            hijriMonthName = null,
-            hijriMonthArabicName = null,
-            hijriYear = null,
-            gregorianDate = null,
-            gregorianDateFormat = null,
-            timestamp = null,
-            gregorianReadableDate = null,
-            gregorianDay = null,
-            gregorianDayName = null,
-            gregorianMonth = null,
-            gregorianMonthName = null,
-            gregorianYear = null
         )
-        val startOfDayInstant: Instant = Instant.fromEpochMilliseconds(0)
+        val startOfDayInstant: Instant = Instant.DISTANT_PAST
         val fakePrayerTimesWithDefaults: List<PrayerTime> = getPrayerTimesFakeData(
             sunriseTime = startOfDayInstant,
             fajrTime = startOfDayInstant,

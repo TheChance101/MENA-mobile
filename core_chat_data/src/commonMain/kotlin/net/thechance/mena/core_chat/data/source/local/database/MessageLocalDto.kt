@@ -9,15 +9,15 @@ data class MessageLocalDto(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "sender_id")
     val senderId: String,
-    @ColumnInfo(name = "message_text")
+    @ColumnInfo(name = "text")
     val text: String? = null,
-    @ColumnInfo(name = "images")
-    val images: List<ByteArray>? = null,
+    @ColumnInfo(name = "image")
+    val image: ByteArray? = null,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long,
     @ColumnInfo(name = "chat_id")
     val chatId: String,
-    @ColumnInfo(name = "message_status")
+    @ColumnInfo(name = "status")
     val status: MessageStatus,
 ) {
     enum class MessageStatus { LOADING, SENT, READ, FAILED }

@@ -199,7 +199,7 @@ internal class ReelRepositoryImplTest {
         }
         repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
 
-        val result = repository.toggleReelLike(REEL_ID)
+        val result = repository.addReelLike(REEL_ID)
 
         assertThat(result).isEqualTo(fakeReelList.first())
     }
