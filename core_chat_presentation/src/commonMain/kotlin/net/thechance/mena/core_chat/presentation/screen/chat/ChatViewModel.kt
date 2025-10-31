@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
@@ -407,19 +408,27 @@ class ChatViewModel(
 
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
         tryToExecute(
-            execute = {messageRepository.sendReaction(messageId,reaction)},
+            execute = {messageRepository.addMessageReaction(messageId,reaction)},
             onSuccess = { updateReactionInMessages(messageId, reaction) }
         )
     }
-    private suspend fun updateReactionInMessages(messageId: Uuid, reaction: String) {
-            safeUpdateMessages { messages ->
-                messages.map { message ->
-                    if (message.id == messageId)
-                        message.copy(reaction = reaction)
-                    else message
+    private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val newReaction = MessageReaction(emoji, currentUserId, messageId)
+                    val updatedReactions = message.reactions
+                        .filter { it.userId != currentUserId }
+                        .toMutableList()
+                        .apply { add(newReaction) }
+
+                    message.copy(reactions = updatedReactions)
+                } else {
+                    message
                 }
             }
-
+        }
     }
 
     override fun onDownloadImageClicked(url: String) {

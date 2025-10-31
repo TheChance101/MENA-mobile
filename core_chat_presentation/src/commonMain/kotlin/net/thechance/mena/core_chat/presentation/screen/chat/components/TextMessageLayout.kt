@@ -28,6 +28,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
@@ -153,28 +154,39 @@ fun TextMessageLayout(
                     messageIsMine = message.isMine,
                     onFailClick = onFailClick,
                 )
-                if (message.reaction != null) {
-                    Box(
-                        modifier = Modifier
-                            .offset( y = (-6).dp)
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(Theme.colorScheme.background.surface)
-                            .border(2.dp, Theme.colorScheme.background.surfaceLow, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = message.reaction,
-                            style = Theme.typography.label.small,
-                        )
-                    }
+                if (message.reactions.isNotEmpty()) {
+                    ReactionsRow(
+                        reactions = message.reactions,
+                    )
                 }
-
-
             }
         }
     }
 }
+@Composable
+fun ReactionsRow(
+    reactions: List<MessageReaction>,
+) {
+    val grouped = reactions.groupBy { it.emoji }
+    Box(
+        modifier = Modifier
+            .offset( y = (-6).dp)
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(Theme.colorScheme.background.surface)
+            .border(2.dp, Theme.colorScheme.background.surfaceLow, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        grouped.forEach { (emoji, list) ->
+            val count = list.size
+            Text(
+                text = if (count > 1) "$count $emoji" else emoji,
+                style = Theme.typography.label.small
+            )
+        }
+    }
+}
+
 
 @Composable
 @Preview()
@@ -190,7 +202,7 @@ private fun PreviewBaseMessageLayout() {
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
-                    reaction = "❤️",
+                    reactions = listOf(net.thechance.mena.core_chat.domain.entity.MessageReaction("❤️", Uuid.random(), Uuid.random())),
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
@@ -199,4 +211,3 @@ private fun PreviewBaseMessageLayout() {
         }
     }
 }
-

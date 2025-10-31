@@ -28,13 +28,17 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 private val availableReactions = listOf("🔥", "❤️", "😂", "\uD83D\uDE22", "\uD83D\uDE20","\uD83D\uDC4F\uD83C\uDFFB","\uD83D\uDE4F\uD83C\uDFFB")
 
+@OptIn(ExperimentalUuidApi::class)
 fun ScaffoldScope.messageReactionDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    message: MessageUiState?=null,
+    message: MessageUiState? = null,
+    currentUserId: Uuid? = null,
     onReactionSelected: (reaction: String) -> Unit
 ) {
     dialog(isVisible) {
@@ -46,8 +50,9 @@ fun ScaffoldScope.messageReactionDialog(
                 MessageToReactDisplay(
                     message = message ?: return@BasicDialog
                 )
+                val selected = message.reactions.firstOrNull { it.userId == currentUserId }?.emoji
                 ReactionContent(
-                    selectedReaction = message.reaction,
+                    selectedReaction = selected,
                     onReactionSelected = onReactionSelected
                 )
 
