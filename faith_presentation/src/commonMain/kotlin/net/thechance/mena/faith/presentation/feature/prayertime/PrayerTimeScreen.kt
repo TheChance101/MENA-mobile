@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -239,6 +238,7 @@ private fun PrayerItem(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
+            .padding(bottom = Theme.spacing._12)
             .padding(horizontal = Theme.spacing._16)
             .padding(bottom = Theme.spacing._12)
             .background(
@@ -250,17 +250,13 @@ private fun PrayerItem(
     ) {
         Row(
             modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (isNextPrayer) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_next_prayer_arrow),
                     contentDescription = "next prayer time icon",
-                    modifier = Modifier
-                        .width(16.dp)
-                        .height(9.dp)
-                        .padding(start = Theme.spacing._12)
+                    modifier = Modifier.padding(end = Theme.spacing._8)
                 )
             }
 
@@ -269,7 +265,7 @@ private fun PrayerItem(
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadeSecondary,
                 modifier = Modifier.padding(
-                    start = if (isNextPrayer) Theme.spacing._8 else Theme.spacing._16,
+                    start = if (isNextPrayer) 0.dp else Theme.spacing._16,
                     top = Theme.spacing._12,
                     bottom = Theme.spacing._12
                 )
