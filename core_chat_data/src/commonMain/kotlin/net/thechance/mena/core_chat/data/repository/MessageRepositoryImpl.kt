@@ -132,6 +132,10 @@ class MessageRepositoryImpl(
         )
     }
 
+    override suspend fun sendReaction(messageId: Uuid, reaction: String) {
+        TODO("Not yet implemented")
+    }
+
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
