@@ -38,7 +38,6 @@ import net.thechance.mena.faith.presentation.feature.main.components.SunriseTime
 import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -65,7 +64,7 @@ fun MainScreen(
         when (effect) {
             is MainScreenEffect.NavigateToSurah -> {
                 navController.navigate(
-                    SurahDetailsRoute(
+                    Route.SurahDetailsRoute(
                         surahId = effect.surahId,
                         surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
