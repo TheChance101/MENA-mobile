@@ -15,6 +15,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -57,10 +58,11 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun deleteChatById(chatId: Uuid) {
-        tryNetworkCall<Unit>(bodyType = typeInfo<Unit>()) {
-            client.delete(DELETE_CHAT_ENDPOINT) {
-                parameter(key = CHAT_ID_PARAMETER, value = chatId)
-            }
+        tryNetworkCall<Unit>(
+            bodyType = typeInfo<Unit>(),
+            defaultException = OperationFailedException("failed to delete message from data")
+        ) {
+            client.delete("$DELETE_CHAT_ENDPOINT/$chatId")
         }
     }
 
@@ -80,8 +82,6 @@ class ChatRepositoryImpl(
         const val PAGE_SIZE_PARAMETER = "size"
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val CHAT_ENDPOINT = "/chat"
-        const val CHAT_ID_PARAMETER = "chatId"
-
         const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
         const val DELETE_CHAT_ENDPOINT = "/chat/delete"
     }
