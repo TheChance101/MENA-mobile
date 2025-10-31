@@ -26,7 +26,8 @@ fun Message.toUi(): MessageUiState {
         sendTime = sendAt,
         status = status,
         isMine = isMine,
-        content = content
+        content = content,
+        reactions = reactions
     )
 }
 
@@ -38,7 +39,8 @@ fun MessageUiState.toEntity(): Message {
         content = content,
         sendAt = sendTime,
         status = status,
-        isMine = isMine
+        isMine = isMine,
+        reactions = reactions
     )
 }
 
