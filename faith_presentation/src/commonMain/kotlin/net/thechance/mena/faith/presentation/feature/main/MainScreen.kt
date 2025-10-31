@@ -74,8 +74,7 @@ fun MainScreen(
 
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
-            //TODO: Add navigation
-            MainScreenEffect.NavigateToMosques -> {}
+            MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
         }
     }
 

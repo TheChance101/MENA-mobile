@@ -34,6 +34,7 @@ fun GridItemStyle(
             DukanImageItemPlaceholder(
                 modifier = Modifier
                     .height(42.dp)
+                    .padding(Theme.spacing._2)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.xxs))
                     .background(Theme.colorScheme.background.surfaceLow)
@@ -44,7 +45,7 @@ fun GridItemStyle(
         ShoppingCartPlaceholder(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(top = 24.dp)
+                .padding(top = 18.dp)
                 .clip(RoundedCornerShape(Theme.radius.full))
                 .background(cartBackgroundColor)
         )

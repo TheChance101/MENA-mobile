@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
@@ -156,6 +157,25 @@ class HomeViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+    @Test
+    fun `onClickExpandDescription should toggle isDescriptionExpanded for specific reel`() = runTest {
+        viewModel = HomeViewModel(repository, testDispatcher)
+        advanceUntilIdle()
+
+        val initial = viewModel.state.value.reels.asSnapshot().first { it.id == "1" }
+        viewModel.onClickExpandDescription("1")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val updated = state.reels.asSnapshot().first { it.id == "1" }
+
+            assertThat(updated.isDescriptionExpanded).isEqualTo(!initial.isDescriptionExpanded)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 
     companion object {
 

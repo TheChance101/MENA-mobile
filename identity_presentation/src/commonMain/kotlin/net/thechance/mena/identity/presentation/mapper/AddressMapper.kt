@@ -38,5 +38,5 @@ fun AddEditAddressUIState.toAddressInput(): AddressInput = AddressInput(
     latitude = coordinates.latitude,
     longitude = coordinates.longitude,
     addressLine = addressDetails,
-    addressType = if(otherAddressType.isNullOrBlank()) addressType ?: AddressType.Home else AddressType.Other(otherAddressType)
+    addressType = if(otherAddressType.isNullOrBlank()) addressType ?: AddressType.Home else AddressType.Other(otherAddressType),
 )
