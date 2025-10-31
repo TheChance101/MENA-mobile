@@ -1,18 +1,44 @@
 package net.thechance.mena.admin_panel.data.repository.user
 
-import net.thechance.mena.admin_panel.data.remote.service.ApiService
+import net.thechance.mena.admin_panel.data.mapper.toEntityList
+import net.thechance.mena.admin_panel.data.mapper.user.toDomain
+import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
+import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
+import net.thechance.mena.admin_panel.data.remote.service.AdminPanelApiService
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
 import net.thechance.mena.admin_panel.domain.entity.user.User
+import net.thechance.mena.admin_panel.domain.model.SortDirection
+import net.thechance.mena.admin_panel.domain.model.UserQuery
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import org.koin.core.annotation.Single
 
 @Single
-class UserRepositoryImpl (
-    private val apiService: ApiService,
-): UserRepository {
-    override suspend fun getAllUser(): List<User> {
-        return executeApiSafely { apiService.getAllUsers() }
+class UserRepositoryImpl(
+    private val adminPanelApiService: AdminPanelApiService,
+) : UserRepository {
+    override suspend fun getUsers(userQuery: UserQuery?): List<User> {
+        val sortParam = buildSortParam(userQuery?.sortType, userQuery?.sortDirection)
+        return executeApiSafely<PagedResponse<UserResponse>>{
+            adminPanelApiService
+                .getUsers(
+                    query=userQuery?.searchInput,
+                    sort = sortParam,
+                    page = userQuery?.page,
+                    size = userQuery?.size
 
+                )
+        }.toEntityList(UserResponse::toDomain)
     }
 
+}
+private fun buildSortParam(property: String?, direction: SortDirection?): String? {
+    if (property == null) return null
+
+    val directionStr = when (direction) {
+        SortDirection.ASC -> "asc"
+        SortDirection.DESC -> "desc"
+        null -> "ASC"
+    }
+
+    return "$property,$directionStr"
 }

@@ -24,8 +24,10 @@ interface AdminPanelApiService {
     @GET(USER_BASE)
     suspend fun getUsers(
         @Query("query") query: String? = null,
-        @Query("sort") sort: String? = null
-    ): PagedResponse<UserResponse>
+        @Query("sort") sort: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("size") size: Int? = null
+    ): Response<PagedResponse<UserResponse>>
 
     @POST(BLOCK_USER_ENDPOINT)
     suspend fun blockUser(@Body userID: Long)
