@@ -9,6 +9,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
@@ -48,18 +50,22 @@ internal class ManageTrendsViewModel(
 
     fun getCurrentUserInfo() {
         tryToExecute(
-            block = {
-                userRepository.getUser()
-                    .map { it?.toUiState() }
-                    .collectLatest { userUi ->
-                        userUi?.let { updateState { copy(profile = it) } }
-                    }
-            },
-            onError = { errorState -> updateState { copy(error = errorState) } },
+            block = { userRepository.getUser() },
+            onSuccess = ::onGetUserSuccess,
+            onError = { updateState { copy(error = it) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = defaultDispatcher
         )
+    }
+
+    private fun onGetUserSuccess(flow: Flow<User?>) {
+        viewModelScope.launch {
+            flow.map { it?.toUiState() }
+                .collectLatest { userUi ->
+                    userUi?.let { updateState { copy(profile = it) } }
+                }
+        }
     }
 
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
@@ -83,8 +89,8 @@ internal class ManageTrendsViewModel(
         getCurrentUserInfo()
     }
 
-    override fun onTabSelect(tab: SelectedTab) {
-        updateState { copy(selectedTab = tab) }
+    override fun onSelectTab(tab: SelectTab) {
+        updateState { copy(selectTab = tab) }
     }
 
 }

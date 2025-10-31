@@ -4,5 +4,5 @@ internal interface ManageTrendsInteractionListener {
     fun onClickReel(reelId: String)
     fun onClickBack()
     fun onClickRetry()
-    fun onTabSelect(tab: SelectedTab)
+    fun onSelectTab(tab: SelectTab)
 }

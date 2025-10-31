@@ -126,9 +126,10 @@ private fun ManageTrendsScreenBody(
     state: ManageTrendsScreenState
 ) {
     val reels = state.reels.collectAsLazyPagingItems()
+    val cardWidth = 106.dp
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 106.dp),
+        columns = GridCells.Adaptive(minSize = cardWidth),
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
         horizontalArrangement = Arrangement.spacedBy(
@@ -146,7 +147,7 @@ private fun ManageTrendsScreenBody(
                 profileImageUrl = state.profile.profileImageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 32.dp, bottom = Theme.spacing._8)
+                    .padding(top = Theme.spacing._32, bottom = Theme.spacing._8)
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
         }
@@ -172,21 +173,21 @@ private fun ManageTrendsScreenBody(
             ) {
                 SegmentButton(
                     title = stringResource(Res.string.my_trends),
-                    isSelected = state.selectedTab == SelectedTab.MyTrends,
-                    onSelectChange = { listener.onTabSelect(SelectedTab.MyTrends) },
+                    isSelected = state.selectTab == SelectTab.MyTrends,
+                    onSelectChange = { listener.onSelectTab(SelectTab.MyTrends) },
                     modifier = Modifier.weight(1f)
                 )
 
                 SegmentButton(
                     title = stringResource(Res.string.favorite),
-                    isSelected = state.selectedTab == SelectedTab.Favorites,
-                    onSelectChange = { listener.onTabSelect(SelectedTab.Favorites) },
+                    isSelected = state.selectTab == SelectTab.Favorites,
+                    onSelectChange = { listener.onSelectTab(SelectTab.Favorites) },
                     modifier = Modifier.weight(1f)
                 )
             }
         }
 
-        if (state.selectedTab == SelectedTab.Favorites) {
+        if (state.selectTab == SelectTab.Favorites) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     text = stringResource(Res.string.no_favorites_yet),
@@ -241,9 +242,11 @@ private fun TrendItem(
     onTrendClick: (id: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardWidthRatio = 106f / 164f
+
     Box(
         modifier = modifier
-            .aspectRatio(106f / 164f)
+            .aspectRatio(cardWidthRatio)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onTrendClick(item.id) }
             .background(color = Theme.colorScheme.background.surfaceLow),
@@ -312,6 +315,6 @@ private fun SegmentButton(
             .fillMaxWidth()
             .heightIn(min = 40.dp)
             .wrapContentHeight(Alignment.CenterVertically)
-            .padding(horizontal = 16.dp, vertical = 9.dp)
+            .padding(horizontal = Theme.spacing._16, vertical = 9.dp)
     )
 }
