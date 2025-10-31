@@ -2,12 +2,15 @@ package net.thechance.mena.trends.presentation.video_player
 
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -78,8 +81,20 @@ actual fun VideoPlayer(
     var isPause by remember { mutableStateOf(false) }
 
     var currentProgress by remember { mutableFloatStateOf(0f) }
-    var duration by remember { mutableStateOf(1L) }
+    var duration by remember { mutableLongStateOf(1) }
     var barWidth by remember { mutableFloatStateOf(1f) }
+    var isPressed by remember { mutableStateOf(false) }
+    val barHeight by animateDpAsState(
+        targetValue = if (isPressed) 8.dp else 4.dp,
+    )
+
+    var isStartPlaying by remember { mutableStateOf(false) }
+    var isInitialBuffering by remember { mutableStateOf(true) }
+
+    val backgroundColor = animateColorAsState(
+        targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
+        else Theme.colorScheme.primary.primary,
+    )
 
 
     val exoPlayer = remember {
@@ -87,12 +102,22 @@ actual fun VideoPlayer(
             .setLoadControl(loadControl)
             .build().apply {
                 setSeekParameters(SeekParameters.EXACT)
+                repeatMode = Player.REPEAT_MODE_ONE
 
                 addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         isLoading = when (state) {
-                            Player.STATE_BUFFERING, Player.STATE_IDLE -> true
-                            Player.STATE_READY, Player.STATE_ENDED -> false
+                            Player.STATE_IDLE -> true
+                            Player.STATE_READY -> {
+                                isStartPlaying = true
+                                false
+                            }
+
+                            Player.STATE_BUFFERING -> {
+                                isInitialBuffering = !isStartPlaying
+                                true
+                            }
+
                             else -> false
                         }
                     }
@@ -164,10 +189,13 @@ actual fun VideoPlayer(
 
         if (isLoading && !isPause) {
             Box(
-                Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
+                Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor.value),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 DotsProgressIndicator(
+                    dotSize = 7.dp,
                     colors = listOf(
                         Theme.colorScheme.stroke,
                         Theme.colorScheme.shadeTertiary,
@@ -182,21 +210,29 @@ actual fun VideoPlayer(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .fillMaxWidth()
-                .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
+                .padding(bottom = 2.dp)
+                .height(barHeight)
                 .onGloballyPositioned {
                     barWidth = it.size.width.toFloat()
                 }
-                .pointerInput(barWidth) {
-                    detectTapGestures { offset ->
-                        if (duration > 0L && barWidth > 0f) {
-                            val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
-                            val seekPosition = (newProgress * duration).toLong()
-                            exoPlayer.seekTo(seekPosition)
+                .pointerInput(barWidth, duration) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            awaitRelease()
+                            isPressed = false
+                        },
+                        onTap = { offset ->
+                            if (duration > 0L && barWidth > 0f) {
+                                val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                                val seekPosition = (newProgress * duration).toLong()
+                                exoPlayer.seekTo(seekPosition)
+                            }
                         }
-                    }
+                    )
                 },
             trackColor = Theme.colorScheme.primary.onPrimaryHint,
-            color = Theme.colorScheme.border.brand
+            color = Theme.colorScheme.border.brand,
         )
         content()
     }

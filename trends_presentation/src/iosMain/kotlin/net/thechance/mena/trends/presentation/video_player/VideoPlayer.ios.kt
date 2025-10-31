@@ -1,12 +1,15 @@
 package net.thechance.mena.trends.presentation.video_player
 
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,10 +39,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
 import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
 import platform.AVFoundation.AVPlayerItemStatusUnknown
 import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.duration
@@ -50,6 +55,7 @@ import platform.AVFoundation.timeControlStatus
 import platform.AVKit.AVPlayerViewController
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
+import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
 
 @OptIn(ExperimentalForeignApi::class)
@@ -68,8 +74,21 @@ actual fun VideoPlayer(
     var currentProgress by remember { mutableStateOf(0f) }
     var duration by remember { mutableStateOf(1.0) }
     var barWidth by remember { mutableFloatStateOf(1f) }
+    var isPressed by remember { mutableStateOf(false) }
+    val barHeight by animateDpAsState(
+        targetValue = if (isPressed) 8.dp else 4.dp,
+    )
+
+    var isStartPlaying by remember { mutableStateOf(false) }
+    var isInitialBuffering by remember { mutableStateOf(true) }
+
+    val backgroundColor = animateColorAsState(
+        targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
+        else Theme.colorScheme.primary.primary,
+    )
 
     val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
+    player.actionAtItemEnd = 0
 
     val playerViewController = remember {
         AVPlayerViewController().apply {
@@ -80,6 +99,16 @@ actual fun VideoPlayer(
 
     LaunchedEffect(url, isReelVisible) {
         playerViewController.player = player
+
+        NSNotificationCenter.defaultCenter.addObserverForName(
+            name = AVPlayerItemDidPlayToEndTimeNotification,
+            `object` = player.currentItem,
+            queue = null
+        ) { _ ->
+            player.seekToTime(CMTimeMakeWithSeconds(0.0, 600))
+            player.play()
+        }
+
         if (isReelVisible) {
             if (lastPosition > 0.0) {
                 val time = CMTimeMakeWithSeconds(lastPosition, 600)
@@ -100,7 +129,14 @@ actual fun VideoPlayer(
         while (true) {
             val item = player.currentItem
             val itemReady = when (item?.status) {
-                AVPlayerItemStatusReadyToPlay -> true
+                AVPlayerItemStatusReadyToPlay -> {
+                    isStartPlaying = true
+                    true
+                }
+
+                AVPlayerItemStatusFailed -> {
+                    true
+                }
                 AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
                 else -> false
             }
@@ -109,6 +145,8 @@ actual fun VideoPlayer(
                 player.timeControlStatus == AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 
             isLoading = (!itemReady) || waiting
+
+            if (waiting) isInitialBuffering = !isStartPlaying
 
             delay(250)
         }
@@ -166,12 +204,12 @@ actual fun VideoPlayer(
 
             if (isLoading && !isPaused) {
                 Box(
-                    Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
+                    Modifier.fillMaxSize().background(backgroundColor.value),
                     contentAlignment = Alignment.Center
                 ){
                     DotsProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
-                        dotSize = 10.dp,
+                        dotSize = 7.dp,
                         colors = listOf(
                             Theme.colorScheme.stroke,
                             Theme.colorScheme.shadeTertiary,
@@ -186,19 +224,27 @@ actual fun VideoPlayer(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .fillMaxWidth()
-                    .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
+                    .height(barHeight)
+                    .padding(bottom = 2.dp)
                     .onGloballyPositioned {
                         barWidth = it.size.width.toFloat()
                     }
                     .pointerInput(barWidth, duration) {
-                        detectTapGestures { offset ->
-                            if (duration > 0.0 && barWidth > 0f) {
-                                val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
-                                val seekSeconds = newProgress * duration
-                                val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
-                                player.seekToTime(seekTime)
+                        detectTapGestures(
+                            onPress = {
+                                isPressed = true
+                                awaitRelease()
+                                isPressed = false
+                            },
+                            onTap = { offset ->
+                                if (duration > 0.0 && barWidth > 0f) {
+                                    val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                                    val seekSeconds = newProgress * duration
+                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
+                                    player.seekToTime(seekTime)
+                                }
                             }
-                        }
+                        )
                     },
                 trackColor = Theme.colorScheme.primary.onPrimaryHint,
                 color = Theme.colorScheme.border.brand
