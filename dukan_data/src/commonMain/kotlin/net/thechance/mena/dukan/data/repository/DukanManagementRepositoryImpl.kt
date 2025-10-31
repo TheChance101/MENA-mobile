@@ -11,6 +11,7 @@ import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorsResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanNameResponse
+import net.thechance.mena.dukan.data.dto.dukan.DukanStylesResponse
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.data.mapper.toCategoryList
 import net.thechance.mena.dukan.data.mapper.toColorsList
@@ -61,11 +62,11 @@ class DukanManagementRepositoryImpl(
     }
 
     override suspend fun getDukanStyles(): List<Dukan.Style> {
-        return safeApiCall<List<String>> {
+        return safeApiCall<DukanStylesResponse> {
             client.get(
                 urlString = "$DUKAN_BASE_PATH/styles"
             )
-        }.map {
+        }.styles.map {
             Dukan.Style.valueOf(it)
         }
     }

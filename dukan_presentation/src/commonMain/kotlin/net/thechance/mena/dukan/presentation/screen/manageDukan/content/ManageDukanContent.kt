@@ -29,7 +29,7 @@ fun ManageDukanContent(
     state: ManageDukanUiState,
     listener: ManageDukanInteractionListener,
 ) {
-    OnSystemBackPressed(listener::onBackButtonClicked)
+    OnSystemBackPressed(listener::onBackClicked)
 
     Scaffold(
         overlays = { manageDukanDialog(state, listener) },
@@ -50,7 +50,7 @@ fun ManageDukanContent(
                 }
                 ManageDukanProducts(
                     state = state,
-                    onProductClick = listener::onProductClick,
+                    onProductClick = listener::onProductClicked,
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }

@@ -18,6 +18,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -43,7 +44,6 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import net.thechance.mena.trends.presentation.shared.util.getFilePath
 import net.thechance.mena.trends.presentation.shared.util.isIdle
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarData
@@ -165,7 +165,7 @@ private fun launchFilePicker(
     file?.let {
         coroutineScope.launch {
             val fileState = FileUiState(
-                filePath = file.getFilePath(),
+                filePath = file.path,
                 name = file.name,
                 size = file.size(),
             )

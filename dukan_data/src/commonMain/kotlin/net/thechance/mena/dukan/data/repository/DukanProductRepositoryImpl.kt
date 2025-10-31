@@ -40,9 +40,10 @@ class DukanProductRepositoryImpl(
         size: Int
     ): PagedResult<Product> {
         val response: PageResponseDto<ProductDto> = safeApiCall {
-            client.get("${PRODUCT_BASE_PATH}/$shelfId") {
+            client.get(PRODUCT_BASE_PATH) {
                 parameter("page", page)
                 parameter("size", size)
+                parameter("shelfId",shelfId)
             }
         }
         return response.toDomain(mapper = ProductDto::toDomain)

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -55,7 +56,7 @@ fun Map(
 
     var locked by rememberSaveable { mutableStateOf(isLocked) }
     val camera = rememberCameraState(firstPosition = cameraPosition)
-    var screenSize by rememberSaveable { mutableStateOf(Pair(0.dp, 0.dp)) }
+    var screenSize by remember { mutableStateOf(Pair(0.dp, 0.dp)) }
     LaunchedEffect(Unit) {
         camera.animateTo(
             finalPosition = cameraPosition,
@@ -79,7 +80,6 @@ fun Map(
                 locked = false
             }
         }
-
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,

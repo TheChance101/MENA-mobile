@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
+import mena.dukan_presentation.generated.resources.edit_shelf_successfully
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -35,6 +36,14 @@ fun ManageDukanScreen(
         }
         ObserveSavedStateEvent<String>(ManageShelfArgs.deletedShelfId) { id ->
             viewModel.onShowDeleteShelfDialog(shelfId = id)
+        }
+        ObserveSavedStateEvent<Boolean>(ManageShelfArgs.isShelfNameEdited) { isEdited ->
+            if (isEdited) {
+                viewModel.onEditShelfName(
+                    message = Res.string.edit_shelf_successfully,
+                    snackBarType = SnackBarType.SUCCESS
+                )
+            }
         }
     }
 

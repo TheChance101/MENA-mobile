@@ -44,9 +44,9 @@ class CreateDukanViewModel(
         getDukanColors()
     }
 
-    override fun onButtonClicked() {
+    override fun onNextOrCreateClicked() {
         if (state.value.currentStep != CreateDukanStep.SELECT_STYLE) {
-            onCLickNext()
+            onNextClicked()
         } else {
             onCreateClicked()
         }
@@ -122,7 +122,7 @@ class CreateDukanViewModel(
         updateNextButtonEnableState()
     }
 
-    override fun onCLickNext() {
+    override fun onNextClicked() {
         val current = state.value.currentStep
         if (current == CreateDukanStep.BASIC_INFORMATION) {
             handleBasicInformationNext()
@@ -206,6 +206,7 @@ class CreateDukanViewModel(
 
     private fun onCreateClicked() {
         tryToExecute(
+            onStart = { updateState { copy(isNextCreateButtonLoading = true) } },
             block = ::onCreateClickedBlock,
             onSuccess = ::onCreateClickedSuccess,
             onError = ::onErrorCreatingDukan
@@ -223,6 +224,7 @@ class CreateDukanViewModel(
     }
 
     private fun onCreateClickedSuccess(unit: Unit) {
+        updateState { copy(isNextCreateButtonLoading = false) }
         emitEffect(CreateDukanEffect.NavigateToPending(state.value.name))
     }
 
@@ -305,6 +307,7 @@ class CreateDukanViewModel(
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
+            onStart = {updateState { copy(isNextCreateButtonLoading = true) }},
             block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
             onError = ::onNameValidationError
@@ -319,6 +322,7 @@ class CreateDukanViewModel(
     }
 
     private fun handleNameValidationResult(isTaken: Boolean) {
+        updateState { copy(isNextCreateButtonLoading = false) }
         val current = state.value.currentStep
         updateNameValidationState(isTaken, current)
         updateNextButtonEnableState()
@@ -346,6 +350,7 @@ class CreateDukanViewModel(
     }
 
     private fun onErrorCreatingDukan(throwable: Throwable) {
+        updateState { copy(isNextCreateButtonLoading = false) }
         val messageRes = when (throwable) {
             is NoInternetException -> Res.string.no_internet_connection
             is CreationFailedException -> Res.string.dukan_creation_failed
@@ -357,6 +362,7 @@ class CreateDukanViewModel(
     }
 
     private fun onNameValidationError(throwable: Throwable) {
+        updateState { copy(isNextCreateButtonLoading = false) }
         val messageRes = when (throwable) {
             is NoInternetException -> Res.string.no_internet_connection
             else -> Res.string.something_went_wrong

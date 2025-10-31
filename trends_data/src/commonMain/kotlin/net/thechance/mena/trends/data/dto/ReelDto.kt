@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class ReelDto(
-    @SerialName("reelId")
+    @SerialName("trendId")
     val id: String? = null,
     @SerialName("thumbnailUrl")
     val reelImageUrl: String? = null,

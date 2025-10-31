@@ -4,7 +4,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createShelf.CreateShelfIn
 
 object PreviewCreateShelfInteractionListener : CreateShelfInteractionListener {
     override fun onTitleChanged(shelfTitle: String) {}
-    override fun onBackButtonClicked() {}
-    override fun onCreateButtonClicked() {}
+    override fun onBackClicked() {}
+    override fun onCreateClicked() {}
     override fun onDismissSnackBar() {}
 }

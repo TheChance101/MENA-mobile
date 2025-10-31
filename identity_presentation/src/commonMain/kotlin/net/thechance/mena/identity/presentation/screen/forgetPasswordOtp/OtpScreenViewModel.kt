@@ -7,10 +7,14 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.entity.PhoneNumber
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import org.jetbrains.compose.resources.StringResource
 
 class OtpScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
@@ -31,8 +35,8 @@ class OtpScreenViewModel(
 
     override fun onClickVerify() {
         tryToExecute(
-            function = ::verifyOTPCode,
-            onSuccess = ::onOTPVerificationSuccess,
+            function = { verifyOTPCode() },
+            onSuccess = { onOTPVerificationSuccess() },
             onError = ::onOTPVerificationError,
             dispatcher = dispatcher
         )
@@ -49,8 +53,8 @@ class OtpScreenViewModel(
         updateState { copy(otpValue = "") }
     }
 
-    private fun onOTPVerificationError(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    private fun onOTPVerificationError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
     override fun onChangeOtp(otp: String) {
@@ -66,8 +70,8 @@ class OtpScreenViewModel(
 
     override fun onClickResend() {
         tryToExecute(
-            function = ::requestNewOTP,
-            onSuccess = ::onResendOTPSuccess,
+            function = { requestNewOTP() },
+            onSuccess = { onResendOTPSuccess() },
             onError = ::onResendOTPError,
             dispatcher = dispatcher
         )
@@ -87,8 +91,8 @@ class OtpScreenViewModel(
         startTimer()
     }
 
-    private fun onResendOTPError(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    private fun onResendOTPError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
     private fun startTimer() {
@@ -99,6 +103,13 @@ class OtpScreenViewModel(
                 delay(1000)
             }
             updateState { copy(isResendEnabled = true) }
+        }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when(throwable){
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
 

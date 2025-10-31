@@ -2,12 +2,12 @@ package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 interface MainInteractionListener {
     fun onDukanButtonClicked()
-    fun onViewMoreButtonClick()
-    fun onRetryButtonClicked()
+    fun onViewMoreClicked()
+    fun onRetryClicked()
     fun onDismissSnackBar()
-    fun onCategorySelectedClick(categoryId: String, categoryName: String)
+    fun onCategorySelectedClicked(categoryId: String, categoryName: String)
 
-    fun onNearestDukanClick(dukanId: String)
+    fun onNearestDukanClicked(dukanId: String)
 
-    fun onEditorPickDukanClick(dukanId: String)
+    fun onEditorPickDukanClicked(dukanId: String)
 }
