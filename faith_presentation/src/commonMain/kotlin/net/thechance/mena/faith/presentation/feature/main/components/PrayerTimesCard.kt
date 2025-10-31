@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.main.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +47,15 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun PrayerTimesCard(
     prayerTimesUiState: PrayerTimesUiState?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (prayerTimesUiState == null) return
 
     Box(
-        modifier = modifier.aspectRatio(2.65f),
+        modifier = modifier
+            .aspectRatio(2.65f)
+            .clickable(onClick = onClick),
     ) {
         Box(
             modifier = Modifier
@@ -188,7 +192,10 @@ private fun PrayerTimesCardPreview() {
         nextPrayerIndex = 0
     )
     QuranTheme {
-        PrayerTimesCard(prayerTimesUiState = samplePrayerTimesUiState)
+        PrayerTimesCard(
+            prayerTimesUiState = samplePrayerTimesUiState,
+            onClick = {}
+        )
     }
 }
 

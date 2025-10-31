@@ -38,6 +38,7 @@ import net.thechance.mena.faith.presentation.feature.main.components.SunriseTime
 import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -64,7 +65,7 @@ fun MainScreen(
         when (effect) {
             is MainScreenEffect.NavigateToSurah -> {
                 navController.navigate(
-                    Route.SurahDetailsRoute(
+                    SurahDetailsRoute(
                         surahId = effect.surahId,
                         surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
@@ -76,6 +77,7 @@ fun MainScreen(
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             //TODO: Add navigation
             MainScreenEffect.NavigateToMosques -> {}
+            MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
         }
     }
 
@@ -131,7 +133,10 @@ private fun PrayerSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        PrayerTimesCard(prayerTimesUiState = uiState.prayerTimesUiState)
+        PrayerTimesCard(
+            prayerTimesUiState = uiState.prayerTimesUiState,
+            onClick = listener::onPrayerTimeClick
+        )
         if (uiState.hijriDate.isNotBlank()) {
             Text(
                 text = uiState.hijriDate,
@@ -223,6 +228,7 @@ private fun Preview() {
                 override fun onQuranClick() {}
                 override fun onQiblahClick() {}
                 override fun onMosquesClick() {}
+                override fun onPrayerTimeClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,
