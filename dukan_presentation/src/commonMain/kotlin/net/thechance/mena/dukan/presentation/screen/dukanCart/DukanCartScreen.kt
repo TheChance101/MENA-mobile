@@ -17,12 +17,12 @@ import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.dukanCart.content.DukanCartContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
-import net.thechance.mena.dukan.presentation.viewModel.cart.DukanCartEffects
-import net.thechance.mena.dukan.presentation.viewModel.cart.DukanCartUiState
-import net.thechance.mena.dukan.presentation.viewModel.cart.DukanCartUiState.DukanCartState
-import net.thechance.mena.dukan.presentation.viewModel.cart.DukanCartViewModel
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartEffects
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.DukanCartState
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -64,9 +64,4 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
             )
         }
     }
-}
-
-@Composable
-fun DukanCartContent(state: DukanCartUiState, listener: DukanCartViewModel) {
-    TODO("Not yet implemented")
 }
