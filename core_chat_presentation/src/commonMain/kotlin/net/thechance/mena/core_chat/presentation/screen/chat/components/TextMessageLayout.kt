@@ -4,12 +4,15 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +49,7 @@ fun TextMessageLayout(
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
     onFailClick: () -> Unit = {},
+    onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
 ) {
     if (message.content !is MessageContent.Text) return
@@ -118,7 +122,10 @@ fun TextMessageLayout(
                 modifier = Modifier
                     .padding(start = messagePaddingStart, end = messagePaddingEnd)
                     .clip(messageShape)
-                    .noHoverClickable(onClick = onMessageClick)
+                    .combinedClickable(
+                        onClick = onMessageClick,
+                        onLongClick = onMessageLongClick
+                    )
                     .background(color = messageBackground, shape = messageShape)
                     .padding(
                         horizontal = verticalPadding,
@@ -137,15 +144,34 @@ fun TextMessageLayout(
             visible = showMessageInfo,
             modifier = Modifier.align(messageInfoAlignment)
         ) {
-            MessageInfo(
-                messageTime = message.sendTime,
-                messageStatus = message.status,
-                messageIsMine = message.isMine,
-                onFailClick = onFailClick,
-                modifier = Modifier
-                    .align(messageInfoAlignment)
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
-            )
+            Row (
+                modifier = Modifier.padding(start = messagePaddingStart, end = messagePaddingEnd)
+            ) {
+                MessageInfo(
+                    messageTime = message.sendTime,
+                    messageStatus = message.status,
+                    messageIsMine = message.isMine,
+                    onFailClick = onFailClick,
+                )
+                if (message.reaction != null) {
+                    Box(
+                        modifier = Modifier
+                            .offset( y = (-6).dp)
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(Theme.colorScheme.background.surface)
+                            .border(2.dp, Theme.colorScheme.background.surfaceLow, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = message.reaction,
+                            style = Theme.typography.label.small,
+                        )
+                    }
+                }
+
+
+            }
         }
     }
 }
@@ -164,6 +190,7 @@ private fun PreviewBaseMessageLayout() {
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
+                    reaction = "❤️",
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
