@@ -235,7 +235,7 @@ fun createHttpClient(
             path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
                 ?: defaultChatHistoryResponse()
 
-            path == DELETE_CHAT_ENDPOINT ->
+            path.startsWith(DELETE_CHAT_ENDPOINT) ->
                 deleteChatResponse?.invoke(this) ?: defaultDeleteChatResponse()
 
             request.url.encodedPath == CHAT_SUMMARY_ENDPOINT ->
