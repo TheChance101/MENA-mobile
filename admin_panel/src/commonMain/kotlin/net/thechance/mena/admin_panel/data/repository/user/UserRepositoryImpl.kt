@@ -36,8 +36,6 @@ class UserRepositoryImpl(
     }
 
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
-        executeApiSafely<Unit> {
-            userApiService.updateUserStatus(userID.toString(), status.toString())
-        }
+        executeApiSafely<Unit> { userApiService.updateUserStatus(userID.toString(), status.toString()) }
     }
 }
