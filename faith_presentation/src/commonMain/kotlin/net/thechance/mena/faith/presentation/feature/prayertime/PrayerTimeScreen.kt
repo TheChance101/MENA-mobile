@@ -238,9 +238,8 @@ private fun PrayerItem(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .padding(bottom = Theme.spacing._12)
+            .padding(bottom = Theme.spacing._8)
             .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._12)
             .background(
                 Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.sm)
