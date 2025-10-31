@@ -23,7 +23,7 @@ actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
 @OptIn(ExperimentalForeignApi::class)
 class VideoFileHandlerImpl : VideoFileHandler {
 
-    override suspend fun readFile(filePath: String): RawSource {
+    override fun readFile(filePath: String): RawSource {
         val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
         return NSInputStream(fileUrl).asSource()
     }

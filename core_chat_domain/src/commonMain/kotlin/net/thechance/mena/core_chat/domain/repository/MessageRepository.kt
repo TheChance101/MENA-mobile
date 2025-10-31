@@ -17,5 +17,6 @@ MessageRepository {
     fun observeReadMessages(): Flow<MarkMessageAsReadEvent>
     fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>>
     suspend fun markMessagesOfChatAsRead(chatId: Uuid)
-    suspend fun sendReaction(messageId: Uuid, reaction: String)
+    suspend fun addMessageReaction(messageId: Uuid, emoji: String)
+    suspend fun removeMessageReaction(messageId: Uuid, emoji: String)
 }

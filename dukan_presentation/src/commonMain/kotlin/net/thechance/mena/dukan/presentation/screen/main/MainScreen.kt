@@ -101,6 +101,8 @@ private fun MainContent(
     listener: MainInteractionListener,
     state: MainScreenUiState,
 ) {
+    val dukans = state.editorPickDukans.collectAsLazyPagingItems()
+    val bestNearestDukan = state.bestNearestDukans.collectAsLazyPagingItems()
 
     AnimatedContent(
         targetState = state.isConnected,
@@ -124,7 +126,6 @@ private fun MainContent(
             },
             snakeBar = { ManageDukanSnackbar(state.snackBarState, listener) }
         ) {
-            val dukans = state.editorPickDukans.collectAsLazyPagingItems()
 
             LazyColumn {
                 item {
@@ -145,21 +146,23 @@ private fun MainContent(
                     )
                 }
 
-                item {
-                    Text(
-                        text = stringResource(Res.string.best_dukans_around_you),
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(
-                            start = Theme.spacing._16,
-                            top = Theme.spacing._16
+                if (bestNearestDukan.itemCount > 0) {
+                    item {
+                        Text(
+                            text = stringResource(Res.string.best_dukans_around_you),
+                            style = Theme.typography.title.small,
+                            color = Theme.colorScheme.shadePrimary,
+                            modifier = Modifier.padding(
+                                start = Theme.spacing._16,
+                                top = Theme.spacing._16
+                            )
                         )
-                    )
 
-                    BestNearestDukanSection(
-                        state = state,
-                        onDukanClick = listener::onNearestDukanClicked,
-                    )
+                        BestNearestDukanSection(
+                            dukans = bestNearestDukan,
+                            onDukanClick = listener::onNearestDukanClicked,
+                        )
+                    }
                 }
 
                 item {

@@ -8,6 +8,7 @@ import kotlinx.datetime.toInstant
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSTimeZone
+import platform.Foundation.dateWithTimeIntervalSince1970
 import platform.Foundation.localTimeZone
 import kotlin.time.ExperimentalTime
 
@@ -17,7 +18,8 @@ actual fun formatLocalDateTime(date: LocalDateTime, outputFormat: String): Strin
         dateFormat = outputFormat
         timeZone = NSTimeZone.localTimeZone
     }
-    val nsDate = NSDate(date.toEpochSeconds())
+    val epochSeconds = date.toEpochSeconds()
+    val nsDate = NSDate.dateWithTimeIntervalSince1970(epochSeconds)
     return formatter.stringFromDate(nsDate)
 }
 

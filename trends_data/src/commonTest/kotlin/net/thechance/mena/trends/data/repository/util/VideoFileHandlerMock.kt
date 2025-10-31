@@ -7,7 +7,7 @@ import net.thechance.mena.trends.data.util.VideoFileHandler
 
 class VideoFileHandlerMock: VideoFileHandler {
 
-    override suspend fun readFile(filePath: String): RawSource {
+    override fun readFile(filePath: String): RawSource {
         return ByteReadChannel(byteArrayOf(1, 2, 3)).asSource()
     }
 

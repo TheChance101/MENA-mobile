@@ -6,6 +6,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
@@ -14,6 +15,7 @@ import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -38,7 +40,16 @@ fun MessageDto.toDomain(): Message? {
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
         reaction= reaction,
         content = content,
+        reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
+    )
+}
+
+fun MessageReactionDto.toDomain(): MessageReaction {
+    return MessageReaction(
+        emoji = emoji,
+        userId = getUuidOrNull(userId) ?: error("Invalid user ID"),
+        messageId = getUuidOrNull(messageId) ?: error("Invalid message ID")
     )
 }
 

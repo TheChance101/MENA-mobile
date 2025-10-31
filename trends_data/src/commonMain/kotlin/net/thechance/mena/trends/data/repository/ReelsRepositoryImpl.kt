@@ -97,16 +97,18 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun uploadReel(filePath: String, size: Long): String {
         return safeApiCall<UploadReelResponse> {
-            val fileSource = videoFileHandler.readFile(filePath)
             uploadClient.post(urlString = TRENDS_PATH) {
                 setBody(
                     createRequestBody(
                         key = VIDEO,
                         mimeType = videoFileHandler.getMimeType(filePath),
-                        input = InputProvider(size) { fileSource.buffered() }
+                        input = InputProvider { videoFileHandler.readFile(filePath).buffered() }
                     )
                 )
-                observeUploading(observableUploadingFlow::emit)
+                observeUploading(
+                    totalSize = size,
+                    onProgress = observableUploadingFlow::emit
+                )
             }
         }.reelId.orEmpty()
     }
