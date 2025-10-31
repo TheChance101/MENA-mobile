@@ -261,6 +261,7 @@ actual fun VideoPlayer(
 
         onDispose {
             lastPosition = exoPlayer.currentPosition
+            exoPlayer.pause()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
