@@ -59,7 +59,6 @@ kotlin {
             implementation(libs.squircle.shape)
             implementation(compose.runtime)
             implementation(compose.foundation)
-            implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -72,6 +71,11 @@ kotlin {
             // maps
             implementation(libs.maplibre.compose)
             implementation(libs.kotlinx.datetime)
+
+            //permission
+            implementation(libs.moko.permissions)
+            implementation(libs.moko.permissions.compose)
+
         }
     }
 }

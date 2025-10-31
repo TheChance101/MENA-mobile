@@ -36,6 +36,7 @@ class UserRepositoryImpl(
                 val user: ProfileResponseDto = client.getJson(path = PROFILE)
                 userDao.upsert(user.toEntity())
             } catch (_: Exception) {
+
             }
         }
 

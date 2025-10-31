@@ -15,7 +15,7 @@ actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl(getK
 class VideoFileHandlerImpl(
     private val context: Context
 ): VideoFileHandler {
-    override suspend fun readFile(filePath: String): RawSource {
+    override fun readFile(filePath: String): RawSource {
         return context.contentResolver
             .openInputStream(filePath.toUri())
             ?.asSource()

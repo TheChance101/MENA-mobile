@@ -3,11 +3,15 @@ package net.thechance.mena.identity.presentation.screen.enableLocationScreen
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import org.jetbrains.compose.resources.StringResource
 
 class EnableLocationScreenViewModel(
     private val locationForegroundHandler: PermissionHandler,
@@ -45,7 +49,14 @@ class EnableLocationScreenViewModel(
         }
     }
 
-    private fun onPermissionError(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    private fun onPermissionError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource{
+        return when (throwable) {
+            is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
     }
 }

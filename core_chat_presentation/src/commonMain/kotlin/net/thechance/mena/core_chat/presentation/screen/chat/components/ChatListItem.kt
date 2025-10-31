@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
@@ -22,7 +23,7 @@ fun ChatListItem(
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
-    onMessageImageClick: (MessageUiState, Int) -> Unit,
+    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -32,28 +33,43 @@ fun ChatListItem(
                 text = item.label.asString(),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Theme.spacing._8),
-                textAlign = TextAlign.Center
             )
         }
 
-        is ChatListItem.Message -> {
+        is ChatListItem.TextMessage -> {
             val markedMessage = item.data
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = if (markedMessage.isMine) Arrangement.End else Arrangement.Start
             ) {
-                MessageLayout(
+                TextMessageLayout(
                     message = markedMessage,
                     chatAvatarUrl = chatAvatarUrl,
-                    showMessageInfo = markedMessage.isVisibleMessageInfo,
+                    showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     onMessageClick = { onMessageClick(markedMessage.id) },
-                    onMessageImageClick = onMessageImageClick,
                     onFailClick = { onFailedMessageClick(markedMessage) },
-                    modifier = Modifier
+                )
+            }
+        }
+
+        is ChatListItem.ImageMessages -> {
+            val markedMessage = item.data
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = if (markedMessage.last().isMine) Arrangement.End else Arrangement.Start
+            ) {
+                ImageMessagesLayout(
+                    messages = markedMessage,
+                    chatAvatarUrl = chatAvatarUrl,
+                    showMessageInfo = (markedMessage.last().isVisibleMessageInfo || markedMessage.last().isLastInSeries || markedMessage.last().status == MessageStatus.FAILED),
+                    isMarkedLastInSeries = markedMessage.last().isLastInSeries,
+                    onMessageImageClick = onMessageImageClick,
+                    onFailClick = onFailedMessageClick,
                 )
             }
         }

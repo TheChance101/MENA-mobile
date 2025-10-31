@@ -34,6 +34,7 @@
     <string name="swipe_animation">SwipeAnimation</string>
     <string name="aya">Aya %1$d</string>
     <string name="start_tilawah">Start Tilawah</string>
+    <string name="search_area">Search in this area</string>
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
@@ -116,4 +117,6 @@
     <string name="navigate_next">Navigate to next screen</string>
     <string name="surah_al_fatiha">Al-Fatiha</string>
     <string name="mosque_image_description">Mosque icon</string>
+    <string name="mosque_details">Mosque details</string>
+    <string name="view_on_map">View on map</string>
 </resources>
