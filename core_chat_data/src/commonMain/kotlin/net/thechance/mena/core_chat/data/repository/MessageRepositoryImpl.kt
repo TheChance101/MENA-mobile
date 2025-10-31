@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionRequestDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
@@ -111,6 +112,7 @@ class MessageRepositoryImpl(
     private suspend fun handleIncomingAsEvent(
         incomingText: String
     ) {
+        println("Received Text Frame: $incomingText")
         val jsonBody = incomingText.substringAfter("\n\n").trimEnd('\u0000')
         val event = json.decodeFromString<MessageEvent>(jsonBody)
 
@@ -125,11 +127,34 @@ class MessageRepositoryImpl(
         }
     }
 
-   override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
+    override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
+    }
+
+    override suspend fun addMessageReaction(messageId: Uuid, emoji: String) {
+        sendMessageReactionEvent(ADD_REACTION_DESTINATION, messageId, emoji)
+    }
+
+    override suspend fun removeMessageReaction(messageId: Uuid, emoji: String) {
+        sendMessageReactionEvent(REMOVE_REACTION_DESTINATION, messageId, emoji)
+    }
+
+    private suspend fun sendMessageReactionEvent(
+        destination: String,
+        messageId: Uuid,
+        emoji: String
+    ) {
+        val dto = MessageReactionRequestDto(messageId = messageId.toString(), emoji = emoji)
+        val payload = json.encodeToString<MessageReactionRequestDto>(dto)
+
+        if (!webSocketManager.isConnected()) {
+            throw SendMessageFailedException("WebSocket is not connected")
+        }
+
+        webSocketManager.sendTextFrame(destination, payload)
     }
 
     private companion object {
@@ -140,6 +165,8 @@ class MessageRepositoryImpl(
         const val PRIVATE_MESSAGES = "/private/messages"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
         const val CHAT_ID_PARAMETER = "chatId"
+        const val ADD_REACTION_DESTINATION = "/app/chat.addReaction"
+        const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteReaction"
 
     }
 }
