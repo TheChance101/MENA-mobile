@@ -57,8 +57,8 @@ fun NoImageDukanShelves(
     AnimatedContent(
         targetState = shelves.loadState.refresh,
         label = "ShelvesContentAnimation"
-    ) {
-        when (it) {
+    ) { loadingState ->
+        when (loadingState) {
             LoadState.Loading -> NoImageDukanShelvesSkeleton()
             is LoadState.NotLoading -> {
                 LazyColumn(

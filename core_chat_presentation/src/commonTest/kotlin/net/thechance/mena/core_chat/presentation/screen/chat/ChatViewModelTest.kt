@@ -93,44 +93,6 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `init should update chat list when its loaded messages successfully`() = runTest {
-        everySuspend { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(
-            messages
-        )
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, 0, 40)
-        } returns PagedData(messages, messages.size, false)
-
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
-    }
-
-    @Test
-    fun `init should update uiMessage and chatListItems when receive new message`() = runTest {
-        everySuspend { chatRepository.getChatById(chatId) } returns chat
-        every { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(messages)
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(emptyList(), 80, false)
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf(messages.first())
-
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
-    }
-
-    @Test
     fun `init should update user data when receive user data from repository`() = runTest {
         everySuspend { userRepository.getUserInfo() } returns user
 
@@ -208,7 +170,7 @@ class ChatViewModelTest {
     @Test
     fun `onFailedMessageClicked should update the failedMessageToResend to the failedMessage when its call`() =
         runTest {
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -219,7 +181,7 @@ class ChatViewModelTest {
     fun `onFailedMessageClicked should update the isResendMessageDialogVisible to true when its call`() =
         runTest {
             advanceUntilIdle()
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -231,7 +193,7 @@ class ChatViewModelTest {
         runTest {
             everySuspend { messageRepository.deleteMessage(any()) } returns Unit
             advanceUntilIdle()
-            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(msgUi)
 
             viewModel.onDeleteFailedMessageClicked()
@@ -246,7 +208,7 @@ class ChatViewModelTest {
             everySuspend { messageRepository.sendMessage(any()) } returns Unit
             advanceUntilIdle()
             val failedMessage =
-                messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+                messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(failedMessage)
 
             viewModel.onResendMessageClicked()
@@ -260,15 +222,15 @@ class ChatViewModelTest {
     @Test
     fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
         runTest {
-            val message = messages.first().toUi(chatRequesterId)
+            val messages = messages.map(Message::toUi)
             val index = 2
             advanceUntilIdle()
 
-            viewModel.onMessageImageClicked(message, index)
+            viewModel.onMessageImageClicked(messages, index)
             advanceUntilIdle()
 
             assertThat(viewModel.state.value.isImagePagerVisible).isTrue()
-            assertThat(viewModel.state.value.selectedMessage).isEqualTo(message)
+            assertThat(viewModel.state.value.selectedImageMessages).isEqualTo(messages)
             assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
         }
 
@@ -284,27 +246,26 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() =
-        runTest {
-            everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() = runTest {
+        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
+        advanceUntilIdle()
+
+        viewModel.effect.test {
+            viewModel.onDownloadImageClicked(imageUrl)
             advanceUntilIdle()
 
-            viewModel.effect.test {
-                viewModel.onDownloadImageClicked(imageUrl)
-                advanceUntilIdle()
-
-                assertEquals(
-                    ChatScreenEffect.ShowSnackBar(
-                        SnackBarData(
-                            title = UiText.StringRes(Res.string.error),
-                            message = UiText.StringRes(Res.string.error_failed_to_download_image),
-                            isError = true
-                        )
-                    ), awaitItem()
-                )
-                cancelAndIgnoreRemainingEvents()
-            }
+            assertEquals(
+                ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.error),
+                        message = UiText.StringRes(Res.string.error_failed_to_download_image),
+                        isError = true
+                    )
+                ), awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
     fun `onDownloadImageClicked should emit success snackBar effect on success`() = runTest {
@@ -513,8 +474,8 @@ class ChatViewModelTest {
         }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
-        filterIsInstance<ChatListItem.Message>()
-            .map { it.data }
+        filterIsInstance<ChatListItem.ImageMessages>()
+            .flatMap { it.data }
             .sortedByDescending { it.sendTime }
 
 

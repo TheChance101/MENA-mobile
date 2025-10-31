@@ -27,6 +27,7 @@
     <string name="continue_btn">Continue</string>
     <string name="islamic_decoration">islamic decoration</string>
     <string name="calibrate_device_animation">calibrate device animation</string>
+    <string name="ic_islamic_pattern">ic_islamic_pattern</string>
     <string name="motion_configuration">Move your phone in a figure-8 motion, as shown in the animation above</string>
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
     <string name="time_icon">Time Icon</string>
@@ -115,4 +116,6 @@
     <string name="navigate_next">Navigate to next screen</string>
     <string name="surah_al_fatiha">Al-Fatiha</string>
     <string name="mosque_image_description">Mosque icon</string>
+    <string name="mosque_details">Mosque details</string>
+    <string name="view_on_map">View on map</string>
 </resources>

@@ -14,7 +14,7 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onAttachmentClicked()
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
-    fun onMessageImageClicked(message: MessageUiState, initialImageIndex: Int)
+    fun onMessageImageClicked(messages: List<MessageUiState>, initialImageIndex: Int)
 }
 
 interface MessageListInteractionListener {

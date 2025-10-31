@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScre
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -137,7 +138,7 @@ fun ChatScreenContent(
             val senderImageUrl = if (isMine) state.userData.imageUrl else state.chatAvatarUrl
 
             FullImagePagerView(
-                message = state.selectedMessage,
+                messages = state.selectedImageMessages,
                 senderName = senderName,
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,

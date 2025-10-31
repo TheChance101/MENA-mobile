@@ -78,10 +78,13 @@ private fun SmallImageContent(
     defaultColor: Color,
     imageIconPadding: Dp
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = Theme.spacing._4)
+    ) {
         SmallImage(
             Modifier.padding(
-                start = Theme.spacing._4,
                 bottom = imageIconPadding,
                 top = Theme.spacing._4,
             )
@@ -105,7 +108,7 @@ private fun SmallImageGrid(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = Theme.spacing._4),
+            .padding(end = Theme.spacing._4),
         verticalArrangement = Arrangement.spacedBy(verticalColumnPadding)
     ) {
         repeat(2) { rowIndex ->
@@ -135,6 +138,7 @@ private fun SmallImage(modifier: Modifier = Modifier) {
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
+            .padding(Theme.spacing._4 + Theme.spacing._2)
             .size(20.dp)
     )
 }
