@@ -60,6 +60,7 @@ fun ShelfProducts(
                                     product = product
                                 )
                             },
+                            onClick = {listener.onProductClicked(product.id)},
                         )
                     }
                 }
