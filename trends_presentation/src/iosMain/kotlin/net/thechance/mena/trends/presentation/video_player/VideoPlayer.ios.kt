@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ actual fun VideoPlayer(
 
     val backgroundColor = animateColorAsState(
         targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
-        else Theme.colorScheme.primary.primary,
+        else Color.Transparent,
     )
 
     val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
