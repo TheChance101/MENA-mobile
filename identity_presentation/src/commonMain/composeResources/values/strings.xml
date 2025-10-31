@@ -99,6 +99,13 @@
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
 
+    <string name="share_profile_title">Share your profile</string>
+    <string name="share_profile_description">Use your QR code to share your profile with other</string>
+    <string name="share_profile_qr_code">Profile QR Code</string>
+    <string name="share_icon_content_description">Share Icon</string>
+    <string name="link_icon_content_description">Link Icon</string>
+    <string name="download_icon_content_description">Download Icon</string>
+
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
     <string name="enable_location_permission_button">Enable location permission</string>
@@ -174,7 +181,7 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
