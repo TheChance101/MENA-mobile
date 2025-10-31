@@ -1,10 +1,8 @@
 package net.thechance.mena.faith.presentation.feature.prayertime
 
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
@@ -25,7 +23,7 @@ class PrayerTimeViewModel(
 
     init {
         loadTodayPrayerTimes()
-        startCountdownTimer()
+        updateNextPrayerInfo()
     }
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
@@ -115,13 +113,5 @@ class PrayerTimeViewModel(
         return "${hours.toString().padStart(2, '0')}:${
             minutes.toString().padStart(2, '0')
         }:${seconds.toString().padStart(2, '0')}"
-    }
-
-    private fun startCountdownTimer() {
-        viewModelScope.launch(dispatcher) {
-            while (true) {
-                updateNextPrayerInfo()
-            }
-        }
     }
 }

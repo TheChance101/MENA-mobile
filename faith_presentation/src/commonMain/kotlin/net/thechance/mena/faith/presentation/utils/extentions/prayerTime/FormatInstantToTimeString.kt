@@ -9,18 +9,17 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 fun formatInstantToTimeString(instant: Instant): String {
-    val instant = Instant.fromEpochMilliseconds(instant.toEpochMilliseconds())
     val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
 
-    val hour =
-        localDateTime.hour
-            .let { if (it > 12) it - 12 else it }
-            .toString()
-            .padStart(2, '0')
+    val hour24 = localDateTime.hour
+    val hour12 = if (hour24 % 12 == 0) 12 else hour24 % 12
     val minute = localDateTime.minute.toString().padStart(2, '0')
+    val amPm = if (hour24 < 12) "AM" else "PM"
 
-    return "$hour:$minute"
+    val hourString = hour12.toString().padStart(2, '0')
+    return "$hourString:$minute $amPm"
 }
+
 
 fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String = runCatching {
     val hijriDate = prayerTimes.firstOrNull()?.hijriDate ?: return ""
