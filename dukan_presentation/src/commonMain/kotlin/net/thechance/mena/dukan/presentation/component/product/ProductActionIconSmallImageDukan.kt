@@ -88,7 +88,7 @@ private fun ProductCart(
 }
 
 @Composable
-private fun SetProductQuantity(
+fun SetProductQuantity(
     onAddProductClick: () -> Unit,
     onRemoveProductClick: () -> Unit,
     modifier: Modifier = Modifier,

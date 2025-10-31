@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.viewModel.cart
+package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,11 +17,11 @@ class DukanCartViewModel(
         emitEffect(DukanCartEffects.NavigateBack)
     }
 
-    override fun onDukanDetailsClick(dukanId: String) {
+    override fun onDukanDetailsClick() {
         emitEffect(DukanCartEffects.NavigateToDukanDetails(dukanId))
     }
 
-    override fun onCheckoutClick(dukanId: String) {
+    override fun onCheckoutClick() {
         emitEffect(DukanCartEffects.NavigateToCheckout(dukanId))
     }
 

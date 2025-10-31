@@ -1,9 +1,9 @@
-package net.thechance.mena.dukan.presentation.viewModel.cart
+package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 
 interface DukanCartInteractionListener {
     fun onBackClick()
-    fun onDukanDetailsClick(dukanId: String)
-    fun onCheckoutClick(dukanId: String)
+    fun onDukanDetailsClick()
+    fun onCheckoutClick()
     fun onIncreaseItemQuantityClick(cartItemId: String)
     fun onDecreaseItemQuantityClick(cartItemId: String)
     fun onRemoveItemClick(cartItemId: String)

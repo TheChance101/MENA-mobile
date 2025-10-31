@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.viewModel.cart
+package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 
 sealed class DukanCartEffects {
     object NavigateBack : DukanCartEffects()

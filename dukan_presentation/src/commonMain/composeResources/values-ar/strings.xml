@@ -97,5 +97,9 @@
     <string name="favorite_icon">الأيقونة المفضلة</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
+    <string name="cart">عربة</string>
+    <string name="go_to_checkout">اذهب إلى الدفع</string>
+    <string name="sub_total_price">السعر الإجمالي الفرعي</string>
+    <string name="from_dukan">من دكان</string>
 
 </resources>

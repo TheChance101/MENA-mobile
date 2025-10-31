@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.di
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.dukan.presentation.viewModel.cart.DukanCartViewModel
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
