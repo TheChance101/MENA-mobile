@@ -1,0 +1,69 @@
+package net.thechance.mena.dukan.presentation.screen.productDetails
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsAppBar
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsImagesSection
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsInfoSection
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewProductDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
+import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun ProductDetailsContent(
+    state: ProductDetailsUiState,
+    listener: ProductDetailsInteractionListener
+) {
+    OnSystemBackPressed(listener::onBackClicked)
+    Scaffold(
+        topBar = {
+            ProductDetailsAppBar(
+                state = state,
+                listener = listener
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Theme.spacing._16),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+        ) {
+            ProductDetailsImagesSection(
+                allImages = state.product.images,
+                selectedImageUrl = state.selectedImageUrl,
+                onSecondaryImageClick = listener::onSecondaryImageClicked
+            )
+
+            ProductDetailsInfoSection(
+                state = state.product
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ProductDetailsContentPreview() {
+    MenaTheme {
+        ProductDetailsContent(
+            state = fakeProductDetails,
+            listener = PreviewProductDetailsInteractionListener
+        )
+    }
+}
