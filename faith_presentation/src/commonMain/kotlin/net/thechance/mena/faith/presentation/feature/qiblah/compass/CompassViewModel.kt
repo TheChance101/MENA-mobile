@@ -37,7 +37,7 @@ class CompassViewModel(
 
     private fun loadCompassData() {
         tryToExecute(
-            dispatcher = dispatcher,  // Add dispatcher here
+            dispatcher = dispatcher,
             execute = { locationService.getActiveAddress() },
             onSuccess = ::handleAddressResult
         )

@@ -54,7 +54,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun CompassScreen(
@@ -311,7 +310,6 @@ enum class CompassDirection(
     WEST("W", Alignment.CenterStart)
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 @Preview
 private fun CompassScreenPreview() {

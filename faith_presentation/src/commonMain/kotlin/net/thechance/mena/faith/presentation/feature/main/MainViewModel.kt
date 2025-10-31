@@ -14,9 +14,8 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+@OptIn(ExperimentalTime::class)
 class MainViewModel(
     private val quranRepository: QuranRepository,
     private val prayerTimeRepository: PrayerTimeRepository,
@@ -52,16 +51,15 @@ class MainViewModel(
     }
 
     private fun updateAddress(address: Address?) {
-        if (!isValidAddress(uiState.value.address)) {
+        if (address?.addressLine.isNullOrEmpty()) {
             sendEffect(MainScreenEffect.NavigateToEnableLocation)
             return
         }
-        if (address != null) {
-            updateState { it.copy(address = address.addressLine) }
-        }
+
+        address?.let { updateState { state -> state.copy(address = it.addressLine) } }
     }
 
-    private fun isValidAddress(address: String): Boolean = address.isEmpty()
+    private fun isValidAddress(address: String): Boolean = address.isNotEmpty()
 
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
@@ -102,6 +100,7 @@ class MainViewModel(
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
+
     override fun onChangeLocation() {
         if (isValidAddress(uiState.value.address)) {
             sendEffect(MainScreenEffect.NavigateToEnableLocation)
