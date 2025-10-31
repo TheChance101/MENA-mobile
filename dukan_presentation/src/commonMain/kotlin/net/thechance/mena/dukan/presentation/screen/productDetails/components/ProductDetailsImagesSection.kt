@@ -18,8 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.product_image
+import mena.dukan_presentation.generated.resources.product_thumbnail
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -53,7 +57,7 @@ fun ProductDetailsMainImage(
 ) {
     AsyncImage(
         model = imageUrl,
-        contentDescription = "Product Image",
+        contentDescription = stringResource(Res.string.product_image),
         modifier = modifier
             .fillMaxWidth()
             .height(288.dp)
@@ -85,7 +89,7 @@ fun ProductDetailsSecondaryImages(
 
             AsyncImage(
                 model = imageUrl,
-                contentDescription = "Product thumbnail",
+                contentDescription = stringResource(Res.string.product_thumbnail),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(56.dp)
