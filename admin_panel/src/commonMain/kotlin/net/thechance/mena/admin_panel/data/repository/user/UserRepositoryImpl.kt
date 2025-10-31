@@ -7,6 +7,7 @@ import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.data.remote.service.AdminPanelApiService
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
+import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.UserQuery
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
@@ -33,17 +34,13 @@ class UserRepositoryImpl(
         }.toEntityList(UserResponse::toDomain)
     }
 
-    override suspend fun blockUser(userID: Uuid) {
+    override suspend fun updateUserStatus(userID: Uuid ,status : Status) {
         executeApiSafely<Unit> {
-            adminPanelApiService.blockUser(userID.toString())
+            adminPanelApiService.updateUserStatus(userID.toString(),status.toString())
         }
     }
 
-    override suspend fun activeUser(userID: Uuid) {
-        executeApiSafely<Unit> {
-            adminPanelApiService.activateUser(userID.toString())
-        }
-    }
+
 
 
 

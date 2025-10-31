@@ -3,6 +3,7 @@ package net.thechance.mena.admin_panel.data.remote.service
 import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.PATCH
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
@@ -11,6 +12,7 @@ import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthen
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshTokenRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
+import net.thechance.mena.admin_panel.domain.entity.user.Status
 
 interface AdminPanelApiService {
 
@@ -30,13 +32,10 @@ interface AdminPanelApiService {
         @Query("size") size: Int? = null
     ): Response<PagedResponse<UserResponse>>
 
-    @POST(BLOCK_USER_ENDPOINT)
-    suspend fun blockUser(@Path("userId") userId: String): Response<Unit>
-
-    @POST(ACTIVE_USER_ENDPOINT)
-    suspend fun activateUser(@Path("userId") userId: String): Response<Unit>
-
-
+    @PATCH(UPDATE_USER_STATUS_ENDPOINT)
+    suspend fun updateUserStatus(
+        @Path("userId") userId: String ,
+        @Body status: String): Response<Unit>
 
     private companion object {
         const val AUTH_BASE = "identity/admin/authentication/"
@@ -45,8 +44,7 @@ interface AdminPanelApiService {
 
         const val USER_BASE = "identity/admin/users"
 
-        const val BLOCK_USER_ENDPOINT = "${USER_BASE}/{userId}/block"
+        const val UPDATE_USER_STATUS_ENDPOINT = "${USER_BASE}/{userId}/status"
 
-        const val ACTIVE_USER_ENDPOINT = "${USER_BASE}/{userId}/activate"
     }
 }
