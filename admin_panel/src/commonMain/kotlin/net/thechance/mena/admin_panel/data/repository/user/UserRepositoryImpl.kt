@@ -15,7 +15,6 @@ import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import org.koin.core.annotation.Single
 import kotlin.uuid.ExperimentalUuidApi
-
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)

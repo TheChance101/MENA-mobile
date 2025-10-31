@@ -1,7 +1,5 @@
 package net.thechance.mena.admin_panel.data.mapper.user
 
-
-import kotlinx.datetime.toLocalDate
 import net.thechance.mena.admin_panel.data.mapper.parseLocalDateOrDefault
 import net.thechance.mena.admin_panel.data.mapper.toUuidOrNull
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
