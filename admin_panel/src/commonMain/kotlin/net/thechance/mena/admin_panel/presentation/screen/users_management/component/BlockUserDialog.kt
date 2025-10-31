@@ -62,22 +62,18 @@ fun BlockUserDialog(
 
 @Composable
 private fun DialogIcon() {
-    Box(
+    Icon(
+        painter = painterResource(Res.drawable.ic_user_block),
+        contentDescription = null,
         modifier = Modifier
             .size(88.dp)
             .background(
                 color = Theme.colorScheme.background.bgError,
                 shape = CircleShape
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_user_block),
-            contentDescription = null,
-            modifier = Modifier.size(48.dp),
-            tint = Theme.colorScheme.error
-        )
-    }
+            )
+            .padding(20.dp),
+        tint = Theme.colorScheme.error
+    )
 }
 
 @Composable

@@ -4,9 +4,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import net.thechance.mena.admin_panel.domain.entity.User
-import net.thechance.mena.admin_panel.domain.entity.User.UserState
 import net.thechance.mena.admin_panel.domain.repository.UserRepo
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
+import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -33,8 +33,8 @@ class UsersManagementViewModel(
         tryToExecute(
             callee = { userRepo.getAllUsers().first() },
             dispatcher = dispatcher,
-            onSuccess = ::onGetUsersSuccess,
-            onError = { onGetUsersError() }
+            onSuccess = { result -> onGetUsersSuccess(result) },
+            onError = ::onGetUsersError
         )
     }
 
@@ -43,14 +43,13 @@ class UsersManagementViewModel(
         updateState {
             it.copy(
                 users = userItems,
-                filteredUsers = userItems,
                 isLoading = false,
                 errorState = null
             )
         }
     }
 
-    private fun onGetUsersError() {
+    private fun onGetUsersError(errorState: ErrorState) {
         updateState {
             it.copy(
                 isLoading = false,
@@ -59,34 +58,13 @@ class UsersManagementViewModel(
         }
     }
 
-    override fun onNavigateBackClicked() {
-        sendEffect(UsersManagementEffect.NavigateBack)
-    }
-
-    override fun onBlockUserClicked(userId: Uuid) {
-        updateState {
-            it.copy(
-                showBlockDialog = true,
-                selectedUserId = userId
-            )
-        }
-    }
-
-    override fun onActivateUserClicked(userId: Uuid) {}
+    override fun onToggleUserStatusClicked(userId: Uuid) {}
 
     override fun onRetryClicked() {
         getUsers()
     }
 
-    override fun onStatusClick(userId: Uuid) {
-        val user = state.value.filteredUsers.find { it.id == userId }
-
-        when (user?.userStates) {
-            UserState.ACTIVE -> onShowBlockDialog(userId)
-            UserState.BLOCKED -> onActivateUserClicked(userId)
-            else -> {}
-        }
-    }
+    override fun onStatusClicked(userId: Uuid) {}
 
     override fun onSortUsersNameClicked() {}
 

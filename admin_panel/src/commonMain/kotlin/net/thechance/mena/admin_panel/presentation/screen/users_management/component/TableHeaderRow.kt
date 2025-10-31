@@ -28,7 +28,9 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TableHeaderRow(
-    state: UsersManagementScreenState,
+    userNameSort: UsersManagementScreenState.Sort,
+    lastLoginDateSort: UsersManagementScreenState.Sort,
+    lastVisitDateSort: UsersManagementScreenState.Sort,
     listener: UsersManagementInteractionListener,
     modifier: Modifier = Modifier
 ) {
@@ -43,23 +45,6 @@ fun TableHeaderRow(
                 )
             )
             .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TableHeaderRowContent(
-            state = state,
-            listener = listener
-        )
-    }
-}
-
-@Composable
-private fun TableHeaderRowContent(
-    state: UsersManagementScreenState,
-    listener: UsersManagementInteractionListener,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -74,7 +59,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.user_name),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(2f),
-            isSelected = state.userNameASC ?: false,
+            isSelected = userNameSort == UsersManagementScreenState.Sort.ASC,
             onClick = { listener.onSortUsersNameClicked() }
         )
 
@@ -89,7 +74,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.last_login_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),
-            isSelected = state.lastLoginDateASC?: false,
+            isSelected = lastLoginDateSort == UsersManagementScreenState.Sort.ASC,
             onClick = { listener.onSortLastLoginDateClicked() }
         )
 
@@ -97,7 +82,7 @@ private fun TableHeaderRowContent(
             text = stringResource(Res.string.last_visit_date),
             icon = painterResource(Res.drawable.ic_sort),
             modifier = Modifier.weight(1.5f),
-            isSelected = state.lastVisitDateASC?: false,
+            isSelected = lastVisitDateSort == UsersManagementScreenState.Sort.ASC,
             onClick = { listener.onSortLastVisitDateClicked() }
         )
 

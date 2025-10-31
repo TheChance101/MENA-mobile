@@ -76,22 +76,27 @@ private fun PaginationButton(
         label = "buttonBackgroundColor"
     )
 
-    Box(
+    val iconTint by animateColorAsState(
+        targetValue = if (enabled) {
+            Theme.colorScheme.primary.primary
+        } else {
+            Theme.colorScheme.primary.primary.copy(alpha = 0.5f)
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "buttonIconTint"
+    )
+
+    Icon(
+        painter = painterResource(icon),
+        contentDescription = null,
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(backgroundColor)
             .clickable(enabled = enabled) { onClick() }
             .padding(12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = Theme.colorScheme.primary.primary
-        )
-    }
+        tint = iconTint
+    )
 }
 
 @Composable

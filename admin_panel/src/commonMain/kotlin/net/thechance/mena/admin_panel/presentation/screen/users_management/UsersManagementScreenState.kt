@@ -12,10 +12,9 @@ import kotlin.uuid.Uuid
 data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
-    val filteredUsers: List<UserItem> = emptyList(),
-    val userNameASC: Boolean? = null,
-    val lastLoginDateASC: Boolean? = null,
-    val lastVisitDateASC: Boolean? = null,
+    val userNameSort: Sort = Sort.NONE,
+    val lastLoginDateSort: Sort = Sort.NONE,
+    val lastVisitDateSort: Sort = Sort.NONE,
     val isUserActive: Boolean = true,
     val isLoading: Boolean = false,
     val errorState: ErrorState? = null,
@@ -30,4 +29,10 @@ data class UsersManagementScreenState(
         val lastVisitDate: LocalDate,
         val userStates: UserState
     )
+
+    enum class Sort {
+        ASC,
+        DESC,
+        NONE
+    }
 }

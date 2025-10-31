@@ -1,12 +1,10 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management.component
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_search
 import net.thechance.mena.admin_panel.resources.search_hint
@@ -20,16 +18,14 @@ fun SearchBar(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.height(48.dp),
-        horizontalArrangement = Arrangement.End
-    ) {
-        TextField(
-            value = value,
-            onValueChanged = onValueChange,
-            leadingIcon = painterResource(Res.drawable.ic_search),
-            hint = stringResource(Res.string.search_hint),
-            modifier = Modifier.fillMaxWidth(0.3f)
-        )
-    }
+    TextField(
+        value = value,
+        onValueChanged = onValueChange,
+        leadingIcon = painterResource(Res.drawable.ic_search),
+        hint = stringResource(Res.string.search_hint),
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentWidth(Alignment.End)
+            .fillMaxWidth(0.3f)
+    )
 }

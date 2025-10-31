@@ -1,14 +1,19 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management.component
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,19 +34,27 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun StatusManager(
+fun ToggleUserStatus(
     userState: UserState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isActive = userState == UserState.ACTIVE
+    val buttonText = if (isActive) {
+        stringResource(Res.string.block)
+    } else {
+        stringResource(Res.string.activate)
+    }
+    val buttonIcon = if (isActive) {
+        painterResource(Res.drawable.ic_block)
+    } else {
+        painterResource(Res.drawable.ic_activate)
+    }
 
     OutlinedButton(
         modifier = modifier.wrapContentWidth(),
-        text = if (isActive) stringResource(Res.string.block) else stringResource(Res.string.activate),
-        trailingIcon = painterResource(
-            if (isActive) Res.drawable.ic_block else Res.drawable.ic_activate
-        ),
+        text = buttonText,
+        trailingIcon = buttonIcon,
         onClick = onClick
     )
 }
@@ -51,20 +64,42 @@ fun UserStatus(
     status: UserState,
     modifier: Modifier = Modifier
 ) {
-    val (backgroundColor, dotColor, textColor, statusText) = when (status) {
-        UserState.ACTIVE -> StatusColors(
-            backgroundColor = Theme.colorScheme.background.bgSuccess,
-            dotColor = Theme.colorScheme.success,
-            textColor = Theme.colorScheme.success,
-            text = stringResource(Res.string.active)
-        )
+    val isActive = status == UserState.ACTIVE
 
-        UserState.BLOCKED -> StatusColors(
-            backgroundColor = Theme.colorScheme.background.bgError,
-            dotColor = Theme.colorScheme.error,
-            textColor = Theme.colorScheme.error,
-            text = stringResource(Res.string.blocked)
-        )
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isActive) {
+            Theme.colorScheme.background.bgSuccess
+        } else {
+            Theme.colorScheme.background.bgError
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "statusBackgroundColor"
+    )
+
+    val dotColor by animateColorAsState(
+        targetValue = if (isActive) {
+            Theme.colorScheme.success
+        } else {
+            Theme.colorScheme.error
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "statusDotColor"
+    )
+
+    val textColor by animateColorAsState(
+        targetValue = if (isActive) {
+            Theme.colorScheme.success
+        } else {
+            Theme.colorScheme.error
+        },
+        animationSpec = tween(durationMillis = 300),
+        label = "statusTextColor"
+    )
+
+    val statusText = if (isActive) {
+        stringResource(Res.string.active)
+    } else {
+        stringResource(Res.string.blocked)
     }
 
     Row(
@@ -92,19 +127,9 @@ private fun StatusDot(
     color: Color,
     modifier: Modifier = Modifier
 ) {
-    Canvas(
-        modifier = modifier.size(6.dp)
-    ) {
-        drawCircle(
-            color = color,
-            radius = size.minDimension / 2
-        )
-    }
+    Box(
+        modifier = modifier
+            .size(6.dp)
+            .background(color = color, shape = CircleShape)
+    )
 }
-
-private data class StatusColors(
-    val backgroundColor: Color,
-    val dotColor: Color,
-    val textColor: Color,
-    val text: String
-)

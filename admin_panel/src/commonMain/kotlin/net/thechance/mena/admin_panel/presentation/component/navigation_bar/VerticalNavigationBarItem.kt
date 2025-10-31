@@ -48,13 +48,10 @@ fun VerticalNavigationBarItem(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .width(112.dp)
-            .then(
-                if (isSelected) Modifier
-                else Modifier.clickable(
-                    onClick = onClick,
-                    indication = null,
-                    interactionSource = interactionSource
-                )
+            .clickableItem(
+                isSelected = isSelected,
+                interactionSource = interactionSource,
+                onClick = onClick
             )
     ) {
         Icon(
@@ -71,3 +68,19 @@ fun VerticalNavigationBarItem(
         )
     }
 }
+
+private fun Modifier.clickableItem(
+    isSelected: Boolean,
+    interactionSource: MutableInteractionSource,
+    onClick: () -> Unit
+): Modifier = then(
+    if (isSelected) {
+        Modifier
+    } else {
+        Modifier.clickable(
+            onClick = onClick,
+            indication = null,
+            interactionSource = interactionSource
+        )
+    }
+)

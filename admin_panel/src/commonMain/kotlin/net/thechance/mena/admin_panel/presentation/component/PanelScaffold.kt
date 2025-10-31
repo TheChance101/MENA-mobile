@@ -26,7 +26,6 @@ fun PanelScaffold(
     topBar: (@Composable () -> Unit)? = null,
     snackBar: (@Composable () -> Unit)? = null,
     overlays: (ScaffoldScope.() -> Unit)? = null,
-    backgroundColor: Color = Theme.colorScheme.background.surface,
     errorState: ErrorState? = null,
     isLoading: Boolean = false,
     onRetry: (() -> Unit)? = null,
@@ -35,7 +34,7 @@ fun PanelScaffold(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(Theme.colorScheme.background.surface)
             .then(modifier)
     ) {
         Scaffold(

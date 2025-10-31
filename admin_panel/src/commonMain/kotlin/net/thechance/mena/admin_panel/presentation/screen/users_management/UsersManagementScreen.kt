@@ -15,15 +15,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
 import net.thechance.mena.admin_panel.presentation.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.SearchBar
-import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UserListSearchEmpty
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.img_search_empty
+import net.thechance.mena.admin_panel.resources.no_search_result
+import net.thechance.mena.admin_panel.resources.no_search_result_description
 import net.thechance.mena.admin_panel.resources.users_management
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -61,16 +65,7 @@ private fun UsersManagementScreenContent(
             state.errorState != null ->
                 ErrorView(onRetry = { listener.onRetryClicked() })
 
-            state.isLoading -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    ThreeDotsLoadingIndicator()
-                }
-            }
-
-            state.filteredUsers.isEmpty() && state.query.isNotEmpty() -> {
+            state.users.isEmpty() && state.query.isNotEmpty() -> {
                 Column(modifier = Modifier.fillMaxSize()) {
                     SearchBar(
                         value = state.query,
@@ -79,10 +74,14 @@ private fun UsersManagementScreenContent(
                         },
                         modifier = Modifier.padding(16.dp)
                     )
-                    UserListSearchEmpty(modifier = Modifier.fillMaxSize())
+                    StatePlaceholder(
+                        image = painterResource(Res.drawable.img_search_empty),
+                        title = stringResource(Res.string.no_search_result),
+                        description = stringResource(Res.string.no_search_result_description),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                 }
             }
-
 
             else -> {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -96,7 +95,10 @@ private fun UsersManagementScreenContent(
                     UsersListContent(
                         modifier = Modifier.fillMaxSize(),
                         listener = listener,
-                        state = state
+                        users = state.users,
+                        userNameSort = state.userNameSort,
+                        lastLoginDateSort = state.lastLoginDateSort,
+                        lastVisitDateSort = state.lastVisitDateSort,
                     )
                 }
             }
@@ -108,7 +110,6 @@ private fun onUsersManagementEffect(
     effect: UsersManagementEffect,
 ) {
     when (effect) {
-        UsersManagementEffect.NavigateBack -> {}
         is UsersManagementEffect.ShowConfirmationMessage -> {}
     }
 }
