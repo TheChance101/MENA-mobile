@@ -7,6 +7,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,8 @@ abstract class BaseViewModel<S, E>(
             try {
                 val result = block()
                 onSuccess(result)
+            } catch (_: CancellationException) {
+
             } catch (e: Exception) {
                 onError(e)
             }

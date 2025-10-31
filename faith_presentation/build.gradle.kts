@@ -53,6 +53,9 @@ kotlin {
             implementation(libs.coil.gif)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
+
+            // maps
+            implementation(libs.maplibre.compose)
         }
         iosMain.dependencies {
 
