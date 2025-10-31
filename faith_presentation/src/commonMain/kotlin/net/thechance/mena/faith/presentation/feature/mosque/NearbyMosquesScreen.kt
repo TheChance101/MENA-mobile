@@ -9,14 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dellisd.spatialk.geojson.Position
 import mena.faith_presentation.generated.resources.Res
@@ -25,7 +21,6 @@ import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.utils.MapStyle
-import org.koin.compose.viewmodel.koinViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -54,8 +49,8 @@ private fun Content(
 ) {
     val initialCameraPosition = CameraPosition(
         target = Position(
-            longitude = state.centerOfMap?.longitude ?: 0.0,
-            latitude = state.centerOfMap?.latitude ?: 0.0
+            longitude = uiState.centerOfMap?.longitude ?: 0.0,
+            latitude = uiState.centerOfMap?.latitude ?: 0.0
         ),
         zoom = 14.0
     )
@@ -65,10 +60,11 @@ private fun Content(
         snapshotFlow { cameraState.position }
             .collect {
                 listener.mapPositionChanged(
-                    latitude = cameraState.position.target.latitude,
-                    longitude = cameraState.position.target.longitude
+                    coordinate = Coordinate(
+                        latitude = cameraState.position.target.latitude,
+                        longitude = cameraState.position.target.longitude
+                    )
                 )
-                listener.mapPositionChanged()
             }
     }
 
@@ -86,8 +82,10 @@ private fun Content(
                 onClick = {
                     val target = cameraState.position.target
                     listener.onSearchByCoordinatesClick(
-                        latitude = target.latitude,
-                        longitude = target.longitude
+                        coordinate = Coordinate(
+                            latitude = target.latitude,
+                            longitude = target.longitude
+                        )
                     )
                 },
                 modifier = Modifier
@@ -128,9 +126,9 @@ private fun NearbyMosquesScreenPreview() {
             override fun onAddMosqueClick() {}
             override fun onCurrentUserLocationClick() {}
             override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-            override fun onViewMosqueOnMapClick(latitude: Double, longitude: Double) {}
-            override fun onSearchByCoordinatesClick(latitude: Double, longitude: Double) {}
-            override fun mapPositionChanged() {}
+            override fun onViewMosqueOnMapClick(coordinate: Coordinate) {}
+            override fun onSearchByCoordinatesClick(coordinate: Coordinate) {}
+            override fun mapPositionChanged(coordinate: Coordinate) {}
             override fun onQueryChange(query: String) {}
         }
     )

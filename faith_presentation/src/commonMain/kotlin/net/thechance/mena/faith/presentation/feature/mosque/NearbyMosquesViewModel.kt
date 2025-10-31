@@ -29,16 +29,16 @@ internal class NearbyMosquesViewModel() :
 //        TODO("Not yet implemented")
     }
 
-    override fun onViewMosqueOnMapClick(latitude: Double, longitude: Double) {
+    override fun onViewMosqueOnMapClick(coordinate: Coordinate) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onSearchByCoordinatesClick(latitude: Double, longitude: Double) {
+    override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
 //        TODO("Not yet implemented")
     }
 
-    override fun mapPositionChanged(latitude: Double, longitude: Double) {
-        updateCenterOfMap(latitude = latitude, longitude = longitude)
+    override fun mapPositionChanged(coordinate: Coordinate) {
+        updateCenterOfMap(coordinate = coordinate)
         handleSearchButtonVisibilityOnInteraction()
     }
 
@@ -56,14 +56,9 @@ internal class NearbyMosquesViewModel() :
         }
     }
 
-    private fun updateCenterOfMap(latitude: Double, longitude: Double) {
+    private fun updateCenterOfMap(coordinate: Coordinate) {
         updateState {
-            it.copy(
-                centerOfMap = Coordinate(
-                    latitude = latitude,
-                    longitude = longitude
-                )
-            )
+            it.copy(centerOfMap = coordinate)
         }
     }
 }
