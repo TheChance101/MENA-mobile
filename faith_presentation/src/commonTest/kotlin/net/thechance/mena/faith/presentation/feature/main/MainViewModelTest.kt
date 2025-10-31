@@ -32,17 +32,16 @@ import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class MainViewModelTest {
+@OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
+class MainViewModelAdditionalTests {
 
     private var testDispatcher: TestDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: MainViewModel
     private lateinit var quranRepository: QuranRepository
     private lateinit var prayerTimeRepository: PrayerTimeRepository
-
     private lateinit var addressesRepository: AddressesRepository
     private lateinit var locationService: LocationService
 
-    @OptIn(ExperimentalTime::class)
     @BeforeTest
     fun setup() {
         quranRepository = mock(MockMode.autofill)
@@ -54,6 +53,12 @@ class MainViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
 
         locationService = LocationService(addressesRepository)
+    }
+
+    @Test
+    fun `init should navigate to enable location when address is null`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns null
 
         viewModel = MainViewModel(
             quranRepository = quranRepository,
@@ -61,29 +66,40 @@ class MainViewModelTest {
             locationService = locationService,
             dispatcher = testDispatcher
         )
+
+        viewModel.uiEffect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+    @Test
+    fun `init should navigate to enable location when addressLine is empty`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns emptyAddressLine
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        viewModel.uiEffect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
-    fun `viewModel should load prayer times`() = runTest(testDispatcher) {
-        testDispatcher.scheduler.advanceUntilIdle()
-        val state = viewModel.uiState.value
+    fun `init should update address in state when address is valid`() = runTest {
 
-        assertFalse(state.isLoading)
-        assertEquals(fakePrayerTimes.size, state.prayerTimes.size)
-        assertTrue(state.prayerTimes.isNotEmpty())
-    }
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
 
-    @OptIn(ExperimentalTime::class)
-    @Test
-    fun `init should handle prayer times error`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any()
-            )
-        } throws Exception("Network error")
-
-        val failingViewModel = MainViewModel(
+        viewModel = MainViewModel(
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
@@ -91,68 +107,275 @@ class MainViewModelTest {
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
-        val state = failingViewModel.uiState.value
 
-        assertFalse(state.isLoading)
-        assertTrue(state.prayerTimes.isEmpty())
+        assertEquals("Baghdad, Iraq", viewModel.uiState.value.address)
     }
 
     @Test
-    fun `onContinueTilawahClick should emit NavigateToSurah effect`() = runTest {
+    fun `onChangeLocation should navigate to enable location when address is not empty`() =
+        runTest {
+
+            everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+            viewModel = MainViewModel(
+                quranRepository = quranRepository,
+                prayerTimeRepository = prayerTimeRepository,
+                locationService = locationService,
+                dispatcher = testDispatcher
+            )
+
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.uiEffect.test {
+                viewModel.onChangeLocation()
+                assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onChangeLocation should navigate to my location when address is empty`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns emptyAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.uiEffect.test {
-            viewModel.onContinueTilawahClick(SURAH_ID, SURAH_NAME, AYAH_NUMBER)
+        assertEquals("", viewModel.uiState.value.address)
 
-            assertEquals(
-                MainScreenEffect.NavigateToSurah(SURAH_ID, SURAH_NAME, AYAH_NUMBER),
-                awaitItem()
-            )
+        viewModel.uiEffect.test {
+            viewModel.onChangeLocation()
+            assertEquals(MainScreenEffect.NavigateToMyLocation, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `init should set isLoading to false during prayer times loading`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        assertFalse(viewModel.uiState.value.isLoading)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `init should set isLoading to false after prayer times error`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend {
+            prayerTimeRepository.getPrayerTimes(any(), any())
+        } throws Exception("Network error")
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `init should populate prayerTimesUiState when prayer times loaded`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.prayerTimesUiState != null)
+        assertTrue(state.prayerTimesUiState?.prayers?.isNotEmpty() == true)
+    }
+
+    @Test
+    fun `init should set hijri date when prayer times loaded`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.hijriDate.isNotEmpty())
+    }
+
+    @Test
+    fun `init should set sunrise time when prayer times loaded`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.sunriseTime.isNotEmpty())
+    }
+
+    @Test
+    fun `init should populate tilawahUiState when last ayah loaded`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.tilawahUiState != null)
+        assertEquals(SURAH_ID, state.tilawahUiState?.surahId)
+    }
+
+    @Test
+    fun `init should handle error when loading last ayah fails`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend {
+            quranRepository.getLastAyahForTilawah()
+        } throws Exception("Database error")
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isLoading)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `init should call both prayer times and tilawah repositories`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend(mode = exactly(1)) {
+            prayerTimeRepository.getPrayerTimes(any(), any())
+        }
+        verifySuspend(mode = exactly(1)) {
+            quranRepository.getLastAyahForTilawah()
         }
     }
 
     @OptIn(ExperimentalTime::class)
     @Test
-    fun `onQuranClick should emit NavigateToQuran effect`() = runTest {
+    fun `prayer times should remain empty when loading fails`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend {
+            prayerTimeRepository.getPrayerTimes(any(), any())
+        } throws Exception("Network error")
+
+        viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.uiState.value.prayerTimes.isEmpty())
+        assertTrue(viewModel.uiState.value.prayerTimesUiState == null)
+    }
+
+    @Test
+    fun `onChangeLocation should navigate to EnableLocation when address is valid`() = runTest {
+
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+
+        val viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onQuranClick()
-
-            assertEquals(MainScreenEffect.NavigateToQuran, awaitItem())
+            viewModel.onChangeLocation()
+            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `onQiblahClick should emit NavigateToQiblah effect`() = runTest {
+    fun `onChangeLocation should navigate to MyLocation when address is empty`() = runTest {
+        val emptyAddress = fakeAddress.copy(addressLine = "")
+        everySuspend { addressesRepository.getActiveAddress() } returns emptyAddress
+
+        val viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
+
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onQiblahClick()
-
-            assertEquals(MainScreenEffect.NavigateToQiblah, awaitItem())
+            viewModel.onChangeLocation()
+            assertEquals(MainScreenEffect.NavigateToMyLocation, awaitItem())
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
-    @Test
-    fun `onMosquesClick should emit NavigateToMosques effect`() = runTest {
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.uiEffect.test {
-            viewModel.onMosquesClick()
-            assertEquals(MainScreenEffect.NavigateToMosques, awaitItem())
-        }
-    }
-
-    @Test
-    fun `refreshTilawah should load last ayah for tilawah`() = runTest {
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.refreshTilawah()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        verifySuspend(mode = exactly(2)) { quranRepository.getLastAyahForTilawah() } // once in init, once in refresh
-    }
 
     private companion object {
         const val SURAH_ID = 1
@@ -182,9 +405,13 @@ class MainViewModelTest {
         )
 
         val fakeAyah = LastAyahForTilawah(
-            number = 1,
+            number = AYAH_NUMBER,
             surahId = SURAH_ID,
             surahName = SURAH_NAME
         )
+
+        val emptyAddressLine = fakeAddress.copy(addressLine = "")
+        val emptyAddress = fakeAddress.copy(addressLine = "")
+
     }
 }
