@@ -367,7 +367,8 @@ class ChatViewModel(
 
     private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
         if (deleteChatEvent == null) return
-        emitEffect(ChatScreenEffect.NavigateBack)      // the chat is deleted, navigate back
+        onDeleteChatSuccess()
+        emitEffect(ChatScreenEffect.NavigateBack)
     }
 
     private fun observeReadMessages() {
