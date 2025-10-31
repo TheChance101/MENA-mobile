@@ -41,7 +41,7 @@ import sv.lib.squircleshape.SquircleShape
 
 
 @Composable
-fun ScaffoldScope.ShareProfileQrCode(
+fun ScaffoldScope.ShareQrCode(
     showDialog: Boolean,
     fullName: String,
     qrCodePainter: Painter,
@@ -152,7 +152,7 @@ private fun ShareProfileQrCodePreview() {
         Scaffold(
             overlays = {
                 dialog(true) {
-                    ShareProfileQrCode(
+                    ShareQrCode(
                         fullName = "Hassan Nabil",
                         qrCodePainter = painterResource(Res.drawable.male),
                         showDialog = it,

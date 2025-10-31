@@ -45,7 +45,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.Invite
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.profile.components.ShareProfileQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.register.RegisterScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -109,7 +109,7 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     dialog(state.showShareProfileDialog) {
-                        ShareProfileQrCode(
+                        ShareQrCode(
                             showDialog = it,
                             qrCodePainter = rememberAsyncImagePainter(
                                 "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
