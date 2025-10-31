@@ -8,6 +8,8 @@ import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.findNextPrayer
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -91,27 +93,5 @@ class PrayerTimeViewModel(
                 }
             }
         }
-    }
-
-    private fun findNextPrayer(
-        prayerTimes: List<PrayerTime>,
-        currentTime: kotlin.time.Instant
-    ): PrayerTime? {
-        val sortedPrayers = prayerTimes.sortedBy { it.time }
-        val nextPrayer = sortedPrayers.firstOrNull { it.time > currentTime }
-
-        return nextPrayer ?: sortedPrayers.firstOrNull()
-    }
-
-    private fun formatCountdown(remainingMillis: Long): String {
-        val remainingSeconds = remainingMillis / 1000
-
-        val hours = remainingSeconds / 3600
-        val minutes = (remainingSeconds % 3600) / 60
-        val seconds = remainingSeconds % 60
-
-        return "${hours.toString().padStart(2, '0')}:${
-            minutes.toString().padStart(2, '0')
-        }:${seconds.toString().padStart(2, '0')}"
     }
 }
