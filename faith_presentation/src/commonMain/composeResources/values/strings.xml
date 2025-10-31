@@ -34,6 +34,7 @@
     <string name="swipe_animation">SwipeAnimation</string>
     <string name="aya">Aya %1$d</string>
     <string name="start_tilawah">Start Tilawah</string>
+    <string name="search_area">Search in this area</string>
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
