@@ -1,8 +1,10 @@
 package net.thechance.mena.admin_panel.presentation.screen.login
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -11,11 +13,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginCredentials
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginHeader
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginScaffold
+import net.thechance.mena.admin_panel.presentation.screen.login.component.PasswordInputField
+import net.thechance.mena.admin_panel.presentation.screen.login.component.UsernameInputField
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.login
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -45,20 +52,31 @@ private fun LoginScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LoginHeader(modifier = Modifier.padding(top = 64.dp))
-
-            LoginCredentials(
-                username = state.username,
-                password = state.password,
-                usernameErrorMsg = state.usernameErrorMsg,
-                passwordErrorMsg = state.passwordErrorMsg,
-                isPasswordVisible = state.isPasswordVisible,
-                isLoginBtnLoading = state.isLoginBtnLoading,
-                isLoginBtnEnabled = state.isLoginBtnEnabled,
-                onLoginBtnClicked = interactionListener::onLoginBtnClicked,
-                onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
-                onUsernameChanged = interactionListener::onUsernameChanged,
-                onPasswordChanged = interactionListener::onPasswordChanged
-            )
+            Column(modifier = Modifier.padding(top = 40.dp)) {
+                UsernameInputField(
+                    username = state.username,
+                    usernameErrorMsg = state.usernameErrorMsg,
+                    onChangeValue = interactionListener::onUsernameChanged
+                )
+                PasswordInputField(
+                    modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
+                    password = state.password,
+                    passwordErrorMsg = state.passwordErrorMsg,
+                    isPasswordVisible = state.isPasswordVisible,
+                    onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
+                    onChangeValue = interactionListener::onPasswordChanged
+                )
+                PrimaryButton(
+                    modifier = Modifier
+                        .width(70.dp)
+                        .align(Alignment.End),
+                    text = stringResource(Res.string.login),
+                    onClick = interactionListener::onLoginBtnClicked,
+                    isLoading = state.isLoginBtnLoading,
+                    isEnabled = state.isLoginBtnEnabled,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+                )
+            }
         }
     }
 }
