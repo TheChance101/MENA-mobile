@@ -214,7 +214,7 @@ private fun ReelFooterSection(
                 text = pluralStringResource(
                     resource = Res.plurals.likes_suffix,
                     quantity = reel.likesCount,
-                    reel.likesCount
+                    formatArgs = arrayOf(reel.likesCount)
                 ),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
@@ -235,7 +235,7 @@ private fun ReelFooterSection(
                 text = pluralStringResource(
                     resource = Res.plurals.views_suffix,
                     quantity = reel.viewsCount,
-                    reel.viewsCount
+                    formatArgs = arrayOf(reel.viewsCount)
                 ),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
