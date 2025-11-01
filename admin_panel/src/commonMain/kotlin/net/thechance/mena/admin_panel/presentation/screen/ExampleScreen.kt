@@ -26,6 +26,6 @@ fun ExampleScreen(){
 
         Button(onClick = {}) {
             Text("Click me", style = Theme.typography.body.large)
-        }
+
     }
 }
