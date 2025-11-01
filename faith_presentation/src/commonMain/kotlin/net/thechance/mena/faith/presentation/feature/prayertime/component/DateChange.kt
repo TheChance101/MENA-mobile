@@ -16,6 +16,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.arrow_right
 import mena.faith_presentation.generated.resources.ic_arrow_down
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
@@ -38,7 +39,7 @@ internal fun DateChange(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        Icon(
             painterResource(Res.drawable.arrow_left),
             contentDescription = "Back icon",
             modifier = Modifier
@@ -62,7 +63,7 @@ internal fun DateChange(
                     .clickable(onClick = onDropDownClick)
             )
         }
-        Image(
+        Icon(
             painterResource(Res.drawable.arrow_right),
             contentDescription = "Forward icon",
             modifier = Modifier

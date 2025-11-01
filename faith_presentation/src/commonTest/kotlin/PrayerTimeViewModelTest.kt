@@ -13,6 +13,7 @@ import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
@@ -27,8 +28,8 @@ class PrayerTimeViewModelTest {
     private lateinit var viewModel: PrayerTimeViewModel
 
     @OptIn(ExperimentalTime::class)
-    @Test
-    fun `initialize view model should load today's prayer times successfully`() = runTest {
+    @BeforeTest
+    fun setup() {
         everySuspend {
             prayerTimeRepository.getPrayerTimes(
                 any(),
@@ -39,6 +40,10 @@ class PrayerTimeViewModelTest {
         viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
 
         testDispatcher.scheduler.advanceTimeBy(100)
+    }
+
+    @Test
+    fun `initialize view model should load today's prayer times size successfully`() = runTest {
 
         val state = viewModel.uiState.value
         assertEquals(
@@ -47,20 +52,8 @@ class PrayerTimeViewModelTest {
         )
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns emptyList()
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
-
-        testDispatcher.scheduler.advanceTimeBy(100)
-
         viewModel.uiEffect.test {
             viewModel.onBackClick()
 
@@ -70,19 +63,8 @@ class PrayerTimeViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onNextDateClick should emit NavigateNextDate effect`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns emptyList()
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
-        testDispatcher.scheduler.advanceTimeBy(100)
-
         viewModel.uiEffect.test {
             viewModel.onNextDateClick()
             assertEquals(PrayerTimeEffect.NavigateNextDate, awaitItem())
@@ -90,19 +72,8 @@ class PrayerTimeViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onPrevDateClick should emit NavigatePrevDate effect`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns emptyList()
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
-        testDispatcher.scheduler.advanceTimeBy(100)
-
         viewModel.uiEffect.test {
             viewModel.onPrevDateClick()
             assertEquals(PrayerTimeEffect.NavigatePrevDate, awaitItem())
@@ -110,19 +81,8 @@ class PrayerTimeViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onDateDropdownClick should emit NavigateCalenderBottomSheet effect`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns emptyList()
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
-        testDispatcher.scheduler.advanceTimeBy(100)
-
         viewModel.uiEffect.test {
             viewModel.onDateDropdownClick()
             assertEquals(PrayerTimeEffect.NavigateCalenderBottomSheet, awaitItem())
