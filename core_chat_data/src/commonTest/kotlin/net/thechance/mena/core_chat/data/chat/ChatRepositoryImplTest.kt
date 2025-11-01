@@ -135,7 +135,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should return chat summary when getChatsSummary is successful`() = runTest {
         httpClient = createHttpClient(
-            chatSummaryResponse = { defaultChatSummaryResponse() }
+            chatsSummariesResponse = { defaultChatSummaryResponse() }
         )
         repository = createChatRepository(
             httpClient = httpClient,
@@ -153,7 +153,7 @@ class ChatRepositoryImplTest {
     @Test
     fun `should throw NotFoundException when getChatsSummary returns error`() = runTest {
         httpClient = createHttpClient(
-            chatSummaryResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+            chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
         )
         repository = createChatRepository(
             httpClient = httpClient,

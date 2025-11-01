@@ -36,7 +36,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -182,7 +181,7 @@ fun createChatRepository(
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
         chatResponse = chatResponse,
-        chatSummaryResponse = chatSummaryResponse,
+        chatsSummariesResponse = chatSummaryResponse,
         chatByIdResponse = chatByIdResponse
     )
     return ChatRepositoryImpl(
@@ -213,7 +212,7 @@ fun createHttpClient(
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    chatsSummariesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
     val engine = MockEngine { request ->
@@ -225,11 +224,11 @@ fun createHttpClient(
             path == SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
                 ?: defaultSyncContactsResponse()
 
-            path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
+            path.contains("/chat") && path.endsWith("/messages") -> chatHistoryResponse?.invoke(this)
                 ?: defaultChatHistoryResponse()
 
-            request.url.encodedPath == CHAT_SUMMARY_ENDPOINT ->
-                chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
+            request.url.encodedPath == CHATS_SUMMARIES_ENDPOINT ->
+                chatsSummariesResponse?.invoke(this) ?: defaultChatSummaryResponse()
 
             request.url.encodedPath == CHAT_ENDPOINT ->
                 chatResponse?.invoke(this) ?: defaultChatResponse()
@@ -268,6 +267,5 @@ private const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
 private const val CHAT_ENDPOINT = "/chat"
 
 private const val USER_ENDPOINT = "/chat/user"
-private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-private const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
+private const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
