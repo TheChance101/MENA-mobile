@@ -54,7 +54,7 @@ fun AnimatedStatementItem(
             delayMillis = 220,
             easing = LinearEasing
         )
-
+    )
 
     Column(
         modifier = Modifier
