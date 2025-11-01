@@ -1,5 +1,8 @@
 package net.thechance.mena.admin_panel.presentation.screen.login
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -15,6 +18,7 @@ class LoginViewModel(
     private val loginUseCase: LoginUseCase,
     @Provided
     private val stringProvider: StringProvider,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
     LoginInteractionListener {
     override fun onUsernameChanged(username: String) {
@@ -37,6 +41,7 @@ class LoginViewModel(
             onStart = { updateState { it.copy(isLoginBtnLoading = true) } },
             onSuccess = { onLoginSuccess() },
             onError = ::onLoginError,
+            dispatcher = dispatcher
         )
     }
 
