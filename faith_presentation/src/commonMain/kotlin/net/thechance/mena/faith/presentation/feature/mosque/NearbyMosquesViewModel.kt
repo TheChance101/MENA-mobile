@@ -16,6 +16,7 @@ internal class NearbyMosquesViewModel(
         initialState = NearbyMosquesMapUiState(),
     ), NearbyMosquesInteractionListener {
 
+    private var searchButtonInactivityJob: Job? = null
     private var searchJob: Job? = null
 
     override fun onBackClick() {
@@ -49,7 +50,7 @@ internal class NearbyMosquesViewModel(
 
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
-        cancelPreviousSearch()
+        searchJob?.cancel()
         searchJob = tryToExecute(
             execute = {
                 // TODO: send search request to the repository with the current query
@@ -72,15 +73,11 @@ internal class NearbyMosquesViewModel(
 
     private fun handleSearchButtonVisibilityOnInteraction() {
         updateState { it.copy(isSearchButtonVisible = false) }
-        cancelPreviousSearch()
-        searchJob = viewModelScope.launch {
+        searchButtonInactivityJob?.cancel()
+        searchButtonInactivityJob = viewModelScope.launch {
             delay(500)
             updateState { it.copy(isSearchButtonVisible = true) }
         }
-    }
-
-    private fun cancelPreviousSearch() {
-        searchJob?.cancel()
     }
 
     private fun updateCenterOfMap(coordinate: Coordinate) {
