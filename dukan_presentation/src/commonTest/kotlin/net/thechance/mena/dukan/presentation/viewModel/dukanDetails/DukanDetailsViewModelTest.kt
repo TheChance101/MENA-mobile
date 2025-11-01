@@ -292,6 +292,29 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onFavoriteDukanClicked SHOULD toggle isFavorite in state when repository call succeeds`() =
+        runTest {
+            // Given
+            advanceUntilIdle()
+            val initialState = dukanDetailsViewModel.state.value
+            val initialFavorite = initialState.dukanInfo.isFavorite
+            val dukanId = initialState.dukanInfo.dukanId
+
+            everySuspend {
+                dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !initialFavorite)
+            } returns Unit
+
+            // When
+            dukanDetailsViewModel.onFavoriteDukanClicked(dukanId, initialFavorite)
+            advanceUntilIdle()
+
+            // Then
+            val updatedState = dukanDetailsViewModel.state.value
+            assertEquals(!initialFavorite, updatedState.dukanInfo.isFavorite)
+        }
+
     private fun createViewModel() = DukanDetailsViewModel(
         dukanManagementRepository = dukanManagementRepository,
         shelfRepository = shelfRepository,
@@ -317,6 +340,7 @@ class DukanDetailsViewModelTest {
 private fun dummyDukanDetails() = Dukan(
     id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
     name = "Test Dukan",
+    isFavorite = true,
     address = "123 Test Street",
     imageUrl = "https://example.com/image.png",
     coordinates = Dukan.Coordinates(latitude = 30.0, longitude = 31.0),

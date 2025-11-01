@@ -29,6 +29,7 @@ data class MainScreenUiState(
         val id: String,
         val name: String,
         val imageUrl: String,
+        val isFavorite: Boolean
     )
     enum class DukanStatusUi {
         Loading,

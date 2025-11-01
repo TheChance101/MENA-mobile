@@ -1,10 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_general
@@ -30,6 +32,9 @@ class MainViewModel(
     initialState = MainScreenUiState(),
     defaultDispatcher = dispatcher
 ), MainInteractionListener {
+
+    private var editorPickState: MutableStateFlow<PagingData<MainScreenUiState.EditorPickDukanUiState>> =
+        MutableStateFlow(PagingData.empty())
 
     init {
         fetchData()
@@ -58,10 +63,12 @@ class MainViewModel(
             ).items
         }
     }
+
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        editorPickState.value = dukans
         updateState {
             copy(
-                editorPickDukans = flowOf(dukans),
+                editorPickDukans = editorPickState,
                 snackBarState = null
             )
         }
@@ -83,6 +90,7 @@ class MainViewModel(
             ).items
         }
     }
+
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
         updateState {
             copy(
@@ -220,6 +228,30 @@ class MainViewModel(
 
     override fun onEditorPickDukanClicked(dukanId: String) {
         emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
+    }
+
+    override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !isFavorite) },
+            onSuccess = {
+                updateFavoriteDukanPagingData(
+                    dukanId = dukanId,
+                    transform = { it.copy(isFavorite = !isFavorite) }
+                )
+            }
+        )
+    }
+
+    private fun updateFavoriteDukanPagingData(
+        dukanId: String,
+        transform: (MainScreenUiState.EditorPickDukanUiState) -> MainScreenUiState.EditorPickDukanUiState
+    ) {
+        val currentData = editorPickState.value
+        val updatedData = currentData.map { dukan ->
+            if (dukan.id == dukanId) transform(dukan) else dukan
+        }
+        editorPickState.value = updatedData
+        updateState { copy(editorPickDukans = editorPickState) }
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {

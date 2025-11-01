@@ -23,6 +23,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun LazyListScope.editorPickDukanItems(
     dukans: LazyPagingItems<MainScreenUiState.EditorPickDukanUiState>,
     onDukanClick: (String) -> Unit,
+    onClickFavorite: (String, Boolean) -> Unit
 ) {
 
     when (dukans.loadState.refresh) {
@@ -47,7 +48,9 @@ fun LazyListScope.editorPickDukanItems(
                 EditorPickDukanItem(
                     dukanName = dukan.name,
                     dukanImage = dukan.imageUrl,
-                    onClick = { onDukanClick(dukan.id) },
+                    onClickDukan = { onDukanClick(dukan.id) },
+                    isFavorite = dukan.isFavorite,
+                    onClickFavorite = { onClickFavorite(dukan.id, dukan.isFavorite) },
                     modifier = Modifier.padding(
                         horizontal = Theme.spacing._16,
                         vertical = Theme.spacing._8
@@ -70,6 +73,7 @@ private fun EditorPickDukanItemsListPreview() {
         LazyColumn {
             editorPickDukanItems(
                 dukans = fakePagingItems,
+                onClickFavorite = { _, _ -> },
                 onDukanClick = {}
             )
         }

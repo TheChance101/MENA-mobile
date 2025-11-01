@@ -1,9 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,6 +15,7 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_location
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_favorite_filled
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.shopping_basket_icon
@@ -40,6 +43,8 @@ fun SmallImageDukanDetails(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
+
+
     OnSystemBackPressed(listener::onBackClicked)
 
     Scaffold(
@@ -47,7 +52,7 @@ fun SmallImageDukanDetails(
             SmallImageAppBar(listener)
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
@@ -66,13 +71,29 @@ fun SmallImageDukanDetails(
             )
             Row(
                 modifier = Modifier.padding(horizontal = Theme.spacing._16),
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
-                SmallImageDukanIconButton(
-                    icon = painterResource(Res.drawable.ic_favorite),
-                    iconColor = Color(state.dukanInfo.color),
+                Crossfade(
+                    targetState = state.dukanInfo.isFavorite,
+                    label = "favoriteCrossfade",
                     modifier = Modifier.weight(1f)
-                )
+                ) { isFavorite ->
+                    val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
+                    else Res.drawable.ic_favorite
+
+                    SmallImageDukanIconButton(
+                        icon = painterResource(favoriteIcon),
+                        iconColor = Color(state.dukanInfo.color),
+                        onIconClick = {
+                            listener.onFavoriteDukanClicked(
+                                dukanId = state.dukanInfo.dukanId,
+                                isFavorite = state.dukanInfo.isFavorite
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
                 SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.ic_share),
                     iconColor = Color(state.dukanInfo.color),

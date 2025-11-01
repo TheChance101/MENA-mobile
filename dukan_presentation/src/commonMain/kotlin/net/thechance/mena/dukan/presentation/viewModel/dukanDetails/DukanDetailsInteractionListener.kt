@@ -8,4 +8,5 @@ interface DukanDetailsInteractionListener {
     fun onViewDukanOnMapClicked(latitude: Double, longitude: Double)
     fun onAddToCartClicked(productId: String)
     fun onRetryClicked()
+    fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean)
 }

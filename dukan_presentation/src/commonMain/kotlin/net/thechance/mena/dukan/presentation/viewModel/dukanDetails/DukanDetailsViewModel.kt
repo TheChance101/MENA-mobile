@@ -73,8 +73,7 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
+    private fun isWideImageStyle() = state.value.dukanInfo.style == Style.WIDE_IMAGE
 
     private fun loadShelvesPaging() {
         tryToCollect(
@@ -211,6 +210,21 @@ class DukanDetailsViewModel(
 
     override fun onRetryClicked() {
         loadDukanDetails()
+    }
+
+    override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !isFavorite) },
+            onSuccess = { setFavoriteState(!isFavorite) }
+        )
+    }
+
+    private fun setFavoriteState(isFavorite: Boolean) {
+        updateState {
+            copy(
+                dukanInfo = dukanInfo.copy(isFavorite = isFavorite)
+            )
+        }
     }
 
     private fun updateShelvesWithAddedProduct(

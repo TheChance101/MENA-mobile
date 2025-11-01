@@ -26,6 +26,7 @@ class DukanMappersTest {
         val dukan = Dukan(
             id = dukanId,
             name = "My Dukan",
+            isFavorite = false,
             categories = setOf(Category(categoryId, "Category 1", "")),
             address = "Baghdad",
             coordinates = Dukan.Coordinates(33.3, 44.4),

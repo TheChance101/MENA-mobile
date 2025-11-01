@@ -61,7 +61,10 @@ fun WideImageDukanDetails(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                DukanHeader(state = state.dukanInfo)
+                DukanHeader(
+                    state = state.dukanInfo,
+                    onFavoriteClicked = listener::onFavoriteDukanClicked,
+                )
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanShelves(

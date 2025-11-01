@@ -179,7 +179,8 @@ private fun MainContent(
                 }
                 editorPickDukanItems(
                     dukans = dukans,
-                    onDukanClick = listener::onEditorPickDukanClicked
+                    onDukanClick = listener::onEditorPickDukanClicked,
+                    onClickFavorite = listener::onFavoriteDukanClicked
                 )
             }
         }
