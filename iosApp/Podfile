@@ -5,6 +5,7 @@ target 'iosApp' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
     pod 'MapLibre', '6.17.1'
+    pod 'SSZipArchive'
 
   # Pods for iosApp
 
