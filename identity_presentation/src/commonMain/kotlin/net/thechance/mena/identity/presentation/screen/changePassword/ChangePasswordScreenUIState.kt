@@ -1,10 +1,12 @@
 package net.thechance.mena.identity.presentation.screen.changePassword
 
+import androidx.compose.foundation.pager.PagerState
 import org.jetbrains.compose.resources.StringResource
 
 data class ChangePasswordScreenUIState(
-    val currentPasswordUIState: CurrentPasswordContentUIState,
-    val newPasswordUIState: NewPasswordContentUIState,
+    val currentPasswordUIState: CurrentPasswordContentUIState = CurrentPasswordContentUIState(),
+    val newPasswordUIState: NewPasswordContentUIState = NewPasswordContentUIState(),
+    val currentPage: Int = 0 ,
     val errorMessage: StringResource? = null,
     val isLoading: Boolean = false,
 )

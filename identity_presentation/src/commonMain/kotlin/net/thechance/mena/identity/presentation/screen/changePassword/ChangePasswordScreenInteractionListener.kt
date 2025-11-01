@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.screen.changePassword
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
-interface ChangePasswordInteractionListener : BaseInteractionListener{
+interface ChangePasswordScreenInteractionListener : BaseInteractionListener{
 
     fun onClickBack()
     fun onClickContinue()
