@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.login
 
+import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 
 data class LoginScreenState(
@@ -11,4 +12,7 @@ data class LoginScreenState(
 ){
     val isLoginButtonEnabled : Boolean
         get() = password.length >= 8 && username.isNotEmpty()
+}
+interface LoginErrorState : ErrorState {
+    data object InvalidCredentials : ErrorState
 }
