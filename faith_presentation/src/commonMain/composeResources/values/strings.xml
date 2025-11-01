@@ -156,4 +156,6 @@
     <string name="mosque_image_description">Mosque icon</string>
     <string name="mosque_details">Mosque details</string>
     <string name="view_on_map">View on map</string>
+    <string name="search_hint">Search...</string>
+    <string name="no_mosques_found">No mosques found, try with another keyword.</string>
 </resources>
