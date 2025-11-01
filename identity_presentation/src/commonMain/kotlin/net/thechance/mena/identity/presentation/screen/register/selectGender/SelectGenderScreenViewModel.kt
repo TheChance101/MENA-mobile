@@ -9,7 +9,7 @@ class SelectGenderScreenViewModel :
     ), SelectGenderScreenInteractionListener {
 
     override fun onClickRegister() {
-        sendNewEffect(SelectGenderScreenUIEffect.NavigateBack)
+        sendNewEffect(SelectGenderScreenUIEffect.NavigateToAccountCreatedScreen)
     }
 
     override fun onChangeGender(gender: Gender) {

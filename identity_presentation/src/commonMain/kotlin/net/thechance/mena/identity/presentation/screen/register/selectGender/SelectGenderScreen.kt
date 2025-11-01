@@ -7,31 +7,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.back
-import mena.identity_presentation.generated.resources.next
 import mena.identity_presentation.generated.resources.register
-import mena.identity_presentation.generated.resources.register_prompt_description
-import mena.identity_presentation.generated.resources.register_prompt_title
 import mena.identity_presentation.generated.resources.select_gender_screen_prompt
 import mena.identity_presentation.generated.resources.select_gender_screen_prompt_title
-import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.components.WheelDatePicker
 import net.thechance.mena.identity.presentation.screen.editProfile.component.GenderToggle
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class SelectGenderScreen() :
     BaseScreen<SelectGenderScreenViewModel, SelectGenderScreenUIState, SelectGenderScreenUIEffect, SelectGenderScreenInteractionListener>() {
@@ -86,7 +76,7 @@ class SelectGenderScreen() :
         navigator: Navigator
     ) {
         when (effect) {
-            SelectGenderScreenUIEffect.NavigateBack -> navigator.pop()
+            SelectGenderScreenUIEffect.NavigateToAccountCreatedScreen -> {} // TODO: navigate to account created screen
         }
     }
 }
