@@ -15,7 +15,10 @@ import net.thechance.mena.identity.presentation.screen.notImplemented.NotImpleme
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
+import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
+import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreen
+import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.uploadProfileImage.UploadProfileImageViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
@@ -49,6 +52,8 @@ val identityScreensModule = module {
     factoryOf(::ResetPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
+    factoryOf(::DatePickerScreenViewModel)
+    factoryOf(::SelectGenderScreenViewModel)
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->
         ImageCropperComponentViewModel(minScale, maxScale, initialState)
