@@ -221,7 +221,9 @@ class MainViewModel(
     override fun onEditorPickDukanClicked(dukanId: String) {
         emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
     }
-
+    override fun onSearchButtonClicked() {
+        emitEffect(MainScreenEffect.NavigateToSearchScreen)
+    }
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
