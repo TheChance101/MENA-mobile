@@ -36,37 +36,41 @@ private val availableReactions = listOf("🔥", "❤️", "😂", "\uD83D\uDE22"
 @OptIn(ExperimentalUuidApi::class)
 fun ScaffoldScope.messageReactionDialog(
     isVisible: Boolean,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit = { },
     message: MessageUiState? = null,
     currentUserId: Uuid? = null,
-    onReactionSelected: (reaction: String) -> Unit
+    onReactionClicked: (messageId: Uuid, emoji: String) -> Unit
 ) {
+    if (message == null) return
+
     dialog(isVisible) {
         BasicDialog(
             isVisible = isVisible,
             onDismiss = onDismiss,
             contentPadding = PaddingValues(Theme.spacing._16),
             actionButtons = {
-                MessageToReactDisplay(
-                    message = message ?: return@BasicDialog
-                )
+                MessageToReactDisplay(message = message)
+
                 val selected = message.reactions.firstOrNull { it.userId == currentUserId }?.emoji
+
                 ReactionContent(
                     selectedReaction = selected,
-                    onReactionSelected = onReactionSelected
+                    onReactionSelected = { emoji ->
+                        onReactionClicked(message.id, emoji)
+                        onDismiss()
+                    }
                 )
-
             }
         ) {
-
             Text(
                 text = stringResource(Res.string.react_to_message),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().padding(vertical = Theme.spacing._12)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Theme.spacing._12)
             )
-
         }
     }
 }
@@ -75,6 +79,10 @@ fun ScaffoldScope.messageReactionDialog(
 fun MessageToReactDisplay(
     message: MessageUiState
 ) {
+    if (message.content !is MessageContent.Text) {
+        return
+    }
+
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -88,13 +96,10 @@ fun MessageToReactDisplay(
                 shape = RoundedCornerShape(Theme.radius.md)
             )
     ) {
+        val textContent = message.content
+
         Text(
-            text = message.content.let {
-                when (it) {
-                    is MessageContent.Text -> it.text
-                    is MessageContent.Image -> ""
-                }
-            },
+            text = textContent.text,
             modifier = Modifier.padding(Theme.spacing._12),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
