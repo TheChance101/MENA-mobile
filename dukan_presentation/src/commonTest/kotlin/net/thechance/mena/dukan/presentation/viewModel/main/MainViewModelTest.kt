@@ -270,4 +270,14 @@ class MainViewModelTest {
             }
         }
 
+    @Test
+    fun `onSearchButtonClicked SHOULD emit NavigateToSearchScreen`() = runTest {
+        mainViewModel.onSearchButtonClicked()
+
+        val actualEffect = mainViewModel.effect.first()
+        val expectedEffect = MainScreenEffect.NavigateToSearchScreen
+
+        assertEquals(expectedEffect, actualEffect)
+    }
+
 }
