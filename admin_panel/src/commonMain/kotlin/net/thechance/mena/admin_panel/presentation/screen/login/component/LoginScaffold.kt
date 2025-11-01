@@ -30,10 +30,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun LoginScaffold(
     snackBarState: SnackBarState,
-    content : @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit
 ) {
     Scaffold {
-        Box{
+        Box {
             Image(
                 modifier = Modifier
                     .fillMaxSize()
@@ -43,19 +43,21 @@ internal fun LoginScaffold(
                 contentScale = ContentScale.Crop
             )
 
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Theme.colorScheme.background.surface.copy(alpha = 0.9f),
-                            Theme.colorScheme.background.surface,
-                            Theme.colorScheme.background.surface,
-                        ),
-                        start = Offset(0f, Float.POSITIVE_INFINITY),
-                        end = Offset(0f, 0f)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Theme.colorScheme.background.surface.copy(alpha = 0.9f),
+                                Theme.colorScheme.background.surface,
+                                Theme.colorScheme.background.surface,
+                            ),
+                            start = Offset(0f, Float.POSITIVE_INFINITY),
+                            end = Offset(0f, 0f)
+                        )
                     )
-                ))
+            )
 
             Column(
                 modifier = Modifier
@@ -63,7 +65,7 @@ internal fun LoginScaffold(
                     .padding(bottom = Theme.spacing._16)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){ content() }
+            ) { content() }
 
             Box(
                 modifier = Modifier

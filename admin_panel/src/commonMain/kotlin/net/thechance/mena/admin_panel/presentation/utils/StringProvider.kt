@@ -14,4 +14,3 @@ class DefaultStringProvider : StringProvider {
         return getMessage(resource, *args)
     }
 }
-
