@@ -218,7 +218,6 @@
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
 
-
     <!-- date picker -->
     <string name="date_picker_screen_prompt_title">Complete your profile</string>
     <string name="date_picker_screen_prompt">Select your date of birth, only allowed for 14+ years</string>

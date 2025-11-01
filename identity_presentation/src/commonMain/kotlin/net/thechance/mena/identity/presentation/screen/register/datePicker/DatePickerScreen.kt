@@ -15,11 +15,8 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.date_picker_screen_prompt
 import mena.identity_presentation.generated.resources.date_picker_screen_prompt_title
 import mena.identity_presentation.generated.resources.next
-import mena.identity_presentation.generated.resources.register_prompt_description
-import mena.identity_presentation.generated.resources.register_prompt_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
@@ -27,7 +24,6 @@ import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.WheelDatePicker
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreen
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class DatePickerScreen :
     BaseScreen<DatePickerScreenViewModel, DatePickerScreenUIState, DatePickerScreenUIEffect, DatePickerScreenInteractionListener>() {
@@ -41,26 +37,12 @@ class DatePickerScreen :
         state: DatePickerScreenUIState,
         listener: DatePickerScreenInteractionListener
     ) {
-        Scaffold(
-            bottomBar = {
-                PrimaryButton(
-                    text = stringResource(Res.string.next),
-                    onClick = listener::onClickNext,
-                    isEnabled = state.isNextEnabled,
-                    isLoading = state.isNextLoading,
-                    contentPadding = PaddingValues(vertical = 13.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._16),
-                )
-            }
-        ) {
+        Scaffold {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
-                    .padding(vertical = 24.dp)
+                    .padding(top = 24.dp)
             ) {
                 AuthScreenContainer {
                     PageDescription(
@@ -77,6 +59,15 @@ class DatePickerScreen :
                             onDateChange = listener::onChangeDate
                         )
                     }
+
+                    PrimaryButton(
+                        text = stringResource(Res.string.next),
+                        onClick = listener::onClickNext,
+                        isEnabled = state.isNextEnabled,
+                        isLoading = state.isNextLoading,
+                        contentPadding = PaddingValues(vertical = 13.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

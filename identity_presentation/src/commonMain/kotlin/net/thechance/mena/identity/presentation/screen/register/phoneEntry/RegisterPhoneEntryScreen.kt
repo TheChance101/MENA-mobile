@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.next
 import mena.identity_presentation.generated.resources.register_prompt_title
 import mena.identity_presentation.generated.resources.you_already_have_account
 import mena.identity_presentation.generated.resources.login
@@ -71,19 +70,6 @@ class RegisterPhoneEntryScreen : BaseScreen<
                         onClickConfirm = listener::onSelectCountryItem,
                     )
                 }
-            },
-            bottomBar = {
-                PrimaryButton(
-                    text = stringResource(Res.string.register),
-                    onClick = listener::onClickContinue,
-                    isEnabled = state.isContinueEnabled,
-                    isLoading = state.isLoading,
-                    contentPadding = PaddingValues(vertical = 13.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._16),
-                )
             }
         ) {
             Box(
@@ -107,6 +93,15 @@ class RegisterPhoneEntryScreen : BaseScreen<
                     )
 
                     Spacer(modifier = Modifier.weight(1f))
+
+                    PrimaryButton(
+                        text = stringResource(Res.string.register),
+                        onClick = listener::onClickRegister,
+                        isEnabled = state.isRegisterEnabled,
+                        isLoading = state.isLoading,
+                        contentPadding = PaddingValues(vertical = 13.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12)
+                    )
 
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
@@ -150,12 +145,12 @@ fun PreviewRegisterPhoneEntryScreen() {
             state = RegisterPhoneEntryUIState(
                 phoneNumber = "7901234567",
                 currentCountry = MenaCountry.IRAQ,
-                isContinueEnabled = true
+                isRegisterEnabled = true
             ),
             listener = object : RegisterPhoneEntryInteractionListener {
                 override fun onSelectCountryItem(country: MenaCountry) {}
                 override fun onDismissBottomSheet() {}
-                override fun onClickContinue() {}
+                override fun onClickRegister() {}
                 override fun onClickCountry() {}
                 override fun onChangePhone(phone: String) {}
                 override fun onClickBack() {}

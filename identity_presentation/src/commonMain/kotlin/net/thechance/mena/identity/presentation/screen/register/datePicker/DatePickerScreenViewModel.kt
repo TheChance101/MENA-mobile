@@ -19,13 +19,13 @@ class DatePickerScreenViewModel :
     override fun onChangeDate(day: Int, month: Int, year: Int) {
         tryToExecute(
             function = {updateState { copy(selectedDate = LocalDate(year, month, day)) }},
-            onSuccess = { checkEnableNext() }
+            onSuccess = { changeIsNextEnable() }
         )
     }
 
 
     @OptIn(ExperimentalTime::class)
-    private fun checkEnableNext() {
+    private fun changeIsNextEnable() {
         val selectedDate = state.value.selectedDate
         val isAgeValid = selectedDate.let { date ->
             val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date

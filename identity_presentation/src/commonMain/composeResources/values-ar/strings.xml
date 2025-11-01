@@ -137,4 +137,12 @@
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
+
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="date_picker_screen_prompt">اختر تاريخ ميلادك، يُسمح فقط لمن هم بعمر 14 سنة أو أكثر</string>
+
+    <!-- select gender -->
+    <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="select_gender_screen_prompt">اختر جنسك</string>
 </resources>

@@ -14,5 +14,12 @@ class SelectGenderScreenViewModel :
 
     override fun onChangeGender(gender: Gender) {
         updateState { copy(gender = gender) }
+        changeIsRegisterEnabled()
+    }
+
+    private fun changeIsRegisterEnabled(){
+        updateState {
+            copy(isRegisterEnabled = gender != null)
+        }
     }
 }

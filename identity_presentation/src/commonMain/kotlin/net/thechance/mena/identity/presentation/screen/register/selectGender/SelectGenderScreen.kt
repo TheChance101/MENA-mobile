@@ -2,6 +2,7 @@ package net.thechance.mena.identity.presentation.screen.register.selectGender
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,26 +36,12 @@ class SelectGenderScreen() :
         state: SelectGenderScreenUIState,
         listener: SelectGenderScreenInteractionListener
     ) {
-        Scaffold(
-            bottomBar = {
-                PrimaryButton(
-                    text = stringResource(Res.string.register),
-                    onClick = listener::onClickRegister,
-                    isEnabled = state.isRegisterEnabled,
-                    isLoading = state.isRegisterLoading,
-                    contentPadding = PaddingValues(vertical = 13.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._16),
-                )
-            }
-        ) {
+        Scaffold {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
-                    .padding(vertical = 24.dp)
+                    .padding(top = 24.dp)
             ) {
                 AuthScreenContainer {
                     PageDescription(
@@ -65,6 +52,17 @@ class SelectGenderScreen() :
                     GenderToggle(
                         gender = state.gender,
                         onGenderChange = listener::onChangeGender
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    PrimaryButton(
+                        text = stringResource(Res.string.register),
+                        onClick = listener::onClickRegister,
+                        isEnabled = state.isRegisterEnabled,
+                        isLoading = state.isRegisterLoading,
+                        contentPadding = PaddingValues(vertical = 13.dp),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }

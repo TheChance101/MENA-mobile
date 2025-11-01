@@ -5,5 +5,5 @@ import net.thechance.mena.identity.domain.entity.Gender
 data class SelectGenderScreenUIState(
     val isRegisterEnabled: Boolean = false,
     val isRegisterLoading: Boolean = false,
-    val gender: Gender = Gender.MALE
+    val gender: Gender? = null
 )
