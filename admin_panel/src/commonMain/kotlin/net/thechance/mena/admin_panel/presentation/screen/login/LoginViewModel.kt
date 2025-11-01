@@ -8,6 +8,8 @@ import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 

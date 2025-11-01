@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.login
+package net.thechance.mena.admin_panel.presentation.utils
 
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.resources.Res
