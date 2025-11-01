@@ -652,8 +652,10 @@ private fun fakeProducts(): List<Product> {
             description = "Latest iPhone model",
             price = 999.99,
             createdAt = "2023-08-01T10:00:00Z",
-            imageUrls = listOf("https://example.com/iphone.jpg")
-        ),
+            imageUrls = listOf("https://example.com/iphone.jpg"),
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+
+            ),
         Product(
             id = Uuid.random(),
             name = "MacBook Pro",
@@ -661,14 +663,16 @@ private fun fakeProducts(): List<Product> {
             price = 1999.99,
             imageUrls = listOf("https://example.com/macbook.jpg"),
             createdAt = "2023-08-01T10:00:00Z",
-        ),
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            ),
         Product(
             id = Uuid.random(),
             name = "T-Shirt",
             description = "Cotton t-shirt",
             price = 29.99,
             createdAt = "2023-08-01T10:00:00Z",
-            imageUrls = listOf("https://example.com/tshirt.jpg")
-        )
+            imageUrls = listOf("https://example.com/tshirt.jpg"),
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
+            )
     )
 }

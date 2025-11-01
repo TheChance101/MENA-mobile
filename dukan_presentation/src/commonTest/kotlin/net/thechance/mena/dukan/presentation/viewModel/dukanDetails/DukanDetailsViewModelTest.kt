@@ -341,6 +341,7 @@ private fun fakeProducts(): List<Product> = listOf(
         description = "A cool laptop",
         price = 1200.0,
         imageUrls = emptyList(),
-        createdAt = "2025-10-10T12:00:00Z"
-    )
+        createdAt = "2025-10-10T12:00:00Z",
+        shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+        )
 )
