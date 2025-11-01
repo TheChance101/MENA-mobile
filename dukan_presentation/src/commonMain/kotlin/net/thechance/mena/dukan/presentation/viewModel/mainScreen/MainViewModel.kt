@@ -7,6 +7,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_management_general_error
+import mena.dukan_presentation.generated.resources.dukan_managment_loading
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -58,6 +60,7 @@ class MainViewModel(
             ).items
         }
     }
+
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
         updateState {
             copy(
@@ -83,6 +86,7 @@ class MainViewModel(
             ).items
         }
     }
+
     private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
         updateState {
             copy(
@@ -173,8 +177,14 @@ class MainViewModel(
 
             is NoInternetException -> {
                 updateState {
+                    copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
                     updateToNoInternetState()
                 }
+
+            }
+
+            else -> updateState {
+                copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
             }
         }
     }
@@ -192,7 +202,15 @@ class MainViewModel(
             DukanStatusUi.None -> emitEffect(MainScreenEffect.NavigateToAddDukanScreen)
             DukanStatusUi.Pending -> emitEffect(MainScreenEffect.NavigateToPendingDukanScreen)
             DukanStatusUi.Approved -> emitEffect(MainScreenEffect.NavigateToManageDukanScreen)
-            DukanStatusUi.Loading -> {}
+            DukanStatusUi.Default -> showSnackBar(
+                message = Res.string.dukan_management_general_error,
+                type = SnackBarType.ERROR
+            )
+
+            DukanStatusUi.Loading -> showSnackBar(
+                message = Res.string.dukan_managment_loading,
+                type = SnackBarType.ERROR
+            )
         }
     }
 

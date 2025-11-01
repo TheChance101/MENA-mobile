@@ -34,6 +34,7 @@ data class MainScreenUiState(
         Loading,
         Pending,
         None,
-        Approved
+        Approved,
+        Default
     }
 }
