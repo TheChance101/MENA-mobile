@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiColor
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -33,4 +34,12 @@ fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
     price = price,
     imageUrl = imageUrls.firstOrNull().orEmpty()
 )
+
+fun DukanDetailsUiState.ProductUiState.toUpdateProductCartQuantityParams(dukanId: String): UpdateProductCartQuantityParams {
+    return UpdateProductCartQuantityParams(
+        productId = id,
+        quantity = inCartQuantity,
+        dukanId = dukanId
+    )
+}
 

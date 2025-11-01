@@ -2,8 +2,8 @@ package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 interface ShelfDetailsInteractionListener {
     fun onBackClicked()
-    fun onAddToCartClicked(productId: String)
-    fun onPlusClicked(productId: String)
-    fun onMinusClicked(productId: String)
+    fun onAddToCartClicked(product: ShelfDetailsUiState.ProductUiState)
+    fun onPlusClicked(product: ShelfDetailsUiState.ProductUiState)
+    fun onMinusClicked(product: ShelfDetailsUiState.ProductUiState)
     fun onCartClicked()
 }
