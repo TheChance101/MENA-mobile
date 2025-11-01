@@ -2,7 +2,6 @@ package net.thechance.mena.faith.presentation.feature.prayertime.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -20,13 +19,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun PrayerTimeTopBar(onClick: () -> Unit) {
+internal fun PrayerTimeTopBar() {
     Row(
         modifier = Modifier.background(
             shape = RoundedCornerShape(Theme.radius.full),
             color = Theme.colorScheme.background.surfaceLow
-        ).height(Theme.spacing._24)
-            .clickable(onClick = onClick),
+        ).height(Theme.spacing._24),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -50,5 +48,5 @@ internal fun PrayerTimeTopBar(onClick: () -> Unit) {
 @Preview
 @Composable
 private fun Preview() {
-    PrayerTimeTopBar(onClick = {})
+    PrayerTimeTopBar()
 }

@@ -34,9 +34,7 @@ class PrayerTimeViewModel(
 
     override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
 
-    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
-
-    override fun onChangeLocation() = sendEffect(PrayerTimeEffect.NavigateToChangeLocation)
+    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderBottomSheet)
 
     private fun loadTodayPrayerTimes() {
         tryToExecute(
@@ -75,18 +73,23 @@ class PrayerTimeViewModel(
                 prayer.time.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
 
             if (remainingMillis > 0) {
-                updateState {
-                    it.copy(
+                val countdown = formatCountdown(remainingMillis)
+
+                updateState { state ->
+                    state.copy(
                         nextPrayerName = prayer.name,
-                        nextPrayerCountdown = formatCountdown(remainingMillis)
+                        nextPrayerCountdown = countdown
                     )
                 }
             } else {
-                updateState {
-                    it.copy(
-                        nextPrayerName = prayerTimes.firstOrNull()?.name ?: PrayerName.DHUHR,
-                        nextPrayerCountdown = "--:--:--"
-                    )
+                val firstPrayer = prayerTimes.firstOrNull()
+                firstPrayer?.let {
+                    updateState { state ->
+                        state.copy(
+                            nextPrayerName = it.name,
+                            nextPrayerCountdown = "--:--:--"
+                        )
+                    }
                 }
             }
         }
