@@ -4,8 +4,8 @@ data class UserQueryParams(
     val searchInput: String?,
     val sortType: String?,
     val sortDirection: SortDirection?,
-    val page: Int = 0,
-    val size: Int = 20
+    val page: Int ,
+    val size: Int
 )
 
 enum class SortDirection(val value: String) {

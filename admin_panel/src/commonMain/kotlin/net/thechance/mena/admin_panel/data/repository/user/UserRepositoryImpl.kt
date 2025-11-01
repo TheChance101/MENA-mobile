@@ -6,6 +6,7 @@ import net.thechance.mena.admin_panel.data.mapper.toEntityList
 import net.thechance.mena.admin_panel.data.mapper.user.buildSortQuery
 import net.thechance.mena.admin_panel.data.mapper.user.toEntity
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
+import net.thechance.mena.admin_panel.data.remote.dto.user.UpdateUserStatusRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.data.remote.service.UserApiService
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
@@ -36,6 +37,7 @@ class UserRepositoryImpl(
     }
 
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
-        executeApiSafely<Unit> { userApiService.updateUserStatus(userID.toString(), status.toString()) }
+        executeApiSafely<Unit> { userApiService.updateUserStatus(userID.toString(),
+            UpdateUserStatusRequestDto(status.toString())) }
     }
 }

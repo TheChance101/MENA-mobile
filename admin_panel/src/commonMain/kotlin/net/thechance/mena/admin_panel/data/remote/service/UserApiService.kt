@@ -7,6 +7,7 @@ import de.jensklingenberg.ktorfit.http.PATCH
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
+import net.thechance.mena.admin_panel.data.remote.dto.user.UpdateUserStatusRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 
 interface UserApiService {
@@ -21,7 +22,7 @@ interface UserApiService {
     @PATCH(UPDATE_USER_STATUS_ENDPOINT)
     suspend fun updateUserStatus(
         @Path("userId") userId: String,
-        @Body status: String
+        @Body status: UpdateUserStatusRequestDto
     ): Response<Unit>
 
     private companion object {
