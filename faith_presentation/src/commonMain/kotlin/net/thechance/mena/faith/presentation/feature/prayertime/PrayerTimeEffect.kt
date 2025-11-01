@@ -4,5 +4,6 @@ sealed class PrayerTimeEffect {
     data object NavigateBack : PrayerTimeEffect()
     data object NavigatePrevDate : PrayerTimeEffect()
     data object NavigateNextDate : PrayerTimeEffect()
-    data object NavigateCalenderBottomSheet : PrayerTimeEffect()
+    data object NavigateToChangeLocation : PrayerTimeEffect()
+    data object NavigateCalenderDialog : PrayerTimeEffect()
 }
