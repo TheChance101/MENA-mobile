@@ -39,7 +39,7 @@ internal fun LoginHeader(modifier: Modifier = Modifier) {
             color = Theme.colorScheme.shadePrimary
         )
         Text(
-            modifier = Modifier.padding(top = Theme.spacing._16),
+            modifier = Modifier.padding(top = 16.dp),
             text = stringResource(Res.string.login_header),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,

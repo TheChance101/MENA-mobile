@@ -32,7 +32,7 @@ internal fun PasswordInputField(
 ) {
     Column(modifier = modifier) {
         Text(
-            modifier = Modifier.padding(bottom = Theme.spacing._4),
+            modifier = Modifier.padding(bottom = 4.dp),
             text = stringResource(Res.string.password),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary
