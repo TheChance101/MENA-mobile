@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.edit_product_pencil
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -24,11 +25,9 @@ fun EditProductIcon(
         painter = painterResource(Res.drawable.edit_product_pencil),
         contentDescription = stringResource(Res.string.edit_product_pencil),
         modifier = modifier
+            .clip(RoundedCornerShape(Theme.radius.full))
+            .background(Theme.colorScheme.primary.primary)
             .clickable(onClick = onClick)
-            .background(
-                color = Theme.colorScheme.primary.primary,
-                shape = RoundedCornerShape(size = Theme.radius.full)
-            )
             .padding(Theme.spacing._8)
     )
 }

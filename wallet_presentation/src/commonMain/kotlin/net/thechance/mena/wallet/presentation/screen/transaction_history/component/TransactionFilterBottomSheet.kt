@@ -61,10 +61,7 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
             )
         },
         sheetContent = {
-
-            HeaderFilterContent(
-                onResetClicked = onResetClicked
-            )
+            HeaderFilterContent(onResetClicked = onResetClicked)
 
             FilterContent(
                 selectedTypes = uiState.selectedTypes,

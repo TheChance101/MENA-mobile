@@ -8,6 +8,7 @@ import mena.identity_presentation.generated.resources.error_invalid_otp
 import mena.identity_presentation.generated.resources.error_invalid_password
 import mena.identity_presentation.generated.resources.error_no_network
 import mena.identity_presentation.generated.resources.error_otp_expired
+import mena.identity_presentation.generated.resources.error_phone_number_already_exists
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import mena.identity_presentation.generated.resources.error_too_many_requests
 import mena.identity_presentation.generated.resources.error_user_blocked
@@ -22,6 +23,7 @@ internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): S
         AuthenticationErrorState.UserIsBlocked -> Res.string.error_user_blocked
         AuthenticationErrorState.TooManyRequests -> Res.string.error_too_many_requests
         AuthenticationErrorState.OTPExpired -> Res.string.error_otp_expired
+        AuthenticationErrorState.PhoneNumberAlreadyExists -> Res.string.error_phone_number_already_exists
         AuthenticationErrorState.NoNetwork -> Res.string.error_no_network
         is AuthenticationErrorState.SomethingWentWrong -> Res.string.error_something_went_wrong
     }
