@@ -82,10 +82,19 @@ class PrayerTimeViewModelTest {
     }
 
     @Test
-    fun `onDateDropdownClick should emit NavigateCalenderBottomSheet effect`() = runTest {
+    fun `onDateDropdownClick should emit NavigateCalenderDialog effect`() = runTest {
         viewModel.uiEffect.test {
             viewModel.onDateDropdownClick()
-            assertEquals(PrayerTimeEffect.NavigateCalenderBottomSheet, awaitItem())
+            assertEquals(PrayerTimeEffect.NavigateCalenderDialog, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onChangeLocationClick should emit NavigateChangeLocation effect`() = runTest {
+        viewModel.uiEffect.test {
+            viewModel.onChangeLocation()
+            assertEquals(PrayerTimeEffect.NavigateToChangeLocation, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
