@@ -84,6 +84,18 @@ class UserReelViewModelTest {
         }
 
     @Test
+    fun `viewmodel init should update isLoading to false getFeedReels return data`() =
+        runTest(testDispatcher) {
+            everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().isLoading).isFalse()
+            }
+        }
+
+    @Test
     fun `onClickDescription should expand description when called with collapsed state`() =
         runTest {
             viewModel.onClickDescription(isCollapsed = false)
@@ -219,17 +231,11 @@ class UserReelViewModelTest {
         }
 
     @Test
-    fun `increaseReelView should update error state when repository throws exception`() = runTest {
-        everySuspend { mockReelsRepository.addReelView(any()) } throws Exception("View failed")
-
+    fun `increaseReelView should call addReelView if isReelDeleted is null`() = runTest {
         viewModel.increaseReelView("2")
         advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertNotNull(state.error)
-            cancelAndIgnoreRemainingEvents()
-        }
+        verifySuspend { mockReelsRepository.addReelView("2") }
     }
 
     @Test

@@ -84,11 +84,12 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        tryToExecute(
-            block = { reelsRepository.addReelView(reelId) },
-            onError = { error -> updateState { copy(error = error) } },
-            dispatcher = defaultDispatcher
-        )
+        if(state.value.isReelDeleted == null) {
+            tryToExecute(
+                block = { reelsRepository.addReelView(reelId) },
+                dispatcher = defaultDispatcher
+            )
+        }
     }
 
     override fun onClickLike(reelId: String, isLiked: Boolean) {
