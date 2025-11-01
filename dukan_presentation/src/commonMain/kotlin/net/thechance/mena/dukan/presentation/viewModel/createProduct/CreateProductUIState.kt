@@ -36,6 +36,7 @@ data class CreateProductUiState(
     data class ProductImageUi(
         override val id: Long = Clock.System.now().toEpochMilliseconds(),
         override val image: ImageBitmap,
+        override val imageUrl: String? = null,
         override val imageSizeInMegaByte: Double,
         override val imageState: ProductImageState,
         override val errorMessage: String? = null,

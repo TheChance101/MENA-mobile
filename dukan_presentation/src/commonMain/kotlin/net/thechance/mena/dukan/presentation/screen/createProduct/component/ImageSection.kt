@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.productImage.DisplayProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageModel
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.product.productImage.UploadProductImage
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
@@ -38,28 +39,32 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ImageSection(
-    images: List<CreateProductUiState.ProductImageUi>,
+    images: List<ProductImageModel>,
     isUploadingImageEnabled: Boolean,
     isCancelImageEnabled: Boolean,
     onUploadImageClick: (image: ImageFile) -> Unit,
     onCancelImageClick: (image: ImageBitmap) -> Unit,
+    onCancelImageUrlClick: ((url: String) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         val lazyListImageState = rememberLazyListState()
         var previousSize by remember { mutableStateOf(images.size) }
+
         LaunchedEffect(images.size) {
             if (images.size > previousSize) {
-                lazyListImageState.animateScrollToItem(images.size)
+                lazyListImageState.animateScrollToItem(images.size - 1)
             }
             previousSize = images.size
         }
+
         Text(
             text = stringResource(Res.string.image_1_1),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(horizontal = Theme.spacing._16)
         )
+
         LazyRow(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._32 + Theme.spacing._16 + Theme.spacing._2)
@@ -76,26 +81,30 @@ fun ImageSection(
         ) {
             items(
                 items = images,
-                key = { it.id },
-                contentType = { "Product Images" }
+                key = { it.id }
             ) { image ->
+                val imageUrl = image.imageUrl
                 DisplayProductImage(
                     modifier = Modifier.animateItem(
                         fadeInSpec = tween(easing = FastOutSlowInEasing),
                         fadeOutSpec = tween(durationMillis = 200, easing = FastOutLinearInEasing),
                         placementSpec = tween(easing = LinearOutSlowInEasing)
                     ),
-                    image = image.image,
+                    image = if (imageUrl == null) image.image else null,
+                    imageUrl = imageUrl,
                     imageSizeInMegaByte = image.imageSizeInMegaByte,
                     productImageState = image.imageState,
-                    onCancelClick = onCancelImageClick,
+                    onCancelClick = if (imageUrl != null && onCancelImageUrlClick != null) {
+                        { onCancelImageUrlClick(imageUrl) }
+                    } else {
+                        { onCancelImageClick(image.image) }
+                    },
                     isCancelButtonEnabled = isCancelImageEnabled,
                     errorMessage = image.errorMessage
                 )
             }
-            item(
-                key = "Upload Product Image Container"
-            ) {
+
+            item(key = "Upload Product Image Container") {
                 UploadProductImage(
                     modifier = Modifier.size(88.dp),
                     onUploadImageClick = onUploadImageClick,

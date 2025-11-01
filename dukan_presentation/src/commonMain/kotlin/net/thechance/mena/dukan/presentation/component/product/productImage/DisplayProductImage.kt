@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_cancel
 import mena.dukan_presentation.generated.resources.image_size_mb
@@ -44,11 +45,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DisplayProductImage(
-    image: ImageBitmap,
-    imageSizeInMegaByte: Double,
-    onCancelClick: (image: ImageBitmap) -> Unit,
+    image: ImageBitmap? = null,
+    imageUrl: String? = null,
+    imageSizeInMegaByte: Double = 0.0,
+    onCancelClick: ((Any) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    productImageState: ProductImageState = ProductImageState.LOADING,
+    productImageState: ProductImageState = ProductImageState.SUCCESS,
     isCancelButtonEnabled: Boolean = true,
     errorMessage: String? = null,
 ) {
@@ -60,37 +62,45 @@ fun DisplayProductImage(
         contentAlignment = Alignment.Center
     )
     {
-        AnimatedContent(
-            targetState = productImageState,
-            label = "display product Image",
-            transitionSpec = { fadeTransitionSpec() },
-            modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
-        ) { currentState ->
-            when (currentState) {
-                ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
-                ProductImageState.SUCCESS -> SuccessContentImage(image = image)
-                ProductImageState.ERROR -> ErrorContentImage(image = image)
+        if (imageUrl != null) {
+            DisplayExistingProductImage(
+                imageUrl = imageUrl,
+                onCancelClick = onCancelClick,
+                isCancelButtonEnabled = isCancelButtonEnabled
+            )
+        } else if (image != null) {
+            AnimatedContent(
+                targetState = productImageState,
+                label = "display product Image",
+                transitionSpec = { fadeTransitionSpec() },
+                modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
+            ) { currentState ->
+                when (currentState) {
+                    ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
+                    ProductImageState.SUCCESS -> SuccessContentImage(image = image)
+                    ProductImageState.ERROR -> ErrorContentImage(image = image)
+                }
             }
-        }
 
-        CancelImageIconButton(
-            productImageState = productImageState,
-            onCancelClick = { onCancelClick(image) },
-            isCancelButtonEnabled = isCancelButtonEnabled
-        )
+            CancelImageIconButton(
+                productImageState = productImageState,
+                onCancelClick = { onCancelClick?.invoke(image) },
+                isCancelButtonEnabled = isCancelButtonEnabled
+            )
 
-        errorMessage?.let { error ->
-            if (productImageState == ProductImageState.ERROR) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = Theme.spacing._4)
-                        .align(Alignment.BottomCenter),
-                    text = error,
-                    style = Theme.typography.label.extraSmall,
-                    color = Theme.colorScheme.error,
-                    maxLines = 1,
-                )
+            errorMessage?.let { error ->
+                if (productImageState == ProductImageState.ERROR) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = Theme.spacing._4)
+                            .align(Alignment.BottomCenter),
+                        text = error,
+                        style = Theme.typography.label.extraSmall,
+                        color = Theme.colorScheme.error,
+                        maxLines = 1,
+                    )
+                }
             }
         }
     }
@@ -186,6 +196,50 @@ private fun SuccessContentImage(image: ImageBitmap) {
             bitmap = image,
             contentDescription = stringResource(resource = Res.string.upload_dukan_image),
             contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.DisplayExistingProductImage(
+    imageUrl: String,
+    onCancelClick: ((Any) -> Unit)?,
+    isCancelButtonEnabled: Boolean
+) {
+    SuccessContentImageUrl(
+        imageUrl = imageUrl,
+        modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
+    )
+    onCancelClick?.let { cancel ->
+        CancelImageIconButton(
+            productImageState = ProductImageState.SUCCESS,
+            onCancelClick = { cancel(imageUrl) },
+            isCancelButtonEnabled = isCancelButtonEnabled
+        )
+    }
+}
+
+@Composable
+private fun SuccessContentImageUrl(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(88.dp)
+            .background(
+                color = Theme.colorScheme.background.surfaceHigh,
+                shape = RoundedCornerShape(size = Theme.radius.md)
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = stringResource(resource = Res.string.upload_dukan_image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(shape = RoundedCornerShape(size = Theme.radius.md))
         )
     }
 }
