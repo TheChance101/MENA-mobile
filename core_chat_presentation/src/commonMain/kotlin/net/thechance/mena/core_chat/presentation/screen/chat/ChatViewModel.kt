@@ -407,11 +407,37 @@ class ChatViewModel(
 
 
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
-        tryToExecute(
-            execute = {messageRepository.addMessageReaction(messageId,reaction)},
-            onSuccess = { updateReactionInMessages(messageId, reaction) }
-        )
+        val currentUserId = state.value.chatRequesterId ?: return
+        val message = _messages.value.firstOrNull { it.id == messageId } ?: return
+        val hasSameReaction = message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+
+        if (hasSameReaction) {
+            tryToExecute(
+                execute = { messageRepository.removeMessageReaction(messageId, reaction) },
+                onSuccess = { removeReactionFromMessages(messageId, reaction) }
+            )
+        } else {
+            tryToExecute(
+                execute = { messageRepository.addMessageReaction(messageId, reaction) },
+                onSuccess = { updateReactionInMessages(messageId, reaction) }
+            )
+        }
     }
+    private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val updatedReactions = message.reactions.filterNot {
+                        it.userId == currentUserId && it.emoji == emoji
+                    }
+                    message.copy(reactions = updatedReactions)
+                } else message
+            }
+        }
+    }
+
+
     private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
         val currentUserId = state.value.chatRequesterId ?: return
         safeUpdateMessages { messages ->
