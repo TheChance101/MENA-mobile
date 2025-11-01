@@ -45,7 +45,7 @@ fun validatePasswordConfirmation(password: String, confirmPassword: String): Str
     } else null
 }
 
-fun isPasswordValid(password: String): Boolean {
-    return password.length >= 8
-}
+fun isPasswordValid(password: String): Boolean = password.length >= 8
+
+fun isPasswordMatch(password: String, confirmPassword: String): Boolean = password == confirmPassword
 

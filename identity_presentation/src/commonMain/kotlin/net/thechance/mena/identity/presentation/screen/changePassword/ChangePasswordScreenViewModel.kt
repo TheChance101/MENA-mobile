@@ -11,6 +11,7 @@ import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToM
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.util.isPasswordMatch
 import net.thechance.mena.identity.presentation.util.isPasswordValid
 import org.jetbrains.compose.resources.StringResource
 
@@ -77,7 +78,7 @@ class ChangePasswordScreenViewModel(
                 )
             )
         }
-        isContinueEnabled()
+        updateContinueEnabledState()
     }
 
     override fun onChangeNewPassword(newValue: String) {
@@ -88,7 +89,7 @@ class ChangePasswordScreenViewModel(
                 )
             )
         }
-        isSaveEnabled()
+        updateSaveEnabledState()
     }
 
     override fun onChangeConfirmPassword(newValue: String) {
@@ -99,7 +100,7 @@ class ChangePasswordScreenViewModel(
                 )
             )
         }
-        isSaveEnabled()
+        updateSaveEnabledState()
     }
 
     override fun onToggleCurrentPasswordVisibility() {
@@ -132,18 +133,20 @@ class ChangePasswordScreenViewModel(
         }
     }
 
-    private fun isSaveEnabled() {
+    private fun updateSaveEnabledState() {
         updateState {
             copy(
                 newPasswordUIState = newPasswordUIState.copy(
-                    isSaveEnabled = isPasswordValid(newPasswordUIState.newPassword) &&
-                            (newPasswordUIState.newPassword == newPasswordUIState.confirmPassword)
+                    isSaveEnabled = isPasswordValid(newPasswordUIState.newPassword) && isPasswordMatch(
+                        password = newPasswordUIState.newPassword,
+                        confirmPassword = newPasswordUIState.confirmPassword
+                    )
                 )
             )
         }
     }
 
-    private fun isContinueEnabled() {
+    private fun updateContinueEnabledState() {
         updateState {
             copy(
                 currentPasswordUIState = currentPasswordUIState.copy(
