@@ -89,7 +89,7 @@ actual fun VideoPlayer(
     )
 
     val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
-    player.actionAtItemEnd = 0
+    player.actionAtItemEnd = 1
 
     val playerViewController = remember {
         AVPlayerViewController().apply {
