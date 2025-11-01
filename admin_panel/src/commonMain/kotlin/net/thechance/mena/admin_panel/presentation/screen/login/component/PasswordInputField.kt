@@ -2,7 +2,7 @@ package net.thechance.mena.admin_panel.presentation.screen.login.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -41,7 +41,7 @@ internal fun PasswordInputField(
         TextField(
             modifier = Modifier
                 .fillMaxWidth(0.4f)
-                .height(48.dp),
+                .heightIn(min = 48.dp),
             value = password,
             hint = "",
             onValueChanged = { onChangeValue(it) },

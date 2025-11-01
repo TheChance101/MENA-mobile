@@ -46,7 +46,14 @@ class LoginViewModel(
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
-        updateState { it.copy(isLoginBtnLoading = false) }
+        val errorMsg = errorState.getInvalidCredentialsMsg()?.let { stringProvider.getString(it) }
+        updateState {
+            it.copy(
+                isLoginBtnLoading = false,
+                usernameErrorMsg = errorMsg,
+                passwordErrorMsg = errorMsg,
+            )
+        }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
