@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

@@ -42,7 +42,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
-import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
