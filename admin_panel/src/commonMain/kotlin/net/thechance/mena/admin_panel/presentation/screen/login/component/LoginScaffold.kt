@@ -1,15 +1,17 @@
 package net.thechance.mena.admin_panel.presentation.screen.login.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
@@ -25,23 +27,10 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun LoginScaffold(
     snackBarState: SnackBarState,
-    content : @Composable () -> Unit
+    content : @Composable ColumnScope.() -> Unit
 ) {
     Scaffold {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                Brush.linearGradient(
-                    listOf(
-                        Theme.colorScheme.background.surface,
-                        Theme.colorScheme.background.surface,
-                        Theme.colorScheme.background.surface.copy(alpha = 0.6f),
-                        Theme.colorScheme.background.surface.copy(alpha = 0.2f),
-                    )
-                )
-            )
-        ) {
+        Box{
             Image(
                 modifier = Modifier
                     .fillMaxSize()
@@ -50,14 +39,21 @@ internal fun LoginScaffold(
                 contentDescription = stringResource(Res.string.login_background_img),
                 contentScale = ContentScale.FillBounds
             )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = Theme.spacing._16)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){ content() }
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(end = 68.dp, top = 16.dp)
-                    .fillMaxWidth(0.4f)
+                    .fillMaxWidth(0.3f)
             ) { SnackBarContainer(snackBarState) }
-
-            content()
         }
     }
 }

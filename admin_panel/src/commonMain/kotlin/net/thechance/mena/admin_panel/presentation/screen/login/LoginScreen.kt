@@ -2,11 +2,8 @@ package net.thechance.mena.admin_panel.presentation.screen.login
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -21,7 +18,6 @@ import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.login
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,39 +40,31 @@ private fun LoginScreenContent(
     interactionListener: LoginInteractionListener
 ) {
     LoginScaffold(snackBarState = state.snackBar){
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = Theme.spacing._16)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            LoginHeader(modifier = Modifier.padding(top = 64.dp))
-            Column(modifier = Modifier.padding(top = 40.dp)) {
-                UsernameInputField(
-                    username = state.username,
-                    usernameErrorMsg = state.usernameErrorMsg,
-                    onChangeValue = interactionListener::onUsernameChanged
-                )
-                PasswordInputField(
-                    modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
-                    password = state.password,
-                    passwordErrorMsg = state.passwordErrorMsg,
-                    isPasswordVisible = state.isPasswordVisible,
-                    onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
-                    onChangeValue = interactionListener::onPasswordChanged
-                )
-                PrimaryButton(
-                    modifier = Modifier
-                        .width(70.dp)
-                        .align(Alignment.End),
-                    text = stringResource(Res.string.login),
-                    onClick = interactionListener::onLoginBtnClicked,
-                    isLoading = state.isLoginBtnLoading,
-                    isEnabled = state.isLoginBtnEnabled,
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
-                )
-            }
+        LoginHeader(modifier = Modifier.padding(top = 64.dp))
+        Column(modifier = Modifier.padding(top = 40.dp)) {
+            UsernameInputField(
+                username = state.username,
+                usernameErrorMsg = state.usernameErrorMsg,
+                onChangeValue = interactionListener::onUsernameChanged
+            )
+            PasswordInputField(
+                modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
+                password = state.password,
+                passwordErrorMsg = state.passwordErrorMsg,
+                isPasswordVisible = state.isPasswordVisible,
+                onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
+                onChangeValue = interactionListener::onPasswordChanged
+            )
+            PrimaryButton(
+                modifier = Modifier
+                    .width(70.dp)
+                    .align(Alignment.End),
+                text = stringResource(Res.string.login),
+                onClick = interactionListener::onLoginBtnClicked,
+                isLoading = state.isLoginBtnLoading,
+                isEnabled = state.isLoginBtnEnabled,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+            )
         }
     }
 }
