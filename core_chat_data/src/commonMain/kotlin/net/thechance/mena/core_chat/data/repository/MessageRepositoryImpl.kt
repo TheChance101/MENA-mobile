@@ -130,7 +130,7 @@ class MessageRepositoryImpl(
             }
 
             is MessageEvent.DeleteChat -> {
-                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.chatId))
+                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.deletedChatId))
             }
         }
     }
