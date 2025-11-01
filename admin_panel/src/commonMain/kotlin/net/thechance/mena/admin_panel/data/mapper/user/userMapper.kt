@@ -11,11 +11,11 @@ import kotlin.uuid.ExperimentalUuidApi
 fun UserResponse.toEntity(): User {
     return User(
         id = id.toUuidOrNull() ?: throw IllegalStateException("Invalid User id"),
-        phoneNumber = phoneNumber ?: "",
+        phoneNumber = phoneNumber.orEmpty(),
         lastLoginAt = parseLocalDateOrDefault(lastLoginAt),
         lastVisitAt = parseLocalDateOrDefault(lastVisitAt),
         status = Status.valueOfOrDefault(status),
-        firstName = firstName ?: "",
-        lastName = lastName ?: "",
+        firstName = firstName.orEmpty(),
+        lastName = lastName.orEmpty(),
     )
 }

@@ -8,14 +8,14 @@ data class UserQueryParams(
     val size: Int
 )
 
-enum class SortDirection(val value: String) {
-    ASC("asc"),
-    DESC("desc")
+enum class SortDirection() {
+    ASC,
+    DESC
 }
-enum class SortType(val value: String) {
-    USERNAME("username"),
-    PHONE_NUMBER("phoneNumber"),
-    LAST_LOGIN_DATE("lastLoginDate"),
-    LAST_VISIT_DATE("lastVisitDate"),
-    STATUS("status")
+enum class SortType() {
+    USERNAME,
+    PHONE_NUMBER,
+    LAST_LOGIN_DATE,
+    LAST_VISIT_DATE,
+    STATUS
 }
