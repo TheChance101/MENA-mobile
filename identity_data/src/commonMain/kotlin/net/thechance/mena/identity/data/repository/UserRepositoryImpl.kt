@@ -11,13 +11,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
+import net.thechance.mena.identity.data.dto.profile.request.ChangePasswordRequestDto
 import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.dto.profile.request.UpdateProfileRequestDto
+import net.thechance.mena.identity.data.dto.profile.response.ChangePasswordResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postFileWithData
+import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
@@ -65,6 +68,23 @@ class UserRepositoryImpl(
         }
     }
 
+    override suspend fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ): String {
+        val response = safeWrapper {
+            client.postJson<ChangePasswordRequestDto, ChangePasswordResponseDto>(
+                requestDto = ChangePasswordRequestDto(
+                    currentPassword = currentPassword,
+                    newPassword = newPassword,
+                    confirmPassword = confirmPassword
+                ),
+                path = CHANGE_PASSWORD_PATH
+            )
+        }
+        return response.message
+    }
     fun User.toRequest(shouldUpdateImage: Boolean): UpdateProfileRequestDto {
         return UpdateProfileRequestDto(
             firstName = this.firstName,
@@ -82,5 +102,7 @@ class UserRepositoryImpl(
 
     companion object {
         const val PROFILE = "identity/profile/me"
+        const val CHANGE_PASSWORD_PATH = "identity/profile/change-password"
+
     }
 }
