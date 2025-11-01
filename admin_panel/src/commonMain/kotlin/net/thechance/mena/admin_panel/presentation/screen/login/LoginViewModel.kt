@@ -1,13 +1,27 @@
 package net.thechance.mena.admin_panel.presentation.screen.login
 
+import kotlinx.coroutines.delay
+import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
+import net.thechance.mena.admin_panel.presentation.base.ErrorState
+import net.thechance.mena.admin_panel.presentation.model.SnackBarState
+import net.thechance.mena.admin_panel.presentation.utils.StringProvider
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.error_invalid_credentials_description
+import net.thechance.mena.admin_panel.resources.error_invalid_credentials_title
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
 
 @KoinViewModel
-class LoginViewModel : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
+class LoginViewModel(
+    @Provided
+    private val loginUseCase: LoginUseCase,
+    @Provided
+    private val stringProvider: StringProvider,
+) : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
     LoginInteractionListener {
     override fun onUsernameChanged(username: String) {
-        updateState { it.copy(username = username.filter { it.isLetterOrDigit() || it == '_' }) }
+        updateState { it.copy(username = username.filter { char -> char.isLetterOrDigit() || char == '_' }) }
     }
 
     override fun onPasswordChanged(password: String) {
@@ -19,7 +33,55 @@ class LoginViewModel : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenS
     }
 
     override fun onLoginBtnClicked() {
-        updateState { it.copy(isLoginBtnLoading = true) }
+        tryToExecute(
+            callee = {
+                loginUseCase.login(state.value.username, state.value.password)
+                     },
+            onStart = { updateState { it.copy(isLoginBtnLoading = true) } },
+            onSuccess = { onLoginSuccess() },
+            onError = ::onLoginError,
+        )
     }
 
+    private fun onLoginSuccess() {
+        updateState { it.copy(isLoginBtnLoading = false) }
+        sendEffect(LoginEffect.NavigateToAdminPanel)
+    }
+
+    private suspend fun onLoginError(errorState: ErrorState) {
+        updateState { it.copy(isLoginBtnLoading = false, errorState = errorState) }
+        showSnackBar(
+            title = stringProvider.getString(Res.string.error_invalid_credentials_title),
+            message = stringProvider.getString(Res.string.error_invalid_credentials_description),
+            isSuccess = false
+            )
+    }
+
+    private suspend fun showSnackBar(
+        title: String,
+        message: String,
+        isSuccess: Boolean,
+        durationMillis: Long = 3000L
+    ) {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = SnackBarState(
+                    isVisible = true,
+                    title = title,
+                    message = message,
+                    isSuccess = isSuccess
+                )
+            )
+        }
+
+        delay(durationMillis)
+
+        hideSnackBar()
+    }
+
+    private fun hideSnackBar() {
+        updateState { oldState ->
+            oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
+        }
+    }
 }
