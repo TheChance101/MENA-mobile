@@ -1,7 +1,7 @@
-package net.thechance.mena.admin_panel.domain.use_case
+package net.thechance.mena.admin_panel.domain.use_case.auth
 
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
-import net.thechance.mena.admin_panel.domain.repository.AdminAuthenticationRepository
+import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 

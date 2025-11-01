@@ -7,8 +7,8 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
-import net.thechance.mena.admin_panel.domain.repository.AdminAuthenticationRepository
-import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
+import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
+import net.thechance.mena.admin_panel.domain.use_case.auth.LoginUseCase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith

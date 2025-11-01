@@ -30,7 +30,7 @@
     <string name="error_generic">Something went wrong, please try again later</string>
     <string name="error_request_timeout">Request timed out, please try again later</string>
 
-<!--    Publish Trend-->
+    <!--    Publish Trend-->
     <string name="upload_your_video">Upload your video</string>
     <string name="available_video_format">MP4, MOV up to 100MB</string>
     <string name="thumbnail_description">Uploaded video thumbnail</string>
@@ -73,8 +73,17 @@
     <string name="video_thumbnail">Video Thumbnail</string>
     <string name="likes">Likes</string>
     <string name="views">Views</string>
-    <string name="likes_suffix">%1$d Likes</string>
-    <string name="views_suffix">%1$d Views</string>
+
+    <plurals name="likes_suffix">
+        <item quantity="one">%1$d Like</item>
+        <item quantity="other">%1$d Likes</item>
+    </plurals>
+
+    <plurals name="views_suffix">
+        <item quantity="one">%1$d View</item>
+        <item quantity="other">%1$d Views</item>
+    </plurals>
+
     <string name="play_now">Play Now</string>
 
     <string name="just_now">Just now</string>
