@@ -114,15 +114,13 @@ fun ChatScreenContent(
                 messageReactionDialog(
                     isVisible = state.isReactionDialogVisible,
                     message = state.messageToReactTo,
-                    onDismiss = interactions::onReactionDialogDismissed,
-                    onReactionSelected = { reaction ->
-                        val messageId = state.messageToReactTo?.id
-                        if (messageId != null) {
-                            interactions.onReactionSelected(messageId, reaction)
-                        }
-                        interactions.onReactionDialogDismissed()
+                    currentUserId = state.chatRequesterId,
+                    onDismiss = { interactions.onReactionDialogDismissed() },
+                    onReactionClicked = { messageId, emoji ->
+                        interactions.onReactionSelected(messageId, emoji)
                     }
                 )
+
             }
         ) {
             ChatList(
@@ -150,6 +148,7 @@ fun ChatScreenContent(
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,
                 onCloseClick = interactions::onCloseImageViewClicked,
+                onImageLongClick = interactions::onMessageLongClicked,
                 onDownloadClick = interactions::onDownloadImageClicked,
             )
         }
