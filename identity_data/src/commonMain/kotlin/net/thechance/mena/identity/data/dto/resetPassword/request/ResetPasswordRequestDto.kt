@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.data.dto.resetPassword
+package net.thechance.mena.identity.data.dto.resetPassword.request
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
