@@ -32,7 +32,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DukanCard(
-    dukan: CategoryDukansUiState.DukanUiState,
+    title: String,
+    imageUrl: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFavorite: Boolean = false,
@@ -54,7 +55,8 @@ fun DukanCard(
     ) {
         if (!isLoading) {
             DukanCardContent(
-                dukan = dukan,
+                title = title,
+                imageUrl = imageUrl,
                 isFavorite = isFavorite,
                 onFavoriteClick = onFavoriteClick
             )
@@ -64,15 +66,16 @@ fun DukanCard(
 
 @Composable
 private fun BoxScope.DukanCardContent(
-    dukan: CategoryDukansUiState.DukanUiState,
+    title: String,
+    imageUrl: String,
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit
 ) {
     var isImageLoaded by remember { mutableStateOf(false) }
 
     AsyncImage(
-        model = dukan.imageUrl,
-        contentDescription = dukan.name,
+        model = imageUrl,
+        contentDescription = title,
         contentScale = ContentScale.Crop,
         onState = { state ->
             isImageLoaded = state is AsyncImagePainter.State.Success
@@ -106,7 +109,7 @@ private fun BoxScope.DukanCardContent(
     )
 
     Text(
-        text = dukan.name,
+        text = title,
         color = Theme.colorScheme.primary.onPrimary,
         style = Theme.typography.title.small,
         maxLines = 1,
@@ -121,7 +124,8 @@ private fun BoxScope.DukanCardContent(
 private fun DukanCardLoadingPreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(),
+            title = "Dukan",
+            imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
             onClick = {},
             isLoading = true
         )
@@ -133,11 +137,8 @@ private fun DukanCardLoadingPreview() {
 private fun DukanCardFavoritePreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(
-                id = "dukan1",
-                name = "Dukan",
-                imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400"
-            ),
+            title = "Dukan",
+            imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
             onClick = {},
             isFavorite = true
         )
@@ -149,11 +150,8 @@ private fun DukanCardFavoritePreview() {
 private fun DukanCardEmptyImagePreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(
-                id = "dukan2",
-                name = "Dukan Without Image",
-                imageUrl = ""
-            ),
+            title = "Dukan Without Image",
+            imageUrl = "",
             onClick = {}
         )
     }

@@ -22,6 +22,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.product_image
 import mena.dukan_presentation.generated.resources.silver_tc
+import net.thechance.mena.designsystem.presentation.theme.color.scheme.ColorScheme
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -35,8 +36,9 @@ fun ProductCard(
     productDescription: String,
     productPrice: Double,
     modifier: Modifier = Modifier,
-    productCardBackground: Color? = null,
     productAction: @Composable () -> Unit,
+    productCardBackground: Color? = null,
+    productImageBackground: Color = Theme.colorScheme.background.surfaceLow,
 ) {
     Row(
         modifier = modifier
@@ -49,7 +51,7 @@ fun ProductCard(
     ) {
         Box(
             modifier = Modifier.background(
-                color = Theme.colorScheme.background.surfaceLow,
+                color = productImageBackground,
                 shape = RoundedCornerShape( Theme.radius.md)
             )
         ) {
