@@ -53,7 +53,7 @@ jobs:
           echo "All modules JSON: $ALL_MODULES_JSON"
 
           CHANGED_FILES="${{ steps.changed-files-git.outputs.changed_files }}"
-          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation composeApp'
+          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation admin_panel composeApp'
           IOS_MODULES='core_chat_presentation dukan_presentation faith_presentation identity_presentation trends_presentation wallet_presentation composeApp'
 
           UNIQUE_MODULE_LIST=$(echo "$CHANGED_FILES" | awk -F/ '{print $1}' | sort -u)
