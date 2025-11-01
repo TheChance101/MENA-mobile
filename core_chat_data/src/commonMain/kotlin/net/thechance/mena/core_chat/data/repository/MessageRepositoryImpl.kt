@@ -53,7 +53,7 @@ class MessageRepositoryImpl(
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
-            client.get("/chat/${chatId}/messages"){
+            client.get(getChatMessagesEndpoint(chatId)){
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -138,5 +138,8 @@ class MessageRepositoryImpl(
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
 
+        fun getChatMessagesEndpoint(chatId:Uuid): String {
+            return "/chat/${chatId}/messages"
+        }
     }
 }
