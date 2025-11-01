@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.changePassword.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.`continue`
 import mena.identity_presentation.generated.resources.password
+import mena.identity_presentation.generated.resources.please_enter_your_password_to_change_it
+import mena.identity_presentation.generated.resources.verify_current_password
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -31,20 +34,16 @@ fun CurrentPasswordContent(
     modifier: Modifier = Modifier
 ){
 
-    Column(modifier = modifier.fillMaxWidth()){
-
+    Column(modifier = modifier.fillMaxSize()) {
         Text(
-            text = "Verify current password",
+            text = stringResource(Res.string.verify_current_password),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = Theme.spacing._24)
-
+            modifier = Modifier.fillMaxWidth()
         )
 
         Text(
-            text = "Please enter your password to change it",
+            text = stringResource(Res.string.please_enter_your_password_to_change_it),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
             modifier = Modifier

@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.confirm_password_label
+import mena.identity_presentation.generated.resources.enter_your_new_password
 import mena.identity_presentation.generated.resources.new_password_title
 import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -18,7 +19,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
-import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordInteractionListener
+import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenInteractionListener
 import net.thechance.mena.identity.presentation.screen.changePassword.NewPasswordContentUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -26,18 +27,18 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NewPasswordContent(
     state: NewPasswordContentUIState,
-    listener: ChangePasswordInteractionListener,
     isLoading: Boolean,
+    listener: ChangePasswordScreenInteractionListener,
     modifier: Modifier = Modifier
 ) {
 
     Column(modifier = modifier.fillMaxWidth()) {
 
         Text(
-            text = "Enter your new password",
+            text = stringResource(Res.string.enter_your_new_password),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.fillMaxWidth().padding(vertical = Theme.spacing._24)
+            modifier = Modifier.fillMaxWidth()
 
         )
 
@@ -69,7 +70,8 @@ fun NewPasswordContent(
             isEnabled = state.isSaveEnabled,
             isLoading = isLoading,
             contentPadding = PaddingValues(vertical = 13.dp),
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12).imePadding()
+            modifier = Modifier.fillMaxWidth()
+                .padding(bottom = Theme.spacing._12).imePadding()
         )
     }
 }
@@ -78,7 +80,7 @@ fun NewPasswordContent(
 @Composable
 fun NewPasswordContentPreview() {
 
-    val listener = object : ChangePasswordInteractionListener {
+    val listener = object : ChangePasswordScreenInteractionListener {
         override fun onClickBack() {}
 
         override fun onClickContinue() {}
@@ -100,8 +102,8 @@ fun NewPasswordContentPreview() {
     MenaTheme {
         NewPasswordContent(
             state = NewPasswordContentUIState(),
-            listener,
             isLoading = false,
+            listener = listener,
             modifier = Modifier.padding(horizontal = Theme.spacing._16)
         )
     }
