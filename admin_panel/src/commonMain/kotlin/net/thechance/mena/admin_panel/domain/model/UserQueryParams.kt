@@ -14,7 +14,6 @@ enum class SortDirection() {
 }
 enum class SortType() {
     USERNAME,
-    PHONE_NUMBER,
     LAST_LOGIN_DATE,
     LAST_VISIT_DATE,
     STATUS
