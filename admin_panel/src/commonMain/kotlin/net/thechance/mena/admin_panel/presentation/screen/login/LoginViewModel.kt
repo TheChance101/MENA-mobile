@@ -6,9 +6,6 @@ import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
-import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.error_invalid_credentials_description
-import net.thechance.mena.admin_panel.resources.error_invalid_credentials_title
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 
@@ -36,7 +33,7 @@ class LoginViewModel(
         tryToExecute(
             callee = {
                 loginUseCase.login(state.value.username, state.value.password)
-                     },
+            },
             onStart = { updateState { it.copy(isLoginBtnLoading = true) } },
             onSuccess = { onLoginSuccess() },
             onError = ::onLoginError,
@@ -49,12 +46,12 @@ class LoginViewModel(
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
-        updateState { it.copy(isLoginBtnLoading = false, errorState = errorState) }
+        updateState { it.copy(isLoginBtnLoading = false) }
         showSnackBar(
-            title = stringProvider.getString(Res.string.error_invalid_credentials_title),
-            message = stringProvider.getString(Res.string.error_invalid_credentials_description),
+            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
             isSuccess = false
-            )
+        )
     }
 
     private suspend fun showSnackBar(
