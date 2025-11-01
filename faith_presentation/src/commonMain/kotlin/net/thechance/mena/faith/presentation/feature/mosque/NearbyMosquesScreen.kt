@@ -20,6 +20,7 @@ import mena.faith_presentation.generated.resources.search_area
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.feature.mosque.component.SearchBarField
 import net.thechance.mena.faith.presentation.utils.MapStyle
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -93,6 +94,13 @@ private fun Content(
                     .padding(top = Theme.spacing._32)
             )
         }
+        SearchBarField(
+            query = uiState.query,
+            onQueryChange = listener::onQueryChange,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(horizontal = Theme.spacing._16)
+        )
     }
 }
 
