@@ -50,7 +50,7 @@ fun DisplayProductImage(
     imageSizeInMegaByte: Double = 0.0,
     onCancelClick: ((Any) -> Unit)? = null,
     modifier: Modifier = Modifier,
-    productImageState: ProductImageState = ProductImageState.SUCCESS,
+    productImageState: ProductImageState = ProductImageState.LOADING,
     isCancelButtonEnabled: Boolean = true,
     errorMessage: String? = null,
 ) {
