@@ -51,7 +51,7 @@ class DateUtilTest {
     fun `getCurrentDate should have correct day`() {
         val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val result = getCurrentDate()
-        assertEquals(currentDateTime.dayOfMonth, result.dayOfMonth)
+        assertEquals(currentDateTime.day, result.day)
     }
 
     @Test
