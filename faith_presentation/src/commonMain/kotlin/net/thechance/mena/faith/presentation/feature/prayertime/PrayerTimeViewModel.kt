@@ -69,25 +69,20 @@ class PrayerTimeViewModel(
         val prayerTimes = uiState.value.prayerTimes
         val currentTime = Clock.System.now()
         val nextPrayer = findNextPrayer(prayerTimes, currentTime)
-
-        nextPrayer?.let { prayer ->
-            val remainingMillis =
-                prayer.time.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
-
             if (remainingMillis > 0) {
-                updateState {
-                    it.copy(
+                updateState { state ->
+                    state.copy(
                         nextPrayerName = prayer.name,
                         nextPrayerCountdown = formatCountdown(remainingMillis)
                     )
                 }
             } else {
-                updateState {
-                    it.copy(
-                        nextPrayerName = prayerTimes.firstOrNull()?.name ?: PrayerName.DHUHR,
-                        nextPrayerCountdown = "--:--:--"
-                    )
-                }
+                updateState { state ->
+                        state.copy(
+                            nextPrayerName = prayerTimes.firstOrNull()?.name ?: PrayerName.DHUHR,
+                            nextPrayerCountdown = "--:--:--"
+                        )
+                    }
             }
         }
     }
