@@ -23,6 +23,7 @@ internal class UserReelViewModel(
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
+        updateState { copy(currentReelId = userReelArgs.realId) }
         getFeedReals()
     }
 
@@ -132,6 +133,10 @@ internal class UserReelViewModel(
 
     override fun onClickBack() {
         sendEffect(UserReelEffect.NavigateBack)
+    }
+
+    override fun onChangeCurrentReel(reelId: String) {
+        updateState { copy(currentReelId = reelId) }
     }
 
     override fun onClickDelete() {

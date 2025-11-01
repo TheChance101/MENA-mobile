@@ -2,6 +2,7 @@ package net.thechance.mena.trends.presentation.screen.user_reel
 
 internal interface UserReelInteractionListener {
     fun onClickBack()
+    fun onChangeCurrentReel(reelId: String)
     fun onClickDelete()
     fun onClickConfirmDelete()
     fun onDismissConfirmationDialog()
