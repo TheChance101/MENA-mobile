@@ -31,7 +31,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
-import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -141,23 +140,28 @@ fun TextMessageLayout(
             }
 
         }
-        AnimatedVisibility(
+         AnimatedVisibility(
             visible = showMessageInfo,
-            modifier = Modifier.align(messageInfoAlignment)
+            modifier = Modifier
+                .align(messageInfoAlignment)
+                .padding(start = messagePaddingStart, end = messagePaddingEnd)
         ) {
-            Row (
-                modifier = Modifier.padding(start = messagePaddingStart, end = messagePaddingEnd)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
+                if (!message.isMine && message.reactions.isNotEmpty()) {
+                    ReactionsRow(reactions = message.reactions)
+                }
+
                 MessageInfo(
                     messageTime = message.sendTime,
                     messageStatus = message.status,
                     messageIsMine = message.isMine,
                     onFailClick = onFailClick,
                 )
-                if (message.reactions.isNotEmpty()) {
-                    ReactionsRow(
-                        reactions = message.reactions,
-                    )
+
+                if (message.isMine && message.reactions.isNotEmpty()) {
+                    ReactionsRow(reactions = message.reactions)
                 }
             }
         }
@@ -168,24 +172,29 @@ fun ReactionsRow(
     reactions: List<MessageReaction>,
 ) {
     val grouped = reactions.groupBy { it.emoji }
-    Box(
-        modifier = Modifier
-            .offset( y = (-6).dp)
-            .size(24.dp)
-            .clip(CircleShape)
-            .background(Theme.colorScheme.background.surface)
-            .border(2.dp, Theme.colorScheme.background.surfaceLow, CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        grouped.forEach { (emoji, list) ->
-            val count = list.size
+
+    grouped.forEach { (emoji, list) ->
+        val count = list.size
+        val label = if (count > 1) "$count $emoji" else emoji
+
+        Box(
+            modifier = Modifier
+                .offset(y = (-6).dp)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(Theme.colorScheme.background.surface)
+                .border(2.dp, Theme.colorScheme.background.surfaceLow, RoundedCornerShape((Theme.radius.full)))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text = if (count > 1) "$count $emoji" else emoji,
-                style = Theme.typography.label.small
+                text = label,
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadeSecondary
             )
         }
     }
 }
+
 
 
 @Composable
@@ -202,7 +211,7 @@ private fun PreviewBaseMessageLayout() {
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
-                    reactions = listOf(net.thechance.mena.core_chat.domain.entity.MessageReaction("❤️", Uuid.random(), Uuid.random())),
+                    reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random())),
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,
