@@ -98,6 +98,8 @@
     <string name="no_connection_description">Check your connection and try again</string>
     <string name="re_try">Re-try</string>
 
+    <string name="no_favorites_yet">No favorites yet</string>
+
     <string name="show_more">show more</string>
     <string name="show_less">show less</string>
 </resources>
