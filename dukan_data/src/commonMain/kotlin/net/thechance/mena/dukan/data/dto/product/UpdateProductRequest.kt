@@ -6,14 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class UpdateProductRequest(
     @SerialName("name")
-    val name: String? = null,
+    val name: String?,
     @SerialName("description")
-    val description: String? = null,
+    val description: String?,
     @SerialName("price")
-    val price: Double? = null,
+    val price: Double?,
     @SerialName("shelfId")
-    val shelfId: String? = null,
+    val shelfId: String?,
     @SerialName("imageUrls")
-    val imageUrls: List<String>? = null
+    val imageUrls: List<String>?
 )
-
