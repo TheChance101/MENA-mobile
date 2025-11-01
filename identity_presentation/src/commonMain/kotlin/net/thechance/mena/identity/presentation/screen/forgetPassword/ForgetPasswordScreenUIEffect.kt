@@ -1,11 +1,11 @@
 package net.thechance.mena.identity.presentation.screen.forgetPassword
 
-sealed class ForgetPasswordScreenUIEffect {
+sealed interface ForgetPasswordScreenUIEffect {
     data class NavigateToOTP(
         val phoneNumber: String,
         val callingCode: String,
         val countryCode: String
-    ) : ForgetPasswordScreenUIEffect()
+    ) : ForgetPasswordScreenUIEffect
 
-    data object NavigateBack : ForgetPasswordScreenUIEffect()
+    data object NavigateBack : ForgetPasswordScreenUIEffect
 }

@@ -7,8 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
+import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -126,14 +128,25 @@ class HomeViewModel(
 
     private fun getBalanceAmount() {
         tryToExecute(
+            onStart = { updateState { it.copy(isBalanceLoading = true) }},
             execute = { balanceRepository.getBalance() },
-            onSuccess = ::onGetBalanceAmountSuccess
+            onSuccess = ::onGetBalanceAmountSuccess,
+            onError = { onGetBalanceAmountError() }
         )
     }
 
     private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
-        val balance = (balanceAmount * 100).toInt() / 100.0
-        updateState { it.copy(balanceAmount = balance) }
+        val balance = balanceAmount.toInt()
+        updateState { it.copy(balanceAmount = balance, isBalanceLoading = false) }
+    }
+
+    private fun onGetBalanceAmountError() {
+        updateState { it.copy(isBalanceLoading = false) }
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.could_not_get_balance,
+            isError = true
+        )
     }
 
     override fun onChatsListScrolled() {
