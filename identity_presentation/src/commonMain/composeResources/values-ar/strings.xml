@@ -89,6 +89,11 @@
     <string name="upload_another_image">رفع صورة أخرى</string>
     <string name="image_preview">عرض الصوره</string>
 
+    <!-- Change Password Screen -->
+    <string name="verify_current_password">تحقق من كلمة المرور الحالية</string>
+    <string name="please_enter_your_password_to_change_it">من فضلك أدخل كلمة المرور الخاصة بك لتتمكن من تغييرها</string>
+    <string name="enter_your_new_password">أدخل كلمة المرور الجديدة</string>
+
     <!-- Error Messages -->
 
     <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.</string>
