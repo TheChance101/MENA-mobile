@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.fajr
 import mena.faith_presentation.generated.resources.ic_next_prayer_arrow
+import mena.faith_presentation.generated.resources.next_prayer_time_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -48,7 +49,7 @@ internal fun PrayerItem(
             if (isNextPrayer) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_next_prayer_arrow),
-                    contentDescription = "next prayer time icon",
+                    contentDescription = stringResource(Res.string.next_prayer_time_icon),
                     modifier = Modifier.padding(end = Theme.spacing._8)
                 )
             }

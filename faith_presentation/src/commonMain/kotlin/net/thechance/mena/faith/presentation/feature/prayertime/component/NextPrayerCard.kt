@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_prayer_man
+import mena.faith_presentation.generated.resources.next_prayer_in
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.main.getPrayerDisplayNameResource
@@ -53,7 +54,10 @@ internal fun NextPrayerCard(uiState: PrayerTimeUiState) {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Next prayer ${stringResource(getPrayerDisplayNameResource(uiState.nextPrayerName))} in:",
+                text = stringResource(
+                    Res.string.next_prayer_in,
+                    stringResource(getPrayerDisplayNameResource(uiState.nextPrayerName))
+                ),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeSecondary
             )

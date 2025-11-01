@@ -15,12 +15,15 @@ import androidx.compose.ui.Modifier
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.arrow_right
+import mena.faith_presentation.generated.resources.back_icon
+import mena.faith_presentation.generated.resources.dropdown_icon
 import mena.faith_presentation.generated.resources.ic_arrow_down
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -41,7 +44,7 @@ internal fun DateChange(
     ) {
         Icon(
             painterResource(Res.drawable.arrow_left),
-            contentDescription = "Back icon",
+            contentDescription = stringResource(Res.string.back_icon),
             modifier = Modifier
                 .size(Theme.spacing._16)
                 .clickable(onClick = onPrevClick)
@@ -57,7 +60,7 @@ internal fun DateChange(
             )
             Image(
                 painterResource(Res.drawable.ic_arrow_down),
-                contentDescription = "Dropdown icon",
+                contentDescription = stringResource(Res.string.dropdown_icon),
                 modifier = Modifier
                     .size(Theme.spacing._16)
                     .clickable(onClick = onDropDownClick)
@@ -65,7 +68,7 @@ internal fun DateChange(
         }
         Icon(
             painterResource(Res.drawable.arrow_right),
-            contentDescription = "Forward icon",
+            contentDescription = stringResource(Res.string.arrow_right),
             modifier = Modifier
                 .size(Theme.spacing._16)
                 .clickable(onClick = onNextClick)

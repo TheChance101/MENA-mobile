@@ -24,28 +24,23 @@ class PrayerTimeViewModelTest {
 
     private val prayerTimeRepository: PrayerTimeRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
-
     private lateinit var viewModel: PrayerTimeViewModel
 
-    @OptIn(ExperimentalTime::class)
     @BeforeTest
     fun setup() {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(
-                any(),
-                any<Location>()
-            )
-        } returns samplePrayerTimes
-
         viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
-
-        testDispatcher.scheduler.advanceTimeBy(100)
     }
 
+    @OptIn(ExperimentalTime::class)
     @Test
     fun `initialize view model should load today's prayer times size successfully`() = runTest {
+        everySuspend {
+            prayerTimeRepository.getPrayerTimes(any(), any<Location>())
+        } returns samplePrayerTimes
+        testDispatcher.scheduler.advanceTimeBy(100)
 
         val state = viewModel.uiState.value
+
         assertEquals(
             samplePrayerTimes.filter { it.name != PrayerName.SUNRISE }.size,
             state.prayerTimes.size
@@ -56,9 +51,7 @@ class PrayerTimeViewModelTest {
     fun `onBackClick should emit NavigateBack effect`() = runTest {
         viewModel.uiEffect.test {
             viewModel.onBackClick()
-
             assertEquals(PrayerTimeEffect.NavigateBack, awaitItem())
-
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -102,30 +95,12 @@ class PrayerTimeViewModelTest {
     private companion object {
         @OptIn(ExperimentalTime::class)
         val samplePrayerTimes = listOf(
-            PrayerTime(
-                PrayerName.FAJR, createInstant(5, 0),
-                hijriDate = "22 Sufar 1447H"
-            ),
-            PrayerTime(
-                PrayerName.SUNRISE, createInstant(6, 15),
-                hijriDate = "22 Sufar 1447H"
-            ),
-            PrayerTime(
-                PrayerName.DHUHR, createInstant(12, 0),
-                hijriDate = "22 Sufar 1447H"
-            ),
-            PrayerTime(
-                PrayerName.ASR, createInstant(15, 30),
-                hijriDate = "22 Sufar 1447H"
-            ),
-            PrayerTime(
-                PrayerName.MAGHRIB, createInstant(18, 0),
-                hijriDate = "22 Sufar 1447H"
-            ),
-            PrayerTime(
-                PrayerName.ISHA, createInstant(19, 30),
-                hijriDate = "22 Sufar 1447H"
-            )
+            PrayerTime(PrayerName.FAJR, createInstant(5, 0), hijriDate = "22 Sufar 1447H"),
+            PrayerTime(PrayerName.SUNRISE, createInstant(6, 15), hijriDate = "22 Sufar 1447H"),
+            PrayerTime(PrayerName.DHUHR, createInstant(12, 0), hijriDate = "22 Sufar 1447H"),
+            PrayerTime(PrayerName.ASR, createInstant(15, 30), hijriDate = "22 Sufar 1447H"),
+            PrayerTime(PrayerName.MAGHRIB, createInstant(18, 0), hijriDate = "22 Sufar 1447H"),
+            PrayerTime(PrayerName.ISHA, createInstant(19, 30), hijriDate = "22 Sufar 1447H")
         )
 
         @OptIn(ExperimentalTime::class)

@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_location
+import mena.faith_presentation.generated.resources.icon_location
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -32,7 +34,7 @@ internal fun PrayerTimeTopBar(onClick: () -> Unit) {
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_location),
-            contentDescription = "icon_location",
+            contentDescription = stringResource(Res.string.icon_location),
             modifier = Modifier
                 .padding(start = Theme.spacing._4)
                 .size(Theme.spacing._16)
