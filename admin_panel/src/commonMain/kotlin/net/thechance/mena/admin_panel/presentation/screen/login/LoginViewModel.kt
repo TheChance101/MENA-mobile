@@ -3,9 +3,9 @@ package net.thechance.mena.admin_panel.presentation.screen.login
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.thechance.mena.admin_panel.domain.exceptions.InvalidCredentialsException
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
@@ -94,7 +94,7 @@ class LoginViewModel(
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
             is InvalidPasswordException -> LoginErrorState.InvalidCredentials
-            is InvalidCredentialsException -> LoginErrorState.InvalidCredentials
+            is UnauthorizedException -> LoginErrorState.InvalidCredentials
             else -> ErrorState.UnknownError
         }
     }
