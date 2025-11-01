@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
-import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.mockHttpClient

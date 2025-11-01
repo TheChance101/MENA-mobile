@@ -2,7 +2,7 @@ package net.thechance.mena.identity.data.mapper
 
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
-import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User

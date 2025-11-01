@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
-import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
-import net.thechance.mena.identity.data.dto.profile.UpdateProfileRequestDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
+import net.thechance.mena.identity.data.dto.profile.request.UpdateProfileRequestDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.formatAsString
