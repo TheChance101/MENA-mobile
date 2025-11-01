@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 
 abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
@@ -61,6 +62,7 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     private fun mapError(throwable: Throwable): ErrorState {
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
+            is InvalidPasswordException -> ErrorState.InvalidCredentials
             else -> ErrorState.UnknownError
         }
     }

@@ -14,5 +14,4 @@
     <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
     <string name="error_invalid_credentials_title">Wrong credentials.</string>
     <string name="error_invalid_credentials_description">Please check your username and password.</string>
-    <string name="error_invalid_credentials_msg">Wrong username or password.</string>
 </resources>
