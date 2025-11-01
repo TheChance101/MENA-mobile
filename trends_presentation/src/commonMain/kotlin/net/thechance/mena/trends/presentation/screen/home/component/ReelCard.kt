@@ -152,7 +152,6 @@ private fun ReelHeaderSection(
     }
 }
 
-@OptIn(InternalResourceApi::class)
 @Composable
 private fun ReelFooterSection(
     reel: ReelUiState,
