@@ -6,6 +6,8 @@ import net.thechance.mena.dukan.presentation.util.file.ImageFile
 interface EditProductInteractionListener {
     fun onBackClicked()
     fun onDeleteProductClicked()
+    fun onDismissDeleteDialog()
+    fun onDeleteConfirmed()
     fun onProductNameChange(name: String)
     fun onShelfSelect(shelfUiState: EditProductUiState.ShelfUiState)
     fun onPriceChange(price: String)

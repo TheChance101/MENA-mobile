@@ -31,6 +31,7 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Pric
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
+import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
@@ -88,6 +89,9 @@ private fun EditProductContent(
                 title = stringResource(Res.string.manage_product),
                 onDeleteClick = interactionListener::onDeleteProductClicked
             )
+        },
+        overlays = {
+            editProductDialog(state, interactionListener)
         },
         bottomBar = {
             PrimaryButton(

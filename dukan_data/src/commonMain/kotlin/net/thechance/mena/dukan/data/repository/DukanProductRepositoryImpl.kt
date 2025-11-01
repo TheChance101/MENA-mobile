@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -97,4 +98,9 @@ class DukanProductRepositoryImpl(
         }
     }
 
+    override suspend fun deleteProduct(productId: String) {
+        safeApiCall<Unit> {
+            client.delete("${PRODUCT_BASE_PATH}/$productId")
+        }
+    }
 }

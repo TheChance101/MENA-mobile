@@ -5,6 +5,7 @@ import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageModel
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -27,7 +28,13 @@ data class EditProductUiState(
     val showSnackBar: Boolean = false,
     val isTextFieldEnabled: Boolean = true,
     val isCancelImageEnabled: Boolean = true,
+    val deleteDialog: DeleteDialogState? = null,
 ) {
+    data class DeleteDialogState(
+        val title: StringResource,
+        val description: StringResource,
+    )
+
     data class ShelfUiState(
         val id: String = "",
         val name: String = "",
@@ -59,6 +66,4 @@ data class EditProductUiState(
             return existingImages + images
         }
 }
-
-
 

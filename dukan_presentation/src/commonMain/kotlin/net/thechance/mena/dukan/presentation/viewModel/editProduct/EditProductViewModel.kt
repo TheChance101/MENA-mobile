@@ -8,6 +8,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.awaitCancellation
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.delete_product_description
+import mena.dukan_presentation.generated.resources.delete_product_success
+import mena.dukan_presentation.generated.resources.delete_product_title
+import mena.dukan_presentation.generated.resources.error_delete_product
 import mena.dukan_presentation.generated.resources.error_description_length
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.error_image_max_limit
@@ -175,7 +179,42 @@ class EditProductViewModel(
     }
 
     override fun onDeleteProductClicked() {
+        updateState {
+            copy(
+                deleteDialog = EditProductUiState.DeleteDialogState(
+                    title = Res.string.delete_product_title,
+                    description = Res.string.delete_product_description
+                )
+            )
+        }
+    }
+
+    override fun onDismissDeleteDialog() {
+        updateState { copy(deleteDialog = null) }
+    }
+
+    override fun onDeleteConfirmed() {
+        updateState { copy(deleteDialog = null) }
+        tryToExecute(
+            block = { productRepository.deleteProduct(productId) },
+            onSuccess = ::onDeleteProductSuccess,
+            onError = ::onDeleteProductError
+        )
+    }
+
+    private fun onDeleteProductSuccess(unit: Unit) {
+        showSnackBar(message = Res.string.delete_product_success, type = SnackBarType.SUCCESS)
         emitEffect(effect = EditProductEffect.NavigateToManageDukanProducts)
+    }
+
+    private fun onDeleteProductError(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            is NoSuchItemException -> Res.string.error_product_not_found
+            is UnAuthorizedException -> Res.string.error_unauthorized_access
+            else -> Res.string.error_delete_product
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     override fun onProductNameChange(name: String) {
