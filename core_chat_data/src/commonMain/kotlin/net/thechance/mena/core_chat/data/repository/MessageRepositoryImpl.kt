@@ -28,6 +28,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -46,6 +47,7 @@ class MessageRepositoryImpl(
 ) : MessageRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
+    private val markChatAsDeleted = MutableSharedFlow<DeleteChatEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
@@ -93,6 +95,10 @@ class MessageRepositoryImpl(
         return markMessagesAsRead
     }
 
+    override fun observeDeleteChat(): Flow<DeleteChatEvent> {
+        return markChatAsDeleted
+    }
+
     private fun initializeWebsocketConnection() {
         scope.launch {
             webSocketManager.connect(
@@ -121,6 +127,10 @@ class MessageRepositoryImpl(
 
             is MessageEvent.Message -> {
                 event.dto.toDomain()?.let { messageFlows.emit(it) }
+            }
+
+            is MessageEvent.DeleteChat -> {
+                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.deletedChatId))
             }
         }
     }

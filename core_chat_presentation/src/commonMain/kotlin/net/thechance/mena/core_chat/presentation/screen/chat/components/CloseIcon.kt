@@ -17,7 +17,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CancelDialogIcon(
+fun CloseIcon(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -36,10 +36,10 @@ fun CancelDialogIcon(
 
 @Composable
 @Preview()
-private fun PreviewCancelIcon() {
+private fun Preview() {
 
     MenaTheme {
-        CancelDialogIcon(
+        CloseIcon(
             onClick = {},
             modifier = Modifier
         )
