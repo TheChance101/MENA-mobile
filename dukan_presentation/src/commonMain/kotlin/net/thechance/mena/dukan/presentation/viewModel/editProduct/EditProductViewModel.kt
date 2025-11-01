@@ -405,12 +405,11 @@ class EditProductViewModel(
         validateProductBeforeSave()
         updateUiStateForSaving()
 
-        val (keptOldUrls, deletedImageUrls) = calculateImageChanges()
+        val existingImageUrls = state.value.existingImageUrls
         val uploadedUrls = uploadNewImages()
-        val finalImageUrls = keptOldUrls + uploadedUrls
+        val finalImageUrls = existingImageUrls + uploadedUrls
 
         validateFinalImageUrls(finalImageUrls)
-        deleteRemovedImages(deletedImageUrls)
         updateProductData(finalImageUrls)
         updateStateAfterSave(finalImageUrls)
     }
@@ -435,12 +434,6 @@ class EditProductViewModel(
                 isCancelImageEnabled = false
             )
         }
-    }
-
-    private fun calculateImageChanges(): Pair<List<String>, List<String>> {
-        val keptOldUrls = state.value.existingImageUrls.toList()
-        val deletedImageUrls = originalExistingUrls.filterNot { url -> keptOldUrls.contains(url) }
-        return Pair(keptOldUrls, deletedImageUrls)
     }
 
     private suspend fun uploadNewImages(): List<String> {
@@ -485,15 +478,6 @@ class EditProductViewModel(
                 isUploadingImageEnabled = true,
                 isTextFieldEnabled = true,
                 isCancelImageEnabled = true
-            )
-        }
-    }
-
-    private suspend fun deleteRemovedImages(deletedImageUrls: List<String>) {
-        if (deletedImageUrls.isNotEmpty()) {
-            productRepository.deleteProductImages(
-                productId = productId,
-                imageUrls = deletedImageUrls
             )
         }
     }
