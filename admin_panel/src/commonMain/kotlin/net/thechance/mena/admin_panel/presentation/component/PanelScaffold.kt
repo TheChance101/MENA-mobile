@@ -7,13 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.img_no_internet
 import net.thechance.mena.admin_panel.resources.no_internet_content
 import net.thechance.mena.admin_panel.resources.no_internet_title
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -53,7 +52,7 @@ fun PanelScaffold(
 
                     isLoading -> {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
+                            DotsProgressIndicator(modifier = Modifier.align(Alignment.Center))
                         }
                     }
 

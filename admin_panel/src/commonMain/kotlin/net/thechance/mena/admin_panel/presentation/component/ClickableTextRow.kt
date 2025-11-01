@@ -38,12 +38,7 @@ fun ClickableTextRow(
     )
 
     Row(
-        modifier = modifier
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ),
+        modifier = modifier.noRippleClickable(onClick),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -60,3 +55,10 @@ fun ClickableTextRow(
         )
     }
 }
+
+@Composable
+private fun Modifier.noRippleClickable(onClick: () -> Unit): Modifier = this.clickable(
+    onClick = onClick,
+    indication = null,
+    interactionSource = remember { MutableInteractionSource() }
+)

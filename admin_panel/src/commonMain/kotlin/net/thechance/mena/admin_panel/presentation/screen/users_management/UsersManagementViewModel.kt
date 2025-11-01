@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import net.thechance.mena.admin_panel.domain.entity.User
-import net.thechance.mena.admin_panel.domain.repository.UserRepo
+import net.thechance.mena.admin_panel.domain.repository.UserRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import org.koin.android.annotation.KoinViewModel
@@ -15,7 +15,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
 class UsersManagementViewModel(
-    @Provided private val userRepo: UserRepo,
+    @Provided private val userRepository: UserRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UsersManagementScreenState, UsersManagementEffect>
     (UsersManagementScreenState()), UsersManagementInteractionListener {
@@ -31,7 +31,7 @@ class UsersManagementViewModel(
      */
     private fun getUsers() {
         tryToExecute(
-            callee = { userRepo.getAllUsers().first() },
+            callee = { userRepository.getAllUsers().first() },
             dispatcher = dispatcher,
             onSuccess = { result -> onGetUsersSuccess(result) },
             onError = ::onGetUsersError

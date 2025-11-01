@@ -2,7 +2,7 @@
 
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
-import net.thechance.mena.admin_panel.domain.entity.User.UserState
+import net.thechance.mena.admin_panel.domain.entity.User.UserStates
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import java.time.LocalDate
 import kotlin.uuid.ExperimentalUuidApi
@@ -27,7 +27,7 @@ data class UsersManagementScreenState(
         val phoneNumber: String,
         val lastLoginDate: LocalDate,
         val lastVisitDate: LocalDate,
-        val userStates: UserState
+        val userStates: UserStates
     )
 
     enum class Sort {

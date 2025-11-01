@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.admin_panel.domain.entity.User
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -113,13 +114,13 @@ private fun UserItemRow(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
-        UserStatus(
-            status = user.userStates,
+        UserStatesButton(
+            isActive = user.userStates == User.UserStates.ACTIVE,
             modifier = Modifier.weight(0.8f)
         )
 
-        ToggleUserStatus(
-            userState = user.userStates,
+        UserStatesToggleButton(
+            isActive = user.userStates == User.UserStates.ACTIVE,
             onClick = onStatusClick,
             modifier = Modifier.weight(0.8f)
         )

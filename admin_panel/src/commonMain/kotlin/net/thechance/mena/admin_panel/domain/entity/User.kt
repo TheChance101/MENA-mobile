@@ -13,9 +13,9 @@ data class User(
     val phoneNumber: String,
     val lastLoginDate: LocalDate,
     val lastVisitDate: LocalDate,
-    val userState: UserState
+    val userStates: UserStates
 ) {
-    enum class UserState {
+    enum class UserStates {
         ACTIVE, BLOCKED
     }
 }

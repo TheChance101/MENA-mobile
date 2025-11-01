@@ -11,6 +11,6 @@ fun User.toUIState(): UsersManagementScreenState.UserItem {
         phoneNumber = phoneNumber,
         lastLoginDate = lastLoginDate,
         lastVisitDate = lastVisitDate,
-        userStates = userState
+        userStates = userStates
     )
 }

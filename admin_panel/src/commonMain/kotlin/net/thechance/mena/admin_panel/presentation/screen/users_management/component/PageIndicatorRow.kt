@@ -33,26 +33,26 @@ fun PaginationRow(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PaginationButton(
+        PageNavigationButton(
             icon = Res.drawable.ic_arrow_left,
-            enabled = currentPage > 1,
+            isEnabled = currentPage > 1,
             onClick = { onPageChange(currentPage - 1) },
             modifier = Modifier.padding(end = 8.dp)
         )
 
         repeat(totalPages) { index ->
             val pageNumber = index + 1
-            PageNumberItem(
+            PageNumberButton(
                 pageNumber = pageNumber,
                 isSelected = pageNumber == currentPage,
                 onClick = { onPageChange(pageNumber) },
-                modifier = Modifier.padding(horizontal = 2.dp)
+                modifier = Modifier.padding(start = 6.dp)
             )
         }
 
-        PaginationButton(
+        PageNavigationButton(
             icon = Res.drawable.ic_arrow_right,
-            enabled = currentPage < totalPages,
+            isEnabled = currentPage < totalPages,
             onClick = { onPageChange(currentPage + 1) },
             modifier = Modifier.padding(start = 8.dp)
         )
@@ -60,30 +60,20 @@ fun PaginationRow(
 }
 
 @Composable
-private fun PaginationButton(
+private fun PageNavigationButton(
     icon: DrawableResource,
-    enabled: Boolean,
+    isEnabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (enabled) {
+        targetValue = if (isEnabled) {
             Theme.colorScheme.background.surfaceLow
         } else {
             Theme.colorScheme.background.surfaceLow.copy(alpha = 0.5f)
         },
         animationSpec = tween(durationMillis = 300),
         label = "buttonBackgroundColor"
-    )
-
-    val iconTint by animateColorAsState(
-        targetValue = if (enabled) {
-            Theme.colorScheme.primary.primary
-        } else {
-            Theme.colorScheme.primary.primary.copy(alpha = 0.5f)
-        },
-        animationSpec = tween(durationMillis = 300),
-        label = "buttonIconTint"
     )
 
     Icon(
@@ -93,14 +83,14 @@ private fun PaginationButton(
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(backgroundColor)
-            .clickable(enabled = enabled) { onClick() }
+            .clickable(enabled = isEnabled) { onClick() }
             .padding(12.dp),
-        tint = iconTint
+        tint = Theme.colorScheme.primary.primary
     )
 }
 
 @Composable
-private fun PageNumberItem(
+private fun PageNumberButton(
     pageNumber: Int,
     isSelected: Boolean,
     onClick: () -> Unit,

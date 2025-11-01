@@ -51,7 +51,7 @@ fun TableHeaderRow(
         Text(
             text = "#",
             style = Theme.typography.label.large,
-            color = Theme.colorScheme.primary.primary,
+            color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.3f)
         )
 
@@ -66,7 +66,7 @@ fun TableHeaderRow(
         Text(
             text = stringResource(Res.string.phone_number),
             style = Theme.typography.label.large,
-            color = Theme.colorScheme.primary.primary,
+            color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
 
@@ -89,7 +89,7 @@ fun TableHeaderRow(
         Text(
             text = stringResource(Res.string.status),
             style = Theme.typography.label.large,
-            color = Theme.colorScheme.primary.primary,
+            color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.8f)
         )
 

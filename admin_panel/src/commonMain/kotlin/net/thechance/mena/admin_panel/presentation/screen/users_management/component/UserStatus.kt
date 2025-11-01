@@ -2,7 +2,6 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management.comp
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.domain.entity.User.UserState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.activate
 import net.thechance.mena.admin_panel.resources.active
@@ -34,18 +32,18 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun ToggleUserStatus(
-    userState: UserState,
+fun UserStatesToggleButton(
+    isActive: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isActive = userState == UserState.ACTIVE
+
     val buttonText = if (isActive) {
         stringResource(Res.string.block)
     } else {
         stringResource(Res.string.activate)
     }
-    val buttonIcon = if (isActive) {
+    val buttonTrailingIcon = if (isActive) {
         painterResource(Res.drawable.ic_block)
     } else {
         painterResource(Res.drawable.ic_activate)
@@ -54,18 +52,16 @@ fun ToggleUserStatus(
     OutlinedButton(
         modifier = modifier.wrapContentWidth(),
         text = buttonText,
-        trailingIcon = buttonIcon,
+        trailingIcon = buttonTrailingIcon,
         onClick = onClick
     )
 }
 
 @Composable
-fun UserStatus(
-    status: UserState,
+fun UserStatesButton(
+    isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val isActive = status == UserState.ACTIVE
-
     val backgroundColor by animateColorAsState(
         targetValue = if (isActive) {
             Theme.colorScheme.background.bgSuccess

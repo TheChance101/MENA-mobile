@@ -47,8 +47,7 @@ fun BlockUserDialog(
                     shape = RoundedCornerShape(24.dp)
                 )
                 .padding(24.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalAlignment = Alignment.Start
         ) {
             DialogIcon()
             DialogContent()
@@ -79,8 +78,7 @@ private fun DialogIcon() {
 @Composable
 private fun DialogContent() {
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = stringResource(Res.string.block_user),

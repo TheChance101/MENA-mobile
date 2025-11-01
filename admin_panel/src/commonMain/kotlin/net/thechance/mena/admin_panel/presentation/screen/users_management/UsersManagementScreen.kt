@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
-import net.thechance.mena.admin_panel.presentation.component.ThreeDotsLoadingIndicator
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.SearchBar
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
@@ -53,7 +52,7 @@ private fun UsersManagementScreenContent(
         topBar = {
             AppBar(
                 title = stringResource(Res.string.users_management),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
                 modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
             )
         },
@@ -72,7 +71,7 @@ private fun UsersManagementScreenContent(
                         onValueChange = { newQuery ->
                             listener.onSearchQueryChanged(newQuery)
                         },
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
                     )
                     StatePlaceholder(
                         image = painterResource(Res.drawable.img_search_empty),
