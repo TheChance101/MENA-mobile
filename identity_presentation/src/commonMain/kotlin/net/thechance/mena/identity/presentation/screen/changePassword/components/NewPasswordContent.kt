@@ -49,7 +49,7 @@ fun NewPasswordContent(
             onTogglePasswordVisibility = listener::onToggleNewPasswordVisibility,
             label = stringResource(Res.string.new_password_title),
             errorMessage = state.newPasswordErrorMessage,
-            modifier = Modifier.padding(bottom = Theme.spacing._16)
+            modifier = Modifier.padding(bottom = Theme.spacing._16, top = Theme.spacing._24)
         )
 
         LabeledInputPassword(

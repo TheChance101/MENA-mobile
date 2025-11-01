@@ -44,3 +44,8 @@ fun validatePasswordConfirmation(password: String, confirmPassword: String): Str
         "Confirm password doesn't match the new password"
     } else null
 }
+
+fun isPasswordValid(password: String): Boolean {
+    return password.length >= 8
+}
+
