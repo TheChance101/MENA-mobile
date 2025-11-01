@@ -39,6 +39,7 @@ kotlin {
             implementation(libs.androidx.media3.exoplayer.dash)
         }
         commonMain.dependencies {
+            implementation(projects.identityDomain)
             implementation(projects.trendsDomain)
             implementation(projects.trendsApi)
             implementation(projects.designSystem)
