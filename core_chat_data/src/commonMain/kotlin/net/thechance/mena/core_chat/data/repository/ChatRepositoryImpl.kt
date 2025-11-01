@@ -29,7 +29,7 @@ class ChatRepositoryImpl(
         return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
             bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
         ) {
-            client.get(CHAT_SUMMARY_ENDPOINT) {
+            client.get("$CHAT_ENDPOINT$CHATS_SUMMARY_ENDPOINT") {
                 parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -40,7 +40,7 @@ class ChatRepositoryImpl(
         return tryNetworkCall<ChatSummaryDto>(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
-            client.get("$CHAT_SUMMARY_ENDPOINT/$chatId")
+            client.get("$CHAT_ENDPOINT/$chatId$CHAT_SUMMARY_ENDPOINT")
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
@@ -71,6 +71,7 @@ class ChatRepositoryImpl(
         const val PAGE_SIZE_PARAMETER = "size"
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val CHAT_ENDPOINT = "/chat"
-        const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
+        const val CHAT_SUMMARY_ENDPOINT = "/summary"
+        const val CHATS_SUMMARY_ENDPOINT = "/chatsSummary"
     }
 }

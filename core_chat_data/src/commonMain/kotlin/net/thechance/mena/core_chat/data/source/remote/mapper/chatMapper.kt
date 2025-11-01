@@ -4,7 +4,7 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -121,7 +121,7 @@ fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
     }
 }
 
-fun MarkAsReadResponse.toEntity(): MarkMessageAsReadEvent {
+fun MarkAsReadDto.toDomain(): MarkMessageAsReadEvent {
     return MarkMessageAsReadEvent(
         readByUserId = Uuid.parse(readByUserId),
         chatId = Uuid.parse(chatId),

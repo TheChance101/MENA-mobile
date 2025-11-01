@@ -17,17 +17,18 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionRequestDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
-import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
-import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
@@ -45,8 +46,10 @@ class MessageRepositoryImpl(
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
-    private val messageFlows = MutableSharedFlow<Message>()
+    private val messagesFlow = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
+    private val addReactionFlow = MutableSharedFlow<MessageReaction>()
+    private val deleteReactionFlow = MutableSharedFlow<MessageReaction>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
@@ -54,8 +57,7 @@ class MessageRepositoryImpl(
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
-            client.get(CHAT_HISTORY_ENDPOINT) {
-                parameter(CHAT_ID_PARAMETER, chatId)
+            client.get("$CHAT_ENDPOINT/$chatId$MESSAGES_ENDPOINT") {
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -73,7 +75,7 @@ class MessageRepositoryImpl(
 
     override fun observeMessagesForChatOrAll(chatId: Uuid?): Flow<Message> {
         if (webSocketManager.isConnected().not()) initializeWebsocketConnection()
-        return messageFlows.filter { chatId == null || it.chatId == chatId }
+        return messagesFlow.filter { chatId == null || it.chatId == chatId }
     }
 
     override suspend fun sendMessage(message: Message) {
@@ -90,9 +92,7 @@ class MessageRepositoryImpl(
         }
     }
 
-    override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> {
-        return markMessagesAsRead
-    }
+    override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> { return markMessagesAsRead }
 
     private fun initializeWebsocketConnection() {
         scope.launch {
@@ -107,24 +107,52 @@ class MessageRepositoryImpl(
 
     private suspend fun onConnectedWebSocket() {
         webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + PRIVATE_MESSAGES)
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + MARK_AS_READ)
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + ADD_REACTION)
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + DELETE_REACTION)
     }
 
-    private suspend fun handleIncomingAsEvent(
-        incomingText: String
-    ) {
-        println("Received Text Frame: $incomingText")
-        val jsonBody = incomingText.substringAfter("\n\n").trimEnd('\u0000')
-        val event = json.decodeFromString<MessageEvent>(jsonBody)
+    private suspend fun handleIncomingAsEvent(incomingText: String) {
+        val parts = incomingText.split("\n\n", limit = 2)
+        val headers = parts.getOrNull(0).orEmpty()
+        val body = parts.getOrNull(1).orEmpty().trimEnd('\u0000')
 
-        when (event) {
-            is MessageEvent.MarkAsRead -> {
-                markMessagesAsRead.emit(event.dto.toEntity())
+        val destination = headers
+            .lineSequence()
+            .firstOrNull { it.startsWith("destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX") }
+            ?.substringAfter("destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX")
+            ?.trim()
+
+        handleDestinations(body, destination.orEmpty())
+    }
+
+    private suspend fun handleDestinations(body: String, destination: String) {
+        when (destination) {
+            ADD_REACTION -> {
+                val dto = json.decodeFromString<MessageReactionDto>(body)
+                addReactionFlow.emit(dto.toDomain())
             }
 
-            is MessageEvent.Message -> {
-                event.dto.toDomain()?.let { messageFlows.emit(it) }
+            DELETE_REACTION -> {
+                val dto = json.decodeFromString<MessageReactionDto>(body)
+                deleteReactionFlow.emit(dto.toDomain())
+            }
+
+            PRIVATE_MESSAGES -> {
+                val dto = json.decodeFromString<MessageDto>(body)
+                dto.toDomain()?.let { messagesFlow.emit(it) }
+            }
+
+            MARK_AS_READ -> {
+                val dto = json.decodeFromString<MarkAsReadDto>(body)
+                markMessagesAsRead.emit(dto.toDomain())
+            }
+
+            else -> {
+                println("Unknown destination: $destination")
             }
         }
+
     }
 
     override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
@@ -142,6 +170,10 @@ class MessageRepositoryImpl(
         sendMessageReactionEvent(REMOVE_REACTION_DESTINATION, messageId, emoji)
     }
 
+    override fun observeMessageReactions(): Flow<MessageReaction> { return addReactionFlow }
+
+    override fun observeRemovedMessageReactions(): Flow<MessageReaction> { return deleteReactionFlow }
+
     private suspend fun sendMessageReactionEvent(
         destination: String,
         messageId: Uuid,
@@ -158,15 +190,17 @@ class MessageRepositoryImpl(
     }
 
     private companion object {
-        const val PAGE_NUMBER_PARAMETER = "page"
-        const val PAGE_SIZE_PARAMETER = "size"
-        const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+        const val CHAT_ENDPOINT = "/chat"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-        const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-        const val CHAT_ID_PARAMETER = "chatId"
-        const val ADD_REACTION_DESTINATION = "/app/chat.addReaction"
-        const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteReaction"
-
+        const val MESSAGES_ENDPOINT = "/messages"
+        const val ADD_REACTION = "/private/addReaction"
+        const val DELETE_REACTION = "/private/deleteReaction"
+        const val MARK_AS_READ = "/private/markAsRead"
+        const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+        const val ADD_REACTION_DESTINATION = "/app/chat.addMessageReaction"
+        const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
+        const val PAGE_NUMBER_PARAMETER = "page"
+        const val PAGE_SIZE_PARAMETER = "size"
     }
 }
