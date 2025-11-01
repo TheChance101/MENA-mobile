@@ -15,6 +15,7 @@ object PreviewManageDukanInteractionListener : ManageDukanInteractionListener {
     override fun onDeleteConfirmed(shelfId: String) {}
     override fun onAddProductClicked() {}
     override fun onProductClicked(product: ProductUiState) {}
+    override fun onEditProductClicked(product: ProductUiState) {}
     override fun onEditShelfClicked() {}
     override fun onAddShelfClicked() {}
     override fun isShelfSelected(shelf: ShelfUiState) = false

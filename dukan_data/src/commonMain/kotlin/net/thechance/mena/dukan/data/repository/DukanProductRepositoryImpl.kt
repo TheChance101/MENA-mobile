@@ -5,6 +5,7 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -13,11 +14,13 @@ import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
+import net.thechance.mena.dukan.data.mapper.toUpdateProductRequest
 import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
+import net.thechance.mena.dukan.domain.model.UpdateProductParams
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 
@@ -43,10 +46,17 @@ class DukanProductRepositoryImpl(
             client.get(PRODUCT_BASE_PATH) {
                 parameter("page", page)
                 parameter("size", size)
-                parameter("shelfId",shelfId)
+                parameter("shelfId", shelfId)
             }
         }
         return response.toDomain(mapper = ProductDto::toDomain)
+    }
+
+    override suspend fun getProductById(productId: String): Product {
+        val response: ProductDto = safeApiCall {
+            client.get("$PRODUCT_BASE_PATH/$productId")
+        }
+        return response.toDomain()
     }
 
     override suspend fun uploadProductImages(
@@ -64,6 +74,25 @@ class DukanProductRepositoryImpl(
             client.post("${PRODUCT_BASE_PATH}/images/$productId") {
                 accept(ContentType.Application.Json)
                 setBody(buildMultiPartFormData(parts, fieldName = "files"))
+            }
+        }
+    }
+
+    override suspend fun updateProduct(productId: String, params: UpdateProductParams) {
+        safeApiCall<Unit> {
+            client.put("${PRODUCT_BASE_PATH}/$productId") {
+                contentType(ContentType.Application.Json)
+                setBody(params.toUpdateProductRequest())
+            }
+        }
+    }
+
+    override suspend fun deleteProductImages(productId: String, imageUrls: List<String>) {
+        data class DeleteImagesBody(val imageUrls: List<String>)
+        safeApiCall<Unit> {
+            client.post("${PRODUCT_BASE_PATH}/images/$productId/delete") {
+                contentType(ContentType.Application.Json)
+                setBody(DeleteImagesBody(imageUrls))
             }
         }
     }
