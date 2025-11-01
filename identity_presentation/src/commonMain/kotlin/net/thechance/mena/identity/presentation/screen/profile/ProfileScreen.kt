@@ -96,10 +96,13 @@ class ProfileScreen : BaseScreen<
                             qrCodePainter = rememberAsyncImagePainter(
                                 "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
                             ),
-                            onDismiss = listener::onDismissShareProfileDialog,
+                            onDismiss = listener::onDismissShareDialog,
                             fullName = state.fullName,
                             onShareProfile = {},
-                            onClipboardContent = { },
+                            onClipboardContent = {
+
+                                listener.onDismissShareDialog()
+                            },
                             onDownload = {},
                         )
                     }
