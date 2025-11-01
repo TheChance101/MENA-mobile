@@ -59,7 +59,6 @@ private fun DukanIconButton(
     dukanButtonStatus: MainScreenUiState.DukanStatusUi,
     onDukanIconClicked: () -> Unit,
 ) {
-    val iconButtonEnabled = dukanButtonStatus != MainScreenUiState.DukanStatusUi.Loading
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -68,7 +67,7 @@ private fun DukanIconButton(
                 shape = RoundedCornerShape(Theme.radius.md)
             )
             .clip(shape = RoundedCornerShape(Theme.radius.md))
-            .clickable(onClick = onDukanIconClicked, enabled = iconButtonEnabled),
+            .clickable(onClick = onDukanIconClicked),
         contentAlignment = Alignment.Center
     ) {
         DukanIcon(dukanStatus = dukanButtonStatus)
