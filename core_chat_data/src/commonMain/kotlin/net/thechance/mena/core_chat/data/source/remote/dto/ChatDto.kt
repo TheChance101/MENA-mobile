@@ -15,5 +15,5 @@ data class ChatDto(
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class DeleteChatResponse(
-    val chatId: Uuid,
+    val deletedChatId: Uuid,
 )

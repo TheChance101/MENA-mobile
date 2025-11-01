@@ -54,7 +54,7 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
             "id" in element && "senderId" in element && "chatId" in element && "sendAt" in element && "isRead" in element ->
                 MessageEvent.Message(Json.decodeFromJsonElement(MessageDto.serializer(), element))
 
-            "deleteChat" in element ->
+            "deletedChatId" in element ->
                 MessageEvent.DeleteChat(Json.decodeFromJsonElement(DeleteChatResponse.serializer(), element))
 
             else -> throw SerializationException("Unknown payload: $element")
