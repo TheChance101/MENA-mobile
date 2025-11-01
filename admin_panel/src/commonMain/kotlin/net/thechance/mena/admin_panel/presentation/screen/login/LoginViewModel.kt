@@ -40,17 +40,16 @@ class LoginViewModel(
             onStart = { updateState { it.copy(isLoginButtonLoading = true) } },
             onSuccess = { onLoginSuccess() },
             onError = ::onLoginError,
+            onFinish = { updateState { it.copy(isLoginButtonLoading = false) } },
             dispatcher = dispatcher
         )
     }
 
     private fun onLoginSuccess() {
-        updateState { it.copy(isLoginButtonLoading = false) }
         sendEffect(LoginEffect.NavigateToAdminPanel)
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
-        updateState { it.copy(isLoginButtonLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
