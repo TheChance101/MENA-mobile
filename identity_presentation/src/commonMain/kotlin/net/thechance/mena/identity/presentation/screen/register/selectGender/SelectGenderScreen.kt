@@ -1,0 +1,92 @@
+package net.thechance.mena.identity.presentation.screen.register.selectGender
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.Navigator
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.back
+import mena.identity_presentation.generated.resources.next
+import mena.identity_presentation.generated.resources.register
+import mena.identity_presentation.generated.resources.register_prompt_description
+import mena.identity_presentation.generated.resources.register_prompt_title
+import mena.identity_presentation.generated.resources.select_gender_screen_prompt
+import mena.identity_presentation.generated.resources.select_gender_screen_prompt_title
+import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.WheelDatePicker
+import net.thechance.mena.identity.presentation.screen.editProfile.component.GenderToggle
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+class SelectGenderScreen() :
+    BaseScreen<SelectGenderScreenViewModel, SelectGenderScreenUIState, SelectGenderScreenUIEffect, SelectGenderScreenInteractionListener>() {
+    @Composable
+    override fun Content() {
+        InitScreen(getScreenModel())
+    }
+
+    @Composable
+    override fun OnRender(
+        state: SelectGenderScreenUIState,
+        listener: SelectGenderScreenInteractionListener
+    ) {
+        Scaffold(
+            bottomBar = {
+                PrimaryButton(
+                    text = stringResource(Res.string.register),
+                    onClick = listener::onClickRegister,
+                    isEnabled = state.isRegisterEnabled,
+                    isLoading = state.isRegisterLoading,
+                    contentPadding = PaddingValues(vertical = 13.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._16),
+                )
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding()
+                    .padding(vertical = 24.dp)
+            ) {
+                AuthScreenContainer {
+                    PageDescription(
+                        title = stringResource(Res.string.select_gender_screen_prompt_title),
+                        subtitle = stringResource(Res.string.select_gender_screen_prompt),
+                    )
+
+                    GenderToggle(
+                        gender = state.gender,
+                        onGenderChange = listener::onChangeGender
+                    )
+                }
+            }
+        }
+    }
+
+    override fun onEffect(
+        effect: SelectGenderScreenUIEffect,
+        navigator: Navigator
+    ) {
+        when (effect) {
+            SelectGenderScreenUIEffect.NavigateBack -> navigator.pop()
+        }
+    }
+}
