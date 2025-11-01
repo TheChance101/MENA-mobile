@@ -147,7 +147,7 @@ internal class UserReelViewModel(
 
     override fun onClickConfirmDelete() {
         tryToExecute(
-            block = { reelsRepository.deleteReelById(userReelArgs.realId) },
+            block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
             dispatcher = defaultDispatcher

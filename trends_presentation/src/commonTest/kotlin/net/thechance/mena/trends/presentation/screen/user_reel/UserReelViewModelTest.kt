@@ -61,6 +61,7 @@ class UserReelViewModelTest {
             skipItems(1)
             val initialState = awaitItem()
 
+            assertThat(initialState.currentReelId).isEqualTo("2")
             assertFalse(initialState.isLoading)
             assertNull(initialState.error)
             assertFalse(initialState.isConfirmationDialogVisible)
@@ -132,6 +133,15 @@ class UserReelViewModelTest {
     }
 
     @Test
+    fun `onChangeCurrentReel should update state with new reel id`() = runTest {
+        viewModel.onChangeCurrentReel("newReelId")
+
+        viewModel.state.test {
+            assertThat(awaitItem().currentReelId).isEqualTo("newReelId")
+        }
+    }
+
+    @Test
     fun `onClickDelete should show confirmation dialog when called`() = runTest {
         viewModel.onClickDelete()
 
@@ -198,25 +208,16 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `onClickConfirmDelete should update error state when repository throws exception`() =
-        runTest {
+    fun `onClickConfirmDelete should update error state when repository throws exception`() = runTest(testDispatcher) {
+        everySuspend { mockReelsRepository.deleteReelById(any()) } throws Exception("Failed")
 
-            val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
-                everySuspend { deleteReelById("1") } throws Exception()
-            }
+        viewModel.onClickConfirmDelete()
+        advanceUntilIdle()
 
-            val errorViewModel =
-                UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)
-
-            errorViewModel.onClickConfirmDelete()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            errorViewModel.state.test {
-                val errorState = awaitItem()
-                assertNotNull(errorState.error is ErrorState)
-                cancelAndIgnoreRemainingEvents()
-            }
+        viewModel.state.test {
+            assertThat(awaitItem().error).isEqualTo(ErrorState.RequestFailed("Failed"))
         }
+    }
 
     @Test
     fun `onClickPublisherInfo should send NavigateToPublisherProfile effect when called`() =
