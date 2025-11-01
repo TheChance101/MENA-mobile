@@ -17,6 +17,8 @@ data class ChatScreenState(
     val chatRequesterId: Uuid? = null,
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
+    val isChatActionsDialogVisible: Boolean = false,
+    val isConfirmDeleteChatDialogVisible: Boolean = false,
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
     val isAttachmentsOverlayVisible: Boolean = false,

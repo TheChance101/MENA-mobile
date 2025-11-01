@@ -46,5 +46,8 @@
     <string name="you">أنت</string>
     <string name="could_not_get_sync_contacts_status">لم نتمكن من الحصول على حالة مزامنة جهات الاتصال، يرجى المحاولة مرة أخرى.</string>
     <string name="could_not_load_chats">فشل تحميل المحادثات</string>
+    <string name="delete_chat_confirmation_message">هل أنت متأكد أنك تريد حذف هذه المحادثة؟ ستفقد جميع الرسائل ولن تتمكن من استعادتها؟</string>
+    <string name="could_not_delete_chat">لم نتمكن من حذف المحادثة</string>
+    <string name="chat_deleted_successfully">تم حذف المحادثة بنجاح</string>
     <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
 </resources>

@@ -1,27 +1,38 @@
 <resources>
+    <!-- General Terms -->
     <string name="sur">Sur</string>
     <string name="quran">Quran</string>
     <string name="qiblah">Qiblah</string>
     <string name="makki">Makki</string>
     <string name="madani">Madani</string>
     <string name="ayat">Ayat</string>
+
+    <!-- Icons -->
     <string name="bookmark_icon">bookmark icon</string>
     <string name="surah_arabic_name_icon">surah arabic name icon</string>
     <string name="surah_number_container_icon">surah number container</string>">
     <string name="moshaf_icon">moshaf icon</string>
+
+    <!-- Formatting and Actions -->
     <string name="ayat_count_format">%1$d %2$s</string>
     <string name="link_forward">Link forward</string>
     <string name="send_to">Send to</string>
     <string name="bookmark">Bookmark</string>
     <string name="copy">Copy</string>
+
+    <!-- Specific Content and UI -->
     <string name="bismillah">Bismillah</string>
     <string name="arrow_left">Arrow left</string>
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
+
+    <!-- Qiblah Directions -->
     <string name="device_angle_to_qiblah">Device’s angle to qiblah</string>
     <string name="qibla_direction">Qibla direction</string>
     <string name="back_icon">Back Icon</string>
+
+    <!-- Bookmarks Section -->
     <string name="bookmarks">Bookmarks</string>
     <string name="calibrate_device">Calibrate device</string>
     <string name="continue_btn">Continue</string>
@@ -32,6 +43,8 @@
     <string name="remove_bookmark_icon">Remove Bookmark Icon</string>
     <string name="time_icon">Time Icon</string>
     <string name="swipe_animation">SwipeAnimation</string>
+
+    <!-- Ayah and Tilawah -->
     <string name="aya">Aya %1$d</string>
     <string name="start_tilawah">Start Tilawah</string>
     <string name="search_area">Search in this area</string>
@@ -40,6 +53,8 @@
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
     <string name="bookmark_removed_successfully">Bookmark removed successfully</string>
     <string name="bookmark_added_successfully">Bookmark added successfully</string>
+
+    <!-- Time Plurals -->
     <plurals name="time_seconds_ago">
         <item quantity="one">%1$d second ago</item>
         <item quantity="other">%1$d seconds ago</item>
@@ -74,20 +89,28 @@
         <item quantity="one">%1$d year ago</item>
         <item quantity="other">%1$d years ago</item>
     </plurals>
+
+    <!-- Success and Error Basics -->
     <string name="success">Success</string>
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>
     <string name="error_icon">Error Icon</string>
+
+    <!-- Navigation and Copy -->
     <string name="navigate_to_sur_screen">Go to Sur Screen</string>"
     <string name="copied_ayah_successfully">Copied message successfully</string>
     <string name="default_snackbar_message">Bookmark added successfully</string>
     <string name="copied_ayah_failed">Copied ayah failed</string>
+
+    <!-- Error Messages -->
     <string name="error_unknown">Something went wrong. Please try again.</string>
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
     <string name="error_latitude">Latitude must be between -90 and 90 degrees.</string>
     <string name="error_longitude">Longitude must be between -180 and 180 degrees.</string>
+
+    <!-- Search Section -->
     <string name="search_in_surah_hint">Search in %1$s...</string>
     <string name="start_searching_title">Start searching!</string>
     <string name="start_searching_subtitle">Enter a word from a specific Ayah to view it.</string>
@@ -95,6 +118,8 @@
     <string name="no_results_found_subtitle">Please try again with another keyword.</string>
     <string name="back">back</string>
     <string name="search_icon">Search Icon</string>"
+
+    <!-- Prayer and Faith -->
     <string name="faith_title">Faith</string>
     <string name="sunrise_time_label">Sunrise time</string>
     <string name="location">location</string>
@@ -112,10 +137,22 @@
     <string name="isha">Isha</string>
     <string name="icon_shadow">icon shadow</string>
     <string name="sunrise">Sunrise</string>
+
+    <!-- Surah Specific -->
     <string name="unknown_surah">Unknown Surah</string>
     <string name="ayah_number">Aya No %1$d</string>
     <string name="navigate_next">Navigate to next screen</string>
     <string name="surah_al_fatiha">Al-Fatiha</string>
+
+    <!-- Audio and Recitation -->
+    <string name="reciters">reciters</string>
+    <string name="previous_ayah">previous ayah</string>
+    <string name="pause">pause</string>
+    <string name="play">play</string>
+    <string name="next_ayah">next ayah</string>
+    <string name="repeat">repeat</string>
+    <string name="surah_ayah_format">%1$s: %2$d aya</string>
+    <string name="cancel_icon">cancel icon</string>
     <string name="mosque_image_description">Mosque icon</string>
     <string name="mosque_details">Mosque details</string>
     <string name="view_on_map">View on map</string>
