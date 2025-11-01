@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.login.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -12,6 +13,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
@@ -37,8 +40,22 @@ internal fun LoginScaffold(
                     .align(Alignment.BottomCenter),
                 painter = painterResource(Res.drawable.login_background),
                 contentDescription = stringResource(Res.string.login_background_img),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Crop
             )
+
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            Theme.colorScheme.background.surface.copy(alpha = 0.9f),
+                            Theme.colorScheme.background.surface,
+                            Theme.colorScheme.background.surface,
+                        ),
+                        start = Offset(0f, Float.POSITIVE_INFINITY),
+                        end = Offset(0f, 0f)
+                    )
+                ))
 
             Column(
                 modifier = Modifier
