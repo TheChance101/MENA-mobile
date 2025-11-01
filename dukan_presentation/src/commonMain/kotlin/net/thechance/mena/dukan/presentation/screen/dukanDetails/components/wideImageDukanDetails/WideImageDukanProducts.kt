@@ -57,9 +57,9 @@ fun LazyGridScope.wideImageProductsGrid(
                         showProductQuantity = product.showProductQuantity,
                         inCartQuantity = product.inCartQuantity,
                         cartColor = cartColor,
-                        onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                        onPlusClick = { listener.onPlusClicked(product.id) },
-                        onMinusClick = { listener.onMinusClicked(product.id) },
+                        onAddToCartClick = { listener.onAddToCartClicked(product) },
+                        onPlusClick = { listener.onPlusClicked(product) },
+                        onMinusClick = { listener.onMinusClicked(product) },
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart)
                     )
                 }

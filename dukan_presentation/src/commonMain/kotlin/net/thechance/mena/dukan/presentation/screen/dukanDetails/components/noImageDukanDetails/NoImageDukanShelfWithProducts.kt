@@ -52,9 +52,9 @@ fun NoImageDukanShelfWithProducts(
                         inCartQuantity = product.inCartQuantity,
                         showProductQuantity = product.showProductQuantity,
                         dukanColor = Color(dukanColor),
-                        onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                        onPlusClick = { listener.onPlusClicked(product.id) },
-                        onMinusClick = { listener.onMinusClicked(product.id) }
+                        onAddToCartClick = { listener.onAddToCartClicked(product) },
+                        onPlusClick = { listener.onPlusClicked(product) },
+                        onMinusClick = { listener.onMinusClicked(product) }
                     )
                 },
                 modifier = Modifier.padding(top = topPadding)

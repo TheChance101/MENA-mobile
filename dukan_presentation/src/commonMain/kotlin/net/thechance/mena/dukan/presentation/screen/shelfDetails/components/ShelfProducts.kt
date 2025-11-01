@@ -125,9 +125,9 @@ private fun GetProductIconAction(
                 inCartQuantity = product.inCartQuantity,
                 cartColor = Color(state.dukancolor),
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
-                onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { listener.onPlusClicked(product.id)},
-                onMinusClick = { listener.onMinusClicked(product.id)},
+                onAddToCartClick = { listener.onAddToCartClicked(product) },
+                onPlusClick = { listener.onPlusClicked(product)},
+                onMinusClick = { listener.onMinusClicked(product)},
             )
         }
 
@@ -135,9 +135,9 @@ private fun GetProductIconAction(
             NoImageDukanProductAction(
                 showProductQuantity = product.showProductQuantity,
                 inCartQuantity = product.inCartQuantity,
-                onAddToCartClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { listener.onPlusClicked(product.id)},
-                onMinusClick = { listener.onMinusClicked(product.id)},
+                onAddToCartClick = { listener.onAddToCartClicked(product) },
+                onPlusClick = { listener.onPlusClicked(product)},
+                onMinusClick = { listener.onMinusClicked(product)},
                 dukanColor = Color(state.dukancolor),
             )
         }

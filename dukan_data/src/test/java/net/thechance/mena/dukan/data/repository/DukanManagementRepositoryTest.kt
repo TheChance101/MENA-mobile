@@ -31,23 +31,6 @@ import kotlin.uuid.Uuid
 class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
         createDukanManagementRepository()
-    private lateinit var capturedRequest: HttpRequestData
-
-    private fun createMockClient(): HttpClient {
-        val mockEngine = MockEngine { request ->
-            capturedRequest = request
-            respond(
-                content = """["https://mock/image.jpg"]""",
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
-        }
-        return HttpClient(mockEngine) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
-            }
-        }
-    }
 
     @OptIn(ExperimentalUuidApi::class)
     @Test
