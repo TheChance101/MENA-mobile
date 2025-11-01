@@ -1,6 +1,5 @@
 package net.thechance.mena.admin_panel.presentation.screen.login
 
-import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 
 data class LoginScreenState(
@@ -8,8 +7,6 @@ data class LoginScreenState(
     val password: String = "",
     val isPasswordVisible: Boolean = false,
     val isLoginBtnLoading: Boolean = false,
-    val usernameErrorMsg: String? = null,
-    val passwordErrorMsg: String? = null,
     val snackBar: SnackBarState = SnackBarState()
 ){
     val isLoginBtnEnabled : Boolean

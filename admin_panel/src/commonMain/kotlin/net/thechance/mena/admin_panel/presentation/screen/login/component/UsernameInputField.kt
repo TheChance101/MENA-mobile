@@ -23,7 +23,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun UsernameInputField(
     username: String,
-    usernameErrorMsg: String?,
     onChangeValue: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -44,9 +43,7 @@ internal fun UsernameInputField(
             leadingIcon = painterResource(Res.drawable.ic_user),
             showTrailingDivider = false,
             visualTransformation = if (username.isNotEmpty()) AtPrefixTransformation
-            else VisualTransformation.None,
-            isError = usernameErrorMsg != null,
-            errorMessage = usernameErrorMsg
+            else VisualTransformation.None
         )
     }
 }

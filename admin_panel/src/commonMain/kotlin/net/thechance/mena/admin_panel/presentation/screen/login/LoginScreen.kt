@@ -44,13 +44,11 @@ private fun LoginScreenContent(
         Column(modifier = Modifier.padding(top = 40.dp)) {
             UsernameInputField(
                 username = state.username,
-                usernameErrorMsg = state.usernameErrorMsg,
                 onChangeValue = interactionListener::onUsernameChanged
             )
             PasswordInputField(
                 modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
                 password = state.password,
-                passwordErrorMsg = state.passwordErrorMsg,
                 isPasswordVisible = state.isPasswordVisible,
                 onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
                 onChangeValue = interactionListener::onPasswordChanged

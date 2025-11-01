@@ -25,7 +25,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PasswordInputField(
     password: String,
-    passwordErrorMsg: String?,
     isPasswordVisible: Boolean,
     onVisiblePasswordBtnClicked: () -> Unit,
     onChangeValue: (String) -> Unit,
@@ -54,9 +53,7 @@ internal fun PasswordInputField(
                 if (isPasswordVisible) Res.drawable.ic_open_eye
                 else Res.drawable.ic_close_eye
             ),
-            onTrailingIconClick = onVisiblePasswordBtnClicked,
-            isError = passwordErrorMsg != null,
-            errorMessage = passwordErrorMsg
+            onTrailingIconClick = onVisiblePasswordBtnClicked
         )
     }
 }

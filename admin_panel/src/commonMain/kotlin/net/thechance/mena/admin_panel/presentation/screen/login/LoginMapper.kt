@@ -2,7 +2,6 @@ package net.thechance.mena.admin_panel.presentation.screen.login
 
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.error_invalid_credentials_msg
 import net.thechance.mena.admin_panel.resources.no_internet_content
 import net.thechance.mena.admin_panel.resources.no_internet_title
 import net.thechance.mena.admin_panel.resources.unknown_error_description
@@ -20,12 +19,5 @@ fun ErrorState.getErrorSnackBarMsg(): StringResource {
     return when(this){
         ErrorState.NoInternet -> Res.string.no_internet_content
         ErrorState.UnknownError -> Res.string.unknown_error_description
-    }
-}
-
-fun ErrorState.getInvalidCredentialsMsg(): StringResource? {
-    return when(this){
-        ErrorState.NoInternet -> null
-        ErrorState.UnknownError -> Res.string.error_invalid_credentials_msg
     }
 }

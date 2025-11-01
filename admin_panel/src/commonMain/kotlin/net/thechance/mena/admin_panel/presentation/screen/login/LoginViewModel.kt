@@ -2,7 +2,6 @@ package net.thechance.mena.admin_panel.presentation.screen.login
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -51,14 +50,7 @@ class LoginViewModel(
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
-        val errorMsg = errorState.getInvalidCredentialsMsg()?.let { stringProvider.getString(it) }
-        updateState {
-            it.copy(
-                isLoginBtnLoading = false,
-                usernameErrorMsg = errorMsg,
-                passwordErrorMsg = errorMsg,
-            )
-        }
+        updateState { it.copy(isLoginBtnLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
