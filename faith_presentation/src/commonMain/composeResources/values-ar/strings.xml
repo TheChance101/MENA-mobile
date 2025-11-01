@@ -102,7 +102,11 @@
     <string name="mosque_details">تفاصيل المسجد</string>
     <string name="view_on_map">أعرض على الخريطة</string>
     <string name="search_area">البحث في هذه المنطقة</string>
+    <string name="icon_location">أيقونة الموقع</string>
+    <string name="prayer_man_icon">أيقونة المصلي</string>
+    <string name="dropdown_icon">أيقونة القائمة المنسدلة</string>
+    <string name="next_prayer_time_icon">يقونة المصلي</string>
+    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="search_hint">ابحث...</string>
     <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
-
 </resources>
