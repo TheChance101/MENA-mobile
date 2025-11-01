@@ -37,7 +37,7 @@ class LoginViewModel(
     override fun onLoginButtonClicked() {
         tryToExecute(
             callee = {
-                loginUseCase.login(state.value.username, state.value.password)
+                loginUseCase.login(currentState.username, currentState.password)
             },
             onStart = { updateState { it.copy(isLoginButtonLoading = true) } },
             onSuccess = { onLoginSuccess() },

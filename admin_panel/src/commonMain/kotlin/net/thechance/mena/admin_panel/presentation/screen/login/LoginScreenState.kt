@@ -10,5 +10,5 @@ data class LoginScreenState(
     val snackBar: SnackBarState = SnackBarState()
 ){
     val isLoginButtonEnabled : Boolean
-        get() = password.isNotEmpty() && username.isNotEmpty()
+        get() = password.length >= 8 && username.isNotEmpty()
 }
