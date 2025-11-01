@@ -61,11 +61,11 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `should update password to true when onVisiblePasswordBtnClicked called first`() = runTest {
+    fun `should update isPasswordVisible to true when onPasswordVisibilityToggled called first`() = runTest {
         val expectedIsPasswordVisible = true
         viewModel = createViewModel()
 
-        viewModel.onVisiblePasswordBtnClicked()
+        viewModel.onPasswordVisibilityToggled()
 
         viewModel.state.test {
             val state = awaitItem()
@@ -78,12 +78,12 @@ class LoginViewModelTest {
         coEvery { loginUseCase.login(any(), any()) } returns Unit
         viewModel = createViewModel()
 
-        viewModel.onLoginBtnClicked()
+        viewModel.onLoginButtonClicked()
 
         viewModel.state.test {
             skipItems(1)
             val state = awaitItem()
-            assertEquals(true, state.isLoginBtnLoading)
+            assertEquals(true, state.isLoginButtonLoading)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -93,12 +93,12 @@ class LoginViewModelTest {
         coEvery { loginUseCase.login(any(), any()) } returns Unit
         viewModel = createViewModel()
 
-        viewModel.onLoginBtnClicked()
+        viewModel.onLoginButtonClicked()
 
         viewModel.state.test {
             skipItems(2)
             val state = awaitItem()
-            assertEquals(false, state.isLoginBtnLoading)
+            assertEquals(false, state.isLoginButtonLoading)
         }
     }
 
@@ -107,7 +107,7 @@ class LoginViewModelTest {
         coEvery { loginUseCase.login(any(), any()) } returns Unit
         viewModel = createViewModel()
 
-        viewModel.onLoginBtnClicked()
+        viewModel.onLoginButtonClicked()
 
         viewModel.uiEffect.test {
             val effect = awaitItem()
@@ -120,7 +120,7 @@ class LoginViewModelTest {
         coEvery { loginUseCase.login(any(), any()) } throws Exception()
         viewModel = createViewModel()
 
-        viewModel.onLoginBtnClicked()
+        viewModel.onLoginButtonClicked()
 
         viewModel.state.test {
             var stateItem = awaitItem()

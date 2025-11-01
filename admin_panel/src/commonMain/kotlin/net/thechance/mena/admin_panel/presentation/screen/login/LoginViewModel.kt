@@ -28,16 +28,16 @@ class LoginViewModel(
         updateState { it.copy(password = password) }
     }
 
-    override fun onVisiblePasswordBtnClicked() {
+    override fun onPasswordVisibilityToggled() {
         updateState { it.copy(isPasswordVisible = !state.value.isPasswordVisible) }
     }
 
-    override fun onLoginBtnClicked() {
+    override fun onLoginButtonClicked() {
         tryToExecute(
             callee = {
                 loginUseCase.login(state.value.username, state.value.password)
             },
-            onStart = { updateState { it.copy(isLoginBtnLoading = true) } },
+            onStart = { updateState { it.copy(isLoginButtonLoading = true) } },
             onSuccess = { onLoginSuccess() },
             onError = ::onLoginError,
             dispatcher = dispatcher
@@ -45,12 +45,12 @@ class LoginViewModel(
     }
 
     private fun onLoginSuccess() {
-        updateState { it.copy(isLoginBtnLoading = false) }
+        updateState { it.copy(isLoginButtonLoading = false) }
         sendEffect(LoginEffect.NavigateToAdminPanel)
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
-        updateState { it.copy(isLoginBtnLoading = false) }
+        updateState { it.copy(isLoginButtonLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),

@@ -6,9 +6,9 @@ data class LoginScreenState(
     val username: String = "",
     val password: String = "",
     val isPasswordVisible: Boolean = false,
-    val isLoginBtnLoading: Boolean = false,
+    val isLoginButtonLoading: Boolean = false,
     val snackBar: SnackBarState = SnackBarState()
 ){
-    val isLoginBtnEnabled : Boolean
+    val isLoginButtonEnabled : Boolean
         get() = password.isNotEmpty() && username.isNotEmpty()
 }

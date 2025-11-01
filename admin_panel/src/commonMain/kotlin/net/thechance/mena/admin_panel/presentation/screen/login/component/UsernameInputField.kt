@@ -23,7 +23,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun UsernameInputField(
     username: String,
-    onChangeValue: (String) -> Unit,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -39,7 +39,7 @@ internal fun UsernameInputField(
                 .heightIn(min = 48.dp),
             value = username,
             hint = "",
-            onValueChanged = { onChangeValue(it) },
+            onValueChanged = { onValueChange(it) },
             leadingIcon = painterResource(Res.drawable.ic_user),
             showTrailingDivider = false,
             visualTransformation = if (username.isNotEmpty()) AtPrefixTransformation

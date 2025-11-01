@@ -44,23 +44,23 @@ private fun LoginScreenContent(
         Column(modifier = Modifier.padding(top = 40.dp)) {
             UsernameInputField(
                 username = state.username,
-                onChangeValue = interactionListener::onUsernameChanged
+                onValueChange = interactionListener::onUsernameChanged
             )
             PasswordInputField(
                 modifier = Modifier.padding(top = 24.dp, bottom = 40.dp),
                 password = state.password,
                 isPasswordVisible = state.isPasswordVisible,
-                onVisiblePasswordBtnClicked = interactionListener::onVisiblePasswordBtnClicked,
-                onChangeValue = interactionListener::onPasswordChanged
+                onPasswordVisibilityToggled = interactionListener::onPasswordVisibilityToggled,
+                onValueChange = interactionListener::onPasswordChanged
             )
             PrimaryButton(
                 modifier = Modifier
                     .width(70.dp)
                     .align(Alignment.End),
                 text = stringResource(Res.string.login),
-                onClick = interactionListener::onLoginBtnClicked,
-                isLoading = state.isLoginBtnLoading,
-                isEnabled = state.isLoginBtnEnabled,
+                onClick = interactionListener::onLoginButtonClicked,
+                isLoading = state.isLoginButtonLoading,
+                isEnabled = state.isLoginButtonEnabled,
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
             )
         }

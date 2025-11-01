@@ -26,8 +26,8 @@ import org.jetbrains.compose.resources.stringResource
 internal fun PasswordInputField(
     password: String,
     isPasswordVisible: Boolean,
-    onVisiblePasswordBtnClicked: () -> Unit,
-    onChangeValue: (String) -> Unit,
+    onPasswordVisibilityToggled: () -> Unit,
+    onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -43,7 +43,7 @@ internal fun PasswordInputField(
                 .heightIn(min = 48.dp),
             value = password,
             hint = "",
-            onValueChanged = { onChangeValue(it) },
+            onValueChanged = { onValueChange(it) },
             leadingIcon = painterResource(Res.drawable.ic_lock),
             showTrailingDivider = false,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -53,7 +53,7 @@ internal fun PasswordInputField(
                 if (isPasswordVisible) Res.drawable.ic_open_eye
                 else Res.drawable.ic_close_eye
             ),
-            onTrailingIconClick = onVisiblePasswordBtnClicked
+            onTrailingIconClick = onPasswordVisibilityToggled
         )
     }
 }
