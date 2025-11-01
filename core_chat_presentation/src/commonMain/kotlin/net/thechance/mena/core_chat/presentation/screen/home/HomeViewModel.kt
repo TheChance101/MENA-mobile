@@ -15,6 +15,7 @@ import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -57,6 +58,7 @@ class HomeViewModel(
         onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
+        observeDeleteChat()
     }
 
     private fun listenToMarkAsReadEvent() {
@@ -64,6 +66,22 @@ class HomeViewModel(
             collect = { messageRepository.observeReadMessages() },
             onCollect = ::onCollectMarkAsReadEvent,
         )
+    }
+
+    private fun observeDeleteChat() {
+        tryToCollect(
+            collect = { messageRepository.observeDeleteChat() },
+            onCollect = ::onCollectDeleteChatEvent
+        )
+    }
+
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
+        if (deleteChatEvent == null) return
+        updateState {
+            it.copy(
+                chats = it.chats.filterNot { chat -> chat.id == deleteChatEvent.chatId }
+            )
+        }
     }
 
     private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {

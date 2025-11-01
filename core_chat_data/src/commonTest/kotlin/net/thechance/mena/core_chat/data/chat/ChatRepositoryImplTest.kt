@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.data.createChatRepository
 import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.defaultChatResponse
 import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
+import net.thechance.mena.core_chat.data.defaultDeleteChatResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
@@ -27,6 +28,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -207,6 +209,59 @@ class ChatRepositoryImplTest {
 
         assertFailsWith<NotFoundException> {
             repository.getChatSummaryById(testChatId)
+        }
+    }
+
+    @Test
+    fun `should delete chat when deleteChatById is successful`() = runTest {
+        val testChatId = Uuid.random()
+
+        httpClient = createHttpClient(
+            deleteChatResponse = { defaultDeleteChatResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+        )
+
+        repository.deleteChatById(testChatId)
+    }
+
+    @Test
+    fun `should throw NotFoundException when deleteChatById returns 404`() = runTest {
+        val testChatId = Uuid.random()
+
+        httpClient = createHttpClient(
+            deleteChatResponse = {
+                respond("", HttpStatusCode.NotFound, jsonHeaders)
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.deleteChatById(testChatId)
+        }
+    }
+
+    @Test
+    fun `should throw UnknownException when deleteChatById returns server error`() = runTest {
+        val testChatId = Uuid.random()
+
+        httpClient = createHttpClient(
+            deleteChatResponse = {
+                respond("", HttpStatusCode.InternalServerError, jsonHeaders)
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+        )
+
+        assertFailsWith<UnknownException> {
+            repository.deleteChatById(testChatId)
         }
     }
 

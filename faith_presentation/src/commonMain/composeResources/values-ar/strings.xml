@@ -97,8 +97,12 @@
     <string name="mosque_image_description">أيقونة المسجد</string>
     <string name="device_angle_to_qiblah">زاوية الجهاز إلى القبله</string>
     <string name="qibla_direction">اتجاه القبله</string>
+    <string name="surah_ayah_format">%1$s: %2$d آية</string>
+    <string name="cancel_icon">أيقونة الإلغاء</string>
     <string name="mosque_details">تفاصيل المسجد</string>
     <string name="view_on_map">أعرض على الخريطة</string>
     <string name="search_area">البحث في هذه المنطقة</string>
+    <string name="search_hint">ابحث...</string>
+    <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
 
 </resources>
