@@ -21,7 +21,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ManageDukanProductsList(
     products: LazyPagingItems<ProductUiState>,
     modifier: Modifier = Modifier,
-    onEditProductClick: (ProductUiState) -> Unit = {}
+    onEditProductClick: (ProductUiState) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
