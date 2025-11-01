@@ -27,7 +27,6 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.skeletonLoading
-import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
