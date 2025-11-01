@@ -97,5 +97,10 @@
     <string name="favorite_icon">الأيقونة المفضلة</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
-
+    <string name="manage_product">إدارة المنتج</string>
+    <string name="product_name_is_already_exist">اسم المنتج موجود بالفعل، جرب اسمًا آخر.</string>
+    <string name="save_product_success">تم حفظ المنتج بنجاح.</string>
+    <string name="error_update_product">فشل في تحديث المنتج. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_product_not_found">المنتج غير موجود.</string>
+    <string name="error_unauthorized_access">غير مصرح لك بتعديل هذا المنتج.</string>
 </resources>
