@@ -29,15 +29,18 @@ internal class NearbyMosquesViewModel() :
 //        TODO("Not yet implemented")
     }
 
-    override fun onViewMosqueOnMapClick(latitude: Double, longitude: Double) {
+    override fun onViewMosqueOnMapClick(coordinate: Coordinate) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onSearchByCoordinatesClick(latitude: Double, longitude: Double) {
+    override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
 //        TODO("Not yet implemented")
     }
 
-    override fun mapPositionChanged() = handleSearchButtonVisibilityOnInteraction()
+    override fun mapPositionChanged(coordinate: Coordinate) {
+        updateCenterOfMap(coordinate = coordinate)
+        handleSearchButtonVisibilityOnInteraction()
+    }
 
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
@@ -50,6 +53,12 @@ internal class NearbyMosquesViewModel() :
         searchButtonInactivityJob = viewModelScope.launch {
             delay(500)
             updateState { it.copy(isSearchButtonVisible = true) }
+        }
+    }
+
+    private fun updateCenterOfMap(coordinate: Coordinate) {
+        updateState {
+            it.copy(centerOfMap = coordinate)
         }
     }
 }

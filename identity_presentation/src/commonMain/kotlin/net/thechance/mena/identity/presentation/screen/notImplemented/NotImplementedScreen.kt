@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.register
+package net.thechance.mena.identity.presentation.screen.notImplemented
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +14,8 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-class RegisterScreen :
-    BaseScreen<RegisterScreenModel, RegisterScreenUIState, RegisterScreenUIEffect, RegisterScreenInteractionListener>() {
+class NotImplementedScreen :
+    BaseScreen<NotImplementedScreenViewModel, NotImplementedScreenUIState, NotImplementedScreenUIEffect, NotImplementedScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -23,11 +23,12 @@ class RegisterScreen :
 
     @Composable
     override fun OnRender(
-        state: RegisterScreenUIState, listener: RegisterScreenInteractionListener
+        state: NotImplementedScreenUIState,
+        listener: NotImplementedScreenInteractionListener
     ) {
         Box(
-            Modifier.fillMaxSize()
-        , contentAlignment = Alignment.Center
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
             NegativeButton(
                 text = stringResource(Res.string.back),
@@ -37,19 +38,24 @@ class RegisterScreen :
     }
 
     override fun onEffect(
-        effect: RegisterScreenUIEffect, navigator: Navigator
+        effect: NotImplementedScreenUIEffect,
+        navigator: Navigator
     ) {
         when (effect) {
-            RegisterScreenUIEffect.NavigateBack -> navigator.pop()
+            NotImplementedScreenUIEffect.NavigateBack -> navigator.pop()
         }
     }
 }
 
-
 @Preview
 @Composable
-fun PreviewRegisterScreen() {
+fun PreviewNotImplementedScreen() {
     MenaTheme {
-
+        NotImplementedScreen().OnRender(
+            state = NotImplementedScreenUIState(),
+            listener = object : NotImplementedScreenInteractionListener {
+                override fun onBackButtonClicked() {}
+            }
+        )
     }
 }
