@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -116,13 +117,13 @@ private fun UserItemRow(
         )
         UserStatesButton(
             isActive = user.userStates == User.UserStates.ACTIVE,
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier.weight(0.8f).wrapContentWidth()
         )
 
         UserStatesToggleButton(
             isActive = user.userStates == User.UserStates.ACTIVE,
             onClick = onStatusClick,
-            modifier = Modifier.weight(0.8f)
+            modifier = Modifier.weight(0.8f).wrapContentWidth()
         )
     }
 }
