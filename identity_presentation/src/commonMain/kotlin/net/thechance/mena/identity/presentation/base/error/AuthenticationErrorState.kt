@@ -12,6 +12,7 @@ sealed interface AuthenticationErrorState {
     data object OTPExpired : AuthenticationErrorState
     
     data object NoNetwork : AuthenticationErrorState
-    
+
+    data object InvalidRequest :AuthenticationErrorState
     data class SomethingWentWrong(val message: String?) : AuthenticationErrorState
 }
