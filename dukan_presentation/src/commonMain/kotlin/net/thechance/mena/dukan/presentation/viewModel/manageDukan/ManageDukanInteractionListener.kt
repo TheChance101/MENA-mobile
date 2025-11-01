@@ -12,6 +12,7 @@ interface ManageDukanInteractionListener {
     fun onDeleteConfirmed(shelfId: String)
     fun onAddProductClicked()
     fun onProductClicked(product: ManageDukanUiState.ProductUiState)
+    fun onEditProductClicked(product: ManageDukanUiState.ProductUiState)
     fun onEditShelfClicked()
     fun onAddShelfClicked()
     fun isShelfSelected(shelf: ManageDukanUiState.ShelfUiState): Boolean
