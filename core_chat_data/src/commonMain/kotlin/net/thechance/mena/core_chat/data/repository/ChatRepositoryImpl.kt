@@ -40,7 +40,7 @@ class ChatRepositoryImpl(
         return tryNetworkCall<ChatSummaryDto>(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
-            client.get("$CHAT_SUMMARY_ENDPOINT/$chatId")
+            client.get("/chat/$chatId/summary")
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
