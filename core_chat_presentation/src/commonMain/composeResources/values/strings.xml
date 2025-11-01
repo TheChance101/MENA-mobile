@@ -50,4 +50,5 @@
     <string name="could_not_delete_chat">Could not delete chat</string>
     <string name="chat_deleted_successfully">Chat deleted successfully</string>
 
+    <string name="could_not_get_balance">Could not get current balance</string>
 </resources>

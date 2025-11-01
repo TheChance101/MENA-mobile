@@ -54,12 +54,6 @@ fun TextMessageLayout(
         if (message.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
-    val messagePaddingStart = if (message.isMine)
-        Theme.spacing._24
-    else
-        Theme.spacing._8
-
-    val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
     val maxRadius = Theme.radius.md
 
     val messageShape = if (message.isMine && isMarkedLastInSeries)
@@ -79,82 +73,80 @@ fun TextMessageLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (message.isMine)
-        Alignment.Start
-    else
-        Alignment.End
+    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
-    val verticalPadding = Theme.spacing._8
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-        horizontalAlignment = messageAlignment
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = if (message.isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+            horizontalAlignment = messageAlignment
         ) {
-            if (!message.isMine) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isMarkedLastInSeries) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxSize(),
-                            model = chatAvatarUrl,
-                            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                            error = painterResource(Res.drawable.ic_profile_placeholder),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Contact photo",
-                        )
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            ) {
+                if (!message.isMine) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isMarkedLastInSeries) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = chatAvatarUrl,
+                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                                error = painterResource(Res.drawable.ic_profile_placeholder),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "Contact photo",
+                            )
+                        }
                     }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
-                    .clip(messageShape)
-                    .noHoverClickable(onClick = onMessageClick)
-                    .background(color = messageBackground, shape = messageShape)
-                    .padding(
-                        horizontal = verticalPadding,
-                        vertical = Theme.spacing._4
+
+                Box(
+                    modifier = Modifier
+                        .clip(messageShape)
+                        .noHoverClickable(onClick = onMessageClick)
+                        .background(color = messageBackground, shape = messageShape)
+                        .padding(
+                            horizontal = Theme.spacing._8,
+                            vertical = Theme.spacing._4
+                        )
+                ) {
+                    Text(
+                        text = message.content.text,
+                        style = Theme.typography.body.small,
+                        color = Theme.colorScheme.shadeSecondary
                     )
-            ) {
-                Text(
-                    text = message.content.text,
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary
-                )
+                }
             }
 
-        }
-        AnimatedVisibility(
-            visible = showMessageInfo,
-            modifier = Modifier.align(messageInfoAlignment)
-        ) {
-            MessageInfo(
-                messageTime = message.sendTime,
-                messageStatus = message.status,
-                messageIsMine = message.isMine,
-                onFailClick = onFailClick,
-                modifier = Modifier
-                    .align(messageInfoAlignment)
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
-            )
+            AnimatedVisibility(
+                visible = showMessageInfo,
+                modifier = Modifier.align(messageInfoAlignment)
+            ) {
+                MessageInfo(
+                    messageTime = message.sendTime,
+                    messageStatus = message.status,
+                    messageIsMine = message.isMine,
+                    onFailClick = onFailClick,
+                )
+            }
         }
     }
 }
 
+@Preview
 @Composable
-@Preview()
-private fun PreviewBaseMessageLayout() {
+private fun Preview() {
     MenaTheme {
-        Box(
+        Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextMessageLayout(
@@ -164,6 +156,19 @@ private fun PreviewBaseMessageLayout() {
                     sendTime = LocalDateTime.now(),
                     status = MessageStatus.READ,
                     isMine = false,
+                    content = MessageContent.Text("Good Morning!")
+                ),
+                showMessageInfo = true,
+                isMarkedLastInSeries = true,
+            )
+
+            TextMessageLayout(
+                message = MessageUiState(
+                    Uuid.random(),
+                    Uuid.random(),
+                    sendTime = LocalDateTime.now(),
+                    status = MessageStatus.READ,
+                    isMine = true,
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,

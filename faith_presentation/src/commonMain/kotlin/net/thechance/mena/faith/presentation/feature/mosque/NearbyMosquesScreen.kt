@@ -48,7 +48,10 @@ private fun Content(
     listener: NearbyMosquesInteractionListener
 ) {
     val initialCameraPosition = CameraPosition(
-        target = Position(longitude = 14.7749, latitude = -5.4194),
+        target = Position(
+            longitude = uiState.centerOfMap?.longitude ?: 0.0,
+            latitude = uiState.centerOfMap?.latitude ?: 0.0
+        ),
         zoom = 14.0
     )
     val cameraState = rememberCameraState(firstPosition = initialCameraPosition)
@@ -56,7 +59,12 @@ private fun Content(
     LaunchedEffect(cameraState) {
         snapshotFlow { cameraState.position }
             .collect {
-                listener.mapPositionChanged()
+                listener.mapPositionChanged(
+                    coordinate = Coordinate(
+                        latitude = cameraState.position.target.latitude,
+                        longitude = cameraState.position.target.longitude
+                    )
+                )
             }
     }
 
@@ -74,8 +82,10 @@ private fun Content(
                 onClick = {
                     val target = cameraState.position.target
                     listener.onSearchByCoordinatesClick(
-                        latitude = target.latitude,
-                        longitude = target.longitude
+                        coordinate = Coordinate(
+                            latitude = target.latitude,
+                            longitude = target.longitude
+                        )
                     )
                 },
                 modifier = Modifier
@@ -116,9 +126,9 @@ private fun NearbyMosquesScreenPreview() {
             override fun onAddMosqueClick() {}
             override fun onCurrentUserLocationClick() {}
             override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-            override fun onViewMosqueOnMapClick(latitude: Double, longitude: Double) {}
-            override fun onSearchByCoordinatesClick(latitude: Double, longitude: Double) {}
-            override fun mapPositionChanged() {}
+            override fun onViewMosqueOnMapClick(coordinate: Coordinate) {}
+            override fun onSearchByCoordinatesClick(coordinate: Coordinate) {}
+            override fun mapPositionChanged(coordinate: Coordinate) {}
             override fun onQueryChange(query: String) {}
         }
     )

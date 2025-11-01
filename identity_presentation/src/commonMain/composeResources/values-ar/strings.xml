@@ -22,6 +22,17 @@
     <string name="tunisia">تونس</string>
     <string name="uae">الإمارات العربية المتحدة</string>
     <string name="yemen">اليمن</string>
+    <string name="register_prompt">يرجى إدخال رقم هاتفك لإرسال رمز التحقق</string>
+    <string name="register_prompt_description">يرجى إدخال رقم هاتفك لإرسال رمز التحقق (OTP) إليك</string>
+    <string name="you_are_new">أنت جديد؟</string>
+    <string name="register_prompt_title">إنشاء حساب</string>
+    <string name="register_otp_prompt">يرجى إدخال رمز التحقق (OTP) الذي تم إرساله إلى رقم هاتفك وينتهي بـ **%1$s</string>
+    <string name="create_password">تعيين كلمة المرور</string>
+    <string name="create_password_title">إكمال ملفك الشخصي</string>
+    <string name="create_password_description">تعيين كلمة المرور</string>
+    <string name="register">التالي</string>
+    <string name="you_already_have_account">لديك حساب بالفعل؟</string>
+    <string name="validation_code">رمز التحقق</string>
     <string name="reset_password">إعادة تعيين كلمة المرور</string>
     <string name="new_password_title">كلمة المرور الجديدة</string>
     <string name="reset_password_description">يرجى إدخال كلمة المرور الجديدة والتأكد من تذكرها في المرة القادمة</string>
@@ -103,6 +114,7 @@
     <string name="error_unauthorized">ليس لديك الصلاحية للوصول إلى التطبيق.</string>
     <string name="error_invalid_otp">رمز التحقق (OTP) غير صحيح.</string>
     <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
+    <string name="error_phone_number_already_exists">رقم الهاتف مسجل بالفعل.</string>
 
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
@@ -116,5 +128,6 @@
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
     <string name="error_last_name_required">اسم العائلة مطلوب</string>
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
+    <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
 </resources>
