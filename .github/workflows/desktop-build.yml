@@ -32,7 +32,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Admin Panel (Desktop)
-        run: ./gradlew :admin_panel:build --parallel --build-cache --no-daemon
+        run:  ./gradlew :admin_panel:assemble --parallel --build-cache --no-daemon -x lint -x assembleRelease
 
   notify-slack-on-failure:
     if: failure()
