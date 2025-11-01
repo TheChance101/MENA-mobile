@@ -19,6 +19,10 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.delete_product_description
+import mena.dukan_presentation.generated.resources.delete_product_success
+import mena.dukan_presentation.generated.resources.delete_product_title
+import mena.dukan_presentation.generated.resources.error_delete_product
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.error_image_max_limit
 import mena.dukan_presentation.generated.resources.error_image_size
@@ -28,7 +32,6 @@ import mena.dukan_presentation.generated.resources.error_unauthorized_access
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.product_name_is_already_exist
-import mena.dukan_presentation.generated.resources.save_product_success
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
@@ -45,6 +48,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
@@ -66,8 +70,15 @@ class EditProductViewModelTest {
         everySuspend { shelfRepository.getMyDukanShelves() } returns fakeShelves()
         everySuspend { productRepository.getProductById(any()) } returns fakeProduct()
         everySuspend { productRepository.updateProduct(any(), any()) } returns Unit
-        everySuspend { productRepository.uploadProductImages(any(), any(), any()) } returns listOf("image-url")
+        everySuspend {
+            productRepository.uploadProductImages(
+                any(),
+                any(),
+                any()
+            )
+        } returns listOf("image-url")
         everySuspend { productRepository.deleteProductImages(any(), any()) } returns Unit
+        everySuspend { productRepository.deleteProduct(any()) } returns Unit
 
         val savedStateHandle = SavedStateHandle(
             mapOf("productId" to productId)
@@ -157,11 +168,111 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `onDeleteProductClicked SHOULD emit NavigateToManageDukanProducts`() = scope.runTest {
+    fun `onDeleteProductClicked SHOULD show delete dialog`() = scope.runTest {
+        viewModel.onDeleteProductClicked()
+        val state = viewModel.state.value
+        assertNotNull(state.deleteDialog)
+        assertEquals(Res.string.delete_product_title.key, state.deleteDialog?.title?.key)
+        assertEquals(
+            Res.string.delete_product_description.key,
+            state.deleteDialog?.description?.key
+        )
+    }
+
+    @Test
+    fun `onDismissDeleteDialog SHOULD hide delete dialog`() = scope.runTest {
+        viewModel.onDeleteProductClicked()
+        assertNotNull(viewModel.state.value.deleteDialog)
+
+        viewModel.onDismissDeleteDialog()
+        assertNull(viewModel.state.value.deleteDialog)
+    }
+
+    @Test
+    fun `onDeleteConfirmed SHOULD delete product and navigate on success`() = scope.runTest {
+        viewModel.onDeleteProductClicked()
+
         viewModel.effect.test {
-            viewModel.onDeleteProductClicked()
+            viewModel.onDeleteConfirmed()
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.delete_product_success.key,
+                state.snackBarUiState?.message?.key
+            )
+
             assertEquals(EditProductEffect.NavigateToManageDukanProducts, awaitItem())
         }
+    }
+
+    @Test
+    fun `onDeleteConfirmed - no internet shows error`() = scope.runTest {
+        everySuspend { productRepository.deleteProduct(any()) } throws NoInternetException()
+
+        viewModel.onDeleteProductClicked()
+        viewModel.onDeleteConfirmed()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.no_internet_connection.key,
+            state.snackBarUiState?.message?.key
+        )
+        assertNull(state.deleteDialog)
+    }
+
+    @Test
+    fun `onDeleteConfirmed - product not found shows error`() = scope.runTest {
+        everySuspend { productRepository.deleteProduct(any()) } throws NoSuchItemException()
+
+        viewModel.onDeleteProductClicked()
+        viewModel.onDeleteConfirmed()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_product_not_found.key,
+            state.snackBarUiState?.message?.key
+        )
+        assertNull(state.deleteDialog)
+    }
+
+    @Test
+    fun `onDeleteConfirmed - unauthorized shows error`() = scope.runTest {
+        everySuspend { productRepository.deleteProduct(any()) } throws UnAuthorizedException()
+
+        viewModel.onDeleteProductClicked()
+        viewModel.onDeleteConfirmed()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_unauthorized_access.key,
+            state.snackBarUiState?.message?.key
+        )
+        assertNull(state.deleteDialog)
+    }
+
+    @Test
+    fun `onDeleteConfirmed - general error shows error message`() = scope.runTest {
+        everySuspend { productRepository.deleteProduct(any()) } throws RuntimeException("Unknown error")
+
+        viewModel.onDeleteProductClicked()
+        viewModel.onDeleteConfirmed()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_delete_product.key,
+            state.snackBarUiState?.message?.key
+        )
+        assertNull(state.deleteDialog)
     }
 
     @Test
@@ -388,7 +499,12 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - duplicate name shows error`() = scope.runTest {
-        everySuspend { productRepository.updateProduct(any(), any()) } throws DuplicateNameException()
+        everySuspend {
+            productRepository.updateProduct(
+                any(),
+                any()
+            )
+        } throws DuplicateNameException()
         everySuspend { productRepository.deleteProductImages(any(), any()) } returns Unit
 
         val firstShelf = fakeShelves().first()
@@ -401,7 +517,7 @@ class EditProductViewModelTest {
             copy(
                 productName = "Duplicate Name",
                 selectedShelf = selectedShelfUi,
-                shelves = shelves.map { 
+                shelves = shelves.map {
                     if (it.id == selectedShelfUi.id) selectedShelfUi else it
                 },
                 price = "50.0",
