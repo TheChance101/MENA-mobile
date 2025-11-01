@@ -80,6 +80,13 @@
     <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
     <string name="add_location_button">إضافة موقع</string>
     <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+
+    <string name="title_pick_profile_picture">اختر صورة الملف الشخصي</string>
+    <string name="title_complete_your_profile">أكمل ملفك الشخصي</string>
+    <string name="desc_upload_profile_image">حمّل صورة للملف الشخصي ليتعرّف عليك الآخرون</string>
+    <string name="click_to_upload">اضغط للتحميل</string>
+    <string name="button_upload">تحميل</string>
+    <string name="button_skip_for_now">تخطَّ الآن</string>
     <string name="pick_location_title">اختر منطقة</string>
 
 

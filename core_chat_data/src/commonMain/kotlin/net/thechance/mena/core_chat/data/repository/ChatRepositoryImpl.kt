@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.data.repository
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
@@ -14,6 +15,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -55,6 +57,15 @@ class ChatRepositoryImpl(
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
+    override suspend fun deleteChatById(chatId: Uuid) {
+        tryNetworkCall<Unit>(
+            bodyType = typeInfo<Unit>(),
+            defaultException = OperationFailedException("failed to delete message from data")
+        ) {
+            client.delete("$DELETE_CHAT_ENDPOINT/$chatId")
+        }
+    }
+
     override suspend fun getChatById(chatId: Uuid): Chat {
         return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
             client.get("$CHAT_ENDPOINT/$chatId")
@@ -72,5 +83,6 @@ class ChatRepositoryImpl(
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val CHAT_ENDPOINT = "/chat"
         const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
+        const val DELETE_CHAT_ENDPOINT = "/chat/delete"
     }
 }

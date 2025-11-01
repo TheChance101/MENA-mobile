@@ -36,7 +36,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -154,6 +153,11 @@ fun MockRequestHandleScope.defaultUploadImagesResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultDeleteChatResponse() = respond(
+    content = "",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
 
 fun createRepository(
     contactsProvider: ContactsProvider,
@@ -177,13 +181,15 @@ fun createChatRepository(
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): ChatRepositoryImpl {
     val defaultClient = createHttpClient(
         chatHistoryResponse = chatHistoryResponse,
         chatResponse = chatResponse,
         chatSummaryResponse = chatSummaryResponse,
-        chatByIdResponse = chatByIdResponse
+        chatByIdResponse = chatByIdResponse,
+        deleteChatResponse = deleteChatResponse
     )
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
@@ -214,7 +220,8 @@ fun createHttpClient(
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
@@ -227,6 +234,9 @@ fun createHttpClient(
 
             path == CHAT_HISTORY_ENDPOINT -> chatHistoryResponse?.invoke(this)
                 ?: defaultChatHistoryResponse()
+
+            path.startsWith(DELETE_CHAT_ENDPOINT) ->
+                deleteChatResponse?.invoke(this) ?: defaultDeleteChatResponse()
 
             request.url.encodedPath == CHAT_SUMMARY_ENDPOINT ->
                 chatSummaryResponse?.invoke(this) ?: defaultChatSummaryResponse()
@@ -271,3 +281,4 @@ private const val USER_ENDPOINT = "/chat/user"
 private const val CHAT_HISTORY_ENDPOINT = "/chat/history"
 private const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
+private const val DELETE_CHAT_ENDPOINT = "/chat/delete"

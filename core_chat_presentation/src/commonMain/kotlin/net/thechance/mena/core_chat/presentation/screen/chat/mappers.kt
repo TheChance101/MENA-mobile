@@ -9,7 +9,6 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
-import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -51,7 +50,7 @@ fun List<MessageUiState>.markLastInSeries(): List<MessageUiState> {
     }
 }
 
-fun List<MessageUiState>.toChatList(): List<ChatListItem> {
+fun List<MessageUiState>.toChatList(shouldGroupMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
     if (isEmpty()) return emptyList()
 
     val today = LocalDateTime.now().date
@@ -61,7 +60,7 @@ fun List<MessageUiState>.toChatList(): List<ChatListItem> {
         .groupBy { it.sendTime.date }
         .flatMap { (date, messages) ->
             val markedMessages = messages.markLastInGroup()
-            val groupedMessages = markedMessages.toGroupedMessagesChatList()
+            val groupedMessages = markedMessages.toGroupedMessagesChatList(shouldGroupMessages)
 
             buildList {
                 add(ChatListItem.DateSeparator(date.toLabel(today, yesterday)))
@@ -72,8 +71,7 @@ fun List<MessageUiState>.toChatList(): List<ChatListItem> {
 }
 
 
-
-fun List<MessageUiState>.toGroupedMessagesChatList(): List<ChatListItem> {
+fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
     val grouped = mutableListOf<ChatListItem>()
     var tempImages = mutableListOf<MessageUiState>()
 
@@ -87,7 +85,10 @@ fun List<MessageUiState>.toGroupedMessagesChatList(): List<ChatListItem> {
     for (msg in this) {
         if (msg.content is MessageContent.Image) {
             val last = tempImages.lastOrNull()
-            if (last != null && last.isMine == msg.isMine && last.status == msg.status && msg.status != MessageStatus.FAILED && msg.status != MessageStatus.LOADING) {
+            if (last != null && last.isMine == msg.isMine && last.status == msg.status && shouldGroupMessages(
+                    msg
+                )
+            ) {
                 tempImages.add(msg)
             } else {
                 groupAndClear()
@@ -131,6 +132,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
 }
 
 
-fun List<MessageUiState>.buildListItems(): List<ChatListItem> {
-    return sortedByDescending { it.sendTime }.markLastInSeries().toChatList()
+fun List<MessageUiState>.buildListItems(shouldGroupImageMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
+    return sortedByDescending { it.sendTime }.markLastInSeries()
+        .toChatList(shouldGroupImageMessages)
 }
