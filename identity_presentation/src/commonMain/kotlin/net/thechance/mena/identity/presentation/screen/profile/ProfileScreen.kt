@@ -35,13 +35,13 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareSheet
 import org.jetbrains.compose.resources.painterResource
@@ -64,49 +64,46 @@ class ProfileScreen : BaseScreen<
     ) {
 
         AnimatedVisibility(state.showShareBottomSheet) {
-                    ShareSheet(
-                        title = "MENA app-download app",
+            ShareSheet(
+                title = "MENA app-download app",
                 url = "https://MENA_app.com",
                 onDismiss = listener::onDismissBottomSheet
             )
         }
 
         Scaffold(overlays = {
-                    dialog(state.showLanguageDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissLanguageDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showThemeDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissThemeDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showShareProfileDialog) {
-                        ShareQrCode(
-                            showDialog = it,
-                            qrCodePainter = rememberAsyncImagePainter(
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                            ),
-                            onDismiss = listener::onDismissShareDialog,
-                            fullName = state.fullName,
-                            onShareProfile = {},
-                            onClipboardContent = {
-
-                                listener.onDismissShareDialog()
-                            },
-                            onDownload = {},
-                        )
-                    }
-                }) {
+            dialog(state.showLanguageDialog) {
+                Dialog(
+                    isVisible = it,
+                    title = "HI",
+                    message = "Not Yet Implemented",
+                    onDismiss = listener::onDismissLanguageDialog,
+                    actionButtons = {}
+                )
+            }
+            dialog(state.showThemeDialog) {
+                Dialog(
+                    isVisible = it,
+                    title = "HI",
+                    message = "Not Yet Implemented",
+                    onDismiss = listener::onDismissThemeDialog,
+                    actionButtons = {}
+                )
+            }
+            dialog(state.showShareProfileDialog) {
+                ShareQrCode(
+                    showDialog = it,
+                    fullName = state.fullName,
+                    urlString = "https:mena.dev?uresname=hassan",
+                    qrCodePainter = rememberAsyncImagePainter(
+                        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
+                    ),
+                    onDismiss = listener::onDismissShareDialog,
+                    onShareProfile = {},
+                    onDownload = {}
+                )
+            }
+        }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

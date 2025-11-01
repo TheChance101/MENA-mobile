@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_icon_content_description
 import mena.identity_presentation.generated.resources.ic_download
@@ -44,13 +47,17 @@ import sv.lib.squircleshape.SquircleShape
 fun ScaffoldScope.ShareQrCode(
     showDialog: Boolean,
     fullName: String,
+    urlString: String,
     qrCodePainter: Painter,
     onDismiss: () -> Unit,
     onShareProfile: () -> Unit,
-    onClipboardContent: () -> Unit,
     onDownload: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+
     BasicDialog(
         onDismiss = onDismiss,
         onCancelClick = onDismiss,
@@ -104,7 +111,12 @@ fun ScaffoldScope.ShareQrCode(
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_link),
                     contentDescription = stringResource(Res.string.link_icon_content_description),
-                    onClick = onClipboardContent
+                    onClick = {
+                        scope.launch {
+                            clipboard.setClipEntry(clipEntryOf(urlString))
+                        }
+                        onDismiss()
+                    }
                 )
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_download),
@@ -153,12 +165,12 @@ private fun ShareProfileQrCodePreview() {
             overlays = {
                 dialog(true) {
                     ShareQrCode(
-                        fullName = "Hassan Nabil",
-                        qrCodePainter = painterResource(Res.drawable.male),
                         showDialog = it,
+                        fullName = "Hassan Nabil",
+                        urlString = "",
+                        qrCodePainter = painterResource(Res.drawable.male),
                         onDismiss = {},
                         onShareProfile = {},
-                        onClipboardContent = { },
                         onDownload = { },
                     )
                 }
