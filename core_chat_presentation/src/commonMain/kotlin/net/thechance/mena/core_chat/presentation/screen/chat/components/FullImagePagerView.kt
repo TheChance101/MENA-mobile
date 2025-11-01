@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,7 @@ fun FullImagePagerView(
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
+    onImageLongClick : (message: MessageUiState) -> Unit,
     onDownloadClick: (String) -> Unit,
 ) {
     if (messages.isEmpty() || messages.first().content !is MessageContent.Image) return onCloseClick()
@@ -65,8 +67,13 @@ fun FullImagePagerView(
         initialPage = initialPage,
         pageCount = { messages.size }
     )
+    val message = messages[pagerState.currentPage]
     Box(
-        modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
+        modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface).
+        combinedClickable (
+            onClick = {},
+            onLongClick = { onImageLongClick(message) }
+        )
     ) {
         if (messages[pagerState.currentPage].content !is MessageContent.Image) return onCloseClick()
 
