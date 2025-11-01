@@ -26,5 +26,6 @@ class DukanResponseDtoMapperTest {
         assertEquals(id, result.id)
         assertEquals("Dukan Name", result.name)
         assertEquals("https://example.com/image.png", result.imageUrl)
+        assertEquals(false, result.isFavorite)
     }
 }

@@ -204,5 +204,4 @@ class DukanManagementRepositoryTest {
         // Assert
         assertEquals(30.0444, details.coordinates.latitude)
     }
-
 }
