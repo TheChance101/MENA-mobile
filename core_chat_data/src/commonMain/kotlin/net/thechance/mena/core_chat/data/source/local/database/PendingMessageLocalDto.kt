@@ -3,9 +3,10 @@ package net.thechance.mena.core_chat.data.source.local.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 
-@Entity(tableName = "messages")
-data class MessageLocalDto(
+@Entity(tableName = "pending_messages")
+data class PendingMessageLocalDto(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "sender_id")
     val senderId: String,
@@ -19,6 +20,4 @@ data class MessageLocalDto(
     val chatId: String,
     @ColumnInfo(name = "status")
     val status: MessageStatus,
-) {
-    enum class MessageStatus { LOADING, SENT, READ, FAILED }
-}
+)

@@ -33,7 +33,7 @@ internal val repositoryModule = module {
         MessageRepositoryImpl(
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
-            messageDao = get(),
+            pendingMessageDao = get(),
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON))
         )

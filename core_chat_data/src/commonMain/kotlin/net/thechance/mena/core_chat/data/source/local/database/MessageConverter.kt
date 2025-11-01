@@ -1,16 +1,17 @@
 package net.thechance.mena.core_chat.data.source.local.database
 
 import androidx.room.TypeConverter
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import kotlin.io.encoding.Base64
 
 class MessageConverter {
     @TypeConverter
-    fun fromMessageStatus(status: MessageLocalDto.MessageStatus): String = status.name
+    fun fromMessageStatus(status: MessageStatus): String = status.name
 
     @TypeConverter
-    fun toMessageStatus(status: String): MessageLocalDto.MessageStatus {
-        return runCatching { MessageLocalDto.MessageStatus.valueOf(status) }
-            .getOrDefault(MessageLocalDto.MessageStatus.FAILED)
+    fun toMessageStatus(status: String): MessageStatus {
+        return runCatching { MessageStatus.valueOf(status) }
+            .getOrDefault(MessageStatus.FAILED)
     }
 
     @TypeConverter

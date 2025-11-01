@@ -8,11 +8,11 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 
-@Database(entities = [MessageLocalDto::class], version = 1)
+@Database(entities = [PendingMessageLocalDto::class], version = 1)
 @ConstructedBy(ChatDatabaseConstructor::class)
 @TypeConverters(MessageConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
-    abstract fun getMessageDao(): MessageDao
+    abstract fun getMessageDao(): PendingMessageDao
 }
 
 @Suppress("KotlinNoActualForExpect")

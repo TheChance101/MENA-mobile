@@ -23,7 +23,7 @@ import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -43,7 +43,7 @@ class ChatRepositoryImplTest {
     private lateinit var httpClient: HttpClient
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
-    private lateinit var messageDao: MessageDao
+    private lateinit var pendingMessageDao: PendingMessageDao
     private val authRepository = mock<AuthenticationRepository>()
 
 
@@ -52,7 +52,7 @@ class ChatRepositoryImplTest {
         everySuspend { authRepository.getAccessToken() } returns "token"
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
-        messageDao = mock<MessageDao>()
+        pendingMessageDao = mock<PendingMessageDao>()
 
         repository = createChatRepository(
             httpClient = httpClient,

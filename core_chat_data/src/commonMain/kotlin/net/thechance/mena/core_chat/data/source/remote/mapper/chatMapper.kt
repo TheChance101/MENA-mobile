@@ -2,7 +2,7 @@
 
 package net.thechance.mena.core_chat.data.source.remote.mapper
 
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
@@ -51,26 +51,26 @@ fun ChatDto.toDomain(): Chat? {
 }
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
-fun Message.toLocalDto(): MessageLocalDto {
+fun Message.toLocalDto(): PendingMessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
     val data = if (content is MessageContent.Image) content.data else null
     val images = if (data is ImageData.ImageByteArray) data.byteArray else null
 
 
-    return MessageLocalDto(
+    return PendingMessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
         text = text,
         image = images,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
-        status = status.toLocalDto()
+        status = status
     )
 }
 
 
-fun MessageLocalDto.toDomain(): Message {
+fun PendingMessageLocalDto.toDomain(): Message {
     val content = if (text != null) {
         MessageContent.Text(text)
     } else if (image != null) {
@@ -85,30 +85,12 @@ fun MessageLocalDto.toDomain(): Message {
         chatId = Uuid.parse(this.chatId),
         content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
-        status = status.toDomain(),
+        status = status,
         isMine = true
     )
 }
 
-fun List<MessageLocalDto>.toDomain(): List<Message> = map { it.toDomain() }
-
-fun MessageLocalDto.MessageStatus.toDomain(): MessageStatus {
-    return when (this) {
-        MessageLocalDto.MessageStatus.LOADING -> MessageStatus.LOADING
-        MessageLocalDto.MessageStatus.SENT -> MessageStatus.SENT
-        MessageLocalDto.MessageStatus.FAILED -> MessageStatus.FAILED
-        MessageLocalDto.MessageStatus.READ -> MessageStatus.READ
-    }
-}
-
-fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
-    return when (this) {
-        MessageStatus.LOADING -> MessageLocalDto.MessageStatus.LOADING
-        MessageStatus.SENT -> MessageLocalDto.MessageStatus.SENT
-        MessageStatus.FAILED -> MessageLocalDto.MessageStatus.FAILED
-        MessageStatus.READ -> MessageLocalDto.MessageStatus.READ
-    }
-}
+fun List<PendingMessageLocalDto>.toDomain(): List<Message> = map { it.toDomain() }
 
 fun MarkAsReadResponse.toEntity(): MarkMessageAsReadEvent {
     return MarkMessageAsReadEvent(

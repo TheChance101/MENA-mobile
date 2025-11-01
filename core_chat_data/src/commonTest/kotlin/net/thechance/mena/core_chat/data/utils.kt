@@ -28,7 +28,7 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
@@ -201,11 +201,11 @@ fun createMessageRepository(
     httpClient: HttpClient,
     webSocketManager: WebSocketManager,
     messageSenderFactory: MessageSenderFactory,
-    messageDao: MessageDao,
+    pendingMessageDao: PendingMessageDao,
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
-        messageDao = messageDao,
+        pendingMessageDao = pendingMessageDao,
         client =httpClient,
         messageSenderFactory = messageSenderFactory,
         json = jsonSerialization

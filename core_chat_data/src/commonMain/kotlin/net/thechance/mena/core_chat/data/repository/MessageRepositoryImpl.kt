@@ -14,8 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -41,7 +40,7 @@ import kotlin.uuid.Uuid
 class MessageRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
-    private val messageDao: MessageDao,
+    private val pendingMessageDao: PendingMessageDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -64,11 +63,11 @@ class MessageRepositoryImpl(
     }
 
     override suspend fun deleteMessage(message: Message) {
-        messageDao.deleteMessage(message.id.toString())
+        pendingMessageDao.deleteMessage(message.id.toString())
     }
 
     override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {
-        val failedEntities = messageDao.getMessagesByChat(chatId.toString())
+        val failedEntities = pendingMessageDao.getMessagesByChat(chatId.toString())
         return failedEntities.map { it.toDomain() }
     }
 
@@ -79,14 +78,14 @@ class MessageRepositoryImpl(
 
     override suspend fun sendMessage(message: Message) {
         val pendingMessage = message.copy(status = MessageStatus.LOADING).toLocalDto()
-        messageDao.insertMessage(pendingMessage)
+        pendingMessageDao.insertMessage(pendingMessage)
 
         try {
             val messageSender = messageSenderFactory.create(message.content)
             messageSender.send(message)
-            messageDao.deleteMessage(pendingMessage.id)
+            pendingMessageDao.deleteMessage(pendingMessage.id)
         } catch (e: Exception) {
-            messageDao.updateMessageStatus(pendingMessage.id, MessageLocalDto.MessageStatus.FAILED)
+            pendingMessageDao.updateMessageStatus(pendingMessage.id, MessageStatus.FAILED)
             throw SendMessageFailedException("Failed to send message: ${e.message}")
         }
     }

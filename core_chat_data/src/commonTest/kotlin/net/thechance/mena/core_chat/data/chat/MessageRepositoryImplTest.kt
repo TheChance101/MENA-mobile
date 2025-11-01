@@ -31,13 +31,13 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import kotlin.test.BeforeTest
@@ -55,13 +55,13 @@ class MessageRepositoryImplTest {
     private lateinit var messageSenderFactory: MessageSenderFactory
     private lateinit var textMessageSender: TextMessageSender
     private lateinit var imageMessageSender: ImageMessageSender
-    private lateinit var messageDao: MessageDao
+    private lateinit var pendingMessageDao: PendingMessageDao
 
     @BeforeTest
     fun setUp() {
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
-        messageDao = mock<MessageDao>()
+        pendingMessageDao = mock<PendingMessageDao>()
 
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
@@ -73,7 +73,7 @@ class MessageRepositoryImplTest {
 
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
-            messageDao = messageDao,
+            pendingMessageDao = pendingMessageDao,
             messageSenderFactory = messageSenderFactory,
             httpClient = httpClient
         )
@@ -88,7 +88,7 @@ class MessageRepositoryImplTest {
             httpClient = httpClient,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
-            messageDao = messageDao,
+            pendingMessageDao = pendingMessageDao,
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -102,11 +102,11 @@ class MessageRepositoryImplTest {
             senderId = userId,
             chatId = chatId,
         )
-        everySuspend { messageDao.deleteMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
 
         repository.deleteMessage(message)
 
-        verifySuspend { messageDao.deleteMessage(message.id.toString()) }
+        verifySuspend { pendingMessageDao.deleteMessage(message.id.toString()) }
     }
 
     @Test
@@ -118,7 +118,7 @@ class MessageRepositoryImplTest {
             httpClient = httpClient,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
-            messageDao = messageDao,
+            pendingMessageDao = pendingMessageDao,
         )
 
         assertFailsWith<NotFoundException> {
@@ -130,8 +130,8 @@ class MessageRepositoryImplTest {
     fun `should send message successfully when websocket is connected`() = runTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        everySuspend { messageDao.insertMessage(any()) } returns Unit
-        everySuspend { messageDao.deleteMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
 
         val message = createMessage(
             senderId = userId,
@@ -151,8 +151,8 @@ class MessageRepositoryImplTest {
     @Test
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
-        everySuspend { messageDao.insertMessage(any()) } returns Unit
-        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.updateMessageStatus(any(), any()) } returns Unit
 
         val message = createMessage(
             senderId = userId,
@@ -181,7 +181,7 @@ class MessageRepositoryImplTest {
                 message2.toLocalDto()
             )
 
-            everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
+            everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
                 messageEntities
             )
 
@@ -190,17 +190,17 @@ class MessageRepositoryImplTest {
 
             assertThat(result).isNotEmpty()
             assertThat(result.size).isEqualTo(2)
-            verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
+            verifySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) }
         }
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
+        everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
 
         val result = repository.observePendingMessagesByChatId(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
-        verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
+        verifySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) }
     }
 
     @Test
@@ -225,8 +225,8 @@ class MessageRepositoryImplTest {
     fun `should send image message successfully when websocket connected and images uploaded`() =
         runTest {
             every { webSocketManager.isConnected() } returns true
-            everySuspend { messageDao.insertMessage(any()) } returns Unit
-            everySuspend { messageDao.deleteMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
 
             httpClient = createHttpClient(
                 imagesResponse = { defaultUploadImagesResponse() }
@@ -236,7 +236,7 @@ class MessageRepositoryImplTest {
                 httpClient = httpClient,
                 webSocketManager = webSocketManager,
                 messageSenderFactory = messageSenderFactory,
-                messageDao = messageDao,
+                pendingMessageDao = pendingMessageDao,
             )
 
             val byteArray = ByteArray(10)
@@ -248,15 +248,15 @@ class MessageRepositoryImplTest {
 
             repository.sendMessage(message)
 
-            verifySuspend { messageDao.insertMessage(any()) }
-            verifySuspend { messageDao.deleteMessage(any()) }
+            verifySuspend { pendingMessageDao.insertMessage(any()) }
+            verifySuspend { pendingMessageDao.deleteMessage(any()) }
         }
 
     @Test
     fun `should mark message as FAILED when image upload throws exception`() = runTest {
         every { webSocketManager.isConnected() } returns true
-        everySuspend { messageDao.insertMessage(any()) } returns Unit
-        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.updateMessageStatus(any(), any()) } returns Unit
 
         httpClient = createHttpClient(
             imagesResponse = { respondError(HttpStatusCode.InternalServerError) }
@@ -266,7 +266,7 @@ class MessageRepositoryImplTest {
             httpClient = httpClient,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
-            messageDao = messageDao,
+            pendingMessageDao = pendingMessageDao,
         )
 
         val byteArray = ByteArray(10)
@@ -281,9 +281,9 @@ class MessageRepositoryImplTest {
         }
 
         verifySuspend {
-            messageDao.updateMessageStatus(
+            pendingMessageDao.updateMessageStatus(
                 any(),
-                MessageLocalDto.MessageStatus.FAILED
+                MessageStatus.FAILED
             )
         }
     }

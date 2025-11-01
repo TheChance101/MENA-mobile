@@ -8,7 +8,7 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -19,7 +19,7 @@ internal val localDataModule = module {
     single(named(ChatDatabaseBuilder)) { getDatabaseBuilder() }
 
     single<ChatDatabase> { getChatDatabase(get(named(ChatDatabaseBuilder))) }
-    single<MessageDao> { get<ChatDatabase>().getMessageDao() }
+    single<PendingMessageDao> { get<ChatDatabase>().getMessageDao() }
 }
 
 expect fun Scope.createContactsProvider(): ContactsProvider
