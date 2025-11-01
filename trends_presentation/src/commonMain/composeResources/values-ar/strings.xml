@@ -75,8 +75,17 @@
     <string name="video_thumbnail">صورة الفيديو المصغرة</string>
     <string name="likes">إعجابات</string>
     <string name="views">مشاهدات</string>
-    <string name="likes_suffix">%1$d إعجاب</string>
-    <string name="views_suffix">%1$d مشاهدة</string>
+
+    <plurals name="likes_suffix">
+        <item quantity="one">%1$d إعجاب</item>
+        <item quantity="other">%1$d إعجابات</item>
+    </plurals>
+
+    <plurals name="views_suffix">
+        <item quantity="one">%1$d مشاهدة</item>
+        <item quantity="other">%1$d مشاهدات</item>
+    </plurals>
+
     <string name="play_now">تشغيل الآن</string>
 
     <string name="just_now">الآن</string>

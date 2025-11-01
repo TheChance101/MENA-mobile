@@ -48,7 +48,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.home.ReelUiState
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.asString
+import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -150,6 +152,7 @@ private fun ReelHeaderSection(
     }
 }
 
+@OptIn(InternalResourceApi::class)
 @Composable
 private fun ReelFooterSection(
     reel: ReelUiState,
@@ -209,7 +212,11 @@ private fun ReelFooterSection(
             )
 
             Text(
-                text = stringResource(Res.string.likes_suffix, reel.likesCount),
+                text = pluralStringResource(
+                    resource = Res.plurals.likes_suffix,
+                    quantity = reel.likesCount,
+                    reel.likesCount
+                ),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )
@@ -226,7 +233,11 @@ private fun ReelFooterSection(
                 modifier = Modifier.size(24.dp)
             )
             Text(
-                text = stringResource(Res.string.views_suffix, reel.viewsCount),
+                text = pluralStringResource(
+                    resource = Res.plurals.views_suffix,
+                    quantity = reel.viewsCount,
+                    reel.viewsCount
+                ),
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary
             )
