@@ -9,12 +9,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class ShelfDetailsViewModel(
     private val productRepository: ProductRepository,
+    private val dukanCartRepository: DukanCartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ShelfDetailsUiState, ShelfDetailsEffects>(
@@ -64,12 +66,12 @@ class ShelfDetailsViewModel(
     }
 
     private fun updateProductInPagingData(
-        productId: String,
+        product: ShelfDetailsUiState.ProductUiState,
         updateProduct: (ShelfDetailsUiState.ProductUiState) -> ShelfDetailsUiState.ProductUiState
     ) {
         val currentData = productsState.value
-        val updatedData = currentData.map { product ->
-            if (product.id == productId) updateProduct(product) else product
+        val updatedData = currentData.map { productState ->
+            if (productState.id == product.id) updateProduct(productState) else productState
         }
 
         productsState.value = updatedData
@@ -80,42 +82,45 @@ class ShelfDetailsViewModel(
         emitEffect(ShelfDetailsEffects.NavigateBack)
     }
 
-    override fun onAddToCartClicked(productId: String) {
-        updateProductInPagingData(productId) { product ->
+    override fun onAddToCartClicked(product: ShelfDetailsUiState.ProductUiState) {
+        updateProductInPagingData(product) { product ->
             product.copy(showProductQuantity = true)
         }
     }
 
-    private fun increaseProductQuantity(productId: String) {
-        updateProductInPagingData(productId) { product ->
+    private fun increaseProductQuantity(product: ShelfDetailsUiState.ProductUiState) {
+        updateProductInPagingData(product) { product ->
             product.copy(inCartQuantity = product.inCartQuantity + 1)
         }
     }
 
-    private fun decreaseProductQuantity(productId: String) {
-        updateProductInPagingData(productId) { product ->
+    private fun decreaseProductQuantity(product: ShelfDetailsUiState.ProductUiState) {
+        updateProductInPagingData(product) { product ->
             if (product.inCartQuantity == 1) {
                 product.copy(showProductQuantity = false)
             } else product.copy(inCartQuantity = product.inCartQuantity - 1)
         }
     }
 
-    override fun onPlusClicked(productId: String) {
-        increaseProductQuantity(productId)
-        tryToExecuteWithDebounce(
-            block = {
-                // update product
-            },
-        )
+    override fun onPlusClicked(product: ShelfDetailsUiState.ProductUiState) {
+        increaseProductQuantity(product)
+        onQuantityChangedRequest(product)
     }
 
-    override fun onMinusClicked(productId: String) {
-        decreaseProductQuantity(productId)
-        tryToExecuteWithDebounce(
-            block = {
-                // update product
-            },
+    override fun onMinusClicked(product: ShelfDetailsUiState.ProductUiState) {
+        decreaseProductQuantity(product)
+        onQuantityChangedRequest(product)
+    }
+
+    private fun onQuantityChangedRequest(product: ShelfDetailsUiState.ProductUiState) {
+
+        val params = product.toUpdateProductCartQuantityParams(args.dukanId)
+
+        tryToExecuteWithDebounce (
+            debounceTime = 300,
+            block = { dukanCartRepository.updateProductQuantity(params) }
         )
+
     }
 
     override fun onCartClicked() {
