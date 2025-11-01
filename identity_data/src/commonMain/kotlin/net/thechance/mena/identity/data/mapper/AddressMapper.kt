@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.data.mapper
 
-import net.thechance.mena.identity.data.dto.addresses.AddressRequestDto
-import net.thechance.mena.identity.data.dto.addresses.AddressResponseDto
+import net.thechance.mena.identity.data.dto.addresses.request.AddressRequestDto
+import net.thechance.mena.identity.data.dto.addresses.response.AddressResponseDto
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressTypeFromString
