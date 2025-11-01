@@ -66,7 +66,7 @@ fun UploadImageContainer(
                 UploadedImage(image = image)
             }
         }
-        if (image != null) {
+        image?.let {
             EditIcon(modifier = Modifier.align(Alignment.BottomCenter).clickable { onClick() })
         }
     }
