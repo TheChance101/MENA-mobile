@@ -9,6 +9,6 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface UserRepository {
-    suspend fun getUsers(userQueryParams: UserQueryParams?): Flow<List<User>>
+    suspend fun getUsers(userQueryParams: UserQueryParams?): List<User>
     suspend fun updateUserStatus(userID: Uuid, status: Status)
 }

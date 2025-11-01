@@ -22,22 +22,24 @@ import kotlin.uuid.Uuid
 @Single
 class UserRepositoryImpl(
     private val userApiService: UserApiService,
-): UserRepository {
-    override suspend fun getUsers(userQueryParams: UserQueryParams?): Flow<List<User>> = flow {
+) : UserRepository {
+    override suspend fun getUsers(userQueryParams: UserQueryParams?): List<User> {
         val sortParam = buildSortQuery(userQueryParams?.sortType, userQueryParams?.sortDirection)
-        val response = executeApiSafely<PagedResponse<UserResponse>> {
+        return executeApiSafely<PagedResponse<UserResponse>> {
             userApiService.getUsers(
                 query = userQueryParams?.searchInput,
                 sort = sortParam,
                 page = userQueryParams?.page,
                 size = userQueryParams?.size
             )
-        }
-        emit(response.toEntityList(UserResponse::toEntity))
+        }.toEntityList(UserResponse::toEntity)
     }
-
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
-        executeApiSafely<Unit> { userApiService.updateUserStatus(userID.toString(),
-            UpdateUserStatusRequestDto(status.toString())) }
+        executeApiSafely<Unit> {
+            userApiService.updateUserStatus(
+                userID.toString(),
+                UpdateUserStatusRequestDto(status.toString())
+            )
+        }
     }
 }
