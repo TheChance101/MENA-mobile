@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.data.repository
+package net.thechance.mena.admin_panel.data.repository.authentication
 
 import com.russhwolf.settings.Settings
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
@@ -8,7 +8,7 @@ import net.thechance.mena.admin_panel.data.remote.service.AdminPanelApiService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
 import net.thechance.mena.admin_panel.data.utils.refreshToken
-import net.thechance.mena.admin_panel.domain.repository.AdminAuthenticationRepository
+import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import org.koin.core.annotation.Single
 
 @Single

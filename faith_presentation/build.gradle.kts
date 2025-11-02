@@ -96,6 +96,7 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
+                "net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel",
                 "*MapperKt",
             )
         }
