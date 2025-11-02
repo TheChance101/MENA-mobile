@@ -95,81 +95,79 @@ fun TextMessageLayout(
 
     Column(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = messageAlignment
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-            horizontalAlignment = messageAlignment
+        horizontalAlignment = messageAlignment,
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+
         ) {
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
-            ) {
-                if (!message.isMine) {
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(avatarSize),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        if (isMarkedLastInSeries) {
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = chatAvatarUrl,
-                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                                error = painterResource(Res.drawable.ic_profile_placeholder),
-                                contentScale = ContentScale.Crop,
-                                contentDescription = "Contact photo",
-                            )
-                        }
-                    }
-                }
+
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
+        ) {
+            if (!message.isMine) {
                 Box(
                     modifier = Modifier
-                        .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
-                        .clip(messageShape)
-                        .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
-                        .combinedClickable(
-                            onClick = onMessageClick,
-                            onLongClick = onMessageLongClick
-                        )
-                        .background(color = messageBackground, shape = messageShape)
-                        .padding(
-                            horizontal = Theme.spacing._8,
-                            vertical = Theme.spacing._4
-                        ),
+                        .clip(CircleShape)
+                        .size(avatarSize),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = message.content.text,
-                        style = Theme.typography.body.small,
-                        color = Theme.colorScheme.shadeSecondary
-                    )
+                    if (isMarkedLastInSeries) {
+                        AsyncImage(
+                            modifier = Modifier.fillMaxSize(),
+                            model = chatAvatarUrl,
+                            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                            error = painterResource(Res.drawable.ic_profile_placeholder),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "Contact photo",
+                        )
+                    }
                 }
             }
-
-            Row(
+            Box(
                 modifier = Modifier
-                    .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (!message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
-                }
-
-                AnimatedVisibility(visible = showMessageInfo) {
-                    MessageInfo(
-                        messageTime = message.sendTime,
-                        messageStatus = message.status,
-                        messageIsMine = message.isMine,
-                        onFailClick = onFailClick,
+                    .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
+                    .clip(messageShape)
+                    .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
+                    .combinedClickable(
+                        onClick = onMessageClick,
+                        onLongClick = onMessageLongClick
                     )
-                }
+                    .background(color = messageBackground, shape = messageShape)
+                    .padding(
+                        horizontal = Theme.spacing._8,
+                        vertical = Theme.spacing._4
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = message.content.text,
+                    style = Theme.typography.body.small,
+                    color = Theme.colorScheme.shadeSecondary
+                )
+            }
+        }
 
-                if (message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
-                }
+        Row(
+            modifier = Modifier
+                .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!message.isMine && message.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.reactions)
+            }
+
+            AnimatedVisibility(visible = showMessageInfo) {
+                MessageInfo(
+                    messageTime = message.sendTime,
+                    messageStatus = message.status,
+                    messageIsMine = message.isMine,
+                    onFailClick = onFailClick,
+                )
+            }
+
+            if (message.isMine && message.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.reactions)
             }
         }
     }
