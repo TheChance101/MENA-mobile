@@ -30,6 +30,8 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInpu
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
@@ -85,7 +87,7 @@ fun ChatScreenContent(
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
-                    onMenuClick = {},
+                    onMenuClick = interactions::onChatActionsMenuClicked,
                     onBackClick = interactions::onBackClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -108,6 +110,12 @@ fun ChatScreenContent(
                     onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
+                )
+
+                chatActionsMenuOverlay(
+                    showChatActionsDialog = state.isChatActionsDialogVisible,
+                    showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
+                    actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
             }
         ) {

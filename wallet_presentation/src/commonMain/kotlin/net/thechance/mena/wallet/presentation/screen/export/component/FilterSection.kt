@@ -18,6 +18,7 @@ import net.thechance.mena.wallet.presentation.component.FilterContent
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsListener
 import net.thechance.mena.wallet.presentation.screen.export.ExportTransactionsState
+import net.thechance.mena.wallet.presentation.utils.formatLocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -30,8 +31,8 @@ fun FilterSection(
         FilterContent(
             showStatusFilter = false,
             selectedTypes = state.selectedTransactionsTypes,
-            startDate = state.startDate?.toString() ?: "",
-            endDate = state.endDate?.toString() ?: "",
+            startDate = state.startDate?.let { formatLocalDate(date = it, outputFormat = "yyyy/MM/dd") } ?: "",
+            endDate = state.endDate?.let { formatLocalDate(date = it, outputFormat = "yyyy/MM/dd") } ?: "",
             onTypeSelected = interactionListener::onTypeSelected,
             onStartDateClicked = interactionListener::onStartDateClicked,
             onEndDateClicked = interactionListener::onEndDateClicked

@@ -31,7 +31,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build modules
-        run: ./gradlew $(for m in $(echo '${{ needs.detect.outputs.modules }}' | jq -r '.[]'); do echo ":$m:assemble"; done) --parallel --build-cache --no-daemon -x lint -x assembleRelease
+        run: ./gradlew $(for m in $(echo '${{ needs.detect.outputs.android_modules }}' | jq -r '.[]'); do echo ":$m:assemble"; done) --parallel --build-cache --no-daemon -x lint -x assembleRelease
 
   notify-slack-on-failure:
     if: failure()

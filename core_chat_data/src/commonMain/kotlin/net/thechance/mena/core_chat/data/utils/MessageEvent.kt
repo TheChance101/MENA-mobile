@@ -10,6 +10,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
+import net.thechance.mena.core_chat.data.source.remote.dto.DeleteChatResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 
@@ -18,6 +19,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 sealed class MessageEvent {
     data class Message(val dto: MessageDto) : MessageEvent()
     data class MarkAsRead(val dto: MarkAsReadResponse) : MessageEvent()
+    data class DeleteChat(val dto: DeleteChatResponse) : MessageEvent()
 }
 
 private object MessageEventSerializer : KSerializer<MessageEvent> {
@@ -31,6 +33,9 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
 
             is MessageEvent.MarkAsRead ->
                 encoder.encodeSerializableValue(MarkAsReadResponse.serializer(), value.dto)
+
+            is MessageEvent.DeleteChat ->
+                encoder.encodeSerializableValue(DeleteChatResponse.serializer(), value.dto)
         }
     }
 
@@ -48,6 +53,9 @@ private object MessageEventSerializer : KSerializer<MessageEvent> {
 
             "id" in element && "senderId" in element && "chatId" in element && "sendAt" in element && "isRead" in element ->
                 MessageEvent.Message(Json.decodeFromJsonElement(MessageDto.serializer(), element))
+
+            "deletedChatId" in element ->
+                MessageEvent.DeleteChat(Json.decodeFromJsonElement(DeleteChatResponse.serializer(), element))
 
             else -> throw SerializationException("Unknown payload: $element")
         }

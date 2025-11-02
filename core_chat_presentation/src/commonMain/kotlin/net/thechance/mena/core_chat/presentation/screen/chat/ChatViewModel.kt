@@ -19,6 +19,8 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
+import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
@@ -33,6 +35,7 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -167,6 +170,7 @@ class ChatViewModel(
         subscribeToNewMessages(chat.id)
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
+        observeDeleteChat()
     }
 
     private fun onGetChatError() {
@@ -363,6 +367,19 @@ class ChatViewModel(
 
     }
 
+    private fun observeDeleteChat() {
+        tryToCollect(
+            collect = { messageRepository.observeDeleteChat() },
+            onCollect = ::onCollectDeleteChatEvent
+        )
+    }
+
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
+        if (deleteChatEvent == null) return
+        onDeleteChatSuccess()
+        emitEffect(ChatScreenEffect.NavigateBack)
+    }
+
     private fun observeReadMessages() {
         tryToCollect(
             collect = { messageRepository.observeReadMessages() },
@@ -390,6 +407,57 @@ class ChatViewModel(
                 currentImageIndexForPreview = initialImageIndex
             )
         }
+    }
+
+    override fun onChatActionsMenuClicked() {
+        updateState { it.copy(isChatActionsDialogVisible = true) }
+    }
+
+    override fun onChatActionsMenuDialogDismissed() {
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = false
+            )
+        }
+    }
+
+    override fun onConfirmDeleteChatDialogDismissed() {
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
+    override fun onDeleteChatClicked() {
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = true
+            )
+        }
+    }
+
+    override fun onConfirmDeleteChatClicked() {
+        tryToExecute(
+            execute = { chatRepository.deleteChatById(state.value.chatId!!) },
+            onSuccess = { onDeleteChatSuccess() },
+            onError = { onDeleteChatFailure() }
+        )
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
+    private fun onDeleteChatSuccess() {
+        showSnackBar(
+            titleStringResource = Res.string.success,
+            messageStringResource = Res.string.chat_deleted_successfully,
+            isError = false
+        )
+    }
+
+    private fun onDeleteChatFailure() {
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.could_not_delete_chat,
+            isError = true
+        )
     }
 
     override fun onDownloadImageClicked(url: String) {
