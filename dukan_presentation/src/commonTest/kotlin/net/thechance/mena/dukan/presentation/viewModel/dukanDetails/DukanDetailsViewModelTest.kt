@@ -1,14 +1,17 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -20,11 +23,13 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,16 +46,18 @@ class DukanDetailsViewModelTest {
         mock<DukanManagementRepository>(mode = MockMode.autofill)
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
-    private lateinit var savedStateHandle: SavedStateHandle
+    private val savedStateHandle = mock<SavedStateHandle>(mode = MockMode.autofill) {
+        every { toRoute<DukanRoute.DukanDetails>().dukanId } returns "20"
+    }
     private lateinit var dukanDetailsViewModel: DukanDetailsViewModel
 
     @OptIn(ExperimentalUuidApi::class)
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle(mapOf(DUKAN_ID to dummyDukanDetails().id.toString()))
 
         everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
         everySuspend {
@@ -292,12 +299,88 @@ class DukanDetailsViewModelTest {
         }
     }
 
+    @Test
+    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add first product`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val dukanId = "2"
+            val quantity = 20
+
+            val params = UpdateProductCartQuantityParams(
+                productId = productId,
+                quantity = quantity,
+                dukanId = dukanId
+            )
+
+            //When
+            dukanDetailsViewModel.onAddToCartClicked(productId)
+
+            //Then
+            verifySuspend {
+                dukanCartRepository.addProductQuantity(params)
+            }
+
+        }
+
+    @Test
+    fun `onPlusClicked SHOULD increase product quantity in cart `() = runTest {
+
+        //Given
+        val productId = "1"
+        val dukanId = "2"
+        val quantity = 20
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = quantity,
+            dukanId = dukanId
+        )
+
+        //When
+        dukanDetailsViewModel.onPlusClicked(productId, quantity)
+
+        //Then
+        verifySuspend {
+            dukanCartRepository.updateProductQuantity(params)
+        }
+    }
+
+    @Test
+    fun `onMinusClicked SHOULD decrease product quantity in cart `() = runTest {
+
+        //Given
+        val productId = "1"
+        val dukanId = "2"
+        val quantity = 20
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = quantity,
+            dukanId = dukanId
+        )
+
+        //When
+        dukanDetailsViewModel.onMinusClicked(productId, quantity)
+
+
+        //Then
+        verifySuspend {
+            if (quantity == 1) dukanCartRepository.deleteProductFromCart(
+                dukanId = dukanId,
+                productId = productId
+            )
+            else dukanCartRepository.updateProductQuantity(params)
+        }
+    }
+
     private fun createViewModel() = DukanDetailsViewModel(
         dukanManagementRepository = dukanManagementRepository,
         shelfRepository = shelfRepository,
         productRepository = productRepository,
         defaultDispatcher = testDispatcher,
-        savedStateHandle = savedStateHandle
+        savedStateHandle = savedStateHandle,
+        dukanCartRepository = dukanCartRepository
     )
 
     private fun setupProductsForShelf(shelfId: String) {
@@ -341,6 +424,7 @@ private fun fakeProducts(): List<Product> = listOf(
         description = "A cool laptop",
         price = 1200.0,
         imageUrls = emptyList(),
-        createdAt = "2025-10-10T12:00:00Z"
+        createdAt = "2025-10-10T12:00:00Z",
+        quantityInCart = 10
     )
 )
