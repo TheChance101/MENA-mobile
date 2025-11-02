@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.data.remote.client
 
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -17,65 +18,61 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.koin.core.annotation.Named
-import org.koin.core.annotation.Provided
+import net.thechance.mena.admin_panel.data.utils.accessToken
+import net.thechance.mena.admin_panel.data.utils.refreshToken
 
-class NetworkClient(
-    @Provided
-    @Named("baseUrl")
-    private val baseUrl: String
-){
+fun provideHttpClient(
+    baseUrl: String,
+    settings: Settings,
+    refreshToken: suspend () -> Unit
+): HttpClient {
+    return HttpClient(engineFactory = CIO) {
+        defaultRequest {
+            url(baseUrl)
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+        }
 
-    fun provideHttpClient(): HttpClient = buildClient()
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                    explicitNulls = false
+                })
+        }
 
-    private fun buildClient(): HttpClient {
-        return HttpClient(CIO) {
-            defaultRequest {
-                url(baseUrl)
-                contentType(ContentType.Application.Json)
-                accept(ContentType.Application.Json)
-            }
+        install(Logging) {
+            logger = Logger.Companion.SIMPLE
+            level = LogLevel.ALL
+        }
 
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        ignoreUnknownKeys = true
-                        isLenient = true
-                        explicitNulls = false
-                    })
-            }
+        install(plugin = Auth) {
+            bearer {
+                loadTokens {
+                    BearerTokens(
+                        accessToken = settings.accessToken,
+                        refreshToken=settings.refreshToken
+                    )
 
-            install(Logging) {
-                logger = Logger.Companion.SIMPLE
-                level = LogLevel.ALL
-            }
-
-            install(plugin = Auth) {
-                bearer {
-                    loadTokens {
-                        BearerTokens(
-                            accessToken = "", /*TODO() add access token*/
-                            refreshToken = "" /*TODO() add refresh token*/
-                        )
-                    }
-                    refreshTokens {
-                        BearerTokens(
-                            accessToken = "", /*TODO() add access token*/
-                            refreshToken = "" /*TODO() add refresh token*/
-                        )
-                    }
+                }
+                refreshTokens {
+                    refreshToken()
+                    BearerTokens(
+                        accessToken = settings.accessToken,
+                        refreshToken=settings.refreshToken
+                    )
                 }
             }
-
-            install(HttpTimeout) {
-                requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-                socketTimeoutMillis = TIME_OUT_INTERVAL_MILLI
-            }
         }
-    }
 
-    private companion object {
-        const val TIME_OUT_INTERVAL_MILLI = 15_000L
+        install(HttpTimeout) {
+            requestTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+            connectTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+            socketTimeoutMillis = TIME_OUT_INTERVAL_MILLI
+        }
+
     }
 }
+
+private const val TIME_OUT_INTERVAL_MILLI = 15_000L

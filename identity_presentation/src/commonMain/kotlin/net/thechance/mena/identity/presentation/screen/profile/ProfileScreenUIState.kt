@@ -7,6 +7,7 @@ data class ProfileScreenUIState(
     val userName:String = "",
     val profileImageUrl:String = "",
     val showShareBottomSheet:Boolean = false,
+    val showShareProfileDialog:Boolean = false,
     val showThemeDialog:Boolean = false,
     val versionNumber:String? = null,
     val isLoading: Boolean = false,

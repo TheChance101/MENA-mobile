@@ -18,11 +18,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BestNearestDukanSection(
-    state: MainScreenUiState,
+    dukans : LazyPagingItems<MainScreenUiState.BestNearestDukanUiState>,
     onDukanClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dukans = state.bestNearestDukans.collectAsLazyPagingItems()
 
     AnimatedContent(
         targetState = dukans.loadState.refresh,

@@ -6,9 +6,10 @@ import kotlin.uuid.Uuid
 
 data class HomeScreenState(
     val isLoading: Boolean = false,
+    val isBalanceLoading: Boolean = false,
     val isSynced: Boolean = false,
     val isError: Boolean = false,
-    val balanceAmount: Double = 0.0,
+    val balanceAmount: Int = 0,
     val chats: List<ChatUiState> = emptyList()
 ) {
     data class ChatUiState @OptIn(ExperimentalUuidApi::class) constructor(

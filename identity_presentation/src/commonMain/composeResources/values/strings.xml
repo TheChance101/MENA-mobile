@@ -7,8 +7,17 @@
     <string name="password">Password</string>
     <string name="forget_password">Forget Password?</string>
     <string name="login">Login</string>
-    <string name="register_prompt">You are new?</string>
-    <string name="register_now">Register Now</string>
+    <string name="register_now">register now</string>
+    <string name="you_are_new">You are new?</string>
+    <string name="register_prompt_title">Create account</string>
+    <string name="register_prompt_description">please enter your phone number to send you OTP code</string>
+    <string name="register_otp_prompt">please enter the OTP code that send to your phone number end with **%1$s</string>
+    <string name="create_password">Set your password</string>
+    <string name="create_password_title">Complete your profile</string>
+    <string name="create_password_description">Set your password</string>
+    <string name="register">Next</string>
+    <string name="you_already_have_account">You already have an account?</string>
+    <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
     <string name="is_main_address_error">Can't Delete Active Address</string>
@@ -99,6 +108,13 @@
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
 
+    <string name="share_profile_title">Share your profile</string>
+    <string name="share_profile_description">Use your QR code to share your profile with other</string>
+    <string name="share_profile_qr_code">Profile QR Code</string>
+    <string name="share_icon_content_description">Share Icon</string>
+    <string name="link_icon_content_description">Link Icon</string>
+    <string name="download_icon_content_description">Download Icon</string>
+
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
     <string name="enable_location_permission_button">Enable location permission</string>
@@ -174,16 +190,18 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
     <string name="error_last_name_required">Last name is required</string>
     <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_password_validation">Password must be at least 8 characters long and contain at least one uppercase letter and one digit.</string>
     <string name="error_camera_permission_required">Camera permission is required</string>
     <string name="error_invalid_otp">Incorrect OTP.</string>
     <string name="error_too_many_requests">Too many requests. Please try again later.</string>
     <string name="error_otp_expired">OTP expired</string>
+    <string name="error_phone_number_already_exists">Phone number is already registered.</string>
     <string name="error_no_network">No Internet Connection</string>
     <string name="error_no_internet_connection">No Internet Connection</string>
     <string name="error_failed_to_open_settings">Failed to open settings</string>
@@ -191,4 +209,12 @@
     <string name="error_address_not_found">Address not found</string>
     <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
+
+    <string name="title_pick_profile_picture">Pick Profile Picture</string>
+    <string name="title_complete_your_profile">Complete your profile</string>
+    <string name="desc_upload_profile_image">Upload a profile image so people can recognize you</string>
+    <string name="click_to_upload">Click to Upload</string>
+    <string name="button_upload">Upload</string>
+    <string name="button_skip_for_now">Skip for now</string>
+
 </resources>
