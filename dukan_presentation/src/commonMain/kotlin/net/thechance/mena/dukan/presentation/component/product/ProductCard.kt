@@ -37,7 +37,7 @@ fun ProductCard(
     productPrice: Double,
     modifier: Modifier = Modifier,
     productCardBackground: Color? = null,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
     productAction: @Composable () -> Unit,
 ) {
     Row(
