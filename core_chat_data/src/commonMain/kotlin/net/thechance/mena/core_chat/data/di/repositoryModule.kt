@@ -26,6 +26,7 @@ internal val repositoryModule = module {
         ChatRepositoryImpl(
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
+            cachedChatDao = get()
         )
     }
 
@@ -35,7 +36,8 @@ internal val repositoryModule = module {
             webSocketManager = get(),
             pendingMessageDao = get(),
             messageSenderFactory = get(),
-            json = get(named(CHAT_JSON))
+            json = get(named(CHAT_JSON)),
+            cachedMessageDao = get()
         )
     }
 

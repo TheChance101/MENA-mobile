@@ -23,7 +23,7 @@ import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager

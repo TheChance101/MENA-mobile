@@ -14,14 +14,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
-import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
-import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
@@ -29,7 +31,6 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
-import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -41,6 +42,7 @@ class MessageRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
     private val pendingMessageDao: PendingMessageDao,
+    private val cachedMessageDao: CachedMessageDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -51,7 +53,7 @@ class MessageRepositoryImpl(
 
 
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
-        return tryNetworkCall<PagedDataDto<MessageDto>>(
+        val networkResponse = tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
             client.get(CHAT_HISTORY_ENDPOINT) {
@@ -59,7 +61,39 @@ class MessageRepositoryImpl(
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        }?.toPagedListOfMessages() ?: throw NotFoundException("Response body is null")
+        }
+
+        if (networkResponse != null) {
+            val pagedMessages = networkResponse.toPagedListOfMessages()
+            val messages = pagedMessages.data.toCachedMessageLocalDto()
+            cachedMessageDao.insertAllMessages(messages)
+            return pagedMessages
+        } else {
+
+            val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
+                chatId = chatId.toString(),
+                offset = (page * pageSize),
+                limit = pageSize
+            )
+
+            if (cachedMessages.isEmpty() && page > 0) {
+                return PagedData(data = emptyList(), isLastPage = true, totalItems = 0)
+            }
+
+            val messages = cachedMessages.map { it.toDomain() }
+            val isLastPage = messages.size < pageSize
+
+            val estimatedTotal = if (isLastPage) {
+                (page * pageSize) + messages.size
+            } else {
+                (page + 1) * pageSize + 1
+            }
+            return PagedData(
+                data = messages,
+                totalItems = estimatedTotal,
+                isLastPage = isLastPage,
+            )
+        }
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -67,8 +101,8 @@ class MessageRepositoryImpl(
     }
 
     override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {
-        val failedEntities = pendingMessageDao.getMessagesByChat(chatId.toString())
-        return failedEntities.map { it.toDomain() }
+        val messages = pendingMessageDao.getMessagesByChat(chatId.toString())
+        return messages.map { it.toDomain() }
     }
 
     override fun observeMessagesForChatOrAll(chatId: Uuid?): Flow<Message> {
@@ -77,7 +111,7 @@ class MessageRepositoryImpl(
     }
 
     override suspend fun sendMessage(message: Message) {
-        val pendingMessage = message.copy(status = MessageStatus.LOADING).toLocalDto()
+        val pendingMessage = message.copy(status = MessageStatus.LOADING).toPendingMessageLocalDto()
         pendingMessageDao.insertMessage(pendingMessage)
 
         try {
@@ -100,9 +134,7 @@ class MessageRepositoryImpl(
 
     private fun initializeWebsocketConnection() {
         scope.launch {
-            webSocketManager.connect(
-                onConnected = ::onConnectedWebSocket
-            )
+            webSocketManager.connect(onConnected = ::onConnectedWebSocket)
 
             webSocketManager.incomingMessages.collect { handleIncomingAsEvent(it) }
         }
@@ -134,7 +166,7 @@ class MessageRepositoryImpl(
         }
     }
 
-   override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
+    override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
@@ -149,6 +181,5 @@ class MessageRepositoryImpl(
         const val PRIVATE_MESSAGES = "/private/messages"
         const val CHAT_HISTORY_ENDPOINT = "/chat/history"
         const val CHAT_ID_PARAMETER = "chatId"
-
     }
 }

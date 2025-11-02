@@ -31,9 +31,9 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -177,8 +177,8 @@ class MessageRepositoryImplTest {
             val message1 = createMessage(senderId = userId, chatId = chatId)
             val message2 = createMessage(senderId = userId, chatId = chatId)
             val messageEntities = listOf(
-                message1.toLocalDto(),
-                message2.toLocalDto()
+                message1.toPendingMessageLocalDto(),
+                message2.toPendingMessageLocalDto()
             )
 
             everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(

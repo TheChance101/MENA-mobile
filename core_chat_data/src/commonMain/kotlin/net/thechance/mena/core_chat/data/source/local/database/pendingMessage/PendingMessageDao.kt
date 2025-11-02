@@ -1,4 +1,4 @@
-package net.thechance.mena.core_chat.data.source.local.database
+package net.thechance.mena.core_chat.data.source.local.database.pendingMessage
 
 import androidx.room.Dao
 import androidx.room.Insert
