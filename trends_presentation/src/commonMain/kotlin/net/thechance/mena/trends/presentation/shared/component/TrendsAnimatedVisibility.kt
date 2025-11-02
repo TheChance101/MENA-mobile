@@ -10,7 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-private const val DURATION_MILLIS = 700
+private const val DURATION_MILLIS = 500
 
 @Composable
 internal fun TrendsAnimatedVisibility(
