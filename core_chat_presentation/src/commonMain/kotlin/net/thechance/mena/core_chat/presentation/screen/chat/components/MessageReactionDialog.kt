@@ -137,7 +137,7 @@ private fun ReactionContent(
             ) {
                 Text(
                     text = reaction,
-                    style = Theme.typography.title.large,
+                    style = Theme.typography.appName,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }

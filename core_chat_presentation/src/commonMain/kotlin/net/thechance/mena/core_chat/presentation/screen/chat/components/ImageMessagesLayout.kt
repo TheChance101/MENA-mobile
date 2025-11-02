@@ -159,7 +159,7 @@ fun ImageMessagesLayout(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
                 if (!lastMessage.isMine && lastMessage.reactions.isNotEmpty()) {
-                    ReactionsRow(reactions = lastMessage.reactions)
+                    ReactionBubble(reactions = lastMessage.reactions)
                 }
 
                 MessageInfo(
@@ -170,7 +170,7 @@ fun ImageMessagesLayout(
                 )
 
                 if (lastMessage.isMine && lastMessage.reactions.isNotEmpty()) {
-                    ReactionsRow(reactions = lastMessage.reactions)
+                    ReactionBubble(reactions = lastMessage.reactions)
                 }
             }
         }

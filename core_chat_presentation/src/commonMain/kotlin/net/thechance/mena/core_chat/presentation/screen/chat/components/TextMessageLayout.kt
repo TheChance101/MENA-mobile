@@ -4,7 +4,6 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -122,6 +121,7 @@ fun TextMessageLayout(
                 modifier = Modifier
                     .padding(start = messagePaddingStart, end = messagePaddingEnd)
                     .clip(messageShape)
+                    .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
                     .combinedClickable(
                         onClick = onMessageClick,
                         onLongClick = onMessageLongClick
@@ -130,7 +130,8 @@ fun TextMessageLayout(
                     .padding(
                         horizontal = verticalPadding,
                         vertical = Theme.spacing._4
-                    )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = message.content.text,
@@ -150,7 +151,7 @@ fun TextMessageLayout(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
                 if (!message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionsRow(reactions = message.reactions)
+                    ReactionBubble(reactions = message.reactions)
                 }
 
                 MessageInfo(
@@ -161,41 +162,12 @@ fun TextMessageLayout(
                 )
 
                 if (message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionsRow(reactions = message.reactions)
+                    ReactionBubble(reactions = message.reactions)
                 }
             }
         }
     }
 }
-@Composable
-fun ReactionsRow(
-    reactions: List<MessageReaction>,
-) {
-    val grouped = reactions.groupBy { it.emoji }
-
-    grouped.forEach { (emoji, list) ->
-        val count = list.size
-        val label = if (count > 1) "$count $emoji" else emoji
-
-        Box(
-            modifier = Modifier
-                .offset(y = (-6).dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
-                .background(Theme.colorScheme.background.surface)
-                .border(2.dp, Theme.colorScheme.background.surfaceLow, RoundedCornerShape((Theme.radius.full)))
-                .padding(4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = label,
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadeSecondary
-            )
-        }
-    }
-}
-
-
 
 @Composable
 @Preview()
