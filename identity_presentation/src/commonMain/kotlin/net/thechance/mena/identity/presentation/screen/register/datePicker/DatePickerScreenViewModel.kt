@@ -18,26 +18,29 @@ class DatePickerScreenViewModel :
 
     override fun onChangeDate(day: Int, month: Int, year: Int) {
         tryToExecute(
-            function = {updateState { copy(selectedDate = LocalDate(year, month, day)) }},
+            function = { updateState { copy(selectedDate = LocalDate(year, month, day)) } },
             onSuccess = { changeIsNextEnable() }
         )
     }
 
-
     @OptIn(ExperimentalTime::class)
     private fun changeIsNextEnable() {
         val selectedDate = state.value.selectedDate
-        val isAgeValid = selectedDate.let { date ->
-            val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-            val age = today.year - date.year -
-                    if (today.month < date.month ||
-                        (today.month == date.month && today.day < date.day)
-                    ) 1 else 0
-            age > 14
-        }
+        val isAgeValid = isAgeValid(selectedDate)
 
-        updateState {
-            copy(isNextEnabled = isAgeValid)
-        }
+        updateState { copy(isNextEnabled = isAgeValid) }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun isAgeValid(date: LocalDate): Boolean {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val yearAdjustment = if (today.month < date.month || (today.month == date.month && today.day < date.day)) 1 else 0
+        val age = today.year - date.year - yearAdjustment
+
+        return age > MIN_AGE
+    }
+
+    companion object {
+        private const val MIN_AGE = 14
     }
 }
