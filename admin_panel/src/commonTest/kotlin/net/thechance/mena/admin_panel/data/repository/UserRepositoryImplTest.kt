@@ -22,6 +22,7 @@ import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.admin_panel.domain.model.SortDirection
+import net.thechance.mena.admin_panel.domain.model.SortType
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -69,13 +70,14 @@ class UserRepositoryImplTest {
         val result = userRepository.getUsers(
             UserQueryParams(
                 searchInput = "Test",
-                "userName",
-                SortDirection.ASC
+                sortType = SortType.USERNAME,
+                sortDirection = SortDirection.ASC,
+                page = 1,
+                size = 1
             )
         ).first()
 
-        assertEquals(1, result.size)
-        assertEquals("Test", result.first().firstName)
+        assertEquals("Test", result.firstName)
     }
 
     @Test
