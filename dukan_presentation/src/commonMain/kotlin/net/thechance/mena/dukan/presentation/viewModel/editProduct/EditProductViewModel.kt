@@ -42,7 +42,6 @@ import net.thechance.mena.dukan.presentation.component.product.productImage.Prod
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
-import net.thechance.mena.dukan.presentation.screen.editProduct.EditProductArgs
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
@@ -70,7 +69,7 @@ class EditProductViewModel(
 
     init {
         getProductData()
-        prefillFromSavedState(savedStateHandle)
+        prefillFromRoute()
         getShelves()
     }
 
@@ -124,10 +123,10 @@ class EditProductViewModel(
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun prefillFromSavedState(savedStateHandle: SavedStateHandle) {
-        val name: String? = savedStateHandle[EditProductArgs.PREFILL_NAME]
-        val price: String? = savedStateHandle[EditProductArgs.PREFILL_PRICE]
-        val description: String? = savedStateHandle[EditProductArgs.PREFILL_DESCRIPTION]
+    private fun prefillFromRoute() {
+        val name = route.prefillName
+        val price = route.prefillPrice
+        val description = route.prefillDescription
         if (name != null || price != null || description != null) {
             updateState {
                 copy(
