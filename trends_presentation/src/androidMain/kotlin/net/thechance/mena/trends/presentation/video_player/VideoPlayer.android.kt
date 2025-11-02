@@ -41,20 +41,15 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
-import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_pause
-import mena.trends_presentation.generated.resources.pause_icon
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
+import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -97,7 +92,6 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
@@ -123,7 +117,6 @@ actual fun VideoPlayer(
                         }
                     }
                 })
-
                 seekTo(lastPosition)
             }
     }
@@ -179,32 +172,15 @@ actual fun VideoPlayer(
                 .clickable { isPause = !isPause }
         )
 
-        if (isPause) {
-            Box(modifier = Modifier.align(Alignment.Center)) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_pause),
-                    contentDescription = stringResource(Res.string.pause_icon)
-                )
-            }
-        }
+        if (isPause)
+            PauseIcon(modifier = Modifier.align(Alignment.Center))
 
-        if (isLoading && !isPause) {
-            Box(
-                Modifier
+        if (isLoading && !isPause)
+            LoadingItem(
+                modifier = Modifier
                     .fillMaxSize()
-                    .background(backgroundColor.value),
-                contentAlignment = Alignment.Center
-            ) {
-                DotsProgressIndicator(
-                    dotSize = 7.dp,
-                    colors = listOf(
-                        Theme.colorScheme.stroke,
-                        Theme.colorScheme.shadeTertiary,
-                        Theme.colorScheme.primary.primary
-                    )
-                )
-            }
-        }
+                    .background(backgroundColor.value)
+            )
 
         ProgressBar(
             progress = { currentProgress },

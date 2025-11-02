@@ -33,9 +33,9 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_pause
 import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
@@ -101,14 +101,7 @@ actual fun VideoPlayer(
     LaunchedEffect(url, isReelVisible) {
         playerViewController.player = player
 
-        NSNotificationCenter.defaultCenter.addObserverForName(
-            name = AVPlayerItemDidPlayToEndTimeNotification,
-            `object` = player.currentItem,
-            queue = null
-        ) { _ ->
-            player.seekToTime(CMTimeMakeWithSeconds(0.0, 600))
-            player.play()
-        }
+        replayReelWhenFinishedAutomatic(player)
 
         if (isReelVisible) {
             if (lastPosition > 0.0) {
@@ -135,9 +128,7 @@ actual fun VideoPlayer(
                     true
                 }
 
-                AVPlayerItemStatusFailed -> {
-                    true
-                }
+                AVPlayerItemStatusFailed -> true
                 AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
                 else -> false
             }
@@ -203,22 +194,8 @@ actual fun VideoPlayer(
                 )
             }
 
-            if (isLoading && !isPaused) {
-                Box(
-                    Modifier.fillMaxSize().background(backgroundColor.value),
-                    contentAlignment = Alignment.Center
-                ){
-                    DotsProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        dotSize = 7.dp,
-                        colors = listOf(
-                            Theme.colorScheme.stroke,
-                            Theme.colorScheme.shadeTertiary,
-                            Theme.colorScheme.shadeTertiary
-                        )
-                    )
-                }
-            }
+            if (isLoading && !isPaused)
+                LoadingItem(modifier = Modifier.fillMaxSize().background(backgroundColor.value))
 
             ProgressBar(
                 progress = { currentProgress },
@@ -258,5 +235,17 @@ actual fun VideoPlayer(
             lastPosition = CMTimeGetSeconds(player.currentTime())
             player.pause()
         }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun replayReelWhenFinishedAutomatic(player: AVPlayer) {
+    NSNotificationCenter.defaultCenter.addObserverForName(
+        name = AVPlayerItemDidPlayToEndTimeNotification,
+        `object` = player.currentItem,
+        queue = null
+    ) { _ ->
+        player.seekToTime(CMTimeMakeWithSeconds(0.0, 600))
+        player.play()
     }
 }
