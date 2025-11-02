@@ -38,6 +38,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
             implementation(libs.bundles.ktorfit)
+            implementation(libs.okio)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
