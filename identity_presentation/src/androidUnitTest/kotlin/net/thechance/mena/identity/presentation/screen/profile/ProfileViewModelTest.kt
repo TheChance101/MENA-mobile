@@ -1,3 +1,4 @@
+
 package net.thechance.mena.identity.presentation.screen.profile
 
 import app.cash.turbine.test
@@ -5,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -37,6 +39,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     override fun setUp() {
         super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { userRepository.getCurrentAppLanguage() } returns "en"
         viewModel = ProfileScreenViewModel(
             userRepository,
             "",
@@ -47,7 +50,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `getUserInfo() updates state on success`() = runTest {
-
         viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -178,6 +180,22 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
+    fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
+        val newLanguage = Language.Arabic
+        coEvery { userRepository.applyLanguage(newLanguage.iso) } returns Unit
+
+        viewModel.onConfirmLanguageSelection(newLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { userRepository.applyLanguage(newLanguage.iso) }
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.languageDialogUiState.isVisible)
+            assertEquals(newLanguage, state.languageDialogUiState.selectedLanguage)
+        }
+    }
+
+    @Test
     fun `should update state to hide language dialog when onDismissLanguageDialog`() = runTest {
         viewModel.onDismissLanguageDialog()
 
@@ -224,4 +242,3 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         gender = Gender.MALE,
     )
 }
-
