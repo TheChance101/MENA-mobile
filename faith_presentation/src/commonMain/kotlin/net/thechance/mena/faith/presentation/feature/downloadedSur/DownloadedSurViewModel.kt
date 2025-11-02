@@ -18,36 +18,33 @@ class DownloadedSurViewModel :
 
     private fun loadDownloadedSur() {
         // TODO: After the domain is done, integrate this function to load the real data
-        updateState {
-            it.copy(
-                listOf(
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ad_duha,
-                        "Al-Duha",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_an_nas,
-                        "An-Nas",
-                        listOf("Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_al_kahf,
-                        "Al-Kahf",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ash_shams,
-                        "Ash-Shams",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                ),
-            )
-        }
+        val dummyData = listOf(
+            DownloadedSurUiState.SurahDetailsUiState(
+                1,
+                Res.drawable.ic_ad_duha,
+                "Al-Duha",
+                listOf("Al Minshawi", "Sudais"),
+            ),
+            DownloadedSurUiState.SurahDetailsUiState(
+                1,
+                Res.drawable.ic_an_nas,
+                "An-Nas",
+                listOf("Sudais"),
+            ),
+            DownloadedSurUiState.SurahDetailsUiState(
+                1,
+                Res.drawable.ic_al_kahf,
+                "Al-Kahf",
+                listOf("Al Minshawi", "Sudais"),
+            ),
+            DownloadedSurUiState.SurahDetailsUiState(
+                1,
+                Res.drawable.ic_ash_shams,
+                "Ash-Shams",
+                listOf("Al Minshawi", "Sudais"),
+            ),
+        )
+        updateState { it.copy(dummyData) }
     }
 
     override fun onReciterSettingsClick() {
