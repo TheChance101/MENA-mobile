@@ -1,29 +1,32 @@
-package net.thechance.mena.admin_panel.data.repository.authentication
+package net.thechance.mena.admin_panel.data.service
 
 import com.russhwolf.settings.Settings
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
-import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
+import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshTokenRequestDto
 import net.thechance.mena.admin_panel.data.remote.api_service.AdminAuthenticationApiService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
 import net.thechance.mena.admin_panel.data.utils.refreshToken
-import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import org.koin.core.annotation.Single
 
 @Single
-class AdminAuthenticationRepositoryImpl(
+class AuthenticationService(
     private val adminAuthenticationApiService: AdminAuthenticationApiService,
     private val settings: Settings
-) : AdminAuthenticationRepository {
-
-    override suspend fun login(userName: String, password: String) {
-        val loginResponse: AdminAuthenticationResponse =
+) {
+    suspend fun refreshAccessToken(): String {
+        val refreshResponse: AdminAuthenticationResponse =
             executeApiSafely<AdminAuthenticationResponse> {
-                adminAuthenticationApiService.login(
-                    LoginRequestDto(userName = userName, password = password)
+                adminAuthenticationApiService.refreshAccessToken(
+                    RefreshTokenRequestDto(settings.refreshToken)
                 )
             }
-        saveAuthTokens(authenticationInfo = loginResponse)
+        saveAuthTokens(authenticationInfo = refreshResponse)
+        return settings.accessToken
+    }
+
+    suspend fun getAccessToken(): String {
+        return settings.accessToken
     }
 
     private fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {

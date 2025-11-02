@@ -1,10 +1,11 @@
-package net.thechance.mena.admin_panel.data.repository
+package net.thechance.mena.admin_panel.domin.service
 
 import com.russhwolf.settings.Settings
 import de.jensklingenberg.ktorfit.Response
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -16,82 +17,97 @@ import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.remote.api_service.AdminAuthenticationApiService
-import net.thechance.mena.admin_panel.data.repository.authentication.AdminAuthenticationRepositoryImpl
+import net.thechance.mena.admin_panel.data.service.AuthenticationService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.refreshToken
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
-import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
-class AdminAuthenticationRepositoryImplTest {
+class AuthenticationServiceTest {
+
     private lateinit var adminAuthenticationApiService: AdminAuthenticationApiService
     private lateinit var settings: Settings
-
-    private lateinit var adminAuthenticationRepositoryImpl: AdminAuthenticationRepositoryImpl
+    private lateinit var authenticationService: AuthenticationService
 
     @BeforeTest
     fun setup() {
-        adminAuthenticationApiService =
-            mock<AdminAuthenticationApiService>(mode = MockMode.autofill)
-        settings = mock<Settings>(mode = MockMode.autofill)
-        adminAuthenticationRepositoryImpl =
-            AdminAuthenticationRepositoryImpl(
-                adminAuthenticationApiService = adminAuthenticationApiService,
-                settings = settings
-            )
+        adminAuthenticationApiService = mock(mode = MockMode.autofill)
+        settings = mock(mode = MockMode.autofill)
+        authenticationService = AuthenticationService(adminAuthenticationApiService, settings)
     }
 
     @Test
-    fun `login should save access token on success`() = runTest {
-
+    fun `refreshAccessToken should save tokens and return access token`() = runTest {
         everySuspend {
-            adminAuthenticationApiService.login(any())
-        } returns successfulLoginResponse()
+            adminAuthenticationApiService.refreshAccessToken(any())
+        } returns successfulResponse()
 
-        adminAuthenticationRepositoryImpl.login(TEST_USERNAME, TEST_PASSWORD)
+         authenticationService.refreshAccessToken()
 
         verify { settings.accessToken = fakeResponse.accessToken }
-    }
-
-    @Test
-    fun `login should save refresh token on success`() = runTest {
-
-        everySuspend {
-            adminAuthenticationApiService.login(any())
-        } returns successfulLoginResponse()
-
-        adminAuthenticationRepositoryImpl.login(TEST_USERNAME, TEST_PASSWORD)
-
         verify { settings.refreshToken = fakeResponse.refreshToken }
     }
 
     @Test
-    fun `login should throw UnauthorizedException on 401 Unauthorized`() = runTest {
+    fun `access token should be stored in settings after successful refreshAccessToken`() =
+        runTest {
+            everySuspend {
+                adminAuthenticationApiService.refreshAccessToken(any())
+            } returns successfulResponse()
+
+            authenticationService.refreshAccessToken()
+
+            verify { settings.accessToken = fakeResponse.accessToken }
+        }
+
+    @Test
+    fun `refreshAccessToken should throw UnauthorizedException on 401`() = runTest {
         everySuspend {
-            adminAuthenticationApiService.login(any())
+            adminAuthenticationApiService.refreshAccessToken(any())
         } returns unauthorizedResponse()
 
         val exception = assertFailsWith<UnauthorizedException> {
-            adminAuthenticationRepositoryImpl
-                .login(TEST_USERNAME, TEST_PASSWORD)
+            authenticationService.refreshAccessToken()
         }
 
         assertTrue(exception.message?.contains("Unauthorized") == true)
     }
 
     @Test
-    fun `login should throw NoInternetException on IOException`() = runTest {
+    fun `refreshAccessToken should throw NoInternetException on IOException`() = runTest {
         everySuspend {
-            adminAuthenticationApiService.login(any())
-        } throws _root_ide_package_.kotlinx.io.IOException("No internet")
+            adminAuthenticationApiService.refreshAccessToken(any())
+        } throws _root_ide_package_.kotlinx.io.IOException(
+            "No internet"
+        )
 
         assertFailsWith<NoInternetException> {
-            adminAuthenticationRepositoryImpl
-                .login(TEST_USERNAME, TEST_PASSWORD)
+            authenticationService.refreshAccessToken()
         }
+    }
+
+    @Test
+    fun `getAccessToken should return stored access token`() = runTest {
+        every {
+            settings.getString(ACCESS_TOKEN_KEY, "")
+        } returns "stored_access_token"
+
+        val result = authenticationService.getAccessToken()
+
+        assertEquals("stored_access_token", result)
+    }
+
+    @Test
+    fun `getAccessToken should return empty string when no token stored`() = runTest {
+        every { settings.getString(ACCESS_TOKEN_KEY, "") } returns ""
+
+        val result = authenticationService.getAccessToken()
+
+        assertEquals("", result)
     }
 
     private companion object {
@@ -99,11 +115,10 @@ class AdminAuthenticationRepositoryImplTest {
             accessToken = "fake_access_token",
             refreshToken = "fake_refresh_token"
         )
-        const val TEST_USERNAME = "testUser"
-        const val TEST_PASSWORD = "testPassword"
+        const val ACCESS_TOKEN_KEY = "access_token"
 
         @OptIn(InternalAPI::class)
-        fun successfulLoginResponse(): Response<AdminAuthenticationResponse> {
+        fun successfulResponse(): Response<AdminAuthenticationResponse> {
             val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
                 everySuspend { status } returns HttpStatusCode.OK
             }

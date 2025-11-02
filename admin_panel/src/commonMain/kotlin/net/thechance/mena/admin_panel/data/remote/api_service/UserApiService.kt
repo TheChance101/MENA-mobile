@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.data.remote.service
+package net.thechance.mena.admin_panel.data.remote.api_service
 
 import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body

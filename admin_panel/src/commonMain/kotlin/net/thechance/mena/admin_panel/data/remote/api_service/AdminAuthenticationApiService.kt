@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.data.remote.service
+package net.thechance.mena.admin_panel.data.remote.api_service
 
 import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body
@@ -7,7 +7,7 @@ import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthen
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshTokenRequestDto
 
-interface AdminPanelApiService {
+interface AdminAuthenticationApiService {
     @POST(LOGIN_ENDPOINT)
     suspend fun login(@Body loginRequest: LoginRequestDto):
             Response<AdminAuthenticationResponse>
