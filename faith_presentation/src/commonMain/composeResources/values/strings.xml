@@ -161,5 +161,6 @@
     <!--  Downloaded sur  -->
     <string name="downloaded_sur">Downloaded sur</string>
     <string name="reciter_list">Reciters list</string>
+    <string name="delete_surah">Delete surah</string>
 
 </resources>

@@ -34,8 +34,10 @@ import mena.faith_presentation.generated.resources.remove_bookmark_icon
 import mena.faith_presentation.generated.resources.swipe_animation
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.maplibre.compose.expressions.dsl.Feature.id
 import kotlin.math.roundToInt
 
 
@@ -44,6 +46,8 @@ fun SwappableCard(
     id: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    backgroundIcon: Painter = painterResource(Res.drawable.bookmark),
+    contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
     swipeThreshold: Float = 130f,
     cardContent: @Composable (Modifier) -> Unit,
 ) {
@@ -70,6 +74,8 @@ fun SwappableCard(
             modifier = Modifier.matchParentSize()
         ) {
             SwipeBackground(
+                painter = backgroundIcon,
+                contentDescription = contentDescription,
                 onClick = {
                     currentSwipedCardId.intValue = -1
                     onClick()

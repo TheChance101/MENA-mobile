@@ -16,7 +16,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete_surah
 import mena.faith_presentation.generated.resources.ic_ad_duha
+import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_play_circle
 import mena.faith_presentation.generated.resources.ic_reciter_list
 import mena.faith_presentation.generated.resources.reciter_list
@@ -40,6 +42,8 @@ fun DownloadedSurahCard(
     SwappableCard(
         id = suraDetails.id,
         onClick = onDeleteDownloadedSurahClick,
+        backgroundIcon = painterResource(Res.drawable.ic_delete),
+        contentDescription = stringResource(Res.string.delete_surah),
         cardContent = { contentModifier ->
             CardContent(
                 surahDetailsUiState = suraDetails,
