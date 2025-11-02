@@ -55,7 +55,7 @@ fun LazyGridScope.wideImageProductsGrid(
     ) { index ->
         productsShelf[index]?.let { product ->
             var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-            var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+            var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
             ProductCard(
                 imageUrl = product.imageUrl,
@@ -66,6 +66,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         showProductQuantity = toggleCartToQuantity,
                         inCartQuantity = productQuantity,
                         dukanColor = cartColor,
+                        cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
                         onAddToCartClick = {
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
@@ -86,8 +87,7 @@ fun LazyGridScope.wideImageProductsGrid(
                                 productId = product.id,
                                 productQuantity = productQuantity
                             )
-                        },
-                        cartIcon = painterResource(Res.drawable.wide_image_shoppingcart)
+                        }
                     )
                 }
             )

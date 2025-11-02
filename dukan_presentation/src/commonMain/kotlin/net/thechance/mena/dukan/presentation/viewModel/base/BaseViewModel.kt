@@ -69,7 +69,7 @@ abstract class BaseViewModel<S, E>(
     }
 
     protected fun <S> tryToExecuteWithDebounce(
-        debounceTime: Long = 300,
+        debounceTime: Long = 500,
         onStart: () -> Unit = {},
         block: suspend () -> S,
         onSuccess: (S) -> Unit = {},

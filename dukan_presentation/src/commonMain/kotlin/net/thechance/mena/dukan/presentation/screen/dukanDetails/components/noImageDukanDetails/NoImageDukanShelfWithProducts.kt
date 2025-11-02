@@ -68,7 +68,7 @@ private fun ProductItem(
     modifier: Modifier = Modifier
 ) {
     var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     ProductCard(
         productName = product.name,
@@ -76,6 +76,7 @@ private fun ProductItem(
         productDescription = product.description,
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
+        modifier = modifier,
         productAction = {
             NoImageDukanProductAction(
                 showProductQuantity = toggleCartToQuantity,
@@ -103,8 +104,7 @@ private fun ProductItem(
                     )
                 },
             )
-        },
-        modifier = modifier
+        }
     )
 }
 

@@ -7,7 +7,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
@@ -75,8 +74,8 @@ class ShelfDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = { dukanCartRepository.addProductQuantity(params) },
+            onError = {}
         )
     }
 
@@ -89,8 +88,8 @@ class ShelfDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = { dukanCartRepository.updateProductQuantity(params) },
+            onError = {}
         )
     }
 
@@ -103,8 +102,24 @@ class ShelfDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = {
+                if (productQuantity == 1) deleteProductFromCart(productId) else dukanCartRepository.updateProductQuantity(
+                    params
+                )
+            },
+            onError = {}
+        )
+    }
+
+    private fun deleteProductFromCart(productId: String) {
+        tryToExecuteWithDebounce(
+            block = {
+                dukanCartRepository.deleteProductFromCart(
+                    dukanId = args.dukanId,
+                    productId = productId
+                )
+            },
+            onError = {}
         )
     }
 

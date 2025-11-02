@@ -32,14 +32,7 @@ fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
     name = name,
     description = description,
     price = price,
-    imageUrl = imageUrls.firstOrNull().orEmpty()
+    imageUrl = imageUrls.firstOrNull().orEmpty(),
+    inCartQuantity = quantityInCart
 )
-
-fun DukanDetailsUiState.ProductUiState.toUpdateProductCartQuantityParams(dukanId: String): UpdateProductCartQuantityParams {
-    return UpdateProductCartQuantityParams(
-        productId = id,
-        quantity = inCartQuantity,
-        dukanId = dukanId
-    )
-}
 

@@ -152,7 +152,7 @@ private fun ProductItem(
     cartColor: Color
 ) {
     var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     ProductCard(
         productName = product.name,

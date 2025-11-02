@@ -206,8 +206,8 @@ class DukanDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = { dukanCartRepository.addProductQuantity(params) },
+            onError = {}
         )
     }
 
@@ -220,8 +220,8 @@ class DukanDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = { dukanCartRepository.updateProductQuantity(params) },
+            onError = {}
         )
     }
 
@@ -234,10 +234,27 @@ class DukanDetailsViewModel(
         )
 
         tryToExecuteWithDebounce(
-            debounceTime = 300,
-            block = { dukanCartRepository.updateProductQuantity(params) }
+            block = {
+                if (productQuantity == 1) deleteProductFromCart(productId) else dukanCartRepository.updateProductQuantity(
+                    params
+                )
+            },
+            onError = {}
         )
     }
+
+    private fun deleteProductFromCart(productId: String) {
+        tryToExecuteWithDebounce(
+            block = {
+                dukanCartRepository.deleteProductFromCart(
+                    dukanId = args.dukanId,
+                    productId = productId
+                )
+            },
+            onError = {}
+        )
+    }
+
 
     override fun onCartClicked() {
         emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
