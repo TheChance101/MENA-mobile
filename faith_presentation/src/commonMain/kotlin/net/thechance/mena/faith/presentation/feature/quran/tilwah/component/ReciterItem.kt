@@ -57,35 +57,48 @@ fun ReciterItem(
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-            ) {
-                Text(
-                    text = recitingType,
-                    style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.shadePrimary
-                )
-                if (isDownloaded) {
-                    Icon(
-                        painterResource(Res.drawable.ic_tick_double_check),
-                        contentDescription = stringResource(Res.string.success),
-                        modifier = Modifier.size(Theme.spacing._12)
-                    )
 
-                    Text(
-                        text = stringResource(Res.string.downloaded),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.success
-                    )
-                }
-            }
+            RecitersDetails(
+                recitingType = recitingType,
+                isDownloaded = isDownloaded
+            )
+            RadioButton(
+                isSelected = isSelected,
+                onClick = onSelect
+            )
         }
+    }
+}
 
-        RadioButton(
-            isSelected = isSelected,
-            onClick = onSelect
+@Composable
+private fun RecitersDetails(
+    recitingType: String,
+    isDownloaded: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+    ) {
+        Text(
+            text = recitingType,
+            style = Theme.typography.label.medium,
+            color = Theme.colorScheme.shadePrimary
         )
+        if (isDownloaded) {
+            Icon(
+                painterResource(Res.drawable.ic_tick_double_check),
+                contentDescription = stringResource(Res.string.success),
+                modifier = Modifier.size(Theme.spacing._12)
+            )
+
+            Text(
+                text = stringResource(Res.string.downloaded),
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.success
+            )
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,11 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.arrow_left
-import mena.faith_presentation.generated.resources.ic_arrow_left
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -21,8 +15,6 @@ import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.Reci
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.TilawahTopBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
@@ -45,25 +37,15 @@ fun DownloadedReciterScreen(
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun Content(
+private fun Content(
     uiState: TilawahUiState,
     listener: TilawahInteractionListener,
 ) {
     Scaffold(
         topBar = {
-            AppBar(
-                title = "Reciters",
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16, vertical = Theme.spacing._8
-                ),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.arrow_left)
-                    )
-                },
-                onLeadingClick = listener::onBackClick,
-                trailingContent = { TilawahTopBar(listener::onSearchClick) }
+            TilawahTopBar(
+                onSearchClick = listener::onSearchClick,
+                onBackClick = listener::onBackClick
             )
         }) {
         LazyColumn(
