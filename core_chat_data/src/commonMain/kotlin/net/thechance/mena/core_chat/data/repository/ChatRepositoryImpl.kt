@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.data.repository
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
@@ -14,6 +15,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import kotlin.uuid.ExperimentalUuidApi
@@ -29,7 +31,7 @@ class ChatRepositoryImpl(
         return tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
             bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
         ) {
-            client.get(CHAT_SUMMARY_ENDPOINT) {
+            client.get(CHATS_SUMMARIES_ENDPOINT) {
                 parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -40,7 +42,7 @@ class ChatRepositoryImpl(
         return tryNetworkCall<ChatSummaryDto>(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
-            client.get("$CHAT_SUMMARY_ENDPOINT/$chatId")
+            client.get(getChatSummaryEndpoint(chatId))
         }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
@@ -53,6 +55,15 @@ class ChatRepositoryImpl(
                 parameter(RECEIVER_ID_PARAMETER, userId)
             }
         }?.toDomain() ?: throw NotFoundException("Chat not found")
+    }
+
+    override suspend fun deleteChatById(chatId: Uuid) {
+        tryNetworkCall<Unit>(
+            bodyType = typeInfo<Unit>(),
+            defaultException = OperationFailedException("failed to delete message from data")
+        ) {
+            client.delete("$DELETE_CHAT_ENDPOINT/$chatId")
+        }
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
@@ -71,6 +82,11 @@ class ChatRepositoryImpl(
         const val PAGE_SIZE_PARAMETER = "size"
         const val RECEIVER_ID_PARAMETER = "receiverId"
         const val CHAT_ENDPOINT = "/chat"
-        const val CHAT_SUMMARY_ENDPOINT = "/chat/chatsSummary"
+        const val DELETE_CHAT_ENDPOINT = "/chat/delete"
+        const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
+
+        fun getChatSummaryEndpoint(chatId: Uuid): String {
+            return "/chat/${chatId}/summary"
+        }
     }
 }

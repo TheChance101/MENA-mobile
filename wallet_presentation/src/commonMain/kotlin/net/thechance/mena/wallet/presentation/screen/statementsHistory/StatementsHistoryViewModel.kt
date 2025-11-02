@@ -14,11 +14,13 @@ import mena.wallet_presentation.generated.resources.file_missing_description
 import mena.wallet_presentation.generated.resources.unknown_error_description
 import mena.wallet_presentation.generated.resources.unknown_error_title
 import net.thechance.mena.wallet.domain.entity.Statement
+import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.StatementRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryViewModel
 import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.Paginator
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
@@ -37,8 +39,23 @@ class StatementsHistoryViewModel(
 ) : BaseViewModel<StatementsHistoryScreenState, StatementsHistoryEffect>
     (StatementsHistoryScreenState()), StatementsHistoryInteractionListener {
 
+    private lateinit var paginator: Paginator<Int, List<Statement>>
+
     init {
+        initializePaginator()
         loadNextStatements()
+    }
+
+    private fun initializePaginator() {
+        paginator = Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = ::onPaginationLoading,
+            onRequest = ::getPagedStatements,
+            getNextKey = { currentKey, _ -> currentKey + 1 },
+            onError = ::onPaginationError,
+            onSuccess = { result, _ -> onPaginationSuccess(result) },
+            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+        )
     }
 
     private fun loadNextStatements() {
@@ -196,18 +213,6 @@ class StatementsHistoryViewModel(
                 endOfPages = items.isEmpty()
             )
         }
-    }
-
-    private val paginator by lazy {
-        Paginator(
-            initialKey = INITIAL_PAGE,
-            onLoadUpdated = ::onPaginationLoading,
-            onRequest = ::getPagedStatements,
-            getNextKey = { currentKey, _ -> currentKey + 1 },
-            onError = ::onPaginationError,
-            onSuccess = { result, newKey -> onPaginationSuccess(result) },
-            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
-        )
     }
 
     private suspend fun showSnackBar(
