@@ -3,6 +3,8 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.domain.model.SortType
+import net.thechance.mena.admin_panel.presentation.utils.format
+import net.thechance.mena.admin_panel.presentation.utils.formatPhoneNumber
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -11,8 +13,8 @@ fun User.toUIState(): UsersManagementScreenState.UserItem {
         id = id,
         fullName = "$firstName $lastName",
         phoneNumber = phoneNumber,
-        lastLoginAt = lastLoginAt,
-        lastVisitAt = lastVisitAt,
+        lastLoginAt = lastLoginAt.format("dd-MM-yyyy"),
+        lastVisitAt = lastVisitAt.format("dd-MM-yyyy"),
         status = status
     )
 }

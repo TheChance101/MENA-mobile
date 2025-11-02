@@ -29,13 +29,10 @@ fun SortableHeaderCell(
 ) {
     val isSortActive = currentSort.type == sortType
 
-    val tint by animateColorAsState(
-        targetValue = if (isSortActive) {
-            Theme.colorScheme.success
+    val iconTint = if (isSortActive) Theme.colorScheme.success else Theme.colorScheme.shadePrimary
 
-        } else {
-            Theme.colorScheme.shadePrimary
-        },
+    val animatedIconTint by animateColorAsState(
+        targetValue = iconTint,
         animationSpec = tween(durationMillis = 300),
         label = "iconTint"
     )
@@ -54,7 +51,7 @@ fun SortableHeaderCell(
             painter = painterResource(Res.drawable.ic_sort),
             contentDescription = null,
             modifier = Modifier.size(20.dp),
-            tint = tint
+            tint = animatedIconTint
         )
     }
 }

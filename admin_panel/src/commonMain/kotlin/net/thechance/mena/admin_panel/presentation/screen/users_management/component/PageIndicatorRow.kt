@@ -66,12 +66,13 @@ private fun PageNavigationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isEnabled) {
-            Theme.colorScheme.background.surfaceLow
-        } else {
-            Theme.colorScheme.background.surfaceLow.copy(alpha = 0.5f)
-        },
+    val backgroundColor = if (isEnabled) {
+        Theme.colorScheme.background.surfaceLow
+    } else {
+        Theme.colorScheme.background.surfaceLow.copy(alpha = 0.5f)
+    }
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
         label = "buttonBackgroundColor"
     )
@@ -82,7 +83,7 @@ private fun PageNavigationButton(
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
-            .background(backgroundColor)
+            .background(animatedBackgroundColor)
             .clickable(enabled = isEnabled) { onClick() }
             .padding(12.dp),
         tint = Theme.colorScheme.primary.primary
@@ -96,22 +97,18 @@ private fun PageNumberButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            Theme.colorScheme.primary.primary
-        } else {
-            Theme.colorScheme.background.surfaceLow
-        },
+    val backgroundColor =
+        if (isSelected) Theme.colorScheme.primary.primary else Theme.colorScheme.background.surfaceLow
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
         label = "pageBackgroundColor"
     )
 
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) {
-            Theme.colorScheme.primary.onPrimary
-        } else {
-            Theme.colorScheme.shadeSecondary
-        },
+    val textColor =
+        if (isSelected) Theme.colorScheme.primary.onPrimary else Theme.colorScheme.shadeSecondary
+    val animatedTextColor by animateColorAsState(
+        targetValue = textColor,
         animationSpec = tween(durationMillis = 300),
         label = "pageTextColor"
     )
@@ -120,7 +117,7 @@ private fun PageNumberButton(
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
-            .background(backgroundColor)
+            .background(animatedBackgroundColor)
             .clickable { onClick() }
             .padding(vertical = 4.dp),
         contentAlignment = Alignment.Center
@@ -128,7 +125,7 @@ private fun PageNumberButton(
         Text(
             text = "$pageNumber",
             style = Theme.typography.label.large,
-            color = textColor
+            color = animatedTextColor
         )
     }
 }

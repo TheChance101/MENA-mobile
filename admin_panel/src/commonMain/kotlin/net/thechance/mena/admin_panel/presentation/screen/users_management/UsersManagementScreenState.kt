@@ -10,7 +10,6 @@ import net.thechance.mena.admin_panel.domain.model.SortType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
@@ -24,8 +23,8 @@ data class UsersManagementScreenState(
         val id: Uuid,
         val fullName: String,
         val phoneNumber: String,
-        val lastLoginAt: LocalDate,
-        val lastVisitAt: LocalDate,
+        val lastLoginAt: String,
+        val lastVisitAt: String,
         val status: Status
     )
 
