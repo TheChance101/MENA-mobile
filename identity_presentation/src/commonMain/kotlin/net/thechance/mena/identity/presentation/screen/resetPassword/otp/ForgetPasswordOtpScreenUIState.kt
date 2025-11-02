@@ -1,8 +1,8 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import org.jetbrains.compose.resources.StringResource
 
-data class OtpScreenUIState (
+data class ForgetPasswordOtpScreenUIState (
     val otpValue: String = "",
     val isVerifyEnabled: Boolean = false,
     val isLoading: Boolean = false,

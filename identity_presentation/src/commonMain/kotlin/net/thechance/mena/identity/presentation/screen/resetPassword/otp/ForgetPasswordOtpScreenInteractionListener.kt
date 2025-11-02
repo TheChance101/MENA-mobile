@@ -1,8 +1,8 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
-interface OtpScreenInteractionListener: BaseInteractionListener {
+interface ForgetPasswordOtpScreenInteractionListener: BaseInteractionListener {
     fun onClickBack()
     fun onClickVerify()
     fun onClickResend()

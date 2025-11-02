@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -30,19 +30,19 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-data class OtpScreen(
+data class ForgetPasswordOtpScreen(
     private val phoneNumber: String,
     private val countryCode: String,
     private val callingCode: String
 ) : BaseScreen<
-        OtpScreenViewModel,
-        OtpScreenUIState,
-        OtpScreenUIEffect,
-        OtpScreenInteractionListener>() {
+        ForgetPasswordOtpScreenViewModel,
+        ForgetPasswordOtpScreenUIState,
+        ForgetPasswordOtpScreenUIEffect,
+        ForgetPasswordOtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(
@@ -54,8 +54,8 @@ data class OtpScreen(
 
     @Composable
     override fun OnRender(
-        state: OtpScreenUIState,
-        listener: OtpScreenInteractionListener
+        state: ForgetPasswordOtpScreenUIState,
+        listener: ForgetPasswordOtpScreenInteractionListener
     ) {
         Scaffold(
             topBar = {
@@ -122,14 +122,14 @@ data class OtpScreen(
     }
 
     override fun onEffect(
-        effect: OtpScreenUIEffect,
+        effect: ForgetPasswordOtpScreenUIEffect,
         navigator: Navigator
     ) {
         when (effect) {
-            OtpScreenUIEffect.NavigateBack -> navigator.pop()
-            is OtpScreenUIEffect.NavigateToResetPassword -> {
+            ForgetPasswordOtpScreenUIEffect.NavigateBack -> navigator.pop()
+            is ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword -> {
                 navigator.popUntilRoot()
-                navigator.push(ResetPasswordScreen())
+                navigator.push(SetNewPasswordScreen())
             }
         }
     }
