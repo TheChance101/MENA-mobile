@@ -21,6 +21,6 @@ data class LanguageDialogUiState(
     val options: List<Language> =Language.entries,
 )
 enum class Language(val iso: String) {
-    English(iso = "en"),
-    Arabic(iso = "ar")
+    Arabic(iso = "ar"),
+    English(iso = "en")
 }
