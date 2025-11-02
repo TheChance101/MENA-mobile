@@ -60,13 +60,11 @@ private fun UserItemRow(
     onToggleUserStatusClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor =
+        if (hasBackground) Theme.colorScheme.background.surfaceLow else Theme.colorScheme.background.surface
 
-    val backgroundColor by animateColorAsState(
-        targetValue = if (hasBackground) {
-            Theme.colorScheme.background.surfaceLow
-        } else {
-            Theme.colorScheme.background.surface
-        },
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
         label = "buttonBackgroundColor"
     )
@@ -75,7 +73,7 @@ private fun UserItemRow(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp)
-            .background(backgroundColor)
+            .background(animatedBackgroundColor)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -86,30 +84,35 @@ private fun UserItemRow(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.3f)
         )
+        
         Text(
             text = user.fullName,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(2f)
         )
+
         Text(
             text = user.phoneNumber,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
+
         Text(
-            text = user.lastLoginAt.toString(),
+            text = user.lastLoginAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
+
         Text(
-            text = user.lastVisitAt.toString(),
+            text = user.lastVisitAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
+
         UserStatusButton(
             isActive = user.status == Status.ACTIVE,
             modifier = Modifier.weight(0.8f).wrapContentWidth()

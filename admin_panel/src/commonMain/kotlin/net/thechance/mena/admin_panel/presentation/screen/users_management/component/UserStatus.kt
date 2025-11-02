@@ -61,32 +61,26 @@ fun UserStatusButton(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isActive) {
-            Theme.colorScheme.background.bgSuccess
-        } else {
-            Theme.colorScheme.background.bgError
-        },
+    val backgroundColor =
+        if (isActive) Theme.colorScheme.background.bgSuccess else Theme.colorScheme.background.bgError
+
+    val dotColor = if (isActive) Theme.colorScheme.success else Theme.colorScheme.error
+    val textColor = if (isActive) Theme.colorScheme.success else Theme.colorScheme.error
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
         label = "statusBackgroundColor"
     )
 
-    val dotColor by animateColorAsState(
-        targetValue = if (isActive) {
-            Theme.colorScheme.success
-        } else {
-            Theme.colorScheme.error
-        },
+    val animatedDotColor by animateColorAsState(
+        targetValue = dotColor,
         animationSpec = tween(durationMillis = 300),
         label = "statusDotColor"
     )
 
-    val textColor by animateColorAsState(
-        targetValue = if (isActive) {
-            Theme.colorScheme.success
-        } else {
-            Theme.colorScheme.error
-        },
+    val animatedTextColor by animateColorAsState(
+        targetValue = textColor,
         animationSpec = tween(durationMillis = 300),
         label = "statusTextColor"
     )
@@ -101,18 +95,18 @@ fun UserStatusButton(
         modifier = modifier
             .wrapContentWidth()
             .background(
-                color = backgroundColor,
+                color = animatedBackgroundColor,
                 shape = RoundedCornerShape(100.dp)
             )
             .padding(horizontal = 12.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        StatusDot(color = dotColor)
+        StatusDot(color = animatedDotColor)
         Text(
             text = statusText,
             style = Theme.typography.label.medium,
-            color = textColor
+            color = animatedTextColor
         )
     }
 }

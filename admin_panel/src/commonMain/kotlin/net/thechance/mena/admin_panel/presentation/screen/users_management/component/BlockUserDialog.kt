@@ -51,10 +51,7 @@ fun BlockUserDialog(
         ) {
             DialogIcon()
             DialogContent()
-            DialogActions(
-                onCancel = onDismiss,
-                onConfirmBlock = onConfirmBlock
-            )
+            DialogActions(onCancel = onDismiss, onConfirmBlock = onConfirmBlock)
         }
     }
 }
