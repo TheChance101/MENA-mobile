@@ -1,14 +1,13 @@
 package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 
 object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener {
     override fun onBackClicked() {}
     override fun onShelfClicked(id: String) {}
     override fun onViewAllProductsShelfClicked(id: String, name: String) {}
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {}
-    override fun onAddToCartClicked(productId: String, toggleCartToQuantity: Boolean) {}
+    override fun onAddToCartClicked(productId: String) {}
     override fun onPlusClicked(productId: String, productQuantity: Int) {}
     override fun onMinusClicked(productId: String, productQuantity: Int) {}
     override fun onCartClicked() {}

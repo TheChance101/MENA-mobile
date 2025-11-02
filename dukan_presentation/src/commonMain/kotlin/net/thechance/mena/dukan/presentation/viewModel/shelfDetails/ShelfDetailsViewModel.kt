@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import androidx.paging.PagingData
-import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -78,7 +77,7 @@ class ShelfDetailsViewModel(
             dukanId = args.dukanId
         )
 
-        tryToExecuteWithDebounce (
+        tryToExecuteWithDebounce(
             debounceTime = 300,
             block = { dukanCartRepository.updateProductQuantity(params) }
         )
@@ -92,7 +91,7 @@ class ShelfDetailsViewModel(
             dukanId = args.dukanId
         )
 
-        tryToExecuteWithDebounce (
+        tryToExecuteWithDebounce(
             debounceTime = 300,
             block = { dukanCartRepository.updateProductQuantity(params) }
         )
@@ -106,7 +105,7 @@ class ShelfDetailsViewModel(
             dukanId = args.dukanId
         )
 
-        tryToExecuteWithDebounce (
+        tryToExecuteWithDebounce(
             debounceTime = 300,
             block = { dukanCartRepository.updateProductQuantity(params) }
         )
