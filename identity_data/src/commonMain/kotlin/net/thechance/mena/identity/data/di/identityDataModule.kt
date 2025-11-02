@@ -11,7 +11,6 @@ import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.CachedImageRepositoryImpl
 import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl
-import net.thechance.mena.identity.data.repository.ProfileRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.AddressesRepositoryImpl
@@ -21,7 +20,6 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import net.thechance.mena.identity.domain.repository.RegisterRepository
-import net.thechance.mena.identity.domain.repository.ProfileRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.service.AuthorizationService
@@ -40,14 +38,12 @@ val identityDataModule = module {
     singleOf(::Settings)
 
     single<UserRepository> {
-        UserRepositoryImpl(client = get(named(IDENTITY_CLIENT)), userDao = get())
+        UserRepositoryImpl(
+            client = get(named(IDENTITY_CLIENT)), userDao = get(), settings =get())
     }
 
     single<AuthenticationRepository> {
         AuthenticationRepositoryImpl(client = get(named(IDENTITY_CLIENT)), settings = get())
-    }
-    single<ProfileRepository> {
-        ProfileRepositoryImpl(settings = get())
     }
 
     single<ResetPasswordRepository> {

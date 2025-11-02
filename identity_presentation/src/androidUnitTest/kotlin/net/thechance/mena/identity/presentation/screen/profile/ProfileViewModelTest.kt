@@ -144,7 +144,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         viewModel.onLanguageClicked()
         viewModel.state.test {
             val updatedState = awaitItem()
-            assertTrue(updatedState.showLanguageDialog)
+            assertTrue(updatedState.languageDialogUiState.isVisible)
         }
     }
 
@@ -183,7 +183,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.showLanguageDialog)
+        assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
 
     }
 

@@ -93,7 +93,7 @@ fun ScaffoldScope.LanguageDialog(
                 item {
                     PrimaryButton(
                         text = stringResource(Res.string.save),
-                        isEnabled = true,
+                        isEnabled = selectedLanguage != currentLanguage,
                         onClick = { onConfirmLanguageSelection(selectedLanguage) },
                         modifier = Modifier
                             .padding(top = 20.dp)

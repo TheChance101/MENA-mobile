@@ -5,23 +5,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
-import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
-import net.thechance.mena.identity.presentation.util.AppLocalizer
-import org.koin.core.KoinApplication.Companion.init
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
     val appVersion: String,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    val localizationService: LocalizationService
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
         (ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
-                selectedLanguage = Language.entries.find { it.iso == localizationService.getCurrentLanguage() }?: Language.English,
-                options = Language.entries
+                selectedLanguage = Language.entries.find { it.iso == userRepository.getCurrentAppLanguage() }?: Language.English,
             ),
         )),
     ProfileScreenInteractionListener {
@@ -92,7 +87,7 @@ class ProfileScreenViewModel(
     override fun onConfirmLanguageSelection(language: Language) {
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedLanguage = language)) }
         tryToExecute(
-            function = { localizationService.applyLanguage(language.iso) },
+            function = { userRepository.applyLanguage(language.iso) },
             onSuccess = {
                 updateState {
                     copy(
