@@ -15,7 +15,6 @@ val fakeProductDetails = ProductDetailsUiState(
         )
     ),
     isLoading = false,
-    isError = false,
     inCartQuantity = 0,
     isFavorite = true
 )
