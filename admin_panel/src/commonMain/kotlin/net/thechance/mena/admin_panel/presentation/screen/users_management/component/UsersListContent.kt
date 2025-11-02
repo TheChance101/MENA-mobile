@@ -28,10 +28,7 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 fun UsersListContent(
-    users: List<UsersManagementScreenState.UserItem>,
-    userNameSort: UsersManagementScreenState.Sort,
-    lastLoginDateSort: UsersManagementScreenState.Sort,
-    lastVisitDateSort: UsersManagementScreenState.Sort,
+    state: UsersManagementScreenState,
     listener: UsersManagementInteractionListener,
     modifier: Modifier = Modifier
 ) {
@@ -39,13 +36,11 @@ fun UsersListContent(
 
     Column(modifier = modifier.padding(16.dp)) {
         TableHeaderRow(
-            userNameSort = userNameSort,
-            lastLoginDateSort = lastLoginDateSort,
-            lastVisitDateSort = lastVisitDateSort,
-            listener = listener
+            sortState = state.sort,
+            onSortClicked = listener::onSortClicked
         )
         LazyColumn(state = listState) {
-            itemsIndexed(users) { index, user ->
+            itemsIndexed(state.users) { index, user ->
                 UserItemRow(
                     index = index + 1,
                     user = user,
@@ -115,12 +110,12 @@ private fun UserItemRow(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
-        UserStatesButton(
+        UserStatusButton(
             isActive = user.status == Status.ACTIVE,
             modifier = Modifier.weight(0.8f).wrapContentWidth()
         )
 
-        UserStatesToggleButton(
+        UserStatusToggleButton(
             isActive = user.status == Status.ACTIVE,
             onClick = onToggleUserStatusClicked,
             modifier = Modifier.weight(0.8f).wrapContentWidth()

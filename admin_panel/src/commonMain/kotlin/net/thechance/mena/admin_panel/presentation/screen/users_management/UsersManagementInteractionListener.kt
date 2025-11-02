@@ -6,13 +6,11 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 
 interface UsersManagementInteractionListener {
-    fun onSortUsersNameClicked()
-    fun onSortLastLoginDateClicked()
-    fun onSortLastVisitDateClicked()
+    fun onSortClicked(type: UsersManagementScreenState.SortType)
     fun onToggleUserStatusClicked(userId: Uuid)
     fun onRetryClicked()
     fun onSearchQueryChanged(query: String)
-    fun onShowBlockDialog(userId: Uuid)
+    fun showBlockDialog(userId: Uuid)
     fun onDismissBlockDialog()
     fun onConfirmBlock()
 }

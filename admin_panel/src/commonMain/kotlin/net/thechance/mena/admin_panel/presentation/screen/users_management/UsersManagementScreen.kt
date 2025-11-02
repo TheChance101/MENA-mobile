@@ -2,7 +2,6 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management
 
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,11 +66,11 @@ private fun UsersManagementScreenContent(
         },
         errorState = state.errorState,
         isLoading = state.isLoading,
-        onRetry = { listener.onRetryClicked() }
+        onRetry = listener::onRetryClicked
     ) {
         when {
             state.errorState != null ->
-                ErrorView(onRetry = { listener.onRetryClicked() })
+                ErrorView(onRetry = listener::onRetryClicked)
 
             state.users.isEmpty() && state.query.isNotEmpty() -> {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -101,12 +100,9 @@ private fun UsersManagementScreenContent(
                         modifier = Modifier.padding(16.dp)
                     )
                     UsersListContent(
-                        modifier = Modifier.fillMaxSize(),
                         listener = listener,
-                        users = state.users,
-                        userNameSort = state.userNameSort,
-                        lastLoginDateSort = state.lastLoginDateSort,
-                        lastVisitDateSort = state.lastVisitDateSort,
+                        state = state,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }

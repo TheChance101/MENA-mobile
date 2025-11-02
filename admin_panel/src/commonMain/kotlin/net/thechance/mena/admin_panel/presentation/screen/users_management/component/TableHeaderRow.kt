@@ -10,11 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.component.ClickableTextRow
-import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.ic_sort
 import net.thechance.mena.admin_panel.resources.last_login_date
 import net.thechance.mena.admin_panel.resources.last_visit_date
 import net.thechance.mena.admin_panel.resources.phone_number
@@ -22,16 +19,12 @@ import net.thechance.mena.admin_panel.resources.status
 import net.thechance.mena.admin_panel.resources.user_name
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 
 @Composable
 fun TableHeaderRow(
-    userNameSort: UsersManagementScreenState.Sort,
-    lastLoginDateSort: UsersManagementScreenState.Sort,
-    lastVisitDateSort: UsersManagementScreenState.Sort,
-    listener: UsersManagementInteractionListener,
+    sortState: UsersManagementScreenState.SortState,
+    onSortClicked: (UsersManagementScreenState.SortType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -55,12 +48,12 @@ fun TableHeaderRow(
             modifier = Modifier.weight(0.3f)
         )
 
-        ClickableTextRow(
+        SortableHeaderCell(
             text = stringResource(Res.string.user_name),
-            icon = painterResource(Res.drawable.ic_sort),
-            modifier = Modifier.weight(2f),
-            isSelected = userNameSort == UsersManagementScreenState.Sort.ASC,
-            onClick = { listener.onSortUsersNameClicked() }
+            sortType = UsersManagementScreenState.SortType.USERNAME,
+            currentSort = sortState,
+            onSortClicked = onSortClicked,
+            modifier = Modifier.weight(2f)
         )
 
         Text(
@@ -70,20 +63,20 @@ fun TableHeaderRow(
             modifier = Modifier.weight(1.5f)
         )
 
-        ClickableTextRow(
+        SortableHeaderCell(
             text = stringResource(Res.string.last_login_date),
-            icon = painterResource(Res.drawable.ic_sort),
-            modifier = Modifier.weight(1.5f),
-            isSelected = lastLoginDateSort == UsersManagementScreenState.Sort.ASC,
-            onClick = { listener.onSortLastLoginDateClicked() }
+            sortType = UsersManagementScreenState.SortType.LAST_LOGIN_DATE,
+            currentSort = sortState,
+            onSortClicked = onSortClicked,
+            modifier = Modifier.weight(1.5f)
         )
 
-        ClickableTextRow(
+        SortableHeaderCell(
             text = stringResource(Res.string.last_visit_date),
-            icon = painterResource(Res.drawable.ic_sort),
-            modifier = Modifier.weight(1.5f),
-            isSelected = lastVisitDateSort == UsersManagementScreenState.Sort.ASC,
-            onClick = { listener.onSortLastVisitDateClicked() }
+            sortType = UsersManagementScreenState.SortType.LAST_VISIT_DATE,
+            currentSort = sortState,
+            onSortClicked = onSortClicked,
+            modifier = Modifier.weight(1.5f)
         )
 
         Text(

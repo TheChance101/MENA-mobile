@@ -30,9 +30,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-
 @Composable
-fun UserStatesToggleButton(
+fun UserStatusToggleButton(
     isActive: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -58,7 +57,7 @@ fun UserStatesToggleButton(
 }
 
 @Composable
-fun UserStatesButton(
+fun UserStatusButton(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {

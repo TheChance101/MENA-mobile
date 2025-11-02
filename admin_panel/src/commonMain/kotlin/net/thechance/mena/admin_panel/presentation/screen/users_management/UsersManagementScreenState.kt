@@ -14,10 +14,7 @@ import kotlin.uuid.Uuid
 data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
-    val userNameSort: Sort = Sort.NONE,
-    val lastLoginDateSort: Sort = Sort.NONE,
-    val lastVisitDateSort: Sort = Sort.NONE,
-    val isUserActive: Boolean = true,
+    val sort: SortState = SortState(),
     val isLoading: Boolean = false,
     val errorState: ErrorState? = null,
     val showBlockDialog: Boolean = false,
@@ -32,29 +29,17 @@ data class UsersManagementScreenState(
         val status: Status
     )
 
-    enum class Sort {
-        ASC,
-        DESC,
-        NONE
+    data class SortState(
+        val type: SortType = SortType.NONE,
+        val direction: SortDirection = SortDirection.ASC
+    )
+
+    enum class SortDirection {
+        ASC, DESC;
+       fun toggle(): SortDirection = if (this == ASC) DESC else ASC
     }
-}
 
-fun UsersManagementScreenState.getActiveSortType(): SortType? = when {
-    userNameSort != UsersManagementScreenState.Sort.NONE -> SortType.USERNAME
-    lastLoginDateSort != UsersManagementScreenState.Sort.NONE -> SortType.LAST_LOGIN_DATE
-    lastVisitDateSort != UsersManagementScreenState.Sort.NONE -> SortType.LAST_VISIT_DATE
-    else -> null
-}
-
-fun UsersManagementScreenState.getActiveSortDirection(): SortDirection? = when {
-    userNameSort != UsersManagementScreenState.Sort.NONE -> userNameSort.toDomain()
-    lastLoginDateSort != UsersManagementScreenState.Sort.NONE -> lastLoginDateSort.toDomain()
-    lastVisitDateSort != UsersManagementScreenState.Sort.NONE -> lastVisitDateSort.toDomain()
-    else -> null
-}
-
-fun UsersManagementScreenState.Sort.toggle(): UsersManagementScreenState.Sort = when (this) {
-    UsersManagementScreenState.Sort.NONE -> UsersManagementScreenState.Sort.ASC
-    UsersManagementScreenState.Sort.ASC -> UsersManagementScreenState.Sort.DESC
-    UsersManagementScreenState.Sort.DESC -> UsersManagementScreenState.Sort.NONE
+    enum class SortType {
+        USERNAME, LAST_LOGIN_DATE, LAST_VISIT_DATE, NONE
+    }
 }

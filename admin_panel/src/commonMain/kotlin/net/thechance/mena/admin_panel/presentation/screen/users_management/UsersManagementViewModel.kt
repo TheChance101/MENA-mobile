@@ -27,23 +27,22 @@ class UsersManagementViewModel(
     }
 
     private fun getUsers() {
-        val queryParams = userQueryParams()
+        val queryParams = getUserQueryParams()
 
         tryToExecute(
             callee = { userRepository.getUsers(queryParams) },
             onSuccess = ::onGetUsersSuccess,
-            onError = ::onGetUsersError,
+            onError = ::onError,
             onStart = { updateState { it.copy(isLoading = true) } },
             dispatcher = dispatcher
         )
     }
 
-    private fun userQueryParams(): UserQueryParams {
-        val currentState = state.value
+    private fun getUserQueryParams(): UserQueryParams {
         return UserQueryParams(
             searchInput = currentState.query.ifBlank { null },
-            sortType = currentState.getActiveSortType(),
-            sortDirection = currentState.getActiveSortDirection(),
+            sortType = currentState.sort.type.toEntity(),
+            sortDirection = currentState.sort.direction.toEntity(),
             page = PAGE,
             size = SIZE
         )
@@ -59,47 +58,24 @@ class UsersManagementViewModel(
         }
     }
 
-    private fun onGetUsersError(errorState: ErrorState) {
+    private fun onError(errorState: ErrorState) {
+        updateState { it.copy(isLoading = false, errorState = errorState) }
+    }
+
+    override fun onSortClicked(type: UsersManagementScreenState.SortType) {
+        val newDirection = if (currentState.sort.type == type) {
+            currentState.sort.direction.toggle()
+        } else {
+            UsersManagementScreenState.SortDirection.ASC
+        }
         updateState {
             it.copy(
-                isLoading = false,
-                errorState = errorState
+                sort = UsersManagementScreenState.SortState(
+                    type = type,
+                    direction = newDirection
+                )
             )
         }
-    }
-
-    override fun onSortUsersNameClicked() {
-        updateSortState { state ->
-            state.copy(
-                userNameSort = state.userNameSort.toggle(),
-                lastLoginDateSort = UsersManagementScreenState.Sort.NONE,
-                lastVisitDateSort = UsersManagementScreenState.Sort.NONE
-            )
-        }
-    }
-
-    override fun onSortLastLoginDateClicked() {
-        updateSortState { state ->
-            state.copy(
-                userNameSort = UsersManagementScreenState.Sort.NONE,
-                lastLoginDateSort = state.lastLoginDateSort.toggle(),
-                lastVisitDateSort = UsersManagementScreenState.Sort.NONE
-            )
-        }
-    }
-
-    override fun onSortLastVisitDateClicked() {
-        updateSortState { state ->
-            state.copy(
-                userNameSort = UsersManagementScreenState.Sort.NONE,
-                lastLoginDateSort = UsersManagementScreenState.Sort.NONE,
-                lastVisitDateSort = state.lastVisitDateSort.toggle()
-            )
-        }
-    }
-
-    private fun updateSortState(update: (UsersManagementScreenState) -> UsersManagementScreenState) {
-        updateState(update)
         getUsers()
     }
 
@@ -112,79 +88,50 @@ class UsersManagementViewModel(
         getUsers()
     }
 
-    override fun onShowBlockDialog(userId: Uuid) {
-        updateState {
-            it.copy(
-                showBlockDialog = true,
-                selectedUserId = userId
-            )
-        }
+    override fun showBlockDialog(userId: Uuid) {
+        updateState { it.copy(showBlockDialog = true, selectedUserId = userId) }
     }
 
     override fun onDismissBlockDialog() {
-        updateState {
-            it.copy(
-                showBlockDialog = false,
-                selectedUserId = null
-            )
-        }
+        updateState { it.copy(showBlockDialog = false, selectedUserId = null) }
     }
 
     override fun onToggleUserStatusClicked(userId: Uuid) {
         val user = state.value.users.find { it.id == userId } ?: return
 
-        if (user.status == Status.ACTIVE) {
-            onShowBlockDialog(userId)
-        } else {
-            activateUser(userId)
+        when (user.status) {
+            Status.ACTIVE -> showBlockDialog(userId)
+            Status.BLOCKED -> updateUserStatus(userId, Status.ACTIVE)
         }
     }
 
-
     override fun onConfirmBlock() {
         val userId = state.value.selectedUserId ?: return
-        blockUser(userId)
+        updateUserStatus(userId, Status.BLOCKED)
         onDismissBlockDialog()
     }
 
-    private fun blockUser(userId: Uuid) {
+    private fun updateUserStatus(userId: Uuid, newStatus: Status) {
         tryToExecute(
-            callee = { userRepository.updateUserStatus(userId, Status.BLOCKED) },
-            onSuccess = {
-                updateUserStatusInState(userId, Status.BLOCKED)
-            },
-            onError = ::onGetUsersError,
+            callee = { userRepository.updateUserStatus(userId, newStatus) },
+            onSuccess = {onUpdateUserStatusSuccess(userId, newStatus)},
+            onError = ::onError,
             dispatcher = dispatcher
         )
     }
 
-    private fun activateUser(userId: Uuid) {
-        tryToExecute(
-            callee = { userRepository.updateUserStatus(userId, Status.ACTIVE) },
-            onSuccess = {
-                updateUserStatusInState(userId, Status.ACTIVE)
-            },
-            onError = ::onGetUsersError,
-            dispatcher = dispatcher
-        )
-    }
-
-    private fun updateUserStatusInState(userId: Uuid, newStatus: Status) {
-        updateState { currentState ->
-            currentState.copy(
-                users = currentState.users.map { user ->
-                    if (user.id == userId) {
-                        user.copy(status = newStatus)
-                    } else {
-                        user
-                    }
+    private fun onUpdateUserStatusSuccess(userId: Uuid, newStatus: Status) {
+        updateState {
+            it.copy(
+                users = it.users.map { user ->
+                    if (user.id == userId) user.copy(status = newStatus) else user
                 }
             )
         }
     }
+
     private companion object {
         const val PAGE = 1
-        const val SIZE = 20
-
+        const val SIZE = 8
     }
 }
