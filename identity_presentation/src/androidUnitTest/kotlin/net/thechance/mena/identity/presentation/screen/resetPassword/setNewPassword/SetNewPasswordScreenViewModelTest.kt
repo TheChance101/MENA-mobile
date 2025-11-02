@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.resetpassword
+package net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword
 
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -22,7 +22,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ResetPasswordScreenViewModelTest {
+class SetNewPasswordScreenViewModelTest {
 
     private lateinit var resetPasswordRepository: ResetPasswordRepository
     private lateinit var passwordValidator: PasswordValidator
