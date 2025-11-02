@@ -74,11 +74,11 @@ private fun CardContent(
             modifier
                 .fillMaxWidth()
                 .padding(
-                    horizontal = 12.dp,
-                    vertical = 8.dp,
+                    horizontal = Theme.spacing._12,
+                    vertical = Theme.spacing._8,
                 ),
     ) {
-        PlayButton(Modifier.padding(end = 12.dp))
+        PlayButton(Modifier.padding(end = Theme.spacing._12))
         SurahDetails(
             surahDetailsUiState,
             modifier = Modifier.weight(1f),
@@ -97,7 +97,7 @@ private fun SurahDetails(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
         modifier = modifier,
     ) {
         Text(
@@ -107,7 +107,7 @@ private fun SurahDetails(
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         ) {
             Icon(
                 painter = painterResource(Res.drawable.ic_reciter_list),
@@ -136,8 +136,8 @@ private fun PlayButton(modifier: Modifier = Modifier) {
                 .size(44.dp)
                 .background(
                     color = Theme.colorScheme.background.surface,
-                    shape = RoundedCornerShape(12.dp),
-                ).clip(RoundedCornerShape(12.dp)),
+                    shape = RoundedCornerShape(Theme.spacing._12),
+                ).clip(RoundedCornerShape(Theme.spacing._12)),
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_play_circle),

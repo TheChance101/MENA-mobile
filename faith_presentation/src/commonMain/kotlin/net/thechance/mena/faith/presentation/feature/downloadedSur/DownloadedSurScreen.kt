@@ -1,7 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.downloadedSur
 
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +8,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_ad_duha
@@ -17,6 +15,7 @@ import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
 import mena.faith_presentation.generated.resources.ic_ash_shams
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.downloadedSur.components.DownloadedSurAppBar
@@ -59,11 +58,11 @@ private fun Content(
         },
     ) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
             contentPadding =
                 PaddingValues(
-                    horizontal = 16.dp,
-                    vertical = 12.dp,
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._12,
                 ),
         ) {
             items(uiState.surDetails) { downloadedSurah ->
