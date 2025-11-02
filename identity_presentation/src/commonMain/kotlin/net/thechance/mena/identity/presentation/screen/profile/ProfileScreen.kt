@@ -73,15 +73,15 @@ class ProfileScreen : BaseScreen<
         }
 
         Scaffold(overlays = {
-                    dialog(state.showLanguageDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissLanguageDialog,
-                            actionButtons = {}
-                        )
-                    }
+            dialog(state.languageDialogUiState.isVisible) {
+                LanguageDialog(
+                    isVisible = it,
+                    onDismissRequest = listener::onDismissLanguageDialog,
+                    languages = state.languageDialogUiState.options,
+                    onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
+                    currentLanguage = state.languageDialogUiState.selectedLanguage
+                )
+            }
                     dialog(state.showThemeDialog) {
                         Dialog(
                             isVisible = it,

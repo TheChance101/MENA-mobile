@@ -6,7 +6,7 @@
     <string name="password">كلمة المرور</string>
     <string name="forget_password">هل نسيت كلمة المرور؟</string>
     <string name="login">تسجيل الدخول</string>
-    <string name="register_prompt">هل أنت جديد؟</string>
+    <string name="register_new_prompt">هل أنت جديد؟</string>
     <string name="register_now">سجل الآن</string>
     <string name="unexpected_error">حدث خطأ ما</string>
     <string name="success">نجاح</string>
