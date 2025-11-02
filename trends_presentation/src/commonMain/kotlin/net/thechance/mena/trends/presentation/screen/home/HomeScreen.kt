@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
 import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +22,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -94,8 +93,8 @@ private fun HomeScreenContent(
                 visible = state.isLoading.not(),
                 content = {
                     TrendsAppBar(
-                        onManageMyTrendsClick = listener::onClickManageMyTrends,
-                        onEditTagsClick = listener::onClickEditTags
+                        onClickManageMyTrends = listener::onClickManageMyTrends,
+                        onClickEditTags = listener::onClickEditTags
                     )
                 }
             )
@@ -132,7 +131,8 @@ private fun HomeScreenContent(
                     ReelsListSection(
                         reels = reels,
                         onClickLike = listener::onClickLike,
-                        onClickReel = listener::onClickReel
+                        onClickReel = listener::onClickReel,
+                        onExpandDescription = listener::onClickExpandDescription
                     )
                 }
             )
@@ -169,6 +169,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -184,8 +185,9 @@ private fun ReelsListSection(
             reels[index]?.let { reel ->
                 FeedReelCard(
                     reel = reel,
-                    onLikeClick = { onClickLike(reel.id, reel.isLiked) },
-                    onReelClick = { onClickReel(reel.id) }
+                    onClickLike = { onClickLike(reel.id, reel.isLiked) },
+                    onClickReel = { onClickReel(reel.id) },
+                    onExpandDescription = { onExpandDescription(reel.id) }
                 )
             }
         }
@@ -194,15 +196,15 @@ private fun ReelsListSection(
 
 @Composable
 private fun TrendsAppBar(
-    onManageMyTrendsClick: () -> Unit,
-    onEditTagsClick: () -> Unit
+    onClickManageMyTrends: () -> Unit,
+    onClickEditTags: () -> Unit
 ) {
     AppBar(
         title = stringResource(Res.string.trends_title),
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onManageMyTrendsClick
+                onClick = onClickManageMyTrends
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_account_setting),
@@ -213,7 +215,7 @@ private fun TrendsAppBar(
 
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onEditTagsClick
+                onClick = onClickEditTags
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
@@ -239,6 +241,7 @@ private fun HomeScreenPreview() {
                     override fun onClickManageMyTrends() {}
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
+                    override fun onClickExpandDescription(reelId: String) {}
                 }
             )
         }

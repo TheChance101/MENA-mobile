@@ -13,7 +13,13 @@ expect val platformNetworkModule: Module
 
 val networkModule = module {
     single(named(BASE_URL_KEY)) { AppEnvironment.baseUrl }
-    single { NetworkClient( get(named(BASE_URL_KEY))) }
+    single {
+        NetworkClient(
+            baseUrl = get(named(BASE_URL_KEY)),
+            settings = get(),
+            adminAuthentication = get()
+        )
+    }
 
     single<HttpClient>(named(ADMIN_PANEL_KEY)) {
         get<NetworkClient>().provideHttpClient()
@@ -21,8 +27,8 @@ val networkModule = module {
 
     single<Ktorfit>(named(ADMIN_PANEL_KEY)) {
         Ktorfit.Builder()
-            .httpClient(get<HttpClient>(named(ADMIN_PANEL_KEY)))
-            .baseUrl(get<String>(named(BASE_URL_KEY)))
+            .httpClient(client = get<HttpClient>(named(ADMIN_PANEL_KEY)))
+            .baseUrl(url = get<String>(named(BASE_URL_KEY)))
             .converterFactories(ResponseConverterFactory())
             .build()
     }

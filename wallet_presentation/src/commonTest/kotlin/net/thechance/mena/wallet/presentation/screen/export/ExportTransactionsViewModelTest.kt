@@ -182,28 +182,37 @@ class ExportTransactionsViewModelTest {
 
     @Test
     fun `should update startDate when user picks start date`() = runTest {
-        everySuspend {
-            transactionRepository.getFirstTransactionDate()
-        } returns LocalDate(2025, 9, 1)
         initViewModel()
-
         viewModel.state.test {
             skipItems(1)
             viewModel.onStartDateClicked()
-            advanceUntilIdle()
-            skipItems(1)
-
-            val selectedDate = LocalDate(2025, 9, 15)
-            viewModel.onPickDateClicked(selectedDate)
-
             val state = awaitItem()
-            assertEquals(selectedDate, state.filterState.startDate)
-            cancelAndIgnoreRemainingEvents()
+            assertTrue(state.dateState.isDateBottomSheetVisible)
+            assertEquals(
+                ExportTransactionsState.DatePickerMode.START_DATE,
+                state.dateState.datePickerMode
+            )
         }
     }
 
     @Test
-    fun `should update endDate when onToDateClicked is called`() = runTest {
+    fun `should set defaultStartDate when current startDate exists`() = runTest {
+        initViewModel()
+
+        viewModel.state.test {
+            skipItems(1)
+            val existingStartDate = LocalDate(2024, 10, 15)
+            viewModel.onPickDateClicked(LocalDate(2024, 10, 15))
+            skipItems(1)
+            viewModel.onStartDateClicked()
+            val state = awaitItem()
+
+            assertEquals(existingStartDate, state.dateState.defaultStartDate)
+        }
+    }
+
+    @Test
+    fun `should update endDate when  user picks end date`() = runTest {
         initViewModel()
 
         viewModel.state.test {

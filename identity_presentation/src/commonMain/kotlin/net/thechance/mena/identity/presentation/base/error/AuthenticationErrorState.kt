@@ -10,6 +10,7 @@ sealed interface AuthenticationErrorState {
     data object UserIsBlocked : AuthenticationErrorState
     data object TooManyRequests : AuthenticationErrorState
     data object OTPExpired : AuthenticationErrorState
+    data object PhoneNumberAlreadyExists : AuthenticationErrorState
     
     data object NoNetwork : AuthenticationErrorState
     

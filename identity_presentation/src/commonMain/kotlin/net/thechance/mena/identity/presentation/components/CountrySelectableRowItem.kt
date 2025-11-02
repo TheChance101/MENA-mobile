@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,6 +21,7 @@ import net.thechance.mena.designsystem.presentation.component.button.radioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -58,7 +58,7 @@ internal fun CountrySelectableRowItem(
                 onClick = {
                     onClick(selectedCountry)
                 },
-                indication = ripple(),
+                indication = rippleIndication(),
                 interactionSource = remember { MutableInteractionSource() }
             )
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)

@@ -53,6 +53,9 @@ kotlin {
             implementation(libs.coil.gif)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
+
+            // maps
+            implementation(libs.maplibre.compose)
         }
         iosMain.dependencies {
 
@@ -93,6 +96,7 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
+                "net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel",
                 "*MapperKt",
             )
         }
