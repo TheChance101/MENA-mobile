@@ -25,7 +25,8 @@ val productDto1 = ProductDto(
         "https://picsum.photos/200/200?random=1",
         "https://picsum.photos/200/200?random=2"
     ),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
 )
 
 
@@ -37,7 +38,8 @@ val productDto2 = ProductDto(
     price = 19.99,
     description = "Another demo product",
     imageUrls = listOf("https://picsum.photos/200/200?random=1","https://picsum.photos/200/200?random=2"),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
 )
 
 val productDtos = listOf(

@@ -6,4 +6,8 @@ interface DukanCartRepository {
 
     suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams)
 
+    suspend fun addProductQuantity(params: UpdateProductCartQuantityParams)
+
+    suspend fun deleteProductFromCart(dukanId: String,productId: String)
+
 }

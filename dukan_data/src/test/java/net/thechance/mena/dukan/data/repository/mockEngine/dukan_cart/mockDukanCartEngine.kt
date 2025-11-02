@@ -15,21 +15,28 @@ import net.thechance.mena.dukan.data.repository.DukanCartRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
 
-fun MockRequestHandleScope.defaultUpdateProductQuantityResponse() = respond(
+fun MockRequestHandleScope.defaultAddOrUpdateProductQuantityResponse() = respond(
     content = """{}""",
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultDeleteProductFromCartResponse() = respond(
+    content = "",
+    status = HttpStatusCode.NoContent,
+    headers = jsonHeaders
+)
 
 fun dukanCartHttpClient(
-    dukanCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
+    val dukanId = "10"
+    val productId = "5"
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
-            "/dukan/cart/items" -> dukanCartResponse?.invoke(this)
-                ?: defaultUpdateProductQuantityResponse()
-
+            "/dukan/cart/items" -> addOrUpdateProductCartResponse?.invoke(this) ?: defaultAddOrUpdateProductQuantityResponse()
+            "/dukan/cart/$dukanId/items/$productId" -> deleteProductFromCartResponse?.invoke(this) ?:defaultDeleteProductFromCartResponse()
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
     }) {
@@ -40,12 +47,14 @@ fun dukanCartHttpClient(
 }
 
 
-fun defaultUpdateProductQuantityRepository(
-    dukanCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+fun dukanCartRepository(
+    addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanCartRepositoryImpl {
     return DukanCartRepositoryImpl(
         client = dukanCartHttpClient(
-            dukanCartResponse = dukanCartResponse
+            addOrUpdateProductCartResponse = addOrUpdateProductCartResponse,
+            deleteProductFromCartResponse = deleteProductFromCartResponse
         )
     )
 }
