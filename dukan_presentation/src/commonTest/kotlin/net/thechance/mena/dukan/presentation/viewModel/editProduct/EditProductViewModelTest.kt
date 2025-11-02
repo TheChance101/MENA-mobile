@@ -585,8 +585,6 @@ class EditProductViewModelTest {
     }
 }
 
-// ===== FAKE DATA FUNCTIONS =====
-
 @OptIn(ExperimentalUuidApi::class)
 private val testShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174000")
 
