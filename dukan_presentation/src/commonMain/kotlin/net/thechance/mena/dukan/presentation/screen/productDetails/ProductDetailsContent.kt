@@ -1,13 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -28,6 +26,7 @@ fun ProductDetailsContent(
     listener: ProductDetailsInteractionListener
 ) {
     OnSystemBackPressed(listener::onBackClicked)
+
     Scaffold(
         topBar = {
             ProductDetailsAppBar(
@@ -45,11 +44,13 @@ fun ProductDetailsContent(
             ProductDetailsImagesSection(
                 allImages = state.product.images,
                 selectedImageUrl = state.selectedImageUrl,
-                onSecondaryImageClick = listener::onSecondaryImageClicked
+                onSecondaryImageClick = listener::onSecondaryImageClicked,
+                isLoading = state.isLoading
             )
 
             ProductDetailsInfoSection(
-                state = state.product
+                state = state.product,
+                isLoading = state.isLoading
             )
         }
     }

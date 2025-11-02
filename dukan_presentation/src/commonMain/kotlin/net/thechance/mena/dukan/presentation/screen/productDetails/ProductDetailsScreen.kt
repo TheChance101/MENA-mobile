@@ -15,6 +15,7 @@ fun ProductDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {
             ProductDetailsEffects.NavigateBack -> navController.popBackStack()
