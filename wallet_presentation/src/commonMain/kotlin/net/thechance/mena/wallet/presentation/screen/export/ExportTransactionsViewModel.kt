@@ -8,9 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.download_complete
@@ -33,7 +30,6 @@ import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
 import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
@@ -315,22 +311,12 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun getTransactionFilterParams(): TransactionFilterParams {
-        val formatter = LocalDate.Format {
-            year(); char('-'); monthNumber(); char('-')
-            day(padding = Padding.ZERO)
-        }
-        val startDateTime =
-            currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
-        val endDateTime =
-            currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
-
-        return TransactionFilterParams(
+    private fun getTransactionFilterParams(): TransactionFilterParams =
+        TransactionFilterParams(
             types = currentState.filterState.selectedTransactionsTypes.map { it.toDomain() },
-            startDate = startDateTime,
-            endDate = endDateTime
+            startDate = currentState.filterState.startDate,
+            endDate = currentState.filterState.endDate
         )
-    }
 
     private suspend fun handleDownloadError(error: ErrorState) {
         resetDownloadState()
@@ -403,7 +389,6 @@ class ExportTransactionsViewModel(
             isSuccess = false
         )
     }
-
 
     private suspend fun handleError(
         error: ErrorState,
@@ -511,17 +496,8 @@ class ExportTransactionsViewModel(
         }
     }
 
-
     @OptIn(ExperimentalTime::class)
     private fun getUniqueStatementFileName(): String {
         return "statement_${Clock.System.now().epochSeconds}.pdf"
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private fun String?.toStartOfDayLocalDateTime(formatter: DateTimeFormat<LocalDate>):
-            LocalDate? {
-        return this
-            ?.takeIf { it.isNotEmpty() }
-            ?.let { LocalDate.parse(it, formatter) }
     }
 }

@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">MENA Admin Panel</string>
+    <string name="mena">MENA</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="password">كلمة السر</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="login_header">مرحبًا بكم مرة أخرى في MENA</string>
+    <string name="login_sub_title">أدخل بيانات الخاصة بك لتسجيل الدخول</string>
+    <string name="login_background_img">صورة خلفية لتسجيل الدخول</string>
+    <string name="no_internet_title">عفواً! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
+    <string name="unknown_error_title">خطأ غير معروف</string>
+    <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_invalid_credentials_title">بيانات اعتماد غير صحيحة.</string>
+    <string name="error_invalid_credentials_description">يرجى التحقق من اسم المستخدم وكلمة المرور الخاصة بك.</string>
 </resources>
