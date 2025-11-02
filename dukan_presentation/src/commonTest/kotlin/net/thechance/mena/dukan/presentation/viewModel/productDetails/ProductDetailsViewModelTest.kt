@@ -22,7 +22,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -61,11 +62,11 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `init SHOULD set isError to false after successful load`() = runTest {
+    fun `init SHOULD set errorState to null after successful load`() = runTest {
         advanceUntilIdle()
 
         val state = productDetailsViewModel.state.value
-        assertFalse(state.isError)
+        assertNull(state.errorState)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -133,14 +134,16 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `init SHOULD set isError to true when load fails`() = runTest {
-        everySuspend { productRepository.getProductDetails(any()) } throws Exception("Network Error")
+    fun `init SHOULD set errorState to non-null when load fails`() = runTest {
+        val networkError = Exception("Network Error")
+        everySuspend { productRepository.getProductDetails(any()) } throws networkError
 
         val errorViewModel = createViewModel()
         advanceUntilIdle()
         val state = errorViewModel.state.value
 
-        assertTrue(state.isError)
+        assertNotNull(state.errorState)
+        assertEquals(networkError, state.errorState)
     }
 
     @Test
