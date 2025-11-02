@@ -57,12 +57,6 @@ fun TextMessageLayout(
         if (message.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
-    val messagePaddingStart = if (message.isMine)
-        Theme.spacing._24
-    else
-        Theme.spacing._8
-
-    val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
     val maxRadius = Theme.radius.md
 
     val messageShape = if (message.isMine && isMarkedLastInSeries)
@@ -82,84 +76,96 @@ fun TextMessageLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (message.isMine)
-        Alignment.Start
-    else
-        Alignment.End
+    val avatarSize = 24.dp
+    val avatarSpacing = Theme.spacing._8
+    val myMessageMarginStart = Theme.spacing._24
+    val otherMessageMarginEnd = Theme.spacing._8
+
+    val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
+    val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+
+    val infoRowPaddingStart = if (message.isMine) {
+        myMessageMarginStart
+    } else {
+        avatarSize + avatarSpacing
+    }
+    val infoRowPaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
-    val verticalPadding = Theme.spacing._8
     Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = messageAlignment
     ) {
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-        ) {
-            if (!message.isMine) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(24.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isMarkedLastInSeries) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxSize(),
-                            model = chatAvatarUrl,
-                            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                            error = painterResource(Res.drawable.ic_profile_placeholder),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Contact photo",
-                        )
-                    }
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .padding(start = messagePaddingStart, end = messagePaddingEnd)
-                    .clip(messageShape)
-                    .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
-                    .combinedClickable(
-                        onClick = onMessageClick,
-                        onLongClick = onMessageLongClick
-                    )
-                    .background(color = messageBackground, shape = messageShape)
-                    .padding(
-                        horizontal = verticalPadding,
-                        vertical = Theme.spacing._4
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = message.content.text,
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary
-                )
-            }
-
-        }
-         AnimatedVisibility(
-            visible = showMessageInfo,
-            modifier = Modifier
-                .align(messageInfoAlignment)
-                .padding(start = messagePaddingStart, end = messagePaddingEnd)
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+            horizontalAlignment = messageAlignment
         ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
+            ) {
+                if (!message.isMine) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(avatarSize),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isMarkedLastInSeries) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = chatAvatarUrl,
+                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                                error = painterResource(Res.drawable.ic_profile_placeholder),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "Contact photo",
+                            )
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
+                        .clip(messageShape)
+                        .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
+                        .combinedClickable(
+                            onClick = onMessageClick,
+                            onLongClick = onMessageLongClick
+                        )
+                        .background(color = messageBackground, shape = messageShape)
+                        .padding(
+                            horizontal = Theme.spacing._8,
+                            vertical = Theme.spacing._4
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = message.content.text,
+                        style = Theme.typography.body.small,
+                        color = Theme.colorScheme.shadeSecondary
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (!message.isMine && message.reactions.isNotEmpty()) {
                     ReactionBubble(reactions = message.reactions)
                 }
 
-                MessageInfo(
-                    messageTime = message.sendTime,
-                    messageStatus = message.status,
-                    messageIsMine = message.isMine,
-                    onFailClick = onFailClick,
-                )
+                AnimatedVisibility(visible = showMessageInfo) {
+                    MessageInfo(
+                        messageTime = message.sendTime,
+                        messageStatus = message.status,
+                        messageIsMine = message.isMine,
+                        onFailClick = onFailClick,
+                    )
+                }
 
                 if (message.isMine && message.reactions.isNotEmpty()) {
                     ReactionBubble(reactions = message.reactions)
