@@ -41,7 +41,6 @@
     <string name="block_user">Block user</string>
     <string name="block_user_confirmation_message">Are you sure you want to continue with blocking?</string>
     <string name="cancel">Cancel</string>
-    <string name="mena">MENA</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="login">login</string>
