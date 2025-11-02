@@ -1,9 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +22,7 @@ import mena.dukan_presentation.generated.resources.silver_tc
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsContent
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewProductDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.util.ShimmerBox
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
 import org.jetbrains.compose.resources.painterResource
@@ -42,7 +37,6 @@ fun ProductDetailsInfoSection(
 ) {
     Column(modifier = modifier.padding(top = Theme.spacing._16)) {
         if (isLoading) {
-            // SKELETON LOADING
             ShimmerBox(
                 width = 200.dp,
                 height = Theme.typography.title.medium.fontSize.value.dp
@@ -64,13 +58,12 @@ fun ProductDetailsInfoSection(
             }
 
         } else {
-            // ACTUAL CONTENT (Your original implementation)
             Text(
                 text = state.name,
                 style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center,
-                modifier = Modifier // Removed top padding here as it's on the parent column
+                modifier = Modifier
             )
             Row(
                 modifier = Modifier.padding(top = Theme.spacing._2),
@@ -105,24 +98,6 @@ fun ProductDetailsInfoSection(
         }
     }
 }
-
-@Composable
-fun ShimmerBox(
-    width: Dp,
-    height: Dp,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .width(width)
-            .height(height)
-            .background(
-                color = Theme.colorScheme.shadeSecondary.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(Theme.radius.xs)
-            )
-    )
-}
-
 
 @Preview
 @Composable
