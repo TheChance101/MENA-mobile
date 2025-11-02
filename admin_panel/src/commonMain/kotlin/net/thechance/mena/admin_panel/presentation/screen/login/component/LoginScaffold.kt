@@ -47,7 +47,7 @@ internal fun LoginScaffold(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .padding(end = 68.dp, top = 16.dp)
+                    .padding(end = 32.dp, top = 32.dp)
                     .fillMaxWidth(0.3f)
             ) { SnackBarContainer(snackBarState) }
         }
