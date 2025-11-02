@@ -34,7 +34,7 @@ internal fun LoginScaffold(
 ) {
     Scaffold {
         Box {
-            BackgroundImage()
+            LoginBackground()
 
             Column(
                 modifier = Modifier
@@ -55,7 +55,7 @@ internal fun LoginScaffold(
 }
 
 @Composable
-private fun BackgroundImage() {
+private fun LoginBackground() {
     Image(
         modifier = Modifier.fillMaxSize(),
         painter = painterResource(Res.drawable.login_background),
