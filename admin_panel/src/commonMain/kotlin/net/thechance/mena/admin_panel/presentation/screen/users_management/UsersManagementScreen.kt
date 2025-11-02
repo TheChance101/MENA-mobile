@@ -34,12 +34,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UsersManagementScreen(viewModel: UsersManagementViewModel = koinViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = { effect ->
-            onUsersManagementEffect(effect = effect)
-        }
-    )
     UsersManagementScreenContent(state = state, listener = viewModel)
 }
 
@@ -107,13 +101,5 @@ private fun UsersManagementScreenContent(
                 }
             }
         }
-    }
-}
-
-private fun onUsersManagementEffect(
-    effect: UsersManagementEffect,
-) {
-    when (effect) {
-        is UsersManagementEffect.ShowConfirmationMessage -> {}
     }
 }

@@ -18,7 +18,7 @@ import kotlin.uuid.Uuid
 class UsersManagementViewModel(
     @Provided private val userRepository: UserRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<UsersManagementScreenState, UsersManagementEffect>(
+) : BaseViewModel<UsersManagementScreenState, Unit>(
     UsersManagementScreenState()
 ), UsersManagementInteractionListener {
 
