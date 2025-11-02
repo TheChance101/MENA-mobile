@@ -80,6 +80,10 @@ internal fun UpdateCategoriesScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.getCategories()
+    }
+
     UpdateCategoriesScreenContent(
         state = state,
         listener = viewModel
