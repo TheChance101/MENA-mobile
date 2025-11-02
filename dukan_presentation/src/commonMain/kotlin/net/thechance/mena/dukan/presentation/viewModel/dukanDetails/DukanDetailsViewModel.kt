@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -25,21 +27,13 @@ class DukanDetailsViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
+    private val dukanCartRepository: DukanCartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DukanDetailsUiState, DukanDetailsEffects>(
     DukanDetailsUiState(),
     defaultDispatcher = defaultDispatcher
 ), DukanDetailsInteractionListener {
-
-    private val productsState: MutableStateFlow<PagingData<ProductUiState>> =
-        MutableStateFlow(PagingData.empty())
-
-    private val shelvesState: MutableStateFlow<PagingData<ShelfUiState>> =
-        MutableStateFlow(PagingData.empty())
-
-    val shelfProductsState: MutableStateFlow<List<ProductUiState>> = MutableStateFlow(emptyList())
-
 
     private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
 
@@ -137,10 +131,9 @@ class DukanDetailsViewModel(
     }
 
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
-        shelvesState.value = updatedShelves
         updateState {
             copy(
-                shelves = shelvesState,
+                shelves = flowOf(updatedShelves),
                 dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
@@ -169,10 +162,9 @@ class DukanDetailsViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
-        productsState.value = products
         updateState {
             copy(
-                productsShelf = productsState,
+                productsShelf = flowOf(products),
                 dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
@@ -206,91 +198,45 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
-    private fun updateProductListInShelfPagingData(
-        productId: String,
-        updateProduct: (ProductUiState) -> ProductUiState
-    ) {
-        val currentData = shelvesState.value
-        val updatedData = currentData.map { shelf ->
-            shelf.copy(
-                products = shelf.products.map { product ->
-                    if (product.id == productId) updateProduct(product) else product
-                }
-            )
-        }
-
-        shelvesState.value = updatedData
-        updateState { copy(shelves = shelvesState) }
-    }
-
-    private fun updateProductInPagingData(
-        productId: String,
-        updateProduct: (ProductUiState) -> ProductUiState
-    ) {
-        val currentData = productsState.value
-        val updatedData = currentData.map { product ->
-            if (product.id == productId) updateProduct(product) else product
-        }
-
-        productsState.value = updatedData
-        updateState { copy(productsShelf = productsState) }
-    }
-
-
     override fun onAddToCartClicked(productId: String) {
-        if (isWideImageStyle()) {
-            updateProductInPagingData(productId) { product ->
-                product.copy(showProductQuantity = true)
-            }
-        } else {
-            updateProductListInShelfPagingData(productId) { product ->
-                product.copy(showProductQuantity = true)
-            }
-        }
 
-    }
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = 1,
+            dukanId = args.dukanId
+        )
 
-    private fun increaseProductQuantity(productId: String) {
-        updateProductQuantity(productId) { product ->
-            product.copy(inCartQuantity = product.inCartQuantity + 1)
-        }
-
-    }
-
-    private fun decreaseProductQuantity(productId: String) {
-        updateProductQuantity(productId) { product ->
-            if (product.inCartQuantity == 1) {
-                product.copy(showProductQuantity = false)
-            } else product.copy(inCartQuantity = product.inCartQuantity - 1)
-        }
-    }
-
-    private fun updateProductQuantity(
-        productId: String,
-        update: (ProductUiState) -> ProductUiState
-    ) {
-        if (isWideImageStyle()) {
-            updateProductInPagingData(productId, update)
-        } else {
-            updateProductListInShelfPagingData(productId, update)
-        }
-    }
-
-    override fun onPlusClicked(productId: String) {
-        increaseProductQuantity(productId)
         tryToExecuteWithDebounce(
-            block = {
-                // update product
-            },
+            debounceTime = 300,
+            block = { dukanCartRepository.updateProductQuantity(params) }
         )
     }
 
-    override fun onMinusClicked(productId: String) {
-        decreaseProductQuantity(productId)
+    override fun onPlusClicked(productId: String, productQuantity: Int) {
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = productQuantity,
+            dukanId = args.dukanId
+        )
+
         tryToExecuteWithDebounce(
-            block = {
-                // update product
-            },
+            debounceTime = 300,
+            block = { dukanCartRepository.updateProductQuantity(params) }
+        )
+    }
+
+    override fun onMinusClicked(productId: String, productQuantity: Int) {
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = productQuantity,
+            dukanId = args.dukanId
+        )
+
+        tryToExecuteWithDebounce(
+            debounceTime = 300,
+            block = { dukanCartRepository.updateProductQuantity(params) }
         )
     }
 

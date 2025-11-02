@@ -8,9 +8,9 @@ object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener 
     override fun onShelfClicked(id: String) {}
     override fun onViewAllProductsShelfClicked(id: String, name: String) {}
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {}
-    override fun onAddToCartClicked(product: DukanDetailsUiState.ProductUiState) {}
-    override fun onPlusClicked(product: DukanDetailsUiState.ProductUiState) {}
-    override fun onMinusClicked(product: DukanDetailsUiState.ProductUiState) {}
+    override fun onAddToCartClicked(productId: String, toggleCartToQuantity: Boolean) {}
+    override fun onPlusClicked(productId: String, productQuantity: Int) {}
+    override fun onMinusClicked(productId: String, productQuantity: Int) {}
     override fun onCartClicked() {}
     override fun onRetryClicked() {}
 }
