@@ -69,12 +69,14 @@ private fun Content(
             items(uiState.surDetails) { downloadedSurah ->
                 DownloadedSurahCard(
                     suraDetails = downloadedSurah,
+                    onDownloadedSurahClick = {
+                        listener.onDownloadedSurahClick(downloadedSurah.id)
+                    },
                     onDeleteDownloadedSurahClick = {
                         listener.onDeleteDownloadedSurahClick(downloadedSurah.id)
                     },
                     modifier =
                         Modifier
-                            .clickable(onClick = { listener.onDownloadedSurahClick(downloadedSurah.id) })
                             .animateItem(
                                 fadeInSpec = tween(500),
                                 fadeOutSpec = tween(500),

@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.downloadedSur.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DownloadedSurahCard(
     suraDetails: DownloadedSurUiState.SurahDetailsUiState,
+    onDownloadedSurahClick: () -> Unit,
     onDeleteDownloadedSurahClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -47,7 +49,14 @@ fun DownloadedSurahCard(
         cardContent = { contentModifier ->
             CardContent(
                 surahDetailsUiState = suraDetails,
-                modifier = contentModifier,
+                modifier =
+                    contentModifier
+                        .background(
+                            color = Theme.colorScheme.background.surfaceLow,
+                            shape = RoundedCornerShape(Theme.radius.md),
+                        ).clip(
+                            shape = RoundedCornerShape(Theme.radius.md),
+                        ).clickable(onClick = onDownloadedSurahClick),
             )
         },
         modifier = modifier,
@@ -64,12 +73,7 @@ private fun CardContent(
         modifier =
             modifier
                 .fillMaxWidth()
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(Theme.radius.md),
-                ).clip(
-                    shape = RoundedCornerShape(Theme.radius.md),
-                ).padding(
+                .padding(
                     horizontal = 12.dp,
                     vertical = 8.dp,
                 ),
@@ -153,6 +157,7 @@ private fun PreviewDownloadedSuraItem() {
                 "Al-Duha",
                 listOf("Al Minshawi", "Sudais"),
             ),
+            {},
             {},
         )
     }
