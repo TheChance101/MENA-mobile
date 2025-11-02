@@ -7,6 +7,7 @@ import net.thechance.mena.faith.presentation.base.snackbar.DefaultSnackbarHandle
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesViewModel
+import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
@@ -36,6 +37,7 @@ internal val faithViewModelModule = module {
     viewModelOf(::SearchViewModel)
     viewModelOf(::CompassViewModel)
     viewModelOf(::MainViewModel)
+    viewModelOf(::PrayerTimeViewModel)
     viewModelOf(::NearbyMosquesViewModel)
     viewModelOf(::CreateMosqueViewModel)
 }
