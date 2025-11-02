@@ -50,6 +50,8 @@
     <string name="start_tilawah">Start Tilawah</string>
     <string name="search_area">Search in this area</string>
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
+    <string name="upload_mosque_image">Upload Mosque Image</string>
+    <string name="click_to_upload">Click to upload</string>
     <string name="warning_icon">warning icon</string>
     <string name="search_results">Search results</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
@@ -158,6 +160,11 @@
     <string name="cancel_icon">cancel icon</string>
     <string name="mosque_image_description">Mosque icon</string>
     <string name="mosque_details">Mosque details</string>
+    <string name="mosque_name">Mosque name</string>
+    <string name="mosque_address">Address</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="add_new_mosque">Add New Mosque</string>
+    <string name="image_size_required">Image (9:16)</string>
     <string name="view_on_map">View on map</string>
     <string name="icon_location">location icon</string>
     <string name="prayer_man_icon">"prayer man icon"</string>

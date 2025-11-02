@@ -75,6 +75,8 @@
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>
+    <string name="upload_mosque_image">اضف صورة للمسجد</string>
+    <string name="click_to_upload">اضغط للرفع</string>
     <string name="faith_title">الإيمان</string>
     <string name="sunrise_time_label">وقت الشروق</string>
     <string name="location">الموقع</string>
