@@ -109,4 +109,6 @@
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="search_hint">ابحث...</string>
     <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
+    <string name="search_results">نتائج البحث</string>
+
 </resources>
