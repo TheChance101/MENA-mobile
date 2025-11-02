@@ -14,17 +14,16 @@ import net.thechance.mena.identity.data.repository.location.AddressesRepositoryI
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
-import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.model.AddressInput
-import net.thechance.mena.identity.domain.model.Coordinates as DomainCoordinates
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import net.thechance.mena.identity.domain.model.Coordinates as DomainCoordinates
 
 @OptIn(ExperimentalUuidApi::class)
 class AddressesRepositoryImplTest {
