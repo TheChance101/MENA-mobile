@@ -23,7 +23,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun LazyListScope.editorPickDukanItems(
     dukans: LazyPagingItems<MainScreenUiState.EditorPickDukanUiState>,
     onDukanClick: (String) -> Unit,
-    onClickFavorite: (String, Boolean) -> Unit
+    onClickFavorite: (dukanId: String,isFavorite: Boolean) -> Unit
 ) {
 
     when (dukans.loadState.refresh) {

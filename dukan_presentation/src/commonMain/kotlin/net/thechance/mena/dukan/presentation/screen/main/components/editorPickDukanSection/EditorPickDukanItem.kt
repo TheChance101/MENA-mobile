@@ -83,7 +83,7 @@ fun EditorPickDukanItem(
                         .clickable(
                             onClick = onClickFavorite,
                             indication = null,
-                            interactionSource = MutableInteractionSource()
+                            interactionSource = null
                         )
                         .background(color = Theme.colorScheme.primary.primary)
                         .padding(Theme.spacing._8)
