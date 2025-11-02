@@ -45,8 +45,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DisplayProductImage(
-    image: ImageBitmap? = null,
-    imageUrl: String? = null,
+    image: ImageBitmap,
     imageSizeInMegaByte: Double = 0.0,
     onCancelClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
@@ -60,49 +59,62 @@ fun DisplayProductImage(
             .width(94.dp)
             .background(color = Transparent),
         contentAlignment = Alignment.Center
-    )
-    {
-        if (imageUrl != null) {
-            DisplayExistingProductImage(
-                imageUrl = imageUrl,
-                onCancelClick = onCancelClick,
-                isCancelButtonEnabled = isCancelButtonEnabled
-            )
-        } else if (image != null) {
-            AnimatedContent(
-                targetState = productImageState,
-                label = "display product Image",
-                transitionSpec = { fadeTransitionSpec() },
-                modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
-            ) { currentState ->
-                when (currentState) {
-                    ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
-                    ProductImageState.SUCCESS -> SuccessContentImage(image = image)
-                    ProductImageState.ERROR -> ErrorContentImage(image = image)
-                }
-            }
-
-            CancelImageIconButton(
-                productImageState = productImageState,
-                onCancelClick = { onCancelClick(image) },
-                isCancelButtonEnabled = isCancelButtonEnabled
-            )
-
-            errorMessage?.let { error ->
-                if (productImageState == ProductImageState.ERROR) {
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = Theme.spacing._4)
-                            .align(Alignment.BottomCenter),
-                        text = error,
-                        style = Theme.typography.label.extraSmall,
-                        color = Theme.colorScheme.error,
-                        maxLines = 1,
-                    )
-                }
+    ) {
+        AnimatedContent(
+            targetState = productImageState,
+            label = "display product Image",
+            transitionSpec = { fadeTransitionSpec() },
+            modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
+        ) { currentState ->
+            when (currentState) {
+                ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
+                ProductImageState.SUCCESS -> SuccessContentImage(image = image)
+                ProductImageState.ERROR -> ErrorContentImage(image = image)
             }
         }
+
+        CancelImageIconButton(
+            productImageState = productImageState,
+            onCancelClick = { onCancelClick(image) },
+            isCancelButtonEnabled = isCancelButtonEnabled
+        )
+
+        errorMessage?.let { error ->
+            if (productImageState == ProductImageState.ERROR) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = Theme.spacing._4)
+                        .align(Alignment.BottomCenter),
+                    text = error,
+                    style = Theme.typography.label.extraSmall,
+                    color = Theme.colorScheme.error,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplayProductImage(
+    imageUrl: String,
+    onCancelClick: (Any) -> Unit,
+    modifier: Modifier = Modifier,
+    isCancelButtonEnabled: Boolean = true,
+) {
+    Box(
+        modifier = modifier
+            .height(104.dp)
+            .width(94.dp)
+            .background(color = Transparent),
+        contentAlignment = Alignment.Center
+    ) {
+        DisplayExistingProductImage(
+            imageUrl = imageUrl,
+            onCancelClick = onCancelClick,
+            isCancelButtonEnabled = isCancelButtonEnabled
+        )
     }
 }
 

@@ -84,24 +84,30 @@ fun ImageSection(
                 key = { it.id }
             ) { image ->
                 val imageUrl = image.imageUrl
-                DisplayProductImage(
-                    modifier = Modifier.animateItem(
-                        fadeInSpec = tween(easing = FastOutSlowInEasing),
-                        fadeOutSpec = tween(durationMillis = 200, easing = FastOutLinearInEasing),
-                        placementSpec = tween(easing = LinearOutSlowInEasing)
-                    ),
-                    image = if (imageUrl == null) image.image else null,
-                    imageUrl = imageUrl,
-                    imageSizeInMegaByte = image.imageSizeInMegaByte,
-                    productImageState = image.imageState,
-                    onCancelClick = if (imageUrl != null && onCancelImageUrlClick != null) {
-                        { onCancelImageUrlClick(imageUrl) }
-                    } else {
-                        { onCancelImageClick(image.image) }
-                    },
-                    isCancelButtonEnabled = isCancelImageEnabled,
-                    errorMessage = image.errorMessage
+                val modifier = Modifier.animateItem(
+                    fadeInSpec = tween(easing = FastOutSlowInEasing),
+                    fadeOutSpec = tween(durationMillis = 200, easing = FastOutLinearInEasing),
+                    placementSpec = tween(easing = LinearOutSlowInEasing)
                 )
+                
+                if (imageUrl != null && onCancelImageUrlClick != null) {
+                    DisplayProductImage(
+                        imageUrl = imageUrl,
+                        onCancelClick = { onCancelImageUrlClick(imageUrl) },
+                        modifier = modifier,
+                        isCancelButtonEnabled = isCancelImageEnabled
+                    )
+                } else {
+                    DisplayProductImage(
+                        image = image.image,
+                        imageSizeInMegaByte = image.imageSizeInMegaByte,
+                        productImageState = image.imageState,
+                        onCancelClick = { onCancelImageClick(image.image) },
+                        modifier = modifier,
+                        isCancelButtonEnabled = isCancelImageEnabled,
+                        errorMessage = image.errorMessage
+                    )
+                }
             }
 
             item(key = "Upload Product Image Container") {
