@@ -24,6 +24,7 @@ import mena.faith_presentation.generated.resources.error_network
 import mena.faith_presentation.generated.resources.error_no_internet
 import mena.faith_presentation.generated.resources.error_unauthorized
 import mena.faith_presentation.generated.resources.error_unknown
+import mena.faith_presentation.generated.resources.surah_download_failed
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
