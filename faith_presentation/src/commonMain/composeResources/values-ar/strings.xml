@@ -113,4 +113,8 @@
     <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
     <string name="search_results">نتائج البحث</string>
 
+    <string name="reset">إعادة تعيين</string>
+    <string name="upload_another_image">تحميل صورة أخرى</string>
+    <string name="save">حفظ</string>
+
 </resources>
