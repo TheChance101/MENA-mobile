@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -24,9 +25,6 @@ class ShelfDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), ShelfDetailsInteractionListener {
     private val args = savedStateHandle.toRoute<DukanRoute.ShelfDetails>()
-
-    private val productsState: MutableStateFlow<PagingData<ShelfDetailsUiState.ProductUiState>> =
-        MutableStateFlow(PagingData.empty())
 
     init {
         updateState {
@@ -59,9 +57,8 @@ class ShelfDetailsViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) {
-        productsState.value = products
         updateState {
-            copy(productsShelf = productsState)
+            copy(productsShelf = flowOf(products))
         }
     }
 
