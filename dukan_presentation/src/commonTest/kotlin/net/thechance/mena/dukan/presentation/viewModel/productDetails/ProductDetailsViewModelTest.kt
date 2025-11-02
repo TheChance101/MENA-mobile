@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsArgs.PRODUCT_ID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -40,9 +39,9 @@ class ProductDetailsViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle =
-            SavedStateHandle(mapOf(PRODUCT_ID to dummyProductDetails().id.toString()))
-
+        savedStateHandle = SavedStateHandle(
+            mapOf("productId" to dummyProductDetails().id.toString())
+        )
         everySuspend { productRepository.getProductDetails(any()) } returns dummyProductDetails()
 
         productDetailsViewModel = createViewModel()
@@ -115,11 +114,11 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `init SHOULD have empty selected image URL after successful load`() = runTest {
+    fun `init SHOULD set first image as selected image URL after successful load`() = runTest {
         advanceUntilIdle()
 
         val state = productDetailsViewModel.state.value
-        assertEquals("", state.selectedImageUrl)
+        assertEquals(dummyProductDetails().imageUrls.first(), state.selectedImageUrl)
     }
 
     @Test
