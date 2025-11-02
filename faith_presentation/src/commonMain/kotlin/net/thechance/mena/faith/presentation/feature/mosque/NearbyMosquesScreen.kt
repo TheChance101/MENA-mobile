@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.mosque
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -16,11 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dellisd.spatialk.geojson.Position
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.ic_outline_search
 import mena.faith_presentation.generated.resources.search_area
+import mena.faith_presentation.generated.resources.search_hint
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.utils.MapStyle
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -93,6 +98,17 @@ private fun Content(
                     .padding(top = Theme.spacing._32)
             )
         }
+        TextField(
+            value = uiState.query,
+            hint = stringResource(Res.string.search_hint),
+            leadingIcon = painterResource(Res.drawable.ic_outline_search),
+            leadingIconTint = Theme.colorScheme.shadeSecondary,
+            onValueChanged = listener::onQueryChange,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(horizontal = Theme.spacing._16)
+                .fillMaxWidth()
+        )
     }
 }
 

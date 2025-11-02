@@ -20,7 +20,7 @@ fun StatementHistoryBody(
     when {
         state.statements.isEmpty() -> EmptyStatementsHistory(modifier = Modifier.fillMaxSize())
         else -> StatementsListContent(
-            modifier = Modifier.fillMaxSize().padding(top = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(top = 16.dp),
             listener = listener,
             state = state
         )

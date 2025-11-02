@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -190,6 +191,14 @@ private fun UserReelScreenContent(
             pageCount = { reels.itemCount },
         )
 
+        LaunchedEffect(pagerState.currentPage) {
+            if(reels.itemCount > 0) {
+                reels[pagerState.currentPage]?.let { reel ->
+                    listener.onChangeCurrentReel(reel.id)
+                }
+            }
+        }
+
         TopAppBar(onBackClick = listener::onClickBack, modifier = Modifier.zIndex(5f))
 
         VerticalPager(
@@ -249,7 +258,7 @@ private fun ReelContent(
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(Theme.colorScheme.primary.primary),
         url = reel.videoUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount
