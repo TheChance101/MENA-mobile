@@ -6,16 +6,16 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
     override fun onBackClicked() {
     }
 
-    override fun onAddToCartClick(productId: String) {
+    override fun onAddToCartClicked(productId: String) {
     }
 
-    override fun onShareButtonClicked() {
+    override fun onShareClicked() {
     }
 
-    override fun onAddToFavoritesButtonClicked() {
+    override fun onAddToFavoritesClicked() {
     }
 
-    override fun onViewCartButtonClicked() {
+    override fun onViewCartClicked() {
     }
 
     override fun onSecondaryImageClicked(imageUrl: String) {

@@ -3,9 +3,9 @@ package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
 interface ProductDetailsInteractionListener {
     fun onBackClicked()
-    fun onAddToCartClick(productId: String)
-    fun onShareButtonClicked()
-    fun onAddToFavoritesButtonClicked()
-    fun onViewCartButtonClicked()
+    fun onAddToCartClicked(productId: String)
+    fun onShareClicked()
+    fun onAddToFavoritesClicked()
+    fun onViewCartClicked()
     fun onSecondaryImageClicked(imageUrl: String)
 }
