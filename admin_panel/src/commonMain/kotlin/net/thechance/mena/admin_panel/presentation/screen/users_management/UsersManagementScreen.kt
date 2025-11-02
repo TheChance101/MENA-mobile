@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.BlockUserDialog
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.SearchBar
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
@@ -55,6 +56,14 @@ private fun UsersManagementScreenContent(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
                 modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
             )
+        },
+        overlays = {
+            dialog(state.showBlockDialog) {
+                BlockUserDialog(
+                    onDismiss = listener::onDismissBlockDialog,
+                    onConfirmBlock = listener::onConfirmBlock
+                )
+            }
         },
         errorState = state.errorState,
         isLoading = state.isLoading,

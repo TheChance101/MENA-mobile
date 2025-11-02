@@ -18,7 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.domain.entity.User
+import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -50,7 +50,7 @@ fun UsersListContent(
                     index = index + 1,
                     user = user,
                     hasBackground = index % 2 != 0,
-                    onStatusClick = { listener.onStatusClicked(user.id) }
+                    onToggleUserStatusClicked = { listener.onToggleUserStatusClicked(user.id) }
                 )
             }
         }
@@ -62,7 +62,7 @@ private fun UserItemRow(
     index: Int,
     user: UsersManagementScreenState.UserItem,
     hasBackground: Boolean,
-    onStatusClick: () -> Unit,
+    onToggleUserStatusClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -104,25 +104,25 @@ private fun UserItemRow(
             modifier = Modifier.weight(1.5f)
         )
         Text(
-            text = user.lastLoginDate.toString(),
+            text = user.lastLoginAt.toString(),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
         Text(
-            text = user.lastVisitDate.toString(),
+            text = user.lastVisitAt.toString(),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(1.5f)
         )
         UserStatesButton(
-            isActive = user.userStates == User.UserStates.ACTIVE,
+            isActive = user.status == Status.ACTIVE,
             modifier = Modifier.weight(0.8f).wrapContentWidth()
         )
 
         UserStatesToggleButton(
-            isActive = user.userStates == User.UserStates.ACTIVE,
-            onClick = onStatusClick,
+            isActive = user.status == Status.ACTIVE,
+            onClick = onToggleUserStatusClicked,
             modifier = Modifier.weight(0.8f).wrapContentWidth()
         )
     }

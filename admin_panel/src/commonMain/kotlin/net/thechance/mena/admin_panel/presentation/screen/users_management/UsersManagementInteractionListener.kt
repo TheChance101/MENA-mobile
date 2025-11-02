@@ -11,7 +11,6 @@ interface UsersManagementInteractionListener {
     fun onSortLastVisitDateClicked()
     fun onToggleUserStatusClicked(userId: Uuid)
     fun onRetryClicked()
-    fun onStatusClicked(userId: Uuid)
     fun onSearchQueryChanged(query: String)
     fun onShowBlockDialog(userId: Uuid)
     fun onDismissBlockDialog()
