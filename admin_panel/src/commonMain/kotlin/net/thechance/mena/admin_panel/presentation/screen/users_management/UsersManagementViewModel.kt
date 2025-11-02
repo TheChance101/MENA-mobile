@@ -131,7 +131,7 @@ class UsersManagementViewModel(
     }
 
     private companion object {
-        const val PAGE = 1
+        const val PAGE = 0
         const val SIZE = 8
     }
 }
