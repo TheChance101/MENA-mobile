@@ -6,6 +6,9 @@ on:
       modules:
         description: "Changed modules"
         value: ${{ jobs.detect.outputs.modules }}
+      android_modules:
+        description: "Changed Android modules (admin_panel excluded)"
+        value: ${{ jobs.detect.outputs.android_modules }}
       has_changes:
         description: "If there are any changes"
         value: ${{ jobs.detect.outputs.has_changes }}
@@ -25,6 +28,7 @@ jobs:
     outputs:
       modules: ${{ steps.changes.outputs.modules }}
       has_changes: ${{ steps.changes.outputs.has_changes }}
+      android_modules: ${{ steps.changes.outputs.android_modules }}
       ios_modules: ${{ steps.changes.outputs.ios_modules }}
       has_ios_changes: ${{ steps.changes.outputs.has_ios_changes }}
       test_modules: ${{ steps.changes.outputs.test_modules }}
@@ -53,7 +57,7 @@ jobs:
           echo "All modules JSON: $ALL_MODULES_JSON"
 
           CHANGED_FILES="${{ steps.changed-files-git.outputs.changed_files }}"
-          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation composeApp'
+          ALL_MODULES='core_chat_api core_chat_data core_chat_domain core_chat_presentation dukan_api dukan_data dukan_domain dukan_presentation faith_api faith_data faith_domain faith_presentation identity_api identity_data identity_domain identity_presentation trends_api trends_data trends_domain trends_presentation wallet_api wallet_data wallet_domain wallet_presentation admin_panel composeApp'
           IOS_MODULES='core_chat_presentation dukan_presentation faith_presentation identity_presentation trends_presentation wallet_presentation composeApp'
 
           UNIQUE_MODULE_LIST=$(echo "$CHANGED_FILES" | awk -F/ '{print $1}' | sort -u)
@@ -71,6 +75,7 @@ jobs:
           done
 
           FINAL_MODULES=$(echo $FINAL_MODULES | tr ' ' '\n' | sort -u | tr '\n' ' ')
+          ANDROID_JSON_ARRAY=$(echo "$FINAL_MODULES" | tr ' ' '\n' | grep -v '^admin_panel$' | jq -R -s -c 'split("\n")[:-1]')
           JSON_ARRAY=$(echo "$FINAL_MODULES" | jq -R 'split(" ") | map(select(length > 0))' | jq -c '.')
           IOS_JSON_ARRAY=$(echo "$FINAL_MODULES" | tr ' ' '\n' | grep -F -x -f <(echo "$IOS_MODULES" | tr ' ' '\n') | jq -R -s -c 'split("\n")[:-1]')
           TEST_JSON_ARRAY=$(echo "$JSON_ARRAY" | jq '[.[] | select(. != "composeApp")]')
@@ -84,7 +89,11 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "modules=[]" >> $GITHUB_OUTPUT
           fi
-
+          
+          echo "android_modules<<EOF" >> $GITHUB_OUTPUT
+          echo "$ANDROID_JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+  
           echo "ios_modules<<EOF" >> $GITHUB_OUTPUT
           echo "$IOS_JSON_ARRAY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT

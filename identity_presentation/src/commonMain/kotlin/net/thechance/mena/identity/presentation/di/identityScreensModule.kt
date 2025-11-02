@@ -11,9 +11,13 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.register.RegisterScreenModel
+import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
+import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
+import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.uploadProfileImage.UploadProfileImageViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
@@ -34,10 +38,14 @@ val identityScreensModule = module {
     factory { ProfileScreenViewModel(get(), get(named(APP_VERSION))) }
     factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
-    factoryOf(::RegisterScreenModel)
+    factoryOf(::NotImplementedScreenViewModel)
+    factoryOf(::RegisterPhoneEntryViewModel)
+    factoryOf(::RegisterOtpViewModel)
+    factoryOf(::CreatePasswordViewModel)
     factoryOf(::ForgetPasswordScreenViewModel)
     factoryOf(::OtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
+    factoryOf(::UploadProfileImageViewModel)
     factoryOf(::ResetPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
