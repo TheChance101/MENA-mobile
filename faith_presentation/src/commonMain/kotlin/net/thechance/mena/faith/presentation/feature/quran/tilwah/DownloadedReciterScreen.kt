@@ -16,6 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,8 +47,9 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 
 @Composable
-fun DownloadedReciterScreen(viewModel: TilawahViewModel = koinViewModel()) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
+fun DownloadedReciterScreen(viewModel: TilawahViewModel = koinViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
@@ -54,12 +58,17 @@ fun DownloadedReciterScreen(viewModel: TilawahViewModel = koinViewModel()) {
             TilawahEffect.NavigateToSearch -> navController.navigate(Route.SearchRoute)
         }
     }
-    Content(listener = viewModel)
+    Content(uiState = uiState, listener = viewModel)
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-fun Content(listener: TilawahInteractionListener) {
+fun Content(
+    uiState: TilawahUiState,
+    listener: TilawahInteractionListener,
+) {
+    var selectedReciterId by remember { mutableStateOf<Int?>(null) }
+
     Scaffold(
         topBar = {
             AppBar(
@@ -77,12 +86,22 @@ fun Content(listener: TilawahInteractionListener) {
                 trailingContent = { TilawahTopBar(listener::onSearchClick) }
             )
         }) {
-        LazyColumn {
-            items(4) {
-                ReciterItem(onSelect = listener::onSelectReciterClick)
+        LazyColumn(
+            modifier = Modifier.padding(bottom = Theme.spacing._16)
+        ) {
+            items(uiState.reciter.size) { index ->
+                ReciterItem(
+                    reciter = uiState.reciter[index],
+                    recitingType = uiState.recitingType,
+                    isDownloaded = uiState.isDownloaded,
+                    isSelected = selectedReciterId == index,
+                    onSelect = {
+                        selectedReciterId = index
+                        listener::onSelectReciterClick
+                    }
+                )
             }
         }
-
     }
 }
 
@@ -106,56 +125,64 @@ private fun TilawahTopBar(onSearchClick: () -> Unit) {
 
 @Composable
 private fun ReciterItem(
-    reciter: String = "Abdul Basit Abdul Samad",
-    recitingType: String = "Tajweed - Mujawwad",
-    isDownloaded: Boolean = true,
-    isSelected: Boolean = false,
+    reciter: String,
+    recitingType: String,
+    isDownloaded: Boolean,
+    isSelected: Boolean,
     onSelect: () -> Unit
 ) {
-    RadioButton(
-        isSelected = isSelected,
-        onClick = onSelect
-    )
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
             .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._8)
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
+            .clickable(onClick = onSelect)
+            .padding(Theme.spacing._8),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        Text(
-            text = reciter,
-            style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(start = Theme.spacing._8, top = 9.dp)
-        )
-        Row(
-            modifier = Modifier.padding(start = Theme.spacing._8, bottom = 9.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        Column(
+            modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = recitingType,
+                text = reciter,
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary
             )
-            if (isDownloaded) {
-                Icon(
-                    painterResource(Res.drawable.ic_tick_double_check),
-                    contentDescription = "",
-                    modifier = Modifier.size(Theme.spacing._12)
-                )
-
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+            ) {
                 Text(
-                    text = "Downloaded",
-                    style = Theme.typography.label.small,
-                    color = Theme.colorScheme.success
+                    text = recitingType,
+                    style = Theme.typography.label.medium,
+                    color = Theme.colorScheme.shadePrimary
                 )
+                if (isDownloaded) {
+                    Icon(
+                        painterResource(Res.drawable.ic_tick_double_check),
+                        contentDescription = "",
+                        modifier = Modifier.size(Theme.spacing._12)
+                    )
+
+                    Text(
+                        text = "Downloaded",
+                        style = Theme.typography.label.small,
+                        color = Theme.colorScheme.success
+                    )
+                }
             }
         }
+
+        RadioButton(
+            isSelected = isSelected,
+            onClick = onSelect
+        )
     }
 }
 
@@ -163,10 +190,16 @@ private fun ReciterItem(
 @Composable
 fun Preview() {
     QuranTheme {
-        Content(listener = object : TilawahInteractionListener {
-            override fun onBackClick() {}
-            override fun onSearchClick() {}
-            override fun onSelectReciterClick() {}
-        })
+        Content(
+            uiState = TilawahUiState(
+                reciter = listOf("Muhammad Siddiq Al-Minshawi"),
+                recitingType = "Teacher - Tajweed",
+                isDownloaded = true
+            ),
+            listener = object : TilawahInteractionListener {
+                override fun onBackClick() {}
+                override fun onSearchClick() {}
+                override fun onSelectReciterClick() {}
+            })
     }
 }
