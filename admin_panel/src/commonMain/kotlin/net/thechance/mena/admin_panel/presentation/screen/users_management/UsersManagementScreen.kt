@@ -53,6 +53,7 @@ private fun UsersManagementScreenContent(
         overlays = {
             dialog(state.showBlockDialog) {
                 BlockUserDialog(
+                    isVisible = it,
                     onDismiss = listener::onDismissBlockDialog,
                     onConfirmBlock = listener::onConfirmBlock
                 )

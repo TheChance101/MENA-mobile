@@ -66,7 +66,7 @@ fun PanelScaffold(
         snackBar?.let { snackBarContent ->
             Box(
                 modifier = Modifier
-                    .align(Alignment.BottomEnd)
+                    .align(Alignment.TopEnd)
                     .padding(end = Theme.spacing._32, top = Theme.spacing._32)
             ) { snackBarContent() }
         }
