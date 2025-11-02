@@ -206,4 +206,10 @@
     <string name="error_no_network">لا يوجد اتصال بالإنترنت</string>
     <string name="error_cannot_delete_active_address">لا يمكن حذف العنوان النشط</string>
     <string name="error_location_is_turned_off">"الموقع مغلق"</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
+    <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
+    <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
+    <string name="ic_account_shield">أيقونة درع الحساب</string>
 </resources>
