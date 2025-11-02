@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPassword
+package net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -15,13 +15,13 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.StringResource
 
-class ForgetPasswordScreenViewModel(
+class ForgetPasswordPhoneEntryScreenViewModel(
     private val loginUseCase: LoginUseCase,
     private val resetPasswordRepository: ResetPasswordRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<ForgetPasswordScreenUIState, ForgetPasswordScreenUIEffect>(
-    ForgetPasswordScreenUIState()
-), ForgetPasswordScreenInteractionListener {
+) : BaseScreenModel<ForgetPasswordPhoneEntryScreenUIState, ForgetPasswordPhoneEntryScreenUIEffect>(
+    ForgetPasswordPhoneEntryScreenUIState()
+), ForgetPasswordPhoneEntryScreenInteractionListener {
 
     override fun onSelectCountryItem(country: MenaCountry) {
         updateState {
@@ -57,7 +57,7 @@ class ForgetPasswordScreenViewModel(
 
     private fun onOTPRequestSuccess() {
         sendNewEffect(
-            ForgetPasswordScreenUIEffect.NavigateToOTP(
+            ForgetPasswordPhoneEntryScreenUIEffect.NavigateToOTP(
                 phoneNumber = state.value.phoneNumber,
                 callingCode = state.value.currentCountry.callingCode,
                 countryCode = state.value.currentCountry.countryCodeName
@@ -79,7 +79,7 @@ class ForgetPasswordScreenViewModel(
     }
 
     override fun onClickBack() {
-        sendNewEffect(ForgetPasswordScreenUIEffect.NavigateBack)
+        sendNewEffect(ForgetPasswordPhoneEntryScreenUIEffect.NavigateBack)
     }
 
     override fun onClearErrorMessage() {

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.resetPassword
+package net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -16,13 +16,13 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
 import org.jetbrains.compose.resources.StringResource
 
-class ResetPasswordScreenViewModel(
+class SetNewPasswordScreenViewModel(
     private val passwordValidator: PasswordValidator,
     private val resetPasswordRepository: ResetPasswordRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<ResetPasswordScreenUIState, ResetPasswordScreenUIEffect>(
-    ResetPasswordScreenUIState()
-), ResetPasswordScreenInteractionListener {
+) : BaseScreenModel<SetNewPasswordScreenUIState, SetNewPasswordScreenUIEffect>(
+    SetNewPasswordScreenUIState()
+), SetNewPasswordScreenInteractionListener {
 
     override fun onChangeNewPassword(password: String) {
         updateState { copy(newPassword = password) }
@@ -48,7 +48,7 @@ class ResetPasswordScreenViewModel(
     }
 
     override fun onClickBack() {
-        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        sendNewEffect(SetNewPasswordScreenUIEffect.NavigateBackToLogin)
     }
 
     override fun onClearErrorMessage() {
@@ -56,7 +56,7 @@ class ResetPasswordScreenViewModel(
     }
 
     override fun onClickOk() {
-        sendNewEffect(ResetPasswordScreenUIEffect.NavigateBackToLogin)
+        sendNewEffect(SetNewPasswordScreenUIEffect.NavigateBackToLogin)
         updateState { copy(isDialogVisible = false) }
     }
 

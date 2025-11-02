@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -12,23 +12,25 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OtpScreenViewModelTest {
+class ForgetPasswordOtpScreenViewModelTest {
     private val resetPasswordRepository = mockk<ResetPasswordRepository>()
     private val phoneNumber = "01100661617"
     private val countryCode = "EG"
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: OtpScreenViewModel
+    private lateinit var viewModel: ForgetPasswordOtpScreenViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = OtpScreenViewModel(
+        viewModel = ForgetPasswordOtpScreenViewModel(
             resetPasswordRepository = resetPasswordRepository,
             phoneNumber = phoneNumber,
             countryCode = countryCode,
@@ -47,7 +49,7 @@ class OtpScreenViewModelTest {
         viewModel.effect.test {
             viewModel.onClickBack()
             val effect = awaitItem()
-            assertTrue { effect is OtpScreenUIEffect.NavigateBack }
+            assertTrue { effect is ForgetPasswordOtpScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -62,7 +64,7 @@ class OtpScreenViewModelTest {
             viewModel.effect.test {
                 viewModel.onClickVerify()
                 val effect = awaitItem()
-                assertTrue { effect is OtpScreenUIEffect.NavigateToResetPassword }
+                assertTrue { effect is ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword }
                 cancelAndConsumeRemainingEvents()
             }
         }

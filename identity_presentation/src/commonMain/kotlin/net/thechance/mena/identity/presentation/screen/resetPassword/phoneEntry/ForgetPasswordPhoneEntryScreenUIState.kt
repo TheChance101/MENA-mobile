@@ -1,9 +1,9 @@
-package net.thechance.mena.identity.presentation.screen.forgetPassword
+package net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry
 
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.StringResource
 
-data class ForgetPasswordScreenUIState(
+data class ForgetPasswordPhoneEntryScreenUIState(
     val phoneNumber: String = "",
     val showCountryBottomSheet: Boolean = false,
     val currentCountry: MenaCountry = MenaCountry.IRAQ,

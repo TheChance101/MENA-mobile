@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.forgetPasswordOtp
+package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,21 +16,23 @@ import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToM
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import org.jetbrains.compose.resources.StringResource
 
-class OtpScreenViewModel(
+class ForgetPasswordOtpScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
     private val callingCode: String,
     private val countryCode: String,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<OtpScreenUIState, OtpScreenUIEffect>(OtpScreenUIState()),
-    OtpScreenInteractionListener {
+) : BaseScreenModel<ForgetPasswordOtpScreenUIState, ForgetPasswordOtpScreenUIEffect>(
+    ForgetPasswordOtpScreenUIState()
+),
+    ForgetPasswordOtpScreenInteractionListener {
 
     init {
         startTimer()
     }
 
     override fun onClickBack() {
-        sendNewEffect(OtpScreenUIEffect.NavigateBack)
+        sendNewEffect(ForgetPasswordOtpScreenUIEffect.NavigateBack)
     }
 
     override fun onClickVerify() {
@@ -49,7 +51,7 @@ class OtpScreenViewModel(
     }
 
     private fun onOTPVerificationSuccess() {
-        sendNewEffect(OtpScreenUIEffect.NavigateToResetPassword)
+        sendNewEffect(ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword)
         updateState { copy(otpValue = "") }
     }
 

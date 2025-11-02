@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.resetPassword
+package net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,11 +38,11 @@ import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
 
-class ResetPasswordScreen() :
-    BaseScreen<ResetPasswordScreenViewModel,
-            ResetPasswordScreenUIState,
-            ResetPasswordScreenUIEffect,
-            ResetPasswordScreenInteractionListener>() {
+class SetNewPasswordScreen() : BaseScreen<
+        SetNewPasswordScreenViewModel,
+        SetNewPasswordScreenUIState,
+        SetNewPasswordScreenUIEffect,
+        SetNewPasswordScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -51,7 +51,7 @@ class ResetPasswordScreen() :
 
     @Composable
     override fun OnRender(
-        state: ResetPasswordScreenUIState, listener: ResetPasswordScreenInteractionListener
+        state: SetNewPasswordScreenUIState, listener: SetNewPasswordScreenInteractionListener
     ) {
         Scaffold(
             topBar = {
@@ -128,10 +128,10 @@ class ResetPasswordScreen() :
     }
 
     override fun onEffect(
-        effect: ResetPasswordScreenUIEffect, navigator: Navigator
+        effect: SetNewPasswordScreenUIEffect, navigator: Navigator
     ) {
         when (effect) {
-            ResetPasswordScreenUIEffect.NavigateBackToLogin -> navigator.push(LoginScreen())
+            SetNewPasswordScreenUIEffect.NavigateBackToLogin -> navigator.push(LoginScreen())
         }
     }
 }
