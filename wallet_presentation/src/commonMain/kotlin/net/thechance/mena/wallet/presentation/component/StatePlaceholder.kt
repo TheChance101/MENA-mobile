@@ -27,8 +27,7 @@ fun StatePlaceholder(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp),
+        modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -43,6 +42,7 @@ fun StatePlaceholder(
             modifier = Modifier
                 .padding(bottom = 8.dp),
             text = title,
+            textAlign = TextAlign.Center,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.title.small,
         )

@@ -47,7 +47,7 @@ fun TransactionContent(
         Text(
             modifier = Modifier.align(Alignment.Start),
             text = transactionTimeAndDate,
-            style = Theme.typography.label.small,
+            style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeSecondary
         )
     }
