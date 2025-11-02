@@ -76,6 +76,7 @@ fun MainScreen(
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
             MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
+            MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
         }
     }
 
@@ -227,6 +228,7 @@ private fun Preview() {
                 override fun onQiblahClick() {}
                 override fun onMosquesClick() {}
                 override fun onPrayerTimeClick() {}
+                override fun onTilawahClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,
