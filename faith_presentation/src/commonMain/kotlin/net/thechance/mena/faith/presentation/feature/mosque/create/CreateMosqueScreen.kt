@@ -86,7 +86,7 @@ private fun MosqueLocationHeader(
         color = Theme.colorScheme.shadePrimary
     )
     TextField(
-        value = uiState.mosqueName,
+        value = uiState.name,
         onValueChanged = listener::onNameChange,
         hint = "",
         leadingIcon = painterResource(Res.drawable.ic_mosque),
@@ -101,8 +101,8 @@ private fun MosqueLocationMapSection(
 
     val initialCameraPosition = CameraPosition(
         target = Position(
-            longitude = uiState.mosqueLocation?.longitude ?: 0.0,
-            latitude = uiState.mosqueLocation?.latitude ?: 0.0
+            longitude = uiState.location?.longitude ?: 0.0,
+            latitude = uiState.location?.latitude ?: 0.0
         ),
         zoom = 14.0
     )

@@ -7,6 +7,6 @@ internal data class CreateMosqueUiState(
     val croppedImage: ImageBitmap? = null,
     val isImageBeingCropped: Boolean = false,
     val address: String = "",
-    val mosqueName: String = "",
-    val mosqueLocation: Coordinate? = null,
+    val name: String = "",
+    val location: Coordinate? = null,
 )
