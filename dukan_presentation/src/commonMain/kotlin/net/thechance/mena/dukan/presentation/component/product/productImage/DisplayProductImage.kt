@@ -48,7 +48,7 @@ fun DisplayProductImage(
     image: ImageBitmap? = null,
     imageUrl: String? = null,
     imageSizeInMegaByte: Double = 0.0,
-    onCancelClick: ((Any) -> Unit)? = null,
+    onCancelClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
     productImageState: ProductImageState = ProductImageState.LOADING,
     isCancelButtonEnabled: Boolean = true,
@@ -84,7 +84,7 @@ fun DisplayProductImage(
 
             CancelImageIconButton(
                 productImageState = productImageState,
-                onCancelClick = { onCancelClick?.invoke(image) },
+                onCancelClick = { onCancelClick(image) },
                 isCancelButtonEnabled = isCancelButtonEnabled
             )
 
@@ -203,20 +203,18 @@ private fun SuccessContentImage(image: ImageBitmap) {
 @Composable
 private fun BoxScope.DisplayExistingProductImage(
     imageUrl: String,
-    onCancelClick: ((Any) -> Unit)?,
+    onCancelClick: (Any) -> Unit,
     isCancelButtonEnabled: Boolean
 ) {
     SuccessContentImageUrl(
         imageUrl = imageUrl,
         modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
     )
-    onCancelClick?.let { cancel ->
-        CancelImageIconButton(
-            productImageState = ProductImageState.SUCCESS,
-            onCancelClick = { cancel(imageUrl) },
-            isCancelButtonEnabled = isCancelButtonEnabled
-        )
-    }
+    CancelImageIconButton(
+        productImageState = ProductImageState.SUCCESS,
+        onCancelClick = { onCancelClick(imageUrl) },
+        isCancelButtonEnabled = isCancelButtonEnabled
+    )
 }
 
 @Composable
