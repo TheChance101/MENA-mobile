@@ -164,4 +164,5 @@
     <string name="next_prayer_in">Next prayer %1$s in:</string>
     <string name="search_hint">Search...</string>
     <string name="no_mosques_found">No mosques found, try with another keyword.</string>
+    <string name="downloaded">Downloaded</string>
 </resources>

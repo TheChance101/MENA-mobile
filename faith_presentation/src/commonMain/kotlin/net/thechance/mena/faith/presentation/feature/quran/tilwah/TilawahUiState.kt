@@ -1,7 +1,13 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
 data class TilawahUiState(
-    val reciter: List<String> = emptyList(),
-    val recitingType: String = "",
-    val isDownloaded: Boolean = true
+    val reciters: List<ReciterData> = emptyList(),
+    val selectedReciterId: Int? = null,
+    )
+
+data class ReciterData(
+    val id: Int,
+    val name: String,
+    val recitingType: String,
+    val isDownloaded: Boolean
 )

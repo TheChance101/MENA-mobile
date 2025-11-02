@@ -3,5 +3,5 @@ package net.thechance.mena.faith.presentation.feature.quran.tilwah
 interface TilawahInteractionListener {
     fun onBackClick()
     fun onSearchClick()
-    fun onSelectReciterClick()
+    fun onSelectReciterClick(reciterId: Int)
 }

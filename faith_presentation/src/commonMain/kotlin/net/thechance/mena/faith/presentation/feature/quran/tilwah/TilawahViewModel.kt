@@ -6,10 +6,9 @@ class TilawahViewModel : BaseViewModel<TilawahUiState, TilawahEffect>(
     TilawahUiState()
 ), TilawahInteractionListener {
     override fun onBackClick() = sendEffect(TilawahEffect.NavigateBack)
-
     override fun onSearchClick() = sendEffect(TilawahEffect.NavigateToSearch)
-    override fun onSelectReciterClick() {
-        //not implemented yet
+    override fun onSelectReciterClick(reciterId: Int) {
+        //TODO() not implemented yet
     }
 
 }

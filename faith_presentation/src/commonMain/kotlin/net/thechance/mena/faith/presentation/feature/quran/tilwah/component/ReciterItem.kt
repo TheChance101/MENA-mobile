@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.downloaded
 import mena.faith_presentation.generated.resources.ic_tick_double_check
 import mena.faith_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.button.radioButton.RadioButton
@@ -73,7 +74,7 @@ fun ReciterItem(
                     )
 
                     Text(
-                        text = "Downloaded",
+                        text = stringResource(Res.string.downloaded),
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.success
                     )

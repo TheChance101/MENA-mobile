@@ -3,11 +3,9 @@ package net.thechance.mena.faith.presentation.feature.quran.tilwah
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -30,7 +28,8 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 
 @Composable
-fun DownloadedReciterScreen(viewModel: TilawahViewModel = koinViewModel()
+fun DownloadedReciterScreen(
+    viewModel: TilawahViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -50,8 +49,6 @@ fun Content(
     uiState: TilawahUiState,
     listener: TilawahInteractionListener,
 ) {
-    var selectedReciterId by remember { mutableStateOf<Int?>(null) }
-
     Scaffold(
         topBar = {
             AppBar(
@@ -72,15 +69,14 @@ fun Content(
         LazyColumn(
             modifier = Modifier.padding(bottom = Theme.spacing._16)
         ) {
-            items(uiState.reciter.size) { index ->
+            items(uiState.reciters) { reciter ->
                 ReciterItem(
-                    reciter = uiState.reciter[index],
-                    recitingType = uiState.recitingType,
-                    isDownloaded = uiState.isDownloaded,
-                    isSelected = selectedReciterId == index,
+                    reciter = reciter.name,
+                    recitingType = reciter.recitingType,
+                    isDownloaded = reciter.isDownloaded,
+                    isSelected = uiState.selectedReciterId == reciter.id,
                     onSelect = {
-                        selectedReciterId = index
-                        listener::onSelectReciterClick
+                        listener.onSelectReciterClick(reciter.id)
                     }
                 )
             }
@@ -94,15 +90,11 @@ fun Content(
 private fun Preview() {
     QuranTheme {
         Content(
-            uiState = TilawahUiState(
-                reciter = listOf("Muhammad Siddiq Al-Minshawi"),
-                recitingType = "Teacher - Tajweed",
-                isDownloaded = true
-            ),
+            uiState = TilawahUiState(),
             listener = object : TilawahInteractionListener {
                 override fun onBackClick() {}
                 override fun onSearchClick() {}
-                override fun onSelectReciterClick() {}
+                override fun onSelectReciterClick(reciterId: Int) {}
             })
     }
 }

@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_search
 import mena.faith_presentation.generated.resources.search_icon
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -29,7 +29,7 @@ fun TilawahTopBar(onSearchClick: () -> Unit) {
             .clickable(onClick = onSearchClick),
         contentAlignment = Alignment.Center
     ) {
-        Image(
+        Icon(
             modifier = Modifier.size(20.dp),
             painter = painterResource(Res.drawable.ic_search),
             contentDescription = stringResource(Res.string.search_icon)
