@@ -136,7 +136,11 @@ private fun MainContent(
                     bestNearestDukan.itemCount == 0 &&
                     dukans.itemCount == 0
 
-            if (isMainSectionsEmpty){
+            val isMainSectionsLoading = state.isCategoriesLoading ||
+                    state.isBestNearestDukanLoading ||
+                    state.isEditorPickDukanLoading
+
+            if ( isMainSectionsEmpty && isMainSectionsLoading.not()) {
                 EmptyStateContent(
                     image = Res.drawable.dukan_pending,
                     title = Res.string.dukan_main_content_empty_error_title,
@@ -183,7 +187,7 @@ fun MainScreenSections(
             }
         }
 
-        if ((bestNearestDukan.itemCount > 0 )) {
+        if ((bestNearestDukan.itemCount > 0)) {
             item {
                 Text(
                     text = stringResource(Res.string.best_dukans_around_you),
@@ -202,7 +206,7 @@ fun MainScreenSections(
             }
         }
 
-        if (dukans.itemCount >0 ) {
+        if (dukans.itemCount > 0) {
             item {
                 Text(
                     stringResource(Res.string.editor_pick_dukans),
