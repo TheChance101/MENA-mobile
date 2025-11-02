@@ -18,6 +18,7 @@ import net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgsImpl
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -38,5 +39,6 @@ internal val faithViewModelModule = module {
     viewModelOf(::MainViewModel)
     viewModelOf(::PrayerTimeViewModel)
     viewModelOf(::NearbyMosquesViewModel)
+    viewModelOf(::TilawahViewModel)
 }
 
