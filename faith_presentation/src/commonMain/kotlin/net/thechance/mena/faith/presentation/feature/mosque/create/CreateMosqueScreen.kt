@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.add_new_mosque
 import mena.faith_presentation.generated.resources.back
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_location
@@ -156,7 +157,7 @@ private fun CreateMosqueAppBar(
     listener: CreateMosqueInteractionListener
 ) {
     AppBar(
-        title = "add_new_mosque",
+        title = stringResource(Res.string.add_new_mosque),
         onLeadingClick = listener::onBackClicked,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._12,
