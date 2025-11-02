@@ -93,6 +93,7 @@ fun ProductDetailsInfoSection(
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadeSecondary,
                 textAlign = TextAlign.Start,
+                maxLines= 5,
                 modifier = Modifier.padding(top = Theme.spacing._8)
             )
         }
