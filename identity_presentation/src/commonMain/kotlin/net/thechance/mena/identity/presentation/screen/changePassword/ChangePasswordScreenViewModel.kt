@@ -1,5 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.changePassword
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.changed_password_successfully
 import net.thechance.mena.identity.domain.exception.AuthenticationException
@@ -16,10 +19,12 @@ import net.thechance.mena.identity.presentation.util.isPasswordValid
 import org.jetbrains.compose.resources.StringResource
 
 class ChangePasswordScreenViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<ChangePasswordScreenUIState, ChangePasswordScreenUIEffect>(
     initialState = ChangePasswordScreenUIState()
 ), ChangePasswordScreenInteractionListener {
+
     override fun onClickBack() {
         if (state.value.currentPage == 1)
             updateState { copy(currentPage = 0) }
@@ -36,7 +41,8 @@ class ChangePasswordScreenViewModel(
         tryToExecute(
             function = ::changePassword,
             onSuccess = { onChangePasswordSuccess() },
-            onError = ::onChangePasswordError
+            onError = ::onChangePasswordError,
+            dispatcher = dispatcher
         )
 
     }
@@ -69,7 +75,6 @@ class ChangePasswordScreenViewModel(
     private fun onChangePasswordError(throwable: Throwable) {
         updateState { copy(errorMessage = mapErrorMessage(throwable), isLoading = false) }
     }
-
     override fun onChangeCurrentPassword(newValue: String) {
         updateState {
             copy(
@@ -102,7 +107,6 @@ class ChangePasswordScreenViewModel(
         }
         updateSaveEnabledState()
     }
-
     override fun onToggleCurrentPasswordVisibility() {
         updateState {
             copy(
