@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.accountCreated
+package net.thechance.mena.identity.presentation.screen.register.accountCreated
 
 sealed interface AccountCreatedUIEffect {
     data object NavigateToHome : AccountCreatedUIEffect
