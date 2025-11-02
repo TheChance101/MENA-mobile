@@ -55,8 +55,7 @@ class MessageRepositoryImpl(
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
-            client.get(CHAT_HISTORY_ENDPOINT) {
-                parameter(CHAT_ID_PARAMETER, chatId)
+            client.get(getChatMessagesEndpoint(chatId)){
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -148,8 +147,9 @@ class MessageRepositoryImpl(
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-        const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-        const val CHAT_ID_PARAMETER = "chatId"
 
+        fun getChatMessagesEndpoint(chatId:Uuid): String {
+            return "/chat/${chatId}/messages"
+        }
     }
 }

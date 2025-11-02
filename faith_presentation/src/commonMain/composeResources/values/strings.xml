@@ -50,6 +50,8 @@
     <string name="start_tilawah">Start Tilawah</string>
     <string name="search_area">Search in this area</string>
     <string name="empty_state_bookmark_image">Empty Bookmark Image</string>
+    <string name="warning_icon">warning icon</string>
+    <string name="search_results">Search results</string>
     <string name="empty_state_bookmark_title">No ayah saved yet!</string>
     <string name="empty_state_bookmark_description">Start your tilawah and bookmark the ayah you want to return to later.</string>
     <string name="bookmark_removed_successfully">Bookmark removed successfully</string>

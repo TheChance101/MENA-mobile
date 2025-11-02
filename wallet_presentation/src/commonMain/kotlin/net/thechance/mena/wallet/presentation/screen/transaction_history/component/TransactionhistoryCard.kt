@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,9 +29,9 @@ fun TransactionHistoryCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onTransactionCardClicked() },
+            .clickable { onTransactionCardClicked() }
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
