@@ -1,13 +1,14 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsArgs.PRODUCT_ID
 
 class ProductDetailsViewModel(
     private val productRepository: ProductRepository,
@@ -17,26 +18,28 @@ class ProductDetailsViewModel(
     ProductDetailsUiState(),
     defaultDispatcher
 ), ProductDetailsInteractionListener {
-    private val productId: String = requireNotNull(savedStateHandle[PRODUCT_ID])
+    private val args = savedStateHandle.toRoute<DukanRoute.ProductDetails>()
 
     init {
         loadProductDetails()
     }
 
     private fun loadProductDetails() {
-        updateState { copy(isLoading = true, isError = false) }
         tryToExecute(
-            block = { productRepository.getProductDetails(productId) },
+            onStart = { updateState { copy(isLoading = true, isError = false) } },
+            block = { productRepository.getProductDetails(productId = args.productId) },
             onSuccess = ::onLoadProductSuccess,
             onError = ::onLoadProductError
         )
     }
 
     private fun onLoadProductSuccess(product: Product) {
+        val productUiInfo = product.toUiState()
         updateState {
             copy(
                 isLoading = false,
-                product = product.toUiState()
+                product = productUiInfo,
+                selectedImageUrl = productUiInfo.images.firstOrNull() ?: ""
             )
         }
     }
@@ -58,24 +61,20 @@ class ProductDetailsViewModel(
         emitEffect(ProductDetailsEffects.NavigateBack)
     }
 
-    override fun onAddToCartClick(productId: String) {
+    override fun onAddToCartClicked(productId: String) {
         //TODO
     }
 
-    override fun onShareButtonClicked() {
+    override fun onShareClicked() {
         //TODO
     }
 
-    override fun onAddToFavoritesButtonClicked() {
+    override fun onAddToFavoritesClicked() {
         //TODO
     }
 
-    override fun onViewCartButtonClicked() {
+    override fun onViewCartClicked() {
         //TODO
     }
 
-}
-
-object ProductDetailsArgs {
-    const val PRODUCT_ID = "productId"
 }
