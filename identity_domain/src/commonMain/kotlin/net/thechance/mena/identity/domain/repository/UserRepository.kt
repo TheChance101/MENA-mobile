@@ -10,5 +10,5 @@ interface UserRepository {
         currentPassword: String,
         newPassword: String,
         confirmPassword: String
-    ): String
+    )
 }

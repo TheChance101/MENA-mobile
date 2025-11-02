@@ -72,8 +72,8 @@ class UserRepositoryImpl(
         currentPassword: String,
         newPassword: String,
         confirmPassword: String
-    ): String {
-        val response = safeWrapper {
+    ) {
+        return safeWrapper {
             client.postJson<ChangePasswordRequestDto, ChangePasswordResponseDto>(
                 requestDto = ChangePasswordRequestDto(
                     currentPassword = currentPassword,
@@ -83,8 +83,9 @@ class UserRepositoryImpl(
                 path = CHANGE_PASSWORD_PATH
             )
         }
-        return response.message
+
     }
+
     fun User.toRequest(shouldUpdateImage: Boolean): UpdateProfileRequestDto {
         return UpdateProfileRequestDto(
             firstName = this.firstName,

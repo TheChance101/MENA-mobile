@@ -30,12 +30,14 @@ import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -159,21 +161,27 @@ UserRepositoryImplTest {
     }
 
     @Test
-    fun `changePassword() should return success message when server return 200`() = runTest {
+    fun `changePassword() should  not throw exception when server return 200`() = runTest {
         val client = mockHttpClient(fakeChangePasswordResponse)
-        userRepositoryImpl = UserRepositoryImpl(client , userDao)
-        val response = userRepositoryImpl.changePassword(
-            currentPassword = "Abcd1234",
-            newPassword = "12345678",
-            confirmPassword = "12345678"
-        )
-        assertEquals(response , fakeChangePasswordResponse.message)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+
+        try {
+            userRepositoryImpl.changePassword(
+                currentPassword = "Abcd1234",
+                newPassword = "12345678",
+                confirmPassword = "12345678"
+            )
+        }catch (exception: AuthenticationException){
+            fail("Exception: ${exception.message}")
+        }
+
+
     }
 
     @Test
     fun `changePassword() should throw UnAuthorizedException when server return 401`() = runTest {
         val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-        userRepositoryImpl = UserRepositoryImpl(client , userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         assertFailure {
             userRepositoryImpl.changePassword(
@@ -187,7 +195,7 @@ UserRepositoryImplTest {
     @Test
     fun `changePassword() should throw InvalidRequestException when server return 400`() = runTest {
         val client = mockHttpClientError(HttpStatusCode.BadRequest)
-        userRepositoryImpl = UserRepositoryImpl(client , userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
         assertFailure {
             userRepositoryImpl.changePassword(
