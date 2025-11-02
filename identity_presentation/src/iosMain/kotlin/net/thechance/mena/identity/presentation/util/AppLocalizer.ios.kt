@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.service.LocalizationService
 import platform.Foundation.NSUserDefaults
-
 actual class AppLocalizer(
     localizationService: LocalizationService
 ) {
@@ -15,10 +14,9 @@ actual class AppLocalizer(
     init {
         scope.launch {
             localizationService.observeLanguage().collectLatest { iso ->
-                val defaults = NSUserDefaults.standardUserDefaults
-                defaults.setObject(listOf(iso), forKey = "app_language")
-                defaults.synchronize()
-            }
-        }
+                NSUserDefaults.standardUserDefaults.setObject(
+                    arrayListOf(iso), "AppleLanguages"
+                )
+        }}
     }
 }

@@ -124,8 +124,6 @@ resources = { module = "dev.icerock.moko:resources", version.ref = "resources" }
 #Unit testing
 multiplatform-settings = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettings" }
 assertk-jvm = { module = "com.willowtreeapps.assertk:assertk-jvm", version.ref = "assertk" }
-remember-settings = { module = "dev.burnoo:compose-remember-setting", version.ref = "settings" }
-
 # Ktor
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

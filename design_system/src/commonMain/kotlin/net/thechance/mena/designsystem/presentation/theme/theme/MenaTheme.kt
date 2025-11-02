@@ -3,6 +3,7 @@ package net.thechance.mena.designsystem.presentation.theme.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import net.thechance.mena.designsystem.presentation.theme.color.scheme.ColorScheme
@@ -39,7 +40,6 @@ fun MenaTheme(
         content()
     }
 }
-
 object Theme {
     val colorScheme: ColorScheme
         @Composable @ReadOnlyComposable get() = LocalColorScheme.current
