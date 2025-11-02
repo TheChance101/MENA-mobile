@@ -1,7 +1,5 @@
 package net.thechance.mena.admin_panel.data.utils
 
-import androidx.compose.ui.text.intl.Locale
-import androidx.compose.ui.text.toLowerCase
 import de.jensklingenberg.ktorfit.Response
 import io.ktor.http.HttpStatusCode
 import kotlinx.io.IOException
@@ -35,9 +33,6 @@ private inline fun <reified T> handleResponse(response: Response<T>): T {
     }
 
     throw when {
-        response.message.contains("Credentials") ->
-            UnauthorizedException("Unauthorized: " + parseErrorMessage(response))
-
         response.status == HttpStatusCode.Unauthorized ->
             UnauthorizedException("Unauthorized: " + parseErrorMessage(response))
 
