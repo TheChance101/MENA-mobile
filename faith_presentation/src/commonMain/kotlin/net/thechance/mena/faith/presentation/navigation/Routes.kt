@@ -27,6 +27,9 @@ internal sealed interface Route {
     data object CalibrateDeviceRoute : Route
 
     @Serializable
+    data object PrayerTimeRoute : Route
+
+    @Serializable
     data object NearbyMosquesRoute : Route
 
     @Serializable
