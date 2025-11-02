@@ -35,7 +35,7 @@ private inline fun <reified T> handleResponse(response: Response<T>): T {
     }
 
     throw when {
-        response.message.toLowerCase(Locale.current).contains("credentials") ->
+        response.message.contains("Credentials") ->
             UnauthorizedException("Unauthorized: " + parseErrorMessage(response))
 
         response.status == HttpStatusCode.Unauthorized ->
