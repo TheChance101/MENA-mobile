@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.data.remote.network
 
 import net.thechance.mena.faith.data.utils.unpackZip
+import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -16,7 +17,7 @@ class DownloadSurahManagerImpl : DownloadSurahManager {
             val unZippedFilePath = unZipFile(it)
             FileSystem.SYSTEM.delete(it.toPath())
             unZippedFilePath
-        } ?: throw Exception()
+        } ?: throw FaithException.FailedToDownloadSurahException
     }
 
     private fun unZipFile(path: String): String =

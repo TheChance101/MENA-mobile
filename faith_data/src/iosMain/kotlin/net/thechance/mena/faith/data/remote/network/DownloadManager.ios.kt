@@ -2,6 +2,7 @@ package net.thechance.mena.faith.data.remote.network
 
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
+import net.thechance.mena.faith.domain.exception.FaithException
 import platform.Foundation.*
 import kotlin.coroutines.resume
 
@@ -11,7 +12,7 @@ actual suspend fun downloadSurahFileToAppStorage(
     fileName: String,
 ): String? =
     suspendCancellableCoroutine { cont ->
-        val nsUrl = NSURL.URLWithString(url) ?: throw Exception()
+        val nsUrl = NSURL.URLWithString(url) ?: throw FaithException.UrlCreationException
         val session = NSURLSession.sharedSession
         val task =
             session.dataTaskWithURL(nsUrl) { data, _, error ->
@@ -32,7 +33,7 @@ actual suspend fun downloadSurahFileToAppStorage(
                         .first() as NSURL
 
                 val zipFile =
-                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: throw Exception()
+                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: throw FaithException.FileCreationException
                 data.writeToURL(zipFile, atomically = true)
 
                 cont.resume(zipFile.path)
