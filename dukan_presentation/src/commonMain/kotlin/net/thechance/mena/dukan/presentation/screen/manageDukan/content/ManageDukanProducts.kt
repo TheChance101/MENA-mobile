@@ -22,8 +22,8 @@ import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUi
 @Composable
 fun ManageDukanProducts(
     state: ManageDukanUiState,
-    onProductClick: (ProductUiState) -> Unit,
-    onEditProductClick: (ProductUiState) -> Unit
+    onProductClicked: (ProductUiState) -> Unit,
+    onEditProductClicked: (ProductUiState) -> Unit
 ) {
     val product = state.products.collectAsLazyPagingItems()
 
@@ -50,7 +50,7 @@ fun ManageDukanProducts(
                 } else {
                     ManageDukanProductsList(
                         products = product,
-                        onEditProductClick = onEditProductClick
+                        onEditProductClick = onEditProductClicked
                     )
                 }
             }

@@ -50,8 +50,8 @@ fun ManageDukanContent(
                 }
                 ManageDukanProducts(
                     state = state,
-                    onProductClick = listener::onProductClicked,
-                    onEditProductClick = listener::onEditProductClicked
+                    onProductClicked = listener::onProductClicked,
+                    onEditProductClicked = listener::onEditProductClicked
                 )
                 Spacer(modifier = Modifier.weight(1f))
             }
