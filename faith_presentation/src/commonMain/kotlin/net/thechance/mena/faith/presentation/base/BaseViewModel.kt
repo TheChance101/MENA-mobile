@@ -115,5 +115,8 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         FaithException.UnknownException -> Res.string.error_unknown
         FaithException.InvalidLatitudeException -> Res.string.error_latitude
         FaithException.InvalidLongitudeException -> Res.string.error_longitude
+        FaithException.FailedToDownloadSurahException -> Res.string.surah_download_failed
+        FaithException.FileCreationException -> Res.string.surah_download_failed
+        FaithException.UrlCreationException -> Res.string.surah_download_failed
     }
 }
