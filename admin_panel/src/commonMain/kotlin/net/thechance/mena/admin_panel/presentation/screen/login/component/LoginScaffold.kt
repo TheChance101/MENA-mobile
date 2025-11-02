@@ -34,30 +34,7 @@ internal fun LoginScaffold(
 ) {
     Scaffold {
         Box {
-            Image(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.BottomCenter),
-                painter = painterResource(Res.drawable.login_background),
-                contentDescription = stringResource(Res.string.login_background_img),
-                contentScale = ContentScale.Crop
-            )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Theme.colorScheme.background.surface.copy(alpha = 0.9f),
-                                Theme.colorScheme.background.surface,
-                                Theme.colorScheme.background.surface,
-                            ),
-                            start = Offset(0f, Float.POSITIVE_INFINITY),
-                            end = Offset(0f, 0f)
-                        )
-                    )
-            )
+            BackgroundImage()
 
             Column(
                 modifier = Modifier
@@ -75,4 +52,30 @@ internal fun LoginScaffold(
             ) { SnackBarContainer(snackBarState) }
         }
     }
+}
+
+@Composable
+private fun BackgroundImage() {
+    Image(
+        modifier = Modifier.fillMaxSize(),
+        painter = painterResource(Res.drawable.login_background),
+        contentDescription = stringResource(Res.string.login_background_img),
+        contentScale = ContentScale.Crop
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        Theme.colorScheme.background.surface.copy(alpha = 0.9f),
+                        Theme.colorScheme.background.surface,
+                        Theme.colorScheme.background.surface,
+                    ),
+                    start = Offset(0f, Float.POSITIVE_INFINITY),
+                    end = Offset(0f, 0f)
+                )
+            )
+    )
 }
