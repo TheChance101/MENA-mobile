@@ -4,7 +4,6 @@ import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.domain.model.SortType
 import net.thechance.mena.admin_panel.presentation.utils.format
-import net.thechance.mena.admin_panel.presentation.utils.formatPhoneNumber
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
