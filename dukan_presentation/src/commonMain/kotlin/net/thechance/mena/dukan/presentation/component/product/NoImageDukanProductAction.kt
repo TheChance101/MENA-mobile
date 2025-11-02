@@ -30,86 +30,117 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
 @Composable
 fun NoImageDukanProductAction(
     showProductQuantity: Boolean,
     inCartQuantity: Int,
-    dukanColor: Color,
     onAddToCartClick: () -> Unit,
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
-    modifier: Modifier = Modifier
+    dukanColor: Color
 ) {
+
     AnimatedContent(
         targetState = showProductQuantity,
         transitionSpec = { fadeTransitionSpec() },
         label = "CartToQuantity"
     ) {
         if (it) {
-            Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
-                Icon(
-                    painter = painterResource(Res.drawable.remove_01),
-                    tint = dukanColor,
-                    contentDescription = stringResource(Res.string.remove_product),
-                    modifier = modifier.size(24.dp)
-                        .clip(RoundedCornerShape(Theme.radius.full))
-                        .background(Theme.colorScheme.background.surfaceLow)
-                        .clickable(
-                            onClick = onMinusClick,
-                            indication = null,
-                            interactionSource = null
-                        )
-                        .padding(Theme.spacing._4 + Theme.spacing._2)
-                )
-
-                Text(
-                    text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
-                    style = Theme.typography.label.small,
-                    color = Theme.colorScheme.primary.onPrimary,
-                    textAlign = TextAlign.Center,
-                    modifier = modifier.size(24.dp)
-                        .clip(RoundedCornerShape(Theme.radius.full))
-                        .background(dukanColor)
-                        .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._2)
-                )
-
-                Icon(
-                    painter = painterResource(Res.drawable.add_icon),
-                    tint = dukanColor,
-                    contentDescription = stringResource(Res.string.add_product),
-                    modifier = modifier.size(24.dp)
-                        .clip(RoundedCornerShape(Theme.radius.full))
-                        .background(Theme.colorScheme.background.surfaceLow)
-                        .clickable(
-                            onClick = onPlusClick,
-                            indication = null,
-                            interactionSource = null
-                        )
-                        .padding(Theme.spacing._4 + Theme.spacing._2)
-                )
-            }
+            SetProductQuantity(
+                inCartQuantity = inCartQuantity,
+                onPlusClick = onPlusClick,
+                onMinusClick = onMinusClick,
+                dukanColor = dukanColor
+            )
         } else {
-            Icon(
-                painter = painterResource(Res.drawable.ic_shopping_bag_add),
-                tint = dukanColor,
-                contentDescription = stringResource(Res.string.add_product),
-                modifier = modifier.size(36.dp)
-                    .clip(RoundedCornerShape(Theme.radius.md))
-                    .border(
-                        1.dp,
-                        Theme.colorScheme.stroke,
-                        RoundedCornerShape(Theme.radius.md)
-                    )
-                    .clickable(
-                        onClick = onAddToCartClick,
-                        indication = null,
-                        interactionSource = null
-                    )
-                    .padding(Theme.spacing._8)
+            ProductCart(
+                onClick = onAddToCartClick,
+                dukanColor = dukanColor
             )
         }
     }
 }
+
+@Composable
+private fun ProductCart(
+    onClick: () -> Unit,
+    dukanColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_shopping_bag_add),
+        tint = dukanColor,
+        contentDescription = stringResource(Res.string.add_product),
+        modifier = modifier.size(36.dp)
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .border(
+                1.dp,
+                Theme.colorScheme.stroke,
+                RoundedCornerShape(Theme.radius.md)
+            )
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = null
+            )
+            .padding(Theme.spacing._8)
+    )
+
+}
+
+@Composable
+private fun SetProductQuantity(
+    onPlusClick: () -> Unit,
+    onMinusClick: () -> Unit,
+    inCartQuantity: Int,
+    modifier : Modifier = Modifier,
+    dukanColor: Color,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
+        Icon(
+            painter = painterResource(Res.drawable.remove_01),
+            tint = dukanColor,
+            contentDescription = stringResource(Res.string.remove_product),
+            modifier = modifier.size(24.dp)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(Theme.colorScheme.background.surfaceLow)
+                .clickable(
+                    onClick = onMinusClick,
+                    indication = null,
+                    interactionSource = null
+                )
+                .padding(Theme.spacing._4 + Theme.spacing._2)
+        )
+
+        Text(
+            text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.primary.onPrimary,
+            textAlign = TextAlign.Center,
+            modifier = modifier.size(24.dp)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(dukanColor)
+                .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._2)
+        )
+
+        Icon(
+            painter = painterResource(Res.drawable.add_icon),
+            tint = dukanColor,
+            contentDescription = stringResource(Res.string.add_product),
+            modifier = modifier.size(24.dp)
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(Theme.colorScheme.background.surfaceLow)
+                .clickable(
+                    onClick = onPlusClick,
+                    indication = null,
+                    interactionSource = null
+                )
+                .padding(Theme.spacing._4 + Theme.spacing._2)
+        )
+    }
+}
+
 
 @Preview()
 @Composable

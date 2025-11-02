@@ -41,7 +41,7 @@ fun SmallAndWideImageDukanProductAction(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     cartIcon: Painter,
-    cartColor: Color
+    dukanColor: Color
 ) {
 
     AnimatedContent(
@@ -57,7 +57,7 @@ fun SmallAndWideImageDukanProductAction(
             )
         } else {
             ProductCart(
-                cartColor = cartColor,
+                dukanColor = dukanColor,
                 cartIcon = cartIcon,
                 onClick = onAddToCartClick
             )
@@ -69,7 +69,7 @@ fun SmallAndWideImageDukanProductAction(
 private fun ProductCart(
     onClick: () -> Unit,
     cartIcon : Painter,
-    cartColor: Color
+    dukanColor: Color
 ) {
     Icon(
         painter = cartIcon,
@@ -77,7 +77,7 @@ private fun ProductCart(
         modifier = Modifier
             .size(32.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
-            .background(cartColor)
+            .background(dukanColor)
             .clickable(
                 onClick = onClick,
                 indication = null,
@@ -138,7 +138,7 @@ private fun ProductActionIconSmallImageDukanPreview() {
         SmallAndWideImageDukanProductAction(
             showProductQuantity = false,
             inCartQuantity = 0,
-            cartColor = Color(0xFFFB5B5D),
+            dukanColor = Color(0xFFFB5B5D),
             cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
             onAddToCartClick = {},
             onPlusClick = {},
@@ -154,7 +154,7 @@ private fun ProductActionIconWideImageDukanPreview() {
         SmallAndWideImageDukanProductAction(
             showProductQuantity = false,
             inCartQuantity = 0,
-            cartColor = Color(0xFFFB5B5D),
+            dukanColor = Color(0xFFFB5B5D),
             cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
             onAddToCartClick = {},
             onPlusClick = {},
@@ -170,7 +170,7 @@ private fun ProductActionHasQuantitySmallImageDukanPreview() {
         SmallAndWideImageDukanProductAction(
             showProductQuantity = true,
             inCartQuantity = 1,
-            cartColor = Color(0xFFFB5B5D),
+            dukanColor = Color(0xFFFB5B5D),
             cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
             onAddToCartClick = {},
             onPlusClick = {},

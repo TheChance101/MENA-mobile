@@ -8,6 +8,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
@@ -18,9 +23,9 @@ import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
-import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState.Style
@@ -50,6 +55,7 @@ fun ShelfProducts(
                 listener = listener,
                 state = state
             )
+
             is LoadState.Error -> {}
         }
     }
@@ -57,11 +63,11 @@ fun ShelfProducts(
 
 @Composable
 private fun ProductCardLoaded(
-    productCardBackground : Color?,
+    productCardBackground: Color?,
     products: LazyPagingItems<ShelfDetailsUiState.ProductUiState>,
     listener: ShelfDetailsInteractionListener,
-    state : ShelfDetailsUiState
-){
+    state: ShelfDetailsUiState
+) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -89,6 +95,7 @@ private fun ProductCardLoaded(
         }
     }
 }
+
 @Composable
 private fun CartProductAction(
     state: ShelfDetailsUiState,
@@ -117,27 +124,65 @@ private fun GetProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
 
     when (style) {
         Style.SMALL_IMAGE -> {
             SmallAndWideImageDukanProductAction(
-                showProductQuantity = product.showProductQuantity,
-                inCartQuantity = product.inCartQuantity,
-                cartColor = Color(state.dukancolor),
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = Color(state.dukancolor),
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
-                onAddToCartClick = { listener.onAddToCartClicked(product) },
-                onPlusClick = { listener.onPlusClicked(product)},
-                onMinusClick = { listener.onMinusClicked(product)},
+                onAddToCartClick = {
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    else productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                }
             )
         }
 
         else -> {
             NoImageDukanProductAction(
-                showProductQuantity = product.showProductQuantity,
-                inCartQuantity = product.inCartQuantity,
-                onAddToCartClick = { listener.onAddToCartClicked(product) },
-                onPlusClick = { listener.onPlusClicked(product)},
-                onMinusClick = { listener.onMinusClicked(product)},
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                onAddToCartClick = {
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    else productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
                 dukanColor = Color(state.dukancolor),
             )
         }

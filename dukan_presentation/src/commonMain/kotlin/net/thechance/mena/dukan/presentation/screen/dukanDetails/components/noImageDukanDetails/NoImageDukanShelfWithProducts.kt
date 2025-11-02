@@ -4,6 +4,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -16,6 +21,7 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetai
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -25,6 +31,7 @@ fun NoImageDukanShelfWithProducts(
     listener: DukanDetailsInteractionListener,
     dukanColor: Long,
 ) {
+
     Column(
         Modifier.padding(horizontal = Theme.spacing._16)
             .padding(top = Theme.spacing._16)
@@ -42,25 +49,63 @@ fun NoImageDukanShelfWithProducts(
         )
         shelf.products.forEachIndexed { index, product ->
             val topPadding = if (index > 0) Theme.spacing._8 else 0.dp
-            ProductCard(
-                productName = product.name,
-                productImageUrl = product.imageUrl,
-                productDescription = product.description,
-                productPrice = product.price,
-                productAction = {
-                    NoImageDukanProductAction(
-                        inCartQuantity = product.inCartQuantity,
-                        showProductQuantity = product.showProductQuantity,
-                        dukanColor = Color(dukanColor),
-                        onAddToCartClick = { listener.onAddToCartClicked(product) },
-                        onPlusClick = { listener.onPlusClicked(product) },
-                        onMinusClick = { listener.onMinusClicked(product) }
-                    )
-                },
+            ProductItem(
+                product = product,
+                listener = listener,
+                dukanColor = Color(dukanColor),
                 modifier = Modifier.padding(top = topPadding)
             )
         }
     }
+}
+
+
+@Composable
+private fun ProductItem(
+    product: ProductUiState,
+    listener: DukanDetailsInteractionListener,
+    dukanColor: Color,
+    modifier: Modifier = Modifier
+) {
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+
+    ProductCard(
+        productName = product.name,
+        productImageUrl = product.imageUrl,
+        productDescription = product.description,
+        productPrice = product.price,
+        productCardBackground = Theme.colorScheme.background.surfaceLow,
+        productAction = {
+            NoImageDukanProductAction(
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = dukanColor,
+                onAddToCartClick = {
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    else productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+            )
+        },
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF2F4F7)

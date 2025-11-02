@@ -13,6 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,25 +46,47 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun LazyGridScope.wideImageProductsGrid(
     listener: DukanDetailsInteractionListener,
-    cartColor : Color,
+    cartColor: Color,
     productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
 ) {
+
     items(
         count = productsShelf.itemCount,
     ) { index ->
         productsShelf[index]?.let { product ->
+            var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
+            var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+
             ProductCard(
                 imageUrl = product.imageUrl,
                 title = product.name,
                 price = "${product.price}",
                 productAction = {
                     SmallAndWideImageDukanProductAction(
-                        showProductQuantity = product.showProductQuantity,
-                        inCartQuantity = product.inCartQuantity,
-                        cartColor = cartColor,
-                        onAddToCartClick = { listener.onAddToCartClicked(product) },
-                        onPlusClick = { listener.onPlusClicked(product) },
-                        onMinusClick = { listener.onMinusClicked(product) },
+                        showProductQuantity = toggleCartToQuantity,
+                        inCartQuantity = productQuantity,
+                        dukanColor = cartColor,
+                        onAddToCartClick = {
+                            toggleCartToQuantity = true
+                            listener.onAddToCartClicked(
+                                productId = product.id
+                            )
+                        },
+                        onPlusClick = {
+                            productQuantity += 1
+                            listener.onPlusClicked(
+                                productId = product.id,
+                                productQuantity = productQuantity
+                            )
+                        },
+                        onMinusClick = {
+                            if (productQuantity == 1) toggleCartToQuantity = false
+                            else productQuantity -= 1
+                            listener.onMinusClicked(
+                                productId = product.id,
+                                productQuantity = productQuantity
+                            )
+                        },
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart)
                     )
                 }
@@ -142,7 +169,7 @@ private fun ProductCardPreview() {
                 SmallAndWideImageDukanProductAction(
                     showProductQuantity = false,
                     inCartQuantity = 1,
-                    cartColor = Theme.colorScheme.primary.primary,
+                    dukanColor = Theme.colorScheme.primary.primary,
                     onAddToCartClick = {},
                     onPlusClick = {},
                     onMinusClick = {},

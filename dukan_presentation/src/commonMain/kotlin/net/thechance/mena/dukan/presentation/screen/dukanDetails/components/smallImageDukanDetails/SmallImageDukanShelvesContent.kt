@@ -13,8 +13,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
@@ -91,7 +96,7 @@ private fun ShelfContent(
                 )
                 ShelfProducts(
                     shelf = shelf,
-                    listener= listener,
+                    listener = listener,
                     cartColor = dukanColor
                 )
             }
@@ -105,6 +110,7 @@ private fun ShelfProducts(
     listener: DukanDetailsInteractionListener,
     cartColor: Color
 ) {
+
     val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
     val lazyListState = rememberLazyListState()
     val flingBehavior = rememberSnapFlingBehavior(
@@ -129,9 +135,7 @@ private fun ShelfProducts(
                         ProductItem(
                             product = product,
                             cartColor = cartColor,
-                            onAddToCartClick = { listener.onAddToCartClicked(product) },
-                            onPlusClick = { listener.onPlusClicked(product) },
-                            onMinusClick = { listener.onMinusClicked(product) }
+                            listener = listener
                         )
                     }
                 }
@@ -144,11 +148,12 @@ private fun ShelfProducts(
 @Composable
 private fun ProductItem(
     product: ProductUiState,
-    onAddToCartClick: (productId: String) -> Unit,
-    onPlusClick: (productId: String) -> Unit,
-    onMinusClick: (productId: String) -> Unit,
+    listener: DukanDetailsInteractionListener,
     cartColor: Color
 ) {
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+
     ProductCard(
         productName = product.name,
         productImageUrl = product.imageUrl,
@@ -157,13 +162,31 @@ private fun ProductItem(
         productCardBackground = Theme.colorScheme.background.surfaceLow,
         productAction = {
             SmallAndWideImageDukanProductAction(
-                showProductQuantity = product.showProductQuantity,
-                inCartQuantity = product.inCartQuantity,
-                cartColor = cartColor,
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = cartColor,
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
-                onAddToCartClick = { onAddToCartClick(product.id) },
-                onPlusClick = { onPlusClick(product.id) },
-                onMinusClick = { onMinusClick(product.id) }
+                onAddToCartClick = {
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    else productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                }
             )
         }
     )
