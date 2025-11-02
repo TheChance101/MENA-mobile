@@ -7,7 +7,7 @@ import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthen
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshTokenRequestDto
 
-interface AdminAuthenticationApiService {
+interface AuthenticationApiService {
     @POST(LOGIN_ENDPOINT)
     suspend fun login(@Body loginRequest: LoginRequestDto):
             Response<AdminAuthenticationResponse>
@@ -16,9 +16,13 @@ interface AdminAuthenticationApiService {
     suspend fun refreshAccessToken(@Body refreshTokenRequest: RefreshTokenRequestDto):
             Response<AdminAuthenticationResponse>
 
+    @POST(LOGOUT_ENDPOINT)
+    suspend fun logout(): Response<Unit>
+
     private companion object {
         const val AUTH_BASE = "identity/admin/authentication/"
         const val LOGIN_ENDPOINT = "${AUTH_BASE}login"
         const val REFRESH_ENDPOINT = "${AUTH_BASE}refresh"
+        const val LOGOUT_ENDPOINT = "${AUTH_BASE}logout"
     }
 }
