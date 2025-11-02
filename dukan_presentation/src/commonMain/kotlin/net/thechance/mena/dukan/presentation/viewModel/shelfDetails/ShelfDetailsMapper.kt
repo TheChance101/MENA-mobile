@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
