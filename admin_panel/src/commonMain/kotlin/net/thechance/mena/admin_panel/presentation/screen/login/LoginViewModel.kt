@@ -26,7 +26,11 @@ class LoginViewModel(
 ) : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
     LoginInteractionListener {
     override fun onUsernameChanged(username: String) {
-        updateState { it.copy(username = username.filter { char -> char.isLetterOrDigit() || char == '_' }) }
+        updateState {
+            it.copy(
+                username = username.filter { char -> char.isLetterOrDigit() || char == '_' }
+            )
+        }
     }
 
     override fun onPasswordChanged(password: String) {
@@ -39,15 +43,17 @@ class LoginViewModel(
 
     override fun onLoginButtonClicked() {
         tryToExecute(
-            callee = {
-                loginUseCase.login(currentState.username, currentState.password)
-            },
+            callee = ::onLoginClicked,
             onStart = { updateState { it.copy(isLoginButtonLoading = true) } },
             onSuccess = { onLoginSuccess() },
             onError = ::onLoginError,
             onFinish = { updateState { it.copy(isLoginButtonLoading = false) } },
             dispatcher = dispatcher
         )
+    }
+
+    private suspend fun onLoginClicked(){
+        loginUseCase.login(userName = currentState.username, password = currentState.password)
     }
 
     private fun onLoginSuccess() {
@@ -90,7 +96,7 @@ class LoginViewModel(
         }
     }
 
-    override fun mapError(throwable: Throwable): ErrorState  {
+    override fun mapError(throwable: Throwable): ErrorState {
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
             is InvalidPasswordException -> LoginErrorState.InvalidCredentials
