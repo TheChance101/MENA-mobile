@@ -32,10 +32,11 @@ fun ReciterItem(
     recitingType: String,
     isDownloaded: Boolean,
     isSelected: Boolean,
-    onSelect: () -> Unit
+    onSelect: () -> Unit,
+    modifier: Modifier =Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
             .padding(horizontal = Theme.spacing._16)
