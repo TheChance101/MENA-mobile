@@ -45,7 +45,7 @@ import org.maplibre.compose.map.MaplibreMap
 import org.maplibre.compose.style.BaseStyle
 
 @Composable
-internal fun MosqueCreateScreen(viewModel: CreateMosqueViewModel = koinViewModel()) {
+internal fun CreateMosqueScreen(viewModel: CreateMosqueViewModel = koinViewModel()) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -101,8 +101,8 @@ private fun MosqueLocationMapSection(
 
     val initialCameraPosition = CameraPosition(
         target = Position(
-            longitude = uiState.centerOfMap?.longitude ?: 0.0,
-            latitude = uiState.centerOfMap?.latitude ?: 0.0
+            longitude = uiState.mosqueLocation?.longitude ?: 0.0,
+            latitude = uiState.mosqueLocation?.latitude ?: 0.0
         ),
         zoom = 14.0
     )
@@ -189,6 +189,9 @@ private fun AddImage(
     UploadImageContainer(
         onClick = listener::onClickUploadImage,
         image = uiState.croppedImage,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 20.dp)
     )
 }
 
@@ -200,6 +203,7 @@ private fun MosqueCreateScreenPreview() {
             uiState = CreateMosqueUiState(),
             listener = object : CreateMosqueInteractionListener {
                 override fun onBackClicked() {}
+                override fun onEditImageMosqueClicked() {}
                 override fun onClickUploadImage(image: ImageSrc) {}
                 override fun onNameChange(name: String) {}
                 override fun onAddressChanged(address: String) {}

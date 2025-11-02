@@ -12,8 +12,12 @@ internal class CreateMosqueViewModel() :
         //TODO("Not yet implemented")
     }
 
+    override fun onEditImageMosqueClicked() {
+        //TODO("Not yet implemented")
+    }
+
     override fun onClickUploadImage(image: ImageSrc) {
-        TODO("Not yet implemented")
+        //TODO("Not yet implemented")
     }
 
     override fun onNameChange(name: String) {

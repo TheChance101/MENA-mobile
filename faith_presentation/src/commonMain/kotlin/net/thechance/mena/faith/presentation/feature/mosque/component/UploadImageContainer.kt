@@ -5,12 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -67,8 +67,7 @@ fun UploadImageContainer(
     }
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 20.dp)
+
     ) {
         Box(
             modifier = Modifier
@@ -111,18 +110,7 @@ fun UploadImageContainer(
         }
         if (image != null) {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 20.dp)
-                    .clip(shape = RoundedCornerShape(Theme.radius.full))
-                    .background(Theme.colorScheme.primary.primary)
-                    .border(
-                        width = 1.dp,
-                        color = Theme.colorScheme.background.surface,
-                        shape = RoundedCornerShape(radius)
-                    )
-                    .clickable { filePicker.launch() },
+                modifier = editButtonModifier().clickable { filePicker.launch() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -135,6 +123,21 @@ fun UploadImageContainer(
         }
     }
 }
+
+
+@Composable
+private fun BoxScope.editButtonModifier(): Modifier = Modifier
+    .size(40.dp)
+    .align(Alignment.BottomCenter)
+    .offset(y = 20.dp)
+    .clip(shape = RoundedCornerShape(Theme.radius.full))
+    .background(Theme.colorScheme.primary.primary)
+    .border(
+        width = 1.dp,
+        color = Theme.colorScheme.background.surface,
+        shape = RoundedCornerShape(Theme.radius.full)
+    )
+
 
 @Preview
 @Composable
