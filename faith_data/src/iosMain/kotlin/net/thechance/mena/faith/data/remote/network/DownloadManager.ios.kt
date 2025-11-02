@@ -3,18 +3,15 @@ package net.thechance.mena.faith.data.remote.network
 import kotlinx.cinterop.*
 import kotlinx.coroutines.*
 import platform.Foundation.*
-import platform.darwin.*
 import kotlin.coroutines.resume
-import cocoapods.SSZipArchive.SSZipArchive
 
 @OptIn(ExperimentalForeignApi::class)
-actual suspend fun downloadFileIntoPrivateStorage(
+actual suspend fun downloadSurahFileToAppStorage(
     url: String,
     fileName: String,
-    isZipFile: Boolean,
 ): String? =
     suspendCancellableCoroutine { cont ->
-        val nsUrl = NSURL.URLWithString(url)!!
+        val nsUrl = NSURL.URLWithString(url) ?: throw Exception()
         val session = NSURLSession.sharedSession
         val task =
             session.dataTaskWithURL(nsUrl) { data, _, error ->
@@ -30,25 +27,15 @@ actual suspend fun downloadFileIntoPrivateStorage(
 
                 val fileManager = NSFileManager.defaultManager
                 val documentsDir =
-                    fileManager.URLsForDirectory(NSDocumentDirectory, NSUserDomainMask).first() as NSURL
+                    fileManager
+                        .URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
+                        .first() as NSURL
 
-                val zipFile = documentsDir.URLByAppendingPathComponent("downloaded.zip")!!
+                val zipFile =
+                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: throw Exception()
                 data.writeToURL(zipFile, atomically = true)
 
-                val extractDir = documentsDir.URLByAppendingPathComponent("extracted")!!.path!!
-                fileManager.createDirectoryAtPath(
-                    extractDir,
-                    withIntermediateDirectories = true,
-                    attributes = null,
-                    error = null,
-                )
-
-                val success = SSZipArchive.unzipFileAtPath(zipFile.path!!, toDestination = extractDir)
-                if (success) {
-                    cont.resume(extractDir)
-                } else {
-                    cont.resumeWith(Result.failure(Exception("Failed to extract ZIP")))
-                }
+                cont.resume(zipFile.path)
             }
         task.resume()
     }
