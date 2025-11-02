@@ -9,7 +9,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
+import net.thechance.mena.admin_panel.domain.use_case.auth.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import kotlin.test.AfterTest

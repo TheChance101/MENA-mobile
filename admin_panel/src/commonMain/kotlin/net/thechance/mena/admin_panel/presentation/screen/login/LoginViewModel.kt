@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
-import net.thechance.mena.admin_panel.domain.use_case.LoginUseCase
+import net.thechance.mena.admin_panel.domain.use_case.auth.LoginUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
