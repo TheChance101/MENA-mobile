@@ -13,8 +13,8 @@ import org.jetbrains.compose.resources.StringResource
 
 fun ErrorState.getErrorSnackBarTitle(): StringResource {
     return when(this){
-        ErrorState.NoInternet -> Res.string.no_internet_title
-        ErrorState.UnknownError -> Res.string.unknown_error_title
+        is ErrorState.NoInternet -> Res.string.no_internet_title
+        is ErrorState.UnknownError -> Res.string.unknown_error_title
         is LoginErrorState.InvalidCredentials -> Res.string.error_invalid_credentials_title
         else -> Res.string.unknown_error_title
     }
@@ -22,8 +22,8 @@ fun ErrorState.getErrorSnackBarTitle(): StringResource {
 
 fun ErrorState.getErrorSnackBarMsg(): StringResource {
     return when(this){
-        ErrorState.NoInternet -> Res.string.no_internet_content
-        ErrorState.UnknownError -> Res.string.unknown_error_description
+        is ErrorState.NoInternet -> Res.string.no_internet_content
+        is ErrorState.UnknownError -> Res.string.unknown_error_description
         is LoginErrorState.InvalidCredentials -> Res.string.error_invalid_credentials_description
         else -> Res.string.unknown_error_description
     }
