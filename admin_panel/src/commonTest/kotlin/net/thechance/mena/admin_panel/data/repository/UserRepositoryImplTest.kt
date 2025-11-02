@@ -11,17 +11,18 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
-import net.thechance.mena.admin_panel.data.remote.service.UserApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.repository.user.UserRepositoryImpl
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.admin_panel.domain.model.SortDirection
+import net.thechance.mena.admin_panel.domain.model.SortType
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -65,18 +66,20 @@ class UserRepositoryImplTest {
             userApiService.getUsers(any(), any(), any(), any())
         } returns successfulResponse(fakePagedResponse)
 
-
         val result = userRepository.getUsers(
             UserQueryParams(
                 searchInput = "Test",
-                "userName",
-                SortDirection.ASC
+                sortType = SortType.USERNAME,
+                sortDirection = SortDirection.ASC,
+                page = 0,
+                size = 10
             )
-        ).first()
+        )
 
         assertEquals(1, result.size)
         assertEquals("Test", result.first().firstName)
     }
+
 
     @Test
     fun `getUsers should throw NoInternetException on IOException`() = runTest {
@@ -90,12 +93,12 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUsers should throw UnknownNetworkException on 401 Unauthorized`() = runTest {
+    fun `getUsers should throw UnauthorizedException on 401 Unauthorized`() = runTest {
         everySuspend {
             userApiService.getUsers(any(), any(), any(), any())
         } returns unauthorizedResponse()
 
-        val exception = assertFailsWith<UnknownNetworkException> {
+        val exception = assertFailsWith<UnauthorizedException> {
             userRepository.getUsers(null).first()
         }
 
