@@ -65,6 +65,7 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.mokkery.core)
+            implementation(libs.mockk)
         }
 
         val desktopMain by getting {
