@@ -39,14 +39,6 @@ data class UsersManagementScreenState(
     }
 }
 
-fun UsersManagementScreenState.Sort.toDomain(): SortDirection? {
-    return when (this) {
-        UsersManagementScreenState.Sort.ASC -> SortDirection.ASC
-        UsersManagementScreenState.Sort.DESC -> SortDirection.DESC
-        UsersManagementScreenState.Sort.NONE -> null
-    }
-}
-
 fun UsersManagementScreenState.getActiveSortType(): SortType? = when {
     userNameSort != UsersManagementScreenState.Sort.NONE -> SortType.USERNAME
     lastLoginDateSort != UsersManagementScreenState.Sort.NONE -> SortType.LAST_LOGIN_DATE
