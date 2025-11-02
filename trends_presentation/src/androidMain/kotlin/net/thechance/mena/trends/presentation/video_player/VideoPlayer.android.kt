@@ -2,12 +2,15 @@ package net.thechance.mena.trends.presentation.video_player
 
 import android.view.View
 import androidx.annotation.OptIn
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -21,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -37,20 +41,15 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
-import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_pause
-import mena.trends_presentation.generated.resources.pause_icon
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
+import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -78,26 +77,46 @@ actual fun VideoPlayer(
     var isPause by remember { mutableStateOf(false) }
 
     var currentProgress by remember { mutableFloatStateOf(0f) }
-    var duration by remember { mutableStateOf(1L) }
+    var duration by remember { mutableLongStateOf(1) }
     var barWidth by remember { mutableFloatStateOf(1f) }
+    var isPressed by remember { mutableStateOf(false) }
+    val barHeight by animateDpAsState(
+        targetValue = if (isPressed) 8.dp else 4.dp,
+    )
 
+    var isStartPlaying by remember { mutableStateOf(false) }
+    var isInitialBuffering by remember { mutableStateOf(true) }
+
+    val backgroundColor = animateColorAsState(
+        targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
+        else Color.Transparent,
+    )
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
             .build().apply {
                 setSeekParameters(SeekParameters.EXACT)
+                repeatMode = Player.REPEAT_MODE_ONE
 
                 addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(state: Int) {
                         isLoading = when (state) {
-                            Player.STATE_BUFFERING, Player.STATE_IDLE -> true
-                            Player.STATE_READY, Player.STATE_ENDED -> false
+                            Player.STATE_IDLE -> true
+                            Player.STATE_READY -> {
+                                isStartPlaying = true
+                                false
+                            }
+
+                            Player.STATE_BUFFERING -> {
+                                isInitialBuffering = !isStartPlaying
+                                true
+                            }
+
                             else -> false
                         }
                     }
                 })
-
                 seekTo(lastPosition)
             }
     }
@@ -153,50 +172,44 @@ actual fun VideoPlayer(
                 .clickable { isPause = !isPause }
         )
 
-        if (isPause) {
-            Box(modifier = Modifier.align(Alignment.Center)) {
-                Icon(
-                    painter = painterResource(Res.drawable.ic_pause),
-                    contentDescription = stringResource(Res.string.pause_icon)
-                )
-            }
-        }
+        if (isPause)
+            PauseIcon(modifier = Modifier.align(Alignment.Center))
 
-        if (isLoading && !isPause) {
-            Box(
-                Modifier.fillMaxSize().background(Theme.colorScheme.brand.brand),
-                contentAlignment = Alignment.Center
-            ){
-                DotsProgressIndicator(
-                    colors = listOf(
-                        Theme.colorScheme.stroke,
-                        Theme.colorScheme.shadeTertiary,
-                        Theme.colorScheme.primary.primary
-                    )
-                )
-            }
-        }
+        if (isLoading && !isPause)
+            LoadingItem(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor.value)
+            )
 
         ProgressBar(
             progress = { currentProgress },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .fillMaxWidth()
-                .padding(bottom = 2.dp, start = 1.dp, end = 1.dp)
+                .padding(bottom = 2.dp)
+                .height(barHeight)
                 .onGloballyPositioned {
                     barWidth = it.size.width.toFloat()
                 }
-                .pointerInput(barWidth) {
-                    detectTapGestures { offset ->
-                        if (duration > 0L && barWidth > 0f) {
-                            val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
-                            val seekPosition = (newProgress * duration).toLong()
-                            exoPlayer.seekTo(seekPosition)
+                .pointerInput(barWidth, duration) {
+                    detectTapGestures(
+                        onPress = {
+                            isPressed = true
+                            awaitRelease()
+                            isPressed = false
+                        },
+                        onTap = { offset ->
+                            if (duration > 0L && barWidth > 0f) {
+                                val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
+                                val seekPosition = (newProgress * duration).toLong()
+                                exoPlayer.seekTo(seekPosition)
+                            }
                         }
-                    }
+                    )
                 },
             trackColor = Theme.colorScheme.primary.onPrimaryHint,
-            color = Theme.colorScheme.border.brand
+            color = Theme.colorScheme.border.brand,
         )
         content()
     }
@@ -224,6 +237,7 @@ actual fun VideoPlayer(
 
         onDispose {
             lastPosition = exoPlayer.currentPosition
+            exoPlayer.pause()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }

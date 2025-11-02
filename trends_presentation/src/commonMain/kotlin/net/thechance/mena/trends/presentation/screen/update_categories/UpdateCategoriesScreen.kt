@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,6 +36,7 @@ import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
@@ -95,48 +95,43 @@ private fun UpdateCategoriesScreenContent(
     state: UpdateCategoriesScreenState,
     listener: UpdateCategoriesInteractionListener
 ) {
-    AnimatedVisibility(
-        visible = !state.isLoading,
-        enter = androidx.compose.animation.fadeIn(),
-        exit = androidx.compose.animation.fadeOut()
-    ) {
-        Scaffold(
-            topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
-            bottomBar = {
-                AnimatedVisibility(
-                    visible = state.errorState == null && state.isLoading.not(),
-                    content = {
-                        SaveChangeButton(
-                            onSaveClick = listener::onClickSave,
-                            isButtonEnabled = state.saveButtonEnabled(),
-                            isButtonLoading = state.isSaveButtonLoading,
-                            modifier = Modifier
-                                .padding(
-                                    start = Theme.spacing._16,
-                                    end = Theme.spacing._16,
-                                    bottom = Theme.spacing._24
-                                )
-                        )
-                    }
-                )
-            },
-            content = {
-                AnimatedVisibility(
-                    visible = state.isLoading,
-                    content = { LoadingProgressBar() })
+    Scaffold(
+        topBar = { ChangeTagsAppBar(onBackClick = listener::onClickBack) },
+        bottomBar = {
+            TrendsAnimatedVisibility(
+                visible = state.errorState == null && state.isLoading.not(),
+                content = {
+                    SaveChangeButton(
+                        onSaveClick = listener::onClickSave,
+                        isButtonEnabled = state.saveButtonEnabled(),
+                        isButtonLoading = state.isSaveButtonLoading,
+                        modifier = Modifier
+                            .padding(
+                                start = Theme.spacing._16,
+                                end = Theme.spacing._16,
+                                bottom = Theme.spacing._24
+                            )
+                    )
+                }
+            )
+        },
+        content = {
+            TrendsAnimatedVisibility(
+                visible = state.isLoading,
+                content = { LoadingProgressBar() }
+            )
 
-                AnimatedVisibility(
-                    visible = state.errorState == null && state.isLoading.not(),
-                    content = { UpdateCategoryScreenBody(listener, state) }
-                )
+            TrendsAnimatedVisibility(
+                visible = state.errorState == null && state.isLoading.not(),
+                content = { UpdateCategoryScreenBody(listener, state) }
+            )
 
-                AnimatedVisibility(
-                    visible = state.errorState == ErrorState.NoInternet,
-                    content = { NoConnection { listener.onClickRetry() } }
-                )
-            }
-        )
-    }
+            TrendsAnimatedVisibility(
+                visible = state.errorState == ErrorState.NoInternet,
+                content = { NoConnection { listener.onClickRetry() } }
+            )
+        }
+    )
 }
 
 @Composable
@@ -168,16 +163,7 @@ private fun UpdateCategoryScreenBody(
             }
         }
     }
-
-    AnimatedVisibility(
-        visible = state.isLoading,
-        enter = androidx.compose.animation.fadeIn(),
-        exit = androidx.compose.animation.fadeOut()
-    ) {
-        LoadingProgressBar()
-    }
 }
-
 
 @Composable
 private fun SaveChangeButton(
