@@ -111,7 +111,8 @@ fun ProductDetailsSecondaryImages(
     LazyRow(
         modifier = modifier
             .height(64.dp)
-            .background(Theme.colorScheme.background.surfaceLow),
+            .background(Theme.colorScheme.background.surfaceLow)
+            .clip(RoundedCornerShape(Theme.radius.md)),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(horizontal = Theme.spacing._4)
