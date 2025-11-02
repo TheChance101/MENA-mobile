@@ -171,6 +171,7 @@ private fun DatePickerField(
             hint = stringResource(Res.string.select_date),
             onValueChanged = {},
             readOnly = true,
+            showTrailingDivider = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 8.dp)
