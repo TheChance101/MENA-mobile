@@ -55,17 +55,17 @@ fun ProductDetailsAppBar(
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_share),
                 contentDescription = stringResource(Res.string.share_icon),
-                onClick = listener::onShareButtonClicked
+                onClick = listener::onShareClicked
             )
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_favorite),
                 contentDescription = stringResource(Res.string.favorite_icon),
-                onClick = listener::onAddToFavoritesButtonClicked
+                onClick = listener::onAddToFavoritesClicked
             )
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
-                onClick = listener::onViewCartButtonClicked
+                onClick = listener::onViewCartClicked
             )
         }
     }

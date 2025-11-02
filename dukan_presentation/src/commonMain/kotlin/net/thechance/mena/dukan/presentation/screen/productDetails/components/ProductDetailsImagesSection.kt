@@ -1,9 +1,15 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -11,11 +17,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
@@ -31,22 +39,49 @@ fun ProductDetailsImagesSection(
     allImages: List<String>,
     selectedImageUrl: String,
     onSecondaryImageClick: (String) -> Unit,
+    isLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.fillMaxWidth()
             .height(320.dp)
     ) {
-        ProductDetailsMainImage(
-            imageUrl = selectedImageUrl,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
-        ProductDetailsSecondaryImages(
-            images = allImages,
-            selectedImageUrl = selectedImageUrl,
-            onImageClick = onSecondaryImageClick,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        if (isLoading) {
+            Column(
+                modifier = Modifier.fillMaxWidth().align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ShimmerBox(
+                    width = Dp.Unspecified,
+                    height = 288.dp,
+                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(Theme.radius.md))
+                )
+
+                Spacer(modifier = Modifier.height(Theme.spacing._16))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                ) {
+                    repeat(4) {
+                        ShimmerBox(
+                            width = 56.dp,
+                            height = 56.dp,
+                            modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
+                        )
+                    }
+                }
+            }
+        } else {
+            ProductDetailsMainImage(
+                imageUrl = selectedImageUrl,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+            ProductDetailsSecondaryImages(
+                images = allImages,
+                selectedImageUrl = selectedImageUrl,
+                onImageClick = onSecondaryImageClick,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
     }
 }
 
@@ -74,18 +109,27 @@ fun ProductDetailsSecondaryImages(
     modifier: Modifier = Modifier
 ) {
     LazyRow(
-        modifier = modifier.height(64.dp),
+        modifier = modifier
+            .height(64.dp)
+            .background(Theme.colorScheme.background.surfaceLow),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        contentPadding = PaddingValues(horizontal = Theme.spacing._4)
     ) {
         items(images) { imageUrl ->
             val isSelected = (imageUrl == selectedImageUrl)
             val shape = RoundedCornerShape(Theme.radius.sm)
-            val borderColor = if (isSelected) {
+
+            val targetBorderColor = if (isSelected) {
                 Theme.colorScheme.primary.primary
             } else {
                 Color.Transparent
             }
+
+            val animatedBorderColor by animateColorAsState(
+                targetValue = targetBorderColor,
+                label = "BorderColorAnimation"
+            )
 
             AsyncImage(
                 model = imageUrl,
@@ -94,7 +138,7 @@ fun ProductDetailsSecondaryImages(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(shape)
-                    .border(1.dp, borderColor, shape)
+                    .border(1.dp, animatedBorderColor, shape)
                     .clickable { onImageClick(imageUrl) }
             )
         }
@@ -109,7 +153,8 @@ private fun ProductDetailsImagesSectionPreview() {
         ProductDetailsImagesSection(
             allImages = images,
             selectedImageUrl = images[1],
-            onSecondaryImageClick = {}
+            onSecondaryImageClick = {},
+            isLoading = true
         )
     }
 }
