@@ -12,7 +12,10 @@ actual suspend fun downloadSurahFileToAppStorage(
     fileName: String,
 ): String? =
     suspendCancellableCoroutine { cont ->
-        val nsUrl = NSURL.URLWithString(url) ?: throw FaithException.UrlCreationException
+        val nsUrl = NSURL.URLWithString(url) ?: run {
+            cont.resumeWith(Result.failure(FaithException.UrlCreationException))
+            return@suspendCancellableCoroutine
+        }
         val session = NSURLSession.sharedSession
         val task =
             session.dataTaskWithURL(nsUrl) { data, _, error ->
@@ -32,11 +35,28 @@ actual suspend fun downloadSurahFileToAppStorage(
                         .URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
                         .first() as NSURL
 
-                val zipFile =
-                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: throw FaithException.FileCreationException
-                data.writeToURL(zipFile, atomically = true)
+                val fileUrl =
+                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: run {
+                        cont.resumeWith(Result.failure(FaithException.UrlCreationException))
+                        return@dataTaskWithURL
+                    }
 
-                cont.resume(zipFile.path)
+                fileUrl.URLByDeletingLastPathComponent?.let { parentDir ->
+                    fileManager.createDirectoryAtURL(
+                        parentDir,
+                        withIntermediateDirectories = true,
+                        attributes = null,
+                        error = null
+                    )
+                }
+
+                val success = data.writeToURL(fileUrl, atomically = true)
+
+                if (success) {
+                    cont.resume(fileUrl.path)
+                } else {
+                    cont.resumeWith(Result.failure(Exception("Failed to write file")))
+                }
             }
         task.resume()
     }
