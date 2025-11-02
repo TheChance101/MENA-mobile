@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
+import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -34,6 +35,7 @@ class UsersManagementViewModel(
             onSuccess = ::onGetUsersSuccess,
             onError = ::onError,
             onStart = { updateState { it.copy(isLoading = true) } },
+            onFinish = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
     }
@@ -52,14 +54,13 @@ class UsersManagementViewModel(
         updateState {
             it.copy(
                 users = users.map(User::toUIState),
-                isLoading = false,
                 errorState = null
             )
         }
     }
 
     private fun onError(errorState: ErrorState) {
-        updateState { it.copy(isLoading = false, errorState = errorState) }
+        updateState { it.copy( errorState = errorState) }
     }
 
     override fun onSortClicked(type: UsersManagementScreenState.SortType) {
@@ -127,6 +128,13 @@ class UsersManagementViewModel(
                     if (user.id == userId) user.copy(status = newStatus) else user
                 }
             )
+        }
+    }
+
+    override fun mapError(throwable: Throwable): ErrorState {
+        return when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            else -> ErrorState.UnknownError
         }
     }
 
