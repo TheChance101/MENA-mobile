@@ -33,8 +33,8 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            DownloadedSurEffect.NavigateToRecitersScreen -> TODO("Navigate to reciters screen when done")
-            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> TODO("Navigate to downloaded surah reciters when done")
+            DownloadedSurEffect.NavigateToRecitersScreen -> Unit // TODO("Navigate to reciters screen when done")
+            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> Unit // TODO("Navigate to downloaded surah reciters when done")
         }
     }
 

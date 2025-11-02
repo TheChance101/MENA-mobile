@@ -55,11 +55,11 @@ class DownloadedSurViewModel :
     }
 
     override fun onDownloadedSurahClick(surahId: Int) {
-        TODO("Integrate with the domain repo when done")
+        // TODO("Integrate with the domain repo when done")
     }
 
     override fun onDeleteDownloadedSurahClick(surahId: Int) {
-        TODO("Integrate with the domain repo when done")
+        // TODO("Integrate with the domain repo when done")
     }
 
     override fun onBackClick() {
