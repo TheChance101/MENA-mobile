@@ -72,8 +72,7 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
-        return cachedChatDao.getChatById(chatId.toString()).toDomain()
-
+        return cachedChatDao.getChatById(chatId.toString())?.toDomain()
             ?: tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
             client.get("$CHAT_ENDPOINT/$chatId")
         }?.also { chat ->

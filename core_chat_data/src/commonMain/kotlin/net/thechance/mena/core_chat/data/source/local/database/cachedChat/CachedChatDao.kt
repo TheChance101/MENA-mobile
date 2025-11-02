@@ -14,7 +14,7 @@ interface CachedChatDao {
     suspend fun insertAllChats(chats: List<CachedChatLocalDto>)
 
     @Query("SELECT * FROM cached_chats WHERE id = :chatId")
-    fun getChatById(chatId: String): CachedChatLocalDto
+    suspend fun getChatById(chatId: String): CachedChatLocalDto?
 
     @Query("DELETE FROM cached_chats WHERE id = :id")
     suspend fun deleteChatById(id: String)
