@@ -32,6 +32,7 @@ class UserRepositoryImpl(
             )
         }.toEntityList(UserResponse::toEntity)
     }
+
     override suspend fun updateUserStatus(userID: Uuid, status: Status) {
         executeApiSafely<Unit> {
             userApiService.updateUserStatus(
