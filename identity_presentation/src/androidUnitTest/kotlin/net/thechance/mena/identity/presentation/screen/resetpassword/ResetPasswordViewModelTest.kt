@@ -13,8 +13,8 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
-import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -26,7 +26,7 @@ class ResetPasswordScreenViewModelTest {
 
     private lateinit var resetPasswordRepository: ResetPasswordRepository
     private lateinit var passwordValidator: PasswordValidator
-    private lateinit var viewModel: ResetPasswordScreenViewModel
+    private lateinit var viewModel: SetNewPasswordScreenViewModel
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -39,7 +39,7 @@ class ResetPasswordScreenViewModelTest {
         resetPasswordRepository = mockk()
         passwordValidator = mockk()
 
-        viewModel = ResetPasswordScreenViewModel(
+        viewModel = SetNewPasswordScreenViewModel(
             passwordValidator = passwordValidator,
             resetPasswordRepository = resetPasswordRepository,
             dispatcher = testDispatcher
@@ -152,7 +152,7 @@ class ResetPasswordScreenViewModelTest {
     fun `onClickOk should send NavigateBackToLogin effect`() = runTest {
         viewModel.effect.test {
             viewModel.onClickOk()
-            assertTrue(awaitItem() is ResetPasswordScreenUIEffect.NavigateBackToLogin)
+            assertTrue(awaitItem() is SetNewPasswordScreenUIEffect.NavigateBackToLogin)
         }
     }
 
@@ -180,7 +180,7 @@ class ResetPasswordScreenViewModelTest {
     fun `onClickBack should send NavigateBackToLogin effect`() = runTest {
         viewModel.effect.test {
             viewModel.onClickBack()
-            assertTrue(awaitItem() is ResetPasswordScreenUIEffect.NavigateBackToLogin)
+            assertTrue(awaitItem() is SetNewPasswordScreenUIEffect.NavigateBackToLogin)
         }
     }
 }
