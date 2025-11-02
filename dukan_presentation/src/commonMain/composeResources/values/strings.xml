@@ -58,6 +58,7 @@
     <string name="foreground_image">Foreground Image</string>
     <string name="blur_image">Blur Image</string>
     <string name="shelves">Shelves</string>
+    <string name="checkout">Checkout</string>
     <string name="add_shelf_successfully">Add shelf successfully.</string>
     <string name="failed_to_add_shelf">Failed to add shelf</string>
     <string name="dukan_approved_header">Create dukan request it approved now</string>
@@ -138,4 +139,7 @@
     <string name="error_edit_shelf">Error editing shelf</string>
     <string name="edit_shelf_successfully">Edit shelf successfully.</string>
     <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
+    <string name="confirm_order">Confirm order</string>
+    <string name="deliver_to">Deliver to</string>
+    <string name="summary_details">Summary details</string>
 </resources>

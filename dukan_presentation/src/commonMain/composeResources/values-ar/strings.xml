@@ -97,5 +97,8 @@
     <string name="favorite_icon">الأيقونة المفضلة</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
-
+    <string name="checkout">Checkout</string>
+    <string name="confirm_order">تأكيد الطلب</string>
+    <string name="deliver_to">التوصيل إلى</string>
+    <string name="summary_details">تفاصيل الملخص</string>
 </resources>
