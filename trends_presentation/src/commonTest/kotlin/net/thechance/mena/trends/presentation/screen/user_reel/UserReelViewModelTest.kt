@@ -52,6 +52,7 @@ class UserReelViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        every { userReelArgs.isFromFeed } returns true
         viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 
