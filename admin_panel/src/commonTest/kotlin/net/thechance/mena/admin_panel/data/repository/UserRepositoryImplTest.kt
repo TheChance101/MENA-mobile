@@ -11,7 +11,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import junit.framework.TestCase.assertTrue
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.io.IOException
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
