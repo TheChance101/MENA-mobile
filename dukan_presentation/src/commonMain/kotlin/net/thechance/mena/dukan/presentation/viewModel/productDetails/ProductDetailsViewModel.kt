@@ -26,7 +26,7 @@ class ProductDetailsViewModel(
 
     private fun loadProductDetails() {
         tryToExecute(
-            onStart = { updateState { copy(isLoading = true, isError = false) } },
+            onStart = { updateState { copy(isLoading = true) } },
             block = { productRepository.getProductDetails(productId = args.productId) },
             onSuccess = ::onLoadProductSuccess,
             onError = ::onLoadProductError
@@ -48,7 +48,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isLoading = false,
-                isError = true
+                errorState = throwable
             )
         }
     }
