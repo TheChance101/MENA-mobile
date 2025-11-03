@@ -11,7 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
-import net.thechance.mena.dukan.data.repository.DukanCartRepositoryImpl
+import net.thechance.mena.dukan.data.repository.CartRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
 
@@ -50,8 +50,8 @@ fun dukanCartHttpClient(
 fun dukanCartRepository(
     addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): DukanCartRepositoryImpl {
-    return DukanCartRepositoryImpl(
+): CartRepositoryImpl {
+    return CartRepositoryImpl(
         client = dukanCartHttpClient(
             addOrUpdateProductCartResponse = addOrUpdateProductCartResponse,
             deleteProductFromCartResponse = deleteProductFromCartResponse

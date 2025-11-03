@@ -13,7 +13,7 @@ import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 
-class DukanCartRepositoryImpl (
+class CartRepositoryImpl (
     private val client: HttpClient
 ): DukanCartRepository {
 
