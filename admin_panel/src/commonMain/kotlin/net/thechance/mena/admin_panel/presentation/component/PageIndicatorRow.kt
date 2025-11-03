@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.users_management.component
+package net.thechance.mena.admin_panel.presentation.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.admin_panel.presentation.utils.getDisplayedPages
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_arrow_left
 import net.thechance.mena.admin_panel.resources.ic_arrow_right
@@ -22,39 +23,61 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun PaginationRow(
+fun PagesIndicatorRow(
     currentPage: Int,
     totalPages: Int,
-    onPageChange: (Int) -> Unit,
+    onPageChanged: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val displayedPages = getDisplayedPages(currentPage, totalPages)
+
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         PageNavigationButton(
             icon = Res.drawable.ic_arrow_left,
-            isEnabled = currentPage > 1,
-            onClick = { onPageChange(currentPage - 1) },
+            isEnabled = currentPage > 0,
+            onClick = { onPageChanged(currentPage - 1) },
             modifier = Modifier.padding(end = 8.dp)
         )
 
-        repeat(totalPages) { index ->
-            val pageNumber = index + 1
-            PageNumberButton(
-                pageNumber = pageNumber,
-                isSelected = pageNumber == currentPage,
-                onClick = { onPageChange(pageNumber) },
-                modifier = Modifier.padding(start = 6.dp)
-            )
+        displayedPages.forEach { page ->
+            if (page == null) {
+                PageEllipsisButton(modifier = Modifier.padding(start = 6.dp))
+            } else {
+                PageNumberButton(
+                    pageNumber = page + 1,
+                    isSelected = page == currentPage,
+                    onClick = { onPageChanged(page) },
+                    modifier = Modifier.padding(start = 6.dp)
+                )
+            }
         }
 
         PageNavigationButton(
             icon = Res.drawable.ic_arrow_right,
-            isEnabled = currentPage < totalPages,
-            onClick = { onPageChange(currentPage + 1) },
+            isEnabled = currentPage < totalPages - 1,
+            onClick = { onPageChanged(currentPage + 1) },
             modifier = Modifier.padding(start = 8.dp)
+        )
+    }
+}
+
+@Composable
+private fun PageEllipsisButton(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .background(Theme.colorScheme.background.surfaceLow)
+            .padding(vertical = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "…",
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadeSecondary
         )
     }
 }
@@ -123,7 +146,7 @@ private fun PageNumberButton(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "$pageNumber",
+            text = pageNumber.toString(),
             style = Theme.typography.label.large,
             color = animatedTextColor
         )

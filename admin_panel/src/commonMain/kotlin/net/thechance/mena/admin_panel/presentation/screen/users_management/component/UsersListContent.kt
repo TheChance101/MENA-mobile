@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,9 +16,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.Status
+import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
+import net.thechance.mena.admin_panel.presentation.component.TableHeaderRow
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -41,7 +40,7 @@ fun UsersListContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
         )
-        LazyColumn(state = listState) {
+        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             itemsIndexed(state.users) { index, user ->
                 UserItemRow(
                     index = index + 1,
@@ -56,6 +55,12 @@ fun UsersListContent(
                 )
             }
         }
+        PagesIndicatorRow(
+            currentPage = state.pageInfo.page,
+            totalPages = state.pageInfo.totalPages,
+            onPageChanged = listener::onPageChanged,
+            modifier = Modifier.padding(top = 8.dp, bottom = 14.dp).align(Alignment.Start)
+        )
     }
 }
 

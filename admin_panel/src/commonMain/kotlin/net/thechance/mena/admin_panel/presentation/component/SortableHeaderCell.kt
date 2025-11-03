@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.users_management.component
+package net.thechance.mena.admin_panel.presentation.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween

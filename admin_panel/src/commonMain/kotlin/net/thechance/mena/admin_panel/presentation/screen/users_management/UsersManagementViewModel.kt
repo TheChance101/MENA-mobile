@@ -9,6 +9,7 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -47,19 +48,25 @@ class UsersManagementViewModel(
     }
 
     private fun getUserQueryParams(): UserQueryParams {
+        val trimmedQuery = currentState.query.trim().replace(Regex("\\s+"), " ").ifBlank { null }
+
         return UserQueryParams(
-            searchInput = currentState.query.trim().replace(Regex("\\s+"), " ").ifBlank { null },
+            searchInput = trimmedQuery,
             sortType = currentState.sort.type.toEntity(),
             sortDirection = currentState.sort.direction.toEntity(),
-            page = PAGE,
-            size = SIZE
+            page = currentState.pageInfo.page,
+            size = PAGE_SIZE
         )
     }
 
-    private fun onGetUsersSuccess(users: List<User>) {
+    private fun onGetUsersSuccess(result: PagedResult<User>) {
         updateState {
             it.copy(
-                users = users.map(User::toUIState),
+                users = result.items.map(User::toUIState),
+                pageInfo = UsersManagementScreenState.UserPageInfo(
+                    page = result.currentPage,
+                    totalPages = result.totalPages
+                ),
                 errorState = null
             )
         }
@@ -80,7 +87,8 @@ class UsersManagementViewModel(
                 sort = UsersManagementScreenState.SortState(
                     type = type,
                     direction = newDirection
-                )
+                ),
+                pageInfo = it.pageInfo.copy(page = 0)
             )
         }
         getUsers()
@@ -89,7 +97,7 @@ class UsersManagementViewModel(
     override fun onSearchQueryChanged(query: String) {
         if (query == currentState.query) return
 
-        updateState { it.copy(query = query) }
+        updateState { it.copy(query = query, pageInfo = it.pageInfo.copy(page = 0)) }
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
@@ -100,6 +108,11 @@ class UsersManagementViewModel(
 
     override fun onClearQueryClicked() {
         updateState { it.copy(query = "") }
+        getUsers()
+    }
+
+    override fun onPageChanged(page: Int) {
+        updateState { it.copy(pageInfo = it.pageInfo.copy(page = page)) }
         getUsers()
     }
 
@@ -155,8 +168,7 @@ class UsersManagementViewModel(
     }
 
     private companion object {
-        const val PAGE = 0
-        const val SIZE = 8
+        const val PAGE_SIZE = 8
         const val SEARCH_DEBOUNCE_DELAY = 500L
     }
 }

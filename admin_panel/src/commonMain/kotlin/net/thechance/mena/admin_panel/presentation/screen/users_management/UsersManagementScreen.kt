@@ -17,9 +17,10 @@ import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.BlockUserDialog
-import net.thechance.mena.admin_panel.presentation.screen.users_management.component.SearchBar
+import net.thechance.mena.admin_panel.presentation.component.SearchBar
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.search_hint
 import net.thechance.mena.admin_panel.resources.users_management
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
@@ -62,6 +63,7 @@ private fun UsersManagementScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
             SearchBar(
                 value = state.query,
+                hint = stringResource(Res.string.search_hint),
                 onValueChange = { newQuery ->
                     listener.onSearchQueryChanged(newQuery)
                 },

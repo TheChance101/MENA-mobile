@@ -22,7 +22,6 @@ fun UsersManagementScreenState.SortType.toEntity(): SortType? = when (this) {
     UsersManagementScreenState.SortType.USERNAME -> SortType.USERNAME
     UsersManagementScreenState.SortType.LAST_LOGIN_DATE -> SortType.LAST_LOGIN_DATE
     UsersManagementScreenState.SortType.LAST_VISIT_DATE -> SortType.LAST_VISIT_DATE
-    UsersManagementScreenState.SortType.NONE ->  null
 }
 
 fun UsersManagementScreenState.SortDirection.toEntity(): SortDirection? = when (this) {
