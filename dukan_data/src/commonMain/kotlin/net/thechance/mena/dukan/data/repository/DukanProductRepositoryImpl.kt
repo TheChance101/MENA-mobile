@@ -12,6 +12,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
+import net.thechance.mena.dukan.data.dto.product.DeleteProductImagesRequest
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
@@ -89,11 +90,10 @@ class DukanProductRepositoryImpl(
     }
 
     override suspend fun deleteProductImages(productId: String, imageUrls: List<String>) {
-        data class DeleteImagesBody(val imageUrls: List<String>)
         safeApiCall<Unit> {
             client.post("${PRODUCT_BASE_PATH}/images/$productId/delete") {
                 contentType(ContentType.Application.Json)
-                setBody(DeleteImagesBody(imageUrls))
+                setBody(DeleteProductImagesRequest(imageUrls))
             }
         }
     }
