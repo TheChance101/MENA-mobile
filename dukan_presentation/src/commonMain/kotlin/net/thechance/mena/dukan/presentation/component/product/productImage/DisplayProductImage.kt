@@ -47,7 +47,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DisplayProductImage(
     image: ImageBitmap,
     imageSizeInMegaByte: Double = 0.0,
-    onCancelClick: (Any) -> Unit,
+    onCancelClick: (ImageBitmap) -> Unit,
     modifier: Modifier = Modifier,
     productImageState: ProductImageState = ProductImageState.LOADING,
     isCancelButtonEnabled: Boolean = true,
@@ -99,7 +99,7 @@ fun DisplayProductImage(
 @Composable
 fun DisplayProductImage(
     imageUrl: String,
-    onCancelClick: (Any) -> Unit,
+    onCancelClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     isCancelButtonEnabled: Boolean = true,
 ) {
@@ -215,7 +215,7 @@ private fun SuccessContentImage(image: ImageBitmap) {
 @Composable
 private fun BoxScope.DisplayExistingProductImage(
     imageUrl: String,
-    onCancelClick: (Any) -> Unit,
+    onCancelClick: (String) -> Unit,
     isCancelButtonEnabled: Boolean
 ) {
     SuccessContentImageUrl(
