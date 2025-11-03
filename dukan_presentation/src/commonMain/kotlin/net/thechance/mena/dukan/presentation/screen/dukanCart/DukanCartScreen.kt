@@ -21,13 +21,13 @@ import net.thechance.mena.dukan.presentation.screen.dukanCart.content.DukanCartC
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartEffects
-import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.DukanCartState
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.CartState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
-    OnSystemBackPressed { viewModel::onBackClick }
+    OnSystemBackPressed { viewModel::onBackClicked }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -42,23 +42,23 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
     }
 
     AnimatedContent(
-        targetState = state.dukanCartState
+        targetState = state.cartState
     ) { targetState ->
         when (targetState) {
-            DukanCartState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
-            DukanCartState.EMPTY -> EmptyStateContent(
+            CartState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
+            CartState.EMPTY -> EmptyStateContent(
                 image = Res.drawable.empty_shelf,
                 title = Res.string.shelf_empty_title,
                 body = Res.string.shelf_empty_body,
                 modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
             )
 
-            DukanCartState.ERROR -> NoInternetContent(
-                onRetry = viewModel::onRetryLoadCartClick,
+            CartState.ERROR -> NoInternetContent(
+                onRetry = viewModel::onRetryLoadCartClicked,
                 modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
             )
 
-            DukanCartState.LOADED -> DukanCartContent(
+            CartState.LOADED -> DukanCartContent(
                 state = state,
                 listener = viewModel
             )

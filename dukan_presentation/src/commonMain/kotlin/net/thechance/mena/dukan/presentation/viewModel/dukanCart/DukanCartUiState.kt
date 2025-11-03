@@ -5,19 +5,21 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 data class DukanCartUiState(
-    val dukanCartState: DukanCartState = DukanCartState.LOADED,
+    val cartState: CartState = CartState.LOADING,
+    val dukanInfo: DukanInfoUiState = DukanInfoUiState(),
+    val dukanInfoState: DukanInfoState = DukanInfoState.LOADING,
+    val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val totalPrice: Double = 0.0,
-    val dukanDetails: DukanDetailsUiState = DukanDetailsUiState(),
-    val products: Flow<PagingData<ProductsUiState>> = emptyFlow()
+    val error: String? = null
 ) {
 
-    data class DukanDetailsUiState(
+    data class DukanInfoUiState(
         val id: String = "",
         val name: String = "",
         val imageUrl: String = ""
     )
 
-    data class ProductsUiState(
+    data class ProductUiState(
         val id: String = "",
         val name: String = "",
         val description: String = "",
@@ -26,7 +28,12 @@ data class DukanCartUiState(
         val quantity: Int = 0
     )
 
-    enum class DukanCartState {
+    enum class DukanInfoState {
+        LOADING,
+        LOADED
+    }
+
+    enum class CartState {
         LOADING,
         LOADED,
         ERROR,

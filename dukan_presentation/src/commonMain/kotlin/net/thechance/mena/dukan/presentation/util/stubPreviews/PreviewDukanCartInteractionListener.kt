@@ -3,17 +3,17 @@ package net.thechance.mena.dukan.presentation.util.stubPreviews
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartInteractionListener
 
 object PreviewDukanCartInteractionListener : DukanCartInteractionListener {
-    override fun onBackClick() {}
+    override fun onBackClicked() {}
 
-    override fun onDukanDetailsClick() {}
+    override fun onDukanClicked() {}
 
-    override fun onCheckoutClick() {}
+    override fun onCheckoutClicked() {}
 
-    override fun onIncreaseItemQuantityClick(cartItemId: String) {}
+    override fun onIncreaseItemQuantityClicked(cartItemId: String) {}
 
-    override fun onDecreaseItemQuantityClick(cartItemId: String) {}
+    override fun onDecreaseItemQuantityClicked(cartItemId: String) {}
 
-    override fun onRemoveItemClick(cartItemId: String) {}
+    override fun onRemoveItemClicked(cartItemId: String) {}
 
-    override fun onRetryLoadCartClick() {}
+    override fun onRetryLoadCartClicked() {}
 }
