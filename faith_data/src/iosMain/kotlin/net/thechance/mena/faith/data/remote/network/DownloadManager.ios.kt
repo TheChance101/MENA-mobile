@@ -30,16 +30,14 @@ actual suspend fun downloadSurahFileToAppStorage(
                 }
 
                 val fileManager = NSFileManager.defaultManager
-                val documentsDir =
-                    fileManager
-                        .URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
-                        .first() as NSURL
+                val documentsDir = fileManager
+                    .URLsForDirectory(NSDocumentDirectory, NSUserDomainMask)
+                    .first() as NSURL
 
-                val fileUrl =
-                    documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: run {
-                        cont.resumeWith(Result.failure(FaithException.UrlCreationException))
-                        return@dataTaskWithURL
-                    }
+                val fileUrl = documentsDir.URLByAppendingPathComponent("$fileName.zip") ?: run {
+                    cont.resumeWith(Result.failure(FaithException.UrlCreationException))
+                    return@dataTaskWithURL
+                }
 
                 fileUrl.URLByDeletingLastPathComponent?.let { parentDir ->
                     fileManager.createDirectoryAtURL(

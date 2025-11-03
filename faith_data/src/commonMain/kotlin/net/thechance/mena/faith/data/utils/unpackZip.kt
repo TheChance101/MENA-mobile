@@ -18,11 +18,10 @@ fun FileSystem.unpackZip(
     }
 
     val zipFileSystem = openZip(zipFile)
-    val paths =
-        zipFileSystem
-            .listRecursively("/".toPath())
-            .filter { zipFileSystem.metadata(it).isRegularFile }
-            .toList()
+    val paths = zipFileSystem
+        .listRecursively("/".toPath())
+        .filter { zipFileSystem.metadata(it).isRegularFile }
+        .toList()
 
     paths.forEach { zipFilePath ->
         zipFileSystem.source(zipFilePath).buffer().use { source ->
