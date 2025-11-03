@@ -80,23 +80,15 @@ class EditProductViewModelTest {
         everySuspend { productRepository.getProductById(any()) } returns fakeProduct()
         everySuspend { productRepository.updateProduct(any(), any()) } returns Unit
         everySuspend {
-            productRepository.uploadProductImages(
-                any(),
-                any(),
-                any()
-            )
+            productRepository.uploadProductImages(any(), any(), any())
         } returns listOf("image-url")
         everySuspend { productRepository.deleteProductImages(any(), any()) } returns Unit
         everySuspend { productRepository.deleteProduct(any()) } returns Unit
 
-        val savedStateHandle = SavedStateHandle(
-            mapOf("productId" to productId)
-        )
-
-        viewModel = EditProductViewModel(
+        viewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         scope.advanceUntilIdle()
@@ -132,24 +124,25 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `shelvesForShelfSection SHOULD map shelves to CreateProductUiState ShelfUiState`() = scope.runTest {
-        val state = viewModel.state.value
-        val shelvesForSection = state.shelvesForShelfSection
+    fun `shelvesForShelfSection SHOULD map shelves to CreateProductUiState ShelfUiState`() =
+        scope.runTest {
+            val state = viewModel.state.value
+            val shelvesForSection = state.shelvesForShelfSection
 
-        assertEquals(state.shelves.size, shelvesForSection.size)
-        
-        state.shelves.forEachIndexed { index, shelf ->
-            val mappedShelf = shelvesForSection[index]
-            assertEquals(shelf.id, mappedShelf.id)
-            assertEquals(shelf.name, mappedShelf.name)
-            assertEquals(shelf.isSelected, mappedShelf.isSelected)
+            assertEquals(state.shelves.size, shelvesForSection.size)
+
+            state.shelves.forEachIndexed { index, shelf ->
+                val mappedShelf = shelvesForSection[index]
+                assertEquals(shelf.id, mappedShelf.id)
+                assertEquals(shelf.name, mappedShelf.name)
+                assertEquals(shelf.isSelected, mappedShelf.isSelected)
+            }
         }
-    }
 
     @Test
     fun `shelvesForShelfSection SHOULD return empty list when shelves are empty`() = scope.runTest {
         viewModel.updateState { copy(shelves = emptyList()) }
-        
+
         val state = viewModel.state.value
         val shelvesForSection = state.shelvesForShelfSection
 
@@ -158,13 +151,8 @@ class EditProductViewModelTest {
 
     @Test
     fun `shelvesForShelfSection SHOULD preserve selection state`() = scope.runTest {
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
-        )
-        
+        val selectedShelfUi = createSelectedShelfUi()
+
         viewModel.updateState {
             copy(
                 shelves = shelves.map {
@@ -178,7 +166,7 @@ class EditProductViewModelTest {
 
         val mappedSelectedShelf = shelvesForSection.first { it.id == selectedShelfUi.id }
         assertTrue(mappedSelectedShelf.isSelected)
-        
+
         val mappedUnselectedShelves = shelvesForSection.filter { it.id != selectedShelfUi.id }
         mappedUnselectedShelves.forEach { shelf ->
             assertFalse(shelf.isSelected)
@@ -192,19 +180,23 @@ class EditProductViewModelTest {
             EditProductUiState.ShelfUiState(id = "id2", name = "Shelf 2", isSelected = false),
             EditProductUiState.ShelfUiState(id = "id3", name = "Shelf 3", isSelected = false)
         )
-        
+
         viewModel.updateState { copy(shelves = customShelves) }
 
         val state = viewModel.state.value
         val shelvesForSection = state.shelvesForShelfSection
 
         assertEquals(3, shelvesForSection.size)
-        
+
         customShelves.forEachIndexed { index, shelf ->
             val mappedShelf = shelvesForSection[index]
             assertEquals(shelf.id, mappedShelf.id, "Shelf $index id should match")
             assertEquals(shelf.name, mappedShelf.name, "Shelf $index name should match")
-            assertEquals(shelf.isSelected, mappedShelf.isSelected, "Shelf $index selection state should match")
+            assertEquals(
+                shelf.isSelected,
+                mappedShelf.isSelected,
+                "Shelf $index selection state should match"
+            )
         }
     }
 
@@ -258,10 +250,10 @@ class EditProductViewModelTest {
         viewModel.onDeleteProductClicked()
         val state = viewModel.state.value
         assertNotNull(state.deleteDialog)
-        assertEquals(Res.string.delete_product_title.key, state.deleteDialog?.title?.key)
+        assertEquals(Res.string.delete_product_title.key, state.deleteDialog.title.key)
         assertEquals(
             Res.string.delete_product_description.key,
-            state.deleteDialog?.description?.key
+            state.deleteDialog.description.key
         )
     }
 
@@ -555,22 +547,12 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - invalid product shows validation error`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "Test",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "abc",
-                description = "Valid description".padEnd(120, 'x'),
-                images = listOf(
-                    EditProductUiState.ProductImageUi(
-                        id = 1234,
-                        image = mock<ImageBitmap>(),
-                        imageSizeInMegaByte = 1.0,
-                        imageState = ProductImageState.SUCCESS
-                    )
-                )
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "Test",
+            price = "abc",
+            selectedShelf = createSimpleShelfUi(),
+            images = listOf(createValidProductImageUi())
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -586,32 +568,15 @@ class EditProductViewModelTest {
     @Test
     fun `onSaveProductClicked - duplicate name shows error`() = scope.runTest {
         everySuspend {
-            productRepository.updateProduct(
-                any(),
-                any()
-            )
+            productRepository.updateProduct(any(), any())
         } throws DuplicateNameException()
         everySuspend { productRepository.deleteProductImages(any(), any()) } returns Unit
 
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
+        viewModel.updateStateWithValidProduct(
+            productName = "Duplicate Name",
+            description = "Nice description".padEnd(120, 'z'),
+            existingImageUrls = fakeProduct().imageUrls
         )
-        viewModel.updateState {
-            copy(
-                productName = "Duplicate Name",
-                selectedShelf = selectedShelfUi,
-                shelves = shelves.map {
-                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
-                },
-                price = "50.0",
-                description = "Nice description".padEnd(120, 'z'),
-                existingImageUrls = fakeProduct().imageUrls,
-                images = emptyList()
-            )
-        }
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -628,11 +593,10 @@ class EditProductViewModelTest {
     fun `getProductData - error shows product not found`() = scope.runTest {
         everySuspend { productRepository.getProductById(any()) } throws NoSuchItemException()
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val errorViewModel = EditProductViewModel(
+        val errorViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -651,11 +615,10 @@ class EditProductViewModelTest {
     fun `getProductData - no internet shows error`() = scope.runTest {
         everySuspend { productRepository.getProductById(any()) } throws NoInternetException()
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val errorViewModel = EditProductViewModel(
+        val errorViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -674,11 +637,10 @@ class EditProductViewModelTest {
     fun `getProductData - general error shows error`() = scope.runTest {
         everySuspend { productRepository.getProductById(any()) } throws RuntimeException("General error")
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val errorViewModel = EditProductViewModel(
+        val errorViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -695,15 +657,15 @@ class EditProductViewModelTest {
 
     @Test
     fun `filterValidImageUrls SHOULD filter out empty and blank URLs`() = scope.runTest {
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            imageUrls = listOf("valid1.jpg", "", "   ", "valid2.jpg")
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(imageUrls = listOf("valid1.jpg", "", "   ", "valid2.jpg"))
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -715,38 +677,40 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `onGetShelvesSuccess - when productShelfId doesn't match any shelf SHOULD not select shelf`() = scope.runTest {
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            shelfId = Uuid.parse("99999999-9999-9999-9999-999999999999")
-        )
+    fun `onGetShelvesSuccess - when productShelfId doesn't match any shelf SHOULD not select shelf`() =
+        scope.runTest {
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(shelfId = Uuid.parse("99999999-9999-9999-9999-999999999999"))
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertNotNull(state.shelves)
-        assertTrue(state.shelves.isNotEmpty())
-        assertNull(state.selectedShelf)
-        assertFalse(state.shelves.any { it.isSelected })
-    }
+            val state = testViewModel.state.value
+            assertNotNull(state.shelves)
+            assertTrue(state.shelves.isNotEmpty())
+            assertNull(state.selectedShelf)
+            assertFalse(state.shelves.any { it.isSelected })
+        }
 
     @Test
-    fun `onGetShelvesSuccess - when shelves arrive after product data SHOULD select shelf`() = scope.runTest {
-        val state = viewModel.state.value
-        assertNotNull(state.selectedShelf)
-        assertEquals(testShelfId.toString(), state.selectedShelf?.id)
-    }
+    fun `onGetShelvesSuccess - when shelves arrive after product data SHOULD select shelf`() =
+        scope.runTest {
+            val state = viewModel.state.value
+            assertNotNull(state.selectedShelf)
+            assertEquals(testShelfId.toString(), state.selectedShelf.id)
+        }
 
     @Test
     fun `selectProductShelf - when shelves are empty SHOULD not crash`() = scope.runTest {
         viewModel.updateState { copy(shelves = emptyList(), selectedShelf = null) }
-        
+
         val state = viewModel.state.value
         assertTrue(state.shelves.isEmpty())
         assertNull(state.selectedShelf)
@@ -756,11 +720,10 @@ class EditProductViewModelTest {
     fun `onErrorGettingShelves - no internet shows error`() = scope.runTest {
         everySuspend { shelfRepository.getMyDukanShelves() } throws NoInternetException()
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val errorViewModel = EditProductViewModel(
+        val errorViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -778,11 +741,10 @@ class EditProductViewModelTest {
     fun `onErrorGettingShelves - general error shows error`() = scope.runTest {
         everySuspend { shelfRepository.getMyDukanShelves() } throws RuntimeException("General error")
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val errorViewModel = EditProductViewModel(
+        val errorViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -798,25 +760,10 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - successful save navigates and shows success`() = scope.runTest {
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
+        viewModel.updateStateWithValidProduct(
+            productName = "Updated Product",
+            description = "Updated description".padEnd(120, 'x')
         )
-        viewModel.updateState {
-            copy(
-                productName = "Updated Product",
-                selectedShelf = selectedShelfUi,
-                shelves = shelves.map {
-                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
-                },
-                price = "50.0",
-                description = "Updated description".padEnd(120, 'x'),
-                existingImageUrls = listOf("existing-url"),
-                images = emptyList()
-            )
-        }
 
         viewModel.effect.test {
             viewModel.onSaveProductClicked()
@@ -836,22 +783,12 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - price not positive shows error`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "Test",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "0.0",
-                description = "Valid description".padEnd(120, 'x'),
-                images = listOf(
-                    EditProductUiState.ProductImageUi(
-                        id = 1234,
-                        image = mock<ImageBitmap>(),
-                        imageSizeInMegaByte = 1.0,
-                        imageState = ProductImageState.SUCCESS
-                    )
-                )
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "Test",
+            price = "0.0",
+            selectedShelf = createSimpleShelfUi(),
+            images = listOf(createValidProductImageUi())
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -866,22 +803,13 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - description too short shows error`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "Test",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "50.0",
-                description = "Short",
-                images = listOf(
-                    EditProductUiState.ProductImageUi(
-                        id = 1234,
-                        image = mock<ImageBitmap>(),
-                        imageSizeInMegaByte = 1.0,
-                        imageState = ProductImageState.SUCCESS
-                    )
-                )
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "Test",
+            price = "50.0",
+            description = "Short",
+            selectedShelf = createSimpleShelfUi(),
+            images = listOf(createValidProductImageUi())
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -896,22 +824,13 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - description too long shows error`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "Test",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "50.0",
-                description = "x".repeat(3001),
-                images = listOf(
-                    EditProductUiState.ProductImageUi(
-                        id = 1234,
-                        image = mock<ImageBitmap>(),
-                        imageSizeInMegaByte = 1.0,
-                        imageState = ProductImageState.SUCCESS
-                    )
-                )
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "Test",
+            price = "50.0",
+            description = "x".repeat(3001),
+            selectedShelf = createSimpleShelfUi(),
+            images = listOf(createValidProductImageUi())
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -926,25 +845,11 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - empty final image URLs shows error`() = scope.runTest {
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
+        viewModel.updateStateWithValidProduct(
+            productName = "Test Product",
+            existingImageUrls = emptyList(),
+            images = emptyList()
         )
-        viewModel.updateState {
-            copy(
-                productName = "Test Product",
-                selectedShelf = selectedShelfUi,
-                shelves = shelves.map {
-                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
-                },
-                price = "50.0",
-                description = "Valid description".padEnd(120, 'x'),
-                existingImageUrls = emptyList(),
-                images = emptyList()
-            )
-        }
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -959,33 +864,49 @@ class EditProductViewModelTest {
     }
 
     @Test
+    fun `resetUiStateAfterValidationFailure SHOULD reset UI state correctly`() = scope.runTest {
+        val fakeBitmap = mock<ImageBitmap>()
+        every { fakeBitmap.width } returns 100
+        every { fakeBitmap.height } returns 100
+
+        everySuspend {
+            productRepository.uploadProductImages(any(), any(), any())
+        } returns emptyList()
+
+        viewModel.updateStateWithValidProduct(
+            productName = "Test Product",
+            existingImageUrls = emptyList(),
+            images = listOf(createValidProductImageUi(image = fakeBitmap))
+        )
+
+        var state = viewModel.state.value
+        assertTrue(state.isUploadingImageEnabled)
+        assertTrue(state.isTextFieldEnabled)
+        assertTrue(state.isCancelImageEnabled)
+        assertFalse(state.isSaveButtonLoading)
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        state = viewModel.state.value
+        assertFalse(state.isSaveButtonLoading, "Save button loading should be false")
+        assertTrue(state.isUploadingImageEnabled, "Uploading image should be enabled")
+        assertTrue(state.isTextFieldEnabled, "Text field should be enabled")
+        assertTrue(state.isCancelImageEnabled, "Cancel image should be enabled")
+        assertTrue(state.showSnackBar, "Should show snackbar with error")
+        assertEquals(
+            Res.string.error_general.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
     fun `onSaveProductClicked - InvalidImageFormatException shows error`() = scope.runTest {
         everySuspend {
-            productRepository.updateProduct(
-                any(),
-                any()
-            )
+            productRepository.updateProduct(any(), any())
         } throws InvalidImageFormatException()
 
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
-        )
-        viewModel.updateState {
-            copy(
-                productName = "Test Product",
-                selectedShelf = selectedShelfUi,
-                shelves = shelves.map {
-                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
-                },
-                price = "50.0",
-                description = "Valid description".padEnd(120, 'x'),
-                existingImageUrls = listOf("existing-url"),
-                images = emptyList()
-            )
-        }
+        viewModel.updateStateWithValidProduct(productName = "Test Product")
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -1001,31 +922,10 @@ class EditProductViewModelTest {
     @Test
     fun `onSaveProductClicked - CreationFailedException shows error`() = scope.runTest {
         everySuspend {
-            productRepository.updateProduct(
-                any(),
-                any()
-            )
+            productRepository.updateProduct(any(), any())
         } throws CreationFailedException()
 
-        val firstShelf = fakeShelves().first()
-        val selectedShelfUi = EditProductUiState.ShelfUiState(
-            id = firstShelf.id.toString(),
-            name = firstShelf.name,
-            isSelected = true
-        )
-        viewModel.updateState {
-            copy(
-                productName = "Test Product",
-                selectedShelf = selectedShelfUi,
-                shelves = shelves.map {
-                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
-                },
-                price = "50.0",
-                description = "Valid description".padEnd(120, 'x'),
-                existingImageUrls = listOf("existing-url"),
-                images = emptyList()
-            )
-        }
+        viewModel.updateStateWithValidProduct(productName = "Test Product")
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -1039,89 +939,81 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `onUploadImageClicked - UploadingFailedException in onErrorUploadingImages shows error`() = scope.runTest {
-        val fakeFile = mock<ImageFile>()
-        val fakeBitmap = mock<ImageBitmap>()
-        every { fakeBitmap.width } returns 100
-        every { fakeBitmap.height } returns 100
+    fun `onUploadImageClicked - UploadingFailedException in onErrorUploadingImages shows error`() =
+        scope.runTest {
+            val fakeFile = mock<ImageFile>()
+            val fakeBitmap = mock<ImageBitmap>()
+            every { fakeBitmap.width } returns 100
+            every { fakeBitmap.height } returns 100
 
-        everySuspend { fakeFile.size() } returns (1024 * 1024L)
-        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
-        everySuspend { fakeFile.toImageSrc() } throws UploadingFailedException()
+            everySuspend { fakeFile.size() } returns (1024 * 1024L)
+            everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+            everySuspend { fakeFile.toImageSrc() } throws UploadingFailedException()
 
-        viewModel.onUploadImageClicked(fakeFile)
-        advanceUntilIdle()
+            viewModel.onUploadImageClicked(fakeFile)
+            advanceUntilIdle()
 
-        val state = viewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(
-            Res.string.error_upload_failed.key,
-            state.snackBarUiState?.message?.key
-        )
-    }
-
-    @Test
-    fun `onUploadImageClicked - InvalidImageFormatException in onErrorUploadingImages shows error`() = scope.runTest {
-        val fakeFile = mock<ImageFile>()
-        val fakeBitmap = mock<ImageBitmap>()
-        every { fakeBitmap.width } returns 100
-        every { fakeBitmap.height } returns 100
-
-        everySuspend { fakeFile.size() } returns (1024 * 1024L)
-        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
-        everySuspend { fakeFile.toImageSrc() } throws InvalidImageFormatException()
-
-        viewModel.onUploadImageClicked(fakeFile)
-        advanceUntilIdle()
-
-        val state = viewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(
-            Res.string.invalid_image_format.key,
-            state.snackBarUiState?.message?.key
-        )
-    }
+            val state = viewModel.state.value
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.error_upload_failed.key,
+                state.snackBarUiState?.message?.key
+            )
+        }
 
     @Test
-    fun `onUploadImageClicked - NoInternetException in onErrorUploadingImages shows error`() = scope.runTest {
-        val fakeFile = mock<ImageFile>()
-        val fakeBitmap = mock<ImageBitmap>()
-        every { fakeBitmap.width } returns 100
-        every { fakeBitmap.height } returns 100
+    fun `onUploadImageClicked - InvalidImageFormatException in onErrorUploadingImages shows error`() =
+        scope.runTest {
+            val fakeFile = mock<ImageFile>()
+            val fakeBitmap = mock<ImageBitmap>()
+            every { fakeBitmap.width } returns 100
+            every { fakeBitmap.height } returns 100
 
-        everySuspend { fakeFile.size() } returns (1024 * 1024L)
-        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
-        everySuspend { fakeFile.toImageSrc() } throws NoInternetException()
+            everySuspend { fakeFile.size() } returns (1024 * 1024L)
+            everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+            everySuspend { fakeFile.toImageSrc() } throws InvalidImageFormatException()
 
-        viewModel.onUploadImageClicked(fakeFile)
-        advanceUntilIdle()
+            viewModel.onUploadImageClicked(fakeFile)
+            advanceUntilIdle()
 
-        val state = viewModel.state.value
-        assertTrue(state.showSnackBar)
-        assertEquals(
-            Res.string.no_internet_connection.key,
-            state.snackBarUiState?.message?.key
-        )
-    }
+            val state = viewModel.state.value
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.invalid_image_format.key,
+                state.snackBarUiState?.message?.key
+            )
+        }
+
+    @Test
+    fun `onUploadImageClicked - NoInternetException in onErrorUploadingImages shows error`() =
+        scope.runTest {
+            val fakeFile = mock<ImageFile>()
+            val fakeBitmap = mock<ImageBitmap>()
+            every { fakeBitmap.width } returns 100
+            every { fakeBitmap.height } returns 100
+
+            everySuspend { fakeFile.size() } returns (1024 * 1024L)
+            everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+            everySuspend { fakeFile.toImageSrc() } throws NoInternetException()
+
+            viewModel.onUploadImageClicked(fakeFile)
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.no_internet_connection.key,
+                state.snackBarUiState?.message?.key
+            )
+        }
 
     @Test
     fun `onSaveProductClicked - isProductValid returns false when name is empty`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "   ",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "50.0",
-                description = "Valid description".padEnd(120, 'x'),
-                images = listOf(
-                    EditProductUiState.ProductImageUi(
-                        id = 1234,
-                        image = mock<ImageBitmap>(),
-                        imageSizeInMegaByte = 1.0,
-                        imageState = ProductImageState.SUCCESS
-                    )
-                )
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "   ",
+            selectedShelf = createSimpleShelfUi(),
+            images = listOf(createValidProductImageUi())
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -1136,16 +1028,12 @@ class EditProductViewModelTest {
 
     @Test
     fun `onSaveProductClicked - isProductValid returns false when no images`() = scope.runTest {
-        viewModel.updateState {
-            copy(
-                productName = "Test",
-                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
-                price = "50.0",
-                description = "Valid description".padEnd(120, 'x'),
-                images = emptyList(),
-                existingImageUrls = emptyList()
-            )
-        }
+        viewModel.updateStateWithValidProduct(
+            productName = "Test",
+            selectedShelf = createSimpleShelfUi(),
+            existingImageUrls = emptyList(),
+            images = emptyList()
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -1160,15 +1048,15 @@ class EditProductViewModelTest {
 
     @Test
     fun `getProductData - product with empty imageUrls SHOULD load successfully`() = scope.runTest {
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            imageUrls = emptyList()
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(imageUrls = emptyList())
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1180,36 +1068,37 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `getProductData - product with only empty imageUrls SHOULD filter them out`() = scope.runTest {
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            imageUrls = listOf("", "   ", "\t\n")
-        )
+    fun `getProductData - product with only empty imageUrls SHOULD filter them out`() =
+        scope.runTest {
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(imageUrls = listOf("", "   ", "\t\n"))
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertTrue(state.existingImageUrls.isEmpty())
-    }
+            val state = testViewModel.state.value
+            assertTrue(state.existingImageUrls.isEmpty())
+        }
 
     @Test
     fun `getProductData - product with all valid imageUrls SHOULD load all URLs`() = scope.runTest {
         val imageUrls = listOf("url1.jpg", "url2.jpg", "url3.jpg", "url4.jpg", "url5.jpg")
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            imageUrls = imageUrls
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(imageUrls = imageUrls)
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1220,37 +1109,38 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `getProductData - product with different shelfId SHOULD not select shelf if not in list`() = scope.runTest {
-        val differentShelfId = Uuid.parse("99999999-9999-9999-9999-999999999999")
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            shelfId = differentShelfId
-        )
+    fun `getProductData - product with different shelfId SHOULD not select shelf if not in list`() =
+        scope.runTest {
+            val differentShelfId = Uuid.parse("99999999-9999-9999-9999-999999999999")
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(shelfId = differentShelfId)
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertNull(state.selectedShelf)
-        assertFalse(state.shelves.any { it.isSelected })
-    }
+            val state = testViewModel.state.value
+            assertNull(state.selectedShelf)
+            assertFalse(state.shelves.any { it.isSelected })
+        }
 
     @Test
     fun `getProductData - product with zero price SHOULD load successfully`() = scope.runTest {
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            price = 0.0
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(price = 0.0)
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1260,77 +1150,80 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `getProductData - product with very large price SHOULD load successfully`() = scope.runTest {
-        val largePrice = 999999.99
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            price = largePrice
-        )
+    fun `getProductData - product with very large price SHOULD load successfully`() =
+        scope.runTest {
+            val largePrice = 999999.99
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(price = largePrice)
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertEquals(largePrice.toString(), state.price)
-    }
-
-    @Test
-    fun `getProductData - product with minimum description length SHOULD load successfully`() = scope.runTest {
-        val minDescription = "x".repeat(100)
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            description = minDescription
-        )
-
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
-
-        val state = testViewModel.state.value
-        assertEquals(minDescription, state.description)
-    }
+            val state = testViewModel.state.value
+            assertEquals(largePrice.toString(), state.price)
+        }
 
     @Test
-    fun `getProductData - product with maximum description length SHOULD load successfully`() = scope.runTest {
-        val maxDescription = "x".repeat(3000)
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            description = maxDescription
-        )
+    fun `getProductData - product with minimum description length SHOULD load successfully`() =
+        scope.runTest {
+            val minDescription = "x".repeat(100)
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(description = minDescription)
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertEquals(maxDescription, state.description)
-    }
+            val state = testViewModel.state.value
+            assertEquals(minDescription, state.description)
+        }
+
+    @Test
+    fun `getProductData - product with maximum description length SHOULD load successfully`() =
+        scope.runTest {
+            val maxDescription = "x".repeat(3000)
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(description = maxDescription)
+            )
+
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
+
+            val state = testViewModel.state.value
+            assertEquals(maxDescription, state.description)
+        }
 
     @Test
     fun `getProductData - product with different id SHOULD load successfully`() = scope.runTest {
         val differentId = Uuid.parse("99999999-9999-9999-9999-999999999998")
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            id = differentId
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(id = differentId)
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1340,77 +1233,80 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `getProductData - product with different createdAt SHOULD load successfully`() = scope.runTest {
-        val differentCreatedAt = "2024-01-01T00:00:00.000000"
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            createdAt = differentCreatedAt
-        )
+    fun `getProductData - product with different createdAt SHOULD load successfully`() =
+        scope.runTest {
+            val differentCreatedAt = "2024-01-01T00:00:00.000000"
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(createdAt = differentCreatedAt)
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertEquals(fakeProduct().copy(createdAt = differentCreatedAt).name, state.productName)
-    }
-
-    @Test
-    fun `getProductData - product with special characters in name SHOULD load successfully`() = scope.runTest {
-        val specialName = "Product!@#$%^&*()_+-=[]{}|;':\",./<>?"
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            name = specialName
-        )
-
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
-
-        val state = testViewModel.state.value
-        assertEquals(specialName, state.productName)
-    }
+            val state = testViewModel.state.value
+            assertEquals(fakeProduct().copy(createdAt = differentCreatedAt).name, state.productName)
+        }
 
     @Test
-    fun `getProductData - product with unicode characters in description SHOULD load successfully`() = scope.runTest {
-        val unicodeDescription = "وصف المنتج باللغة العربية".padEnd(120, 'ة')
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            description = unicodeDescription
-        )
+    fun `getProductData - product with special characters in name SHOULD load successfully`() =
+        scope.runTest {
+            val specialName = "Product!@#$%^&*()_+-=[]{}|;':\",./<>?"
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(name = specialName)
+            )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertEquals(unicodeDescription, state.description)
-    }
+            val state = testViewModel.state.value
+            assertEquals(specialName, state.productName)
+        }
+
+    @Test
+    fun `getProductData - product with unicode characters in description SHOULD load successfully`() =
+        scope.runTest {
+            val unicodeDescription = "وصف المنتج باللغة العربية".padEnd(120, 'ة')
+            setupProductRepositoryWithCustomProduct(
+                productRepository,
+                fakeProduct().copy(description = unicodeDescription)
+            )
+
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
+
+            val state = testViewModel.state.value
+            assertEquals(unicodeDescription, state.description)
+        }
 
     @Test
     fun `getProductData - product with many imageUrls SHOULD load all URLs`() = scope.runTest {
         val manyUrls = List(10) { "image$it.jpg" }
-        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
-            imageUrls = manyUrls
+        setupProductRepositoryWithCustomProduct(
+            productRepository,
+            fakeProduct().copy(imageUrls = manyUrls)
         )
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1420,33 +1316,32 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `getProductData - product when shelves empty SHOULD still load product data`() = scope.runTest {
-        everySuspend { shelfRepository.getMyDukanShelves() } returns emptyList()
+    fun `getProductData - product when shelves empty SHOULD still load product data`() =
+        scope.runTest {
+            everySuspend { shelfRepository.getMyDukanShelves() } returns emptyList()
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
-            dispatcher = dispatcher
-        )
-        advanceUntilIdle()
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+            advanceUntilIdle()
 
-        val state = testViewModel.state.value
-        assertEquals(fakeProduct().name, state.productName)
-        assertTrue(state.shelves.isEmpty())
-        assertNull(state.selectedShelf)
-    }
+            val state = testViewModel.state.value
+            assertEquals(fakeProduct().name, state.productName)
+            assertTrue(state.shelves.isEmpty())
+            assertNull(state.selectedShelf)
+        }
 
     @Test
     fun `onGetProductDataSuccess - when shelves are empty SHOULD not crash`() = scope.runTest {
         everySuspend { shelfRepository.getMyDukanShelves() } returns emptyList()
 
-        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
-        val testViewModel = EditProductViewModel(
+        val testViewModel = createEditProductViewModel(
             productRepository = productRepository,
             shelfRepository = shelfRepository,
-            savedStateHandle = savedStateHandle,
+            productId = productId,
             dispatcher = dispatcher
         )
         advanceUntilIdle()
@@ -1459,6 +1354,87 @@ class EditProductViewModelTest {
 
 @OptIn(ExperimentalUuidApi::class)
 private val testShelfId = Uuid.parse("123e4567-e89b-12d3-a456-426614174000")
+private const val DEFAULT_PRODUCT_ID = "test-product-id"
+
+private fun createSavedStateHandle(productId: String = DEFAULT_PRODUCT_ID): SavedStateHandle {
+    return SavedStateHandle(mapOf("productId" to productId))
+}
+
+private fun createEditProductViewModel(
+    productRepository: ProductRepository,
+    shelfRepository: ShelfRepository,
+    productId: String = DEFAULT_PRODUCT_ID,
+    dispatcher: kotlinx.coroutines.CoroutineDispatcher = StandardTestDispatcher()
+): EditProductViewModel {
+    return EditProductViewModel(
+        productRepository = productRepository,
+        shelfRepository = shelfRepository,
+        savedStateHandle = createSavedStateHandle(productId),
+        dispatcher = dispatcher
+    )
+}
+
+private fun setupProductRepositoryWithCustomProduct(
+    productRepository: ProductRepository,
+    product: Product
+) {
+    everySuspend { productRepository.getProductById(any()) } returns product
+}
+
+@OptIn(ExperimentalUuidApi::class)
+private fun createSelectedShelfUi(shelf: Shelf = fakeShelves().first()): EditProductUiState.ShelfUiState {
+    return EditProductUiState.ShelfUiState(
+        id = shelf.id.toString(),
+        name = shelf.name,
+        isSelected = true
+    )
+}
+
+private fun EditProductViewModel.updateStateWithValidProduct(
+    productName: String = "Test Product",
+    price: String = "50.0",
+    description: String = "Valid description".padEnd(120, 'x'),
+    selectedShelf: EditProductUiState.ShelfUiState? = null,
+    existingImageUrls: List<String> = listOf("existing-url"),
+    images: List<EditProductUiState.ProductImageUi> = emptyList()
+) {
+    val shelf = selectedShelf ?: createSelectedShelfUi()
+    updateState {
+        copy(
+            productName = productName,
+            selectedShelf = shelf,
+            shelves = shelves.map {
+                if (it.id == shelf.id) shelf else it
+            },
+            price = price,
+            description = description,
+            existingImageUrls = existingImageUrls,
+            images = images
+        )
+    }
+}
+
+private fun createSimpleShelfUi(
+    id: String = "id1",
+    name: String = "Shelf1",
+    isSelected: Boolean = true
+): EditProductUiState.ShelfUiState {
+    return EditProductUiState.ShelfUiState(id = id, name = name, isSelected = isSelected)
+}
+
+private fun createValidProductImageUi(
+    id: Long = 1234,
+    image: ImageBitmap = mock<ImageBitmap>(),
+    imageSizeInMegaByte: Double = 1.0,
+    imageState: ProductImageState = ProductImageState.SUCCESS
+): EditProductUiState.ProductImageUi {
+    return EditProductUiState.ProductImageUi(
+        id = id,
+        image = image,
+        imageSizeInMegaByte = imageSizeInMegaByte,
+        imageState = imageState
+    )
+}
 
 @OptIn(ExperimentalUuidApi::class)
 private fun fakeProduct(): Product {
