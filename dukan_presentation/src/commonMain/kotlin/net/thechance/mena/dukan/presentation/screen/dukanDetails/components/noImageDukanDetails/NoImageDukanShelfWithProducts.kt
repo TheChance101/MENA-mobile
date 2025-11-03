@@ -104,7 +104,7 @@ private fun ProductItem(
                         productId = product.id,
                         productQuantity = productQuantity
                     )
-                },
+                }
             )
         }
     )

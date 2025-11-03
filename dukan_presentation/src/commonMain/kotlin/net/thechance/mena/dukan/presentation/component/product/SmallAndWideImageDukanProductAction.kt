@@ -88,50 +88,6 @@ private fun ProductCart(
 
 }
 
-@Composable
-private fun SetProductQuantity(
-    onPlusClick: () -> Unit,
-    onMinusClick: () -> Unit,
-    inCartQuantity: Int,
-) {
-    Row(
-        modifier = Modifier.background(
-            color = Theme.colorScheme.background.surface,
-            shape = RoundedCornerShape(size = Theme.radius.full)
-        ).padding(vertical = Theme.spacing._2, horizontal = Theme.spacing._2),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.remove_01),
-            contentDescription = stringResource(Res.string.remove_product),
-            tint =Theme.colorScheme.primary.primary,
-            modifier = Modifier
-                .clip(RoundedCornerShape(size = Theme.radius.full))
-                .background(color = Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onMinusClick,indication = null, interactionSource = MutableInteractionSource())
-                .padding(Theme.spacing._4 + Theme.spacing._2)
-        )
-        Text(
-            text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.primary.primary,
-            modifier = Modifier.padding(horizontal = Theme.spacing._4)
-        )
-        Icon(
-            painter = painterResource(Res.drawable.add_icon),
-            contentDescription = stringResource(Res.string.add_product),
-            tint = Theme.colorScheme.primary.primary,
-            modifier = Modifier
-                .clip(RoundedCornerShape(size = Theme.radius.full))
-                .background(color = Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onPlusClick,indication = null, interactionSource = MutableInteractionSource())
-                .padding(Theme.spacing._4 + Theme.spacing._2)
-        )
-
-    }
-}
-
 @Preview()
 @Composable
 private fun ProductActionIconSmallImageDukanPreview() {

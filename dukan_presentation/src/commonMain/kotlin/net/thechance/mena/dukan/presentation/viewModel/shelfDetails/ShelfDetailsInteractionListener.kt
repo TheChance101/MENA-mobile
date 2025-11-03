@@ -5,6 +5,7 @@ interface ShelfDetailsInteractionListener {
     fun onAddToCartClicked(productId: String,productQuantity: Int)
     fun onPlusClicked(productId: String, productQuantity: Int)
     fun onMinusClicked(productId: String, productQuantity: Int)
-    fun onCartClicked()
+    fun onDismissSnackBar()
+    fun onViewCartClicked()
     fun onProductClicked(productId: String)
 }

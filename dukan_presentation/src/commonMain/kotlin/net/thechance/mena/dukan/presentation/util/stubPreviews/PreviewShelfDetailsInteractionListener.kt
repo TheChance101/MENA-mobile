@@ -7,6 +7,7 @@ object PreviewShelfDetailsInteractionListener : ShelfDetailsInteractionListener 
     override fun onAddToCartClicked(productId: String,productQuantity: Int) {}
     override fun onPlusClicked(productId: String, productQuantity: Int) {}
     override fun onMinusClicked(productId: String, productQuantity: Int) {}
-    override fun onCartClicked() {}
+    override fun onViewCartClicked() {}
     override fun onProductClicked(productId: String) {}
+    override fun onDismissSnackBar() {}
 }

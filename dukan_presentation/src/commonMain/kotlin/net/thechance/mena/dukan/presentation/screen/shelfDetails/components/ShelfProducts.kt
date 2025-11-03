@@ -90,8 +90,8 @@ private fun ProductCardLoaded(
                             product = product
                         )
                     },
-                    onClick = {listener.onProductClicked(product.id)},
-                                    )
+                    onClick = { listener.onProductClicked(product.id) },
+                )
             }
         }
     }
@@ -164,6 +164,7 @@ private fun GetProductIconAction(
             NoImageDukanProductAction(
                 showProductQuantity = toggleCartToQuantity,
                 inCartQuantity = productQuantity,
+                dukanColor = Color(state.dukancolor),
                 onAddToCartClick = {
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
@@ -185,8 +186,7 @@ private fun GetProductIconAction(
                         productId = product.id,
                         productQuantity = productQuantity
                     )
-                },
-                dukanColor = Color(state.dukancolor),
+                }
             )
         }
     }
