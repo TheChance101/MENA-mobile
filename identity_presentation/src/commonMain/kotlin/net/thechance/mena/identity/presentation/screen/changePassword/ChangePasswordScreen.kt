@@ -9,7 +9,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.profile_change_password
@@ -19,14 +21,20 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIEffect.NavigateBack
 import net.thechance.mena.identity.presentation.screen.changePassword.components.CurrentPasswordContent
 import net.thechance.mena.identity.presentation.screen.changePassword.components.NewPasswordContent
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-class ChangePasswordScreen() :
-    BaseScreen<ChangePasswordScreenViewModel,
+enum class PasswordPage(val index:Int) {
+    CURRENT_PASSWORD(0),
+    NEW_PASSWORD(1)
+}
+class ChangePasswordScreen(
+    val onSuccess: (SnackBarUiState?) -> Unit,
+) : BaseScreen<ChangePasswordScreenViewModel,
             ChangePasswordScreenUIState,
             ChangePasswordScreenUIEffect,
             ChangePasswordScreenInteractionListener>() {
@@ -36,6 +44,7 @@ class ChangePasswordScreen() :
         InitScreen(getScreenModel())
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun OnRender(
         state: ChangePasswordScreenUIState,
@@ -67,7 +76,7 @@ class ChangePasswordScreen() :
                     modifier = Modifier.weight(1f)
                 ) { page ->
                     when (page) {
-                        0 -> CurrentPasswordContent(
+                        PasswordPage.CURRENT_PASSWORD.index -> CurrentPasswordContent(
                             state = state.currentPasswordUIState,
                             isLoading = state.isLoading,
                             onClickContinue = listener::onClickContinue,
@@ -75,7 +84,7 @@ class ChangePasswordScreen() :
                             onToggleCurrentPasswordVisibility = listener::onToggleCurrentPasswordVisibility
                         )
 
-                        1 -> NewPasswordContent(
+                        PasswordPage.NEW_PASSWORD.index -> NewPasswordContent(
                             state = state.newPasswordUIState,
                             isLoading = state.isLoading,
                             listener = listener
@@ -90,6 +99,11 @@ class ChangePasswordScreen() :
             onDismiss = {}, //TODO:Clear error message
             modifier = Modifier.statusBarsPadding()
         )
+
+        BackHandler(enabled = true)
+        {
+            listener.onClickBack()
+        }
     }
 
     override fun onEffect(
@@ -98,15 +112,18 @@ class ChangePasswordScreen() :
     ) {
         when (effect) {
             is NavigateBack -> {
+                onSuccess(effect.snackBarUiState)
                 navigator.pop()
             }
         }
     }
 }
 
+
+
 @Preview
 @Composable
-fun ChangePasswordScreenPreview() {
+private fun ChangePasswordScreenPreview() {
     val listener = object : ChangePasswordScreenInteractionListener {
         override fun onClickBack() {}
 
@@ -127,7 +144,7 @@ fun ChangePasswordScreenPreview() {
         override fun onToggleConfirmPasswordVisibility() {}
     }
     MenaTheme {
-        ChangePasswordScreen().OnRender(
+        ChangePasswordScreen {}.OnRender(
             state = ChangePasswordScreenUIState(),
             listener = listener
         )
