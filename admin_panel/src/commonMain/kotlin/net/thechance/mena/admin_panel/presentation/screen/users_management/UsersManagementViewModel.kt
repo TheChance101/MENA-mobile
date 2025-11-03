@@ -1,7 +1,11 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
@@ -23,6 +27,8 @@ class UsersManagementViewModel(
     UsersManagementScreenState()
 ), UsersManagementInteractionListener {
 
+    private var searchJob: Job? = null
+
     init {
         getUsers()
     }
@@ -42,7 +48,7 @@ class UsersManagementViewModel(
 
     private fun getUserQueryParams(): UserQueryParams {
         return UserQueryParams(
-            searchInput = currentState.query.ifBlank { null },
+            searchInput = currentState.query.trim().replace(Regex("\\s+"), " ").ifBlank { null },
             sortType = currentState.sort.type.toEntity(),
             sortDirection = currentState.sort.direction.toEntity(),
             page = PAGE,
@@ -60,7 +66,7 @@ class UsersManagementViewModel(
     }
 
     private fun onError(errorState: ErrorState) {
-        updateState { it.copy( errorState = errorState) }
+        updateState { it.copy(errorState = errorState) }
     }
 
     override fun onSortClicked(type: UsersManagementScreenState.SortType) {
@@ -81,8 +87,15 @@ class UsersManagementViewModel(
     }
 
     override fun onSearchQueryChanged(query: String) {
+        if (query == currentState.query) return
+
         updateState { it.copy(query = query) }
-        getUsers()
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            getUsers()
+        }
     }
 
     override fun onRetryClicked() {
@@ -115,7 +128,7 @@ class UsersManagementViewModel(
     private fun updateUserStatus(userId: Uuid, newStatus: Status) {
         tryToExecute(
             callee = { userRepository.updateUserStatus(userId, newStatus) },
-            onSuccess = {onUpdateUserStatusSuccess(userId, newStatus)},
+            onSuccess = { onUpdateUserStatusSuccess(userId, newStatus) },
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -141,5 +154,6 @@ class UsersManagementViewModel(
     private companion object {
         const val PAGE = 0
         const val SIZE = 8
+        const val SEARCH_DEBOUNCE_DELAY = 500L
     }
 }
