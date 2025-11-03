@@ -85,10 +85,10 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanUiEffect.NavigateToProductDetails)
     }
 
-    override fun onEditProductClicked(product: ManageDukanUiState.ProductUiState) {
+    override fun onEditProductClicked(productId: String) {
         emitEffect(
             ManageDukanUiEffect.NavigateToEditProduct(
-                productId = product.id
+                productId = productId
             )
         )
     }
