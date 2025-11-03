@@ -93,29 +93,39 @@ class SearchViewModel(
         emitEffect(effect = SearchEffect.NavigateToProductDetails(productId = productId.toString()))
     }
 
+    override fun onSnackBarDismissed() {
+        updateState {
+            copy(
+                snackBarUiState = null
+            )
+        }
+    }
+
     override fun onRetryClicked() {
         searchWithQuery(state.value.searchQuery)
     }
 
     private fun getSearchQueryCurrentState(query: String): SearchUiState.SearchContentState {
-        return if (query.isNotBlank()) SearchUiState.SearchContentState.Complete
-        else SearchUiState.SearchContentState.Idle
+        return if (query.isNotBlank())
+            SearchUiState.SearchContentState.Complete
+        else
+            SearchUiState.SearchContentState.Idle
     }
 
     private fun searchWithQuery(query: String) {
-        when (state.value.userSelectionSearchList) {
-            SearchUiState.UserSelectionSearchList.Dukans -> getDukansByQuery(query = query)
-            SearchUiState.UserSelectionSearchList.Products -> getProductsByQuery(query = query)
-        }
-    }
-
-    private fun getDukansByQuery(query: String) {
         val validQuery = query.trim()
         if (validQuery.isBlank())
             return
 
+        when (state.value.userSelectionSearchList) {
+            SearchUiState.UserSelectionSearchList.Dukans -> getDukansByQuery(query = validQuery)
+            SearchUiState.UserSelectionSearchList.Products -> getProductsByQuery(query = validQuery)
+        }
+    }
+
+    private fun getDukansByQuery(query: String) {
         tryToCollect(
-            block = { getDukansByQueryBlock(validQuery) },
+            block = { getDukansByQueryBlock(query) },
             onCollect = ::onGetDukansByQueryCollect,
             onError = { onGetDukansByQueryError(it as Exception) },
         )
@@ -125,11 +135,11 @@ class SearchViewModel(
          return createPagingSourceFlow(
              mapper = { it.toSearchUiState() },
              onError = { exception -> onGetDukansByQueryError(exception) },
-             block = { pageNumber, pageSize ->
+             block = { pageNumber,_ ->
                  searchRepository.findDukansByQuery(
                     query = validQuery,
                     page = pageNumber,
-                    size = pageSize
+                    size = 15
                  ).items
              }
          )
@@ -166,27 +176,22 @@ class SearchViewModel(
     }
 
     private fun getProductsByQuery(query: String) {
-        val validQuery = query.trim()
-        if (validQuery.isBlank())
-            return
-
         tryToCollect(
-            block = { getProductsByQueryBlock(validQuery) },
+            block = { getProductsByQueryBlock(query) },
             onCollect = ::onGetProductsByQuerySuccess,
             onError = { onGetProductsByQueryError(it as Exception) },
         )
     }
 
-
     private fun getProductsByQueryBlock(validQuery: String): Flow<PagingData<SearchUiState.ProductUiState>> {
         return createPagingSourceFlow(
             mapper = { it.toSearchUiState() },
             onError = { exception -> onGetProductsByQueryError(exception) },
-            block = { pageNumber, pageSize ->
+            block = { pageNumber,_ ->
                 searchRepository.findProductsByQuery(
                     query = validQuery,
                     page = pageNumber,
-                    size = pageSize
+                    size = 15
                 ).items
             }
         )

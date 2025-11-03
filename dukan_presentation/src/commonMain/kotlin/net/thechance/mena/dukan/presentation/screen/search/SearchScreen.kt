@@ -91,12 +91,12 @@ private fun SearchContent(
                         onValueChanged = listener::onSearchChanged,
                         hint = stringResource(resource = Res.string.search_in_dukans),
                         leadingIcon = painterResource(resource = Res.drawable.ic_search),
-                        trailingIcon = if (state.searchQuery.isNotBlank())
+                        onTrailingIconClick = listener::onClearSearchClicked,
+                        showTrailingDivider = false,
+                        trailingIcon = if (state.searchQuery.isNotEmpty())
                             painterResource(resource = Res.drawable.ic_delete_search)
                         else
                             null,
-                        onTrailingIconClick = listener::onClearSearchClicked,
-                        showTrailingDivider = false
                     )
                 },
                 title = "",
@@ -104,7 +104,10 @@ private fun SearchContent(
         },
         snakeBar = {
             state.snackBarUiState?.let { snackBarUiState ->
-                SnackBar(snackBarUiState = snackBarUiState)
+                SnackBar(
+                    snackBarUiState = snackBarUiState,
+                    onDismiss = listener::onSnackBarDismissed
+                )
             }
         }
     ) {
