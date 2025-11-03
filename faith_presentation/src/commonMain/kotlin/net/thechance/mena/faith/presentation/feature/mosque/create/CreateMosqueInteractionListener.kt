@@ -7,6 +7,7 @@ internal interface CreateMosqueInteractionListener {
     fun onBackClicked()
     fun onEditImageMosqueClicked()
     fun onClickUploadImage(image: ImageSrc)
+    fun onAddClicked()
     fun onNameChange(name: String)
     fun onAddressChanged(address: String)
     fun mapPositionChanged(coordinate: Coordinate)
