@@ -246,6 +246,7 @@ private fun DukanInfoSkeleton() {
 
 @Composable
 private fun BottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
+    println("Total Priceaaaaaaaaa: $totalPrice")
     Column(
         modifier = Modifier
             .fillMaxWidth()

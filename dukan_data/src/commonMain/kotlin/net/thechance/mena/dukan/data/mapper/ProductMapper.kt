@@ -24,7 +24,7 @@ fun ProductDto.toDomain(): Product = Product(
     price = price,
     imageUrls = imageUrls,
     createdAt = createdAt,
-    quantity = quantityInCart
+    quantityInCart = quantityInCart
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -34,6 +34,6 @@ fun ProductCartDto.toDomain(): Product = Product(
     description = description,
     price = price,
     imageUrls = listOf(imageUrl),
-    quantity = quantity,
+    quantityInCart = quantityInCart,
     createdAt = ""
 )

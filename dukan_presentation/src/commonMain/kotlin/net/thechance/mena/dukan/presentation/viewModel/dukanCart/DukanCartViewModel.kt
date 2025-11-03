@@ -3,14 +3,16 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import androidx.paging.PagingData
+import androidx.paging.filter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -20,7 +22,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiStat
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.ProductUiState
 
 class DukanCartViewModel(
-    private val cartRepository: DukanCartRepository,
+    private val cartRepository: CartRepository,
     private val dukanRepository: DukanManagementRepository,
     private val productRepository: ProductRepository,
     savedStateHandle: SavedStateHandle,
@@ -135,13 +137,32 @@ class DukanCartViewModel(
         emitEffect(DukanCartEffects.NavigateToCheckout(dukanId))
     }
 
-    override fun onIncreaseItemQuantityClicked(cartItemId: String) {
+    override fun onIncreaseItemQuantityClicked(productId: String) {
     }
 
-    override fun onDecreaseItemQuantityClicked(cartItemId: String) {
+    override fun onDecreaseItemQuantityClicked(productId: String) {
     }
 
-    override fun onRemoveItemClicked(cartItemId: String) {
+    override fun onRemoveItemClicked(productId: String) {
+        productsMutableStateFlow.map {
+            it.filter { productUiState ->
+                productUiState.id != productId
+            }
+        }
+        updateState {
+            copy(
+                products = productsMutableStateFlow
+            )
+        }
+        tryToExecuteWithDebounce(
+            block = {
+                cartRepository.deleteProductFromCart(
+                    dukanId = dukanId,
+                    productId = productId
+                )
+            },
+            onError = {}
+        )
     }
 
     override fun onRetryLoadCartClicked() {

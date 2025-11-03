@@ -24,7 +24,7 @@ import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -46,7 +46,7 @@ class DukanDetailsViewModelTest {
         mock<DukanManagementRepository>(mode = MockMode.autofill)
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
-    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     private val savedStateHandle = mock<SavedStateHandle>(mode = MockMode.autofill) {

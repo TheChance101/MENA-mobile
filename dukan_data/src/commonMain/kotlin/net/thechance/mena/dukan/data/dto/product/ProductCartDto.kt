@@ -24,5 +24,5 @@ data class ProductCartDto(
     val imageUrl: String,
 
     @SerialName("quantity")
-    val quantity: Int,
+    val quantityInCart: Int,
 )

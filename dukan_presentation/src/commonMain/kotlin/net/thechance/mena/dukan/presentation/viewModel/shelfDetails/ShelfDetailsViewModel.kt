@@ -9,14 +9,14 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 
 class ShelfDetailsViewModel(
     private val productRepository: ProductRepository,
-    private val dukanCartRepository: DukanCartRepository,
+    private val dukanCartRepository: CartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ShelfDetailsUiState, ShelfDetailsEffects>(

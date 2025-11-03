@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -35,7 +35,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
-    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     private val savedStateHandle = mock<SavedStateHandle>(mode = MockMode.autofill) {
