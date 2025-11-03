@@ -143,8 +143,9 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         SetProductQuantity(
-                            onAddProductClick = { listener.onIncreaseItemQuantityClicked(product.id) },
-                            onRemoveProductClick = { listener.onDecreaseItemQuantityClicked(product.id) }
+                            onPlusClick = { listener.onIncreaseItemQuantityClicked(product.id) },
+                            onMinusClick = { listener.onDecreaseItemQuantityClicked(product.id) },
+                            inCartQuantity = product.quantity
                         )
                     }
                 }

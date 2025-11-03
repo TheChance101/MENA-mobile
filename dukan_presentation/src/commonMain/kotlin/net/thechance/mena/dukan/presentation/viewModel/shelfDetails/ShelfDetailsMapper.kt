@@ -10,5 +10,5 @@ fun Product.toUiState() = ShelfDetailsUiState.ProductUiState(
     description = description,
     price = price,
     imageUrl = imageUrls.firstOrNull().orEmpty(),
-    inCartQuantity = quantityInCart
+    inCartQuantity = quantity?: 0
 )

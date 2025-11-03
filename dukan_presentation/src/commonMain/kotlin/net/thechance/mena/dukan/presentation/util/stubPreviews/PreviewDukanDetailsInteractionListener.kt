@@ -12,5 +12,4 @@ object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener 
     override fun onMinusClicked(productId: String, productQuantity: Int) {}
     override fun onCartClicked() {}
     override fun onRetryClicked() {}
-    override fun onCartClicked() {}
 }

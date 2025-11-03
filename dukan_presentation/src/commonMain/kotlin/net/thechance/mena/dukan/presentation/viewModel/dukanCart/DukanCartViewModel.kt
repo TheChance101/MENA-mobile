@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.repository.CartRepository
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -20,7 +20,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiStat
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.ProductUiState
 
 class DukanCartViewModel(
-    private val cartRepository: CartRepository,
+    private val cartRepository: DukanCartRepository,
     private val dukanRepository: DukanManagementRepository,
     private val productRepository: ProductRepository,
     savedStateHandle: SavedStateHandle,

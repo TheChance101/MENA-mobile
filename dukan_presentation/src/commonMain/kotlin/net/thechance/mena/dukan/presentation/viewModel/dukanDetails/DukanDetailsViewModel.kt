@@ -257,34 +257,13 @@ class DukanDetailsViewModel(
 
 
     override fun onCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
     override fun onRetryClicked() {
         loadDukanDetails()
     }
 
-    override fun onCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCart(dukanId))
-    }
-
-    private fun updateShelvesWithAddedProduct(
-        shelves: PagingData<ShelfUiState>,
-        productId: String
-    ): PagingData<ShelfUiState> {
-        return shelves.map { shelf ->
-            shelf.copy(products = updateProductsWithAddedItem(shelf.products, productId))
-        }
-    }
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
-
-    private fun updateProductsWithAddedItem(
-        products: List<ProductUiState>,
-        productId: String
-    ): List<ProductUiState> {
-        return products.map { product ->
-            if (product.id == productId) product.copy(inCartQuantity = 1) else product
-        }
-    }
 }
