@@ -13,10 +13,13 @@ import okio.SYSTEM
 class DownloadSurahManagerImpl : DownloadSurahManager {
     override suspend fun downloadSurahFile(
         url: String,
-        fileName: String,
+        surahId: Int,
+        reciterName: String,
     ): String {
         return withContext(Dispatchers.IO) {
-            val downloadedFilePath = downloadSurahFileToAppStorage(url, fileName)
+            val downloadedFileName = url.substringAfterLast("/")
+            val filePath = "$reciterName/$surahId/$downloadedFileName"
+            val downloadedFilePath = downloadSurahFileToAppStorage(url, filePath)
             downloadedFilePath?.let {
                 val unZippedFilePath = unZipFile(it)
                 FileSystem.SYSTEM.delete(it.toPath())
@@ -28,10 +31,10 @@ class DownloadSurahManagerImpl : DownloadSurahManager {
     private fun unZipFile(path: String): String =
         try {
             val zipPath = path.toPath()
-            val destDir =
+            val destinationDir =
                 zipPath.parent ?: throw IllegalStateException("Zip file has no parent directory")
-            FileSystem.SYSTEM.unpackZip(zipPath, destDir)
-            destDir.toString()
+            FileSystem.SYSTEM.unpackZip(zipPath, destinationDir)
+            destinationDir.toString()
         } catch (e: Exception) {
             e.printStackTrace()
             throw e
