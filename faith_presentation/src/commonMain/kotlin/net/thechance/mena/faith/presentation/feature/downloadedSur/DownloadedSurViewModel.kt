@@ -18,32 +18,33 @@ class DownloadedSurViewModel :
 
     private fun loadDownloadedSur() {
         // TODO: After the domain is done, integrate this function to load the real data
-        val dummyData = listOf(
-            DownloadedSurUiState.SurahDetailsUiState(
-                1,
-                Res.drawable.ic_ad_duha,
-                "Al-Duha",
-                listOf("Al Minshawi", "Sudais"),
-            ),
-            DownloadedSurUiState.SurahDetailsUiState(
-                1,
-                Res.drawable.ic_an_nas,
-                "An-Nas",
-                listOf("Sudais"),
-            ),
-            DownloadedSurUiState.SurahDetailsUiState(
-                1,
-                Res.drawable.ic_al_kahf,
-                "Al-Kahf",
-                listOf("Al Minshawi", "Sudais"),
-            ),
-            DownloadedSurUiState.SurahDetailsUiState(
-                1,
-                Res.drawable.ic_ash_shams,
-                "Ash-Shams",
-                listOf("Al Minshawi", "Sudais"),
-            ),
-        )
+        val dummyData =
+            listOf(
+                DownloadedSurUiState.SurahDetailsUiState(
+                    1,
+                    Res.drawable.ic_ad_duha,
+                    "Al-Duha",
+                    listOf("Al Minshawi", "Sudais"),
+                ),
+                DownloadedSurUiState.SurahDetailsUiState(
+                    2,
+                    Res.drawable.ic_an_nas,
+                    "An-Nas",
+                    listOf("Sudais"),
+                ),
+                DownloadedSurUiState.SurahDetailsUiState(
+                    3,
+                    Res.drawable.ic_al_kahf,
+                    "Al-Kahf",
+                    listOf("Al Minshawi", "Sudais"),
+                ),
+                DownloadedSurUiState.SurahDetailsUiState(
+                    4,
+                    Res.drawable.ic_ash_shams,
+                    "Ash-Shams",
+                    listOf("Al Minshawi", "Sudais"),
+                ),
+            )
         updateState { it.copy(dummyData) }
     }
 
@@ -55,11 +56,32 @@ class DownloadedSurViewModel :
         // TODO("Integrate with the domain repo when done")
     }
 
-    override fun onDeleteDownloadedSurahClick(surahId: Int) {
-        // TODO("Integrate with the domain repo when done")
-    }
-
     override fun onBackClick() {
         sendEffect(DownloadedSurEffect.NavigateBack)
+    }
+
+    override fun onDeleteSurahClick(surahId: Int) {
+        updateState {
+            it.copy(
+                selectedSurahForDelete = surahId,
+                showDeleteConfirmationDialog = true,
+            )
+        }
+    }
+
+    override fun onDismissDeleteConfirmationDialog() {
+        updateState { it.copy(selectedSurahForDelete = null, showDeleteConfirmationDialog = false) }
+    }
+
+    override fun onConfirmDeleteDownloadedSurahClick() {
+        // TODO("Should integrate with the domain to delete selected surah")
+        updateState { state ->
+            val newSurDetails = state.surDetails - state.surDetails.first { it.id == state.selectedSurahForDelete }
+            state.copy(
+                surDetails = newSurDetails,
+                selectedSurahForDelete = null,
+                showDeleteConfirmationDialog = false,
+            )
+        }
     }
 }

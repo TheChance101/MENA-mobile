@@ -5,7 +5,11 @@ interface DownloadedSurInteractionListener {
 
     fun onDownloadedSurahClick(surahId: Int)
 
-    fun onDeleteDownloadedSurahClick(surahId: Int)
-
     fun onBackClick()
+
+    fun onDeleteSurahClick(surahId: Int)
+
+    fun onDismissDeleteConfirmationDialog()
+
+    fun onConfirmDeleteDownloadedSurahClick()
 }
