@@ -6,13 +6,16 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -33,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
@@ -123,6 +127,20 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     item {
+                        Box {
+                            ProfileImage(
+                                profileImageUrl = state.profileImageUrl,
+                                profileImageBitmap = null
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .padding(end = 15.dp, bottom = 3.dp)
+                                    .align(Alignment.BottomEnd)
+                                    .size(10.dp)
+                                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                    .background(Theme.colorScheme.success, CircleShape)
+                            )
+                        }
                         AnimatedVisibility(
                             visible = state.isSuccess,
                             enter = expandVertically(),
@@ -130,11 +148,10 @@ class ProfileScreen : BaseScreen<
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             ProfileInfoContainer(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                profilePicture = state.profileImageUrl,
                                 fullName = state.fullName,
                                 userName = state.userName,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
                             )
                         }
                     }

@@ -18,6 +18,8 @@ import mena.wallet_presentation.generated.resources.payment_failed_description
 import mena.wallet_presentation.generated.resources.silvers
 import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.transaction_failed
+import mena.wallet_presentation.generated.resources.transaction_success
+import mena.wallet_presentation.generated.resources.transaction_successful
 import mena.wallet_presentation.generated.resources.you_paid
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -85,12 +87,13 @@ private fun SuccessPaymentDescription(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(Res.string.you_paid),
             color = Theme.colorScheme.shadeSecondary,
-            style = Theme.typography.label.small
+            style = Theme.typography.label.extraSmall
         )
         Text(
             text = " $amount ${stringResource(Res.string.silvers)} ",
@@ -102,7 +105,7 @@ private fun SuccessPaymentDescription(
         Text(
             text = stringResource(Res.string.to),
             color = Theme.colorScheme.shadeSecondary,
-            style = Theme.typography.label.small
+            style = Theme.typography.label.extraSmall
         )
         Text(
             text = " $name",
@@ -123,6 +126,20 @@ private fun PaymentActionButtonsPreview() {
             title = stringResource(Res.string.transaction_failed),
             paymentStatus = SubmissionStatus.UNKNOWN_ERROR,
             description = stringResource(Res.string.payment_failed_description),
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SuccessPaymentPreview() {
+    MenaTheme {
+        PaymentResultCard(
+            image = painterResource(Res.drawable.transaction_success),
+            title = stringResource(Res.string.transaction_successful),
+            paymentStatus = SubmissionStatus.SUCCESS,
+            name = "Ahmed Ali",
+            amount = 31.99
         )
     }
 }
