@@ -27,6 +27,7 @@ import mena.dukan_presentation.generated.resources.products
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
+import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.DukanCard
 import net.thechance.mena.dukan.presentation.util.animation.fadeWithSlideHorizontalTransition
@@ -183,7 +184,7 @@ private fun ProductsList(
                     contentPadding = PaddingValues(horizontal = Theme.spacing._16)
                 ) {
                     items(count = 8) {
-                        LoadingDukanPlaceholder()
+                        LoadingProductCard()
                     }
                 }
             }
