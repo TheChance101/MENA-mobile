@@ -28,6 +28,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.MessageEvent
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -46,6 +47,7 @@ class MessageRepositoryImpl(
 ) : MessageRepository {
     private val messageFlows = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
+    private val markChatAsDeleted = MutableSharedFlow<DeleteChatEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
 
@@ -53,8 +55,7 @@ class MessageRepositoryImpl(
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
-            client.get(CHAT_HISTORY_ENDPOINT) {
-                parameter(CHAT_ID_PARAMETER, chatId)
+            client.get(getChatMessagesEndpoint(chatId)){
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -93,6 +94,10 @@ class MessageRepositoryImpl(
         return markMessagesAsRead
     }
 
+    override fun observeDeleteChat(): Flow<DeleteChatEvent> {
+        return markChatAsDeleted
+    }
+
     private fun initializeWebsocketConnection() {
         scope.launch {
             webSocketManager.connect(
@@ -122,6 +127,10 @@ class MessageRepositoryImpl(
             is MessageEvent.Message -> {
                 event.dto.toDomain()?.let { messageFlows.emit(it) }
             }
+
+            is MessageEvent.DeleteChat -> {
+                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.deletedChatId))
+            }
         }
     }
 
@@ -138,8 +147,9 @@ class MessageRepositoryImpl(
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-        const val CHAT_HISTORY_ENDPOINT = "/chat/history"
-        const val CHAT_ID_PARAMETER = "chatId"
 
+        fun getChatMessagesEndpoint(chatId:Uuid): String {
+            return "/chat/${chatId}/messages"
+        }
     }
 }

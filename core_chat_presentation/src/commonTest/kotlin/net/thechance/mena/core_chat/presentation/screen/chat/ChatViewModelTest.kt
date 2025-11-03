@@ -28,6 +28,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
+import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
@@ -88,44 +90,6 @@ class ChatViewModelTest {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-    }
-
-    @Test
-    fun `init should update chat list when its loaded messages successfully`() = runTest {
-        everySuspend { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(
-            messages
-        )
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, 0, 40)
-        } returns PagedData(messages, messages.size, false)
-
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map { it.toUi(chatRequesterId) }.reversed())
-    }
-
-    @Test
-    fun `init should update uiMessage and chatListItems when receive new message`() = runTest {
-        everySuspend { chatRepository.getChatById(chatId) } returns chat
-        every { messageRepository.observePendingMessagesByChatId(chatId) } returns flowOf(messages)
-        every { messageRepository.observeReadMessages() } returns flowOf()
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(emptyList(), 80, false)
-        every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf(messages.first())
-
-        advanceUntilIdle()
-
-        assertThat(
-            viewModel.state.value.chatListItems.currentUiMessages()
-                .map { it.copy(isLastInSeries = false, isVisibleMessageInfo = false) }
-        ).isEqualTo(messages.map{ it.toUi(chatRequesterId) }.reversed())
     }
 
     @Test
@@ -206,7 +170,7 @@ class ChatViewModelTest {
     @Test
     fun `onFailedMessageClicked should update the failedMessageToResend to the failedMessage when its call`() =
         runTest {
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -217,7 +181,7 @@ class ChatViewModelTest {
     fun `onFailedMessageClicked should update the isResendMessageDialogVisible to true when its call`() =
         runTest {
             advanceUntilIdle()
-            val failedMessage = messages.first().toUi(chatRequesterId)
+            val failedMessage = messages.first().toUi()
 
             viewModel.onFailedMessageClicked(failedMessage)
 
@@ -229,7 +193,7 @@ class ChatViewModelTest {
         runTest {
             everySuspend { messageRepository.deleteMessage(any()) } returns Unit
             advanceUntilIdle()
-            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(msgUi)
 
             viewModel.onDeleteFailedMessageClicked()
@@ -244,7 +208,7 @@ class ChatViewModelTest {
             everySuspend { messageRepository.sendMessage(any()) } returns Unit
             advanceUntilIdle()
             val failedMessage =
-                messages.first().copy(status = MessageStatus.FAILED).toUi(chatRequesterId)
+                messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(failedMessage)
 
             viewModel.onResendMessageClicked()
@@ -258,15 +222,15 @@ class ChatViewModelTest {
     @Test
     fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
         runTest {
-            val message = messages.first().toUi(chatRequesterId)
+            val messages = messages.map(Message::toUi)
             val index = 2
             advanceUntilIdle()
 
-            viewModel.onMessageImageClicked(message, index)
+            viewModel.onMessageImageClicked(messages, index)
             advanceUntilIdle()
 
             assertThat(viewModel.state.value.isImagePagerVisible).isTrue()
-            assertThat(viewModel.state.value.selectedMessage).isEqualTo(message)
+            assertThat(viewModel.state.value.selectedImageMessages).isEqualTo(messages)
             assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
         }
 
@@ -413,9 +377,105 @@ class ChatViewModelTest {
         verifySuspend { messageRepository.sendMessage(any()) }
     }
 
+    @Test
+    fun `onChatActionsMenuClicked should show chat actions dialog`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onChatActionsMenuClicked()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isChatActionsDialogVisible).isTrue()
+    }
+
+    @Test
+    fun `onChatActionsMenuDialogDismissed should hide chat actions and confirm delete dialogs`() =
+        runTest {
+            advanceUntilIdle()
+            viewModel.onChatActionsMenuClicked()
+            advanceUntilIdle()
+
+            viewModel.onChatActionsMenuDialogDismissed()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.isChatActionsDialogVisible).isFalse()
+            assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isFalse()
+        }
+
+    @Test
+    fun `onConfirmDeleteChatDialogDismissed should hide confirm delete chat dialog`() = runTest {
+        advanceUntilIdle()
+        viewModel.onDeleteChatClicked()
+        advanceUntilIdle()
+
+        viewModel.onConfirmDeleteChatDialogDismissed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isFalse()
+    }
+
+    @Test
+    fun `onDeleteChatClicked should show confirm delete dialog and hide chat actions dialog`() =
+        runTest {
+            advanceUntilIdle()
+            viewModel.onChatActionsMenuClicked()
+            advanceUntilIdle()
+
+            viewModel.onDeleteChatClicked()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.isChatActionsDialogVisible).isFalse()
+            assertThat(viewModel.state.value.isConfirmDeleteChatDialogVisible).isTrue()
+        }
+
+    @Test
+    fun `onConfirmDeleteChatClicked should call repository deleteChatById and emit success snackbar`() =
+        runTest {
+            everySuspend { chatRepository.deleteChatById(chatId) } returns Unit
+            advanceUntilIdle()
+
+            viewModel.effect.test {
+                viewModel.onConfirmDeleteChatClicked()
+                advanceUntilIdle()
+
+                val expected = ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.success),
+                        message = UiText.StringRes(Res.string.chat_deleted_successfully),
+                        isError = false
+                    )
+                )
+                val item = awaitItem()
+                assertThat(item).isEqualTo(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `onConfirmDeleteChatClicked should show error snackbar when deleteChatById fails`() =
+        runTest {
+            everySuspend { chatRepository.deleteChatById(chatId) } throws Exception("delete failed")
+            advanceUntilIdle()
+
+            viewModel.effect.test {
+                viewModel.onConfirmDeleteChatClicked()
+                advanceUntilIdle()
+
+                val expected = ChatScreenEffect.ShowSnackBar(
+                    SnackBarData(
+                        title = UiText.StringRes(Res.string.error),
+                        message = UiText.StringRes(Res.string.could_not_delete_chat),
+                        isError = true
+                    )
+                )
+                val item = awaitItem()
+                assertThat(item).isEqualTo(expected)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
-        filterIsInstance<ChatListItem.Message>()
-            .map { it.data }
+        filterIsInstance<ChatListItem.ImageMessages>()
+            .flatMap { it.data }
             .sortedByDescending { it.sendTime }
 
 

@@ -1,0 +1,56 @@
+name: Desktop (Admin Panel)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  detect:
+    name: Detect Changes
+    uses: ./.github/workflows/detect-changed-modules.yml
+    secrets: inherit
+
+  build:
+    name: Build Desktop Admin Panel
+    needs: detect
+    if: needs.detect.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: gradle
+
+      - name: Grant execute permission
+        run: chmod +x gradlew
+
+      - name: Build Admin Panel (Desktop)
+        run:  ./gradlew :admin_panel:assemble --parallel --build-cache --no-daemon -x lint -x assembleRelease
+
+  notify-slack-on-failure:
+    if: failure()
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Notify Slack on failure
+        uses: ./.github/actions/slack/send-pr-notification
+        with:
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack-notification-channel-id: ${{ secrets.SLACK_NOTIFICATION_CHANNEL_ID }}
+          bot-app-id: ${{ secrets.BOT_APP_ID }}
+          branch-name: ${{ github.head_ref }}
+          message: |
+            🚨 *Build Failed on Desktop (Admin Panel)!*
+            Branch Name: ${{ github.head_ref }}
+            PR: ${{ github.event.pull_request.html_url }}

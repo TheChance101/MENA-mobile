@@ -50,9 +50,15 @@ kotlin {
             implementation(libs.androidx.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.coil.compose)
+            implementation(libs.bundles.filekit)
+            implementation(libs.krop.extensions.filekit)
             implementation(libs.coil.gif)
+            implementation(libs.krop.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
+
+            // maps
+            implementation(libs.maplibre.compose)
         }
         iosMain.dependencies {
 
@@ -93,6 +99,7 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel",
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
+                "net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel",
                 "*MapperKt",
             )
         }

@@ -11,9 +11,9 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
-import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
@@ -39,8 +39,24 @@ class TransactionHistoryViewModel(
     TransactionHistoryScreenState()
 ), TransactionHistoryInteractionListener {
 
+    private lateinit var paginator: Paginator<Int, List<Transaction>>
+
     init {
+        initializePaginator()
+        fetchFirstTransactionDate()
         loadNextTransactions()
+    }
+
+    private fun initializePaginator(){
+        paginator = Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = ::onPaginationLoading,
+            onRequest = ::getPagedTransactions,
+            getNextKey = { currentKey, _ -> currentKey + 1 },
+            onError = ::onPaginationError,
+            onSuccess = { result, _ -> onPaginationSuccess(result) },
+            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+        )
     }
 
     override fun onBackClicked() {
@@ -72,16 +88,20 @@ class TransactionHistoryViewModel(
         resetPaginator()
     }
 
-
     override fun onStartDateClicked() {
         val currentStartDate = currentState.filterState.startDate
         if (currentStartDate != null) {
-            openStartDatePickerWithExistingDate(currentStartDate)
-        } else {
-            fetchFirstTransactionDate()
+            updateState { it.copy(filterState = it.filterState.copy(defaultStartDate = currentStartDate)) }
+        }
+        updateState {
+            it.copy(
+                filterState = it.filterState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
+                )
+            )
         }
     }
-
 
     @OptIn(ExperimentalTime::class)
     override fun onEndDateClicked() {
@@ -148,53 +168,29 @@ class TransactionHistoryViewModel(
         loadNextTransactions()
     }
 
-    private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
-                    defaultStartDate = currentStartDate
-                )
-            )
-        }
-    }
-
     private fun fetchFirstTransactionDate() {
         tryToExecute(
             callee = { transactionRepository.getFirstTransactionDate() },
-            onSuccess = ::onGetFirstTransactionDateSuccess,
-            onError = ::onGetFirstTransactionDateError,
+            onSuccess = ::onFetchFirstTransactionDateSuccess,
+            onError = ::onFetchFirstTransactionDateError,
             dispatcher = dispatcher
         )
     }
 
-    private suspend fun onGetFirstTransactionDateError(throwable: ErrorState) {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(errorState = throwable)
-            )
-        }
-
-        showSnackBar(
-            title = stringProvider.getString(Res.string.error),
-            message = stringProvider.getString(Res.string.failed_to_load_date_picker),
-            isSuccess = false
-        )
-    }
-
-    private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
+    private fun onFetchFirstTransactionDateSuccess(date: LocalDate?) {
         updateState {
             val currentStartDate = it.filterState.startDate ?: date
             it.copy(
                 filterState = it.filterState.copy(
                     defaultStartDate = currentStartDate,
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
                     errorState = null
                 )
             )
         }
+    }
+
+    private fun onFetchFirstTransactionDateError(error: ErrorState) {
+        updateState { it.copy(errorState = error) }
     }
 
     private fun updateStartDate(date: LocalDate) {
@@ -219,7 +215,6 @@ class TransactionHistoryViewModel(
         }
     }
 
-
     private fun getActiveFilterCount(): Int {
         val state = currentState.filterState
         return (if (state.selectedTypes.isNotEmpty()) 1 else 0) +
@@ -227,22 +222,12 @@ class TransactionHistoryViewModel(
                 (if (state.startDate != null || state.endDate != null) 1 else 0)
     }
 
-
     private fun resetPaginator() {
-        updateState {
-            it.copy(
-                filterState = it.filterState.copy(
-                    isLoading = true
-                ),
-                history = emptyList(),
-                isLoading = true
-            )
-        }
+        updateState { it.copy(history = emptyList()) }
 
         paginator.reset()
         loadNextTransactions()
     }
-
 
     private fun areDatesValid(): Boolean {
         val startDate = currentState.filterState.startDate
@@ -264,9 +249,7 @@ class TransactionHistoryViewModel(
             )
         }
 
-        if (isLoading) {
-            updateState { it.copy(errorState = null) }
-        }
+        if (isLoading) { updateState { it.copy(errorState = null) } }
     }
 
     private suspend fun getPagedTransactions(page: Int): List<Transaction> =
@@ -299,7 +282,16 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
-        updateState { it.copy(errorState = ErrorState.UnknownError) }
+        updateState {
+            it.copy(
+                errorState = when (throwable) {
+                    is NoInternetException -> ErrorState.NoInternet
+                    else -> ErrorState.UnknownError
+                },
+                isLoading = false,
+                filterState = it.filterState.copy(isLoading = false)
+            )
+        }
     }
 
     private fun showInvalidDatesSnackBar() {
@@ -338,19 +330,7 @@ class TransactionHistoryViewModel(
         updateState { oldState -> oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false)) }
     }
 
-    private val paginator by lazy {
-        Paginator(
-            initialKey = INITIAL_PAGE,
-            onLoadUpdated = ::onPaginationLoading,
-            onRequest = ::getPagedTransactions,
-            getNextKey = { currentKey, _ -> currentKey + 1 },
-            onError = ::onPaginationError,
-            onSuccess = { result, newKey -> onPaginationSuccess(result) },
-            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
-        )
-    }
-
-   private companion object {
+    private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
     }

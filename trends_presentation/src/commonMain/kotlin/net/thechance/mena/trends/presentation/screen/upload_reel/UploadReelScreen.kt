@@ -1,8 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +15,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -36,6 +34,7 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.NextButton
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
@@ -43,7 +42,6 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import net.thechance.mena.trends.presentation.shared.util.getFilePath
 import net.thechance.mena.trends.presentation.shared.util.isIdle
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarData
@@ -122,11 +120,7 @@ private fun UploadReelScreenContent(
                 onCardClick = launcher::launch,
                 onEditClick = launcher::launch
             )
-            AnimatedVisibility(
-                visible = !state.uploadingState.isIdle,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
+            TrendsAnimatedVisibility(visible = !state.uploadingState.isIdle) {
                 VideoLoadingCardItem(
                     modifier = Modifier.padding(
                         top = state.thumbnail?.let { Theme.spacing._24 } ?: Theme.spacing._8
@@ -165,7 +159,7 @@ private fun launchFilePicker(
     file?.let {
         coroutineScope.launch {
             val fileState = FileUiState(
-                filePath = file.getFilePath(),
+                filePath = file.path,
                 name = file.name,
                 size = file.size(),
             )

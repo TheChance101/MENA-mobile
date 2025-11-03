@@ -38,7 +38,7 @@ internal val networkModule = module {
 
     single<ImageDownloaderService> { ImageDownloaderImp() }
 
-    single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT)), get()) }
+    single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT))) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
     single {
         MessageSenderFactory(

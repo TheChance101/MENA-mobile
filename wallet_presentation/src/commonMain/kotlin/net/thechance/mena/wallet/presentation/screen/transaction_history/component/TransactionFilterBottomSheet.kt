@@ -31,6 +31,7 @@ import net.thechance.mena.wallet.presentation.component.FilterContent
 import net.thechance.mena.wallet.presentation.model.FilterStatus
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
+import net.thechance.mena.wallet.presentation.utils.formatLocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -51,8 +52,7 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
         isVisible = isVisible,
         onDismissRequest = onDismiss,
         skipPartiallyExpanded = true,
-        modifier = modifier
-            .navigationBarsPadding(),
+        modifier = modifier.navigationBarsPadding(),
         stickyFooterContent = {
             StickyFooterContent(
                 hasActiveFilters = uiState.hasActiveFilters,
@@ -61,16 +61,13 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
             )
         },
         sheetContent = {
-
-            HeaderFilterContent(
-                onResetClicked = onResetClicked
-            )
+            HeaderFilterContent(onResetClicked = onResetClicked)
 
             FilterContent(
                 selectedTypes = uiState.selectedTypes,
                 selectedStatus = uiState.selectedStatus,
-                startDate = uiState.startDate?.toString() ?: "",
-                endDate = uiState.endDate?.toString() ?: "",
+                startDate = uiState.startDate?.let { formatLocalDate(date = it, outputFormat = "yyyy/MM/dd") } ?: "",
+                endDate = uiState.endDate?.let { formatLocalDate(date = it, outputFormat = "yyyy/MM/dd") } ?: "",
                 onTypeSelected = onTypeToggled,
                 onStatusSelected = onStatusSelected,
                 onStartDateClicked = onStartDateClicked,

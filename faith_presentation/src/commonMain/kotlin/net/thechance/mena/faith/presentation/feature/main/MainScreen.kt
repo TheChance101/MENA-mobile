@@ -74,8 +74,8 @@ fun MainScreen(
 
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
-            //TODO: Add navigation
-            MainScreenEffect.NavigateToMosques -> {}
+            MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
+            MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
         }
     }
 
@@ -131,18 +131,27 @@ private fun PrayerSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        PrayerTimesCard(prayerTimesUiState = uiState.prayerTimesUiState)
-        Text(
-            text = uiState.hijriDate,
-            color = Theme.colorScheme.shadeSecondary,
-            style = Theme.typography.label.extraSmall
+        PrayerTimesCard(
+            prayerTimesUiState = uiState.prayerTimesUiState,
+            onClick = listener::onPrayerTimeClick
         )
-        SunriseTimeRow(
-            icon = painterResource(Res.drawable.ic_sunrise),
-            title = stringResource(Res.string.sunrise_time_label),
-            time = uiState.sunriseTime,
-            modifier = Modifier.padding(vertical = Theme.spacing._12)
-        )
+        if (uiState.hijriDate.isNotBlank()) {
+            Text(
+                text = uiState.hijriDate,
+                color = Theme.colorScheme.shadeSecondary,
+                style = Theme.typography.label.extraSmall
+            )
+        }
+
+        if (uiState.sunriseTime.isNotBlank()) {
+            SunriseTimeRow(
+                icon = painterResource(Res.drawable.ic_sunrise),
+                title = stringResource(Res.string.sunrise_time_label),
+                time = uiState.sunriseTime,
+                modifier = Modifier.padding(vertical = Theme.spacing._12)
+            )
+        }
+
         TilawahSection(
             tilawahUiState = uiState.tilawahUiState,
             onContinueTilawahClick = onContinueTilawahClick(uiState, listener),
@@ -217,6 +226,7 @@ private fun Preview() {
                 override fun onQuranClick() {}
                 override fun onQiblahClick() {}
                 override fun onMosquesClick() {}
+                override fun onPrayerTimeClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -95,6 +97,7 @@ private fun WalletContent(
                 .fillMaxHeight()
                 .padding(horizontal = 16.dp)
                 .padding(top = 16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             BalanceCard(
                 state = state.balanceState,
@@ -130,7 +133,7 @@ private fun WalletContent(
                 onClick = {
                     interactionListener.onPaymentClicked(
                         amount = 225.5,
-                        receiverId = Uuid.parse("95950cab-758e-4c6c-8685-c252667561f2")
+                        receiverId = Uuid.parse("00000000-0000-0000-0000-000000000000")
                     )
                 },
                 modifier = Modifier

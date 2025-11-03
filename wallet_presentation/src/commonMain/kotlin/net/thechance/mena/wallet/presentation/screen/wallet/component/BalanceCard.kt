@@ -161,7 +161,7 @@ private fun BalanceInfoSection(
             isLoading = isLoading,
             errorState = errorState,
             onRetry = onRetry,
-            modifier = Modifier.padding(top = 45.dp)
+            modifier = Modifier.padding(top = 45.dp).padding(horizontal = 24.dp)
         )
 
         Text(

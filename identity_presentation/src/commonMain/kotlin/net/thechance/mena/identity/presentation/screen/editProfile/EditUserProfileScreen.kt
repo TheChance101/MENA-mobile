@@ -58,7 +58,7 @@ import net.thechance.mena.identity.presentation.components.WheelDatePicker
 import net.thechance.mena.identity.presentation.screen.editProfile.component.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.editProfile.component.GenderToggle
 import net.thechance.mena.identity.presentation.screen.editProfile.component.ProfileEditText
-import net.thechance.mena.identity.presentation.screen.editProfile.component.ProfileImage
+import net.thechance.mena.identity.presentation.screen.editProfile.component.EditProfileImage
 import net.thechance.mena.identity.presentation.screen.editProfile.dialog.GetImageDialog
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
@@ -184,7 +184,7 @@ class EditUserProfileScreen : BaseScreen<
                     }
                 )
 
-                ProfileImage(
+                EditProfileImage(
                     profileImageUrl = state.profileImageUrl,
                     profileImageBitmap = state.profileImageBitmap,
                     modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),

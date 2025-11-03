@@ -25,6 +25,7 @@ internal class UserReelViewModel(
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
+        updateState { copy(currentReelId = userReelArgs.realId) }
         getFeedReals()
     }
 
@@ -92,11 +93,12 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        tryToExecute(
-            block = { reelsRepository.addReelView(reelId) },
-            onError = { error -> updateState { copy(error = error) } },
-            dispatcher = defaultDispatcher
-        )
+        if(state.value.isReelDeleted == null) {
+            tryToExecute(
+                block = { reelsRepository.addReelView(reelId) },
+                dispatcher = defaultDispatcher
+            )
+        }
     }
 
     override fun onClickLike(reelId: String, isLiked: Boolean) {
@@ -141,6 +143,10 @@ internal class UserReelViewModel(
         sendEffect(UserReelEffect.NavigateBack)
     }
 
+    override fun onChangeCurrentReel(reelId: String) {
+        updateState { copy(currentReelId = reelId) }
+    }
+
     override fun onClickDelete() {
         updateState {
             copy(isConfirmationDialogVisible = true)
@@ -149,7 +155,7 @@ internal class UserReelViewModel(
 
     override fun onClickConfirmDelete() {
         tryToExecute(
-            block = { reelsRepository.deleteReelById(userReelArgs.realId) },
+            block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
             dispatcher = defaultDispatcher

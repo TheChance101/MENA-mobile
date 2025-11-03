@@ -1,6 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.serialization.json.JsonNull.content
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -45,6 +45,7 @@ import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -90,15 +91,12 @@ private fun HomeScreenContent(
 ) {
     Scaffold(
         topBar = {
-            AnimatedVisibility(
-                visible = state.isLoading.not(),
-                content = {
-                    TrendsAppBar(
-                        onManageMyTrendsClick = listener::onClickManageMyTrends,
-                        onEditTagsClick = listener::onClickEditTags
-                    )
-                }
-            )
+            TrendsAnimatedVisibility(visible = state.isLoading.not()) {
+                TrendsAppBar(
+                    onClickManageMyTrends = listener::onClickManageMyTrends,
+                    onClickEditTags = listener::onClickEditTags
+                )
+            }
         }
     ) {
         val reels = state.reels.collectAsLazyPagingItems()
@@ -111,33 +109,34 @@ private fun HomeScreenContent(
                 reels.loadState.refresh.toErrorState() == null
 
         Box(modifier = Modifier.fillMaxSize()) {
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = reels.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = hasNetworkError,
                 content = { NoConnection { listener.onClickRetry() } }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = shouldShowEmptyState,
                 content = { EmptyTrends() }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = reels.itemSnapshotList.isNotEmpty() && reels.loadState.refresh !is LoadState.Loading,
                 content = {
                     ReelsListSection(
                         reels = reels,
                         onClickLike = listener::onClickLike,
-                        onClickReel = listener::onClickReel
+                        onClickReel = listener::onClickReel,
+                        onExpandDescription = listener::onClickExpandDescription
                     )
                 }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 visible = !hasNetworkError && reels.loadState.refresh !is LoadState.Loading,
                 content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
@@ -169,6 +168,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -177,27 +177,33 @@ private fun ReelsListSection(
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
-        items(reels.itemSnapshotList.items) { reel ->
-            FeedReelCard(
-                reel = reel,
-                onLikeClick = { onClickLike(reel.id, reel.isLiked) },
-                onReelClick = { onClickReel(reel.id) }
-            )
+        items(
+            count = reels.itemCount,
+            key = reels.itemKey { it.id }
+        ) { index ->
+            reels[index]?.let { reel ->
+                FeedReelCard(
+                    reel = reel,
+                    onClickLike = { onClickLike(reel.id, reel.isLiked) },
+                    onClickReel = { onClickReel(reel.id) },
+                    onExpandDescription = { onExpandDescription(reel.id) }
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun TrendsAppBar(
-    onManageMyTrendsClick: () -> Unit,
-    onEditTagsClick: () -> Unit
+    onClickManageMyTrends: () -> Unit,
+    onClickEditTags: () -> Unit
 ) {
     AppBar(
         title = stringResource(Res.string.trends_title),
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onManageMyTrendsClick
+                onClick = onClickManageMyTrends
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_account_setting),
@@ -208,7 +214,7 @@ private fun TrendsAppBar(
 
             AppBarOptionContainer(
                 isBadgeVisible = false,
-                onClick = onEditTagsClick
+                onClick = onClickEditTags
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
@@ -234,6 +240,7 @@ private fun HomeScreenPreview() {
                     override fun onClickManageMyTrends() {}
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
+                    override fun onClickExpandDescription(reelId: String) {}
                 }
             )
         }

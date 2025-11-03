@@ -7,13 +7,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -43,7 +46,7 @@ internal fun PaymentDetailsSection(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -111,8 +114,10 @@ private fun PaymentAmount(
     ) {
         Text(
             text = amount,
-            style = Theme.typography.headline.medium,
-            color = Theme.colorScheme.shadeSecondary
+            style = Theme.typography.headline.medium.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            color = Theme.colorScheme.shadePrimary
         )
         Icon(
             modifier = Modifier
@@ -180,9 +185,14 @@ private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
             PaymentDetailsSection(
-                payment = PaymentUiState(),
-                userMessage = "",
-                receiver = ReceiverUiState()
+                payment = PaymentUiState(
+                    amount = "530,320",
+                    status = true
+                ),
+                userMessage = "You have 1,230.25 silvers in wallet",
+                receiver = ReceiverUiState(
+                    name = "Ahmed Ali"
+                )
             )
         }
     }

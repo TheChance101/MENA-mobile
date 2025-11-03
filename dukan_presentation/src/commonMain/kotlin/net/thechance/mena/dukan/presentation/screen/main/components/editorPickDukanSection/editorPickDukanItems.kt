@@ -15,6 +15,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -32,7 +33,7 @@ fun LazyListScope.editorPickDukanItems(
                     .padding(horizontal = Theme.spacing._16),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
-                repeat(8) { LoadingEditorPickDukanItem() }
+                repeat(8) { LoadingDukanPlaceholder() }
             }
         }
 

@@ -46,4 +46,9 @@
     <string name="you">You</string>
     <string name="could_not_get_sync_contacts_status">Could not get sync contacts status, please try again</string>
     <string name="could_not_load_chats">Could not get chats</string>
+    <string name="delete_chat_confirmation_message">Are you sure you want to delete this chat, you will lose all messages and can’t restore them?</string>
+    <string name="could_not_delete_chat">Could not delete chat</string>
+    <string name="chat_deleted_successfully">Chat deleted successfully</string>
+
+    <string name="could_not_get_balance">Could not get current balance</string>
 </resources>

@@ -2,13 +2,13 @@ package net.thechance.mena.wallet.data.repository.transaction
 
 import io.ktor.client.request.setBody
 import net.thechance.mena.wallet.data.dto.remote.FirstTransactionDateDto
-import net.thechance.mena.wallet.data.dto.remote.PagedTransactionResponseDto
+import net.thechance.mena.wallet.data.dto.remote.PagedResponse
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
 import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
 import net.thechance.mena.wallet.data.mapper.toEntity
+import net.thechance.mena.wallet.data.mapper.toEntityList
 import net.thechance.mena.wallet.data.mapper.toRequest
-import net.thechance.mena.wallet.data.mapper.toTransactionEntityList
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
@@ -27,13 +27,13 @@ class TransactionRepositoryImpl(
         page: Int,
         pageSize: Int,
         transactionFilterParams: TransactionFilterParams?
-    ) = safeApiCall<PagedTransactionResponseDto> {
+    ) = safeApiCall<PagedResponse<TransactionDto>> {
         networkClient.get(
             urlString = TRANSACTION_PATH,
             requestBuilder = transactionFilterParams?.toRequest(page = page, pageSize = pageSize)
                 ?: {}
         )
-    }.transactions.toTransactionEntityList()
+    }.toEntityList(TransactionDto::toEntity)
 
     override suspend fun getTransactionById(transactionId: Uuid) = safeApiCall<TransactionDto> {
         networkClient.get(getTransactionByIdPath(transactionId))
@@ -69,7 +69,7 @@ class TransactionRepositoryImpl(
 
     private companion object {
         const val TRANSACTION_PATH = "wallet/transactions"
-        const val PAYMENT_PATH = "wallet/payment"
+        const val PAYMENT_PATH = "wallet/payments"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
         const val RECEIVER_DETAILS = "/receiver-details"
