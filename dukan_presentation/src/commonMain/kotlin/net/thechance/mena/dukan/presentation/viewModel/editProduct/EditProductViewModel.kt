@@ -69,7 +69,6 @@ class EditProductViewModel(
 
     init {
         getProductData()
-        prefillFromRoute()
         getShelves()
     }
 
@@ -121,21 +120,6 @@ class EditProductViewModel(
             else -> Res.string.error_general
         }
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
-    }
-
-    private fun prefillFromRoute() {
-        val name = route.prefillName
-        val price = route.prefillPrice
-        val description = route.prefillDescription
-        if (name != null || price != null || description != null) {
-            updateState {
-                copy(
-                    productName = name ?: productName,
-                    price = price ?: this.price,
-                    description = description ?: this.description,
-                ).updateButtonState()
-            }
-        }
     }
 
     private fun getShelves() {

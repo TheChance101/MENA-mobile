@@ -29,10 +29,7 @@ sealed interface DukanRoute {
 
     @Serializable
     data class EditProductScreenRoute(
-        val productId: String,
-        val prefillName: String? = null,
-        val prefillPrice: String? = null,
-        val prefillDescription: String? = null
+        val productId: String
     ) : DukanRoute
 
     @Serializable
