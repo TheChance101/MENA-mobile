@@ -9,11 +9,11 @@ internal class CreateMosqueViewModel() :
         CreateMosqueUiState()
     ), CreateMosqueInteractionListener {
 
-    override fun onBackClicked() {
+    override fun onBackClick() {
         //TODO("Not yet implemented")
     }
 
-    override fun onEditImageMosqueClicked() {
+    override fun onEditImageMosqueClick() {
         //TODO("Not yet implemented")
     }
 
@@ -27,7 +27,7 @@ internal class CreateMosqueViewModel() :
         checkIfFormIsComplete()
     }
 
-    override fun onAddClicked() {
+    override fun onAddClick() {
         //TODO("Not yet implemented")
     }
 

@@ -4,10 +4,10 @@ import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 
 internal interface CreateMosqueInteractionListener {
-    fun onBackClicked()
-    fun onEditImageMosqueClicked()
+    fun onBackClick()
+    fun onEditImageMosqueClick()
     fun onClickUploadImage(image: ImageSrc)
-    fun onAddClicked()
+    fun onAddClick()
     fun onNameChange(name: String)
     fun onAddressChanged(address: String)
     fun mapPositionChanged(coordinate: Coordinate)

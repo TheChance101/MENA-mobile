@@ -59,7 +59,7 @@ internal fun CreateMosqueScreen(viewModel: CreateMosqueViewModel = koinViewModel
                     .fillMaxWidth()
                     .padding(Theme.spacing._16),
                 text = stringResource(Res.string.add),
-                onClick = viewModel::onAddClicked,
+                onClick = viewModel::onAddClick,
                 isEnabled = uiState.isButtonEnabled,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)
             )
@@ -171,7 +171,7 @@ private fun CreateMosqueAppBar(
 ) {
     AppBar(
         title = stringResource(Res.string.add_new_mosque),
-        onLeadingClick = listener::onBackClicked,
+        onLeadingClick = listener::onBackClick,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._12,
             vertical = Theme.spacing._8
@@ -215,10 +215,10 @@ private fun MosqueCreateScreenPreview() {
         Content(
             uiState = CreateMosqueUiState(),
             listener = object : CreateMosqueInteractionListener {
-                override fun onBackClicked() {}
-                override fun onEditImageMosqueClicked() {}
+                override fun onBackClick() {}
+                override fun onEditImageMosqueClick() {}
                 override fun onClickUploadImage(image: ImageSrc) {}
-                override fun onAddClicked() {}
+                override fun onAddClick() {}
                 override fun onNameChange(name: String) {}
                 override fun onAddressChanged(address: String) {}
                 override fun mapPositionChanged(coordinate: Coordinate) {}
