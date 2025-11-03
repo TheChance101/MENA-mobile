@@ -21,7 +21,7 @@ internal class CreateMosqueViewModel() :
         updateState {
             it.copy(
                 selectedImage = image,
-                isImageBeingCropped = true
+                isImageBeingCropped = false
             )
         }
         checkIfFormIsComplete()
