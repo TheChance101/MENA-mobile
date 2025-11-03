@@ -1,12 +1,9 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -73,6 +70,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.shared.util.asString
@@ -348,11 +346,7 @@ private fun PublisherInfo(
             }
         }
 
-        AnimatedVisibility(
-            visible = description.isNotBlank(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
+        TrendsAnimatedVisibility(visible = description.isNotBlank()) {
             Text(
                 text = description,
                 modifier = Modifier
@@ -400,11 +394,7 @@ private fun UsersReact(
             label = viewCount
         )
 
-        AnimatedVisibility(
-            visible = isCurrentUserOwner,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
+        TrendsAnimatedVisibility(visible = isCurrentUserOwner) {
             ReActIcon(
                 icon = painterResource(resource = Res.drawable.ic_delete),
                 label = stringResource(Res.string.delete),

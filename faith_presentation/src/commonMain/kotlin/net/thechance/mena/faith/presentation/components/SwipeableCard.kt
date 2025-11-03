@@ -44,6 +44,8 @@ fun SwappableCard(
     id: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    backgroundIcon: Painter = painterResource(Res.drawable.bookmark),
+    contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
     swipeThreshold: Float = 130f,
     cardContent: @Composable (Modifier) -> Unit,
 ) {
@@ -70,6 +72,8 @@ fun SwappableCard(
             modifier = Modifier.matchParentSize()
         ) {
             SwipeBackground(
+                painter = backgroundIcon,
+                contentDescription = contentDescription,
                 onClick = {
                     currentSwipedCardId.intValue = -1
                     onClick()

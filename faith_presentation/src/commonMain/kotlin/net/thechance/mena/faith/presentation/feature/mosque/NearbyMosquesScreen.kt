@@ -1,5 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.mosque
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,12 +22,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dellisd.spatialk.geojson.Position
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_outline_search
+import mena.faith_presentation.generated.resources.no_nearby_mosques_found
 import mena.faith_presentation.generated.resources.search_area
 import mena.faith_presentation.generated.resources.search_hint
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
 import net.thechance.mena.faith.presentation.utils.MapStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -109,6 +115,20 @@ private fun Content(
                 .padding(horizontal = Theme.spacing._16)
                 .fillMaxWidth()
         )
+
+        AnimatedVisibility(
+            visible = uiState.isNoMosquesCardVisible,
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween()),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            NoMosquesFoundCard(
+                message = stringResource(Res.string.no_nearby_mosques_found),
+                modifier = Modifier
+                    .padding(horizontal = Theme.spacing._12)
+                    .padding(bottom = Theme.spacing._24)
+            )
+        }
     }
 }
 
