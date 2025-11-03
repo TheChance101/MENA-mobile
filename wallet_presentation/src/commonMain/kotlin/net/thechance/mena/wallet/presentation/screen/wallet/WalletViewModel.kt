@@ -55,13 +55,24 @@ class WalletViewModel(
     private fun onGetBalanceSuccess(balance: Double) {
         updateState {
             it.copy(
-                balanceState = it.balanceState.copy(balance = balance, errorState = null)
+                balanceState = it.balanceState.copy(
+                    balance = balance,
+                    errorState = null,
+                    isLoading = false
+                )
             )
         }
     }
 
     private suspend fun onGetBalanceError(error: ErrorState) {
-        updateState { it.copy(balanceState = it.balanceState.copy(errorState = error)) }
+        updateState {
+            it.copy(
+                balanceState = it.balanceState.copy(
+                    errorState = error,
+                    isLoading = false
+                )
+            )
+        }
         val errorMessage = when (error) {
             ErrorState.NoInternet -> Res.string.no_internet_title
             else -> Res.string.balance_fetch_error_description

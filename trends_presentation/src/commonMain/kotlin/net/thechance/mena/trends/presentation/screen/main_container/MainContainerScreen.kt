@@ -1,8 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +12,7 @@ import net.thechance.mena.designsystem.presentation.component.indicator.DotsProg
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -46,10 +44,8 @@ internal fun MainContainerScreen(
 
 @Composable
 private fun MainContainerScreenContent(state: MainContainerState) {
-    AnimatedVisibility(
-        visible = state.isCategoriesAlreadySelectedByUser == null,
-        enter = fadeIn(),
-        exit = fadeOut()
+    TrendsAnimatedVisibility(
+        visible = state.isCategoriesAlreadySelectedByUser == null
     ) {
         Box(
             modifier = Modifier

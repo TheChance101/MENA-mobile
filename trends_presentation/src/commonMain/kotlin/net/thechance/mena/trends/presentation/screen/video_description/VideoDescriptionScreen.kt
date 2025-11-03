@@ -90,7 +90,7 @@ private fun VideoDescriptionContent(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .imePadding(),
+                .imePadding()
         ) {
             Text(
                 text = stringResource(Res.string.add_video_description_title),
@@ -165,7 +165,7 @@ private fun DescriptionBox(
             hint = stringResource(Res.string.hint),
             maxLines = Int.MAX_VALUE,
             modifier = Modifier.align(Alignment.TopCenter)
-                .heightIn(max = 190.dp)
+                .heightIn(max = 158.dp)
                 .verticalScroll(rememberScrollState())
         )
 
