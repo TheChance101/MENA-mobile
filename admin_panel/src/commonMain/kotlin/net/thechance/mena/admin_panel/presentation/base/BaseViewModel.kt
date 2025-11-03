@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 
 abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
     private val _state = MutableStateFlow(initialState)
@@ -58,10 +57,5 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
         }
     }
 
-    private fun mapError(throwable: Throwable): ErrorState {
-        return when (throwable) {
-            is NoInternetException -> ErrorState.NoInternet
-            else -> ErrorState.UnknownError
-        }
-    }
+    abstract fun mapError(throwable: Throwable): ErrorState
 }
