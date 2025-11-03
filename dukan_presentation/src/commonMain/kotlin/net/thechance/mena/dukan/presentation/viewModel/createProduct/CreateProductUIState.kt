@@ -2,9 +2,8 @@ package net.thechance.mena.dukan.presentation.viewModel.createProduct
 
 import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
-import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageModel
-import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -34,11 +33,10 @@ data class CreateProductUiState(
 
     @OptIn(ExperimentalTime::class)
     data class ProductImageUi(
-        override val id: Long = Clock.System.now().toEpochMilliseconds(),
-        override val image: ImageBitmap,
-        override val imageUrl: String? = null,
-        override val imageSizeInMegaByte: Double,
-        override val imageState: ProductImageState,
-        override val errorMessage: String? = null,
-    ) : ProductImageModel
+        val id: Long = Clock.System.now().toEpochMilliseconds(),
+        val image: ImageBitmap,
+        val imageSizeInMegaByte: Double,
+        val imageState: ProductImageState,
+        val errorMessage: String? = null,
+    )
 }

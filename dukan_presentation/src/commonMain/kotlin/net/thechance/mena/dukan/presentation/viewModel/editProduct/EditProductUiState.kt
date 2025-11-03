@@ -60,20 +60,5 @@ data class EditProductUiState(
                 isSelected = shelf.isSelected
             )
         }
-
-    val allImages: List<ProductImageModel>
-        get() {
-            val existingImages = existingImageUrls.mapIndexed { index, url ->
-                object : ProductImageModel {
-                    override val id: Long = -index.toLong()
-                    override val image: ImageBitmap = ImageBitmap(1, 1)
-                    override val imageUrl: String? = url
-                    override val imageSizeInMegaByte: Double = 0.0
-                    override val imageState: ProductImageState = ProductImageState.SUCCESS
-                    override val errorMessage: String? = null
-                }
-            }
-            return existingImages + images
-        }
 }
 
