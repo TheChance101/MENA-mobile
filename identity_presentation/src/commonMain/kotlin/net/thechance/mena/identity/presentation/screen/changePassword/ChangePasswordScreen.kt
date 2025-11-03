@@ -21,10 +21,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIEffect.NavigateBack
 import net.thechance.mena.identity.presentation.screen.changePassword.components.CurrentPasswordContent
 import net.thechance.mena.identity.presentation.screen.changePassword.components.NewPasswordContent
+import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -96,7 +96,9 @@ class ChangePasswordScreen(
         }
         ErrorSnackBar(
             errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = {}, //TODO:Clear error message
+            onDismiss = {
+                listener.onClearErrorMessage()
+            },
             modifier = Modifier.statusBarsPadding()
         )
 
@@ -142,6 +144,8 @@ private fun ChangePasswordScreenPreview() {
         override fun onToggleNewPasswordVisibility() {}
 
         override fun onToggleConfirmPasswordVisibility() {}
+
+        override fun onClearErrorMessage() {}
     }
     MenaTheme {
         ChangePasswordScreen {}.OnRender(
