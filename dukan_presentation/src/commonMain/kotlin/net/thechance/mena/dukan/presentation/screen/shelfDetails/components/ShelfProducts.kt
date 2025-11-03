@@ -125,7 +125,7 @@ private fun GetProductIconAction(
     product: ShelfDetailsUiState.ProductUiState
 ) {
     var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {
@@ -137,7 +137,8 @@ private fun GetProductIconAction(
                 onAddToCartClick = {
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
-                        productId = product.id
+                        productId = product.id,
+                        productQuantity = productQuantity
                     )
                 },
                 onPlusClick = {
@@ -165,7 +166,8 @@ private fun GetProductIconAction(
                 onAddToCartClick = {
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
-                        productId = product.id
+                        productId = product.id,
+                        productQuantity = productQuantity
                     )
                 },
                 onPlusClick = {

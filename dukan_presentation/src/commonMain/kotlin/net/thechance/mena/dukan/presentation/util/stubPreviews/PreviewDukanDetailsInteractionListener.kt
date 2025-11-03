@@ -7,7 +7,7 @@ object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener 
     override fun onShelfClicked(id: String) {}
     override fun onViewAllProductsShelfClicked(id: String, name: String) {}
     override fun onViewDukanOnMapClicked(latitude: Double, longitude: Double) {}
-    override fun onAddToCartClicked(productId: String) {}
+    override fun onAddToCartClicked(productId: String,productQuantity: Int) {}
     override fun onPlusClicked(productId: String, productQuantity: Int) {}
     override fun onMinusClicked(productId: String, productQuantity: Int) {}
     override fun onCartClicked() {}

@@ -197,16 +197,20 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
-    override fun onAddToCartClicked(productId: String) {
+    override fun onAddToCartClicked(productId: String, productQuantity: Int) {
 
         val params = UpdateProductCartQuantityParams(
             productId = productId,
-            quantity = 1,
+            quantity = productQuantity,
             dukanId = args.dukanId
         )
 
         tryToExecuteWithDebounce(
-            block = { dukanCartRepository.addProductQuantity(params) },
+            block = {
+                if (productQuantity == 1) dukanCartRepository.addProductQuantity(params) else dukanCartRepository.updateProductQuantity(
+                    params
+                )
+            },
             onError = {}
         )
     }

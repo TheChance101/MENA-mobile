@@ -85,7 +85,8 @@ private fun ProductItem(
                 onAddToCartClick = {
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
-                        productId = product.id
+                        productId = product.id,
+                        productQuantity = productQuantity
                     )
                 },
                 onPlusClick = {

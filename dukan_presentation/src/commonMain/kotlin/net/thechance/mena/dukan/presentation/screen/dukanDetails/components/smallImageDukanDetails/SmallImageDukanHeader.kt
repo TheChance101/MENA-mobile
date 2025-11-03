@@ -70,7 +70,7 @@ fun SmallImageDukanIconButton(
         contentDescription = stringResource(Res.string.dukan_icon),
         tint = iconColor,
         modifier = modifier.clip(RoundedCornerShape(Theme.radius.full))
-            .background(iconColor.copy(alpha = 0.04f))
+            .background(iconColor.copy(alpha = 0.06f))
             .clickable(
                 onClick = onIconClick,
                 indication = null,

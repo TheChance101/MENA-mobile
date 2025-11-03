@@ -116,6 +116,7 @@ private fun SetProductQuantity(
             text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary,
+            modifier = Modifier.padding(horizontal = Theme.spacing._4)
         )
         Icon(
             painter = painterResource(Res.drawable.add_icon),

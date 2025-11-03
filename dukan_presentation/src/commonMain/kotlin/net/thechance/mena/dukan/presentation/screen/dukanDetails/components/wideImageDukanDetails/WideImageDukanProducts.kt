@@ -70,7 +70,8 @@ fun LazyGridScope.wideImageProductsGrid(
                         onAddToCartClick = {
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
-                                productId = product.id
+                                productId = product.id,
+                                productQuantity = productQuantity
                             )
                         },
                         onPlusClick = {
