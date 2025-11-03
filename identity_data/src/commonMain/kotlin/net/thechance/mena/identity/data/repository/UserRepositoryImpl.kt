@@ -89,7 +89,7 @@ class UserRepositoryImpl(
     override fun applyLanguage(languageIso: String) {
         settings.appLanguage = languageIso.also { observableLanguage.value = it }
     }
-    override fun observeAppLanguage(): StateFlow<String> = observableLanguage
+    override fun observeAppLanguage(): Flow<String> = observableLanguage
 
     override fun getCurrentAppLanguage(): String = settings.appLanguage
 

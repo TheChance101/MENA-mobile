@@ -3,7 +3,7 @@ package net.thechance.mena.designsystem.presentation.theme.theme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import net.thechance.mena.designsystem.presentation.theme.color.scheme.ColorScheme
@@ -18,18 +18,21 @@ import net.thechance.mena.designsystem.presentation.theme.spacing.Spacing
 import net.thechance.mena.designsystem.presentation.theme.typography.LocalTypography
 import net.thechance.mena.designsystem.presentation.theme.typography.Typography
 import net.thechance.mena.designsystem.presentation.theme.typography.createThemeTypography
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 
 @OptIn(InternalResourceApi::class, ExperimentalResourceApi::class)
 @Composable
 fun MenaTheme(
-    language: String = "en",
+    language: String = AppLanguage.English.iso,
     content: @Composable () -> Unit,
 ) {
     val colorScheme = LightColorScheme
     val typography = createThemeTypography()
-    val layoutDirection = if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+    val layoutDirection = remember(language) {
+        if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+    }
     CompositionLocalProvider(
         LocalColorScheme provides colorScheme,
         LocalSpacing provides MenaSpacing,
@@ -40,6 +43,7 @@ fun MenaTheme(
         content()
     }
 }
+
 object Theme {
     val colorScheme: ColorScheme
         @Composable @ReadOnlyComposable get() = LocalColorScheme.current

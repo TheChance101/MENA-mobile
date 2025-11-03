@@ -13,10 +13,10 @@ actual class AppLocalizer(
     context: Context,
     localizationService: LocalizationService
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
-        scope.launch {
+        coroutineScope.launch {
             localizationService.observeLanguage().collectLatest {
                 val locale = LocaleList.forLanguageTags(it).get(0)
                 LocaleList.setDefault(LocaleList(locale))

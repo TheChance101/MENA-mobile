@@ -212,4 +212,5 @@
     <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
     <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
     <string name="ic_account_shield">أيقونة درع الحساب</string>
+    <string name="close_dialog_icon">أيقونة إغلاق نافذة تغيير الغة</string>
 </resources>

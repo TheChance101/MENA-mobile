@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.UnknownException
@@ -181,17 +182,17 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
-        val newLanguage = Language.Arabic
-        coEvery { userRepository.applyLanguage(newLanguage.iso) } returns Unit
+        val newAppLanguage = AppLanguage.Arabic
+        coEvery { userRepository.applyLanguage(newAppLanguage.iso) } returns Unit
 
-        viewModel.onConfirmLanguageSelection(newLanguage)
+        viewModel.onConfirmLanguageSelection(newAppLanguage)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { userRepository.applyLanguage(newLanguage.iso) }
+        coVerify { userRepository.applyLanguage(newAppLanguage.iso) }
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.languageDialogUiState.isVisible)
-            assertEquals(newLanguage, state.languageDialogUiState.selectedLanguage)
+            assertEquals(newAppLanguage, state.languageDialogUiState.selectedAppLanguage)
         }
     }
 

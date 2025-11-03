@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import org.jetbrains.compose.resources.StringResource
 
 data class ProfileScreenUIState(
@@ -17,10 +18,6 @@ data class ProfileScreenUIState(
 )
 data class LanguageDialogUiState(
     val isVisible:Boolean=false,
-    val selectedLanguage: Language =Language.English,
-    val options: List<Language> =Language.entries,
+    val selectedAppLanguage: AppLanguage =AppLanguage.English,
+    val options: List<AppLanguage> =AppLanguage.entries,
 )
-enum class Language(val iso: String) {
-    Arabic(iso = "ar"),
-    English(iso = "en")
-}

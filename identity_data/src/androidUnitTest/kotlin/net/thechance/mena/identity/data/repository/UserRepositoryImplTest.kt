@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.data.repository
 
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
@@ -40,10 +41,12 @@ UserRepositoryImplTest {
 
     private val client = mockk<HttpClient>()
     private val userDao = mockk<UserDao>(relaxed = true)
+    private val settings = mockk<Settings>(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
 
     private var userRepositoryImpl = UserRepositoryImpl(
-        client, userDao, testDispatcher
+        client, userDao, testDispatcher,
+        settings
     )
 
     @Before
@@ -60,7 +63,7 @@ UserRepositoryImplTest {
     fun `getUser() should return user stored in local database`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao, settings = settings)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
@@ -74,7 +77,7 @@ UserRepositoryImplTest {
     fun `getUser() should return null when there is no user stored`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao, settings = settings)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns flowOf(null)
@@ -89,7 +92,7 @@ UserRepositoryImplTest {
         runTest {
 
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            userRepositoryImpl = UserRepositoryImpl(client, userDao  , settings = settings)
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -103,7 +106,7 @@ UserRepositoryImplTest {
     fun `getUser() should not call saveUserInfo when remote throws exception`() =
         runTest {
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            userRepositoryImpl = UserRepositoryImpl(client, userDao , settings = settings)
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -117,7 +120,7 @@ UserRepositoryImplTest {
     fun `getUser() should return empty flow when local database is empty`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao , settings = settings)
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns emptyFlow()
@@ -131,7 +134,7 @@ UserRepositoryImplTest {
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao , settings = settings)
 
         coEvery { userDao.upsert(any()) } returns Unit
         every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
@@ -148,7 +151,7 @@ UserRepositoryImplTest {
     @Test
     fun `updateUser() should call upsert user when try to update user`() = runTest {
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao , settings = settings)
         userRepositoryImpl.updateUser(fakeUser, false, null)
         coVerify { userDao.upsert(any()) }
     }

@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
 interface ProfileScreenInteractionListener : BaseInteractionListener {
@@ -21,5 +22,5 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
     fun onDismissShareProfileDialog()
 
     fun onContactUsClicked()
-    fun onConfirmLanguageSelection(language: Language)
+    fun onConfirmLanguageSelection(appLanguage: AppLanguage)
 }

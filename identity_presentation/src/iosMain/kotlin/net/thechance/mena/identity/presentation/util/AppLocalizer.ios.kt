@@ -10,9 +10,9 @@ import platform.Foundation.NSUserDefaults
 actual class AppLocalizer(
     localizationService: LocalizationService
 ) {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     init {
-        scope.launch {
+        coroutineScope.launch {
             localizationService.observeLanguage().collectLatest { iso ->
                 NSUserDefaults.standardUserDefaults.setObject(
                     arrayListOf(iso), "AppleLanguages"

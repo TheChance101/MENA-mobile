@@ -77,9 +77,9 @@ class ProfileScreen : BaseScreen<
                 LanguageDialog(
                     isVisible = it,
                     onDismissRequest = listener::onDismissLanguageDialog,
-                    languages = state.languageDialogUiState.options,
+                    appLanguages = state.languageDialogUiState.options,
                     onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
-                    currentLanguage = state.languageDialogUiState.selectedLanguage
+                    currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
                 )
             }
                     dialog(state.showThemeDialog) {
@@ -156,7 +156,7 @@ class ProfileScreen : BaseScreen<
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
                             onThemeClicked = listener::onThemeClicked,
-                            currentLanguage = state.languageDialogUiState.selectedLanguage.iso
+                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso
                         )
                     }
                     item {

@@ -20,7 +20,7 @@
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can't Delete Active Address</string>
+    <string name="is_main_address_error">Can\'t Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -222,5 +222,6 @@
     <string name="click_to_upload">Click to Upload</string>
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
+    <string name="close_dialog_icon">Close Language Dialog Icon</string>
 
 </resources>

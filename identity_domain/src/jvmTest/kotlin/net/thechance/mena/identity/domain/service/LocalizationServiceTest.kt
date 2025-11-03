@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.UserRepository
 import kotlin.test.Test
@@ -35,11 +36,11 @@ class LocalizationServiceTest {
 
         val result = localizationService.observeLanguage()
 
-        assertEquals(currentLanguage, result.value)
+        assertEquals(currentLanguage, result.first())
 
         result.test {
             fakeLanguageFlow.emit("en")
-            assertEquals("en", result.value)
+            assertEquals("en", result.first())
             cancelAndIgnoreRemainingEvents()
         }
 

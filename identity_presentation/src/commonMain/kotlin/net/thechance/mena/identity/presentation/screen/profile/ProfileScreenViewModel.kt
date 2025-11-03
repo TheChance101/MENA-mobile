@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.profile
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -16,7 +17,7 @@ class ProfileScreenViewModel(
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
         (ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
-                selectedLanguage = Language.entries.find { it.iso == userRepository.getCurrentAppLanguage() }?: Language.English,
+                selectedAppLanguage = AppLanguage.entries.find { it.iso == userRepository.getCurrentAppLanguage() }?: AppLanguage.English,
             ),
         )),
     ProfileScreenInteractionListener {
@@ -84,10 +85,10 @@ class ProfileScreenViewModel(
     override fun onContactUsClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
-    override fun onConfirmLanguageSelection(language: Language) {
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedLanguage = language)) }
+    override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
         tryToExecute(
-            function = { userRepository.applyLanguage(language.iso) },
+            function = { userRepository.applyLanguage(appLanguage.iso) },
             onSuccess = {
                 updateState {
                     copy(

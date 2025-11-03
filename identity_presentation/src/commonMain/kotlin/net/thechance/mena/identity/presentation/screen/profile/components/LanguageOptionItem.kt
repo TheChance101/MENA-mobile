@@ -12,21 +12,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.button.radioButton.RadioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.screen.profile.Language
+import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.presentation.util.mapLanguage
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun LanguageOptionItem(
     isSelected: Boolean,
     modifier: Modifier = Modifier,
-    selectedLanguage: Language,
-    onClick: () -> Unit
+    selectedAppLanguage: AppLanguage,
+    onClick: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -49,7 +50,7 @@ fun LanguageOptionItem(
     ) {
 
         Text(
-            text = stringResource(mapLanguage(selectedLanguage.iso)),
+            text = stringResource(mapLanguage(selectedAppLanguage.iso)),
             color = Theme.colorScheme.primary.primary,
             style = Theme.typography.title.small,
         )
@@ -60,4 +61,14 @@ fun LanguageOptionItem(
 }
 
 
-
+@Preview
+@Composable
+private fun LanguageOptionItemPreview() {
+    MenaTheme {
+    LanguageOptionItem(
+        isSelected = true,
+        selectedAppLanguage = AppLanguage.English,
+        onClick = {}
+    )
+}
+}
