@@ -8,4 +8,5 @@ interface ProductDetailsInteractionListener {
     fun onAddToFavoritesClicked()
     fun onViewCartClicked()
     fun onSecondaryImageClicked(imageUrl: String)
+    fun onRetryClicked()
 }
