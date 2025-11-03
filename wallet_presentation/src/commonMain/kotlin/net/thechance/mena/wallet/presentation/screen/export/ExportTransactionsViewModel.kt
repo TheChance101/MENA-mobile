@@ -162,6 +162,9 @@ class ExportTransactionsViewModel(
             showInvalidDatesSnackBar()
             return
         }
+        updateState { oldState ->
+            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
+        }
         tryToExecute(
             callee = {
                 val statement = getStatement()
@@ -296,9 +299,6 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun onDownloadStart() {
-        updateState { oldState ->
-            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
-        }
         showToast(messageRes = Res.string.downloading_started)
     }
 
