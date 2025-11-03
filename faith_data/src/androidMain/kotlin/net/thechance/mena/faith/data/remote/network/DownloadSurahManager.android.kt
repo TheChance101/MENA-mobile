@@ -17,6 +17,8 @@ actual suspend fun downloadSurahFileToAppStorage(
         file.parentFile?.mkdirs()
 
         val connection = URL(url).openConnection()
+        connection.connectTimeout = 30_000
+        connection.readTimeout = 30_000
         connection.connect()
 
         val inputStream = connection.getInputStream()
