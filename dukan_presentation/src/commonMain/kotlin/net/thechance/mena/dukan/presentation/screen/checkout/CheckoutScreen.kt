@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +33,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.checkout
@@ -50,13 +53,46 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CartItem
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutEffect
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 private fun CheckoutScreen(
+    viewModel: CheckoutViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+    val navController = LocalNavController.current
+
+    ObserveAsEffect(viewModel.effect) { effect ->
+        when (effect) {
+            CheckoutEffect.NavigateBack -> {
+                navController.popBackStack()
+            }
+
+            CheckoutEffect.NavigateToChangeLocation -> {
+                // TODO
+            }
+        }
+    }
+
+    CheckoutContent(
+        state = state,
+        listener = viewModel
+    )
+
+}
+
+@Composable
+fun CheckoutContent(state: CheckoutUiState, listener: CheckoutViewModel) {
+    val products = state.items.collectAsLazyPagingItems()
     Scaffold(
         topBar = {
             CheckoutAppBar()
@@ -65,25 +101,23 @@ private fun CheckoutScreen(
             ConfirmOrderButton()
         }
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .heightIn(),
-        ) {
-            item {
-                DeliveryAddressCard(modifier = Modifier.padding(top = 8.dp))
-            }
 
-            item {
-                CheckoutSummaryCard(modifier = Modifier.padding(top = 16.dp))
-            }
+        ) {
+            DeliveryAddressCard(modifier = Modifier.padding(top = 8.dp))
+            CheckoutSummaryCard(products = products, modifier = Modifier.padding(top = 16.dp))
         }
 
     }
 }
 
 @Composable
-private fun CheckoutSummaryCard(modifier: Modifier = Modifier) {
+private fun CheckoutSummaryCard(
+    products: LazyPagingItems<CartItem>,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.fillMaxSize()) {
         Text(
             text = stringResource(Res.string.summary_details),
@@ -112,14 +146,24 @@ private fun CheckoutSummaryCard(modifier: Modifier = Modifier) {
                         .padding(top = 24.dp)
                         .padding(horizontal = 12.dp),
                 ) {
-                    Column(
+                    LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        (0..4).forEach { _ ->
-                            CheckoutProductItem()
+                        items(
+                            count = products.itemCount,
+                            key = products.itemKey { it.quantity }
+                        ) { index ->
+                            val cartItem = products[index]
+                            if (cartItem != null) {
+                                CheckoutProductItem(cartItem = cartItem)
+                            }
                         }
                     }
-                    CheckoutFeeItem(modifier = Modifier.padding(top = 13.dp, bottom = 24.dp), productName = "Platform fees", price = 1.99)
+                    CheckoutFeeItem(
+                        modifier = Modifier.padding(top = 13.dp, bottom = 24.dp),
+                        productName = "Platform fees",
+                        price = 1.99
+                    )
                     DashedSeparator(
                         modifier = Modifier
                             .padding(bottom = 11.dp)
@@ -147,7 +191,7 @@ private fun CheckoutSummaryCard(modifier: Modifier = Modifier) {
                         .padding(top = 13.dp, bottom = 33.dp)
                         .padding(horizontal = 12.dp),
                 ) {
-                    CheckoutFeeItem(productName = "Total amount", price =31.99)
+                    CheckoutFeeItem(productName = "Total amount", price = 31.99)
 
                 }
                 HalfCircleList(
@@ -235,9 +279,13 @@ private fun DeliveryAddressCard(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CheckoutProductItem(
+    cartItem: CartItem,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Box(
             modifier = Modifier
                 .size(28.dp)
@@ -246,7 +294,7 @@ private fun CheckoutProductItem(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = "3x",
+                text = cartItem.quantity.toString(),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadePrimary
             )
@@ -256,13 +304,13 @@ private fun CheckoutProductItem(
                 .padding(start = 8.dp)
                 .fillMaxWidth()
                 .weight(1f),
-            text = "Girl Crochet Tank Top",
+            text = cartItem.name,
             maxLines = 1,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
         )
         Text(
-            text = "15,99 ",
+            text = cartItem.price.toString(),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )

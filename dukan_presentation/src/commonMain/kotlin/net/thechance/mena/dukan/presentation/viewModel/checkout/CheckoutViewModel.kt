@@ -1,0 +1,65 @@
+package net.thechance.mena.dukan.presentation.viewModel.checkout
+
+import androidx.paging.PagingData
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import net.thechance.mena.dukan.domain.repository.CartProductsRepository
+import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+class CheckoutViewModel(
+    private val cartProductsRepository: CartProductsRepository,
+    dispatcher: CoroutineDispatcher = Dispatchers.IO
+) :
+    BaseViewModel<CheckoutUiState, CheckoutEffect>(
+        initialState = CheckoutUiState(),
+        defaultDispatcher = dispatcher
+    ), CheckoutInteractionListener {
+
+
+    init {
+        loadCartProductsFromRepository()
+    }
+
+    private fun loadCartProductsFromRepository() {
+        tryToCollect(
+            block = ::createPagingSource,
+            onCollect = ::onProductsLoaded
+        )
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun createPagingSource(): Flow<PagingData<CartItem>> {
+        return createPagingSourceFlow(
+            mapper = { it.toUiState() }
+        ) { pageNumber, pageSize ->
+            cartProductsRepository.getCartProducts(
+                dukanId = Uuid.parse(""),
+                page = pageNumber,
+                size = pageSize
+            ).items
+        }
+    }
+
+    private fun onProductsLoaded(products: PagingData<CartItem>) =
+        updateState {
+            copy(items = flowOf(products))
+        }
+
+    override fun onBackClicked() {
+        emitEffect(effect = CheckoutEffect.NavigateBack)
+    }
+
+    override fun onConfirmOrderClicked() {
+        // TODO add confirm order logic
+    }
+
+    override fun onChangeLocationClicked() {
+        emitEffect(effect = CheckoutEffect.NavigateToChangeLocation)
+    }
+
+}
