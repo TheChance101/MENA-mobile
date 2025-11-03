@@ -162,12 +162,14 @@ class ExportTransactionsViewModel(
             showInvalidDatesSnackBar()
             return
         }
+        updateState { oldState ->
+            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
+        }
         tryToExecute(
-            onStart = ::onDownloadStart,
             callee = ::getStatement,
-            onSuccess = { statement -> downloadStatement(statement) },
             onError = ::handleDownloadError,
-            dispatcher = dispatcher
+            onSuccess = { statement -> downloadStatement(statement) },
+            dispatcher = dispatcher,
         )
     }
 
@@ -289,26 +291,26 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun onDownloadStart() {
-        if (currentState.hasNoTransactionsError) {
-            showToast(messageRes = Res.string.error_no_transactions)
-            return
-        }
-
-        updateState { oldState ->
-            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
-        }
         showToast(messageRes = Res.string.downloading_started)
     }
 
     @OptIn(ExperimentalTime::class)
     private suspend fun getStatement(): StatementWithMetaData {
-        return if (currentState.isCustomFilterCardSelected) {
+        val statement = if (currentState.isCustomFilterCardSelected) {
             statementRepository.getStatementWithMetadata(
                 getTransactionFilterParams()
             )
         } else {
             statementRepository.getStatementWithMetadata()
         }
+        if (statement.byteArray.isEmpty()) {
+            currentState.copy(hasNoTransactionsError = true)
+            showToast(messageRes = Res.string.error_no_transactions)
+
+        } else {
+            onDownloadStart()
+        }
+        return statement
     }
 
     private fun getTransactionFilterParams(): TransactionFilterParams =
