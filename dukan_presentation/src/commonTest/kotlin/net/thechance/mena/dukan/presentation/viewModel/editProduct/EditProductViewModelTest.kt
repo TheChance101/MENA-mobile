@@ -44,6 +44,7 @@ import net.thechance.mena.dukan.presentation.component.product.productImage.Prod
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -148,7 +149,7 @@ class EditProductViewModelTest {
 
     @Test
     fun `onShelfSelect SHOULD update selected shelf`() = scope.runTest {
-        val shelf = EditProductUiState.ShelfUiState(
+        val shelf = CreateProductUiState.ShelfUiState(
             id = fakeShelves()[0].id.toString(),
             name = fakeShelves()[0].name,
             isSelected = true

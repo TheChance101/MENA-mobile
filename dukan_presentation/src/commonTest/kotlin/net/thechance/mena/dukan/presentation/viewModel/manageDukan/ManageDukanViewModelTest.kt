@@ -235,6 +235,22 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onEditProductClicked SHOULD emit NavigateToEditProduct effect with correct productId`() = runTest {
+        val productId = fakeProducts().first().id.toString()
+
+        manageDukanViewModel.onEditProductClicked(productId)
+
+        manageDukanViewModel.effect.test {
+            val expectedEffect = ManageDukanUiEffect.NavigateToEditProduct(
+                productId = productId
+            )
+            assertEquals(expectedEffect, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     @Test
     fun `onDismissSnackBar SHOULD hide snackbar`() = runTest {
         manageDukanViewModel.updateState { copy(snackBarState = snackBarSuccess) }
