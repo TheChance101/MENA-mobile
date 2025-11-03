@@ -9,7 +9,7 @@ import okio.use
 
 fun FileSystem.unpackZip(
     zipFile: Path,
-    destDir: Path,
+    destinationDir: Path,
 ) {
     fun Path.createParentDirectories() {
         this.parent?.let { parent ->
@@ -27,7 +27,7 @@ fun FileSystem.unpackZip(
     paths.forEach { zipFilePath ->
         zipFileSystem.source(zipFilePath).buffer().use { source ->
             val relativeFilePath = zipFilePath.toString().trimStart('/')
-            val fileToWrite = destDir.resolve(relativeFilePath)
+            val fileToWrite = destinationDir.resolve(relativeFilePath)
             fileToWrite.createParentDirectories()
             sink(fileToWrite).buffer().use { sink ->
                 sink.writeAll(source)
