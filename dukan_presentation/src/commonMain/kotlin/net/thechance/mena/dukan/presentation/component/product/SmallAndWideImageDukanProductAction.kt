@@ -4,28 +4,20 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_icon
-import mena.dukan_presentation.generated.resources.add_product
 import mena.dukan_presentation.generated.resources.add_shopping_basket
 import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
-import mena.dukan_presentation.generated.resources.remove_01
-import mena.dukan_presentation.generated.resources.remove_product
 import mena.dukan_presentation.generated.resources.wide_image_shoppingcart
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
@@ -68,7 +60,7 @@ fun SmallAndWideImageDukanProductAction(
 @Composable
 private fun ProductCart(
     onClick: () -> Unit,
-    cartIcon : Painter,
+    cartIcon: Painter,
     dukanColor: Color
 ) {
     Icon(
@@ -81,7 +73,7 @@ private fun ProductCart(
             .clickable(
                 onClick = onClick,
                 indication = null,
-                interactionSource =  MutableInteractionSource()
+                interactionSource = MutableInteractionSource()
             )
             .padding(Theme.spacing._8)
     )

@@ -1,10 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -20,6 +22,7 @@ import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -75,11 +78,11 @@ class ShelfDetailsViewModelTest {
 
         savedStateHandle = SavedStateHandle(
             mapOf(
-                "shelfId" to "20",
                 "shelfName" to "Shoes",
-                "dukanStyle" to ShelfDetailsUiState.Style.WIDE_IMAGE,
+                "dukanStyle" to "NO_IMAGE",
                 "dukancolor" to 0xFFFFFFF,
-                "dukanId" to "1"
+                "dukanId" to "1",
+                "shelfId" to "20"
             )
         )
 
@@ -258,7 +261,6 @@ class ShelfDetailsViewModelTest {
             shelfDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then
@@ -281,7 +283,6 @@ class ShelfDetailsViewModelTest {
             shelfDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then
@@ -300,7 +301,7 @@ class ShelfDetailsViewModelTest {
         everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
         //When
-        shelfDetailsViewModel.onPlusClicked(productId, productQuantity = quantity, onComplete = {})
+        shelfDetailsViewModel.onPlusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
@@ -320,7 +321,7 @@ class ShelfDetailsViewModelTest {
         everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
 
         //When
-        shelfDetailsViewModel.onMinusClicked(productId, productQuantity = quantity, onComplete = {})
+        shelfDetailsViewModel.onMinusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
@@ -337,7 +338,7 @@ class ShelfDetailsViewModelTest {
         everySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) } returns Unit
 
         //When
-        shelfDetailsViewModel.onMinusClicked(productId, productQuantity = quantity, onComplete = {})
+        shelfDetailsViewModel.onMinusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
