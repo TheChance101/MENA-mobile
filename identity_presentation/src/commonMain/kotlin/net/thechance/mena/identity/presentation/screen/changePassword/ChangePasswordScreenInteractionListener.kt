@@ -14,4 +14,5 @@ interface ChangePasswordScreenInteractionListener : BaseInteractionListener{
     fun onToggleNewPasswordVisibility()
     fun onToggleConfirmPasswordVisibility()
 
+    fun onClearErrorMessage()
 }
