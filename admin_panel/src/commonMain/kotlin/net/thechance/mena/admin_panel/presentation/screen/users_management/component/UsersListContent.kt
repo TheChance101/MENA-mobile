@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.domain.entity.user.Status
+import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableHeaderRow
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
@@ -118,7 +118,7 @@ private fun UserItemRow(
             modifier = Modifier.weight(0.8f),
             contentAlignment = Alignment.CenterStart
         ) {
-            UserStatusButton(isActive = user.status == Status.ACTIVE)
+            UserStatusButton(isActive = user.status == User.Status.ACTIVE)
         }
 
         Box(
@@ -126,7 +126,7 @@ private fun UserItemRow(
             contentAlignment = Alignment.CenterStart
         ) {
             UserStatusToggleButton(
-                isActive = user.status == Status.ACTIVE,
+                isActive = user.status == User.Status.ACTIVE,
                 onClick = onToggleUserStatusClicked
             )
         }

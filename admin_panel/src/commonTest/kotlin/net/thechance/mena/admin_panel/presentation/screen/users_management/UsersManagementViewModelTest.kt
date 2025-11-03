@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
@@ -240,7 +239,7 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val activeUserId = usersList.items[0].id
-            val userStatus = Status.ACTIVE
+            val userStatus = User.Status.ACTIVE
             viewModel.onToggleUserStatusClicked(activeUserId, userStatus)
             advanceUntilIdle()
 
@@ -258,7 +257,7 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val blockedUserId = usersList.items[1].id
-            val userStatus = Status.BLOCKED
+            val userStatus = User.Status.BLOCKED
             viewModel.onToggleUserStatusClicked(blockedUserId, userStatus)
             advanceUntilIdle()
 
@@ -266,7 +265,7 @@ class UsersManagementViewModelTest {
                 val currentState = awaitItem()
                 val user = currentState.users.find { it.id == blockedUserId }
                 assertNotNull(user)
-                assertEquals(Status.ACTIVE, user.status)
+                assertEquals(User.Status.ACTIVE, user.status)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -286,7 +285,7 @@ class UsersManagementViewModelTest {
             val currentState = awaitItem()
             val user = currentState.users.find { it.id == userId }
             assertNotNull(user)
-            assertEquals(Status.BLOCKED, user.status)
+            assertEquals(User.Status.BLOCKED, user.status)
             assertFalse(currentState.showBlockDialog)
             assertNull(currentState.selectedUserId)
             cancelAndIgnoreRemainingEvents()
@@ -364,7 +363,7 @@ class UsersManagementViewModelTest {
                         phoneNumber = "+970599123456",
                         lastLoginAt = LocalDateTime(2025, 10, 15, 23, 59, 59),
                         lastVisitAt = LocalDateTime(2025, 10, 20, 23, 59, 59),
-                        status = Status.ACTIVE
+                        status = User.Status.ACTIVE
                     ),
                     User(
                         id = Uuid.random(),
@@ -373,7 +372,7 @@ class UsersManagementViewModelTest {
                         phoneNumber = "+970599654321",
                         lastLoginAt = LocalDateTime(2025, 9, 10, 23, 59, 59),
                         lastVisitAt = LocalDateTime(2025, 9, 25, 23, 59, 59),
-                        status = Status.BLOCKED
+                        status = User.Status.BLOCKED
                     ),
                     User(
                         id = Uuid.random(),
@@ -382,7 +381,7 @@ class UsersManagementViewModelTest {
                         phoneNumber = "+970599789012",
                         lastLoginAt = LocalDateTime(2025, 10, 1, 23, 59, 59),
                         lastVisitAt = LocalDateTime(2025, 10, 18, 23, 59, 59),
-                        status = Status.ACTIVE
+                        status = User.Status.ACTIVE
                     )
                 ), totalPages = 10, currentPage = 0
             )

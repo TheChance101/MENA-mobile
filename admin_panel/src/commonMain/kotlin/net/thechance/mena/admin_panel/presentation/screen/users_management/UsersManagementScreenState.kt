@@ -2,7 +2,7 @@
 
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
-import net.thechance.mena.admin_panel.domain.entity.user.Status
+import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import kotlin.uuid.ExperimentalUuidApi
@@ -30,7 +30,7 @@ data class UsersManagementScreenState(
         val phoneNumber: String,
         val lastLoginAt: String,
         val lastVisitAt: String,
-        val status: Status
+        val status: User.Status
     )
 
     data class SortState(

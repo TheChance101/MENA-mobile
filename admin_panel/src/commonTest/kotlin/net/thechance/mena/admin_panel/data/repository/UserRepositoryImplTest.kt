@@ -17,10 +17,9 @@ import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.repository.user.UserRepositoryImpl
-import net.thechance.mena.admin_panel.domain.entity.user.Status
+import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
-import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.domain.model.SortType
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
@@ -109,7 +108,7 @@ class UserRepositoryImplTest {
     @Test
     fun `updateUserStatus should call api with correct parameters`() = runTest {
         val fakeUuid = Uuid.random()
-        val status = Status.ACTIVE
+        val status = User.Status.ACTIVE
 
         everySuspend {
             userApiService.updateUserStatus(any(), any())

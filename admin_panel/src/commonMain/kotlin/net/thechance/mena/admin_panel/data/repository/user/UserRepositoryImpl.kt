@@ -8,7 +8,6 @@ import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UpdateUserStatusRequestDto
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
-import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
@@ -37,7 +36,7 @@ class UserRepositoryImpl(
         }.toEntityPagedResult(UserResponse::toEntity)
     }
 
-    override suspend fun updateUserStatus(userID: Uuid, status: Status) {
+    override suspend fun updateUserStatus(userID: Uuid, status: User.Status) {
         executeApiSafely<Unit> {
             userApiService.updateUserStatus(
                 userID.toString(),

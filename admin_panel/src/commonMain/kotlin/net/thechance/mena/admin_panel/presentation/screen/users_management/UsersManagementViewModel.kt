@@ -1,13 +1,11 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.model.PagedResult
@@ -23,7 +21,6 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.status_updated_title
 import net.thechance.mena.admin_panel.resources.user_activated
 import net.thechance.mena.admin_panel.resources.user_blocked
-import org.jetbrains.compose.resources.stringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -144,20 +141,20 @@ class UsersManagementViewModel(
         updateState { it.copy(showBlockDialog = false, selectedUserId = null) }
     }
 
-    override fun onToggleUserStatusClicked(userId: Uuid, userStatus: Status) {
+    override fun onToggleUserStatusClicked(userId: Uuid, userStatus: User.Status) {
         when (userStatus) {
-            Status.ACTIVE -> showBlockDialog(userId)
-            Status.BLOCKED -> updateUserStatus(userId, Status.ACTIVE)
+            User.Status.ACTIVE -> showBlockDialog(userId)
+            User.Status.BLOCKED -> updateUserStatus(userId, User.Status.ACTIVE)
         }
     }
 
     override fun onConfirmBlock() {
         val userId = state.value.selectedUserId ?: return
-        updateUserStatus(userId, Status.BLOCKED)
+        updateUserStatus(userId, User.Status.BLOCKED)
         onDismissBlockDialog()
     }
 
-    private fun updateUserStatus(userId: Uuid, newStatus: Status) {
+    private fun updateUserStatus(userId: Uuid, newStatus: User.Status) {
         tryToExecute(
             callee = { userRepository.updateUserStatus(userId, newStatus) },
             onSuccess = { onUpdateUserStatusSuccess(userId, newStatus) },
@@ -166,7 +163,7 @@ class UsersManagementViewModel(
         )
     }
 
-    private suspend fun onUpdateUserStatusSuccess(userId: Uuid, newStatus: Status) {
+    private suspend fun onUpdateUserStatusSuccess(userId: Uuid, newStatus: User.Status) {
         updateState {
             it.copy(
                 users = it.users.map { user ->
@@ -176,8 +173,8 @@ class UsersManagementViewModel(
         }
 
         val message = when (newStatus) {
-            Status.ACTIVE -> stringProvider.getString(Res.string.user_activated)
-            Status.BLOCKED -> stringProvider.getString(Res.string.user_blocked)
+            User.Status.ACTIVE -> stringProvider.getString(Res.string.user_activated)
+            User.Status.BLOCKED -> stringProvider.getString(Res.string.user_blocked)
         }
         showSnackBar(
             title = stringProvider.getString(Res.string.status_updated_title),
