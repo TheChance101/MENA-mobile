@@ -7,6 +7,7 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -60,7 +61,9 @@ class ProfileScreenViewModel(
         updateState { copy(showShareBottomSheet = true) }
 
     override fun onChangePasswordClicked() =
-        sendNewEffect(ProfileScreenUIEffect.NavigateToChangePasswordScreen)
+        sendNewEffect(ProfileScreenUIEffect.NavigateToChangePasswordScreen({
+
+        }))
 
     override fun onAddressesClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateToLocationPickerScreen)
@@ -95,5 +98,11 @@ class ProfileScreenViewModel(
 
     override fun clearErrorMessage() {
         updateState { copy(errorMessage = null) }
+    }
+
+    private fun onChangePasswordSuccess(snackBarUiState: SnackBarUiState?) {
+        updateState {
+            copy(snackBarUiState = snackBarUiState ?: state.value.snackBarUiState)
+        }
     }
 }

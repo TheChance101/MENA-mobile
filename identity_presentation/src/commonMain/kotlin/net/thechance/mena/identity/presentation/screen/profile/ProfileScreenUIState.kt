@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import org.jetbrains.compose.resources.StringResource
 
 data class ProfileScreenUIState(
@@ -14,4 +15,5 @@ data class ProfileScreenUIState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
+    val snackBarUiState: SnackBarUiState = SnackBarUiState()
 )
