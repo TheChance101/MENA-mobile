@@ -105,6 +105,7 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         imageUrl = image,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
+        isMine = this.isMine,
         status = status
     )
 }
@@ -127,7 +128,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
         content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
         status = status,
-        isMine = false
+        isMine = isMine
     )
 }
 
