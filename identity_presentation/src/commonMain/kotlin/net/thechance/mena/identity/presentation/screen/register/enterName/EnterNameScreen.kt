@@ -152,7 +152,7 @@ class EnterNameScreen() :
                 state = EnterNameUIState(
                     firstName = "Mohammed",
                     lastName = "Ahmed",
-                    username = "@mohammed_2025",
+                    username = "mohammed_2025",
                     isNextEnabled = true,
                     isLoading = false
                 ),
