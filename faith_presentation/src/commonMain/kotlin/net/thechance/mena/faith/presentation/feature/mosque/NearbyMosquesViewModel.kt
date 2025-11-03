@@ -79,6 +79,19 @@ internal class NearbyMosquesViewModel(
     }
 
     @OptIn(ExperimentalUuidApi::class)
+    private fun handleNearbyMosquesSuccess(mosques: List<MosqueUiState>) {
+        if (mosques.isEmpty()) {
+            viewModelScope.launch {
+                updateState { it.copy(isNoMosquesCardVisible = true) }
+                delay(3000)
+                updateState { it.copy(isNoMosquesCardVisible = false) }
+            }
+        } else {
+            // TODO: handle non-empty list case
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
     private fun handleSearchSuccess(mosques: List<MosqueUiState>) {
         updateState {
             it.copy(
@@ -105,12 +118,6 @@ internal class NearbyMosquesViewModel(
     private fun updateCenterOfMap(coordinate: Coordinate) {
         updateState {
             it.copy(centerOfMap = coordinate)
-        }
-    }
-
-    fun onDismissSearchResultsBottomSheet() {
-        updateState {
-            it.copy(isSearchResultsBottomSheetVisible = false)
         }
     }
 
