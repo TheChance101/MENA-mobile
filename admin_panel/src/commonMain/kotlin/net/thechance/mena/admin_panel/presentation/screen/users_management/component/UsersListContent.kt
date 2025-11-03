@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +35,7 @@ fun UsersListContent(
 ) {
     val listState = rememberLazyListState()
 
-    Column(modifier = modifier.padding(16.dp)) {
+    Column(modifier = modifier.padding(horizontal = 16.dp)) {
         TableHeaderRow(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
@@ -72,14 +73,13 @@ private fun UserItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
             .background(animatedBackgroundColor)
-            .padding(horizontal = 16.dp),
+            .padding( 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "$index",
+            text = index.toString(),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.3f)
@@ -113,15 +113,21 @@ private fun UserItemRow(
             modifier = Modifier.weight(1.5f)
         )
 
-        UserStatusButton(
-            isActive = user.status == Status.ACTIVE,
-            modifier = Modifier.weight(0.8f).wrapContentWidth()
-        )
+        Box(
+            modifier = Modifier.weight(0.8f),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            UserStatusButton(isActive = user.status == Status.ACTIVE)
+        }
 
-        UserStatusToggleButton(
-            isActive = user.status == Status.ACTIVE,
-            onClick = onToggleUserStatusClicked,
-            modifier = Modifier.weight(0.8f).wrapContentWidth()
-        )
+        Box(
+            modifier = Modifier.weight(0.8f),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            UserStatusToggleButton(
+                isActive = user.status == Status.ACTIVE,
+                onClick = onToggleUserStatusClicked
+            )
+        }
     }
 }

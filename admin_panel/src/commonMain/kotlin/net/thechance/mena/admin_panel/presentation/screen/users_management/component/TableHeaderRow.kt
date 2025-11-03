@@ -37,7 +37,7 @@ fun TableHeaderRow(
                     topEnd = Theme.radius.md
                 )
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
