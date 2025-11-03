@@ -136,4 +136,8 @@
     <string name="error_edit_shelf">خطأ في تعديل الرف</string>
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
+    <string name="dukan_management_general_error">إدارة الدكّان غير متاحة حاليًا، يرجى المحاولة لاحقًا.</string>
+    <string name="dukan_managment_loading">يرجى الانتظار حتى يكتمل التحميل...</string>
+    <string name="dukan_main_content_empty_error_title">عذرًا! الشاشة الرئيسية للدكّان غير متاحة حاليًا، يرجى المحاولة مرة أخرى قريبًا.</string>
+    <string name="dukan_main_content_empty_error_body">سيظهر هنا عند توفره.</string>
 </resources>

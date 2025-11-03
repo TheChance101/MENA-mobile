@@ -138,4 +138,8 @@
     <string name="error_edit_shelf">Error editing shelf</string>
     <string name="edit_shelf_successfully">Edit shelf successfully.</string>
     <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
+    <string name="dukan_management_general_error">Dukan Management isn’t available right now. Please try again later!</string>
+    <string name="dukan_managment_loading">Please wait until loading is complete...</string>
+    <string name="dukan_main_content_empty_error_title">Oops! The Dukan Main Screen is currently unavailable. Please check back soon.</string>
+    <string name="dukan_main_content_empty_error_body">It will appear here once it's available.</string>
 </resources>

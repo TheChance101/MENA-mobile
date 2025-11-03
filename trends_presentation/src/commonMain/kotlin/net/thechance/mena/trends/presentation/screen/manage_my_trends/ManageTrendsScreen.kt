@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,6 +58,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -97,22 +97,23 @@ private fun ManageTrendsScreenContent(
 ) {
     Scaffold(
         topBar = {
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.isLoading.not(),
-                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) })
+                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) }
+            )
         },
         content = {
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.isLoading,
                 content = { LoadingProgressBar() }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.error == ErrorState.NoInternet,
                 content = { NoConnection { listener.onClickRetry() } }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.error == null && state.isLoading.not(),
                 content = { ManageTrendsScreenBody(listener, state) }
             )
@@ -253,7 +254,7 @@ private fun TrendItem(
         contentAlignment = Alignment.Center
 
     ) {
-        AnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
             AsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
@@ -262,7 +263,7 @@ private fun TrendItem(
             )
         }
 
-        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),

@@ -146,4 +146,10 @@
     <!-- select gender -->
     <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
     <string name="select_gender_screen_prompt">اختر جنسك</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
+    <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
+    <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
+    <string name="ic_account_shield">أيقونة درع الحساب</string>
 </resources>

@@ -1,8 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.upload_reel
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +34,7 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
 import net.thechance.mena.trends.presentation.shared.component.NextButton
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.component.UploadVideoCard
 import net.thechance.mena.trends.presentation.shared.component.VideoLoadingCardItem
@@ -122,11 +120,7 @@ private fun UploadReelScreenContent(
                 onCardClick = launcher::launch,
                 onEditClick = launcher::launch
             )
-            AnimatedVisibility(
-                visible = !state.uploadingState.isIdle,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
+            TrendsAnimatedVisibility(visible = !state.uploadingState.isIdle) {
                 VideoLoadingCardItem(
                     modifier = Modifier.padding(
                         top = state.thumbnail?.let { Theme.spacing._24 } ?: Theme.spacing._8
