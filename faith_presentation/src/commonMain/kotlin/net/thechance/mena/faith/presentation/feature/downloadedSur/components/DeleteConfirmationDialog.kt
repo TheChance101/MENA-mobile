@@ -17,12 +17,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete
+import mena.faith_presentation.generated.resources.delete_surah
+import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import mena.faith_presentation.generated.resources.icon_cancel
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -63,12 +67,12 @@ fun DeleteConfirmationDialog(
                 modifier = Modifier.padding(vertical = Theme.spacing._12),
             ) {
                 Text(
-                    text = "Delete surah",
+                    text = stringResource(Res.string.delete_surah),
                     style = Theme.typography.title.medium,
                     color = Theme.colorScheme.shadePrimary,
                 )
                 Text(
-                    text = "Are you sure you want to delete this surah from downlading?",
+                    text = stringResource(Res.string.delete_surah_dialog_message),
                     style = Theme.typography.body.small,
                     color = Theme.colorScheme.shadeSecondary,
                     textAlign = TextAlign.Center,
@@ -83,7 +87,7 @@ fun DeleteConfirmationDialog(
                             .align(Alignment.End),
                 ) {
                     Text(
-                        text = "Delete",
+                        text = stringResource(Res.string.delete),
                         style = Theme.typography.label.medium,
                         color = Theme.colorScheme.error,
                     )
