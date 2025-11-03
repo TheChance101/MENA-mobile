@@ -116,4 +116,12 @@
     <string name="search_results">نتائج البحث</string>
     <string name="no_nearby_mosques_found">لم يتم العثور على أي مساجد بالجوار، ابحث بمكان آخر</string>
 
+
+    <!--  Downloaded sur  -->
+    <string name="downloaded_sur">السور المحمله</string>
+    <string name="reciter_list">قائمة القرآء</string>
+    <string name="delete_surah">حذف السوره</string>
+    <string name="delete">حذف</string>
+    <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
+    <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
 </resources>

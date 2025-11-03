@@ -51,7 +51,6 @@
     <string name="create_button">Create</string>
     <string name="shelf_name_validation">Shelf name can only contain letters, spaces, and ‘-’</string>
     <string name="shelf_name_is_already_exist">Shelf name already exists, try another one.</string>
-    <string name="product_name_is_already_exist">Product name already exists, try another one.</string>
     <string name="failed_to_create_shelf">Failed to create shelf</string>
     <string name="dukan_approved_now">create dukan request is approved now</string>
     <string name="creating_shelf">Start creating your shelf and products by clicking on create button below</string>
@@ -87,7 +86,6 @@
     <string name="edit_product_pencil">Edit Product Pencil </string>
     <string name="koin_icon">Koin Icon</string>
     <string name="discount_icon">Discount Icon</string>
-    <string name="manage_product">Manage product</string>
     <string name="add">Add</string>
     <string name="product_name">Product name</string>
     <string name="shelf">shelf</string>
@@ -96,7 +94,6 @@
     <string name="image_1_1">Image (1:1)</string>
     <string name="one_selection_for_each_product">One selection for each product</string>
     <string name="add_product_success">Add product successfully.</string>
-    <string name="save_product_success">Product saved successfully.</string>
     <string name="image_size_mb">%1$d MB</string>
     <string name="error_image_max_limit">You can upload a maximum of 10 images.</string>
     <string name="error_image_size">Image size should be less than 5 MB.</string>
@@ -138,11 +135,18 @@
     <string name="no_dukans_title">There is no dukan related to this category!</string>
     <string name="no_dukans_body">It will appear here when it added.</string>
     <string name="error_edit_shelf">Error editing shelf</string>
+    <string name="edit_shelf_successfully">Edit shelf successfully.</string>
+    <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
+    <string name="dukan_management_general_error">Dukan Management isn’t available right now. Please try again later!</string>
+    <string name="dukan_managment_loading">Please wait until loading is complete...</string>
+    <string name="dukan_main_content_empty_error_title">Oops! The Dukan Main Screen is currently unavailable. Please check back soon.</string>
+    <string name="dukan_main_content_empty_error_body">It will appear here once it's available.</string>
+    <string name="manage_product">Manage product</string>
+    <string name="save_product_success">Product saved successfully.</string>
+    <string name="product_name_is_already_exist">Product name already exists, try another one.</string>
     <string name="error_update_product">Failed to update product. Please try again.</string>
     <string name="error_product_not_found">Product not found.</string>
     <string name="error_unauthorized_access">You are not authorized to edit this product.</string>
-    <string name="edit_shelf_successfully">Edit shelf successfully.</string>
-    <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
     <string name="delete_product_success">Product deleted successfully.</string>
     <string name="error_delete_product">Failed to delete product. Please try again.</string>
     <string name="delete_product_title">Delete product</string>

@@ -27,6 +27,7 @@
     <string name="al_baqarah">Al-Baqarah</string>
     <string name="snack_bar_title">Success</string>
     <string name="app_name">MENA</string>
+    <string name="reciters_settings">Reciters settings</string>
 
     <!-- Qiblah Directions -->
     <string name="device_angle_to_qiblah">Device’s angle to qiblah</string>
@@ -175,4 +176,13 @@
     <string name="no_mosques_found_by_keyword">No mosques found, try with another keyword.</string>
     <string name="no_nearby_mosques_found">No mosques found nearby this location, try another location.</string>
     <string name="downloaded">Downloaded</string>
+
+    <!--  Downloaded sur  -->
+    <string name="downloaded_sur">Downloaded sur</string>
+    <string name="reciter_list">Reciters list</string>
+    <string name="delete_surah">Delete surah</string>
+    <string name="delete">Delete</string>
+    <string name="delete_surah_dialog_message">Are you sure you want to delete this surah from downloading?</string>
+    <string name="surah_deleted_successfully">Surah deleted successfully</string>
+
 </resources>
