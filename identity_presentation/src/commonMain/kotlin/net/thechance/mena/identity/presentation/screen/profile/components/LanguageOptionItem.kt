@@ -25,8 +25,8 @@ import sv.lib.squircleshape.SquircleShape
 @Composable
 fun LanguageOptionItem(
     isSelected: Boolean,
-    modifier: Modifier = Modifier,
     selectedAppLanguage: AppLanguage,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
     Row(
