@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.admin_panel.presentation.utils.PageItem
 import net.thechance.mena.admin_panel.presentation.utils.getDisplayedPages
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_arrow_left
@@ -40,19 +41,19 @@ fun PagesIndicatorRow(
             icon = Res.drawable.ic_arrow_left,
             isEnabled = currentPage > 0,
             onClick = { onPageChanged(currentPage - 1) },
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.padding(end = 6.dp)
         )
 
-        displayedPages.forEach { page ->
-            if (page == null) {
-                PageEllipsisBox(modifier = Modifier.padding(start = 6.dp))
-            } else {
-                PageNumberButton(
-                    pageNumber = page + 1,
-                    isSelected = page == currentPage,
-                    onClick = { onPageChanged(page) },
-                    modifier = Modifier.padding(start = 6.dp)
+        displayedPages.forEach { pageItem ->
+            when (pageItem) {
+                is PageItem.Page -> PageNumberButton(
+                    pageNumber = pageItem.number + 1,
+                    isSelected = pageItem.number == currentPage,
+                    onClick = { onPageChanged(pageItem.number) },
+                    modifier = Modifier.padding(horizontal = 2.dp)
                 )
+
+                PageItem.Ellipsis -> PageEllipsisBox(modifier = Modifier.padding(horizontal = 2.dp))
             }
         }
 
@@ -60,7 +61,7 @@ fun PagesIndicatorRow(
             icon = Res.drawable.ic_arrow_right,
             isEnabled = currentPage < totalPages - 1,
             onClick = { onPageChanged(currentPage + 1) },
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 6.dp)
         )
     }
 }
@@ -92,10 +93,19 @@ private fun PageNavigationButton(
         if (isEnabled) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.disabled
 
+    val iconTint =
+        if (isEnabled) Theme.colorScheme.primary.primary else Theme.colorScheme.textDisabled
+
     val animatedBackgroundColor by animateColorAsState(
         targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
         label = "buttonBackgroundColor"
+    )
+
+    val animatedIconTint by animateColorAsState(
+        targetValue = iconTint,
+        animationSpec = tween(durationMillis = 300),
+        label = "buttonIconTint"
     )
 
     Icon(
@@ -107,7 +117,7 @@ private fun PageNavigationButton(
             .background(animatedBackgroundColor)
             .clickable(enabled = isEnabled) { onClick() }
             .padding(12.dp),
-        tint = Theme.colorScheme.primary.primary
+        tint = animatedIconTint
     )
 }
 
