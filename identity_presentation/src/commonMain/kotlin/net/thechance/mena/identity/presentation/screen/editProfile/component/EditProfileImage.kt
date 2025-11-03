@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.editProfile.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,6 +34,7 @@ import mena.identity_presentation.generated.resources.pencil_edit
 import mena.identity_presentation.generated.resources.profile_profile_picture_content_description
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.components.ProfileImage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -42,7 +42,7 @@ import org.koin.core.qualifier.named
 
 
 @Composable
-fun ProfileImage(
+fun EditProfileImage(
     profileImageUrl: String,
     profileImageBitmap: ImageBitmap?,
     modifier: Modifier = Modifier,
@@ -54,43 +54,12 @@ fun ProfileImage(
         modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(modifier = Modifier) {
-            Box(
+            ProfileImage(
+                profileImageUrl = profileImageUrl,
+                profileImageBitmap = profileImageBitmap,
                 modifier = Modifier
                     .padding(bottom = Theme.spacing._16)
-                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
-                    .dropShadow(
-                        shape = CircleShape,
-                        shadow = Shadow(
-                            radius = 8.dp,
-                            spread = 0.dp,
-                            color = shadowColor,
-                            offset = DpOffset(x = 0.dp, 4.dp)
-                        )
-                    )
-                    .dropShadow(
-                        shape = CircleShape,
-                        shadow = Shadow(
-                            radius = 8.dp,
-                            spread = 0.dp,
-                            color = shadowColor,
-                            offset = DpOffset(x = 4.dp, 0.dp)
-                        )
-                    )
-            ) {
-                if (profileImageBitmap == null) {
-                    AsyncProfileImage(profileImageUrl)
-                } else {
-                    Image(
-                        bitmap = profileImageBitmap,
-                        contentScale = ContentScale.Crop,
-                        contentDescription = stringResource(Res.string.profile_profile_picture_content_description),
-                        modifier = Modifier
-                            .size(88.dp)
-                            .clip(CircleShape),
-                    )
-                }
-            }
-
+            )
             Box(
                 modifier = Modifier
                     .size(32.dp)
