@@ -20,7 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
-import net.thechance.mena.identity.presentation.screen.changePassword.CurrentPasswordContentUIState
+import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIState.CurrentPasswordContentUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -57,7 +57,9 @@ fun CurrentPasswordContent(
             onChangePassword = onChangeCurrentPassword,
             onTogglePasswordVisibility = onToggleCurrentPasswordVisibility,
             label = stringResource(Res.string.password),
-            errorMessage = state.currentPasswordErrorMessage,
+            errorMessage = state.currentPasswordErrorMessage?.let {
+                stringResource(it)
+            },
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -78,7 +80,7 @@ fun CurrentPasswordContent(
 
 @Preview(showBackground = true)
 @Composable
-fun CurrentPasswordContentPreview(){
+private fun CurrentPasswordContentPreview(){
     MenaTheme {
         CurrentPasswordContent(
             state = CurrentPasswordContentUIState(),

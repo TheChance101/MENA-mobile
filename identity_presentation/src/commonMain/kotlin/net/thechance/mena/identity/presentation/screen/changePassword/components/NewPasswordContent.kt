@@ -20,7 +20,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenInteractionListener
-import net.thechance.mena.identity.presentation.screen.changePassword.NewPasswordContentUIState
+import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIState.NewPasswordContentUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,7 +48,9 @@ fun NewPasswordContent(
             onChangePassword = listener::onChangeNewPassword,
             onTogglePasswordVisibility = listener::onToggleNewPasswordVisibility,
             label = stringResource(Res.string.new_password_title),
-            errorMessage = state.newPasswordErrorMessage,
+            errorMessage = state.newPasswordErrorMessage?.let {
+                stringResource(it)
+            },
             modifier = Modifier.padding(bottom = Theme.spacing._16, top = Theme.spacing._24)
         )
 
@@ -58,7 +60,9 @@ fun NewPasswordContent(
             onChangePassword = listener::onChangeConfirmPassword,
             onTogglePasswordVisibility = listener::onToggleConfirmPasswordVisibility,
             label = stringResource(Res.string.confirm_password_label),
-            errorMessage = state.confirmPasswordErrorMessage,
+            errorMessage = state.confirmPasswordErrorMessage?.let {
+                stringResource(it)
+            },
             modifier = Modifier.padding(bottom = Theme.spacing._16)
         )
 
@@ -78,7 +82,7 @@ fun NewPasswordContent(
 
 @Preview(showBackground = true)
 @Composable
-fun NewPasswordContentPreview() {
+private fun NewPasswordContentPreview() {
 
     val listener = object : ChangePasswordScreenInteractionListener {
         override fun onClickBack() {}
