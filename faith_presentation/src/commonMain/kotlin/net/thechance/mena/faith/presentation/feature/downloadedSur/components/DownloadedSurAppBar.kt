@@ -31,8 +31,7 @@ fun DownloadedSurAppBar(
         },
         onLeadingClick = onBackClick,
         title = stringResource(Res.string.downloaded_sur),
-        contentPadding =
-            PaddingValues(
+        contentPadding = PaddingValues(
                 vertical = Theme.spacing._8,
                 horizontal = Theme.spacing._16,
             ),

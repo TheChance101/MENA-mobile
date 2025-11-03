@@ -39,21 +39,19 @@ fun DeleteConfirmationDialog(
         onDismissRequest = onDismiss,
     ) {
         Box(
-            modifier =
-                modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = Theme.colorScheme.background.surfaceLow,
-                        shape = RoundedCornerShape(Theme.radius.lg),
-                    ).padding(Theme.spacing._12),
+            modifier = modifier
+                .fillMaxWidth()
+                .background(
+                    color = Theme.colorScheme.background.surfaceLow,
+                    shape = RoundedCornerShape(Theme.radius.lg),
+                ).padding(Theme.spacing._12),
         ) {
             Button(
                 onClick = onDismiss,
                 containerColor = Theme.colorScheme.background.surface,
-                modifier =
-                    Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape),
             ) {
                 Image(
                     painter = painterResource(Res.drawable.icon_cancel),
@@ -81,10 +79,9 @@ fun DeleteConfirmationDialog(
 
                 Button(
                     onClick = onDeleteClick,
-                    modifier =
-                        Modifier
-                            .padding(top = Theme.spacing._24, end = Theme.spacing._8)
-                            .align(Alignment.End),
+                    modifier = Modifier
+                        .padding(top = Theme.spacing._24, end = Theme.spacing._8)
+                        .align(Alignment.End),
                 ) {
                     Text(
                         text = stringResource(Res.string.delete),

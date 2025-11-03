@@ -18,8 +18,7 @@ class DownloadedSurViewModel :
 
     private fun loadDownloadedSur() {
         // TODO: After the domain is done, integrate this function to load the real data
-        val dummyData =
-            listOf(
+        val dummyData = listOf(
                 DownloadedSurUiState.SurahDetailsUiState(
                     1,
                     Res.drawable.ic_ad_duha,

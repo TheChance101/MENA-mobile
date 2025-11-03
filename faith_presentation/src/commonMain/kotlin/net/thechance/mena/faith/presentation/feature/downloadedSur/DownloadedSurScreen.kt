@@ -55,17 +55,14 @@ private fun Content(
     listener: DownloadedSurInteractionListener,
 ) {
     Box(
-        modifier =
-            Modifier
-                .fillMaxSize()
-                .then(
-                    if (uiState.showDeleteConfirmationDialog) {
-                        Modifier
-                            .blur(4.dp)
-                    } else {
-                        Modifier
-                    },
-                ),
+        modifier = Modifier
+            .fillMaxSize()
+            .then(
+                if (uiState.showDeleteConfirmationDialog)
+                    Modifier.blur(4.dp)
+                else
+                    Modifier,
+            ),
     ) {
         if (uiState.showDeleteConfirmationDialog) {
             DeleteConfirmationDialog(
@@ -83,11 +80,10 @@ private fun Content(
         ) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-                contentPadding =
-                    PaddingValues(
-                        horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._12,
-                    ),
+                contentPadding = PaddingValues(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._12,
+                ),
             ) {
                 items(uiState.surDetails) { downloadedSurah ->
                     DownloadedSurahCard(
@@ -98,12 +94,11 @@ private fun Content(
                         onDeleteDownloadedSurahClick = {
                             listener.onDeleteSurahClick(downloadedSurah.id)
                         },
-                        modifier =
-                            Modifier
-                                .animateItem(
-                                    fadeInSpec = tween(500),
-                                    fadeOutSpec = tween(500),
-                                ),
+                        modifier = Modifier
+                            .animateItem(
+                                fadeInSpec = tween(500),
+                                fadeOutSpec = tween(500),
+                            ),
                     )
                 }
             }
@@ -116,37 +111,35 @@ private fun Content(
 private fun PreviewDownloadedSurScreen() {
     QuranTheme {
         Content(
-            uiState =
-                DownloadedSurUiState(
-                    showDeleteConfirmationDialog = true,
-                    surDetails =
-                        listOf(
-                            DownloadedSurUiState.SurahDetailsUiState(
-                                1,
-                                Res.drawable.ic_ad_duha,
-                                "Al-Duha",
-                                listOf("Al Minshawi", "Sudais"),
-                            ),
-                            DownloadedSurUiState.SurahDetailsUiState(
-                                1,
-                                Res.drawable.ic_an_nas,
-                                "An-Nas",
-                                listOf("Sudais"),
-                            ),
-                            DownloadedSurUiState.SurahDetailsUiState(
-                                1,
-                                Res.drawable.ic_al_kahf,
-                                "Al-Kahf",
-                                listOf("Al Minshawi", "Sudais"),
-                            ),
-                            DownloadedSurUiState.SurahDetailsUiState(
-                                1,
-                                Res.drawable.ic_ash_shams,
-                                "Ash-Shams",
-                                listOf("Al Minshawi", "Sudais"),
-                            ),
-                        ),
+            uiState = DownloadedSurUiState(
+                showDeleteConfirmationDialog = true,
+                surDetails = listOf(
+                    DownloadedSurUiState.SurahDetailsUiState(
+                        1,
+                        Res.drawable.ic_ad_duha,
+                        "Al-Duha",
+                        listOf("Al Minshawi", "Sudais"),
+                    ),
+                    DownloadedSurUiState.SurahDetailsUiState(
+                        1,
+                        Res.drawable.ic_an_nas,
+                        "An-Nas",
+                        listOf("Sudais"),
+                    ),
+                    DownloadedSurUiState.SurahDetailsUiState(
+                        1,
+                        Res.drawable.ic_al_kahf,
+                        "Al-Kahf",
+                        listOf("Al Minshawi", "Sudais"),
+                    ),
+                    DownloadedSurUiState.SurahDetailsUiState(
+                        1,
+                        Res.drawable.ic_ash_shams,
+                        "Ash-Shams",
+                        listOf("Al Minshawi", "Sudais"),
+                    ),
                 ),
+            ),
             listener =
                 object : DownloadedSurInteractionListener {
                     override fun onReciterSettingsClick() {}

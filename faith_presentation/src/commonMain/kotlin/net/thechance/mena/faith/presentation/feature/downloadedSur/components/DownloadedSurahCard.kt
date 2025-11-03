@@ -49,8 +49,7 @@ fun DownloadedSurahCard(
         cardContent = { contentModifier ->
             CardContent(
                 surahDetailsUiState = suraDetails,
-                modifier =
-                    contentModifier
+                modifier = contentModifier
                         .background(
                             color = Theme.colorScheme.background.surfaceLow,
                             shape = RoundedCornerShape(Theme.radius.md),
@@ -70,8 +69,7 @@ private fun CardContent(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier =
-            modifier
+        modifier = modifier
                 .fillMaxWidth()
                 .padding(
                     horizontal = Theme.spacing._12,
@@ -131,8 +129,7 @@ private fun SurahDetails(
 private fun PlayButton(modifier: Modifier = Modifier) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier =
-            modifier
+        modifier = modifier
                 .size(44.dp)
                 .background(
                     color = Theme.colorScheme.background.surface,
