@@ -31,6 +31,7 @@
     <string name="create_password_title">إكمال ملفك الشخصي</string>
     <string name="create_password_description">تعيين كلمة المرور</string>
     <string name="next">التالي</string>
+    <string name="register">تسجيل</string>
     <string name="you_already_have_account">لديك حساب بالفعل؟</string>
     <string name="validation_code">رمز التحقق</string>
     <string name="reset_password">إعادة تعيين كلمة المرور</string>

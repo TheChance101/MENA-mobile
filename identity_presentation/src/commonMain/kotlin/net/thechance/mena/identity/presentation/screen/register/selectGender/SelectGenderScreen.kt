@@ -17,7 +17,6 @@ import mena.identity_presentation.generated.resources.select_gender_screen_promp
 import mena.identity_presentation.generated.resources.select_gender_screen_prompt_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
@@ -51,7 +50,7 @@ class SelectGenderScreen() :
 
                     GenderToggle(
                         gender = state.gender,
-                        onGenderChange = listener::onChangeGender
+                        onChangeGender = listener::onChangeGender
                     )
 
                     Spacer(modifier = Modifier.weight(1f))

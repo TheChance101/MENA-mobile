@@ -228,7 +228,7 @@ class EditUserProfileScreen : BaseScreen<
 
                 GenderToggle(
                     gender = state.gender,
-                    onGenderChange = listener::onChangeGender
+                    onChangeGender = listener::onChangeGender
                 )
 
                 PrimaryButton(
