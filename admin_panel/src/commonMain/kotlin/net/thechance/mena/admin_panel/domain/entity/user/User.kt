@@ -13,13 +13,17 @@ data class User(
     val lastLoginAt: LocalDateTime,
     val lastVisitAt: LocalDateTime,
     val status: Status
-)
-enum class Status {
-    ACTIVE,
-    BLOCKED;
-    companion object {
-        fun valueOfOrDefault(value: String?): Status {
-            return runCatching { value?.let { Status.valueOf(it) } ?: ACTIVE }.getOrDefault (ACTIVE)
+) {
+    enum class Status {
+        ACTIVE,
+        BLOCKED;
+
+        companion object {
+            fun valueOfOrDefault(value: String?): Status {
+                return runCatching { value?.let { Status.valueOf(it) } ?: ACTIVE }.getOrDefault(
+                    ACTIVE
+                )
+            }
         }
     }
 }

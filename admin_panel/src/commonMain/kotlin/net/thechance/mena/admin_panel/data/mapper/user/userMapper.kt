@@ -3,7 +3,6 @@ package net.thechance.mena.admin_panel.data.mapper.user
 import net.thechance.mena.admin_panel.data.mapper.parseLocalDateTimeOrDefault
 import net.thechance.mena.admin_panel.data.mapper.toUuidOrNull
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
-import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -14,7 +13,7 @@ fun UserResponse.toEntity(): User {
         phoneNumber = phoneNumber.orEmpty(),
         lastLoginAt = parseLocalDateTimeOrDefault(lastLoginAt),
         lastVisitAt = parseLocalDateTimeOrDefault(lastVisitAt),
-        status = Status.valueOfOrDefault(status),
+        status = User.Status.valueOfOrDefault(status),
         firstName = firstName.orEmpty(),
         lastName = lastName.orEmpty(),
     )
