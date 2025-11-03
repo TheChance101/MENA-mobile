@@ -8,10 +8,10 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 
 @Dao
 interface CachedMessageDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessage(message: CachedMessageLocalDto)
 
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllMessages(message: List<CachedMessageLocalDto>)
 
     @Query("SELECT * FROM cached_messages WHERE chat_id = :chatId ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")

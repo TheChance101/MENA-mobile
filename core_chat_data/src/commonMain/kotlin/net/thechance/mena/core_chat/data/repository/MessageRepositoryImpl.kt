@@ -100,7 +100,7 @@ class MessageRepositoryImpl(
                 val (existing, notExisting) = remoteMessages.partition { it.id in localIds }
 
                 if (notExisting.isNotEmpty()) {
-                    cachedMessageDao.insertAllMessages(notExisting.map(Message::toCachedMessageLocalDto))
+                    cachedMessageDao.insertAllMessages(notExisting.toCachedMessageLocalDto())
 
                     messageFlows.emitAll(notExisting.asFlow())
                 }
