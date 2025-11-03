@@ -8,4 +8,5 @@ interface DukanCartInteractionListener {
     fun onDecreaseItemQuantityClicked(productId: String, newQuantity: Int)
     fun onRemoveItemClicked(productId: String)
     fun onRetryLoadCartClicked()
+    fun onDismissSnackBar()
 }

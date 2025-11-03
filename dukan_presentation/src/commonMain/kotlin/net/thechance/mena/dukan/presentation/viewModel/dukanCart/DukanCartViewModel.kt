@@ -10,17 +10,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.CartState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.DukanInfoState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.ProductUiState
+import org.jetbrains.compose.resources.StringResource
 
 class DukanCartViewModel(
     private val cartRepository: CartRepository,
@@ -156,7 +163,7 @@ class DukanCartViewModel(
     private fun updateProductQuantityInServer(productId: String, newQuantity: Int) {
         tryToExecuteWithDebounce(
             block = {
-                cartRepository.updateProductQuantity(
+                cartRepository.addProductQuantity(
                     UpdateProductCartQuantityParams(
                         dukanId = dukanId,
                         productId = productId,
@@ -164,7 +171,7 @@ class DukanCartViewModel(
                     )
                 )
             },
-            onError = {},
+            onError = ::onErrorUpdateProductQuantity,
             onSuccess = { loadCartInfo() }
         )
     }
@@ -196,12 +203,39 @@ class DukanCartViewModel(
                     productId = productId
                 )
             },
-            onError = {},
+            onError = ::onErrorUpdateProductQuantity,
             onSuccess = { loadCartInfo() }
         )
     }
 
     override fun onRetryLoadCartClicked() {
         loadCart()
+    }
+
+    private fun onErrorUpdateProductQuantity(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
+            )
+        }
+    }
+
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(
+                snackBarState = null
+            )
+        }
     }
 }

@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 
 data class DukanCartUiState(
     val cartState: CartState = CartState.LOADING,
@@ -10,8 +11,9 @@ data class DukanCartUiState(
     val dukanInfoState: DukanInfoState = DukanInfoState.LOADING,
     val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val totalPrice: Double = 0.0,
-    val error: String? = null
-) {
+    val error: String? = null,
+    val snackBarState: SnackBarUiState? = null,
+    ) {
 
     data class DukanInfoUiState(
         val id: String = "",

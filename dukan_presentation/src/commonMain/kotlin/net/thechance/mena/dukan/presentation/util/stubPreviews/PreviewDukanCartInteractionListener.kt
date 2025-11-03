@@ -16,4 +16,5 @@ object PreviewDukanCartInteractionListener : DukanCartInteractionListener {
     override fun onRemoveItemClicked(productId: String) {}
 
     override fun onRetryLoadCartClicked() {}
+    override fun onDismissSnackBar() {}
 }

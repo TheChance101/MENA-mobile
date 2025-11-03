@@ -63,6 +63,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.SetProductQuantity
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCartInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.dukanCartUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartInteractionListener
@@ -83,6 +84,14 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                 totalPrice = state.totalPrice,
                 onCheckoutClick = listener::onCheckoutClicked
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         LazyColumn(
