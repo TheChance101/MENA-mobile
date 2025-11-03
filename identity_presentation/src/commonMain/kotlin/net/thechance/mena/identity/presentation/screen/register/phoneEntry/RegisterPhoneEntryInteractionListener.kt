@@ -9,7 +9,6 @@ interface RegisterPhoneEntryInteractionListener : BaseInteractionListener {
     fun onClickRegister()
     fun onClickCountry()
     fun onChangePhone(phone: String)
-    fun onClickBack()
     fun onClearErrorMessage()
     fun onClickLogin()
 }

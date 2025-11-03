@@ -84,10 +84,6 @@ class RegisterPhoneEntryViewModel(
         changeIsContinueEnabled()
     }
 
-    override fun onClickBack() {
-        sendNewEffect(RegisterPhoneEntryUIEffect.NavigateBack)
-    }
-
     override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }

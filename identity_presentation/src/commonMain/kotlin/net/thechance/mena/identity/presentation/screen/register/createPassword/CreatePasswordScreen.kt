@@ -106,9 +106,7 @@ class CreatePasswordScreen : BaseScreen<
         effect: CreatePasswordUIEffect,
         navigator: Navigator
     ) {
-        when (effect) {
-            CreatePasswordUIEffect.NavigateBack -> navigator.pop()
-        }
+
     }
 }
 
@@ -128,7 +126,6 @@ fun PreviewCreatePasswordScreen() {
                 override fun onToggleNewPasswordVisibility() {}
                 override fun onToggleConfirmPasswordVisibility() {}
                 override fun onClickCreatePassword() {}
-                override fun onClickBack() {}
                 override fun onClearErrorMessage() {}
             }
         )

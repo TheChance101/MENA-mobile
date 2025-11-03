@@ -124,7 +124,6 @@ class RegisterPhoneEntryScreen : BaseScreen<
         navigator: Navigator
     ) {
         when (effect) {
-            RegisterPhoneEntryUIEffect.NavigateBack -> navigator.pop()
             is RegisterPhoneEntryUIEffect.NavigateToOTP -> navigator.push(
                 item = RegisterOtpScreen(
                     phoneNumber = effect.phoneNumber,
@@ -153,7 +152,6 @@ fun PreviewRegisterPhoneEntryScreen() {
                 override fun onClickRegister() {}
                 override fun onClickCountry() {}
                 override fun onChangePhone(phone: String) {}
-                override fun onClickBack() {}
                 override fun onClearErrorMessage() {}
                 override fun onClickLogin() {}
             }
