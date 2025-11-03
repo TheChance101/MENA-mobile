@@ -47,6 +47,7 @@ import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
 import net.thechance.mena.dukan.presentation.util.toFileName
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -206,13 +207,18 @@ class EditProductViewModel(
         }
     }
 
-    override fun onShelfSelect(shelfUiState: EditProductUiState.ShelfUiState) {
+    override fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState) {
+        val editShelfUiState = EditProductUiState.ShelfUiState(
+            id = shelfUiState.id,
+            name = shelfUiState.name,
+            isSelected = shelfUiState.isSelected
+        )
         updateState {
             copy(
                 shelves = shelves.map { shelfItem ->
                     shelfItem.copy(isSelected = shelfItem.id == shelfUiState.id)
                 },
-                selectedShelf = shelfUiState,
+                selectedShelf = editShelfUiState,
             ).updateButtonState()
         }
     }

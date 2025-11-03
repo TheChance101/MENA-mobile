@@ -5,6 +5,7 @@ import com.attafitamim.krop.core.images.ImageSrc
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageModel
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -50,6 +51,15 @@ data class EditProductUiState(
         override val imageState: ProductImageState,
         override val errorMessage: String? = null,
     ) : ProductImageModel
+
+    val shelvesForShelfSection: List<CreateProductUiState.ShelfUiState>
+        get() = shelves.map { shelf ->
+            CreateProductUiState.ShelfUiState(
+                id = shelf.id,
+                name = shelf.name,
+                isSelected = shelf.isSelected
+            )
+        }
 
     val allImages: List<ProductImageModel>
         get() {

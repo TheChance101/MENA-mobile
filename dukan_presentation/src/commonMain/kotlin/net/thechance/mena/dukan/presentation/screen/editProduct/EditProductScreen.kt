@@ -33,7 +33,6 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Prod
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
 import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductUiState
@@ -127,23 +126,9 @@ private fun EditProductContent(
 
             item {
                 ShelfSection(
-                    shelves = state.shelves.map { editShelf ->
-                        CreateProductUiState.ShelfUiState(
-                            id = editShelf.id,
-                            name = editShelf.name,
-                            isSelected = editShelf.isSelected
-                        )
-                    },
+                    shelves = state.shelvesForShelfSection,
                     isShelvesLoading = state.isShelvesLoading,
-                    onShelfSelect = { shelf ->
-                        interactionListener.onShelfSelect(
-                            EditProductUiState.ShelfUiState(
-                                id = shelf.id,
-                                name = shelf.name,
-                                isSelected = shelf.isSelected
-                            )
-                        )
-                    }
+                    onShelfSelect = interactionListener::onShelfSelect
                 )
             }
 
