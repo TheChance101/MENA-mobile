@@ -7,7 +7,6 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -60,10 +59,15 @@ class ProfileScreenViewModel(
     override fun onInviteFriendsClicked() =
         updateState { copy(showShareBottomSheet = true) }
 
-    override fun onChangePasswordClicked() =
-        sendNewEffect(ProfileScreenUIEffect.NavigateToChangePasswordScreen({
+    override fun onChangePasswordClicked() {
+        sendNewEffect(
+            ProfileScreenUIEffect.NavigateToChangePasswordScreen(
+                onSuccess = ::onChangePasswordSuccess
 
-        }))
+            )
+        )
+        onDismissSnackBar()
+    }
 
     override fun onAddressesClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateToLocationPickerScreen)
@@ -82,6 +86,16 @@ class ProfileScreenViewModel(
 
     override fun onContactUsClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
+
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    isVisible = false,
+                )
+            )
+        }
+    }
 
     override fun onDismissLanguageDialog() =
         updateState { copy(showLanguageDialog = false) }

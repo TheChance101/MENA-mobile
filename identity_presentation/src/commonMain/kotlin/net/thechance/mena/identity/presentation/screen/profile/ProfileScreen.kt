@@ -33,6 +33,7 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
@@ -43,16 +44,17 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
+import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-    ProfileScreenViewModel,
-    ProfileScreenUIState,
-    ProfileScreenUIEffect,
-    ProfileScreenInteractionListener>() {
+        ProfileScreenViewModel,
+        ProfileScreenUIState,
+        ProfileScreenUIEffect,
+        ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -65,46 +67,54 @@ class ProfileScreen : BaseScreen<
     ) {
 
         AnimatedVisibility(state.showShareBottomSheet) {
-                    ShareSheet(
-                        title = "MENA app-download app",
+            ShareSheet(
+                title = "MENA app-download app",
                 url = "https://MENA_app.com",
                 onDismiss = listener::onDismissBottomSheet
             )
         }
 
-        Scaffold(overlays = {
-                    dialog(state.showLanguageDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissLanguageDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showThemeDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissThemeDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showShareProfileDialog) {
-                        ShareQrCode(
-                            showDialog = it,
-                            qrCodePainter = rememberAsyncImagePainter(
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                            ),
-                            onDismiss = listener::onDismissShareProfileDialog,
-                            fullName = state.fullName,
-                            onShareProfile = {},
-                            onClipboardContent = { },
-                            onDownload = {},
-                        )
-                    }
-                }) {
+        Scaffold(
+            overlays = {
+                dialog(state.showLanguageDialog) {
+                    Dialog(
+                        isVisible = it,
+                        title = "HI",
+                        message = "Not Yet Implemented",
+                        onDismiss = listener::onDismissLanguageDialog,
+                        actionButtons = {}
+                    )
+                }
+                dialog(state.showThemeDialog) {
+                    Dialog(
+                        isVisible = it,
+                        title = "HI",
+                        message = "Not Yet Implemented",
+                        onDismiss = listener::onDismissThemeDialog,
+                        actionButtons = {}
+                    )
+                }
+                dialog(state.showShareProfileDialog) {
+                    ShareQrCode(
+                        showDialog = it,
+                        qrCodePainter = rememberAsyncImagePainter(
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
+                        ),
+                        onDismiss = listener::onDismissShareProfileDialog,
+                        fullName = state.fullName,
+                        onShareProfile = {},
+                        onClipboardContent = { },
+                        onDownload = {},
+                    )
+                }
+
+            },
+            snakeBar = {
+                ProfileSnackBar(
+                    snackBarState = state.snackBarUiState,
+                    onDismiss = listener::onDismissSnackBar,
+                )
+            }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -173,21 +183,6 @@ class ProfileScreen : BaseScreen<
                             color = Theme.colorScheme.shadeSecondary,
                         )
                     }
-                }
-
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it }),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SnackBar(
-                        title = stringResource(Res.string.error),
-                        message = stringResource(state.errorMessage!!),
-                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-                            .padding(horizontal = Theme.spacing._16)
-                    )
                 }
 
                 LaunchedEffect(state.errorMessage) {
