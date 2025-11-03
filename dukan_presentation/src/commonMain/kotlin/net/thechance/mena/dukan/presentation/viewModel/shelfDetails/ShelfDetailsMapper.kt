@@ -1,6 +1,8 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -12,3 +14,11 @@ fun Product.toUiState() = ShelfDetailsUiState.ProductUiState(
     imageUrl = imageUrls.firstOrNull().orEmpty(),
     inCartQuantity = if (quantityInCart == 0) quantityInCart + 1 else quantityInCart
 )
+
+fun DukanDetailsUiState.ProductUiState.toDomainParams(dukanId: String): UpdateProductCartQuantityParams {
+    return UpdateProductCartQuantityParams(
+        productId = id,
+        quantity = inCartQuantity,
+        dukanId = dukanId
+    )
+}

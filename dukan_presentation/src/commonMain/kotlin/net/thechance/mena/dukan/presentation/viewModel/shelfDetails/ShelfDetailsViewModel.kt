@@ -8,11 +8,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.toDomainParams
 
 class ShelfDetailsViewModel(
     private val productRepository: ProductRepository,
@@ -65,18 +66,15 @@ class ShelfDetailsViewModel(
         emitEffect(ShelfDetailsEffects.NavigateBack)
     }
 
-    override fun onAddToCartClicked(productId: String,productQuantity: Int) {
+    override fun onAddToCartClicked(productId: String, productQuantity: Int) {
 
-        val params = UpdateProductCartQuantityParams(
-            productId = productId,
-            quantity = productQuantity,
-            dukanId = args.dukanId
-        )
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
             block = {
-                if (productQuantity == 1) dukanCartRepository.addProductQuantity(params) else dukanCartRepository.updateProductQuantity(
-                    params
+                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest) else dukanCartRepository.updateProductQuantity(
+                    domainRequest
                 )
             },
             onError = {}
@@ -85,30 +83,24 @@ class ShelfDetailsViewModel(
 
     override fun onPlusClicked(productId: String, productQuantity: Int) {
 
-        val params = UpdateProductCartQuantityParams(
-            productId = productId,
-            quantity = productQuantity,
-            dukanId = args.dukanId
-        )
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
-            block = { dukanCartRepository.updateProductQuantity(params) },
+            block = { dukanCartRepository.updateProductQuantity(domainRequest) },
             onError = {}
         )
     }
 
     override fun onMinusClicked(productId: String, productQuantity: Int) {
 
-        val params = UpdateProductCartQuantityParams(
-            productId = productId,
-            quantity = productQuantity,
-            dukanId = args.dukanId
-        )
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
             block = {
                 if (productQuantity == 1) deleteProductFromCart(productId) else dukanCartRepository.updateProductQuantity(
-                    params
+                    domainRequest
                 )
             },
             onError = {}
