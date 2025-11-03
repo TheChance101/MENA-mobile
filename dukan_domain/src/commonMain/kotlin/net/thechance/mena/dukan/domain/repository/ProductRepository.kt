@@ -18,4 +18,11 @@ interface ProductRepository {
         fileBytes: List<ByteArray>,
         productId: String
     ): List<String>
+
+    suspend fun getProductsCart(
+        dukanId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<Product>
+
 }

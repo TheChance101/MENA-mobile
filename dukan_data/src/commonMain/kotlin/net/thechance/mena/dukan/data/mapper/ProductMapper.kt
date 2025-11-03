@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.data.mapper
 
 import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
+import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
@@ -23,4 +24,15 @@ fun ProductDto.toDomain(): Product = Product(
     price = price,
     imageUrls = imageUrls,
     createdAt = createdAt
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun ProductCartDto.toDomain(): Product = Product(
+    id = id,
+    name = name,
+    description = description,
+    price = price,
+    imageUrls = listOf(imageUrl),
+    quantity = quantity,
+    createdAt = ""
 )
