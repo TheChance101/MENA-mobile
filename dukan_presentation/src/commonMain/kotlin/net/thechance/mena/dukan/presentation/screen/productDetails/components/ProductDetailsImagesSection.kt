@@ -1,6 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -39,52 +45,69 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ProductDetailsImagesSection(
     allImages: List<String>,
     selectedImageUrl: String,
-    onSecondaryImageClick: (String) -> Unit,
     isLoading: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSecondaryImageClick: (String) -> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .height(320.dp)
     ) {
-        if (isLoading) {
-            Column(
-                modifier = Modifier.fillMaxWidth().align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ShimmerBox(
-                    width = Dp.Unspecified,
-                    height = 288.dp,
-                    modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(Theme.radius.md))
-                )
-
-                Spacer(modifier = Modifier.height(Theme.spacing._16))
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        AnimatedContent(
+            targetState = isLoading,
+            label = "ImageSectionAnimation",
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) togetherWith
+                        fadeOut(animationSpec = tween(300))
+            }
+        ) { loading ->
+            if (loading) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    repeat(4) {
-                        ShimmerBox(
-                            width = 56.dp,
-                            height = 56.dp,
-                            modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
-                        )
+                    ShimmerBox(
+                        width = Dp.Unspecified,
+                        height = 288.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(Theme.radius.md))
+                    )
+
+                    Spacer(modifier = Modifier.height(Theme.spacing._16))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                    ) {
+                        repeat(4) {
+                            ShimmerBox(
+                                width = 56.dp,
+                                height = 56.dp,
+                                modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
+                            )
+                        }
                     }
                 }
+            } else {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    ProductDetailsMainImage(
+                        imageUrl = selectedImageUrl,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                    ProductDetailsSecondaryImages(
+                        images = allImages,
+                        selectedImageUrl = selectedImageUrl,
+                        onImageClick = onSecondaryImageClick,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                }
             }
-        } else {
-            ProductDetailsMainImage(
-                imageUrl = selectedImageUrl,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-            ProductDetailsSecondaryImages(
-                images = allImages,
-                selectedImageUrl = selectedImageUrl,
-                onImageClick = onSecondaryImageClick,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
         }
     }
 }
+
 
 @Composable
 fun ProductDetailsMainImage(

@@ -39,7 +39,8 @@ class ProductDetailsViewModel(
             copy(
                 isLoading = false,
                 product = productUiInfo,
-                selectedImageUrl = productUiInfo.images.firstOrNull() ?: ""
+                selectedImageUrl = productUiInfo.images.firstOrNull() ?: "",
+                errorState = null
             )
         }
     }
@@ -48,9 +49,13 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isLoading = false,
-                errorState = throwable
+                errorState = throwable as? Exception
             )
         }
+    }
+
+    override fun onRetryClicked() {
+        loadProductDetails()
     }
 
     override fun onSecondaryImageClicked(imageUrl: String) {

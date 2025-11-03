@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.productDetails
 data class ProductDetailsUiState(
     val product: ProductInfo = ProductInfo(),
     val isLoading: Boolean = true,
-    val errorState: Throwable? = null,
+    val errorState: Exception? = null,
     val inCartQuantity: Int = 0,
     val isFavorite: Boolean = false,
     val selectedImageUrl: String = ""
