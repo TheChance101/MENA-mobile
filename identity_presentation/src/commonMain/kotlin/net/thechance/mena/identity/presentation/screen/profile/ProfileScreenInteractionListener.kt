@@ -22,4 +22,5 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
 
     fun onContactUsClicked()
 
+    fun onDismissSnackBar()
 }

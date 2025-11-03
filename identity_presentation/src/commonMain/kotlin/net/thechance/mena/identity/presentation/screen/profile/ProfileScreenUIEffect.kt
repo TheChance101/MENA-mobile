@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 
 sealed interface ProfileScreenUIEffect {
     object NavigateToEditProfileScreen : ProfileScreenUIEffect
