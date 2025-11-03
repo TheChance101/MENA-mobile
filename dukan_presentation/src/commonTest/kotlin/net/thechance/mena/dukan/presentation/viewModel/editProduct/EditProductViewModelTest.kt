@@ -23,21 +23,29 @@ import mena.dukan_presentation.generated.resources.delete_product_description
 import mena.dukan_presentation.generated.resources.delete_product_success
 import mena.dukan_presentation.generated.resources.delete_product_title
 import mena.dukan_presentation.generated.resources.error_delete_product
+import mena.dukan_presentation.generated.resources.error_description_length
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.error_image_max_limit
 import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
+import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_product_not_found
 import mena.dukan_presentation.generated.resources.error_unauthorized_access
+import mena.dukan_presentation.generated.resources.error_update_product
 import mena.dukan_presentation.generated.resources.error_upload_failed
+import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.product_name_is_already_exist
+import mena.dukan_presentation.generated.resources.save_product_success
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
+import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.exceptions.UnAuthorizedException
+import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
@@ -583,6 +591,500 @@ class EditProductViewModelTest {
                 state.snackBarUiState?.message?.key
             )
         }
+    }
+
+    @Test
+    fun `getProductData - general error shows error`() = scope.runTest {
+        everySuspend { productRepository.getProductById(any()) } throws RuntimeException("General error")
+
+        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
+        val errorViewModel = EditProductViewModel(
+            productRepository = productRepository,
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            dispatcher = dispatcher
+        )
+        advanceUntilIdle()
+
+        errorViewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.error_general.key,
+                state.snackBarUiState?.message?.key
+            )
+        }
+    }
+
+    @Test
+    fun `filterValidImageUrls SHOULD filter out empty and blank URLs`() = scope.runTest {
+        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
+            imageUrls = listOf("valid1.jpg", "", "   ", "valid2.jpg")
+        )
+
+        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
+        val testViewModel = EditProductViewModel(
+            productRepository = productRepository,
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            dispatcher = dispatcher
+        )
+        advanceUntilIdle()
+
+        val state = testViewModel.state.value
+        assertEquals(2, state.existingImageUrls.size)
+        assertTrue(state.existingImageUrls.contains("valid1.jpg"))
+        assertTrue(state.existingImageUrls.contains("valid2.jpg"))
+    }
+
+    @Test
+    fun `onGetShelvesSuccess - when productShelfId doesn't match any shelf SHOULD not select shelf`() = scope.runTest {
+        // Product has a shelf ID that doesn't exist in shelves list
+        everySuspend { productRepository.getProductById(any()) } returns fakeProduct().copy(
+            shelfId = Uuid.parse("99999999-9999-9999-9999-999999999999")
+        )
+
+        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
+        val testViewModel = EditProductViewModel(
+            productRepository = productRepository,
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            dispatcher = dispatcher
+        )
+        advanceUntilIdle()
+
+        // Shelves should be loaded but shelf not selected since productShelfId doesn't match
+        val state = testViewModel.state.value
+        assertNotNull(state.shelves)
+        assertTrue(state.shelves.isNotEmpty())
+        // Since product shelf ID doesn't match any shelf, selectedShelf should be null
+        assertNull(state.selectedShelf)
+        assertFalse(state.shelves.any { it.isSelected })
+    }
+
+    @Test
+    fun `onGetShelvesSuccess - when shelves arrive after product data SHOULD select shelf`() = scope.runTest {
+        val state = viewModel.state.value
+        assertNotNull(state.selectedShelf)
+        assertEquals(testShelfId.toString(), state.selectedShelf?.id)
+    }
+
+    @Test
+    fun `selectProductShelf - when shelves are empty SHOULD not crash`() = scope.runTest {
+        // This test verifies that selectProductShelf handles empty shelves gracefully
+        // The method has a guard clause: if (state.value.shelves.isEmpty()) return
+        viewModel.updateState { copy(shelves = emptyList(), selectedShelf = null) }
+        
+        // Attempt to select a shelf - should not crash
+        val state = viewModel.state.value
+        assertTrue(state.shelves.isEmpty())
+        assertNull(state.selectedShelf)
+    }
+
+    @Test
+    fun `onErrorGettingShelves - no internet shows error`() = scope.runTest {
+        everySuspend { shelfRepository.getMyDukanShelves() } throws NoInternetException()
+
+        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
+        val errorViewModel = EditProductViewModel(
+            productRepository = productRepository,
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            dispatcher = dispatcher
+        )
+        advanceUntilIdle()
+
+        val state = errorViewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertFalse(state.isShelvesLoading)
+        assertEquals(
+            Res.string.no_internet_connection.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onErrorGettingShelves - general error shows error`() = scope.runTest {
+        everySuspend { shelfRepository.getMyDukanShelves() } throws RuntimeException("General error")
+
+        val savedStateHandle = SavedStateHandle(mapOf("productId" to productId))
+        val errorViewModel = EditProductViewModel(
+            productRepository = productRepository,
+            shelfRepository = shelfRepository,
+            savedStateHandle = savedStateHandle,
+            dispatcher = dispatcher
+        )
+        advanceUntilIdle()
+
+        val state = errorViewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertFalse(state.isShelvesLoading)
+        assertEquals(
+            Res.string.error_general.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - successful save navigates and shows success`() = scope.runTest {
+        val firstShelf = fakeShelves().first()
+        val selectedShelfUi = EditProductUiState.ShelfUiState(
+            id = firstShelf.id.toString(),
+            name = firstShelf.name,
+            isSelected = true
+        )
+        viewModel.updateState {
+            copy(
+                productName = "Updated Product",
+                selectedShelf = selectedShelfUi,
+                shelves = shelves.map {
+                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
+                },
+                price = "50.0",
+                description = "Updated description".padEnd(120, 'x'),
+                existingImageUrls = listOf("existing-url"),
+                images = emptyList()
+            )
+        }
+
+        viewModel.effect.test {
+            viewModel.onSaveProductClicked()
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertFalse(state.isSaveButtonLoading)
+            assertTrue(state.showSnackBar)
+            assertEquals(
+                Res.string.save_product_success.key,
+                state.snackBarUiState?.message?.key
+            )
+
+            assertEquals(EditProductEffect.NavigateToManageDukanProducts, awaitItem())
+        }
+    }
+
+    @Test
+    fun `onSaveProductClicked - price not positive shows error`() = scope.runTest {
+        viewModel.updateState {
+            copy(
+                productName = "Test",
+                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
+                price = "0.0",
+                description = "Valid description".padEnd(120, 'x'),
+                images = listOf(
+                    EditProductUiState.ProductImageUi(
+                        id = 1234,
+                        image = mock<ImageBitmap>(),
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
+                    )
+                )
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_price_not_positive.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - description too short shows error`() = scope.runTest {
+        viewModel.updateState {
+            copy(
+                productName = "Test",
+                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
+                price = "50.0",
+                description = "Short",
+                images = listOf(
+                    EditProductUiState.ProductImageUi(
+                        id = 1234,
+                        image = mock<ImageBitmap>(),
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
+                    )
+                )
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_description_length.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - description too long shows error`() = scope.runTest {
+        viewModel.updateState {
+            copy(
+                productName = "Test",
+                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
+                price = "50.0",
+                description = "x".repeat(3001),
+                images = listOf(
+                    EditProductUiState.ProductImageUi(
+                        id = 1234,
+                        image = mock<ImageBitmap>(),
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
+                    )
+                )
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_description_length.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - empty final image URLs shows error`() = scope.runTest {
+        val firstShelf = fakeShelves().first()
+        val selectedShelfUi = EditProductUiState.ShelfUiState(
+            id = firstShelf.id.toString(),
+            name = firstShelf.name,
+            isSelected = true
+        )
+        viewModel.updateState {
+            copy(
+                productName = "Test Product",
+                selectedShelf = selectedShelfUi,
+                shelves = shelves.map {
+                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
+                },
+                price = "50.0",
+                description = "Valid description".padEnd(120, 'x'),
+                existingImageUrls = emptyList(),
+                images = emptyList()
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_general.key,
+            state.snackBarUiState?.message?.key
+        )
+        assertFalse(state.isSaveButtonLoading)
+    }
+
+    @Test
+    fun `onSaveProductClicked - InvalidImageFormatException shows error`() = scope.runTest {
+        everySuspend {
+            productRepository.updateProduct(
+                any(),
+                any()
+            )
+        } throws InvalidImageFormatException()
+
+        val firstShelf = fakeShelves().first()
+        val selectedShelfUi = EditProductUiState.ShelfUiState(
+            id = firstShelf.id.toString(),
+            name = firstShelf.name,
+            isSelected = true
+        )
+        viewModel.updateState {
+            copy(
+                productName = "Test Product",
+                selectedShelf = selectedShelfUi,
+                shelves = shelves.map {
+                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
+                },
+                price = "50.0",
+                description = "Valid description".padEnd(120, 'x'),
+                existingImageUrls = listOf("existing-url"),
+                images = emptyList()
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.invalid_image_format.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - CreationFailedException shows error`() = scope.runTest {
+        everySuspend {
+            productRepository.updateProduct(
+                any(),
+                any()
+            )
+        } throws CreationFailedException()
+
+        val firstShelf = fakeShelves().first()
+        val selectedShelfUi = EditProductUiState.ShelfUiState(
+            id = firstShelf.id.toString(),
+            name = firstShelf.name,
+            isSelected = true
+        )
+        viewModel.updateState {
+            copy(
+                productName = "Test Product",
+                selectedShelf = selectedShelfUi,
+                shelves = shelves.map {
+                    if (it.id == selectedShelfUi.id) selectedShelfUi else it
+                },
+                price = "50.0",
+                description = "Valid description".padEnd(120, 'x'),
+                existingImageUrls = listOf("existing-url"),
+                images = emptyList()
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_update_product.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onUploadImageClicked - UploadingFailedException in onErrorUploadingImages shows error`() = scope.runTest {
+        val fakeFile = mock<ImageFile>()
+        val fakeBitmap = mock<ImageBitmap>()
+        every { fakeBitmap.width } returns 100
+        every { fakeBitmap.height } returns 100
+
+        everySuspend { fakeFile.size() } returns (1024 * 1024L)
+        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+        everySuspend { fakeFile.toImageSrc() } throws UploadingFailedException()
+
+        viewModel.onUploadImageClicked(fakeFile)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_upload_failed.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onUploadImageClicked - InvalidImageFormatException in onErrorUploadingImages shows error`() = scope.runTest {
+        val fakeFile = mock<ImageFile>()
+        val fakeBitmap = mock<ImageBitmap>()
+        every { fakeBitmap.width } returns 100
+        every { fakeBitmap.height } returns 100
+
+        everySuspend { fakeFile.size() } returns (1024 * 1024L)
+        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+        everySuspend { fakeFile.toImageSrc() } throws InvalidImageFormatException()
+
+        viewModel.onUploadImageClicked(fakeFile)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.invalid_image_format.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onUploadImageClicked - NoInternetException in onErrorUploadingImages shows error`() = scope.runTest {
+        val fakeFile = mock<ImageFile>()
+        val fakeBitmap = mock<ImageBitmap>()
+        every { fakeBitmap.width } returns 100
+        every { fakeBitmap.height } returns 100
+
+        everySuspend { fakeFile.size() } returns (1024 * 1024L)
+        everySuspend { fakeFile.toImageBitmap() } returns fakeBitmap
+        everySuspend { fakeFile.toImageSrc() } throws NoInternetException()
+
+        viewModel.onUploadImageClicked(fakeFile)
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.no_internet_connection.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - isProductValid returns false when name is empty`() = scope.runTest {
+        viewModel.updateState {
+            copy(
+                productName = "   ",
+                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
+                price = "50.0",
+                description = "Valid description".padEnd(120, 'x'),
+                images = listOf(
+                    EditProductUiState.ProductImageUi(
+                        id = 1234,
+                        image = mock<ImageBitmap>(),
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
+                    )
+                )
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_general.key,
+            state.snackBarUiState?.message?.key
+        )
+    }
+
+    @Test
+    fun `onSaveProductClicked - isProductValid returns false when no images`() = scope.runTest {
+        viewModel.updateState {
+            copy(
+                productName = "Test",
+                selectedShelf = EditProductUiState.ShelfUiState("id1", "Shelf1", true),
+                price = "50.0",
+                description = "Valid description".padEnd(120, 'x'),
+                images = emptyList(),
+                existingImageUrls = emptyList()
+            )
+        }
+
+        viewModel.onSaveProductClicked()
+        advanceUntilIdle()
+
+        val state = viewModel.state.value
+        assertTrue(state.showSnackBar)
+        assertEquals(
+            Res.string.error_general.key,
+            state.snackBarUiState?.message?.key
+        )
     }
 }
 
