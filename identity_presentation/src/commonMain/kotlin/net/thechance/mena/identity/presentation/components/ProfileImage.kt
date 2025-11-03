@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.profile_profile_picture_content_description
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.screen.editProfile.component.AsyncProfileImage
+import net.thechance.mena.identity.presentation.screen.editProfile.components.AsyncProfileImage
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
