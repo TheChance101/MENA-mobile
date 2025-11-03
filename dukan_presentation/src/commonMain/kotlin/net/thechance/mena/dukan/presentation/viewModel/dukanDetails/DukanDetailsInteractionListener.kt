@@ -11,4 +11,5 @@ interface DukanDetailsInteractionListener {
     fun onMinusClicked(productId: String, productQuantity: Int)
     fun onCartClicked()
     fun onRetryClicked()
+    fun onProductClicked(productId: String)
 }

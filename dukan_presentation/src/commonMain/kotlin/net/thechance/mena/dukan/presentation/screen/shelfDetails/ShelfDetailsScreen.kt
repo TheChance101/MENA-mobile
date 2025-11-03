@@ -43,6 +43,9 @@ fun ShelfDetailsScreen(
             is ShelfDetailsEffects.NavigateToCart -> {
                 // navigate to cart screen
             }
+            is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
+               ProductDetails(productId = effect.productId)
+            )
         }
     }
     ShelfDetailsContent(

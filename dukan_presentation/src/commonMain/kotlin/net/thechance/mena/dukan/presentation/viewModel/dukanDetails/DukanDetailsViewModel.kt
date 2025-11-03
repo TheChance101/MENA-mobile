@@ -11,7 +11,6 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -282,7 +281,21 @@ class DukanDetailsViewModel(
         loadDukanDetails()
     }
 
+    override fun onProductClicked(productId: String) {
+        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId))
+    }
+
+    private fun updateShelvesWithAddedProduct(
+        shelves: PagingData<ShelfUiState>,
+        productId: String
+    ): PagingData<ShelfUiState> {
+        return shelves.map { shelf ->
+            shelf.copy(products = updateProductsWithAddedItem(shelf.products, productId))
+        }
+    }
+
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
+
 
 }

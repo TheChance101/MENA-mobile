@@ -61,6 +61,7 @@ fun LazyGridScope.wideImageProductsGrid(
                 imageUrl = product.imageUrl,
                 title = product.name,
                 price = "${product.price}",
+                onClick = { listener.onProductClicked(product.id) },
                 productAction = {
                     SmallAndWideImageDukanProductAction(
                         showProductQuantity = toggleCartToQuantity,

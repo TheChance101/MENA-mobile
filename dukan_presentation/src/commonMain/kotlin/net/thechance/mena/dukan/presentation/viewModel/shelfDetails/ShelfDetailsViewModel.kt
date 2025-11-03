@@ -122,4 +122,8 @@ class ShelfDetailsViewModel(
     override fun onCartClicked() {
         emitEffect(ShelfDetailsEffects.NavigateToCart(args.dukanId))
     }
+
+    override fun onProductClicked(productId: String) {
+        emitEffect(ShelfDetailsEffects.NavigateToProductDetails(productId))
+    }
 }

@@ -44,4 +44,7 @@ sealed interface DukanRoute {
         val dukancolor: Long,
         val dukanId: String
     ) : DukanRoute
+
+    @Serializable
+    data class ProductDetails(val productId: String) : DukanRoute
 }

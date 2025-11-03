@@ -14,4 +14,6 @@ sealed class DukanDetailsEffects {
         DukanDetailsEffects()
 
     data class NavigateToCartScreen(val dukanId: String) : DukanDetailsEffects()
+    data class NavigateToProductDetails(val productId: String) : DukanDetailsEffects()
+
 }

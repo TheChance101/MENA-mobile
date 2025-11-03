@@ -40,6 +40,10 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToCartScreen -> {
                 // navigate to cart screen
             }
+
+            is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
+                ProductDetails(productId = effect.productId)
+            )
         }
     }
 

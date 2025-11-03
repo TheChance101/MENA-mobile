@@ -138,4 +138,5 @@
     <string name="error_edit_shelf">Error editing shelf</string>
     <string name="edit_shelf_successfully">Edit shelf successfully.</string>
     <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
+    <string name="product_thumbnail"> Product thumbnail</string>
 </resources>
