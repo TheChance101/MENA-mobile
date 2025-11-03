@@ -70,7 +70,7 @@ class ChatViewModel(
     private val messagesMutex = Mutex()
 
     private var hasResentPendingMessages = false
-
+    private var isInitialConnection = true
     private val chatHistoryPaginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
@@ -171,8 +171,26 @@ class ChatViewModel(
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
         observeDeleteChat()
+        observeConnectionStatus(chat.id)
     }
-
+    private fun observeConnectionStatus(chatId: Uuid) {
+        tryToCollect(
+            collect = { messageRepository.observeConnectionStatus() },
+            onCollect = { isConnected ->
+                if (isConnected == true) {
+                    if (isInitialConnection) {
+                        isInitialConnection = false
+                    } else {
+                        val result = getChatHistory(INITIAL_PAGE)
+                        onGetChatHistorySuccess(result)
+                    }
+                }
+            },
+            onError = {
+                showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
+            }
+        )
+    }
     private fun onGetChatError() {
         showSnackBar(
             titleStringResource = Res.string.error,
