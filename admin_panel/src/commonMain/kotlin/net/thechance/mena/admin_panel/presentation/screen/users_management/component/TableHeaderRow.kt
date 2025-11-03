@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.resources.Res
@@ -60,6 +61,9 @@ fun TableHeaderRow(
             text = stringResource(Res.string.phone_number),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
 
@@ -82,6 +86,9 @@ fun TableHeaderRow(
         Text(
             text = stringResource(Res.string.status),
             style = Theme.typography.label.large,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.8f)
         )

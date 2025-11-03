@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.presentation.utils.noRippleClickable
@@ -44,6 +45,9 @@ fun SortableHeaderCell(
     ) {
         Text(
             text = text,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )

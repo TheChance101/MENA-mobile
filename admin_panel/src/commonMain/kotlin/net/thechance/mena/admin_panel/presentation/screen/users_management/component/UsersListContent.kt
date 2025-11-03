@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
@@ -82,6 +83,9 @@ private fun UserItemRow(
             text = index.toString(),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(0.3f)
         )
         
@@ -89,6 +93,9 @@ private fun UserItemRow(
             text = user.fullName,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(2f)
         )
 
@@ -96,6 +103,9 @@ private fun UserItemRow(
             text = user.phoneNumber,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
 
@@ -103,6 +113,9 @@ private fun UserItemRow(
             text = user.lastLoginAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
 
@@ -110,6 +123,9 @@ private fun UserItemRow(
             text = user.lastVisitAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
 
