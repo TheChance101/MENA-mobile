@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.update_categories
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -136,4 +137,18 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `onRetryClick should reset error and call getCategories`() =
+        runTest(testDispatcher) {
+            viewModel.onClickRetry()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.state.test {
+                val state = awaitItem()
+                assertThat(state.errorState).isNull()
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
 }
