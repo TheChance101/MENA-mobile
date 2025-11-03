@@ -20,4 +20,6 @@ data class CachedMessageLocalDto(
     val chatId: String,
     @ColumnInfo(name = "status")
     val status: MessageStatus,
+    @ColumnInfo(name = "is_mine")
+    val isMine: Boolean
 )

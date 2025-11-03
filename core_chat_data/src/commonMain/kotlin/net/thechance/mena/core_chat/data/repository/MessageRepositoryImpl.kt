@@ -9,6 +9,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -51,48 +53,68 @@ class MessageRepositoryImpl(
     private val markChatAsDeleted = MutableSharedFlow<DeleteChatEvent>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
-
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
-        val networkResponse = tryNetworkCall<PagedDataDto<MessageDto>>(
-            bodyType = typeInfo<PagedDataDto<MessageDto>>()
-        ) {
-            client.get(getChatMessagesEndpoint(chatId)){
-                parameter(PAGE_NUMBER_PARAMETER, page)
-                parameter(PAGE_SIZE_PARAMETER, pageSize)
-            }
+        val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
+            chatId = chatId.toString(),
+            offset = (page * pageSize),
+            limit = pageSize
+        )
+
+        val messages = cachedMessages.map { it.toDomain() }
+        if (page == 0 || cachedMessages.isEmpty()) {
+            syncRemoteMessages(chatId, page, pageSize, messages)
         }
 
-        if (networkResponse != null) {
-            val pagedMessages = networkResponse.toPagedListOfMessages()
-            val messages = pagedMessages.data.toCachedMessageLocalDto()
-            cachedMessageDao.insertAllMessages(messages)
-            return pagedMessages
-        } else {
+        val isLastPage = messages.size < pageSize && cachedMessages.isNotEmpty()
 
-            val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
-                chatId = chatId.toString(),
-                offset = (page * pageSize),
-                limit = pageSize
-            )
+        val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
 
-            if (cachedMessages.isEmpty() && page > 0) {
-                return PagedData(data = emptyList(), isLastPage = true, totalItems = 0)
+        return PagedData(
+            data = messages,
+            totalItems = totalCachedItems,
+            isLastPage = isLastPage,
+        )
+
+    }
+
+    private suspend fun syncRemoteMessages(chatId: Uuid, startingPage: Int, pageSize: Int, localMessages: List<Message>) {
+        val localIds = localMessages.map { it.id }.toSet()
+        var currentPage = startingPage
+        var shouldContinueFetching = true
+
+        do {
+            try {
+                val networkResponse = tryNetworkCall<PagedDataDto<MessageDto>>(
+                    bodyType = typeInfo<PagedDataDto<MessageDto>>()
+                ) {
+                    client.get(getChatMessagesEndpoint(chatId)) {
+                        parameter(PAGE_NUMBER_PARAMETER, currentPage)
+                        parameter(PAGE_SIZE_PARAMETER, pageSize)
+                    }
+                } ?: return
+
+                val remoteMessages = networkResponse.toPagedListOfMessages().data
+
+                if (remoteMessages.isEmpty()) shouldContinueFetching = false
+
+                val (existing, notExisting) = remoteMessages.partition { it.id in localIds }
+
+                if (notExisting.isNotEmpty()) {
+                    cachedMessageDao.insertAllMessages(notExisting.map(Message::toCachedMessageLocalDto))
+
+                    messageFlows.emitAll(notExisting.asFlow())
+                }
+
+                if (existing.isNotEmpty()) shouldContinueFetching = false
+
+                currentPage++
+
+            } catch (e: Throwable) {
+                if (currentPage == 0) return
+                throw e
             }
 
-            val messages = cachedMessages.map { it.toDomain() }
-            val isLastPage = messages.size < pageSize
-
-            val estimatedTotal = if (isLastPage) {
-                (page * pageSize) + messages.size
-            } else {
-                (page + 1) * pageSize + 1
-            }
-            return PagedData(
-                data = messages,
-                totalItems = estimatedTotal,
-                isLastPage = isLastPage,
-            )
-        }
+        } while (shouldContinueFetching && localIds.isNotEmpty())
     }
 
     override suspend fun deleteMessage(message: Message) {
