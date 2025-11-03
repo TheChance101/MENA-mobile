@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.productImage.DisplayProductImage
+import net.thechance.mena.dukan.presentation.component.product.productImage.ImageType
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageModel
 import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.product.productImage.UploadProductImage
@@ -92,7 +93,8 @@ fun ImageSection(
                 
                 if (imageUrl != null && onCancelImageUrlClick != null) {
                     DisplayProductImage(
-                        imageUrl = imageUrl,
+                        image = imageUrl,
+                        imageType = ImageType.URL,
                         onCancelClick = { onCancelImageUrlClick(imageUrl) },
                         modifier = modifier,
                         isCancelButtonEnabled = isCancelImageEnabled
@@ -100,6 +102,7 @@ fun ImageSection(
                 } else {
                     DisplayProductImage(
                         image = image.image,
+                        imageType = ImageType.BITMAP,
                         imageSizeInMegaByte = image.imageSizeInMegaByte,
                         productImageState = image.imageState,
                         onCancelClick = { onCancelImageClick(image.image) },

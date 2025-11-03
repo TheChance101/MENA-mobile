@@ -45,9 +45,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DisplayProductImage(
-    image: ImageBitmap,
+    image: Any,
+    imageType: ImageType,
     imageSizeInMegaByte: Double = 0.0,
-    onCancelClick: (ImageBitmap) -> Unit,
+    onCancelClick: (Any) -> Unit,
     modifier: Modifier = Modifier,
     productImageState: ProductImageState = ProductImageState.LOADING,
     isCancelButtonEnabled: Boolean = true,
@@ -60,61 +61,54 @@ fun DisplayProductImage(
             .background(color = Transparent),
         contentAlignment = Alignment.Center
     ) {
-        AnimatedContent(
-            targetState = productImageState,
-            label = "display product Image",
-            transitionSpec = { fadeTransitionSpec() },
-            modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
-        ) { currentState ->
-            when (currentState) {
-                ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
-                ProductImageState.SUCCESS -> SuccessContentImage(image = image)
-                ProductImageState.ERROR -> ErrorContentImage(image = image)
+        when (imageType) {
+            ImageType.BITMAP -> {
+                if (image is ImageBitmap) {
+                    AnimatedContent(
+                        targetState = productImageState,
+                        label = "display product Image",
+                        transitionSpec = { fadeTransitionSpec() },
+                        modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
+                    ) { currentState ->
+                        when (currentState) {
+                            ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
+                            ProductImageState.SUCCESS -> SuccessContentImage(image = image)
+                            ProductImageState.ERROR -> ErrorContentImage(image = image)
+                        }
+                    }
+
+                    CancelImageIconButton(
+                        productImageState = productImageState,
+                        onCancelClick = { onCancelClick(image) },
+                        isCancelButtonEnabled = isCancelButtonEnabled
+                    )
+
+                    errorMessage?.let { error ->
+                        if (productImageState == ProductImageState.ERROR) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = Theme.spacing._4)
+                                    .align(Alignment.BottomCenter),
+                                text = error,
+                                style = Theme.typography.label.extraSmall,
+                                color = Theme.colorScheme.error,
+                                maxLines = 1,
+                            )
+                        }
+                    }
+                }
+            }
+            ImageType.URL -> {
+                if (image is String) {
+                    DisplayExistingProductImage(
+                        imageUrl = image,
+                        onCancelClick = { onCancelClick(image) },
+                        isCancelButtonEnabled = isCancelButtonEnabled
+                    )
+                }
             }
         }
-
-        CancelImageIconButton(
-            productImageState = productImageState,
-            onCancelClick = { onCancelClick(image) },
-            isCancelButtonEnabled = isCancelButtonEnabled
-        )
-
-        errorMessage?.let { error ->
-            if (productImageState == ProductImageState.ERROR) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = Theme.spacing._4)
-                        .align(Alignment.BottomCenter),
-                    text = error,
-                    style = Theme.typography.label.extraSmall,
-                    color = Theme.colorScheme.error,
-                    maxLines = 1,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DisplayProductImage(
-    imageUrl: String,
-    onCancelClick: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    isCancelButtonEnabled: Boolean = true,
-) {
-    Box(
-        modifier = modifier
-            .height(104.dp)
-            .width(94.dp)
-            .background(color = Transparent),
-        contentAlignment = Alignment.Center
-    ) {
-        DisplayExistingProductImage(
-            imageUrl = imageUrl,
-            onCancelClick = onCancelClick,
-            isCancelButtonEnabled = isCancelButtonEnabled
-        )
     }
 }
 
@@ -286,6 +280,10 @@ enum class ProductImageState {
     SUCCESS, LOADING, ERROR
 }
 
+enum class ImageType {
+    BITMAP, URL
+}
+
 @Preview()
 @Composable
 private fun LoadingProductImagePreview() {
@@ -299,6 +297,7 @@ private fun LoadingProductImagePreview() {
 
             DisplayProductImage(
                 image = image,
+                imageType = ImageType.BITMAP,
                 imageSizeInMegaByte = 2.0,
                 productImageState = ProductImageState.LOADING,
                 onCancelClick = {}
@@ -320,6 +319,7 @@ private fun SuccessProductImagePreview() {
 
             DisplayProductImage(
                 image = image,
+                imageType = ImageType.BITMAP,
                 imageSizeInMegaByte = 2.0,
                 productImageState = ProductImageState.SUCCESS,
                 onCancelClick = {}
@@ -341,6 +341,7 @@ private fun ErrorProductImagePreview() {
 
             DisplayProductImage(
                 image = image,
+                imageType = ImageType.BITMAP,
                 imageSizeInMegaByte = 0.0,
                 productImageState = ProductImageState.ERROR,
                 errorMessage = "Uploading Failed",
