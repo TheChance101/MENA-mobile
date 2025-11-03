@@ -31,7 +31,7 @@ fun MenaTheme(
     val colorScheme = LightColorScheme
     val typography = createThemeTypography()
     val layoutDirection = remember(language) {
-        if (language == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
+        if (language == AppLanguage.Arabic.iso) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
     CompositionLocalProvider(
         LocalColorScheme provides colorScheme,
