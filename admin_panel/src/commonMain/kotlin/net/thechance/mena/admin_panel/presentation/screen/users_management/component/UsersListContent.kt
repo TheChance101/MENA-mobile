@@ -47,7 +47,12 @@ fun UsersListContent(
                     index = index + 1,
                     user = user,
                     hasBackground = index % 2 != 0,
-                    onToggleUserStatusClicked = { listener.onToggleUserStatusClicked(user.id) }
+                    onToggleUserStatusClicked = {
+                        listener.onToggleUserStatusClicked(
+                            userId = user.id,
+                            userStatus = user.status
+                        )
+                    }
                 )
             }
         }
@@ -75,7 +80,7 @@ private fun UserItemRow(
         modifier = modifier
             .fillMaxWidth()
             .background(animatedBackgroundColor)
-            .padding( 16.dp),
+            .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -83,18 +88,14 @@ private fun UserItemRow(
             text = index.toString(),
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(0.3f)
         )
-        
+
         Text(
             text = user.fullName,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(2f)
         )
@@ -103,8 +104,6 @@ private fun UserItemRow(
             text = user.phoneNumber,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
@@ -113,8 +112,6 @@ private fun UserItemRow(
             text = user.lastLoginAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
@@ -123,8 +120,6 @@ private fun UserItemRow(
             text = user.lastVisitAt,
             style = Theme.typography.body.medium,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(1.5f)
         )

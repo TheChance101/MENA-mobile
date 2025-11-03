@@ -61,8 +61,6 @@ fun TableHeaderRow(
             text = stringResource(Res.string.phone_number),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             modifier = Modifier.weight(1.5f)
         )
@@ -86,8 +84,6 @@ fun TableHeaderRow(
         Text(
             text = stringResource(Res.string.status),
             style = Theme.typography.label.large,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
             softWrap = false,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.weight(0.8f)

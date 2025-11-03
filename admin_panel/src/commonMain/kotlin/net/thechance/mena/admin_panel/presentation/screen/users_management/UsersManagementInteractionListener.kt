@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
+import net.thechance.mena.admin_panel.domain.entity.user.Status
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -7,7 +8,7 @@ import kotlin.uuid.Uuid
 
 interface UsersManagementInteractionListener {
     fun onSortClicked(type: UsersManagementScreenState.SortType)
-    fun onToggleUserStatusClicked(userId: Uuid)
+    fun onToggleUserStatusClicked(userId: Uuid, userStatus: Status)
     fun onRetryClicked()
     fun onSearchQueryChanged(query: String)
     fun onClearQueryClicked()

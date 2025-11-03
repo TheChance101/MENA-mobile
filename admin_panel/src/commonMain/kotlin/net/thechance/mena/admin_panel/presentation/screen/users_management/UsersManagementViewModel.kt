@@ -115,10 +115,8 @@ class UsersManagementViewModel(
         updateState { it.copy(showBlockDialog = false, selectedUserId = null) }
     }
 
-    override fun onToggleUserStatusClicked(userId: Uuid) {
-        val user = state.value.users.find { it.id == userId } ?: return
-
-        when (user.status) {
+    override fun onToggleUserStatusClicked(userId: Uuid, userStatus: Status) {
+        when (userStatus) {
             Status.ACTIVE -> showBlockDialog(userId)
             Status.BLOCKED -> updateUserStatus(userId, Status.ACTIVE)
         }

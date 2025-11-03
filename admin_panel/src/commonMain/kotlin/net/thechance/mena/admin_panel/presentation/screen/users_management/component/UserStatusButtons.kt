@@ -107,8 +107,6 @@ fun UserStatusButton(
             Text(
                 text = statusText,
                 style = Theme.typography.label.medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 softWrap = false,
                 color = animatedTextColor
             )

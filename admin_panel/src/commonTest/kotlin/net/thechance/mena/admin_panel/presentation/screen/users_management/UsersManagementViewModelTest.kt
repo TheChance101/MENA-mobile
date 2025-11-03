@@ -14,7 +14,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
@@ -212,7 +212,8 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val activeUserId = usersList[0].id
-            viewModel.onToggleUserStatusClicked(activeUserId)
+            val userStatus = Status.ACTIVE
+            viewModel.onToggleUserStatusClicked(activeUserId, userStatus)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -229,7 +230,8 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val blockedUserId = usersList[1].id
-            viewModel.onToggleUserStatusClicked(blockedUserId)
+            val userStatus = Status.BLOCKED
+            viewModel.onToggleUserStatusClicked(blockedUserId, userStatus)
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -311,8 +313,8 @@ class UsersManagementViewModelTest {
                 firstName = "Farah",
                 lastName = "Khalil",
                 phoneNumber = "+970599123456",
-                lastLoginAt = LocalDate(2025, 10, 15),
-                lastVisitAt = LocalDate(2025, 10, 20),
+                lastLoginAt = LocalDateTime(2025, 10, 15, 23,59,59),
+                lastVisitAt = LocalDateTime(2025, 10, 20, 23,59,59),
                 status = Status.ACTIVE
             ),
             User(
@@ -320,8 +322,8 @@ class UsersManagementViewModelTest {
                 firstName = "Malak",
                 lastName = "Raef",
                 phoneNumber = "+970599654321",
-                lastLoginAt = LocalDate(2025, 9, 10),
-                lastVisitAt = LocalDate(2025, 9, 25),
+                lastLoginAt = LocalDateTime(2025, 9, 10, 23,59,59),
+                lastVisitAt = LocalDateTime(2025, 9, 25, 23,59,59),
                 status = Status.BLOCKED
             ),
             User(
@@ -329,8 +331,8 @@ class UsersManagementViewModelTest {
                 firstName = "Muhammed",
                 lastName = "Magdy",
                 phoneNumber = "+970599789012",
-                lastLoginAt = LocalDate(2025, 10, 1),
-                lastVisitAt = LocalDate(2025, 10, 18),
+                lastLoginAt = LocalDateTime(2025, 10, 1, 23,59,59),
+                lastVisitAt = LocalDateTime(2025, 10, 18, 23,59,59),
                 status = Status.ACTIVE
             )
         )

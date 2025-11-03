@@ -13,12 +13,8 @@ fun UserResponse.toEntity(): User {
     return User(
         id = id.toUuidOrNull() ?: throw IllegalStateException("Invalid User id"),
         phoneNumber = phoneNumber.orEmpty(),
-        lastLoginAt = parseLocalDateTimeOrDefault(lastLoginAt)?.date ?: throw IllegalStateException(
-            "Invalid date"
-        ),
-        lastVisitAt = parseLocalDateTimeOrDefault(lastVisitAt)?.date ?: throw IllegalStateException(
-            "Invalid date"
-        ),
+        lastLoginAt = parseLocalDateTimeOrDefault(lastLoginAt),
+        lastVisitAt = parseLocalDateTimeOrDefault(lastVisitAt),
         status = Status.valueOfOrDefault(status),
         firstName = firstName.orEmpty(),
         lastName = lastName.orEmpty(),
