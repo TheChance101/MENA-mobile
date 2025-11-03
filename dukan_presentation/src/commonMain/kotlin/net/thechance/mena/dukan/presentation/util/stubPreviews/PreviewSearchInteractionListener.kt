@@ -16,4 +16,5 @@ object PreviewSearchInteractionListener: SearchInteractionListener {
     override fun onDukanClicked(dukanId: Uuid) {}
     override fun onDukanFavoriteClicked(dukanId: Uuid) {}
     override fun onProductClicked(productId: Uuid) {}
+    override fun onSnackBarDismissed() {}
 }
