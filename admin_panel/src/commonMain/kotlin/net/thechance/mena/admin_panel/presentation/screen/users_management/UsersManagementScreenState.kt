@@ -29,7 +29,7 @@ data class UsersManagementScreenState(
     )
 
     data class SortState(
-        val type: SortType = SortType.NONE,
+        val type: SortType = SortType.USERNAME,
         val direction: SortDirection = SortDirection.ASC
     )
 
