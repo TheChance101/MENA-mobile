@@ -26,7 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun SnackBar(
     snackBarUiState: SnackBarUiState,
-    onDismiss: () -> Unit = {},
+    onDismiss: () -> Unit,
     autoDismissMillis: Long = 3000L,
     modifier: Modifier = Modifier
 ) {
