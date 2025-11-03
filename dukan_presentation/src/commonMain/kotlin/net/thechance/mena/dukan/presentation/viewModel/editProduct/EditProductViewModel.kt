@@ -89,7 +89,7 @@ class EditProductViewModel(
         saveOriginalProductData(product, filteredImages)
 
         if (state.value.shelves.isNotEmpty()) {
-            selectProductShelf(productShelfId!!)
+            selectProductShelf(product.shelfId.toString())
         }
     }
 
