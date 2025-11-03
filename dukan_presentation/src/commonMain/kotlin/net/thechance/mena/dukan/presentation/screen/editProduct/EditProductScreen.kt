@@ -150,7 +150,8 @@ private fun EditProductContent(
 
             item {
                 ImageSection(
-                    images = state.allImages,
+                    images = state.images,
+                    existingImageUrls = state.existingImageUrls,
                     isUploadingImageEnabled = state.isUploadingImageEnabled,
                     isCancelImageEnabled = state.isCancelImageEnabled,
                     onUploadImageClick = interactionListener::onUploadImageClicked,
