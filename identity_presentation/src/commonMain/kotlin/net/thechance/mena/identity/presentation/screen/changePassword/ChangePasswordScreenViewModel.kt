@@ -15,8 +15,8 @@ import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.screen.profile.SnackBarType
+import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
 import net.thechance.mena.identity.presentation.util.isPasswordMatch
 import org.jetbrains.compose.resources.StringResource
 
@@ -195,7 +195,7 @@ class ChangePasswordScreenViewModel(
         }
     }
 
-    fun onClearErrorMessage() {
+    override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }
 }
