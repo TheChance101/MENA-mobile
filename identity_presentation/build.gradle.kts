@@ -67,6 +67,8 @@ kotlin {
             implementation(libs.bundles.coil)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.compose.ui.backhandler)
+
 
             // maps
             implementation(libs.maplibre.compose)
