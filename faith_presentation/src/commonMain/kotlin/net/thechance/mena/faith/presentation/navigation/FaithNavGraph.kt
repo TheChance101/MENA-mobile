@@ -17,6 +17,7 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScre
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
 
 @Composable
 fun FaithNavigation() {
@@ -55,6 +56,9 @@ fun FaithNavigation() {
                 }
                 composable<Route.NearbyMosquesRoute> {
                     NearbyMosquesScreen()
+                }
+                composable<Route.DownloadedRecitersRoute> {
+                    DownloadedReciterScreen()
                 }
             }
         }
