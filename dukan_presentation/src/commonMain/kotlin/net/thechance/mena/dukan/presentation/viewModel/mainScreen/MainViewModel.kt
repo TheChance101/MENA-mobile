@@ -236,7 +236,7 @@ class MainViewModel(
             onSuccess = {
                 updateFavoriteDukanPagingData(
                     dukanId = dukanId,
-                    transform = { it.copy(isFavorite = !isFavorite) }
+                    isFavorite = !isFavorite
                 )
             }
         )
@@ -244,11 +244,11 @@ class MainViewModel(
 
     private fun updateFavoriteDukanPagingData(
         dukanId: String,
-        transform: (MainScreenUiState.EditorPickDukanUiState) -> MainScreenUiState.EditorPickDukanUiState
+        isFavorite: Boolean
     ) {
         val currentData = editorPickState.value
         val updatedData = currentData.map { dukan ->
-            if (dukan.id == dukanId) transform(dukan) else dukan
+            if (dukan.id == dukanId) dukan.copy(isFavorite = isFavorite) else dukan
         }
         editorPickState.value = updatedData
         updateState { copy(editorPickDukans = editorPickState) }
