@@ -10,6 +10,7 @@ interface UsersManagementInteractionListener {
     fun onToggleUserStatusClicked(userId: Uuid)
     fun onRetryClicked()
     fun onSearchQueryChanged(query: String)
+    fun onClearQueryClicked()
     fun showBlockDialog(userId: Uuid)
     fun onDismissBlockDialog()
     fun onConfirmBlock()

@@ -98,6 +98,11 @@ class UsersManagementViewModel(
         }
     }
 
+    override fun onClearQueryClicked() {
+        updateState { it.copy(query = "") }
+        getUsers()
+    }
+
     override fun onRetryClicked() {
         getUsers()
     }

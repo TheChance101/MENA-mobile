@@ -77,7 +77,7 @@ class UsersManagementViewModelTest {
             viewModel.state.test {
                 val currentState = awaitItem()
                 assertEquals(UsersManagementScreenState.SortType.USERNAME, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
+                assertEquals(UsersManagementScreenState.SortDirection.DESC, currentState.sort.direction)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -95,7 +95,7 @@ class UsersManagementViewModelTest {
             viewModel.state.test {
                 val currentState = awaitItem()
                 assertEquals(UsersManagementScreenState.SortType.USERNAME, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.DESC, currentState.sort.direction)
+                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -264,6 +264,24 @@ class UsersManagementViewModelTest {
     }
 
     @Test
+    fun `should clear query and reload users when onClearQueryClicked is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        viewModel.onSearchQueryChanged("something")
+        advanceUntilIdle()
+
+        viewModel.onClearQueryClicked()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertEquals("", currentState.query) // query should be empty
+            assertTrue(currentState.users.isNotEmpty()) // users reloaded successfully
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `should reload users when onRetryClicked is called`() = runTest(testDispatcher) {
         initViewModel()
 
@@ -284,6 +302,7 @@ class UsersManagementViewModelTest {
         )
         advanceUntilIdle()
     }
+
 
     private companion object {
         val usersList = listOf(

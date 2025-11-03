@@ -65,6 +65,7 @@ private fun UsersManagementScreenContent(
                 onValueChange = { newQuery ->
                     listener.onSearchQueryChanged(newQuery)
                 },
+                onClearQueryClicked = listener::onClearQueryClicked,
                 modifier = Modifier.padding(16.dp)
             )
 
