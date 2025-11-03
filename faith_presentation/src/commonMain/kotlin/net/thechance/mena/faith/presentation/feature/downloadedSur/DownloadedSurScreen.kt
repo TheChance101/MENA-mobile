@@ -26,6 +26,7 @@ import net.thechance.mena.faith.presentation.feature.downloadedSur.components.De
 import net.thechance.mena.faith.presentation.feature.downloadedSur.components.DownloadedSurAppBar
 import net.thechance.mena.faith.presentation.feature.downloadedSur.components.DownloadedSurahCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -38,7 +39,7 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            DownloadedSurEffect.NavigateToRecitersScreen -> Unit // TODO("Navigate to reciters screen when done")
+            DownloadedSurEffect.NavigateToRecitersScreen -> navController.navigate(Route.DownloadedRecitersRoute)
             is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> Unit // TODO("Navigate to downloaded surah reciters when done")
         }
     }
