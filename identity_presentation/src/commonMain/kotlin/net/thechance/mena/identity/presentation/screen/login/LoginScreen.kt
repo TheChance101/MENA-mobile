@@ -21,7 +21,6 @@ import mena.identity_presentation.generated.resources.login
 import mena.identity_presentation.generated.resources.login_prompt
 import mena.identity_presentation.generated.resources.password
 import mena.identity_presentation.generated.resources.register_now
-import mena.identity_presentation.generated.resources.register_prompt
 import mena.identity_presentation.generated.resources.welcome_back
 import mena.identity_presentation.generated.resources.you_are_new
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -36,7 +35,7 @@ import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
-import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -138,7 +137,7 @@ class LoginScreen : BaseScreen<
     ) {
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterPhoneEntryScreen())
-            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordScreen())
+            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordPhoneEntryScreen())
             LoginScreenUIEffect.NavigateToHome -> {}
         }
     }
