@@ -1,13 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -23,14 +21,11 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -293,7 +288,7 @@ class DukanDetailsViewModelTest {
         dukanDetailsViewModel.effect.test {
             // When
             dukanDetailsViewModel.onProductClicked("1")
-            assertEquals(DukanDetailsEffects.NavigateToProductDetails("1","20"), awaitItem())
+            assertEquals(DukanDetailsEffects.NavigateToProductDetails("1", "20"), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -368,7 +363,7 @@ class DukanDetailsViewModelTest {
         everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
         //When
-        dukanDetailsViewModel.onPlusClicked(productId, productQuantity = quantity, onComplete = {})
+        dukanDetailsViewModel.onPlusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
@@ -388,7 +383,7 @@ class DukanDetailsViewModelTest {
         everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
 
         //When
-        dukanDetailsViewModel.onMinusClicked(productId, productQuantity = quantity, onComplete = {})
+        dukanDetailsViewModel.onMinusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
@@ -405,7 +400,7 @@ class DukanDetailsViewModelTest {
         everySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) } returns Unit
 
         //When
-        dukanDetailsViewModel.onMinusClicked(productId, productQuantity = quantity, onComplete = {})
+        dukanDetailsViewModel.onMinusClicked(productId, productQuantity = quantity)
 
         advanceUntilIdle()
         //Then
