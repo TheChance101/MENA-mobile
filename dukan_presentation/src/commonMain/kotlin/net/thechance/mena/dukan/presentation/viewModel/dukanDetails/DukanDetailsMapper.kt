@@ -32,6 +32,6 @@ fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
     description = description,
     price = price,
     imageUrl = imageUrls.firstOrNull().orEmpty(),
-    inCartQuantity = quantityInCart?: 0
+    inCartQuantity = quantityInCart
 )
 

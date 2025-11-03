@@ -92,7 +92,7 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
             modifier = Modifier.fillMaxWidth().padding(horizontal = Theme.spacing._16),
             state = lazyListState,
         ) {
-            stickyHeader(key = "dukan_info") {
+            item(key = "dukan_info") {
                 AnimatedContent(state.dukanInfoState) {
                     when (it) {
                         DukanCartUiState.DukanInfoState.LOADING -> DukanInfoSkeleton()
@@ -131,8 +131,7 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                                     horizontal = Theme.spacing._12
                                 )
                         )
-                    },
-                    // modifier = Modifier.animateItemPlacement(),
+                    }
                 ) {
                     ProductCard(
                         productName = product.name,
@@ -143,8 +142,18 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         SetProductQuantity(
-                            onPlusClick = { listener.onIncreaseItemQuantityClicked(product.id) },
-                            onMinusClick = { listener.onDecreaseItemQuantityClicked(product.id) },
+                            onPlusClick = {
+                                listener.onIncreaseItemQuantityClicked(
+                                    product.id,
+                                    product.quantity + 1
+                                )
+                            },
+                            onMinusClick = {
+                                listener.onDecreaseItemQuantityClicked(
+                                    product.id,
+                                    product.quantity - 1
+                                )
+                            },
                             inCartQuantity = product.quantity
                         )
                     }
@@ -246,7 +255,6 @@ private fun DukanInfoSkeleton() {
 
 @Composable
 private fun BottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
-    println("Total Priceaaaaaaaaa: $totalPrice")
     Column(
         modifier = Modifier
             .fillMaxWidth()

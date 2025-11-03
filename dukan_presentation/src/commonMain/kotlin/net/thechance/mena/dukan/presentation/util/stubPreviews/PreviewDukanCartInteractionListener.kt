@@ -9,9 +9,9 @@ object PreviewDukanCartInteractionListener : DukanCartInteractionListener {
 
     override fun onCheckoutClicked() {}
 
-    override fun onIncreaseItemQuantityClicked(productId: String) {}
+    override fun onIncreaseItemQuantityClicked(productId: String, newQuantity: Int) {}
 
-    override fun onDecreaseItemQuantityClicked(productId: String) {}
+    override fun onDecreaseItemQuantityClicked(productId: String, newQuantity: Int) {}
 
     override fun onRemoveItemClicked(productId: String) {}
 

@@ -10,6 +10,6 @@ data class Product(
     val description: String,
     val price: Double,
     val imageUrls: List<String>,
-    val quantityInCart: Int? = null,
+    val quantityInCart: Int,
     val createdAt: String
 )

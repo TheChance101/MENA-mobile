@@ -112,7 +112,6 @@ private fun SmallImageDukanAppBar(
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                // when cart contains products
                 isBadgeVisible = isBadgeVisible,
                 onClick = listener::onCartClicked
             ) {
