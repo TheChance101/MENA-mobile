@@ -1369,11 +1369,11 @@ class EditProductViewModelTest {
         assertEquals(productWithShelf.name, state.productName)
         assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded")
         assertNotNull(state.selectedShelf, "Product shelf should be selected when shelves are not empty")
-        assertEquals(testShelfId.toString(), state.selectedShelf?.id)
+        assertEquals(testShelfId.toString(), state.selectedShelf.id)
         
         val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
         assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
-        assertTrue(shelfWithMatchingId?.isSelected == true, "Matching shelf should be selected")
+        assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
     }
 
     @Test
@@ -1395,11 +1395,11 @@ class EditProductViewModelTest {
         assertEquals(productWithShelf.name, state.productName)
         assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded before product data")
         assertNotNull(state.selectedShelf, "Product shelf should be selected when shelves are loaded before product data")
-        assertEquals(testShelfId.toString(), state.selectedShelf?.id)
+        assertEquals(testShelfId.toString(), state.selectedShelf.id)
         
         val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
         assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
-        assertTrue(shelfWithMatchingId?.isSelected == true, "Matching shelf should be selected")
+        assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
     }
 }
 
