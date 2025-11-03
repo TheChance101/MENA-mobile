@@ -7,6 +7,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_management_general_error
+import mena.dukan_presentation.generated.resources.dukan_managment_loading
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -38,110 +40,20 @@ class MainViewModel(
     private fun fetchData() {
         getDukanState()
         getCategories()
-        loadEditorPicksDukans()
         loadBestNearestDukans()
-    }
-
-    private fun loadEditorPicksDukans() {
-        tryToCollect(
-            block = ::createLoadEditorPagingSource,
-            onCollect = ::onLoadedEditorPicksDukan,
-            onError = ::handleNetworkError
-        )
-    }
-
-    private fun createLoadEditorPagingSource(): Flow<PagingData<MainScreenUiState.EditorPickDukanUiState>> {
-        return createPagingSourceFlow(mapper = { it.toEditorPickUiState() }) { currentPage, pageSize ->
-            dukanDiscoveryRepository.getEditorPicksDukans(
-                page = currentPage,
-                size = pageSize
-            ).items
-        }
-    }
-    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
-        updateState {
-            copy(
-                editorPickDukans = flowOf(dukans),
-                snackBarState = null
-            )
-        }
-    }
-
-    private fun loadBestNearestDukans() {
-        tryToCollect(
-            block = ::createLoadBestDukanPagingSource,
-            onCollect = ::onLoadedBestNearestDukans,
-            onError = ::handleNetworkError
-        )
-    }
-
-    private fun createLoadBestDukanPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
-        return createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
-            dukanDiscoveryRepository.getBestAroundDukans(
-                page = currentPage,
-                size = pageSize
-            ).items
-        }
-    }
-    private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
-        updateState {
-            copy(
-                bestNearestDukans = flowOf(dukans),
-                snackBarState = null
-            )
-        }
-    }
-
-    private fun handleNetworkError(error: Throwable) {
-        when (error) {
-            is NoInternetException -> updateState {
-                updateToNoInternetState()
-            }
-
-            else -> {
-                showSnackBar(
-                    message = Res.string.error_general,
-                    type = SnackBarType.ERROR
-                )
-            }
-        }
-    }
-
-    private fun getCategories() {
-        tryToExecute(
-            onStart = {
-                setLoadingState()
-            },
-            block = ::getCategoriesBlock,
-            onSuccess = ::onGetCategoriesSuccess,
-            onError = ::handleNetworkError
-        )
-    }
-
-
-    private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
-        return dukanManagementRepository.getCategories().toUiState()
-    }
-
-    private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
-        updateState {
-            copy(
-                categories = categoryUiState,
-                snackBarState = null
-            )
-        }
+        loadEditorPicksDukans()
     }
 
     private fun getDukanState() {
         tryToExecute(
-            onStart = ::setLoadingState,
+            onStart = ::onGetDukanStateStart,
             block = ::getDukanStateBlock,
             onSuccess = ::onGetDukanStateSuccess,
             onError = ::onGetDukanStateError
         )
     }
 
-    private fun setLoadingState() {
+    private fun onGetDukanStateStart() {
         updateState { copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Loading)) }
     }
 
@@ -173,7 +85,164 @@ class MainViewModel(
 
             is NoInternetException -> {
                 updateState {
+                    copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
                     updateToNoInternetState()
+                }
+
+            }
+
+            else -> updateState {
+                copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
+            }
+        }
+    }
+
+    private fun getCategories() {
+        tryToExecute(
+            onStart = ::onGetCategoriesStart,
+            block = ::getCategoriesBlock,
+            onSuccess = ::onGetCategoriesSuccess,
+            onError = ::handleGetCategoriesError
+        )
+    }
+
+    private fun onGetCategoriesStart(){
+        updateState { copy(isCategoriesLoading = true) }
+    }
+
+    private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
+        return dukanManagementRepository.getCategories().toUiState()
+    }
+
+    private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
+        updateState {
+            copy(
+                categories = categoryUiState,
+                snackBarState = null,
+                isCategoriesLoading = false
+            )
+        }
+    }
+
+    private fun handleGetCategoriesError(error: Throwable) {
+        when (error) {
+            is NoInternetException -> updateState {
+                updateToNoInternetState()
+            }
+
+            else -> {
+                showSnackBar(
+                    message = Res.string.error_general,
+                    type = SnackBarType.ERROR,
+                )
+                updateState {
+                    copy(
+                        isCategoriesLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadBestNearestDukans() {
+        tryToCollect(
+            onStart = ::onGetBestNearestDukanStart,
+            block = ::createLoadBestDukanPagingSource,
+            onCollect = ::onLoadedBestNearestDukans,
+            onError = ::handleGetBestNearestDukansError
+        )
+    }
+
+    private fun onGetBestNearestDukanStart(){
+        updateState { copy(isBestNearestDukanLoading = true) }
+    }
+
+    private fun createLoadBestDukanPagingSource(): Flow<PagingData<MainScreenUiState.BestNearestDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toBestNearestUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getBestAroundDukans(
+                page = currentPage,
+                size = pageSize
+            ).items
+        }
+    }
+
+    private fun onLoadedBestNearestDukans(dukans: PagingData<MainScreenUiState.BestNearestDukanUiState>) {
+        updateState {
+            copy(
+                bestNearestDukans = flowOf(dukans),
+                snackBarState = null,
+                isBestNearestDukanLoading = false
+            )
+        }
+    }
+
+    private fun handleGetBestNearestDukansError(error: Throwable) {
+        when (error) {
+            is NoInternetException -> updateState {
+                updateToNoInternetState()
+            }
+
+            else -> {
+                showSnackBar(
+                    message = Res.string.error_general,
+                    type = SnackBarType.ERROR,
+                )
+                updateState {
+                    copy(
+                        isBestNearestDukanLoading = false,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadEditorPicksDukans() {
+        tryToCollect(
+            onStart = ::onGetEditorPicksDukanStart,
+            block = ::createLoadEditorPagingSource,
+            onCollect = ::onLoadedEditorPicksDukan,
+            onError = ::handleGetEditorPicksDukanError
+        )
+    }
+
+    private fun onGetEditorPicksDukanStart(){
+        updateState { copy(isEditorPickDukanLoading = true) }
+    }
+
+    private fun createLoadEditorPagingSource(): Flow<PagingData<MainScreenUiState.EditorPickDukanUiState>> {
+        return createPagingSourceFlow(mapper = { it.toEditorPickUiState() }) { currentPage, pageSize ->
+            dukanDiscoveryRepository.getEditorPicksDukans(
+                page = currentPage,
+                size = pageSize
+            ).items
+        }
+    }
+
+    private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        updateState {
+            copy(
+                editorPickDukans = flowOf(dukans),
+                snackBarState = null,
+                isEditorPickDukanLoading = false
+            )
+        }
+    }
+
+    private fun handleGetEditorPicksDukanError(error: Throwable) {
+        when (error) {
+            is NoInternetException -> updateState {
+                updateToNoInternetState()
+            }
+
+            else -> {
+                showSnackBar(
+                    message = Res.string.error_general,
+                    type = SnackBarType.ERROR,
+                )
+                updateState {
+                    copy(
+                        isEditorPickDukanLoading = false,
+                    )
                 }
             }
         }
@@ -192,7 +261,15 @@ class MainViewModel(
             DukanStatusUi.None -> emitEffect(MainScreenEffect.NavigateToAddDukanScreen)
             DukanStatusUi.Pending -> emitEffect(MainScreenEffect.NavigateToPendingDukanScreen)
             DukanStatusUi.Approved -> emitEffect(MainScreenEffect.NavigateToManageDukanScreen)
-            DukanStatusUi.Loading -> {}
+            DukanStatusUi.Default -> showSnackBar(
+                message = Res.string.dukan_management_general_error,
+                type = SnackBarType.ERROR
+            )
+
+            DukanStatusUi.Loading -> showSnackBar(
+                message = Res.string.dukan_managment_loading,
+                type = SnackBarType.ERROR
+            )
         }
     }
 

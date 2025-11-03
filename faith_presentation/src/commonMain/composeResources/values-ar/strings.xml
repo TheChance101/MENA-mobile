@@ -75,6 +75,8 @@
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>
+    <string name="upload_mosque_image">اضف صورة للمسجد</string>
+    <string name="click_to_upload">اضغط للرفع</string>
     <string name="faith_title">الإيمان</string>
     <string name="sunrise_time_label">وقت الشروق</string>
     <string name="location">الموقع</string>
@@ -108,5 +110,10 @@
     <string name="next_prayer_time_icon">يقونة المصلي</string>
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="search_hint">ابحث...</string>
-    <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
+    <string name="no_mosques_found_by_keyword">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
+    <string name="downloaded">تم التنزيل</string>
+    <string name="reciters">القراء</string>
+    <string name="search_results">نتائج البحث</string>
+    <string name="no_nearby_mosques_found">لم يتم العثور على أي مساجد بالجوار، ابحث بمكان آخر</string>
+
 </resources>

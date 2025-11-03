@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.wallet.repository
 
 import io.ktor.client.engine.mock.MockRequestHandleScope
@@ -9,9 +11,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.transaction.TransactionRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Transaction
@@ -23,6 +24,8 @@ import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -184,10 +187,7 @@ class TransactionRepositoryImplTest {
         val transaction1Id = Uuid.random()
         val transaction1 = Transaction(
             id = transaction1Id,
-            createdAt = LocalDateTime(
-                date = LocalDate(2025, 8, 20),
-                time = LocalTime(12, 0)
-            ),
+            createdAt = Instant.parse("2025-08-20T12:00:00Z").toLocalDateTime(TimeZone.currentSystemDefault()),
             amount = 5000.0,
             status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
@@ -205,7 +205,7 @@ class TransactionRepositoryImplTest {
                         "receiverName": "${transaction1.receiverName}",
                         "status": "SUCCESS",
                         "type": "RECEIVED",
-                        "createdAt": "2025-08-20T12:00",
+                        "createdAt": "2025-08-20T12:00:00",
                         "amount": ${transaction1.amount}
                     }
                     """,
