@@ -9,7 +9,7 @@ internal interface CreateMosqueInteractionListener {
     fun onClickUploadImage(image: ImageSrc)
     fun onAddClick()
     fun onNameChange(name: String)
-    fun onAddressChanged(address: String)
-    fun mapPositionChanged(coordinate: Coordinate)
+    fun onAddressChange(address: String)
+    fun mapPositionChange(coordinate: Coordinate)
 
 }

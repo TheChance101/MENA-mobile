@@ -124,7 +124,7 @@ private fun MosqueLocationMapSection(
     LaunchedEffect(cameraState) {
         snapshotFlow { cameraState.position }
             .collect {
-                listener.mapPositionChanged(
+                listener.mapPositionChange(
                     coordinate = Coordinate(
                         latitude = cameraState.position.target.latitude,
                         longitude = cameraState.position.target.longitude
@@ -159,7 +159,7 @@ private fun MosqueAddressSection(
     )
     TextField(
         value = state.address,
-        onValueChanged = listener::onAddressChanged,
+        onValueChanged = listener::onAddressChange,
         hint = "",
         leadingIcon = painterResource(Res.drawable.ic_location),
     )
@@ -220,8 +220,8 @@ private fun MosqueCreateScreenPreview() {
                 override fun onClickUploadImage(image: ImageSrc) {}
                 override fun onAddClick() {}
                 override fun onNameChange(name: String) {}
-                override fun onAddressChanged(address: String) {}
-                override fun mapPositionChanged(coordinate: Coordinate) {}
+                override fun onAddressChange(address: String) {}
+                override fun mapPositionChange(coordinate: Coordinate) {}
             }
         )
     }

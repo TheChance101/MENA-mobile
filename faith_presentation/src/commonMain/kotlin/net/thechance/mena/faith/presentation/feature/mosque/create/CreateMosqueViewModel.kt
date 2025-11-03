@@ -36,12 +36,12 @@ internal class CreateMosqueViewModel() :
         checkIfFormIsComplete()
     }
 
-    override fun onAddressChanged(address: String) {
+    override fun onAddressChange(address: String) {
         updateState { it.copy(address = address) }
         checkIfFormIsComplete()
     }
 
-    override fun mapPositionChanged(coordinate: Coordinate) {
+    override fun mapPositionChange(coordinate: Coordinate) {
         updateState { it.copy(location = coordinate) }
         checkIfFormIsComplete()
     }
