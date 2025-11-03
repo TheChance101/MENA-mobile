@@ -103,7 +103,7 @@ fun SearchCompleteContent(
 private fun DukansList(
     dukanPagingItems: LazyPagingItems<SearchUiState.DukanUiState>,
     onDukanClicked: (dukanId: Uuid) -> Unit,
-    onDukanFavoriteClicked: (dukan: Uuid) -> Unit
+    onDukanFavoriteClicked: (dukan: Uuid,isFavorite:Boolean) -> Unit
 ) {
     AnimatedContent(
         targetState = dukanPagingItems.loadState.refresh,
@@ -152,8 +152,8 @@ private fun DukansList(
                                 title = dukan.title,
                                 imageUrl = dukan.imageUrl,
                                 onClick = { onDukanClicked(dukan.id) },
-                                isFavorite = dukan.isFavorite, // Todo
-                                onFavoriteClick = { onDukanFavoriteClicked(dukan.id) },
+                                isFavorite = dukan.isFavorite, // Todo (handle with user favorites story)
+                                onFavoriteClick = { onDukanFavoriteClicked(dukan.id,dukan.isFavorite) },
                             )
                         }
                     }

@@ -12,7 +12,7 @@ interface SearchInteractionListener {
     fun onSelectDukans()
     fun onSelectProducts()
     fun onDukanClicked(dukanId: Uuid)
-    fun onDukanFavoriteClicked(dukanId: Uuid)
+    fun onDukanFavoriteClicked(dukanId: Uuid,isFavorite:Boolean)
     fun onProductClicked(productId: Uuid)
     fun onSnackBarDismissed()
 }

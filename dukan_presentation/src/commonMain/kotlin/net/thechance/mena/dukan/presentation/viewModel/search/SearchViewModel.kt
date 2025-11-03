@@ -70,14 +70,14 @@ class SearchViewModel(
         emitEffect(effect = SearchEffect.NavigateToDukanDetails(dukanId = dukanId.toString()))
     }
 
-    override fun onDukanFavoriteClicked(dukanId: Uuid) {
+    override fun onDukanFavoriteClicked(dukanId: Uuid,isFavorite:Boolean) {
 
         // Todo ( add to dukan favorites in repository of favorites user Story )
 
         val dukansState = state.value.dukanPagingFlow
         val favoriteMappedFlowDukans = dukansState.map { dukansPagingData ->
             dukansPagingData.map { dukan ->
-                if (dukan == dukanId) dukan.copy(isFavorite = true)
+                if (dukan == dukanId) dukan.copy(isFavorite = !isFavorite)
                 else dukan
             }
         }.cachedIn(viewModelScope)
