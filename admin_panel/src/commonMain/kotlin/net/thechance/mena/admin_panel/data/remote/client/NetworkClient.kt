@@ -51,7 +51,7 @@ fun provideHttpClient(
             bearer {
                 loadTokens {
                     BearerTokens(
-                        accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI5YmNlMWU0YS04YWZiLTQwMTItYmYwMC02ODYyYzBmNzZiMmQiLCJpYXQiOjE3NjIxNzA2NzEsImV4cCI6MTc2MjE3NDI3MSwiYWRtaW4iOnRydWV9.oEfcVXqhOFAbg5fOp7nlyib2L73noGPLM9UJrHMGVQvFGoQ49BvEvGmOBaiqTDPj",
+                        accessToken = settings.accessToken,
                         refreshToken=settings.refreshToken
                     )
 

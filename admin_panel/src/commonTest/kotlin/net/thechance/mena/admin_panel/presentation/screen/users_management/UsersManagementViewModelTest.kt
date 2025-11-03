@@ -6,6 +6,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -17,6 +18,7 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
+import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -60,7 +62,7 @@ class UsersManagementViewModelTest {
         viewModel.state.test {
             val currentState = awaitItem()
             assertFalse(currentState.isLoading)
-            assertEquals(usersList.size, currentState.users.size)
+            assertEquals(usersList.items.size, currentState.users.size)
             assertNull(currentState.errorState)
             cancelAndIgnoreRemainingEvents()
         }
@@ -77,7 +79,10 @@ class UsersManagementViewModelTest {
             viewModel.state.test {
                 val currentState = awaitItem()
                 assertEquals(UsersManagementScreenState.SortType.USERNAME, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.DESC, currentState.sort.direction)
+                assertEquals(
+                    UsersManagementScreenState.SortDirection.DESC,
+                    currentState.sort.direction
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -95,7 +100,10 @@ class UsersManagementViewModelTest {
             viewModel.state.test {
                 val currentState = awaitItem()
                 assertEquals(UsersManagementScreenState.SortType.USERNAME, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
+                assertEquals(
+                    UsersManagementScreenState.SortDirection.ASC,
+                    currentState.sort.direction
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -110,8 +118,14 @@ class UsersManagementViewModelTest {
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertEquals(UsersManagementScreenState.SortType.LAST_LOGIN_DATE, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
+                assertEquals(
+                    UsersManagementScreenState.SortType.LAST_LOGIN_DATE,
+                    currentState.sort.type
+                )
+                assertEquals(
+                    UsersManagementScreenState.SortDirection.ASC,
+                    currentState.sort.direction
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -126,8 +140,14 @@ class UsersManagementViewModelTest {
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertEquals(UsersManagementScreenState.SortType.LAST_VISIT_DATE, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
+                assertEquals(
+                    UsersManagementScreenState.SortType.LAST_VISIT_DATE,
+                    currentState.sort.type
+                )
+                assertEquals(
+                    UsersManagementScreenState.SortDirection.ASC,
+                    currentState.sort.direction
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -147,8 +167,14 @@ class UsersManagementViewModelTest {
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertEquals(UsersManagementScreenState.SortType.LAST_LOGIN_DATE, currentState.sort.type)
-                assertEquals(UsersManagementScreenState.SortDirection.ASC, currentState.sort.direction)
+                assertEquals(
+                    UsersManagementScreenState.SortType.LAST_LOGIN_DATE,
+                    currentState.sort.type
+                )
+                assertEquals(
+                    UsersManagementScreenState.SortDirection.ASC,
+                    currentState.sort.direction
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -174,7 +200,7 @@ class UsersManagementViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            val userId = usersList[0].id
+            val userId = usersList.items[0].id
             viewModel.showBlockDialog(userId)
             advanceUntilIdle()
 
@@ -191,7 +217,7 @@ class UsersManagementViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            val userId = usersList[0].id
+            val userId = usersList.items[0].id
             viewModel.showBlockDialog(userId)
             advanceUntilIdle()
 
@@ -211,7 +237,7 @@ class UsersManagementViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            val activeUserId = usersList[0].id
+            val activeUserId = usersList.items[0].id
             val userStatus = Status.ACTIVE
             viewModel.onToggleUserStatusClicked(activeUserId, userStatus)
             advanceUntilIdle()
@@ -229,7 +255,7 @@ class UsersManagementViewModelTest {
         runTest(testDispatcher) {
             initViewModel()
 
-            val blockedUserId = usersList[1].id
+            val blockedUserId = usersList.items[1].id
             val userStatus = Status.BLOCKED
             viewModel.onToggleUserStatusClicked(blockedUserId, userStatus)
             advanceUntilIdle()
@@ -247,7 +273,7 @@ class UsersManagementViewModelTest {
     fun `should block user when onConfirmBlock is called`() = runTest(testDispatcher) {
         initViewModel()
 
-        val userId = usersList[0].id
+        val userId = usersList.items[0].id
         viewModel.showBlockDialog(userId)
         advanceUntilIdle()
 
@@ -266,19 +292,37 @@ class UsersManagementViewModelTest {
     }
 
     @Test
-    fun `should clear query and reload users when onClearQueryClicked is called`() = runTest(testDispatcher) {
+    fun `should clear query and reload users when onClearQueryClicked is called`() =
+        runTest(testDispatcher) {
+            initViewModel()
+
+            viewModel.onSearchQueryChanged("something")
+            advanceUntilIdle()
+
+            viewModel.onClearQueryClicked()
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                val currentState = awaitItem()
+                assertEquals("", currentState.query)
+                assertTrue(currentState.users.isNotEmpty())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `should update page and reload users when onPageChanged is called`() = runTest(testDispatcher) {
         initViewModel()
 
-        viewModel.onSearchQueryChanged("something")
-        advanceUntilIdle()
-
-        viewModel.onClearQueryClicked()
-        advanceUntilIdle()
+        val newPage = 3
+        viewModel.onPageChanged(newPage)
 
         viewModel.state.test {
             val currentState = awaitItem()
-            assertEquals("", currentState.query) // query should be empty
-            assertTrue(currentState.users.isNotEmpty()) // users reloaded successfully
+            skipItems(1)
+            advanceUntilIdle()
+            assertEquals(newPage, currentState.pageInfo.page)
+            assertTrue(currentState.users.isNotEmpty())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -307,34 +351,37 @@ class UsersManagementViewModelTest {
 
 
     private companion object {
-        val usersList = listOf(
-            User(
-                id = Uuid.random(),
-                firstName = "Farah",
-                lastName = "Khalil",
-                phoneNumber = "+970599123456",
-                lastLoginAt = LocalDateTime(2025, 10, 15, 23,59,59),
-                lastVisitAt = LocalDateTime(2025, 10, 20, 23,59,59),
-                status = Status.ACTIVE
-            ),
-            User(
-                id = Uuid.random(),
-                firstName = "Malak",
-                lastName = "Raef",
-                phoneNumber = "+970599654321",
-                lastLoginAt = LocalDateTime(2025, 9, 10, 23,59,59),
-                lastVisitAt = LocalDateTime(2025, 9, 25, 23,59,59),
-                status = Status.BLOCKED
-            ),
-            User(
-                id = Uuid.random(),
-                firstName = "Muhammed",
-                lastName = "Magdy",
-                phoneNumber = "+970599789012",
-                lastLoginAt = LocalDateTime(2025, 10, 1, 23,59,59),
-                lastVisitAt = LocalDateTime(2025, 10, 18, 23,59,59),
-                status = Status.ACTIVE
+        val usersList =
+            PagedResult(
+                items = listOf(
+                    User(
+                        id = Uuid.random(),
+                        firstName = "Farah",
+                        lastName = "Khalil",
+                        phoneNumber = "+970599123456",
+                        lastLoginAt = LocalDateTime(2025, 10, 15, 23, 59, 59),
+                        lastVisitAt = LocalDateTime(2025, 10, 20, 23, 59, 59),
+                        status = Status.ACTIVE
+                    ),
+                    User(
+                        id = Uuid.random(),
+                        firstName = "Malak",
+                        lastName = "Raef",
+                        phoneNumber = "+970599654321",
+                        lastLoginAt = LocalDateTime(2025, 9, 10, 23, 59, 59),
+                        lastVisitAt = LocalDateTime(2025, 9, 25, 23, 59, 59),
+                        status = Status.BLOCKED
+                    ),
+                    User(
+                        id = Uuid.random(),
+                        firstName = "Muhammed",
+                        lastName = "Magdy",
+                        phoneNumber = "+970599789012",
+                        lastLoginAt = LocalDateTime(2025, 10, 1, 23, 59, 59),
+                        lastVisitAt = LocalDateTime(2025, 10, 18, 23, 59, 59),
+                        status = Status.ACTIVE
+                    )
+                ), totalPages = 10, currentPage = 0
             )
-        )
     }
 }

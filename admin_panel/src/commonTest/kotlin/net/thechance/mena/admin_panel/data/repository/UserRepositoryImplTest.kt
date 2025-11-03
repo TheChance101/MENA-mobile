@@ -76,8 +76,8 @@ class UserRepositoryImplTest {
             )
         )
 
-        assertEquals(1, result.size)
-        assertEquals("Test", result.first().firstName)
+        assertEquals(1, result.items.size)
+        assertEquals("Test", result.items.first().firstName)
     }
 
 
@@ -88,7 +88,7 @@ class UserRepositoryImplTest {
         } throws IOException("No internet")
 
         assertFailsWith<NoInternetException> {
-            userRepository.getUsers(null).first()
+            userRepository.getUsers(null).items.first()
         }
     }
 
@@ -99,7 +99,7 @@ class UserRepositoryImplTest {
         } returns unauthorizedResponse()
 
         val exception = assertFailsWith<UnauthorizedException> {
-            userRepository.getUsers(null).first()
+            userRepository.getUsers(null).items.first()
         }
 
         assertTrue(exception.message?.contains("Unauthorized") == true)
