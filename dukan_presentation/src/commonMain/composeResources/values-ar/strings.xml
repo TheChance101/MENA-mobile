@@ -136,13 +136,6 @@
     <string name="error_edit_shelf">خطأ في تعديل الرف</string>
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
-    <string name="all">الجميع</string>
-    <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
-    <string name="best_selling">الأكثر مبيعا</string>
-    <string name="shopping_basket_icon">shopping basket icon</string>
-    <string name="favorite_icon">الأيقونة المفضلة</string>
-    <string name="share_icon">أيقونة المشاركة</string>
-    <string name="remove_product">حذف المنتج</string>
     <string name="search_in_dukans">ابحث في الدكاكين...</string>
     <string name="search_icon">أيقونة البحث</string>
     <string name="start_search">ابدأ البحث!</string>
