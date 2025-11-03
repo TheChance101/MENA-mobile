@@ -29,7 +29,7 @@ fun NoInternetConnection(
     Column(
         modifier = modifier
             .padding(
-                horizontal = Theme.spacing._24,
+                horizontal = Theme.spacing._8,
                 vertical = Theme.spacing._12
             )
             .fillMaxWidth()
