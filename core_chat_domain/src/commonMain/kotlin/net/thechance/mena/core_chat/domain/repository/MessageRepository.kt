@@ -19,4 +19,5 @@ MessageRepository {
     fun observeDeleteChat(): Flow<DeleteChatEvent>
     fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>>
     suspend fun markMessagesOfChatAsRead(chatId: Uuid)
+    fun observeConnectionStatus(): Flow<Boolean>
 }

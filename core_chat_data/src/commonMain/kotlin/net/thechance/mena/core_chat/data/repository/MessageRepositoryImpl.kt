@@ -193,6 +193,9 @@ class MessageRepositoryImpl(
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
     }
+    override fun observeConnectionStatus(): Flow<Boolean> {
+        return webSocketManager.connectionStatus
+    }
 
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
