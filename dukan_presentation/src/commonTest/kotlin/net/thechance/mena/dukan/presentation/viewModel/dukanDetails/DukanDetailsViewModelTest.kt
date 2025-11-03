@@ -321,7 +321,6 @@ class DukanDetailsViewModelTest {
             dukanDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then
@@ -344,7 +343,6 @@ class DukanDetailsViewModelTest {
             dukanDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then

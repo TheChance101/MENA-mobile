@@ -211,7 +211,7 @@ class DukanDetailsViewModel(
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
                 else dukanCartRepository.updateProductQuantity(domainRequest)

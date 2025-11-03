@@ -31,7 +31,7 @@ fun DukanDetailsScreen(
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                ShelfDetails(effect.id, effect.name, effect.style, effect.color, effect.dukanId)
+                ShelfDetails(effect.id, effect.name, effect.dukanId)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {

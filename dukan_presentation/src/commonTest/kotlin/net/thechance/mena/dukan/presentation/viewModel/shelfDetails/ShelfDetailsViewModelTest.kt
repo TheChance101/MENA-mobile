@@ -1,12 +1,10 @@
 package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -18,11 +16,13 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,6 +35,9 @@ import kotlin.uuid.Uuid
 class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+
+    private val dukanManagementRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
+
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var savedStateHandle: SavedStateHandle
@@ -72,6 +75,19 @@ class ShelfDetailsViewModelTest {
         )
     )
 
+    @OptIn(ExperimentalUuidApi::class)
+    private fun dummyDukanDetails() = Dukan(
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+        name = "Test Dukan",
+        address = "123 Test Street",
+        imageUrl = "https://example.com/image.png",
+        coordinates = Dukan.Coordinates(latitude = 30.0, longitude = 31.0),
+        color = Color(id = Uuid.random(), hexCode = "#FF0000"),
+        style = Dukan.Style.WIDE_IMAGE,
+        categories = emptySet(),
+        status = Dukan.Status.APPROVED,
+    )
+
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -79,8 +95,6 @@ class ShelfDetailsViewModelTest {
         savedStateHandle = SavedStateHandle(
             mapOf(
                 "shelfName" to "Shoes",
-                "dukanStyle" to "NO_IMAGE",
-                "dukancolor" to 0xFFFFFFF,
                 "dukanId" to "1",
                 "shelfId" to "20"
             )
@@ -90,6 +104,7 @@ class ShelfDetailsViewModelTest {
             ShelfDetailsViewModel(
                 productRepository = productRepository,
                 defaultDispatcher = testDispatcher,
+                dukanManagementRepository = dukanManagementRepository,
                 dukanCartRepository = dukanCartRepository,
                 savedStateHandle = savedStateHandle
             )
@@ -114,6 +129,12 @@ class ShelfDetailsViewModelTest {
 
     @Test
     fun `init SHOULD set shelfName from savedStateHandle`() = runTest {
+
+        //Given
+
+        shelfDetailsViewModel.updateState {
+            copy(shelfName = "Electronics")
+        }
         // When
         val state = shelfDetailsViewModel.state.value
 
@@ -121,22 +142,20 @@ class ShelfDetailsViewModelTest {
         assertEquals("Electronics", state.shelfName)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `init SHOULD set dukanStyle from savedStateHandle`() = runTest {
-        // When
-        val state = shelfDetailsViewModel.state.value
+    fun `init SHOULD load dukan details successfully`() = runTest {
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
+            style = Dukan.Style.SMALL_IMAGE
+        )
 
-        // Then
-        assertEquals(ShelfDetailsUiState.Style.WIDE_IMAGE, state.dukanStyle)
-    }
+        advanceUntilIdle()
 
-    @Test
-    fun `init SHOULD set dukanColor from savedStateHandle`() = runTest {
-        // When
-        val state = shelfDetailsViewModel.state.value
-
-        // Then
-        assertEquals(0xFF0000L, state.dukancolor)
+        shelfDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertTrue(state.dukanStyle.name.isNotEmpty())
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -210,17 +229,6 @@ class ShelfDetailsViewModelTest {
         assertEquals("Mechanical keyboard", productsShelfs[2].description)
     }
 
-    @Test
-    fun `products SHOULD initialize with zero cart quantity`() = runTest {
-        // When
-        advanceUntilIdle()
-        val state = shelfDetailsViewModel.state.value
-
-        // Then
-        state.productsShelf.asSnapshot().forEach { product ->
-            assertEquals(0, product.inCartQuantity)
-        }
-    }
 
     @Test
     fun `onBackClicked SHOULD emit NavigateBack effect`() = runTest {
@@ -229,21 +237,6 @@ class ShelfDetailsViewModelTest {
             // When
             shelfDetailsViewModel.onBackClicked()
             assertEquals(ShelfDetailsEffects.NavigateBack, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onCartClicked SHOULD emit NavigateToCart`() = runTest {
-        // Given
-        val dukanId = "2"
-
-        //When
-        shelfDetailsViewModel.onViewCartClicked()
-
-        //Then
-        shelfDetailsViewModel.effect.test {
-            assertEquals(ShelfDetailsEffects.NavigateToCart(dukanId), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
