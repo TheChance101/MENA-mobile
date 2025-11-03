@@ -139,24 +139,25 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                         productImageUrl = product.imageUrl,
                         productPrice = product.price,
                         productCardBackground = Theme.colorScheme.background.surfaceLow,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SetProductQuantity(
-                            onPlusClick = {
-                                listener.onIncreaseItemQuantityClicked(
-                                    product.id,
-                                    product.quantity + 1
-                                )
-                            },
-                            onMinusClick = {
-                                listener.onDecreaseItemQuantityClicked(
-                                    product.id,
-                                    product.quantity - 1
-                                )
-                            },
-                            inCartQuantity = product.quantity
-                        )
-                    }
+                        modifier = Modifier.fillMaxWidth(),
+                        productAction = {
+                            SetProductQuantity(
+                                onPlusClick = {
+                                    listener.onIncreaseItemQuantityClicked(
+                                        product.id,
+                                        product.quantity + 1
+                                    )
+                                },
+                                onMinusClick = {
+                                    listener.onDecreaseItemQuantityClicked(
+                                        product.id,
+                                        product.quantity - 1
+                                    )
+                                },
+                                inCartQuantity = product.quantity
+                            )
+                        }
+                    )
                 }
 
             }

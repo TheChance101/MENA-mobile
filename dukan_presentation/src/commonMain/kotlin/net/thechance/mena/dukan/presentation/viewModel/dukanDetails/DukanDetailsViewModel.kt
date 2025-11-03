@@ -15,7 +15,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -293,18 +293,18 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
-        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId,args.dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
-    override fun onCartClicked() {
         emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
+
 
     override fun onRetryClicked() {
         loadDukanDetails()
     }
+
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 }
