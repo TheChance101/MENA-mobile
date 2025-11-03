@@ -1,16 +1,22 @@
 package net.thechance.mena.faith.presentation.feature.downloadedSur
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
@@ -18,9 +24,13 @@ import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
 import mena.faith_presentation.generated.resources.ic_ash_shams
+import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.downloadedSur.components.DeleteConfirmationDialog
 import net.thechance.mena.faith.presentation.feature.downloadedSur.components.DownloadedSurAppBar
@@ -46,6 +56,7 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
 
     Content(
         uiState = state,
+        snackBar = snackBarState,
         listener = viewModel,
     )
 }
@@ -53,55 +64,57 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
 @Composable
 private fun Content(
     uiState: DownloadedSurUiState,
+    snackBar: SnackBarState,
     listener: DownloadedSurInteractionListener,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (uiState.showDeleteConfirmationDialog)
-                    Modifier.blur(4.dp)
-                else
-                    Modifier,
-            ),
-    ) {
-        if (uiState.showDeleteConfirmationDialog) {
-            DeleteConfirmationDialog(
-                onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
-                onDismiss = listener::onDismissDeleteConfirmationDialog,
+    Scaffold(
+        topBar = {
+            DownloadedSurAppBar(
+                onRecitersSettingsClick = listener::onReciterSettingsClick,
+                onBackClick = listener::onBackClick,
             )
-        }
-        Scaffold(
-            topBar = {
-                DownloadedSurAppBar(
-                    onRecitersSettingsClick = listener::onReciterSettingsClick,
-                    onBackClick = listener::onBackClick,
-                )
-            },
-        ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-                contentPadding = PaddingValues(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._12,
-                ),
+        },
+        snakeBar = {
+            FaithSnackBar(
+                message = snackBar.message,
+                isVisible = snackBar.isVisible,
+                status = snackBar.status,
+            )
+        },
+        overlays = {
+            dialog(
+                isVisible = uiState.showDeleteConfirmationDialog,
             ) {
-                items(uiState.surDetails) { downloadedSurah ->
-                    DownloadedSurahCard(
-                        suraDetails = downloadedSurah,
-                        onDownloadedSurahClick = {
-                            listener.onDownloadedSurahClick(downloadedSurah.id)
-                        },
-                        onDeleteDownloadedSurahClick = {
-                            listener.onDeleteSurahClick(downloadedSurah.id)
-                        },
-                        modifier = Modifier
-                            .animateItem(
-                                fadeInSpec = tween(500),
-                                fadeOutSpec = tween(500),
-                            ),
-                    )
-                }
+                DeleteConfirmationDialog(
+                    showDialog = uiState.showDeleteConfirmationDialog,
+                    onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
+                    onDismiss = listener::onDismissDeleteConfirmationDialog,
+                )
+            }
+        }
+    ) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            contentPadding = PaddingValues(
+                horizontal = Theme.spacing._16,
+                vertical = Theme.spacing._12,
+            ),
+        ) {
+            items(uiState.surDetails) { downloadedSurah ->
+                DownloadedSurahCard(
+                    suraDetails = downloadedSurah,
+                    onDownloadedSurahClick = {
+                        listener.onDownloadedSurahClick(downloadedSurah.id)
+                    },
+                    onDeleteDownloadedSurahClick = {
+                        listener.onDeleteSurahClick(downloadedSurah.id)
+                    },
+                    modifier = Modifier
+                        .animateItem(
+                            fadeInSpec = tween(500),
+                            fadeOutSpec = tween(500),
+                        ),
+                )
             }
         }
     }
@@ -141,6 +154,7 @@ private fun PreviewDownloadedSurScreen() {
                     ),
                 ),
             ),
+            snackBar = SnackBarState(),
             listener =
                 object : DownloadedSurInteractionListener {
                     override fun onReciterSettingsClick() {}
