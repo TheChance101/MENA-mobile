@@ -1,5 +1,8 @@
 package net.thechance.mena.faith.data.remote.network
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 import net.thechance.mena.faith.data.utils.unpackZip
 import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
@@ -12,12 +15,14 @@ class DownloadSurahManagerImpl : DownloadSurahManager {
         url: String,
         fileName: String,
     ): String {
-        val downloadedFilePath = downloadSurahFileToAppStorage(url, fileName)
-        return downloadedFilePath?.let {
-            val unZippedFilePath = unZipFile(it)
-            FileSystem.SYSTEM.delete(it.toPath())
-            unZippedFilePath
-        } ?: throw FaithException.FailedToDownloadSurahException
+        return withContext(Dispatchers.IO) {
+            val downloadedFilePath = downloadSurahFileToAppStorage(url, fileName)
+            downloadedFilePath?.let {
+                val unZippedFilePath = unZipFile(it)
+                FileSystem.SYSTEM.delete(it.toPath())
+                unZippedFilePath
+            } ?: throw FaithException.FailedToDownloadSurahException
+        }
     }
 
     private fun unZipFile(path: String): String =
