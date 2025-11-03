@@ -160,6 +160,7 @@ private fun ProductItem(
         productDescription = product.description,
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
+        onClick = { listener.onProductClicked(product.id) },
         productAction = {
             SmallAndWideImageDukanProductAction(
                 showProductQuantity = toggleCartToQuantity,
@@ -169,7 +170,8 @@ private fun ProductItem(
                 onAddToCartClick = {
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
-                        productId = product.id
+                        productId = product.id,
+                        productQuantity = productQuantity
                     )
                 },
                 onPlusClick = {

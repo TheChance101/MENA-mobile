@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -37,6 +38,10 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
 
             }
+
+            is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
+                DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
+            )
             is DukanDetailsEffects.NavigateToCart ->
                 navController.navigate(DukanCart(effect.dukanId))
         }

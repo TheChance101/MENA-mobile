@@ -70,6 +70,12 @@ class DukanProductRepositoryImpl(
         }
     }
 
+    override suspend fun getProductDetails(productId: String): Product {
+        return safeApiCall<ProductDto> {
+            client.get("${PRODUCT_BASE_PATH}/$productId")
+        }.toDomain()
+    }
+
     override suspend fun getProductsCart(
         dukanId: String,
         page: Int,

@@ -141,4 +141,5 @@
     <string name="sub_total_price">السعر الإجمالي الفرعي</string>
     <string name="from_dukan">من دكان</string>
 
+    <string name="product_thumbnail">صورة مصغرة للمنتج</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelvesContent
@@ -28,6 +29,14 @@ fun NoImageDukanDetailsContent(
                 isBadgeVisible = true,
                 listener = listener
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {

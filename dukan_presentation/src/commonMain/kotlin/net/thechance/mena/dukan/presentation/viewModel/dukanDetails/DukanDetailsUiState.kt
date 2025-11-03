@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
@@ -11,7 +12,8 @@ data class DukanDetailsUiState(
     val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelfIdSelected: String? = null,
-    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING
+    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
+    val snackBarState: SnackBarUiState? = null,
 ) {
     data class DukanInfo(
         val name: String = "",

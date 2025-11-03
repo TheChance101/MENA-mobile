@@ -42,7 +42,8 @@ fun ManageDukanProductsList(
                     productDescription = product.description.orEmpty(),
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
-                    productAction = { EditProductIcon(onClick = { onProductClick(product) }) }
+                    productAction = { EditProductIcon(onClick = { onProductClick(product) }) },
+                    onClick = { onProductClick(product) }
                 )
             }
         }
@@ -63,7 +64,8 @@ private fun ManageDukanProductsLayoutPreview() {
                     productDescription = product.description,
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
-                    productAction = { EditProductIcon(onClick = {}) }
+                    productAction = { EditProductIcon(onClick = {}) },
+                    onClick = {}
                 )
             }
         }

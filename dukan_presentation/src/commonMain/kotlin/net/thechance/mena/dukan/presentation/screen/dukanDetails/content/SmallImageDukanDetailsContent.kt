@@ -22,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanIconButton
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanImageAndTitle
@@ -48,6 +49,14 @@ fun SmallImageDukanDetailsContent(
                 isBadgeVisible = true,
                 listener = listener
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
@@ -113,7 +122,7 @@ private fun SmallImageDukanAppBar(
         trailingContent = {
             AppBarOptionContainer(
                 isBadgeVisible = isBadgeVisible,
-                onClick = listener::onCartClicked
+                onClick = listener::onViewCartClicked
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),

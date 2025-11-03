@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +62,7 @@ fun LazyGridScope.wideImageProductsGrid(
                 imageUrl = product.imageUrl,
                 title = product.name,
                 price = "${product.price}",
+                onClick = { listener.onProductClicked(product.id) },
                 productAction = {
                     SmallAndWideImageDukanProductAction(
                         showProductQuantity = toggleCartToQuantity,
@@ -70,7 +72,8 @@ fun LazyGridScope.wideImageProductsGrid(
                         onAddToCartClick = {
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
-                                productId = product.id
+                                productId = product.id,
+                                productQuantity = productQuantity
                             )
                         },
                         onPlusClick = {
@@ -101,6 +104,7 @@ private fun ProductCard(
     title: String,
     price: String,
     modifier: Modifier = Modifier,
+    onClick:() -> Unit,
     productAction: @Composable () -> Unit,
 ) {
     Column(
@@ -108,6 +112,7 @@ private fun ProductCard(
             .size(width = 160.dp, height = 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
+            .clickable(onClick = onClick,indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
     ) {
 
@@ -175,7 +180,8 @@ private fun ProductCardPreview() {
                     onMinusClick = {},
                     cartIcon = painterResource(Res.drawable.wide_image_shoppingcart)
                 )
-            }
+            },
+            onClick = {}
         )
     }
 }

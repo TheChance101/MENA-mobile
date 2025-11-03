@@ -19,6 +19,8 @@ interface ProductRepository {
         productId: String
     ): List<String>
 
+    suspend fun getProductDetails(productId: String): Product
+
     suspend fun getProductsCart(
         dukanId: String,
         page: Int,
