@@ -162,16 +162,21 @@ class ExportTransactionsViewModel(
             showInvalidDatesSnackBar()
             return
         }
-        updateState { oldState ->
-            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
-        }
         tryToExecute(
-            callee = ::getStatement,
+            callee = {
+                val statement = getStatement()
+                if (statement.byteArray.isEmpty()) {
+                    showToast(messageRes = Res.string.error_no_transactions)
+                }
+                onDownloadStart()
+                statement
+            },
             onError = ::handleDownloadError,
             onSuccess = { statement -> downloadStatement(statement) },
             dispatcher = dispatcher,
         )
     }
+
 
     private fun areDatesValid(): Boolean {
         val startDate = currentState.filterState.startDate
@@ -291,6 +296,9 @@ class ExportTransactionsViewModel(
     }
 
     private suspend fun onDownloadStart() {
+        updateState { oldState ->
+            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
+        }
         showToast(messageRes = Res.string.downloading_started)
     }
 
