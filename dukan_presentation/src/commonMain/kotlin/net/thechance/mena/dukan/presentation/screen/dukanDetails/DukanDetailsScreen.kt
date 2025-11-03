@@ -7,12 +7,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetails
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetails
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetails
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
@@ -31,13 +32,12 @@ fun DukanDetailsScreen(
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                ShelfDetails(effect.id, effect.name, effect.style, effect.color)
+                ShelfDetails(effect.id, effect.name, effect.style, effect.color, effect.dukanId)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
 
             }
-
             is DukanDetailsEffects.NavigateToCart ->
                 navController.navigate(DukanCart(effect.dukanId))
         }
@@ -62,17 +62,17 @@ private fun DukanDetailsContent(
     listener: DukanDetailsInteractionListener
 ) {
     when (state.dukanInfo.style) {
-        DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetails(
+        DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetailsContent(
             state = state,
             listener = listener,
         )
 
-        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetails(
+        DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetailsContent(
             state = state,
             listener = listener,
         )
 
-        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetails(
+        DukanDetailsUiState.Style.NO_IMAGE -> NoImageDukanDetailsContent(
             state = state,
             listener = listener,
         )

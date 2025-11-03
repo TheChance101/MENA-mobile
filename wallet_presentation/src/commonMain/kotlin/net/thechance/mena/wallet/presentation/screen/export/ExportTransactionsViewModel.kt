@@ -8,9 +8,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.download_complete
@@ -56,6 +53,10 @@ class ExportTransactionsViewModel(
     ExportTransactionsState()
 ), ExportTransactionsListener {
 
+    init {
+        fetchFirstTransactionDate()
+    }
+
     override fun onBackClicked() {
         sendEffect(ExportTransactionsEffect.NavigateBack)
     }
@@ -100,9 +101,15 @@ class ExportTransactionsViewModel(
     override fun onStartDateClicked() {
         val currentStartDate = currentState.filterState.startDate
         if (currentStartDate != null) {
-            openStartDatePickerWithExistingDate(currentStartDate)
-        } else {
-            fetchFirstTransactionDate()
+            updateState { it.copy(dateState = it.dateState.copy(defaultStartDate = currentStartDate)) }
+        }
+        updateState {
+            it.copy(
+                dateState = it.dateState.copy(
+                    isDateBottomSheetVisible = true,
+                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
+                )
+            )
         }
     }
 
@@ -205,47 +212,29 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun openStartDatePickerWithExistingDate(currentStartDate: LocalDate) {
-        updateState { oldState ->
-            oldState.copy(
-                dateState = oldState.dateState.copy(
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                    defaultStartDate = currentStartDate
-                )
-            )
-        }
-    }
-
     private fun fetchFirstTransactionDate() {
         tryToExecute(
             callee = { transactionRepository.getFirstTransactionDate() },
-            onSuccess = ::onGetFirstTransactionDateSuccess,
-            onError = ::onGetFirstTransactionDateError,
-            dispatcher = Dispatchers.IO
+            onSuccess = ::onFetchFirstTransactionDateSuccess,
+            onError = ::onFetchFirstTransactionDateError,
+            dispatcher = dispatcher
         )
     }
 
-    private suspend fun onGetFirstTransactionDateError(error: ErrorState) {
+    private fun onFetchFirstTransactionDateSuccess(date: LocalDate?) {
+        updateState { oldState ->
+            val currentStartDate = oldState.filterState.startDate ?: date
+            oldState.copy(dateState = oldState.dateState.copy(defaultStartDate = currentStartDate))
+        }
+    }
+
+    private suspend fun onFetchFirstTransactionDateError(error: ErrorState) {
         handleError(
             error = error,
             title = stringProvider.getString(Res.string.error),
             message = stringProvider.getString(Res.string.failed_to_load_date_picker),
             isSuccess = false
         )
-    }
-
-    private fun onGetFirstTransactionDateSuccess(date: LocalDate?) {
-        updateState { oldState ->
-            val currentStartDate = oldState.filterState.startDate ?: date
-            oldState.copy(
-                dateState = oldState.dateState.copy(
-                    defaultStartDate = currentStartDate,
-                    isDateBottomSheetVisible = true,
-                    datePickerMode = ExportTransactionsState.DatePickerMode.START_DATE,
-                )
-            )
-        }
     }
 
     private suspend fun onViewAndShareStart() {
@@ -322,20 +311,12 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun getTransactionFilterParams(): TransactionFilterParams {
-        val formatter = LocalDate.Format {
-            year(); char('-'); monthNumber(); char('-')
-            day(padding = Padding.ZERO)
-        }
-        val startDateTime = currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
-        val endDateTime = currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
-
-        return TransactionFilterParams(
+    private fun getTransactionFilterParams(): TransactionFilterParams =
+        TransactionFilterParams(
             types = currentState.filterState.selectedTransactionsTypes.map { it.toDomain() },
-            startDate = startDateTime,
-            endDate = endDateTime
+            startDate = currentState.filterState.startDate,
+            endDate = currentState.filterState.endDate
         )
-    }
 
     private suspend fun handleDownloadError(error: ErrorState) {
         resetDownloadState()
@@ -408,7 +389,6 @@ class ExportTransactionsViewModel(
             isSuccess = false
         )
     }
-
 
     private suspend fun handleError(
         error: ErrorState,
@@ -516,17 +496,8 @@ class ExportTransactionsViewModel(
         }
     }
 
-
     @OptIn(ExperimentalTime::class)
     private fun getUniqueStatementFileName(): String {
         return "statement_${Clock.System.now().epochSeconds}.pdf"
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private fun String?.toStartOfDayLocalDateTime(formatter: DateTimeFormat<LocalDate>):
-            LocalDate? {
-        return this
-            ?.takeIf { it.isNotEmpty() }
-            ?.let { LocalDate.parse(it, formatter) }
     }
 }

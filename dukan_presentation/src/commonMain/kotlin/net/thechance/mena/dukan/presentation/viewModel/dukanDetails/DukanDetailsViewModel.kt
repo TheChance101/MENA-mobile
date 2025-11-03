@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
@@ -8,13 +9,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
@@ -24,6 +26,7 @@ class DukanDetailsViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
+    private val dukanCartRepository: DukanCartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DukanDetailsUiState, DukanDetailsEffects>(
@@ -31,7 +34,7 @@ class DukanDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), DukanDetailsInteractionListener {
 
-    val dukanId: String = requireNotNull(savedStateHandle[DUKAN_ID])
+    private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
 
     init {
         loadDukanDetails()
@@ -40,7 +43,7 @@ class DukanDetailsViewModel(
     private fun loadDukanDetails() {
         tryToExecute(
             onStart = ::onLoadDukanDetailsStart,
-            block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
@@ -73,9 +76,6 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
     private fun loadShelvesPaging() {
         tryToCollect(
             block = ::getShelvesPagingFlow,
@@ -86,7 +86,7 @@ class DukanDetailsViewModel(
     private fun getShelvesPagingFlow(): Flow<PagingData<ShelfUiState>> {
         return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
             shelfRepository.getShelvesByDukanId(
-                dukanId = dukanId,
+                dukanId = args.dukanId,
                 pageNumber = pageNumber,
                 pageSize = pageSize
             ).items
@@ -187,7 +187,8 @@ class DukanDetailsViewModel(
                 id = id,
                 name = name,
                 style = state.value.dukanInfo.style.name,
-                color = state.value.dukanInfo.color
+                color = state.value.dukanInfo.color,
+                dukanId = args.dukanId
             )
         )
     }
@@ -197,16 +198,66 @@ class DukanDetailsViewModel(
     }
 
     override fun onAddToCartClicked(productId: String) {
-        tryToExecute(
-            block = {
-                state.value.shelves.collectLatest {
-                    updateShelvesWithAddedProduct(
-                        it,
-                        productId
-                    )
-                }
-            }
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = 1,
+            dukanId = args.dukanId
         )
+
+        tryToExecuteWithDebounce(
+            block = { dukanCartRepository.addProductQuantity(params) },
+            onError = {}
+        )
+    }
+
+    override fun onPlusClicked(productId: String, productQuantity: Int) {
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = productQuantity,
+            dukanId = args.dukanId
+        )
+
+        tryToExecuteWithDebounce(
+            block = { dukanCartRepository.updateProductQuantity(params) },
+            onError = {}
+        )
+    }
+
+    override fun onMinusClicked(productId: String, productQuantity: Int) {
+
+        val params = UpdateProductCartQuantityParams(
+            productId = productId,
+            quantity = productQuantity,
+            dukanId = args.dukanId
+        )
+
+        tryToExecuteWithDebounce(
+            block = {
+                if (productQuantity == 1) deleteProductFromCart(productId) else dukanCartRepository.updateProductQuantity(
+                    params
+                )
+            },
+            onError = {}
+        )
+    }
+
+    private fun deleteProductFromCart(productId: String) {
+        tryToExecuteWithDebounce(
+            block = {
+                dukanCartRepository.deleteProductFromCart(
+                    dukanId = args.dukanId,
+                    productId = productId
+                )
+            },
+            onError = {}
+        )
+    }
+
+
+    override fun onCartClicked() {
+        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
     }
 
     override fun onRetryClicked() {
@@ -225,6 +276,8 @@ class DukanDetailsViewModel(
             shelf.copy(products = updateProductsWithAddedItem(shelf.products, productId))
         }
     }
+    private fun isWideImageStyle() =
+        state.value.dukanInfo.style == Style.WIDE_IMAGE
 
     private fun updateProductsWithAddedItem(
         products: List<ProductUiState>,

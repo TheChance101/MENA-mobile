@@ -67,11 +67,7 @@ class MessageRepositoryImplTest {
             webSocketManager = webSocketManager,
             json = jsonSerialization
         )
-
-        imageMessageSender = ImageMessageSender(
-            client = httpClient,
-            messageDao = messageDao
-        )
+        imageMessageSender = ImageMessageSender(client = httpClient)
 
         messageSenderFactory = MessageSenderFactory(textMessageSender, imageMessageSender)
 
@@ -176,25 +172,26 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return local messages from database when observePendingMessagesByChatId is called`() = runTest {
-        val message1 = createMessage(senderId = userId, chatId = chatId)
-        val message2 = createMessage(senderId = userId, chatId = chatId)
-        val messageEntities = listOf(
-            message1.toLocalDto(),
-            message2.toLocalDto()
-        )
+    fun `should return local messages from database when observePendingMessagesByChatId is called`() =
+        runTest {
+            val message1 = createMessage(senderId = userId, chatId = chatId)
+            val message2 = createMessage(senderId = userId, chatId = chatId)
+            val messageEntities = listOf(
+                message1.toLocalDto(),
+                message2.toLocalDto()
+            )
 
-        everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
-            messageEntities
-        )
+            everySuspend { messageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
+                messageEntities
+            )
 
-        val result = repository.observePendingMessagesByChatId(chatId).first()
+            val result = repository.observePendingMessagesByChatId(chatId).first()
 
 
-        assertThat(result).isNotEmpty()
-        assertThat(result.size).isEqualTo(2)
-        verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
-    }
+            assertThat(result).isNotEmpty()
+            assertThat(result.size).isEqualTo(2)
+            verifySuspend { messageDao.getMessagesByChat(chatId.toString()) }
+        }
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
@@ -207,28 +204,28 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should return flow when observeMessagesForChatOrAll is called and websocket is connected`() = runTest {
-        every { webSocketManager.isConnected() } returns true
-        everySuspend { webSocketManager.connect(any()) } returns Unit
-        everySuspend { webSocketManager.subscribe(any()) } returns Unit
-        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
-            tryEmit(
-                "test-message"
-            )
+    fun `should return flow when observeMessagesForChatOrAll is called and websocket is connected`() =
+        runTest {
+            every { webSocketManager.isConnected() } returns true
+            everySuspend { webSocketManager.connect(any()) } returns Unit
+            everySuspend { webSocketManager.subscribe(any()) } returns Unit
+            everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+            every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+                tryEmit(
+                    "test-message"
+                )
+            }
+
+            val flow = repository.observeMessagesForChatOrAll(chatId)
+
+            assertThat(flow).isNotNull()
         }
-
-        val flow = repository.observeMessagesForChatOrAll(chatId)
-
-        assertThat(flow).isNotNull()
-    }
 
     @Test
     fun `should send image message successfully when websocket connected and images uploaded`() =
         runTest {
             every { webSocketManager.isConnected() } returns true
             everySuspend { messageDao.insertMessage(any()) } returns Unit
-            everySuspend { messageDao.updateMessageImages(any(), any()) } returns Unit
             everySuspend { messageDao.deleteMessage(any()) } returns Unit
 
             httpClient = createHttpClient(
@@ -242,17 +239,16 @@ class MessageRepositoryImplTest {
                 messageDao = messageDao,
             )
 
-            val byteArrays = listOf(ByteArray(10), ByteArray(20))
+            val byteArray = ByteArray(10)
             val message = createMessage(
                 senderId = userId,
                 chatId = chatId,
-                content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
+                content = MessageContent.Image(ImageData.ImageByteArray(byteArray))
             )
 
             repository.sendMessage(message)
 
             verifySuspend { messageDao.insertMessage(any()) }
-            verifySuspend { messageDao.updateMessageImages(any(), any()) }
             verifySuspend { messageDao.deleteMessage(any()) }
         }
 
@@ -273,11 +269,11 @@ class MessageRepositoryImplTest {
             messageDao = messageDao,
         )
 
-        val byteArrays = listOf(ByteArray(10))
+        val byteArray = ByteArray(10)
         val message = createMessage(
             senderId = userId,
             chatId = chatId,
-            content = MessageContent.Images(ImageData.ImageByteArray(byteArrays))
+            content = MessageContent.Image(ImageData.ImageByteArray(byteArray))
         )
 
         assertFailsWith<SendMessageFailedException> {

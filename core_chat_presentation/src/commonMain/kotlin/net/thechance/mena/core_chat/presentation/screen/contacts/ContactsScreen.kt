@@ -2,7 +2,6 @@ package net.thechance.mena.core_chat.presentation.screen.contacts
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,9 +23,9 @@ import mena.core_chat_presentation.generated.resources.contacts_title
 import mena.core_chat_presentation.generated.resources.could_not_load_contacts
 import mena.core_chat_presentation.generated.resources.ic_arrow_left
 import mena.core_chat_presentation.generated.resources.ic_resync
-import mena.core_chat_presentation.generated.resources.loading
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.presentation.components.ErrorView
+import net.thechance.mena.core_chat.presentation.components.LoadingView
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
@@ -37,7 +36,6 @@ import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -111,15 +109,7 @@ private fun ContactsContent(
         ) { loadState ->
             when (loadState) {
                 is LoadState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.loading),
-                            style = Theme.typography.title.small
-                        )
-                    }
+                    LoadingView()
                 }
 
                 is LoadState.Error -> {

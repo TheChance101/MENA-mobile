@@ -22,15 +22,17 @@ import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import kotlinx.coroutines.flow.SharedFlow
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
-import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -85,7 +87,7 @@ fun ChatScreenContent(
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
-                    onMenuClick = {},
+                    onMenuClick = interactions::onChatActionsMenuClicked,
                     onBackClick = interactions::onBackClicked,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -109,6 +111,12 @@ fun ChatScreenContent(
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
+
+                chatActionsMenuOverlay(
+                    showChatActionsDialog = state.isChatActionsDialogVisible,
+                    showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
+                    actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
+                )
             }
         ) {
             ChatList(
@@ -130,7 +138,7 @@ fun ChatScreenContent(
             val senderImageUrl = if (isMine) state.userData.imageUrl else state.chatAvatarUrl
 
             FullImagePagerView(
-                message = state.selectedMessage,
+                messages = state.selectedImageMessages,
                 senderName = senderName,
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,

@@ -16,7 +16,8 @@ data class ShelfDetailsUiState(
         val imageUrl: String = "",
         val price: Double = 0.0,
         val description: String = "",
-        val inCartQuantity: Int = 0
+        val showProductQuantity: Boolean = false,
+        val inCartQuantity: Int = 1
     )
     enum class Style {
         WIDE_IMAGE,

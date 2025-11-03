@@ -7,10 +7,13 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
-import net.thechance.mena.trends.domain.repository.UserRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -48,13 +51,22 @@ internal class ManageTrendsViewModel(
 
     fun getCurrentUserInfo() {
         tryToExecute(
-            block = { userRepository.getCurrentUserInfo() },
-            onSuccess = { profile -> updateState { copy(profile = profile.toUiState()) } },
-            onError = { errorState -> updateState { copy(error = errorState) } },
+            block = { userRepository.getUser() },
+            onSuccess = ::onGetUserSuccess,
+            onError = { updateState { copy(error = it) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = defaultDispatcher
         )
+    }
+
+    private fun onGetUserSuccess(flow: Flow<User?>) {
+        flow.map { it?.toUiState() }
+            .onEach { userUi ->
+                userUi?.let {
+                    updateState { copy(profile = it) }
+                }
+            }.launchIn(viewModelScope)
     }
 
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
@@ -77,4 +89,9 @@ internal class ManageTrendsViewModel(
         getReels()
         getCurrentUserInfo()
     }
+
+    override fun onSelectTab(tab: SelectTab) {
+        updateState { copy(selectTab = tab) }
+    }
+
 }

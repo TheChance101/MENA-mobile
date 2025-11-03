@@ -1,6 +1,10 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -12,20 +16,23 @@ import mena.identity_presentation.generated.resources.error_last_name_required
 import mena.identity_presentation.generated.resources.error_username_required
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
+import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
     private val userRepository: UserRepository,
-    private val permissionManager: PermissionManager,
+    private val permissionsController: PermissionsController,
     private val cachedImageRepository: CachedImageRepository,
     private val imageDecoder: ImageDecoder,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -42,7 +49,7 @@ class EditUserProfileViewModel(
         tryToCollect(
             function = { userRepository.getUser() },
             onNewValue = ::updateUserInfo,
-            onError = ::onErrorOccurred,
+            onError = ::onGetUserInfoError,
             dispatcher = dispatcher
         )
     }
@@ -62,8 +69,8 @@ class EditUserProfileViewModel(
         }
     }
 
-    private fun onErrorOccurred(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    private fun onGetUserInfoError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
     override fun onChangeFirstName(firstName: String) {
@@ -87,8 +94,8 @@ class EditUserProfileViewModel(
 
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
-            function = ::saveUserProfile,
-            onSuccess = ::handleSaveSuccess,
+            function = { saveUserProfile() },
+            onSuccess = { handleSaveSuccess() },
             onError = ::handleSaveError,
             dispatcher = dispatcher
         )
@@ -145,13 +152,8 @@ class EditUserProfileViewModel(
         sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
     }
 
-    private fun handleSaveError(errorState: ErrorState) {
-        updateState {
-            copy(
-                isLoading = false,
-                errorMessage = mapErrorToMessage(errorState)
-            )
-        }
+    private fun handleSaveError(throwable: Throwable) {
+        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
     }
 
     override fun onClickCancelButton() {
@@ -199,11 +201,12 @@ class EditUserProfileViewModel(
             function = {
                 cachedImageRepository.cacheImage(PROFILE_IMAGE, imageDecoder.encodeImage(imageBitmap))
             },
-            onError = ::onErrorOccurred,
-            onSuccess = ::handleCacheImageSuccess,
+            onSuccess = { handleCacheImageSuccess() },
+            onError = ::onCacheCropImageError,
             dispatcher = dispatcher
         )
     }
+
     private fun handleCacheImageSuccess(){
         sendNewEffect(
             EditUserProfileUIEffect.NavigateToCropScreen(
@@ -222,30 +225,52 @@ class EditUserProfileViewModel(
 
     }
 
+    private fun onCacheCropImageError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+    }
+
     override fun onTakeImageFromCamera() {
         tryToExecute(
             function = ::requestCameraPermission,
+            onSuccess = { onCameraPermissionSuccess() },
             onError = ::handleCameraPermissionError,
             dispatcher = dispatcher
         )
     }
 
-
-
-
     private suspend fun requestCameraPermission() {
-        permissionManager.requestCameraPermission(
-            onGranted = { updateState { copy(showCamera = true) } },
-            onDenied = { updateState { copy(errorMessage = Res.string.error_camera_permission_required) } }
-        )
+        permissionsController.providePermission(Permission.CAMERA)
     }
 
-    private fun handleCameraPermissionError(errorState: ErrorState) {
-        updateState { copy(errorMessage = mapErrorToMessage(errorState)) }
+    private fun onCameraPermissionSuccess() {
+        updateState { copy(showCamera = true) }
+
+    }
+
+    private fun handleCameraPermissionError(throwable: Throwable) {
+        throwable.printStackTrace()
+        when (throwable) {
+            is DeniedAlwaysException -> {
+                permissionsController.openAppSettings()
+            }
+
+            is DeniedException -> {
+                updateState { copy(errorMessage = Res.string.error_camera_permission_required) }
+            }
+
+            else -> updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        }
     }
 
     override fun onOpenCamera() {
         updateState { copy(showCamera = false) }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource{
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
     }
 
     companion object {

@@ -5,15 +5,20 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.Add
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
-import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.register.RegisterScreenModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
+import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
+import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.uploadProfileImage.UploadProfileImageViewModel
+import net.thechance.mena.identity.presentation.util.factoryOfOrNull
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import net.thechance.mena.identity.presentation.utils.ImageDecoderImpl
@@ -29,44 +34,25 @@ const val LOCATION_FOREGROUND = "LOCATION_FOREGROUND"
 val identityScreensModule = module {
 
     includes(platformModule())
-    single { get<String>(named(APP_VERSION)) }
-
     factory { PermissionHandler(get(named(LOCATION_FOREGROUND))) }
-
-    factory {
-        PickLocationScreenViewModel(
-            locationForegroundHandler = get(),
-            dispatcher = get(),
-            addressesRepository = get(),
-            addressModel = getOrNull()
-        )
-    }
-
-    factory {
-        AddEditLocationScreenViewModel(
-            addressesRepository = get(),
-            dispatcher = get(),
-            addressModel = getOrNull(),
-        )
-    }
-    factory { (imageKey: String) ->
-        ImageCropperViewModel(
-            imageKey = imageKey,
-            cachedImageRepository = get(),
-            imageDecoder = get()
-        )
-    }
+    factory { ProfileScreenViewModel(get(), get(named(APP_VERSION))) }
+    factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
-    factoryOf(::RegisterScreenModel)
-    factoryOf(::ForgetPasswordScreenViewModel)
-    factoryOf(::OtpScreenViewModel)
-    factoryOf(::ProfileScreenViewModel)
+    factoryOf(::NotImplementedScreenViewModel)
+    factoryOf(::RegisterPhoneEntryViewModel)
+    factoryOf(::RegisterOtpViewModel)
+    factoryOf(::CreatePasswordViewModel)
+    factoryOf(::ForgetPasswordPhoneEntryScreenViewModel)
+    factoryOf(::ForgetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
-    factoryOf(::ResetPasswordScreenViewModel)
+    factoryOf(::UploadProfileImageViewModel)
+    factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->
         ImageCropperComponentViewModel(minScale, maxScale, initialState)
     }
+    factoryOfOrNull(::AddEditLocationScreenViewModel)
+    factoryOfOrNull(::PickLocationScreenViewModel)
 }

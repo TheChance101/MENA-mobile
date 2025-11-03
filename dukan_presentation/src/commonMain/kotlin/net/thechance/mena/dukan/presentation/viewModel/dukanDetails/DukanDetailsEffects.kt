@@ -6,7 +6,8 @@ sealed class DukanDetailsEffects {
         val id: String,
         val name: String,
         val style: String,
-        val color: Long
+        val color: Long,
+        val dukanId: String
     ) : DukanDetailsEffects()
 
     data class NavigateToViewDukanOnMap(val latitude: Double, val longitude: Double) :
