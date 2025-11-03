@@ -34,10 +34,8 @@ import mena.faith_presentation.generated.resources.remove_bookmark_icon
 import mena.faith_presentation.generated.resources.swipe_animation
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.maplibre.compose.expressions.dsl.Feature.id
 import kotlin.math.roundToInt
 
 
