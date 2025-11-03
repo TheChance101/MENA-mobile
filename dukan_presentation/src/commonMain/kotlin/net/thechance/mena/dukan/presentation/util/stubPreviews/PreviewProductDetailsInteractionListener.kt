@@ -20,4 +20,7 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
 
     override fun onSecondaryImageClicked(imageUrl: String) {
     }
+
+    override fun onRetryClicked() {
+    }
 }
