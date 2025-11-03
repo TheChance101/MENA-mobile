@@ -15,6 +15,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanHeader
@@ -40,8 +41,16 @@ fun WideImageDukanDetailsContent(
         topBar = {
             WideImageDukanAppBar(
                 onBackClicked = listener::onBackClicked,
-                onCartClicked = listener::onCartClicked
+                onCartClicked = listener::onViewCartClicked
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {

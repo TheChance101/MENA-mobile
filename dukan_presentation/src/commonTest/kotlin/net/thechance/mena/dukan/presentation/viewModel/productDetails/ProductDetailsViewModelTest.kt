@@ -8,6 +8,7 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -15,8 +16,15 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_product_success
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.repository.DukanCartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -24,6 +32,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -31,6 +40,8 @@ import kotlin.uuid.Uuid
 class ProductDetailsViewModelTest {
 
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var savedStateHandle: SavedStateHandle
@@ -41,7 +52,10 @@ class ProductDetailsViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         savedStateHandle = SavedStateHandle(
-            mapOf("productId" to dummyProductDetails().id.toString())
+            mapOf(
+                "productId" to dummyProductDetails().id.toString(),
+                "dukanId" to "123"
+            )
         )
         everySuspend { productRepository.getProductDetails(any()) } returns dummyProductDetails()
 
@@ -165,10 +179,116 @@ class ProductDetailsViewModelTest {
         assertEquals(newImageUrl, state.selectedImageUrl)
     }
 
+    @Test
+    fun `onPlusClicked increases product quantity`() = runTest {
+        // Given
+        productDetailsViewModel.updateState { copy(product.copy(inCartQuantity = 3)) }
+
+        // When
+        productDetailsViewModel.onPlusClicked("10")
+
+        advanceUntilIdle()
+
+        // Then
+        val updatedQuantity = productDetailsViewModel.state.value.product.inCartQuantity
+        assertEquals(4, updatedQuantity)
+    }
+
+    @Test
+    fun `onMinusClicked decreases product quantity when greater than one`() = runTest {
+        // Given
+        productDetailsViewModel.updateState { copy(product.copy(inCartQuantity = 3)) }
+
+        // When
+        productDetailsViewModel.onMinusClicked("10")
+        advanceUntilIdle()
+
+        // Then
+        val updatedQuantity = productDetailsViewModel.state.value.product.inCartQuantity
+        assertEquals(2, updatedQuantity)
+    }
+
+    @Test
+    fun `onMinusClicked keeps quantity same when equal to 1`() = runTest {
+        // Given
+        productDetailsViewModel.updateState { copy(product.copy(inCartQuantity = 1)) }
+
+        // When
+        productDetailsViewModel.onMinusClicked("10")
+        advanceUntilIdle()
+
+        // Then
+        val updatedQuantity = productDetailsViewModel.state.value.product.inCartQuantity
+        assertEquals(1, updatedQuantity)
+    }
+
+    @Test
+    fun `onAddToCartClicked calls repository and shows success snackbar`() = runTest {
+        // Given
+        everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
+
+        // When
+        productDetailsViewModel.onAddToCartClicked("10")
+        advanceUntilIdle()
+
+        // Then
+        verifySuspend { dukanCartRepository.addProductQuantity(any()) }
+        assertEquals(
+            productDetailsViewModel.state.value.snackBarState?.snackBarType,
+            SnackBarType.SUCCESS
+        )
+        assertEquals(
+            productDetailsViewModel.state.value.snackBarState?.message,
+            Res.string.add_product_success
+        )
+    }
+
+    @Test
+    fun `onAddToCartClicked shows error snackbar when repository throws`() = runTest {
+        // Given
+        everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
+
+        // When
+        productDetailsViewModel.onAddToCartClicked("10")
+        advanceUntilIdle()
+
+        // Then
+        assertEquals(
+            productDetailsViewModel.state.value.snackBarState?.snackBarType,
+            SnackBarType.ERROR
+        )
+        assertEquals(
+            productDetailsViewModel.state.value.snackBarState?.message,
+            Res.string.no_internet_connection
+        )
+    }
+
+    @Test
+    fun `onDismissSnackBar clears snackbar state`() = runTest {
+        // Given
+        productDetailsViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = Res.string.add_product_success,
+                    snackBarType = SnackBarType.SUCCESS
+                )
+            )
+        }
+
+        // When
+        productDetailsViewModel.onDismissSnackBar()
+
+        // Then
+        assertTrue(productDetailsViewModel.state.value.snackBarState == null)
+    }
+
+
     private fun createViewModel() = ProductDetailsViewModel(
         productRepository = productRepository,
         defaultDispatcher = testDispatcher,
-        savedStateHandle = savedStateHandle
+        savedStateHandle = savedStateHandle,
+        dukanCartRepository = dukanCartRepository
+
     )
 }
 
@@ -182,5 +302,6 @@ private fun dummyProductDetails(): Product = Product(
         "http://example.com/image1.jpg",
         "http://example.com/image2.jpg"
     ),
-    createdAt = "2025-10-31T12:00:00Z"
+    createdAt = "2025-10-31T12:00:00Z",
+    quantityInCart = 10
 )
