@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -16,8 +17,13 @@ import kotlin.test.assertTrue
 class ChangePasswordScreenViewModelTest: BaseCoroutineTest() {
     private val userRepository = mockk<UserRepository>()
 
+    private val passwordValidator = PasswordValidator()
     private val testDispatcher = StandardTestDispatcher()
-    private val viewModel = ChangePasswordScreenViewModel(userRepository ,testDispatcher)
+    private val viewModel = ChangePasswordScreenViewModel(
+        userRepository = userRepository ,
+        passwordValidator = passwordValidator,
+        dispatcher = testDispatcher
+    )
 
     private val fakePassword = "Abcd1234"
 
