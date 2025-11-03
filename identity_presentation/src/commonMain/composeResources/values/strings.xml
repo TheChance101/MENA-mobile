@@ -223,4 +223,12 @@
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
 
+    <!-- EnterName -->
+    <string name="complete_profile_title">Complete your profile</string>
+    <string name="complete_profile_description">Please fill your informations</string>
+    <string name="first_name_label">First name</string>
+    <string name="last_name_label">Last name</string>
+    <string name="username_label">Username</string>
+    <string name="next">Next</string>
+
 </resources>
