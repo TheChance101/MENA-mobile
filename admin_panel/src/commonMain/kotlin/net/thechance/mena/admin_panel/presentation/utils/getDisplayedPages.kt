@@ -1,23 +1,24 @@
 package net.thechance.mena.admin_panel.presentation.utils
 
 fun getDisplayedPages(currentPage: Int, totalPages: Int): List<Int?> {
+    if (totalPages <= 7) return (0 until totalPages).toList()
+
     val pages = mutableListOf<Int?>()
 
-    if (totalPages <= 7) {
-        for (i in 0 until totalPages) pages.add(i)
-    } else {
-        val start = maxOf(1, currentPage - 2)
-        val end = minOf(totalPages - 2, currentPage + 2)
+    val firstPage = 0
+    val lastPage = totalPages - 1
+    val windowStart = maxOf(1, currentPage - 2)
+    val windowEnd = minOf(totalPages - 2, currentPage + 2)
 
-        pages.add(0)
+    pages.add(firstPage)
 
-        if (start > 1) pages.add(null)
+    if (windowStart > firstPage + 1) pages.add(null)
 
-        for (i in start..end) pages.add(i)
+    for (i in windowStart..windowEnd) pages.add(i)
 
-        if (end < totalPages - 2) pages.add(null)
+    if (windowEnd < lastPage - 1) pages.add(null)
 
-        pages.add(totalPages - 1)
-    }
+    pages.add(lastPage)
+
     return pages
 }

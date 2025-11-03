@@ -4,11 +4,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 
-fun parseLocalDateOrDefault(value: String?, defaultDate: LocalDate = DEFAULT_DATE) = value?.let {
-    runCatching { LocalDate.parse(it) }
-        .getOrDefault(defaultDate)
-} ?: defaultDate
-
 fun parseLocalDateTimeOrDefault(
     value: String?,
     defaultDateTime: LocalDateTime = DEFAULT_DATE_TIME

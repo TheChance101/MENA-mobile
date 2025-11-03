@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
@@ -42,9 +44,11 @@ fun UsersListContent(
         )
         LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
             itemsIndexed(state.users) { index, user ->
+                val isLastItem = index == state.users.lastIndex
                 UserItemRow(
                     index = index + 1,
                     user = user,
+                    isLastItem = isLastItem,
                     hasBackground = index % 2 != 0,
                     onToggleUserStatusClicked = {
                         listener.onToggleUserStatusClicked(
@@ -59,7 +63,9 @@ fun UsersListContent(
             currentPage = state.pageInfo.page,
             totalPages = state.pageInfo.totalPages,
             onPageChanged = listener::onPageChanged,
-            modifier = Modifier.padding(top = 8.dp, bottom = 14.dp).align(Alignment.Start)
+            modifier = Modifier
+                .padding(top = 8.dp, bottom = 14.dp)
+                .align(Alignment.Start)
         )
     }
 }
@@ -67,13 +73,15 @@ fun UsersListContent(
 @Composable
 private fun UserItemRow(
     index: Int,
+    isLastItem: Boolean,
     user: UsersManagementScreenState.UserItem,
     hasBackground: Boolean,
     onToggleUserStatusClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor =
-        if (hasBackground) Theme.colorScheme.background.surfaceLow else Theme.colorScheme.background.surface
+        if (hasBackground) Theme.colorScheme.background.surfaceLow
+        else Theme.colorScheme.background.surface
 
     val animatedBackgroundColor by animateColorAsState(
         targetValue = backgroundColor,
@@ -84,50 +92,27 @@ private fun UserItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(animatedBackgroundColor)
+            .background(
+                animatedBackgroundColor,
+                shape = if (isLastItem) RoundedCornerShape(
+                    bottomStart = Theme.radius.lg,
+                    bottomEnd = Theme.radius.lg
+                ) else RectangleShape
+            )
             .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = index.toString(),
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadePrimary,
-            softWrap = false,
-            modifier = Modifier.weight(0.3f)
-        )
 
-        Text(
-            text = user.fullName,
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadePrimary,
-            softWrap = false,
-            modifier = Modifier.weight(2f)
-        )
+        TableCellText(text = index.toString(), modifier = Modifier.weight(0.3f))
 
-        Text(
-            text = user.phoneNumber,
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadePrimary,
-            softWrap = false,
-            modifier = Modifier.weight(1.5f)
-        )
+        TableCellText(text = user.fullName, modifier = Modifier.weight(2f))
 
-        Text(
-            text = user.lastLoginAt,
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadePrimary,
-            softWrap = false,
-            modifier = Modifier.weight(1.5f)
-        )
+        TableCellText(text = user.phoneNumber, modifier = Modifier.weight(1.5f))
 
-        Text(
-            text = user.lastVisitAt,
-            style = Theme.typography.body.medium,
-            color = Theme.colorScheme.shadePrimary,
-            softWrap = false,
-            modifier = Modifier.weight(1.5f)
-        )
+        TableCellText(text = user.lastLoginAt, modifier = Modifier.weight(1.5f))
+
+        TableCellText(text = user.lastVisitAt, modifier = Modifier.weight(1.5f))
 
         Box(
             modifier = Modifier.weight(0.8f),
@@ -146,4 +131,18 @@ private fun UserItemRow(
             )
         }
     }
+}
+
+@Composable
+private fun TableCellText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = text,
+        style = Theme.typography.body.medium,
+        color = Theme.colorScheme.shadePrimary,
+        softWrap = false,
+        modifier = modifier
+    )
 }

@@ -33,8 +33,8 @@ fun TableHeaderRow(
             .background(
                 Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(
-                    topStart = Theme.radius.md,
-                    topEnd = Theme.radius.md
+                    topStart = Theme.radius.lg,
+                    topEnd = Theme.radius.lg
                 )
             )
             .padding(horizontal = 16.dp, vertical = 10.dp),

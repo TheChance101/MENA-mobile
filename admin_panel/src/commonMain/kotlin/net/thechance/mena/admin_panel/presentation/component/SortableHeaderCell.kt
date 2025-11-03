@@ -15,10 +15,12 @@ import net.thechance.mena.admin_panel.presentation.screen.users_management.Users
 import net.thechance.mena.admin_panel.presentation.utils.noRippleClickable
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_sort
+import net.thechance.mena.admin_panel.resources.sort
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SortableHeaderCell(
@@ -53,7 +55,7 @@ fun SortableHeaderCell(
         )
         Icon(
             painter = painterResource(Res.drawable.ic_sort),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.sort),
             modifier = Modifier.size(20.dp),
             tint = animatedIconTint
         )

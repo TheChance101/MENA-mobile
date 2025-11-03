@@ -49,4 +49,9 @@
     <string name="login_background_img">login background image</string>
     <string name="error_invalid_credentials_title">Wrong credentials.</string>
     <string name="error_invalid_credentials_description">Please check your username and password.</string>
+
+    <string name="status_updated_title">Status Updated</string>
+    <string name="user_activated">User has been activated</string>
+    <string name="user_blocked">User has been blocked</string>
+    <string name="sort">Sort</string>
 </resources>

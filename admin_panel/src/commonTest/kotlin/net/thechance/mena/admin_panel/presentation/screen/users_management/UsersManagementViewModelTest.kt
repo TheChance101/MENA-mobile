@@ -6,7 +6,7 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -20,6 +20,7 @@ import net.thechance.mena.admin_panel.domain.entity.user.Status
 import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
+import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,6 +35,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 class UsersManagementViewModelTest {
     private val userRepository = mock<UserRepository>(mode = MockMode.autofill)
+    private val stringProvider: StringProvider = mockk(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: UsersManagementViewModel
 
@@ -344,7 +346,8 @@ class UsersManagementViewModelTest {
     private fun TestScope.initViewModel() {
         viewModel = UsersManagementViewModel(
             userRepository = userRepository,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            stringProvider = stringProvider
         )
         advanceUntilIdle()
     }

@@ -1,6 +1,5 @@
 package net.thechance.mena.admin_panel.data.mapper.user
 
-import net.thechance.mena.admin_panel.data.mapper.parseLocalDateOrDefault
 import net.thechance.mena.admin_panel.data.mapper.parseLocalDateTimeOrDefault
 import net.thechance.mena.admin_panel.data.mapper.toUuidOrNull
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse

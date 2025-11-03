@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.utils.getDisplayedPages
 import net.thechance.mena.admin_panel.resources.Res
@@ -44,7 +45,7 @@ fun PagesIndicatorRow(
 
         displayedPages.forEach { page ->
             if (page == null) {
-                PageEllipsisButton(modifier = Modifier.padding(start = 6.dp))
+                PageEllipsisBox(modifier = Modifier.padding(start = 6.dp))
             } else {
                 PageNumberButton(
                     pageNumber = page + 1,
@@ -65,21 +66,19 @@ fun PagesIndicatorRow(
 }
 
 @Composable
-private fun PageEllipsisButton(modifier: Modifier = Modifier) {
-    Box(
+private fun PageEllipsisBox(modifier: Modifier = Modifier) {
+    Text(
+        text = "…",
+        style = Theme.typography.label.large,
+        color = Theme.colorScheme.shadeSecondary,
+        textAlign = TextAlign.Center,
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "…",
-            style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadeSecondary
-        )
-    }
+            .padding(vertical = 4.dp)
+            .wrapContentHeight(Alignment.CenterVertically)
+    )
 }
 
 @Composable
@@ -89,11 +88,10 @@ private fun PageNavigationButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isEnabled) {
-        Theme.colorScheme.background.surfaceLow
-    } else {
-        Theme.colorScheme.background.surfaceLow.copy(alpha = 0.5f)
-    }
+    val backgroundColor =
+        if (isEnabled) Theme.colorScheme.background.surfaceLow
+        else Theme.colorScheme.disabled
+
     val animatedBackgroundColor by animateColorAsState(
         targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
@@ -121,7 +119,9 @@ private fun PageNumberButton(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor =
-        if (isSelected) Theme.colorScheme.primary.primary else Theme.colorScheme.background.surfaceLow
+        if (isSelected) Theme.colorScheme.primary.primary
+        else Theme.colorScheme.background.surfaceLow
+
     val animatedBackgroundColor by animateColorAsState(
         targetValue = backgroundColor,
         animationSpec = tween(durationMillis = 300),
@@ -136,19 +136,17 @@ private fun PageNumberButton(
         label = "pageTextColor"
     )
 
-    Box(
+    Text(
+        text = pageNumber.toString(),
+        style = Theme.typography.label.large,
+        color = animatedTextColor,
+        textAlign = TextAlign.Center,
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(animatedBackgroundColor)
             .clickable { onClick() }
-            .padding(vertical = 4.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = pageNumber.toString(),
-            style = Theme.typography.label.large,
-            color = animatedTextColor
-        )
-    }
+            .padding(vertical = 4.dp)
+            .wrapContentHeight(Alignment.CenterVertically)
+    )
 }

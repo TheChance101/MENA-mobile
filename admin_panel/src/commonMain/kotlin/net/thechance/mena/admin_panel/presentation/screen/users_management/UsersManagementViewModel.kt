@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
+import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +15,15 @@ import net.thechance.mena.admin_panel.domain.model.UserQueryParams
 import net.thechance.mena.admin_panel.domain.repository.user.UserRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
+import net.thechance.mena.admin_panel.presentation.model.SnackBarState
+import net.thechance.mena.admin_panel.presentation.utils.StringProvider
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.status_updated_title
+import net.thechance.mena.admin_panel.resources.user_activated
+import net.thechance.mena.admin_panel.resources.user_blocked
+import org.jetbrains.compose.resources.stringResource
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -23,6 +33,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class UsersManagementViewModel(
     @Provided private val userRepository: UserRepository,
+    @Provided private val stringProvider: StringProvider,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UsersManagementScreenState, Unit>(
     UsersManagementScreenState()
@@ -48,7 +59,8 @@ class UsersManagementViewModel(
     }
 
     private fun getUserQueryParams(): UserQueryParams {
-        val trimmedQuery = currentState.query.trim().replace(Regex("\\s+"), " ").ifBlank { null }
+        val trimmedQuery = currentState.query
+            .trim().replace(Regex("\\s+"), " ").ifBlank { null }
 
         return UserQueryParams(
             searchInput = trimmedQuery,
@@ -72,8 +84,13 @@ class UsersManagementViewModel(
         }
     }
 
-    private fun onError(errorState: ErrorState) {
+    private suspend fun onError(errorState: ErrorState) {
         updateState { it.copy(errorState = errorState) }
+        showSnackBar(
+            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
     }
 
     override fun onSortClicked(type: UsersManagementScreenState.SortType) {
@@ -107,8 +124,7 @@ class UsersManagementViewModel(
     }
 
     override fun onClearQueryClicked() {
-        updateState { it.copy(query = "") }
-        getUsers()
+        onSearchQueryChanged("")
     }
 
     override fun onPageChanged(page: Int) {
@@ -150,13 +166,51 @@ class UsersManagementViewModel(
         )
     }
 
-    private fun onUpdateUserStatusSuccess(userId: Uuid, newStatus: Status) {
+    private suspend fun onUpdateUserStatusSuccess(userId: Uuid, newStatus: Status) {
         updateState {
             it.copy(
                 users = it.users.map { user ->
                     if (user.id == userId) user.copy(status = newStatus) else user
                 }
             )
+        }
+
+        val message = when (newStatus) {
+            Status.ACTIVE -> stringProvider.getString(Res.string.user_activated)
+            Status.BLOCKED -> stringProvider.getString(Res.string.user_blocked)
+        }
+        showSnackBar(
+            title = stringProvider.getString(Res.string.status_updated_title),
+            message = message,
+            isSuccess = true
+        )
+    }
+
+    private suspend fun showSnackBar(
+        title: String,
+        message: String,
+        isSuccess: Boolean,
+        durationMillis: Long = 3000L
+    ) {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = SnackBarState(
+                    isVisible = true,
+                    title = title,
+                    message = message,
+                    isSuccess = isSuccess
+                )
+            )
+        }
+
+        delay(durationMillis)
+
+        hideSnackBar()
+    }
+
+    private fun hideSnackBar() {
+        updateState { oldState ->
+            oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
     }
 

@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -14,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
-import net.thechance.mena.admin_panel.presentation.component.ErrorView
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.BlockUserDialog
 import net.thechance.mena.admin_panel.presentation.component.SearchBar
+import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.search_hint
@@ -41,13 +43,7 @@ private fun UsersManagementScreenContent(
     listener: UsersManagementInteractionListener
 ) {
     PanelScaffold(
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.users_management),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
-                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
-            )
-        },
+        topBar = { UsersManagementTopBar() },
         overlays = {
             dialog(state.showBlockDialog) {
                 BlockUserDialog(
@@ -57,6 +53,7 @@ private fun UsersManagementScreenContent(
                 )
             }
         },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
         onRetry = listener::onRetryClicked
     ) {
@@ -64,30 +61,20 @@ private fun UsersManagementScreenContent(
             SearchBar(
                 value = state.query,
                 hint = stringResource(Res.string.search_hint),
-                onValueChange = { newQuery ->
-                    listener.onSearchQueryChanged(newQuery)
-                },
+                onValueChange = listener::onSearchQueryChanged,
                 onClearQueryClicked = listener::onClearQueryClicked,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier
+                    .fillMaxWidth(0.3f)
+                    .align(Alignment.End)
+                    .padding(16.dp)
             )
 
             when {
-                state.errorState != null ->
-                    ErrorView(onRetry = listener::onRetryClicked)
+                state.isLoading -> UsersLoadingIndicator()
 
-                state.isLoading -> Box(modifier = Modifier.fillMaxSize()) {
-                    DotsProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center).offset(y=-(76.dp)),
-                        dotSize = 16.dp,
-                        spaceBetween = 4.dp
-                    )
-                }
+                state.users.isEmpty() && state.query.isNotEmpty() -> UsersEmptyState()
 
-                state.users.isEmpty() && state.query.isNotEmpty() -> {
-                    EmptySearchState(modifier = Modifier.fillMaxSize().offset(y=-(76.dp)))
-                }
-
-                else -> {
+                else ->{
                     UsersListContent(
                         listener = listener,
                         state = state,
@@ -97,4 +84,35 @@ private fun UsersManagementScreenContent(
             }
         }
     }
+}
+
+@Composable
+private fun UsersManagementTopBar() {
+    AppBar(
+        title = stringResource(Res.string.users_management),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+        modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
+    )
+}
+
+@Composable
+private fun UsersLoadingIndicator() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        DotsProgressIndicator(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(y = -(76.dp)),
+            dotSize = 16.dp,
+            spaceBetween = 4.dp
+        )
+    }
+}
+
+@Composable
+private fun UsersEmptyState() {
+    EmptySearchState(
+        modifier = Modifier
+            .fillMaxSize()
+            .offset(y = -(76.dp))
+    )
 }

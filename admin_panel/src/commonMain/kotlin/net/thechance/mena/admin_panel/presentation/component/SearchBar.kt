@@ -30,8 +30,5 @@ fun SearchBar(
         trailingIcon = if (value.isNotBlank()) painterResource(Res.drawable.ic_clear) else null,
         onTrailingIconClick = onClearQueryClicked,
         modifier = modifier
-            .fillMaxWidth()
-            .wrapContentWidth(Alignment.End)
-            .fillMaxWidth(0.3f)
     )
 }

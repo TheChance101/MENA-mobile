@@ -14,18 +14,18 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.img_no_internet
+import net.thechance.mena.admin_panel.resources.no_internet_content
+import net.thechance.mena.admin_panel.resources.no_internet_title
 import net.thechance.mena.admin_panel.resources.retry
-import net.thechance.mena.admin_panel.resources.unknown_error_description
-import net.thechance.mena.admin_panel.resources.unknown_error_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ErrorView(
-    image: Painter = painterResource(Res.drawable.img_no_internet),
-    title: String = stringResource(Res.string.unknown_error_title),
-    description: String = stringResource(Res.string.unknown_error_description),
+    image: Painter,
+    title: String,
+    description: String,
     onRetry: () -> Unit,
 ) {
     Column(

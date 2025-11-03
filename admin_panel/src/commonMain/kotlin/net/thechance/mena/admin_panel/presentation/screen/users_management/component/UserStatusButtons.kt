@@ -5,8 +5,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.activate
@@ -50,10 +49,11 @@ fun UserStatusToggleButton(
     }
 
     OutlinedButton(
-        modifier = modifier.wrapContentWidth(),
         text = buttonText,
         trailingIcon = buttonTrailingIcon,
-        onClick = onClick
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp),
+        modifier = modifier.wrapContentWidth(),
     )
 }
 
@@ -63,10 +63,10 @@ fun UserStatusButton(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor =
-        if (isActive) Theme.colorScheme.background.bgSuccess else Theme.colorScheme.background.bgError
+        if (isActive) Theme.colorScheme.background.bgSuccess
+        else Theme.colorScheme.background.bgError
 
-    val dotColor = if (isActive) Theme.colorScheme.success else Theme.colorScheme.error
-    val textColor = if (isActive) Theme.colorScheme.success else Theme.colorScheme.error
+    val contentColor = if (isActive) Theme.colorScheme.success else Theme.colorScheme.error
 
     val animatedBackgroundColor by animateColorAsState(
         targetValue = backgroundColor,
@@ -74,16 +74,10 @@ fun UserStatusButton(
         label = "statusBackgroundColor"
     )
 
-    val animatedDotColor by animateColorAsState(
-        targetValue = dotColor,
+    val animatedContentColor by animateColorAsState(
+        targetValue = contentColor,
         animationSpec = tween(durationMillis = 300),
         label = "statusDotColor"
-    )
-
-    val animatedTextColor by animateColorAsState(
-        targetValue = textColor,
-        animationSpec = tween(durationMillis = 300),
-        label = "statusTextColor"
     )
 
     val statusText = if (isActive) {
@@ -92,25 +86,25 @@ fun UserStatusButton(
         stringResource(Res.string.blocked)
     }
 
-        Row(
-            modifier = modifier
-                .wrapContentWidth()
-                .background(
-                    color = animatedBackgroundColor,
-                    shape = CircleShape
-                )
-                .padding(horizontal = 12.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            StatusDot(color = animatedDotColor)
-            Text(
-                text = statusText,
-                style = Theme.typography.label.medium,
-                softWrap = false,
-                color = animatedTextColor
+    Row(
+        modifier = modifier
+            .wrapContentWidth()
+            .background(
+                color = animatedBackgroundColor,
+                shape = CircleShape
             )
-        }
+            .padding(horizontal = 12.dp, vertical = 4.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        StatusDot(color = animatedContentColor)
+        Text(
+            text = statusText,
+            style = Theme.typography.label.medium,
+            softWrap = false,
+            color = animatedContentColor
+        )
+    }
 }
 
 @Composable

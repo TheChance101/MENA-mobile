@@ -23,7 +23,10 @@ class UserRepositoryImpl(
     private val userApiService: UserApiService,
 ) : UserRepository {
     override suspend fun getUsers(userQueryParams: UserQueryParams?): PagedResult<User> {
-        val sortParam = buildSortQuery(userQueryParams?.sortType, userQueryParams?.sortDirection)
+        val sortParam = buildSortQuery(
+            property = userQueryParams?.sortType,
+            direction = userQueryParams?.sortDirection
+        )
         return executeApiSafely<PagedResponse<UserResponse>> {
             userApiService.getUsers(
                 query = userQueryParams?.searchInput,

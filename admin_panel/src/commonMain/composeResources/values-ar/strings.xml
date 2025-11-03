@@ -48,4 +48,9 @@
     <string name="login_background_img">صورة خلفية لتسجيل الدخول</string>
     <string name="error_invalid_credentials_title">بيانات اعتماد غير صحيحة.</string>
     <string name="error_invalid_credentials_description">يرجى التحقق من اسم المستخدم وكلمة المرور الخاصة بك.</string>
+
+    <string name="status_updated_title">تم تحديث الحالة</string>
+    <string name="user_activated">تم تفعيل المستخدم</string>
+    <string name="user_blocked">تم حظر المستخدم</string>
+    <string name="sort">ترتيب</string>
 </resources>

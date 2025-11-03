@@ -27,7 +27,9 @@ fun StatePlaceholder(
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            modifier = Modifier.size(128.dp).padding(bottom = 24.dp),
+            modifier = Modifier
+                .size(128.dp)
+                .padding(bottom = 24.dp),
             painter = image,
             contentDescription = title
         )
