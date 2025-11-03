@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.data.mapper.user
 
 import net.thechance.mena.admin_panel.data.mapper.parseLocalDateOrDefault
+import net.thechance.mena.admin_panel.data.mapper.parseLocalDateTimeOrDefault
 import net.thechance.mena.admin_panel.data.mapper.toUuidOrNull
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.domain.entity.user.Status
@@ -12,8 +13,12 @@ fun UserResponse.toEntity(): User {
     return User(
         id = id.toUuidOrNull() ?: throw IllegalStateException("Invalid User id"),
         phoneNumber = phoneNumber.orEmpty(),
-        lastLoginAt = parseLocalDateOrDefault(lastLoginAt),
-        lastVisitAt = parseLocalDateOrDefault(lastVisitAt),
+        lastLoginAt = parseLocalDateTimeOrDefault(lastLoginAt)?.date ?: throw IllegalStateException(
+            "Invalid date"
+        ),
+        lastVisitAt = parseLocalDateTimeOrDefault(lastVisitAt)?.date ?: throw IllegalStateException(
+            "Invalid date"
+        ),
         status = Status.valueOfOrDefault(status),
         firstName = firstName.orEmpty(),
         lastName = lastName.orEmpty(),
