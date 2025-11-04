@@ -133,25 +133,25 @@ class UsersManagementViewModel(
         getUsers()
     }
 
-    override fun showBlockDialog(userId: Uuid) {
-        updateState { it.copy(showBlockDialog = true, selectedUserId = userId) }
+    override fun onBlockDialogClicked(userId: Uuid) {
+        updateState { it.copy(isBlockDialogShown = true, selectedUserId = userId) }
     }
 
-    override fun onDismissBlockDialog() {
-        updateState { it.copy(showBlockDialog = false, selectedUserId = null) }
+    override fun onBlockDialogDismissed() {
+        updateState { it.copy(isBlockDialogShown = false, selectedUserId = null) }
     }
 
     override fun onToggleUserStatusClicked(userId: Uuid, userStatus: User.Status) {
         when (userStatus) {
-            User.Status.ACTIVE -> showBlockDialog(userId)
+            User.Status.ACTIVE -> onBlockDialogClicked(userId)
             User.Status.BLOCKED -> updateUserStatus(userId, User.Status.ACTIVE)
         }
     }
 
-    override fun onConfirmBlock() {
+    override fun onBlockConfirmed() {
         val userId = state.value.selectedUserId ?: return
         updateUserStatus(userId, User.Status.BLOCKED)
-        onDismissBlockDialog()
+        onBlockDialogDismissed()
     }
 
     private fun updateUserStatus(userId: Uuid, newStatus: User.Status) {

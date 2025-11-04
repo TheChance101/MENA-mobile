@@ -16,7 +16,7 @@ data class UsersManagementScreenState(
     val isLoading: Boolean = false,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
-    val showBlockDialog: Boolean = false,
+    val isBlockDialogShown: Boolean = false,
     val selectedUserId: Uuid? = null
 ) {
     data class UserPageInfo(

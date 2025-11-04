@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,11 +44,11 @@ private fun UsersManagementScreenContent(
     PanelScaffold(
         topBar = { UsersManagementTopBar() },
         overlays = {
-            dialog(state.showBlockDialog) {
+            dialog(state.isBlockDialogShown) {
                 BlockUserDialog(
                     isVisible = it,
-                    onDismiss = listener::onDismissBlockDialog,
-                    onConfirmBlock = listener::onConfirmBlock
+                    onDismiss = listener::onBlockDialogDismissed,
+                    onConfirmBlock = listener::onBlockConfirmed
                 )
             }
         },

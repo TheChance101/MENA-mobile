@@ -202,12 +202,12 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val userId = usersList.items[0].id
-            viewModel.showBlockDialog(userId)
+            viewModel.onBlockDialogClicked(userId)
             advanceUntilIdle()
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertTrue(currentState.showBlockDialog)
+                assertTrue(currentState.isBlockDialogShown)
                 assertEquals(userId, currentState.selectedUserId)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -219,15 +219,15 @@ class UsersManagementViewModelTest {
             initViewModel()
 
             val userId = usersList.items[0].id
-            viewModel.showBlockDialog(userId)
+            viewModel.onBlockDialogClicked(userId)
             advanceUntilIdle()
 
-            viewModel.onDismissBlockDialog()
+            viewModel.onBlockDialogDismissed()
             advanceUntilIdle()
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertFalse(currentState.showBlockDialog)
+                assertFalse(currentState.isBlockDialogShown)
                 assertNull(currentState.selectedUserId)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -245,7 +245,7 @@ class UsersManagementViewModelTest {
 
             viewModel.state.test {
                 val currentState = awaitItem()
-                assertTrue(currentState.showBlockDialog)
+                assertTrue(currentState.isBlockDialogShown)
                 assertEquals(activeUserId, currentState.selectedUserId)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -275,10 +275,10 @@ class UsersManagementViewModelTest {
         initViewModel()
 
         val userId = usersList.items[0].id
-        viewModel.showBlockDialog(userId)
+        viewModel.onBlockDialogClicked(userId)
         advanceUntilIdle()
 
-        viewModel.onConfirmBlock()
+        viewModel.onBlockConfirmed()
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -286,7 +286,7 @@ class UsersManagementViewModelTest {
             val user = currentState.users.find { it.id == userId }
             assertNotNull(user)
             assertEquals(User.Status.BLOCKED, user.status)
-            assertFalse(currentState.showBlockDialog)
+            assertFalse(currentState.isBlockDialogShown)
             assertNull(currentState.selectedUserId)
             cancelAndIgnoreRemainingEvents()
         }

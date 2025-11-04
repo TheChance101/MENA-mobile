@@ -13,7 +13,7 @@ interface UsersManagementInteractionListener {
     fun onSearchQueryChanged(query: String)
     fun onClearQueryClicked()
     fun onPageChanged(page: Int)
-    fun showBlockDialog(userId: Uuid)
-    fun onDismissBlockDialog()
-    fun onConfirmBlock()
+    fun onBlockDialogClicked(userId: Uuid)
+    fun onBlockDialogDismissed()
+    fun onBlockConfirmed()
 }
