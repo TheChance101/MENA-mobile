@@ -9,5 +9,4 @@ interface EnterNameInteractionListener : BaseInteractionListener {
     fun onUsernameChange(username: String)
     fun onClickNext()
     fun onClearErrorMessage()
-    fun onEffect()
 }

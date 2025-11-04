@@ -137,8 +137,6 @@ class EnterNameScreen() :
                     override fun onUsernameChange(username: String) {}
                     override fun onClickNext() {}
                     override fun onClearErrorMessage() {}
-                    override fun onEffect() {
-                    }
                 }
             )
         }
@@ -163,8 +161,6 @@ class EnterNameScreen() :
                     override fun onUsernameChange(username: String) {}
                     override fun onClickNext() {}
                     override fun onClearErrorMessage() {}
-                    override fun onEffect() {
-                    }
                 }
             )
         }
