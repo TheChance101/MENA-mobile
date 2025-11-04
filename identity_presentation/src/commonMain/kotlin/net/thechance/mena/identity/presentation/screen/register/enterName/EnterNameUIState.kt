@@ -11,4 +11,8 @@ data class EnterNameUIState(
     val isNextEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: Int? = null
-)
+){
+    fun isValidInput(): Boolean {
+        return firstName.isNotBlank() && lastName.isNotBlank() && username.isNotBlank()
+    }
+}

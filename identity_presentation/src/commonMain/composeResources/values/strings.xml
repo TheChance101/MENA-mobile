@@ -238,6 +238,5 @@
     <string name="first_name_label">First name</string>
     <string name="last_name_label">Last name</string>
     <string name="username_label">Username</string>
-    <string name="next">Next</string>
 
 </resources>

@@ -73,7 +73,7 @@ class EnterNameScreen() :
                     ProfileEditText(
                         title = stringResource(Res.string.first_name_label),
                         value = state.firstName,
-                        onValueChange = listener::onFirstNameChange,
+                        onValueChange = listener::onChangeFirstName,
                     )
 
                     ProfileEditText(
@@ -129,7 +129,7 @@ class EnterNameScreen() :
                     isLoading = false,
                 ),
                 listener = object : EnterNameInteractionListener {
-                    override fun onFirstNameChange(name: String) {}
+                    override fun onChangeFirstName(name: String) {}
                     override fun onLastNameChange(name: String) {}
                     override fun onUsernameChange(username: String) {}
                     override fun onClickNext() {}
@@ -152,7 +152,7 @@ class EnterNameScreen() :
                     isLoading = false
                 ),
                 listener = object : EnterNameInteractionListener {
-                    override fun onFirstNameChange(name: String) {}
+                    override fun onChangeFirstName(name: String) {}
                     override fun onLastNameChange(name: String) {}
                     override fun onUsernameChange(username: String) {}
                     override fun onClickNext() {}
