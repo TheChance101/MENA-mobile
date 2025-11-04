@@ -65,7 +65,7 @@ class CompassViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             advanceUntilIdle()
-            assertEquals(CompassEffect.NavigateToEnableLocation, awaitItem())
+            assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -94,7 +94,7 @@ class CompassViewModelAdditionalTests {
             viewModel.onChangeLocation()
             advanceUntilIdle()
 
-            assertEquals(CompassEffect.NavigateToEnableLocation, awaitItem())
+            assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -116,7 +116,7 @@ class CompassViewModelAdditionalTests {
             viewModel.onChangeLocation()
             advanceUntilIdle()
 
-            assertEquals(CompassEffect.NavigateToMyLocation, awaitItem())
+            assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

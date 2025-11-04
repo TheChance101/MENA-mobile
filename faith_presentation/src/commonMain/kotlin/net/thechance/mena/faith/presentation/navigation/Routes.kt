@@ -38,10 +38,7 @@ internal sealed interface Route {
     data object DownloadedRecitersRoute : Route
 
     @Serializable
-    data object EnableLocation : Route
-
-    @Serializable
-    data object MyLocation : Route
+    data object UserAddresses : Route
 
     @Serializable
     data class SearchRoute(

@@ -6,9 +6,7 @@ sealed interface MainScreenEffect {
         val surahName: String,
         val ayahNumber: Int
     ) : MainScreenEffect
-
-    data object NavigateToEnableLocation : MainScreenEffect
-    data object NavigateToMyLocation : MainScreenEffect
+    data object NavigateToAddressesScreen : MainScreenEffect
     data object NavigateToQuran : MainScreenEffect
     data object NavigateToQiblah : MainScreenEffect
     data object NavigateToMosques : MainScreenEffect

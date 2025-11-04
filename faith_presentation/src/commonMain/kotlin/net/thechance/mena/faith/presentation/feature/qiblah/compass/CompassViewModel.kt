@@ -23,57 +23,31 @@ class CompassViewModel(
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
-    override fun onChangeLocation() {
-        if (uiState.value.city.isNotEmpty()) {
-            sendEffect(CompassEffect.NavigateToEnableLocation)
-            return
-        }
-        sendEffect(CompassEffect.NavigateToMyLocation)
-    }
-
-    fun refreshAddress() {
-        loadCompassData()
-    }
+    override fun onChangeLocation() = handleInvalidAddress()
 
     private fun loadCompassData() {
         tryToExecute(
             dispatcher = dispatcher,
-            execute = { locationService.getActiveAddress() },
-            onSuccess = ::handleAddressResult
+            execute = {
+                val address = getValidatedAddress() ?: return@tryToExecute null
+                bearingCalculatorUseCase.calculateQiblahAngle(address)
+            },
+            onSuccess = { angle ->
+                angle?.let { onGetQiblahSuccess(it) }
+            }
         )
     }
 
-    private fun handleAddressResult(address: Address?) {
-        when {
-            address == null -> navigateToMyLocation()
-            address.hasEmptyAddressLine() -> navigateToEnableLocation(address)
-            else -> processValidAddress(address)
+    private suspend fun getValidatedAddress(): Address? {
+        val address = locationService.getActiveAddress()
+
+        if (address == null || address.addressLine.isEmpty()) {
+            handleInvalidAddress()
+            return null
         }
-    }
 
-    private fun navigateToMyLocation() {
-        sendEffect(CompassEffect.NavigateToMyLocation)
-    }
-
-    private fun navigateToEnableLocation(address: Address) {
         updateState { it.copy(city = address.addressLine) }
-        sendEffect(CompassEffect.NavigateToEnableLocation)
-    }
-
-    private fun processValidAddress(address: Address) {
-        updateState { it.copy(city = address.addressLine) }
-        calculateQiblahDirection(address)
-    }
-
-    private fun Address.hasEmptyAddressLine(): Boolean = addressLine.isEmpty()
-
-
-    private fun calculateQiblahDirection(address: Address) {
-        tryToExecute(
-            dispatcher = dispatcher,
-            execute = { bearingCalculatorUseCase.calculateQiblahAngle(address) },
-            onSuccess = ::onGetQiblahSuccess
-        )
+        return address
     }
 
     private fun onGetQiblahSuccess(angle: Double) {
@@ -93,6 +67,7 @@ class CompassViewModel(
         val continuousAzimuth = bearingCalculatorUseCase.calculateContinuousAzimuth(rawAzimuth)
         val relativeAngle =
             calculateRelativeAngleToQiblah(rawAzimuth, uiState.value.qiblahAngleValue)
+
         updateState {
             it.copy(
                 continuousAzimuth = continuousAzimuth,
@@ -106,5 +81,11 @@ class CompassViewModel(
             from = rawAzimuth,
             to = qiblahAngle
         )
+    }
+
+    private fun handleInvalidAddress() = sendEffect(CompassEffect.NavigateToAddressesScreen)
+
+    fun refreshAddress() {
+        loadCompassData()
     }
 }

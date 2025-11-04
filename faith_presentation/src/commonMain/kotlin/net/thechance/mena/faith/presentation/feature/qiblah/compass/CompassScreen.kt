@@ -65,8 +65,7 @@ fun CompassScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is CompassEffect.NavigateBack -> navController.navigateUp()
-            CompassEffect.NavigateToMyLocation -> navController.navigate(Route.MyLocation)
-            CompassEffect.NavigateToEnableLocation -> navController.navigate(Route.EnableLocation)
+            CompassEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }
 

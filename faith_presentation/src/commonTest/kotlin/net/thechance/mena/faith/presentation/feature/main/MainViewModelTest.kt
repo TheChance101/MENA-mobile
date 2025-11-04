@@ -69,7 +69,7 @@ class MainViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             testDispatcher.scheduler.advanceUntilIdle()
-            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -89,7 +89,7 @@ class MainViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             testDispatcher.scheduler.advanceUntilIdle()
-            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -128,7 +128,7 @@ class MainViewModelAdditionalTests {
 
             viewModel.uiEffect.test {
                 viewModel.onChangeLocation()
-                assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+                assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
         }
@@ -151,7 +151,7 @@ class MainViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             viewModel.onChangeLocation()
-            assertEquals(MainScreenEffect.NavigateToMyLocation, awaitItem())
+            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -350,15 +350,21 @@ class MainViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             viewModel.onChangeLocation()
-            assertEquals(MainScreenEffect.NavigateToEnableLocation, awaitItem())
+            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `onPrayerTimeClick should emit NavigateToPrayerTime effect`() = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
+
+        val viewModel = MainViewModel(
+            quranRepository = quranRepository,
+            prayerTimeRepository = prayerTimeRepository,
+            locationService = locationService,
+            dispatcher = testDispatcher
+        )
 
         viewModel.uiEffect.test {
             viewModel.onPrayerTimeClick()
@@ -383,7 +389,7 @@ class MainViewModelAdditionalTests {
 
         viewModel.uiEffect.test {
             viewModel.onChangeLocation()
-            assertEquals(MainScreenEffect.NavigateToMyLocation, awaitItem())
+            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

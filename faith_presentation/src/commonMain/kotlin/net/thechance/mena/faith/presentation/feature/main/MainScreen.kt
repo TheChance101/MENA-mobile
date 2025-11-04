@@ -78,12 +78,7 @@ fun MainScreen(
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
             MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
             MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
-            MainScreenEffect.NavigateToEnableLocation -> {
-                navController.navigate(Route.EnableLocation)
-            }
-            MainScreenEffect.NavigateToMyLocation -> {
-                navController.navigate(Route.MyLocation)
-            }
+            MainScreenEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }
 

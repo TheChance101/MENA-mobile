@@ -37,29 +37,31 @@ class MainViewModel(
     private fun loadPrayerTimes() {
         tryToExecute(
             execute = {
-                updateAddress(locationService.getActiveAddress())
+                val address = getValidatedAddress() ?: return@tryToExecute null
+
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    address = locationService.getActiveAddress()
+                    address = address
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = ::onGetPrayerTimesSuccess,
+            onSuccess = { prayerTimes -> prayerTimes?.let { onGetPrayerTimesSuccess(it) } },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
     }
 
-    private fun updateAddress(address: Address?) {
-        if (address?.addressLine.isNullOrEmpty()) {
-            sendEffect(MainScreenEffect.NavigateToEnableLocation)
-            return
+    private suspend fun getValidatedAddress(): Address? {
+        val address = locationService.getActiveAddress()
+
+        if (address == null || address.addressLine.isEmpty()) {
+            handleInvalidAddress()
+            return null
         }
 
-        address?.let { updateState { state -> state.copy(address = it.addressLine) } }
+        updateState { state -> state.copy(address = address.addressLine) }
+        return address
     }
-
-    private fun isValidAddress(address: String): Boolean = address.isNotEmpty()
 
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
@@ -96,20 +98,13 @@ class MainViewModel(
     }
 
     override fun onQuranClick() = sendEffect(MainScreenEffect.NavigateToQuran)
-
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
-
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
     override fun onPrayerTimeClick() = sendEffect(MainScreenEffect.NavigateToPrayerTime)
     override fun onTilawahClick() = sendEffect(MainScreenEffect.NavigateToTilawah)
+    override fun onChangeLocation() = handleInvalidAddress()
 
-    override fun onChangeLocation() {
-        if (isValidAddress(uiState.value.address)) {
-            sendEffect(MainScreenEffect.NavigateToEnableLocation)
-            return
-        }
-        sendEffect(MainScreenEffect.NavigateToMyLocation)
-    }
+    private fun handleInvalidAddress() = sendEffect(MainScreenEffect.NavigateToAddressesScreen)
 
     fun refreshTilawah() {
         loadLastAyahForTilawah()
