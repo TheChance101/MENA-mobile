@@ -63,4 +63,11 @@ class QuranRepositoryImpl(
         )
         tilawahApiService.getAyahSoundUrl(requestBody)
     }
+
+    override suspend fun saveDefaultReciter(reciterId: Int) =
+        tilawahDataStore.saveDefaultReciter(reciterId)
+
+
+    override suspend fun getDefaultReciter(): Int? =
+        tilawahDataStore.getDefaultReciter()
 }

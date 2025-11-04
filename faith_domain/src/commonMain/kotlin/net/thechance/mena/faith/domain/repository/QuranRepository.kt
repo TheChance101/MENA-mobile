@@ -12,4 +12,7 @@ interface QuranRepository {
     suspend fun searchForAyahInSurah(surahId: Int, query: String): List<Ayah>
     suspend fun searchForAyahInQuran(query: String): List<Ayah>
     suspend fun getAyahSoundUrl(ayahNumber: Int, surahNumber: Int, reciterId: Int): String
+
+    suspend fun saveDefaultReciter(reciterId: Int)
+    suspend fun getDefaultReciter(): Int?
 }
