@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.data.di
 
 import io.ktor.client.HttpClient
-import net.thechance.mena.dukan.data.repository.CartProductsRepositoryImpl
+import net.thechance.mena.dukan.data.repository.CartRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
@@ -10,7 +10,7 @@ import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
 import net.thechance.mena.dukan.data.util.network.buildApiClient
 import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
-import net.thechance.mena.dukan.domain.repository.CartProductsRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
@@ -35,7 +35,7 @@ internal val dukanRepositoryModule = module {
         )
     }
     single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
-    single<CartProductsRepository> { CartProductsRepositoryImpl(get(named("dukanClient"))) }
+    single<CartRepository> { CartRepositoryImpl(get(named("dukanClient"))) }
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
     singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }

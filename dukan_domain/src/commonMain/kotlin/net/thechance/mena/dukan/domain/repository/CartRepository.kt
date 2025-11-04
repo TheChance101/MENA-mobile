@@ -7,7 +7,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-interface CartProductsRepository {
+interface CartRepository {
     suspend fun getCartProducts(dukanId: Uuid, page: Int, size: Int): PagedResult<ProductCart>
     suspend fun getCartInfo(): Cart
 }

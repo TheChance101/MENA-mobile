@@ -10,15 +10,15 @@ import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.ProductCart
-import net.thechance.mena.dukan.domain.repository.CartProductsRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class CartProductsRepositoryImpl(
+class CartRepositoryImpl(
     private val client: HttpClient
-) : CartProductsRepository {
+) : CartRepository {
 
     override suspend fun getCartProducts(
         dukanId: Uuid,

@@ -6,13 +6,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import net.thechance.mena.dukan.domain.repository.CartProductsRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class CheckoutViewModel(
-    private val cartProductsRepository: CartProductsRepository,
+    private val cartRepository: CartRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) :
     BaseViewModel<CheckoutUiState, CheckoutEffect>(
@@ -37,7 +37,7 @@ class CheckoutViewModel(
         return createPagingSourceFlow(
             mapper = { it.toUiState() }
         ) { pageNumber, pageSize ->
-            cartProductsRepository.getCartProducts(
+            cartRepository.getCartProducts(
                 dukanId = Uuid.parse(""),
                 page = pageNumber,
                 size = pageSize
