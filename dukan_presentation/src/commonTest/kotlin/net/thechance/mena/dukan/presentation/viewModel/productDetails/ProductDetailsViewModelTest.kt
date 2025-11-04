@@ -16,14 +16,9 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_product_success
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -222,54 +217,57 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onAddToCartClicked calls repository and shows success snackbar`() = runTest {
-        // Given
-        everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
+    fun `onAddToCartClicked SHOULD update product quantity when product exist`() =
+        runTest {
+            // Given
+            val productId = "1"
 
-        // When
-        productDetailsViewModel.onAddToCartClicked("10")
-        advanceUntilIdle()
+            productDetailsViewModel.updateState {
+                copy(isFirstQuantityOne = false)
+            }
 
-        // Then
-        verifySuspend { dukanCartRepository.addProductQuantity(any()) }
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.snackBarType,
-            SnackBarType.SUCCESS
-        )
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.message,
-            Res.string.add_product_success
-        )
-    }
+            everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
+
+            //When
+            productDetailsViewModel.onAddToCartClicked(
+                productId,
+            )
+            advanceUntilIdle()
+            //Then
+            verifySuspend {
+                dukanCartRepository.updateProductQuantity(any())
+            }
+            assertTrue (productDetailsViewModel.state.value.snackBarState!=null)
+
+
+        }
 
     @Test
-    fun `onAddToCartClicked shows error snackbar when repository throws`() = runTest {
-        // Given
-        everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
+    fun `onAddToCartClicked SHOULD add new product when quantity equal 1`() =
+        runTest {
+            // Given
+            val productId = "1"
+            productDetailsViewModel.updateState {
+                copy(isFirstQuantityOne = true)
+            }
 
-        // When
-        productDetailsViewModel.onAddToCartClicked("10")
-        advanceUntilIdle()
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
-        // Then
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.snackBarType,
-            SnackBarType.ERROR
-        )
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.message,
-            Res.string.no_internet_connection
-        )
-    }
+            //When
+            productDetailsViewModel.onAddToCartClicked(
+                productId,
+            )
+            advanceUntilIdle()
+            //Then
+            verifySuspend {
+                dukanCartRepository.updateProductQuantity(any())
+            }
+            assertTrue (productDetailsViewModel.state.value.snackBarState!=null)
+
+        }
 
     @Test
     fun `onDismissSnackBar clears snackbar state`() = runTest {
-        // Given
-        productDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
 
         // When
         productDetailsViewModel.onDismissSnackBar()

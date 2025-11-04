@@ -354,34 +354,10 @@ class ShelfDetailsViewModelTest {
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
+
         shelfDetailsViewModel.onDismissSnackBar()
 
         assertTrue(shelfDetailsViewModel.state.value.snackBarState == null)
-    }
-
-    @Test
-    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-        assertEquals(
-            Res.string.no_internet_connection,
-            shelfDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
     }
 
     @Test

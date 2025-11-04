@@ -401,35 +401,10 @@ class DukanDetailsViewModelTest {
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        dukanDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
+
         dukanDetailsViewModel.onDismissSnackBar()
 
         assertTrue(dukanDetailsViewModel.state.value.snackBarState == null)
-    }
-
-    @Test
-    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
-        dukanDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-
-        assertEquals(
-            Res.string.no_internet_connection,
-            dukanDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            dukanDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
     }
 
     @Test
