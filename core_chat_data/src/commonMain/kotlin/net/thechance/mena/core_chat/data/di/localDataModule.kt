@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
 import org.koin.dsl.module
@@ -20,6 +21,7 @@ internal val localDataModule = module {
 
     single<ChatDatabase> { getChatDatabase(get(named(ChatDatabaseBuilder))) }
     single<MessageDao> { get<ChatDatabase>().getMessageDao() }
+    single<CachedChatSummaryDao> { get<ChatDatabase>().getChatSummaryDao() }
 }
 
 expect fun Scope.createContactsProvider(): ContactsProvider
