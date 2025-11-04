@@ -147,6 +147,25 @@ class QuranRepositoryImplTest {
         assertEquals(expectedUrl, result)
     }
 
+    @Test
+    fun `saveDefaultReciter should call datastore saveDefaultReciter`() = runTest {
+        val reciterId = 1
+
+        repository.saveDefaultReciter(reciterId)
+
+        verifySuspend {
+            tilawahDataStore.saveDefaultReciter(reciterId)
+        }
+    }
+
+    @Test
+    fun `getDefaultReciter should call datastore getDefaultReciter`() = runTest {
+        val expectedReciterId = 1
+        everySuspend { tilawahDataStore.getDefaultReciter() } returns expectedReciterId
+        val result = repository.getDefaultReciter()
+        assertEquals(expectedReciterId, result)
+    }
+
     private fun makeSuccessFakeResponse(
         body: String? = null,
         successStatus: HttpStatusCode = HttpStatusCode.OK
