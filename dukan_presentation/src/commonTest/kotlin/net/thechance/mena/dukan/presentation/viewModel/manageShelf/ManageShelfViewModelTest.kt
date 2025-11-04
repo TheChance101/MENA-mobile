@@ -21,7 +21,6 @@ import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -45,8 +44,8 @@ class ManageShelfViewModelTest {
 
         savedStateHandle = SavedStateHandle(
             mapOf(
-                ManageShelfArgs.shelfId to expectedShelfId,
-                ManageShelfArgs.shelfTitle to expectedShelfTitle
+                "shelfId" to expectedShelfId,
+                "shelfTitle" to expectedShelfTitle
             )
         )
         shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)

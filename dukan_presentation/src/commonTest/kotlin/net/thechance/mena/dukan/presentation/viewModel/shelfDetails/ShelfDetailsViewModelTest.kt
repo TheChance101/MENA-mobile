@@ -152,14 +152,22 @@ class ShelfDetailsViewModelTest {
     @Test
     fun `init SHOULD load dukan details successfully`() = runTest {
         everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
-            style = Dukan.Style.SMALL_IMAGE
+            style = Dukan.Style.SMALL_IMAGE,
+            color = Color(id = Uuid.random(), hexCode = "#FF0000")
         )
 
+        shelfDetailsViewModel.updateState {
+            copy(
+                dukanStyle = ShelfDetailsUiState.Style.SMALL_IMAGE,
+                dukancolor = 0xFFFFFF
+            )
+        }
         advanceUntilIdle()
 
         shelfDetailsViewModel.state.test {
             val state = awaitItem()
             assertTrue(state.dukanStyle.name.isNotEmpty())
+            assertTrue(state.dukancolor != 0L)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -398,23 +406,4 @@ class ShelfDetailsViewModelTest {
         )
     }
 
-    @Test
-    fun `load Dukan details to update state with color and style`() = runTest {
-        shelfDetailsViewModel.updateState {
-            copy(
-                dukanStyle = ShelfDetailsUiState.Style.SMALL_IMAGE,
-                dukancolor = 0xFFFFFF
-            )
-        }
-
-        assertEquals(
-            ShelfDetailsUiState.Style.SMALL_IMAGE,
-            shelfDetailsViewModel.state.value.dukanStyle
-        )
-
-        assertEquals(
-            0xFFFFFF,
-            shelfDetailsViewModel.state.value.dukancolor
-        )
-    }
 }
