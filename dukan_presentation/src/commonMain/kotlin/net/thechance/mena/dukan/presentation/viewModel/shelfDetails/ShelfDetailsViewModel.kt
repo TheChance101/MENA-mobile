@@ -179,4 +179,9 @@ class ShelfDetailsViewModel(
     override fun onProductClicked(productId: String) {
         emitEffect(ShelfDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
+
+    fun refreshProducts() {
+        loadProductsFromRepository()
+    }
+
 }

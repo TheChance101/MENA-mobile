@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -151,8 +152,8 @@ private fun ProductItem(
     listener: DukanDetailsInteractionListener,
     cartColor: Color
 ) {
-    var toggleCartToQuantity by rememberSaveable(product.id) { mutableStateOf(false) }
-    var productQuantity by rememberSaveable(product.id) { mutableIntStateOf(product.inCartQuantity) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     ProductCard(
         productName = product.name,

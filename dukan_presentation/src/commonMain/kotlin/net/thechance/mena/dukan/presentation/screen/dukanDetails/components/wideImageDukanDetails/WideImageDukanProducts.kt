@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,8 +57,8 @@ fun LazyGridScope.wideImageProductsGrid(
         key = { index -> productsShelf[index]?.id ?: index }
     ) { index ->
         productsShelf[index]?.let { product ->
-            var toggleCartToQuantity by rememberSaveable(product.id) { mutableStateOf(false) }
-            var productQuantity by rememberSaveable(product.id) { mutableIntStateOf(product.inCartQuantity) }
+            var toggleCartToQuantity by rememberSaveable{ mutableStateOf(product.inCartQuantity>1) }
+            var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
 
             ProductCard(
                 imageUrl = product.imageUrl,
