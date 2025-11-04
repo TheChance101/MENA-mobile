@@ -46,6 +46,7 @@ class ProductDetailsViewModel(
 
     private fun onLoadProductSuccess(product: Product) {
         val productUiInfo = product.toUiState()
+        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 1) }
         updateState {
             copy(
                 isLoading = false,
@@ -87,7 +88,10 @@ class ProductDetailsViewModel(
 
         tryToExecute(
             onStart = { updateState { copy(isAddToCartLoading = true) } },
-            block = { dukanCartRepository.addProductQuantity(domainRequest) },
+            block = {
+                if (state.value.isFirstQuantityOne) dukanCartRepository.addProductQuantity(domainRequest)
+                dukanCartRepository.updateProductQuantity(domainRequest)
+            },
             onSuccess = ::addProductToCartSuccessfully,
             onError = ::onErrorUpdateProductQuantity
         )
@@ -108,6 +112,7 @@ class ProductDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
+        updateState { copy(isAddToCartLoading = false) }
         if (throwable is NoInternetException) {
             showSnackBar(
                 message = Res.string.no_internet_connection,
