@@ -33,6 +33,7 @@ fun AddToCartSection(
     onMinusClick: () -> Unit,
     onAddToCartClick: () -> Unit,
     productQuantity: Int,
+    isLoading: Boolean,
     productPrice: Double,
     modifier: Modifier = Modifier
 ) {
@@ -61,6 +62,7 @@ fun AddToCartSection(
                 .fillMaxWidth(),
             onClick = onAddToCartClick,
             isEnabled = true,
+            isLoading = isLoading,
             shape = RoundedCornerShape(Theme.radius.md),
             containerColor = Theme.colorScheme.primary.primary,
             contentPadding = PaddingValues(vertical = Theme.spacing._4)
@@ -113,6 +115,7 @@ private fun AddToCartSectionPreview() {
             productQuantity = 1,
             onAddToCartClick = {},
             productPrice = 10.0,
+            isLoading = false
         )
     }
 }
