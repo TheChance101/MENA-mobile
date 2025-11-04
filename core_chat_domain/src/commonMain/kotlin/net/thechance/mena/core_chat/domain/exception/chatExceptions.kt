@@ -27,3 +27,5 @@ class SendMessageFailedException(logMessage: String) :
 class NotFoundException(logMessage: String) : ChatException(logMessage)
 
 class OperationFailedException(logMessage: String) : ChatException(logMessage)
+
+class NoInternetException(): ChatException("No internet connection")
