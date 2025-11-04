@@ -68,7 +68,6 @@ fun ReciterItem(
                 isDownloaded = isDownloaded
             )
         }
-
         RadioButton(
             isSelected = isSelected,
             onClick = onSelect

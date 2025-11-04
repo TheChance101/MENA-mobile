@@ -1,16 +1,17 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
 
-class TilawahViewModel(
-    private val quranRepository: QuranRepository,
-) : BaseViewModel<TilawahUiState, TilawahEffect>(
-    TilawahUiState()
-), TilawahInteractionListener {
+class TilawahViewModel(val quranRepository: QuranRepository) :
+    BaseViewModel<TilawahUiState, TilawahEffect>(
+        TilawahUiState()
+    ), TilawahInteractionListener {
 
     init {
+        getAllReciters()
         updateDefaultReciter()
     }
 
@@ -32,6 +33,12 @@ class TilawahViewModel(
         )
     }
 
+    private fun getAllReciters() {
+        tryToExecute(
+            execute = { quranRepository.getReciters() },
+            onSuccess = { ::getAllRecitersSuccessfully })
+    }
+
     private fun updateSelectedReciter(reciterId: Int) {
         updateState { state ->
             state.copy(
@@ -42,5 +49,17 @@ class TilawahViewModel(
 
     private fun handleError(errorState: ErrorState) {
         println("Error: $errorState")
+    }
+
+    private fun getAllRecitersSuccessfully(reciters: List<Reciter>) {
+        val recitersUi = reciters.map {
+            ReciterUi(
+                id = it.id,
+                name = it.name,
+                recitingType = it.tilawahType,
+                isDownloaded = false //TODO NOT IMPLEMENTED YET
+            )
+        }
+        updateState { it.copy(reciters = recitersUi) }
     }
 }

@@ -101,6 +101,7 @@
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>
     <string name="error_icon">Error Icon</string>
+    <string name="surah_download_failed">Failed to download surah</string>
 
     <!-- Navigation and Copy -->
     <string name="navigate_to_sur_screen">Go to Sur Screen</string>"
