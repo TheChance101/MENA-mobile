@@ -155,6 +155,7 @@
     <string name="previous_ayah">previous ayah</string>
     <string name="pause">pause</string>
     <string name="play">play</string>
+    <string name="listen">listen</string>
     <string name="next_ayah">next ayah</string>
     <string name="repeat">repeat</string>
     <string name="surah_ayah_format">%1$s: %2$d aya</string>
