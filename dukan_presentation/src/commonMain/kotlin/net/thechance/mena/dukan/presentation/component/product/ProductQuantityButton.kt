@@ -16,13 +16,16 @@ import androidx.compose.ui.graphics.Color
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_icon
 import mena.dukan_presentation.generated.resources.add_product
+import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import mena.dukan_presentation.generated.resources.remove_01
 import mena.dukan_presentation.generated.resources.remove_product
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductQuantityButton(
@@ -67,5 +70,21 @@ fun ProductQuantityButton(
                 .padding(iconPadding)
         )
 
+    }
+}
+
+@Preview
+@Composable
+private fun ProductActionHasQuantitySmallImageDukanPreview() {
+    MenaTheme {
+        SmallAndWideImageDukanProductAction(
+            showProductQuantity = true,
+            inCartQuantity = 1,
+            dukanColor = Color(0xFFFB5B5D),
+            cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
+            onAddToCartClick = {},
+            onPlusClick = {},
+            onMinusClick = {}
+        )
     }
 }

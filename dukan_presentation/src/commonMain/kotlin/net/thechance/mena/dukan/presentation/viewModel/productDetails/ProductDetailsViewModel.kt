@@ -107,11 +107,12 @@ class ProductDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun addProductToCartSuccessfully(success: Unit) {

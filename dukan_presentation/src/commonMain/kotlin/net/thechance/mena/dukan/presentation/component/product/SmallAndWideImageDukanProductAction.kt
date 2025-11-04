@@ -80,7 +80,7 @@ private fun ProductCart(
 
 }
 
-@Preview()
+@Preview
 @Composable
 private fun ProductActionIconSmallImageDukanPreview() {
     MenaTheme {
@@ -96,7 +96,7 @@ private fun ProductActionIconSmallImageDukanPreview() {
     }
 }
 
-@Preview()
+@Preview
 @Composable
 private fun ProductActionIconWideImageDukanPreview() {
     MenaTheme {
@@ -112,18 +112,3 @@ private fun ProductActionIconWideImageDukanPreview() {
     }
 }
 
-@Preview()
-@Composable
-private fun ProductActionHasQuantitySmallImageDukanPreview() {
-    MenaTheme {
-        SmallAndWideImageDukanProductAction(
-            showProductQuantity = true,
-            inCartQuantity = 1,
-            dukanColor = Color(0xFFFB5B5D),
-            cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
-            onAddToCartClick = {},
-            onPlusClick = {},
-            onMinusClick = {}
-        )
-    }
-}

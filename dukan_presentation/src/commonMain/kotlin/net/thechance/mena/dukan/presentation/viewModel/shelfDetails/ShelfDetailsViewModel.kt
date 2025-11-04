@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -95,7 +94,10 @@ class ShelfDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = { if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest) },
+            block = {
+                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
+                dukanCartRepository.updateProductQuantity(domainRequest)
+            },
             onError = ::onErrorUpdateProductQuantity
         )
     }
@@ -143,11 +145,12 @@ class ShelfDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {

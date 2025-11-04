@@ -125,8 +125,8 @@ private fun GetProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
+    var toggleCartToQuantity by rememberSaveable(product.id) { mutableStateOf(false) }
+    var productQuantity by rememberSaveable(product.id) { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {

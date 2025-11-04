@@ -192,8 +192,6 @@ class DukanDetailsViewModel(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
                 name = name,
-                style = state.value.dukanInfo.style.name,
-                color = state.value.dukanInfo.color,
                 dukanId = args.dukanId
             )
         )
@@ -212,7 +210,10 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = { if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest) },
+            block = {
+                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
+                dukanCartRepository.updateProductQuantity(domainRequest)
+            },
             onError = ::onErrorUpdateProductQuantity
         )
     }
@@ -258,11 +259,12 @@ class DukanDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
@@ -285,7 +287,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
-        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId,args.dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
@@ -295,6 +297,7 @@ class DukanDetailsViewModel(
     override fun onRetryClicked() {
         loadDukanDetails()
     }
+
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
