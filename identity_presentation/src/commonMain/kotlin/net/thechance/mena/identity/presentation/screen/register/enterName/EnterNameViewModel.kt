@@ -46,10 +46,6 @@ class EnterNameViewModel(
         sendNewEffect(EnterNameUIEffect.NavigateToNextStep)
     }
 
-    override fun onClickBack() {
-        sendNewEffect(EnterNameUIEffect.NavigateBack)
-    }
-
     override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }

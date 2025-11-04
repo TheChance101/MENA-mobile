@@ -112,11 +112,10 @@ class EnterNameScreen() :
         navigator: Navigator
     ) {
         when (effect) {
-            EnterNameUIEffect.NavigateBack -> {}
             EnterNameUIEffect.NavigateToNextStep -> {}
+            else -> {}
         }
     }
-
 
     @Preview
     @Composable
@@ -131,7 +130,6 @@ class EnterNameScreen() :
                     isLoading = false,
                 ),
                 listener = object : EnterNameInteractionListener {
-                    override fun onClickBack() {}
                     override fun onFirstNameChange(name: String) {}
                     override fun onLastNameChange(name: String) {}
                     override fun onUsernameChange(username: String) {}
@@ -155,7 +153,6 @@ class EnterNameScreen() :
                     isLoading = false
                 ),
                 listener = object : EnterNameInteractionListener {
-                    override fun onClickBack() {}
                     override fun onFirstNameChange(name: String) {}
                     override fun onLastNameChange(name: String) {}
                     override fun onUsernameChange(username: String) {}
