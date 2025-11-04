@@ -113,7 +113,6 @@ class EnterNameScreen() :
     ) {
         when (effect) {
             EnterNameUIEffect.NavigateToNextStep -> {}
-            else -> {}
         }
     }
 
