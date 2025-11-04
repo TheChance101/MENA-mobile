@@ -20,17 +20,18 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.payment_status_crossfade
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
-import net.thechance.mena.wallet.presentation.navigation.WalletMainScreenRoute
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentConnectionLostContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentSuccessContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentUnknownErrorContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -117,5 +118,43 @@ private fun onPaymentResultEffect(
         }
 
         is PaymentResultEffect.NavigateToPrePaymentScreen -> { navigateBack() }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PaymentResultScreenErrorPreview() {
+    MenaTheme {
+        PaymentResultScreenContent(
+            state = PaymentResultScreenState(
+                paymentStatus = SubmissionStatus.UNKNOWN_ERROR
+            ),
+            interactionListener = object : PaymentResultInteractionListener {
+                override fun onBackClicked() {}
+                override fun onTryAgainClicked() {}
+                override fun onCloseClicked() {}
+                override fun onShowTransactionDetailsClicked() {}
+            }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PaymentResultScreenSuccessPreview() {
+    MenaTheme {
+        PaymentResultScreenContent(
+            state = PaymentResultScreenState(
+                paymentStatus = SubmissionStatus.SUCCESS,
+                receiverName = "Ahmed Ali",
+                amount = 31.99
+            ),
+            interactionListener = object : PaymentResultInteractionListener {
+                override fun onBackClicked() {}
+                override fun onTryAgainClicked() {}
+                override fun onCloseClicked() {}
+                override fun onShowTransactionDetailsClicked() {}
+            }
+        )
     }
 }

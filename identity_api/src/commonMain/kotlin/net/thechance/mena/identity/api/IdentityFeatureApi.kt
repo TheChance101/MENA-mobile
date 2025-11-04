@@ -8,4 +8,7 @@ interface IdentityFeatureApi {
 
     @Composable
     fun LoginFlow()
+
+    @Composable
+    fun NavigateToAddressesScreen()
 }

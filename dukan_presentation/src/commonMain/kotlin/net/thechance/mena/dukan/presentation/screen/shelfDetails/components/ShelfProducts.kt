@@ -85,7 +85,8 @@ private fun ProductCardLoaded(
                             product = product
                         )
                     },
-                )
+                    onClick = {listener.onProductClicked(product.id)},
+                                    )
             }
         }
     }

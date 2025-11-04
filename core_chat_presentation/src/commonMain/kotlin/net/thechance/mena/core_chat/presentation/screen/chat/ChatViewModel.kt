@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
+import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
@@ -33,6 +36,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -45,6 +49,7 @@ import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
+import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -103,14 +108,22 @@ class ChatViewModel(
 
     private fun startUiDerivation() {
         viewModelScope.launch(dispatcher) {
+            var earliestUnReadMessageTime: LocalDateTime = LocalDateTime.now()
             messages
-                .map { list -> list.map { it.toUi() } }
+                .map { list ->
+                    list.map {
+                        if (it.status == MessageStatus.SENT && it.sendAt < earliestUnReadMessageTime) {
+                            earliestUnReadMessageTime = it.sendAt
+                            println(earliestUnReadMessageTime)
+                        }
+                        it.toUi()
+                    }
+                }
                 .collectLatest { uiList ->
                     updateState { state ->
                         state.copy(
                             chatListItems = uiList
-                                .sortedByDescending { it.sendTime }
-                                .buildListItems()
+                                .buildListItems { msg -> msg.status != MessageStatus.FAILED && msg.status != MessageStatus.LOADING && msg.sendTime < earliestUnReadMessageTime }
                         )
                     }
                 }
@@ -158,6 +171,7 @@ class ChatViewModel(
         subscribeToNewMessages(chat.id)
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
+        observeDeleteChat()
     }
 
     private fun onGetChatError() {
@@ -230,7 +244,7 @@ class ChatViewModel(
     }
 
     private suspend fun onSendMessageSuccess(message: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter{ it.id != message.id && it.sendAt != message.sendTime } }
+        safeUpdateMessages { messages -> messages.filter { it.id != message.id && it.sendAt != message.sendTime } }
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -258,7 +272,7 @@ class ChatViewModel(
     }
 
     private suspend fun onDeleteFailedMessageSuccess(failedMessage: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter{ it.id != failedMessage.id } }
+        safeUpdateMessages { messages -> messages.filter { it.id != failedMessage.id } }
         updateState { state ->
             state.copy(
                 failedMessageToReSend = null,
@@ -289,13 +303,7 @@ class ChatViewModel(
         tryToCollect(
             collect = { messageRepository.observeMessagesForChatOrAll(chatId) },
             onCollect = ::onCollectNewMessage,
-            onError = {
-                showSnackBar(
-                    Res.string.error,
-                    Res.string.error_cant_subscribe_to_new_messages,
-                    true
-                )
-            },
+            onError = { onCollectNewMessageFailed() },
         )
     }
 
@@ -304,10 +312,17 @@ class ChatViewModel(
         safeUpdateMessages { current ->
             current.toMutableList().apply { add(0, message) }
                 .distinctBy { it.id }
-                .sortedByDescending { it.sendAt }
         }
 
         messageRepository.markMessagesOfChatAsRead(message.chatId)
+    }
+
+    private fun onCollectNewMessageFailed() {
+        showSnackBar(
+            Res.string.error,
+            Res.string.error_cant_subscribe_to_new_messages,
+            true
+        )
     }
 
     private fun subscribeToPendingMessages(chatId: Uuid) {
@@ -325,7 +340,6 @@ class ChatViewModel(
                 .toMutableList()
                 .apply { addAll(pendingMessages) }
                 .distinctBy { it.id }
-                .sortedByDescending { it.sendAt }
         }
 
         if (!hasResentPendingMessages) {
@@ -349,10 +363,22 @@ class ChatViewModel(
         safeUpdateMessages { current ->
             current.toMutableList().apply { addAll(messages.data) }
                 .distinctBy { it.id }
-                .sortedByDescending { it.sendAt }
         }
         messageRepository.markMessagesOfChatAsRead(state.value.chatId ?: return)
 
+    }
+
+    private fun observeDeleteChat() {
+        tryToCollect(
+            collect = { messageRepository.observeDeleteChat() },
+            onCollect = ::onCollectDeleteChatEvent
+        )
+    }
+
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
+        if (deleteChatEvent == null) return
+        onDeleteChatSuccess()
+        emitEffect(ChatScreenEffect.NavigateBack)
     }
 
     private fun observeReadMessages() {
@@ -372,10 +398,7 @@ class ChatViewModel(
 
             }
         }
-
     }
-
-
 
     override fun onMessageImageClicked(messages: List<MessageUiState>, initialImageIndex: Int) {
         updateState {
@@ -385,6 +408,57 @@ class ChatViewModel(
                 currentImageIndexForPreview = initialImageIndex
             )
         }
+    }
+
+    override fun onChatActionsMenuClicked() {
+        updateState { it.copy(isChatActionsDialogVisible = true) }
+    }
+
+    override fun onChatActionsMenuDialogDismissed() {
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = false
+            )
+        }
+    }
+
+    override fun onConfirmDeleteChatDialogDismissed() {
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
+    override fun onDeleteChatClicked() {
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = false,
+                isConfirmDeleteChatDialogVisible = true
+            )
+        }
+    }
+
+    override fun onConfirmDeleteChatClicked() {
+        tryToExecute(
+            execute = { chatRepository.deleteChatById(state.value.chatId!!) },
+            onSuccess = { onDeleteChatSuccess() },
+            onError = { onDeleteChatFailure() }
+        )
+        updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
+    }
+
+    private fun onDeleteChatSuccess() {
+        showSnackBar(
+            titleStringResource = Res.string.success,
+            messageStringResource = Res.string.chat_deleted_successfully,
+            isError = false
+        )
+    }
+
+    private fun onDeleteChatFailure() {
+        showSnackBar(
+            titleStringResource = Res.string.error,
+            messageStringResource = Res.string.could_not_delete_chat,
+            isError = true
+        )
     }
 
     override fun onMessageLongClicked(message: MessageUiState) {
@@ -549,6 +623,7 @@ class ChatViewModel(
             _messages.update(block)
         }
     }
+
     companion object {
         const val PAGE_SIZE = 40
         const val INITIAL_PAGE = 0

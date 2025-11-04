@@ -5,8 +5,8 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.Add
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.forgetPassword.ForgetPasswordScreenViewModel
-import net.thechance.mena.identity.presentation.screen.forgetPasswordOtp.OtpScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
@@ -16,7 +16,8 @@ import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenView
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.ResetPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.uploadProfileImage.UploadProfileImageViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
@@ -41,10 +42,11 @@ val identityScreensModule = module {
     factoryOf(::RegisterPhoneEntryViewModel)
     factoryOf(::RegisterOtpViewModel)
     factoryOf(::CreatePasswordViewModel)
-    factoryOf(::ForgetPasswordScreenViewModel)
-    factoryOf(::OtpScreenViewModel)
+    factoryOf(::ForgetPasswordPhoneEntryScreenViewModel)
+    factoryOf(::ForgetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
-    factoryOf(::ResetPasswordScreenViewModel)
+    factoryOf(::UploadProfileImageViewModel)
+    factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class

@@ -76,108 +76,100 @@ fun TextMessageLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val avatarSize = 24.dp
-    val avatarSpacing = Theme.spacing._8
-    val myMessageMarginStart = Theme.spacing._24
-    val otherMessageMarginEnd = Theme.spacing._8
+    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
 
     val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
     val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
 
-    val infoRowPaddingStart = if (message.isMine) {
-        myMessageMarginStart
-    } else {
-        avatarSize + avatarSpacing
-    }
-    val infoRowPaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
-
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
-    Column(
+    Box(
         modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = messageAlignment,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+        contentAlignment = if (message.isMine) Alignment.CenterEnd else Alignment.CenterStart
+    ) {
 
+        Column(
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+            horizontalAlignment = messageAlignment
         ) {
-
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
-        ) {
-            if (!message.isMine) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(avatarSize),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (isMarkedLastInSeries) {
-                        AsyncImage(
-                            modifier = Modifier.fillMaxSize(),
-                            model = chatAvatarUrl,
-                            placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                            error = painterResource(Res.drawable.ic_profile_placeholder),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "Contact photo",
-                        )
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            ) {
+                if (!message.isMine) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isMarkedLastInSeries) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = chatAvatarUrl,
+                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
+                                error = painterResource(Res.drawable.ic_profile_placeholder),
+                                contentScale = ContentScale.Crop,
+                                contentDescription = "Contact photo",
+                            )
+                        }
                     }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
-                    .clip(messageShape)
-                    .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
-                    .combinedClickable(
-                        onClick = onMessageClick,
-                        onLongClick = onMessageLongClick
+
+                Box(
+                    modifier = Modifier
+                        .clip(messageShape)
+                        .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
+                        .combinedClickable(
+                            onClick = onMessageClick,
+                            onLongClick = onMessageLongClick
+                        )
+                        .background(color = messageBackground, shape = messageShape)
+                        .padding(
+                            horizontal = Theme.spacing._8,
+                            vertical = Theme.spacing._4
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = message.content.text,
+                        style = Theme.typography.body.small,
+                        color = Theme.colorScheme.shadeSecondary
                     )
-                    .background(color = messageBackground, shape = messageShape)
-                    .padding(
-                        horizontal = Theme.spacing._8,
-                        vertical = Theme.spacing._4
-                    ),
-                contentAlignment = Alignment.Center
+                }
+            }
+
+            Row(
+                modifier = Modifier.align(messageInfoAlignment),
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = message.content.text,
-                    style = Theme.typography.body.small,
-                    color = Theme.colorScheme.shadeSecondary
-                )
-            }
-        }
+                if (!message.isMine && message.reactions.isNotEmpty()) {
+                    ReactionBubble(reactions = message.reactions)
+                }
 
-        Row(
-            modifier = Modifier
-                .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (!message.isMine && message.reactions.isNotEmpty()) {
-                ReactionBubble(reactions = message.reactions)
-            }
+                AnimatedVisibility(visible = showMessageInfo) {
+                    MessageInfo(
+                        messageTime = message.sendTime,
+                        messageStatus = message.status,
+                        messageIsMine = message.isMine,
+                        onFailClick = onFailClick,
+                    )
+                }
 
-            AnimatedVisibility(visible = showMessageInfo) {
-                MessageInfo(
-                    messageTime = message.sendTime,
-                    messageStatus = message.status,
-                    messageIsMine = message.isMine,
-                    onFailClick = onFailClick,
-                )
-            }
-
-            if (message.isMine && message.reactions.isNotEmpty()) {
-                ReactionBubble(reactions = message.reactions)
+                if (message.isMine && message.reactions.isNotEmpty()) {
+                    ReactionBubble(reactions = message.reactions)
+                }
             }
         }
     }
 }
 
+@Preview
 @Composable
-@Preview()
-private fun PreviewBaseMessageLayout() {
+private fun Preview() {
     MenaTheme {
-        Box(
+        Column(
             modifier = Modifier.fillMaxWidth()
         ) {
             TextMessageLayout(
@@ -188,6 +180,19 @@ private fun PreviewBaseMessageLayout() {
                     status = MessageStatus.READ,
                     isMine = false,
                     reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random())),
+                    content = MessageContent.Text("Good Morning!")
+                ),
+                showMessageInfo = true,
+                isMarkedLastInSeries = true,
+            )
+
+            TextMessageLayout(
+                message = MessageUiState(
+                    Uuid.random(),
+                    Uuid.random(),
+                    sendTime = LocalDateTime.now(),
+                    status = MessageStatus.READ,
+                    isMine = true,
                     content = MessageContent.Text("Good Morning!")
                 ),
                 showMessageInfo = true,

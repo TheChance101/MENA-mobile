@@ -9,6 +9,7 @@ import kotlin.uuid.Uuid
 @ExperimentalUuidApi
 interface ChatRepository {
     suspend fun getChatByContactUserId(userId: Uuid): Chat
+    suspend fun deleteChatById(chatId: Uuid)
     suspend fun getChatById(chatId: Uuid): Chat
     suspend fun disconnect()
     suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary>

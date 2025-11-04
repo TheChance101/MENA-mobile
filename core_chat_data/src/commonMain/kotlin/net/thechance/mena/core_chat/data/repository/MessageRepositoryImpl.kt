@@ -30,6 +30,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
@@ -48,6 +49,7 @@ class MessageRepositoryImpl(
 ) : MessageRepository {
     private val messagesFlow = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
+    private val markChatAsDeleted = MutableSharedFlow<DeleteChatEvent>()
     private val addReactionFlow = MutableSharedFlow<MessageReaction>()
     private val deleteReactionFlow = MutableSharedFlow<MessageReaction>()
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -57,7 +59,7 @@ class MessageRepositoryImpl(
         return tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
         ) {
-            client.get("$CHAT_ENDPOINT/$chatId$MESSAGES_ENDPOINT") {
+            client.get(getChatMessagesEndpoint(chatId)){
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
@@ -93,6 +95,10 @@ class MessageRepositoryImpl(
     }
 
     override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> { return markMessagesAsRead }
+
+    override fun observeDeleteChat(): Flow<DeleteChatEvent> {
+        return markChatAsDeleted
+    }
 
     private fun initializeWebsocketConnection() {
         scope.launch {
@@ -148,6 +154,10 @@ class MessageRepositoryImpl(
                 markMessagesAsRead.emit(dto.toDomain())
             }
 
+            is MessageEvent.DeleteChat -> {
+                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.deletedChatId))
+            }
+
             else -> {
                 println("Unknown destination: $destination")
             }
@@ -193,14 +203,17 @@ class MessageRepositoryImpl(
         const val CHAT_ENDPOINT = "/chat"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-        const val MESSAGES_ENDPOINT = "/messages"
-        const val ADD_REACTION = "/private/addReaction"
         const val DELETE_REACTION = "/private/deleteReaction"
         const val MARK_AS_READ = "/private/markAsRead"
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+        const val ADD_REACTION = "/private/addReaction"
         const val ADD_REACTION_DESTINATION = "/app/chat.addMessageReaction"
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
+
+        fun getChatMessagesEndpoint(chatId:Uuid): String {
+            return "/chat/${chatId}/messages"
+        }
     }
 }

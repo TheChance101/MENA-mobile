@@ -75,6 +75,8 @@ fun MainScreen(
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
+            MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
+            MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
         }
     }
 
@@ -130,7 +132,10 @@ private fun PrayerSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        PrayerTimesCard(prayerTimesUiState = uiState.prayerTimesUiState)
+        PrayerTimesCard(
+            prayerTimesUiState = uiState.prayerTimesUiState,
+            onClick = listener::onPrayerTimeClick
+        )
         if (uiState.hijriDate.isNotBlank()) {
             Text(
                 text = uiState.hijriDate,
@@ -222,6 +227,8 @@ private fun Preview() {
                 override fun onQuranClick() {}
                 override fun onQiblahClick() {}
                 override fun onMosquesClick() {}
+                override fun onPrayerTimeClick() {}
+                override fun onTilawahClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,

@@ -70,6 +70,7 @@
     <string name="share_icon_content_description">أيقونة المشاركة</string>
     <string name="link_icon_content_description">أيقونة الرابط</string>
     <string name="download_icon_content_description">أيقونة التنزيل</string>
+    <string name="copy_to_clipboard_success">تم النسخ</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
@@ -80,6 +81,13 @@
     <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
     <string name="add_location_button">إضافة موقع</string>
     <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+
+    <string name="title_pick_profile_picture">اختر صورة الملف الشخصي</string>
+    <string name="title_complete_your_profile">أكمل ملفك الشخصي</string>
+    <string name="desc_upload_profile_image">حمّل صورة للملف الشخصي ليتعرّف عليك الآخرون</string>
+    <string name="click_to_upload">اضغط للتحميل</string>
+    <string name="button_upload">تحميل</string>
+    <string name="button_skip_for_now">تخطَّ الآن</string>
     <string name="pick_location_title">اختر منطقة</string>
 
 
@@ -122,7 +130,7 @@
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">اسم المستخدم مطلوب</string>
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
@@ -130,4 +138,10 @@
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
+    <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
+    <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
+    <string name="ic_account_shield">أيقونة درع الحساب</string>
 </resources>

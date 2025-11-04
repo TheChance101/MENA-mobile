@@ -36,6 +36,10 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
 
             }
+
+            is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
+                DukanRoute.ProductDetails(productId = effect.productId)
+            )
         }
     }
 

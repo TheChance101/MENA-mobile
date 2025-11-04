@@ -126,6 +126,18 @@ class MainViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `onPrayerTimeClick should emit NavigateToPrayerTime effect`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.uiEffect.test {
+            viewModel.onPrayerTimeClick()
+
+            assertEquals(MainScreenEffect.NavigateToPrayerTime, awaitItem())
+        }
+    }
+
     @Test
     fun `refreshTilawah should load last ayah for tilawah`() = runTest {
         testDispatcher.scheduler.advanceUntilIdle()
