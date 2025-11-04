@@ -20,6 +20,8 @@ import org.koin.dsl.module
 
 internal val dukanViewModelModule = module {
     single<CoroutineDispatcher> { Dispatchers.IO }
+
+
     viewModelOf(::CreateDukanViewModel)
     viewModelOf(::ManageDukanViewModel)
     viewModelOf(::ImageCropViewModel)

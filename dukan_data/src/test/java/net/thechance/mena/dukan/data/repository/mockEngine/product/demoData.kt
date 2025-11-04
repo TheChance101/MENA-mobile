@@ -11,10 +11,8 @@ import kotlin.uuid.Uuid
 
 
 val createdProductResponseId = "jdoiejdfioewj3229048jsdfjfioewsdfio"
-
 @OptIn(ExperimentalUuidApi::class)
 val demoShelfID = Uuid.random()
-
 @OptIn(ExperimentalUuidApi::class)
 val productDto1 = ProductDto(
 
@@ -27,13 +25,14 @@ val productDto1 = ProductDto(
         "https://picsum.photos/200/200?random=1",
         "https://picsum.photos/200/200?random=2"
     ),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
 )
 
 
 @OptIn(ExperimentalUuidApi::class)
 val productDto2 = ProductDto(
-    id = Uuid.random(),
+    id =  Uuid.random(),
     name = "Demo Product 2",
     shelfId = demoShelfID,
     price = 19.99,
@@ -42,7 +41,9 @@ val productDto2 = ProductDto(
         "https://picsum.photos/200/200?random=1",
         "https://picsum.photos/200/200?random=2"
     ),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
+
 )
 
 val productDtos = listOf(
@@ -79,5 +80,7 @@ val product1 = Product(
         "http://example.com/image1.jpg",
         "http://example.com/image2.jpg"
     ),
-    createdAt = "2025-10-31T12:00:00Z"
+    createdAt = "2025-10-31T12:00:00Z",
+    quantityInCart =10
+
 )

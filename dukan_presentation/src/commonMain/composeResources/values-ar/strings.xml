@@ -147,6 +147,7 @@
     <string name="error_edit_shelf">خطأ في تعديل الرف</string>
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
+    <string name="add_to_cart">الأضافه الي السله</string>
     <string name="checkout">Checkout</string>
     <string name="confirm_order">تأكيد الطلب</string>
     <string name="deliver_to">التوصيل إلى</string>

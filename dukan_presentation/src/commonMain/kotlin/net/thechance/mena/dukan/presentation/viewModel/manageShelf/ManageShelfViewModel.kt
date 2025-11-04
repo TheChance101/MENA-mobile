@@ -1,9 +1,11 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageShelf
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_edit_shelf
 import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
@@ -15,7 +17,6 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
 
@@ -26,11 +27,11 @@ class ManageShelfViewModel(
 ) : BaseViewModel<ManageShelfUiState, ManageShelfEffect>(
     initialState = ManageShelfUiState(), defaultDispatcher = defaultDispatcher
 ), ManageShelfInteractionListener {
-    val shelfId: String = requireNotNull(savedStateHandle[ManageShelfArgs.shelfId])
+    private val args = savedStateHandle.toRoute<DukanRoute.ManageShelfScreenRoute>()
+
 
     init {
-        val shelfTitle: String = savedStateHandle[ManageShelfArgs.shelfTitle] ?: ""
-        updateState { copy(oldShelfTitle = shelfTitle) }
+        updateState { copy(shelfTitle = args.shelfTitle) }
     }
 
     override fun onBackClicked() {
@@ -38,7 +39,7 @@ class ManageShelfViewModel(
     }
 
     override fun onDeleteClicked() {
-        emitEffect(ManageShelfEffect.NavigateBackWithShelfId(shelfId))
+        emitEffect(ManageShelfEffect.NavigateBackWithShelfId(args.shelfId))
     }
 
     override fun onShelfNameChange(name: String) {
@@ -53,7 +54,7 @@ class ManageShelfViewModel(
     override fun onSaveClicked() {
         val trimmedTitle = validateShelfTitle() ?: return
         tryToExecute(
-            block = { updateShelfName(shelfId, trimmedTitle) },
+            block = { updateShelfName(args.shelfId, trimmedTitle) },
             onSuccess = { onEditShelfSuccess() },
             onError = ::onEditShelfError
         )
