@@ -21,10 +21,10 @@ internal class UpdateCategoriesViewModel(
 ), UpdateCategoriesInteractionListener {
 
     init {
-        initializeCategories()
+        getCategories()
     }
 
-    private fun initializeCategories() {
+    private fun getCategories() {
         tryToExecute(
             block = { repository.getAllCategories() },
             onSuccess = ::handleLoadCategoriesSuccess,
@@ -76,6 +76,6 @@ internal class UpdateCategoriesViewModel(
 
     override fun onClickRetry() {
         updateState{ copy(errorState = null) }
-        initializeCategories()
+        getCategories()
     }
 }

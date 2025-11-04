@@ -35,7 +35,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
     }
 
     @Test
-    fun `initializeCategories should start loading when initially called`() =
+    fun `getCategories should start loading when initially called`() =
         runTest(testDispatcher) {
             viewModel.state.test {
                 val state = awaitItem()
@@ -44,7 +44,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `initializeCategories should return categories with success when repository returns value`() =
+    fun `getCategories should return categories with success when repository returns value`() =
         runTest(testDispatcher) {
             viewModel.state.test {
                 skipItems(1)
@@ -55,7 +55,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `initializeCategories should throw exception when initially called`() =
+    fun `getCategories should throw exception when initially called`() =
         runTest(testDispatcher) {
             everySuspend { repository.getAllCategories() } throws Exception()
 
@@ -68,7 +68,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `initializeCategories should end loading when initially called`() =
+    fun `getCategories should end loading when initially called`() =
         runTest(testDispatcher) {
             viewModel.state.test {
                 skipItems(2)
@@ -139,7 +139,7 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
         }
 
     @Test
-    fun `onRetryClick should reset error and call getCategories`() =
+    fun `onRetryClick should reset error`() =
         runTest(testDispatcher) {
             viewModel.onClickRetry()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -150,5 +150,4 @@ class UpdateCategoriesViewModelTest : TestExtensions() {
                 cancelAndIgnoreRemainingEvents()
             }
         }
-
 }
