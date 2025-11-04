@@ -161,6 +161,6 @@ private fun ProductItem(
                 )
             }
         },
-        onClick = { listener.onProductClicked(product.id) }
+        onProductClick = { listener.onProductClicked(product.id) }
     )
 }

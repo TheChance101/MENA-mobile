@@ -59,7 +59,7 @@ fun NoImageDukanShelfWithProducts(
                         )
                     }
                 },
-                onClick = { listener.onProductClicked(product.id) },
+                onProductClick = { listener.onProductClicked(product.id) },
                 modifier = Modifier.padding(top = topPadding),
             )
         }

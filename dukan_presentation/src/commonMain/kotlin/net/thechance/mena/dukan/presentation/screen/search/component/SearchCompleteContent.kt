@@ -221,8 +221,7 @@ private fun ProductsList(
                                 productPrice = product.price,
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
-                                onProductClicked = { onProductClicked(product.id) },
-                                productAction = {},
+                                onProductClick = { onProductClicked(product.id) },
                             )
                         }
                     }
