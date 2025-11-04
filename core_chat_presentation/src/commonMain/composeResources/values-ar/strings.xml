@@ -50,4 +50,5 @@
     <string name="could_not_delete_chat">لم نتمكن من حذف المحادثة</string>
     <string name="chat_deleted_successfully">تم حذف المحادثة بنجاح</string>
     <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
+    <string name="no_internet_connected">أنت غير متصل بالإنترنت، تحقق من الاتصال وحاول مرة أخرى.</string>
 </resources>

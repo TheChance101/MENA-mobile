@@ -232,4 +232,11 @@
     <!-- select gender   -->
     <string name="select_gender_screen_prompt_title">Complete your profile</string>
     <string name="select_gender_screen_prompt">Select your gender</string>
+    <!-- EnterName -->
+    <string name="complete_profile_title">Complete your profile</string>
+    <string name="complete_profile_description">Please fill your informations</string>
+    <string name="first_name_label">First name</string>
+    <string name="last_name_label">Last name</string>
+    <string name="username_label">Username</string>
+
 </resources>
