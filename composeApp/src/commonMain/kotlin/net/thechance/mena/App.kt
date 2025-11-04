@@ -8,9 +8,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import net.thechance.mena.appEntryPoint.EntryPoint
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
-import net.thechance.mena.identity.data.dataSource.local.setting.APP_LANGUAGE
 import net.thechance.mena.identity.domain.service.LocalizationService
+import net.thechance.mena.identity.domain.util.AppLanguage
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -22,10 +21,10 @@ fun App() {
     val currentLanguage by localizationService.observeLanguage().stateIn(
         scope = scope,
         started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
-        initialValue = AppLanguage.English.iso
+        initialValue = AppLanguage.ENGLISH
     ).collectAsStateWithLifecycle()
     MenaTheme(
-        language = currentLanguage,
+        language = currentLanguage.iso,
         content =
             {
                 SetStatusBarIconsDark()

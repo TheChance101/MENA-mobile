@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -26,6 +25,7 @@ import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.uuid.ExperimentalUuidApi
 
 
@@ -35,7 +35,8 @@ class UserRepositoryImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val settings: Settings
 ) : UserRepository {
-    private val observableLanguage: MutableStateFlow<String> = MutableStateFlow(settings.appLanguage)
+    private val observableLanguage: MutableStateFlow<String> =
+        MutableStateFlow(settings.appLanguage)
 
     override suspend fun getUser(): Flow<User?> {
         CoroutineScope(dispatcher).launch {
@@ -86,14 +87,25 @@ class UserRepositoryImpl(
             updateImage = shouldUpdateImage
         )
     }
+
     override fun applyLanguage(languageIso: String) {
         settings.appLanguage = languageIso.also { observableLanguage.value = it }
     }
-    override fun observeAppLanguage(): Flow<String> = observableLanguage
 
-    override fun getCurrentAppLanguage(): String = settings.appLanguage
+    override fun observeAppLanguage(): Flow<AppLanguage> =
+        observableLanguage.map { it.toAppLanguage() }
+
+    override fun getCurrentAppLanguage(): AppLanguage = settings.appLanguage.toAppLanguage()
 
     companion object {
         const val PROFILE = "identity/profile"
+    }
+
+    private fun String.toAppLanguage(): AppLanguage {
+        return when (this) {
+            AppLanguage.ENGLISH.iso -> AppLanguage.ENGLISH
+            AppLanguage.ARABIC.iso -> AppLanguage.ARABIC
+            else -> AppLanguage.ENGLISH
+        }
     }
 }

@@ -13,9 +13,9 @@ actual class AppLocalizer(
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     init {
         coroutineScope.launch {
-            localizationService.observeLanguage().collectLatest { iso ->
+            localizationService.observeLanguage().collectLatest {language ->
                 NSUserDefaults.standardUserDefaults.setObject(
-                    arrayListOf(iso), "AppleLanguages"
+                    arrayListOf(language.iso), "AppleLanguages"
                 )
         }}
     }

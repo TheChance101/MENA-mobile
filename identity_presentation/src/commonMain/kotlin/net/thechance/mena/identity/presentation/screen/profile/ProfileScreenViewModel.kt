@@ -17,7 +17,7 @@ class ProfileScreenViewModel(
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
         (ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
-                selectedAppLanguage = AppLanguage.entries.find { it.iso == userRepository.getCurrentAppLanguage() }?: AppLanguage.English,
+                selectedAppLanguage = AppLanguage.entries.find { it.iso == userRepository.getCurrentAppLanguage().iso }?: AppLanguage.English,
             ),
         )),
     ProfileScreenInteractionListener {

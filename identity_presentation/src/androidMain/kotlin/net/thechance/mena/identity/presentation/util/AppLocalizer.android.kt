@@ -18,7 +18,7 @@ actual class AppLocalizer(
     init {
         coroutineScope.launch {
             localizationService.observeLanguage().collectLatest {
-                val locale = LocaleList.forLanguageTags(it).get(0)
+                val locale = LocaleList.forLanguageTags(it.iso).get(0)
                 LocaleList.setDefault(LocaleList(locale))
                 val config = context.resources.configuration
                 config.setLocales(LocaleList(locale))
