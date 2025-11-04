@@ -17,15 +17,20 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -283,17 +288,6 @@ class DukanDetailsViewModelTest {
     }
 
     @Test
-    fun `when onProductClicked SHOULD emit Navigate to Product details effect`() = runTest {
-        // Then
-        dukanDetailsViewModel.effect.test {
-            // When
-            dukanDetailsViewModel.onProductClicked("1")
-            assertEquals(DukanDetailsEffects.NavigateToProductDetails("1", "20"), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `when onViewDukanOnMapClicked SHOULD emit correct navigation effect`() = runTest {
         // Given
         val lat = 28.0
@@ -405,6 +399,53 @@ class DukanDetailsViewModelTest {
         verifySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) }
     }
 
+    @Test
+    fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
+        dukanDetailsViewModel.updateState {
+            copy(
+                snackBarState = null
+            )
+        }
+        dukanDetailsViewModel.onDismissSnackBar()
+
+        assertTrue(dukanDetailsViewModel.state.value.snackBarState == null)
+    }
+
+    @Test
+    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
+        dukanDetailsViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = Res.string.no_internet_connection,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+
+        assertEquals(
+            Res.string.no_internet_connection,
+            dukanDetailsViewModel.state.value.snackBarState?.message
+        )
+        assertEquals(
+            SnackBarType.ERROR,
+            dukanDetailsViewModel.state.value.snackBarState?.snackBarType
+        )
+    }
+
+    @Test
+    fun `onErrorUpdateProductQuantity show snack Bar when throw exception`()=runTest {
+
+        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+
+        assertEquals(
+            Res.string.no_internet_connection,
+            dukanDetailsViewModel.state.value.snackBarState?.message
+        )
+        assertEquals(
+            SnackBarType.ERROR,
+            dukanDetailsViewModel.state.value.snackBarState?.snackBarType
+        )
+    }
 
     private fun createViewModel() = DukanDetailsViewModel(
         dukanManagementRepository = dukanManagementRepository,

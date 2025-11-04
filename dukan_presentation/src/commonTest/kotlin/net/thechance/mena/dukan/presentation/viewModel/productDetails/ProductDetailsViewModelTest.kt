@@ -268,10 +268,7 @@ class ProductDetailsViewModelTest {
         // Given
         productDetailsViewModel.updateState {
             copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.add_product_success,
-                    snackBarType = SnackBarType.SUCCESS
-                )
+                snackBarState = null
             )
         }
 

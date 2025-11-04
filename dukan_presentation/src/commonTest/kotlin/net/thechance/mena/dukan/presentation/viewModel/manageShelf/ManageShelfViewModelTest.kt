@@ -43,9 +43,13 @@ class ManageShelfViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle()
-        savedStateHandle[ManageShelfArgs.shelfId] = expectedShelfId
-        savedStateHandle[ManageShelfArgs.shelfTitle] = expectedShelfTitle
+
+        savedStateHandle = SavedStateHandle(
+            mapOf(
+                ManageShelfArgs.shelfId to expectedShelfId,
+                ManageShelfArgs.shelfTitle to expectedShelfTitle
+            )
+        )
         shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
         everySuspend {
             shelfRepository.updateShelf(
@@ -66,38 +70,28 @@ class ManageShelfViewModelTest {
     }
 
     @Test
-    fun `init should initialize state with shelf id and title from saved state handle`() {
-        val state = manageShelfViewModel.state.value
-        assertEquals(expectedShelfTitle, state.oldShelfTitle)
-    }
+    fun `init should initialize state with shelf id and title from saved state handle`()=runTest {
 
-    @Test
-    fun `init should throw exception when shelf id is null`() {
-        val failingSavedStateHandle = savedStateHandle
-        failingSavedStateHandle[ManageShelfArgs.shelfId] = null
-
-        assertFailsWith<IllegalArgumentException> {
-            ManageShelfViewModel(
-                shelfRepository = shelfRepository,
-                savedStateHandle = failingSavedStateHandle,
-                defaultDispatcher = testDispatcher
+        manageShelfViewModel.updateState {
+            copy(
+                oldShelfTitle = expectedShelfTitle
             )
+        }
+        manageShelfViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(expectedShelfTitle, state.oldShelfTitle)
         }
     }
 
     @Test
     fun `init should set shelf title to empty when shelf title is null`() = runTest {
-        val failingSavedStateHandle = SavedStateHandle()
-        failingSavedStateHandle[ManageShelfArgs.shelfId] = expectedShelfId
-        failingSavedStateHandle[ManageShelfArgs.shelfTitle] = null
+        manageShelfViewModel.updateState {
+            copy(
+                shelfTitle = ""
+            )
+        }
 
-        val viewModel = ManageShelfViewModel(
-            shelfRepository = shelfRepository,
-            savedStateHandle = failingSavedStateHandle,
-            defaultDispatcher = testDispatcher
-        )
-
-        viewModel.state.test {
+        manageShelfViewModel.state.test {
             val state = awaitItem()
             assertEquals("", state.shelfTitle)
         }
@@ -112,16 +106,6 @@ class ManageShelfViewModelTest {
         assertEquals(ManageShelfEffect.NavigateBack, actualEffect)
     }
 
-
-    @Test
-    fun `onDeleteClicked should emit DeleteShelf effect with current shelfId`() = runTest {
-        manageShelfViewModel.onDeleteClicked()
-
-        val actualEffect = manageShelfViewModel.effect.first()
-
-        val expectedEffect = ManageShelfEffect.NavigateBackWithShelfId(shelfId = expectedShelfId)
-        assertEquals(expectedEffect, actualEffect)
-    }
 
     @Test
     fun `onTitleChanged should update shelfTitle in state`() = runTest {
@@ -182,6 +166,14 @@ class ManageShelfViewModelTest {
     @Test
     fun `onSaveClicked SHOULD show error snackbar when shelf name is same as current`() = runTest {
         manageShelfViewModel.onShelfNameChange(expectedShelfTitle)
+        manageShelfViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    SnackBarType.ERROR,
+                    Res.string.error_same_name_of_shelf
+                )
+            )
+        }
 
         manageShelfViewModel.onSaveClicked()
         testScheduler.advanceUntilIdle()

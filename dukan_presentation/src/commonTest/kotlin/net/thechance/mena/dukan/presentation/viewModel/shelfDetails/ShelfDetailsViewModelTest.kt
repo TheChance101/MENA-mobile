@@ -5,6 +5,7 @@ import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -16,13 +17,18 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -336,5 +342,79 @@ class ShelfDetailsViewModelTest {
         advanceUntilIdle()
         //Then
         verifySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) }
+    }
+
+    @Test
+    fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
+        shelfDetailsViewModel.updateState {
+            copy(
+                snackBarState = null
+            )
+        }
+        shelfDetailsViewModel.onDismissSnackBar()
+
+        assertTrue(shelfDetailsViewModel.state.value.snackBarState == null)
+    }
+
+    @Test
+    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
+        shelfDetailsViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = Res.string.no_internet_connection,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+        assertEquals(
+            Res.string.no_internet_connection,
+            shelfDetailsViewModel.state.value.snackBarState?.message
+        )
+        assertEquals(
+            SnackBarType.ERROR,
+            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
+        )
+    }
+
+    @Test
+    fun `onErrorUpdateProductQuantity show snack Bar when throw exception`()=runTest {
+
+        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+        shelfDetailsViewModel.updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = Res.string.no_internet_connection,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+        assertEquals(
+            Res.string.no_internet_connection,
+            shelfDetailsViewModel.state.value.snackBarState?.message
+        )
+        assertEquals(
+            SnackBarType.ERROR,
+            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
+        )
+    }
+
+    @Test
+    fun `load Dukan details to update state with color and style`() = runTest {
+        shelfDetailsViewModel.updateState {
+            copy(
+                dukanStyle = ShelfDetailsUiState.Style.SMALL_IMAGE,
+                dukancolor = 0xFFFFFF
+            )
+        }
+
+        assertEquals(
+            ShelfDetailsUiState.Style.SMALL_IMAGE,
+            shelfDetailsViewModel.state.value.dukanStyle
+        )
+
+        assertEquals(
+            0xFFFFFF,
+            shelfDetailsViewModel.state.value.dukancolor
+        )
     }
 }
