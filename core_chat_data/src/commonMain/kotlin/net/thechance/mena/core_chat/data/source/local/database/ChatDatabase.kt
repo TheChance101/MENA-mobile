@@ -7,12 +7,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
 
-@Database(entities = [MessageLocalDto::class], version = 1)
+@Database(entities = [MessageLocalDto::class, CachedChatSummaryDto::class], version = 1)
 @ConstructedBy(ChatDatabaseConstructor::class)
 @TypeConverters(MessageConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun getMessageDao(): MessageDao
+    abstract fun getChatSummaryDao(): CachedChatSummaryDao
 }
 
 @Suppress("KotlinNoActualForExpect")
