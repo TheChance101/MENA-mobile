@@ -42,7 +42,7 @@ fun SmallAndWideImageDukanProductAction(
         label = "CartToQuantity"
     ) {
         if (it) {
-            SetProductQuantity(
+            ProductQuantityButton(
                 inCartQuantity = inCartQuantity,
                 onPlusClick = onPlusClick,
                 onMinusClick = onMinusClick,

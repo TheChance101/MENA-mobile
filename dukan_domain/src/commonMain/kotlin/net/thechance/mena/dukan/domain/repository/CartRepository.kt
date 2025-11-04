@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.domain.repository
 
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 
-interface DukanCartRepository {
+interface CartRepository {
 
     suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams)
 

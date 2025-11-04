@@ -15,7 +15,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -32,7 +32,7 @@ class DukanDetailsViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
-    private val dukanCartRepository: DukanCartRepository,
+    private val dukanCartRepository: CartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DukanDetailsUiState, DukanDetailsEffects>(
@@ -212,10 +212,7 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = {
-                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-                else dukanCartRepository.updateProductQuantity(domainRequest)
-            },
+            block = { if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest) },
             onError = ::onErrorUpdateProductQuantity
         )
     }
@@ -229,10 +226,7 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
-            block = {
-                dukanCartRepository.updateProductQuantity(domainRequest)
-            },
-            onError = ::onErrorUpdateProductQuantity
+            block = { dukanCartRepository.updateProductQuantity(domainRequest) },
         )
     }
 
@@ -249,19 +243,17 @@ class DukanDetailsViewModel(
                 if (productQuantity == 1) deleteProductFromCart(productId)
                 else dukanCartRepository.updateProductQuantity(domainRequest)
             },
-            onError = ::onErrorUpdateProductQuantity
         )
     }
 
     private fun deleteProductFromCart(productId: String) {
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 dukanCartRepository.deleteProductFromCart(
                     dukanId = args.dukanId,
                     productId = productId
                 )
             },
-            onError = ::onErrorUpdateProductQuantity
         )
     }
 

@@ -21,7 +21,7 @@ import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -40,7 +40,7 @@ import kotlin.uuid.Uuid
 class ProductDetailsViewModelTest {
 
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
-    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
 
     private val testDispatcher = StandardTestDispatcher()
 

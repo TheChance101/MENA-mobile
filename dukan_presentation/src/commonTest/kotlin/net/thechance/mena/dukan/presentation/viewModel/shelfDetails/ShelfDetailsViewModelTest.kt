@@ -19,7 +19,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
@@ -34,7 +34,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
-    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
 
     private val dukanManagementRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
 

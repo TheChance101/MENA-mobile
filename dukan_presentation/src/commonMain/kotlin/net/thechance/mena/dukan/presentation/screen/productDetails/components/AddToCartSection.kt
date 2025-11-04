@@ -17,11 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.add_to_cart
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.product.SetProductQuantity
+import net.thechance.mena.dukan.presentation.component.product.ProductQuantityButton
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -46,7 +49,7 @@ fun AddToCartSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        SetProductQuantity(
+        ProductQuantityButton(
             onPlusClick = onPlusClick,
             onMinusClick = onMinusClick,
             inCartQuantity = productQuantity,
@@ -68,7 +71,7 @@ fun AddToCartSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Add to cart",
+                    text = stringResource(Res.string.add_to_cart),
                     style = Theme.typography.label.medium,
                     color = Theme.colorScheme.primary.onPrimary,
                 )

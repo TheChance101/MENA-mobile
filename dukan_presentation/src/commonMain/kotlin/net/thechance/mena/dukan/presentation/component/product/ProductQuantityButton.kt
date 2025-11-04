@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SetProductQuantity(
+fun ProductQuantityButton(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     inCartQuantity: Int,

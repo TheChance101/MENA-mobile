@@ -13,7 +13,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.StringResource
 
 class ShelfDetailsViewModel(
     private val productRepository: ProductRepository,
-    private val dukanCartRepository: DukanCartRepository,
+    private val dukanCartRepository: CartRepository,
     private val dukanManagementRepository: DukanManagementRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -95,10 +95,7 @@ class ShelfDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = {
-                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-                else dukanCartRepository.updateProductQuantity(domainRequest)
-            },
+            block = { if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest) },
             onError = ::onErrorUpdateProductQuantity
         )
     }
@@ -135,7 +132,7 @@ class ShelfDetailsViewModel(
     }
 
     private fun deleteProductFromCart(productId: String) {
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 dukanCartRepository.deleteProductFromCart(
                     dukanId = args.dukanId,
