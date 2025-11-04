@@ -155,6 +155,11 @@ private fun ProductItem(
     var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
+    LaunchedEffect(product) {
+        toggleCartToQuantity = product.inCartQuantity > 1
+        productQuantity = product.inCartQuantity
+    }
+
     ProductCard(
         productName = product.name,
         productImageUrl = product.imageUrl,

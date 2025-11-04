@@ -301,8 +301,7 @@ class DukanDetailsViewModel(
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
     fun refreshProducts() {
-        if(isWideImageStyle())loadProductsPaging()
-        else loadShelvesPaging()
+       loadDukanDetails()
     }
 
 

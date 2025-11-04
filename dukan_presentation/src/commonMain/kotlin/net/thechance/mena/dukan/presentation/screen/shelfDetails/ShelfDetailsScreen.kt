@@ -1,12 +1,14 @@
 package net.thechance.mena.dukan.presentation.screen.shelfDetails
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import mena.dukan_presentation.generated.resources.Res
@@ -42,8 +44,10 @@ fun ShelfDetailsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
+    LaunchedEffect(Unit){
+        viewModel.refreshProducts()
+    }
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
@@ -53,12 +57,6 @@ fun ShelfDetailsScreen(
             is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
                 DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
             )
-        }
-    }
-
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.refreshProducts()
         }
     }
 

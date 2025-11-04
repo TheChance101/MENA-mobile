@@ -3,10 +3,12 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
@@ -30,7 +32,10 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit){
+        viewModel.refreshProducts()
+    }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
@@ -50,13 +55,6 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
                 DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
             )
-        }
-    }
-
-
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.refreshProducts()
         }
     }
 
