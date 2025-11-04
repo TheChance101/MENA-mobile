@@ -1,7 +1,7 @@
 package net.thechance.mena.admin_panel.data.repository.user
 
 import net.thechance.mena.admin_panel.data.mapper.toEntityPagedResult
-import net.thechance.mena.admin_panel.data.mapper.user.buildSortQuery
+import net.thechance.mena.admin_panel.data.mapper.user.buildSortQueries
 import net.thechance.mena.admin_panel.data.mapper.user.toEntity
 import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
@@ -22,7 +22,7 @@ class UserRepositoryImpl(
     private val userApiService: UserApiService,
 ) : UserRepository {
     override suspend fun getUsers(userQueryParams: UserQueryParams?): PagedResult<User> {
-        val sortParam = buildSortQuery(
+        val sortParam = buildSortQueries(
             property = userQueryParams?.sortType,
             direction = userQueryParams?.sortDirection
         )

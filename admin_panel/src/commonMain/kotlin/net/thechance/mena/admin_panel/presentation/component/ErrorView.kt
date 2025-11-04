@@ -44,7 +44,7 @@ internal fun ErrorView(
             modifier = Modifier
                 .padding(top = 12.dp)
                 .heightIn(min = 48.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth(0.4f),
             text = stringResource(Res.string.retry),
             onClick = { onRetry() },
             contentPadding = PaddingValues(
