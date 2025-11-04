@@ -112,8 +112,8 @@ class EnterNameScreen() :
         navigator: Navigator
     ) {
         when (effect) {
-            EnterNameUIEffect.NavigateBack -> navigator.pop()
-            EnterNameUIEffect.NavigateToNextStep -> TODO()
+            EnterNameUIEffect.NavigateBack -> {}
+            EnterNameUIEffect.NavigateToNextStep -> {}
         }
     }
 
