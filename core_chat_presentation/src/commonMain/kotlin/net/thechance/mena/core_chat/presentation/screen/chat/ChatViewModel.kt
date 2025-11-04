@@ -554,7 +554,6 @@ class ChatViewModel(
     }
 
     private fun handleChatHistoryError() {
-        showSnackBar(Res.string.error, Res.string.error_cant_get_messages,  true)
         updateState { state -> state.copy(paginationError = true) }
     }
 
