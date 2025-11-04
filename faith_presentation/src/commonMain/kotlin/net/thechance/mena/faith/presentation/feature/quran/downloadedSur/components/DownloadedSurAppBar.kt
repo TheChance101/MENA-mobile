@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.downloadedSur.components
+package net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable

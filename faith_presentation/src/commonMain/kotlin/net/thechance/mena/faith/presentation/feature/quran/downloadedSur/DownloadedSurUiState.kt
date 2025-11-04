@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.downloadedSur
+package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
 import org.jetbrains.compose.resources.DrawableResource
 
