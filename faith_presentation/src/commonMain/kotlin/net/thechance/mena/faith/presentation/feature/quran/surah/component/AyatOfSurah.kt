@@ -150,6 +150,13 @@ private fun Preview() {
             val listener = object : SurahInteractionListener {
                 override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                 override fun onSearchClick() {}
+                override fun onListenClick() {}
+                override fun onReciterClick() {}
+                override fun onNextAyahClick() {}
+                override fun onPlayPauseClick() {}
+                override fun onRepeatAyahClick() {}
+                override fun onClosePlayerClick() {}
+                override fun onPreviousAyahClick() {}
                 override fun onBackClick() {}
                 override fun onDismissActionButtons() {}
                 override fun onBookmarkClick(ayahNumber: Int) {}

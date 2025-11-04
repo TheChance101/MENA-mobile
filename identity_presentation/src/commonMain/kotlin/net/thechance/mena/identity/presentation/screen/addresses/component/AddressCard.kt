@@ -53,14 +53,14 @@ fun AddressCard(
 ) {
     Column(
         Modifier.fillMaxWidth()
+            .background(
+                Theme.colorScheme.background.surfaceLow,
+                shape = RoundedCornerShape(Theme.radius.lg)
+            )
             .clip(shape = RoundedCornerShape(Theme.radius.lg))
-            .background(Theme.colorScheme.background.surfaceLow)
-            .padding(Theme.spacing._8).padding(end = 4.dp)
-            .clickable {
-                if (isMainAddress != true) {
-                    onClickAddress()
-                }
-            }
+            .clickable(enabled = isMainAddress != true) { onClickAddress() }
+            .padding(Theme.spacing._8)
+            .padding(end = 4.dp)
     ) {
         AddressHeader(
             addressType = addressType,
@@ -128,7 +128,7 @@ private fun MyAddressesMap(
                 maxHeight = maxHeight,
             )
         }
-        
+
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,

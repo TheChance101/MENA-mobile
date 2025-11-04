@@ -22,6 +22,18 @@
     <string name="tunisia">تونس</string>
     <string name="uae">الإمارات العربية المتحدة</string>
     <string name="yemen">اليمن</string>
+    <string name="register_prompt">يرجى إدخال رقم هاتفك لإرسال رمز التحقق</string>
+    <string name="register_prompt_description">يرجى إدخال رقم هاتفك لإرسال رمز التحقق (OTP) إليك</string>
+    <string name="you_are_new">أنت جديد؟</string>
+    <string name="register_prompt_title">إنشاء حساب</string>
+    <string name="register_otp_prompt">يرجى إدخال رمز التحقق (OTP) الذي تم إرساله إلى رقم هاتفك وينتهي بـ **%1$s</string>
+    <string name="create_password">تعيين كلمة المرور</string>
+    <string name="create_password_title">إكمال ملفك الشخصي</string>
+    <string name="create_password_description">تعيين كلمة المرور</string>
+    <string name="next">التالي</string>
+    <string name="register">تسجيل</string>
+    <string name="you_already_have_account">لديك حساب بالفعل؟</string>
+    <string name="validation_code">رمز التحقق</string>
     <string name="reset_password">إعادة تعيين كلمة المرور</string>
     <string name="new_password_title">كلمة المرور الجديدة</string>
     <string name="reset_password_description">يرجى إدخال كلمة المرور الجديدة والتأكد من تذكرها في المرة القادمة</string>
@@ -59,6 +71,7 @@
     <string name="share_icon_content_description">أيقونة المشاركة</string>
     <string name="link_icon_content_description">أيقونة الرابط</string>
     <string name="download_icon_content_description">أيقونة التنزيل</string>
+    <string name="copy_to_clipboard_success">تم النسخ</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
@@ -69,6 +82,13 @@
     <string name="no_saved_locations_message">انقر على الزر أدناه للبدء بإضافة ومتابعة حالة مواقعك المفضلة.</string>
     <string name="add_location_button">إضافة موقع</string>
     <string name="location_saved_empty_desc">أيقونة عدم وجود مواقع محفوظة</string>
+
+    <string name="title_pick_profile_picture">اختر صورة الملف الشخصي</string>
+    <string name="title_complete_your_profile">أكمل ملفك الشخصي</string>
+    <string name="desc_upload_profile_image">حمّل صورة للملف الشخصي ليتعرّف عليك الآخرون</string>
+    <string name="click_to_upload">اضغط للتحميل</string>
+    <string name="button_upload">تحميل</string>
+    <string name="button_skip_for_now">تخطَّ الآن</string>
     <string name="pick_location_title">اختر منطقة</string>
 
 
@@ -103,6 +123,7 @@
     <string name="error_unauthorized">ليس لديك الصلاحية للوصول إلى التطبيق.</string>
     <string name="error_invalid_otp">رمز التحقق (OTP) غير صحيح.</string>
     <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
+    <string name="error_phone_number_already_exists">رقم الهاتف مسجل بالفعل.</string>
 
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
@@ -110,11 +131,26 @@
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">اسم المستخدم مطلوب</string>
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
     <string name="error_last_name_required">اسم العائلة مطلوب</string>
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
+    <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
+
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="date_picker_screen_prompt">اختر تاريخ ميلادك، يُسمح فقط لمن هم بعمر 14 سنة أو أكثر</string>
+
+    <!-- select gender -->
+    <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="select_gender_screen_prompt">اختر جنسك</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
+    <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
+    <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
+    <string name="ic_account_shield">أيقونة درع الحساب</string>
 </resources>

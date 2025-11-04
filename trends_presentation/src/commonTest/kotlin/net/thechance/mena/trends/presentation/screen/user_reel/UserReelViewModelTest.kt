@@ -25,6 +25,7 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
+import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -52,6 +53,7 @@ class UserReelViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        every { userReelArgs.userReelSource } returns UserReelSource.HOME
         viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 
@@ -61,6 +63,7 @@ class UserReelViewModelTest {
             skipItems(1)
             val initialState = awaitItem()
 
+            assertThat(initialState.currentReelId).isEqualTo("2")
             assertFalse(initialState.isLoading)
             assertNull(initialState.error)
             assertFalse(initialState.isConfirmationDialogVisible)
@@ -80,6 +83,18 @@ class UserReelViewModelTest {
                 val reelsSnapshot = state.reels.asSnapshot()
                 assertThat(reelsSnapshot).isEqualTo(expectedReelUiStateList)
                 cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `viewmodel init should update isLoading to false getFeedReels return data`() =
+        runTest(testDispatcher) {
+            everySuspend { mockReelsRepository.getFeedReels(any()) } returns feedReels
+
+            advanceUntilIdle()
+
+            viewModel.state.test {
+                assertThat(awaitItem().isLoading).isFalse()
             }
         }
 
@@ -116,6 +131,15 @@ class UserReelViewModelTest {
             val effect = awaitItem()
             assertTrue(effect is UserReelEffect.NavigateBack)
             cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onChangeCurrentReel should update state with new reel id`() = runTest {
+        viewModel.onChangeCurrentReel("newReelId")
+
+        viewModel.state.test {
+            assertThat(awaitItem().currentReelId).isEqualTo("newReelId")
         }
     }
 
@@ -186,25 +210,16 @@ class UserReelViewModelTest {
     }
 
     @Test
-    fun `onClickConfirmDelete should update error state when repository throws exception`() =
-        runTest {
+    fun `onClickConfirmDelete should update error state when repository throws exception`() = runTest(testDispatcher) {
+        everySuspend { mockReelsRepository.deleteReelById(any()) } throws Exception("Failed")
 
-            val errorMockRepository: ReelsRepository = mock(MockMode.autofill) {
-                everySuspend { deleteReelById("1") } throws Exception()
-            }
+        viewModel.onClickConfirmDelete()
+        advanceUntilIdle()
 
-            val errorViewModel =
-                UserReelViewModel(userReelArgs, errorMockRepository, testDispatcher)
-
-            errorViewModel.onClickConfirmDelete()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            errorViewModel.state.test {
-                val errorState = awaitItem()
-                assertNotNull(errorState.error is ErrorState)
-                cancelAndIgnoreRemainingEvents()
-            }
+        viewModel.state.test {
+            assertThat(awaitItem().error).isEqualTo(ErrorState.RequestFailed("Failed"))
         }
+    }
 
     @Test
     fun `onClickPublisherInfo should send NavigateToPublisherProfile effect when called`() =
@@ -219,17 +234,11 @@ class UserReelViewModelTest {
         }
 
     @Test
-    fun `increaseReelView should update error state when repository throws exception`() = runTest {
-        everySuspend { mockReelsRepository.addReelView(any()) } throws Exception("View failed")
-
+    fun `increaseReelView should call addReelView if isReelDeleted is null`() = runTest {
         viewModel.increaseReelView("2")
         advanceUntilIdle()
 
-        viewModel.state.test {
-            val state = awaitItem()
-            assertNotNull(state.error)
-            cancelAndIgnoreRemainingEvents()
-        }
+        verifySuspend { mockReelsRepository.addReelView("2") }
     }
 
     @Test

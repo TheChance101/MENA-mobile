@@ -16,10 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.PagingData
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.best_dukans_around_you
+import mena.dukan_presentation.generated.resources.dukan_main_content_empty_error_body
+import mena.dukan_presentation.generated.resources.dukan_main_content_empty_error_title
+import mena.dukan_presentation.generated.resources.dukan_pending
 import mena.dukan_presentation.generated.resources.editor_pick_dukans
 import mena.dukan_presentation.generated.resources.what_do_you_need
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -28,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
@@ -108,6 +113,7 @@ private fun MainContent(
         targetState = state.isConnected,
         transitionSpec = { fadeTransitionSpec() }
     ) { isConnected ->
+
         if (!isConnected) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
@@ -126,62 +132,97 @@ private fun MainContent(
             },
             snakeBar = { ManageDukanSnackbar(state.snackBarState, listener) }
         ) {
+            val isMainSectionsEmpty = state.categories.isEmpty() &&
+                    bestNearestDukan.itemCount == 0 &&
+                    dukans.itemCount == 0
 
-            LazyColumn {
-                item {
-                    Text(
-                        text = stringResource(Res.string.what_do_you_need),
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(
-                            start = Theme.spacing._16,
-                            bottom = Theme.spacing._8
-                        )
+            val isMainSectionsLoading = state.isCategoriesLoading ||
+                    state.isBestNearestDukanLoading ||
+                    state.isEditorPickDukanLoading
+
+            if ( isMainSectionsEmpty && isMainSectionsLoading.not()) {
+                EmptyStateContent(
+                    image = Res.drawable.dukan_pending,
+                    title = Res.string.dukan_main_content_empty_error_title,
+                    body = Res.string.dukan_main_content_empty_error_body
+                )
+                return@Scaffold
+            }
+
+            MainScreenSections(
+                state = state,
+                bestNearestDukan = bestNearestDukan,
+                dukans = dukans,
+                listener = listener
+            )
+        }
+    }
+}
+
+@Composable
+fun MainScreenSections(
+    state: MainScreenUiState,
+    bestNearestDukan: LazyPagingItems<MainScreenUiState.BestNearestDukanUiState>,
+    dukans: LazyPagingItems<MainScreenUiState.EditorPickDukanUiState>,
+    listener: MainInteractionListener
+) {
+    LazyColumn {
+        if (state.categories.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(Res.string.what_do_you_need),
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier.padding(
+                        start = Theme.spacing._16,
+                        bottom = Theme.spacing._8
                     )
+                )
 
-                    CategorySection(
-                        categories = state.categories,
-                        onCategoryClick = listener::onCategorySelectedClicked,
-                        onViewMoreClick = listener::onViewMoreClicked,
-                    )
-                }
-
-                if (bestNearestDukan.itemCount > 0) {
-                    item {
-                        Text(
-                            text = stringResource(Res.string.best_dukans_around_you),
-                            style = Theme.typography.title.small,
-                            color = Theme.colorScheme.shadePrimary,
-                            modifier = Modifier.padding(
-                                start = Theme.spacing._16,
-                                top = Theme.spacing._16
-                            )
-                        )
-
-                        BestNearestDukanSection(
-                            dukans = bestNearestDukan,
-                            onDukanClick = listener::onNearestDukanClicked,
-                        )
-                    }
-                }
-
-                item {
-                    Text(
-                        stringResource(Res.string.editor_pick_dukans),
-                        style = Theme.typography.title.small,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(
-                            top = Theme.spacing._16,
-                            start = Theme.spacing._16,
-                            bottom = Theme.spacing._12
-                        )
-                    )
-                }
-                editorPickDukanItems(
-                    dukans = dukans,
-                    onDukanClick = listener::onEditorPickDukanClicked
+                CategorySection(
+                    categories = state.categories,
+                    onCategoryClick = listener::onCategorySelectedClicked,
+                    onViewMoreClick = listener::onViewMoreClicked,
                 )
             }
+        }
+
+        if ((bestNearestDukan.itemCount > 0)) {
+            item {
+                Text(
+                    text = stringResource(Res.string.best_dukans_around_you),
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier.padding(
+                        start = Theme.spacing._16,
+                        top = Theme.spacing._16
+                    )
+                )
+
+                BestNearestDukanSection(
+                    dukans = bestNearestDukan,
+                    onDukanClick = listener::onNearestDukanClicked,
+                )
+            }
+        }
+
+        if (dukans.itemCount > 0) {
+            item {
+                Text(
+                    stringResource(Res.string.editor_pick_dukans),
+                    style = Theme.typography.title.small,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier.padding(
+                        top = Theme.spacing._16,
+                        start = Theme.spacing._16,
+                        bottom = Theme.spacing._12
+                    )
+                )
+            }
+            editorPickDukanItems(
+                dukans = dukans,
+                onDukanClick = listener::onEditorPickDukanClicked
+            )
         }
     }
 }

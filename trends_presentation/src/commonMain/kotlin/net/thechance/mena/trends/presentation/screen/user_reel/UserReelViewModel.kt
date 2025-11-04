@@ -8,8 +8,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
+import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -23,6 +25,7 @@ internal class UserReelViewModel(
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
+        updateState { copy(currentReelId = userReelArgs.realId) }
         getFeedReals()
     }
 
@@ -43,10 +46,16 @@ internal class UserReelViewModel(
     private fun createPager(): Flow<PagingData<UserReelUiState>> {
         return createPager(
             scope = viewModelScope,
-            loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
+            loadPage = { page -> getReelsBasedOnSource(userReelArgs.userReelSource, page)}
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
+    private suspend fun getReelsBasedOnSource(userReelSource: UserReelSource, page: Int): List<Reel>{
+        return when(userReelSource){
+            UserReelSource.MANAGE_MY_TRENDS -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
+            UserReelSource.HOME -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+        }
+    }
 
     fun addReelLike(reelId: String) {
         tryToExecute(
@@ -84,11 +93,12 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        tryToExecute(
-            block = { reelsRepository.addReelView(reelId) },
-            onError = { error -> updateState { copy(error = error) } },
-            dispatcher = defaultDispatcher
-        )
+        if(state.value.isReelDeleted == null) {
+            tryToExecute(
+                block = { reelsRepository.addReelView(reelId) },
+                dispatcher = defaultDispatcher
+            )
+        }
     }
 
     override fun onClickLike(reelId: String, isLiked: Boolean) {
@@ -133,6 +143,10 @@ internal class UserReelViewModel(
         sendEffect(UserReelEffect.NavigateBack)
     }
 
+    override fun onChangeCurrentReel(reelId: String) {
+        updateState { copy(currentReelId = reelId) }
+    }
+
     override fun onClickDelete() {
         updateState {
             copy(isConfirmationDialogVisible = true)
@@ -141,7 +155,7 @@ internal class UserReelViewModel(
 
     override fun onClickConfirmDelete() {
         tryToExecute(
-            block = { reelsRepository.deleteReelById(userReelArgs.realId) },
+            block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
             onError = { errorState -> updateState { copy(error = errorState) } },
             dispatcher = defaultDispatcher

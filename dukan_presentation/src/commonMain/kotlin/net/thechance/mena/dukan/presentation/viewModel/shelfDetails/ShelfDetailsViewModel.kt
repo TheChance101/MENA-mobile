@@ -13,6 +13,7 @@ import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArg
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_ID
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsArgs.SHELF_NAME
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 
 class ShelfDetailsViewModel(
     private val productRepository: ProductRepository,
@@ -69,5 +70,9 @@ class ShelfDetailsViewModel(
 
     override fun onAddToCartClicked(productId: String) {
         // ToDO("Not yet implemented")
+    }
+
+    override fun onProductClicked(productId: String) {
+        emitEffect(ShelfDetailsEffects.NavigateToProductDetails(productId))
     }
 }

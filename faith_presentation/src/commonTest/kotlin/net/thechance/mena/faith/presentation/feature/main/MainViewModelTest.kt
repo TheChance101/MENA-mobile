@@ -355,6 +355,18 @@ class MainViewModelAdditionalTests {
         }
     }
 
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `onPrayerTimeClick should emit NavigateToPrayerTime effect`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.uiEffect.test {
+            viewModel.onPrayerTimeClick()
+
+            assertEquals(MainScreenEffect.NavigateToPrayerTime, awaitItem())
+        }
+    }
+
     @Test
     fun `onChangeLocation should navigate to MyLocation when address is empty`() = runTest {
         val emptyAddress = fakeAddress.copy(addressLine = "")

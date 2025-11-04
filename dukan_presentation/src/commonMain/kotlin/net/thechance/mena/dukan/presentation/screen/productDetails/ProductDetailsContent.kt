@@ -1,0 +1,91 @@
+package net.thechance.mena.dukan.presentation.screen.productDetails
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsAppBar
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsImagesSection
+import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsInfoSection
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewProductDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
+import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
+@Composable
+fun ProductDetailsContent(
+    state: ProductDetailsUiState,
+    listener: ProductDetailsInteractionListener
+) {
+    OnSystemBackPressed(listener::onBackClicked)
+
+    Scaffold(
+        topBar = {
+            ProductDetailsAppBar(
+                state = state,
+                listener = listener
+            )
+        }
+    ) {
+        if (state.errorState != null) {
+            NoInternetContent(
+                onRetry = listener::onRetryClicked,
+                isLoading = state.isLoading,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = Theme.spacing._16),
+            ) {
+                ProductDetailsImagesSection(
+                    allImages = state.product.images,
+                    selectedImageUrl = state.selectedImageUrl,
+                    onSecondaryImageClick = listener::onSecondaryImageClicked,
+                    isLoading = state.isLoading
+                )
+
+                ProductDetailsInfoSection(
+                    state = state.product,
+                    isLoading = state.isLoading
+                )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ProductDetailsContentPreview() {
+    MenaTheme {
+        ProductDetailsContent(
+            state = fakeProductDetails,
+            listener = PreviewProductDetailsInteractionListener
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ProductDetailsContentErrorPreview() {
+    MenaTheme {
+        ProductDetailsContent(
+            state = fakeProductDetails.copy(
+                errorState = Exception("No Internet")
+            ),
+            listener = PreviewProductDetailsInteractionListener
+        )
+    }
+}

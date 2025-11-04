@@ -6,6 +6,7 @@ import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import net.thechance.mena.admin_panel.data.remote.dto.ErrorDto
+import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 
@@ -33,7 +34,7 @@ private inline fun <reified T> handleResponse(response: Response<T>): T {
 
     throw when {
         response.status == HttpStatusCode.Unauthorized ->
-            UnknownNetworkException("Unauthorized: " + parseErrorMessage(response))
+            UnauthorizedException("Unauthorized: " + parseErrorMessage(response))
 
         response.status == HttpStatusCode.RequestTimeout ->
             UnknownNetworkException("Request timeout: " + parseErrorMessage(response))

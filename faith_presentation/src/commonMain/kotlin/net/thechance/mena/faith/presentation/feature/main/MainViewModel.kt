@@ -100,6 +100,8 @@ class MainViewModel(
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
 
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
+    override fun onPrayerTimeClick() = sendEffect(MainScreenEffect.NavigateToPrayerTime)
+    override fun onTilawahClick() = sendEffect(MainScreenEffect.NavigateToTilawah)
 
     override fun onChangeLocation() {
         if (isValidAddress(uiState.value.address)) {

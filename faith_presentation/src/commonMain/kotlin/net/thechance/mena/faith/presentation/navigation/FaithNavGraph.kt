@@ -9,14 +9,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import cafe.adriel.voyager.navigator.Navigator
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
+import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassScreen
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScreen
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
 
@@ -43,6 +46,9 @@ fun FaithNavigation() {
                 composable<Route.CalibrateDeviceRoute> {
                     CalibrateDeviceScreen()
                 }
+                composable<Route.PrayerTimeRoute> {
+                    PrayerTimeScreen()
+                }
                 composable<Route.SearchRoute> {
                     SearchScreen()
                 }
@@ -54,6 +60,12 @@ fun FaithNavigation() {
                 }
                 composable<Route.NearbyMosquesRoute> {
                     NearbyMosquesScreen()
+                }
+                composable<Route.TilawahRoute> {
+                    DownloadedSurScreen()
+                }
+                composable<Route.DownloadedRecitersRoute> {
+                    DownloadedReciterScreen()
                 }
                 composable<Route.EnableLocation> {
                     Navigator(screen = EnableLocationScreen())
