@@ -78,9 +78,6 @@ fun TextMessageLayout(
 
     val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
 
-    val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
-    val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
-
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
     Box(

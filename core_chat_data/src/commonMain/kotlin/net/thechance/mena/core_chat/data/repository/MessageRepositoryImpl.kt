@@ -16,12 +16,13 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionRequestDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
@@ -94,7 +95,9 @@ class MessageRepositoryImpl(
         }
     }
 
-    override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> { return markMessagesAsRead }
+    override fun observeReadMessages(): Flow<MarkMessageAsReadEvent> {
+        return markMessagesAsRead
+    }
 
     override fun observeDeleteChat(): Flow<DeleteChatEvent> {
         return markChatAsDeleted
@@ -115,7 +118,8 @@ class MessageRepositoryImpl(
         webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + PRIVATE_MESSAGES)
         webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + MARK_AS_READ)
         webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + ADD_REACTION)
-        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + DELETE_REACTION)
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + REMOVE_REACTION)
+        webSocketManager.subscribe(WEB_SOCKETS_USER_DESTINATION_PREFIX + DELETE_CHAT)
     }
 
     private suspend fun handleIncomingAsEvent(incomingText: String) {
@@ -139,7 +143,7 @@ class MessageRepositoryImpl(
                 addReactionFlow.emit(dto.toDomain())
             }
 
-            DELETE_REACTION -> {
+            REMOVE_REACTION -> {
                 val dto = json.decodeFromString<MessageReactionDto>(body)
                 deleteReactionFlow.emit(dto.toDomain())
             }
@@ -154,8 +158,9 @@ class MessageRepositoryImpl(
                 markMessagesAsRead.emit(dto.toDomain())
             }
 
-            is MessageEvent.DeleteChat -> {
-                markChatAsDeleted.emit(DeleteChatEvent(chatId = event.dto.deletedChatId))
+            DELETE_CHAT -> {
+                val dto = json.decodeFromString<DeleteChatDto>(body)
+                markChatAsDeleted.emit(dto.toDomain())
             }
 
             else -> {
@@ -200,15 +205,19 @@ class MessageRepositoryImpl(
     }
 
     private companion object {
-        const val CHAT_ENDPOINT = "/chat"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-        const val DELETE_REACTION = "/private/deleteReaction"
+
         const val MARK_AS_READ = "/private/markAsRead"
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
+
         const val ADD_REACTION = "/private/addReaction"
         const val ADD_REACTION_DESTINATION = "/app/chat.addMessageReaction"
+        const val REMOVE_REACTION = "/private/deleteReaction"
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
+
+        const val DELETE_CHAT = "/private/deleteChat"
+
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
 
