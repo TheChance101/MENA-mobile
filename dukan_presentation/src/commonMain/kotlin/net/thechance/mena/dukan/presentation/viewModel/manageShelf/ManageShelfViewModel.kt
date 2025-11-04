@@ -10,6 +10,7 @@ import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
+import mena.dukan_presentation.generated.resources.shelf_name_is_not_changed
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -30,7 +31,7 @@ class ManageShelfViewModel(
 
     init {
         val shelfTitle: String = savedStateHandle[ManageShelfArgs.shelfTitle] ?: ""
-        updateState { copy(oldShelfTitle = shelfTitle) }
+        updateState { copy(shelfTitle = shelfTitle) }
     }
 
     override fun onBackClicked() {
@@ -67,12 +68,6 @@ class ManageShelfViewModel(
                 showErrorSnackBar(Res.string.shelf_name_is_invalid)
                 null
             }
-
-            state.value.oldShelfTitle == state.value.shelfTitle -> {
-                showErrorSnackBar(Res.string.error_same_name_of_shelf)
-                null
-            }
-
             else -> trimmedTitle
         }
     }
@@ -99,7 +94,7 @@ class ManageShelfViewModel(
     private fun onEditShelfError(throwable: Throwable) {
         val messageRes = when (throwable) {
             is NoInternetException -> Res.string.no_internet_message
-            is DuplicateNameException -> Res.string.shelf_name_is_already_exist
+            is DuplicateNameException -> Res.string.shelf_name_is_not_changed
             else -> Res.string.error_edit_shelf
         }
         showErrorSnackBar(messageRes)

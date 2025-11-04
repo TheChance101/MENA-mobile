@@ -5,6 +5,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -47,7 +48,12 @@ class ShelfRepositoryImpl(
     }
 
     override suspend fun updateShelf(shelfId: String, newShelfName: String) {
-        // TODO edit shelf name
+        safeApiCall<Unit> {
+            client.put(urlString = "$SHELF_BASE_PATH/$shelfId") {
+                contentType(ContentType.Application.Json)
+                setBody(mapOf("title" to newShelfName))
+            }
+        }
     }
 
     override suspend fun getShelvesByDukanId(
