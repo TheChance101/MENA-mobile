@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.productDetails.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,68 +38,91 @@ fun ProductDetailsInfoSection(
 ) {
     Column(modifier = modifier.padding(top = Theme.spacing._16)) {
         if (isLoading) {
-            ShimmerBox(
-                width = 200.dp,
-                height = Theme.typography.title.medium.fontSize.value.dp
-            )
-            Spacer(modifier = Modifier.height(Theme.spacing._8))
-            ShimmerBox(
-                width = 100.dp,
-                height = Theme.typography.label.large.fontSize.value.dp
-            )
-
-            Spacer(modifier = Modifier.height(Theme.spacing._16))
-            repeat(3) {
-                ShimmerBox(
-                    width = if (it == 2) 150.dp else Dp.Unspecified,
-                    height = Theme.typography.body.small.fontSize.value.dp,
-                    modifier = Modifier.fillMaxWidth(if (it == 2) 0.7f else 1f)
-                )
-                Spacer(modifier = Modifier.height(Theme.spacing._4))
-            }
-
+            ProductDetailsInfoShimmer()
         } else {
-            Text(
-                text = state.name,
-                style = Theme.typography.title.medium,
-                color = Theme.colorScheme.shadePrimary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-            )
-            Row(
-                modifier = Modifier.padding(top = Theme.spacing._2),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.discount_icon),
-                    contentDescription = stringResource(Res.string.discount_icon),
-                    modifier = Modifier.padding(end = Theme.spacing._4)
-                )
-                Text(
-                    text = state.price.toString(),
-                    style = Theme.typography.label.large,
-                    color = Theme.colorScheme.shadePrimary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(end = Theme.spacing._4)
-                )
-                Image(
-                    painter = painterResource(Res.drawable.silver_tc),
-                    contentDescription = stringResource(Res.string.koin_icon),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-            Text(
-                text = state.description,
-                style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadeSecondary,
-                textAlign = TextAlign.Start,
-                maxLines= 5,
-                modifier = Modifier.padding(top = Theme.spacing._8)
-            )
+            ProductDetailsInfoContent(state)
         }
     }
 }
+
+@Composable
+private fun ColumnScope.ProductDetailsInfoShimmer() {
+    ShimmerBox(
+        width = 200.dp,
+        height = Theme.typography.title.medium.fontSize.value.dp
+    )
+    Spacer(modifier = Modifier.height(Theme.spacing._8))
+    ShimmerBox(
+        width = 100.dp,
+        height = Theme.typography.label.large.fontSize.value.dp
+    )
+
+    Spacer(modifier = Modifier.height(Theme.spacing._16))
+    repeat(3) {
+        ShimmerBox(
+            width = if (it == 2) 150.dp else Dp.Unspecified,
+            height = Theme.typography.body.small.fontSize.value.dp,
+            modifier = Modifier.fillMaxWidth(if (it == 2) 0.7f else 1f)
+        )
+        Spacer(modifier = Modifier.height(Theme.spacing._4))
+    }
+}
+
+@Composable
+private fun ColumnScope.ProductDetailsInfoContent(
+    state: ProductDetailsUiState.ProductInfo
+) {
+    Text(
+        text = state.name,
+        style = Theme.typography.title.medium,
+        color = Theme.colorScheme.shadePrimary,
+        textAlign = TextAlign.Center,
+        modifier = Modifier
+    )
+    ProductDetailsPriceRow(
+        price = state.price.toString(),
+        modifier = Modifier.padding(top = Theme.spacing._2)
+    )
+    Text(
+        text = state.description,
+        style = Theme.typography.body.small,
+        color = Theme.colorScheme.shadeSecondary,
+        textAlign = TextAlign.Start,
+        maxLines = 5,
+        modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
+    )
+}
+
+@Composable
+private fun ProductDetailsPriceRow(
+    price: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.discount_icon),
+            contentDescription = stringResource(Res.string.discount_icon),
+            modifier = Modifier.padding(end = Theme.spacing._4)
+        )
+        Text(
+            text = price,
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(end = Theme.spacing._4)
+        )
+        Image(
+            painter = painterResource(Res.drawable.silver_tc),
+            contentDescription = stringResource(Res.string.koin_icon),
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
 
 @Preview
 @Composable

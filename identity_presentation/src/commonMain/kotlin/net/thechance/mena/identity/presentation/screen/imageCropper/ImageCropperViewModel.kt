@@ -18,7 +18,19 @@ class ImageCropperViewModel(
         updateState { copy(imageBitmap = imageByteArray?.let{ imageDecoder.decodeImage(it)}) }
     }
     override fun onCropImage(imageBitmap: ImageBitmap) {
-        sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
+        tryToExecute(
+            function = {
+                val imageByteArray = imageDecoder.encodeImage(imageBitmap)
+                cachedImageRepository.cacheImage(imageKey, imageByteArray)
+            },
+            onSuccess = {
+                sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
+            },
+            onError = {
+                it.printStackTrace()
+                sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
+            }
+        )
     }
 
     override fun onChangeImage(imageBitmap: ImageBitmap) {

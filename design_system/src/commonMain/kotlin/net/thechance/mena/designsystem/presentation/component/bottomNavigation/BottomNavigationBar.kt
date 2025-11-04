@@ -5,10 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import mena.design_system.generated.resources.Res
@@ -27,6 +24,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun BottomNavigationBar(
     modifier: Modifier = Modifier,
+    selectedItemIndex: Int = 0,
     content: @Composable BottomNavigationScope.() -> Unit = {},
 ) {
     val scope = remember { BottomNavigationScopeImpl() }.apply {
@@ -34,17 +32,12 @@ fun BottomNavigationBar(
         content()
     }
 
-    var selectedItemIndex by remember {
-        mutableIntStateOf(0)
-    }
-
-
     BottomNavigationBarContent(
         items = scope.items,
         selectedItemIndex = selectedItemIndex,
-        onItemClick = {
-            selectedItemIndex = scope.items.indexOf(it)
-            scope.items[selectedItemIndex].entry.invoke()
+        onItemClick = { item ->
+            val index = scope.items.indexOf(item)
+            scope.items[index].entry.invoke()
         },
         modifier = modifier.background(Theme.colorScheme.background.surfaceLow)
     )

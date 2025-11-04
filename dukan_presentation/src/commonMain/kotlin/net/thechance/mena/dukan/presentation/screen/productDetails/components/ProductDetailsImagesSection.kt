@@ -63,48 +63,68 @@ fun ProductDetailsImagesSection(
             }
         ) { loading ->
             if (loading) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    ShimmerBox(
-                        width = Dp.Unspecified,
-                        height = 288.dp,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(Theme.radius.md))
-                    )
-
-                    Spacer(modifier = Modifier.height(Theme.spacing._16))
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-                    ) {
-                        repeat(4) {
-                            ShimmerBox(
-                                width = 56.dp,
-                                height = 56.dp,
-                                modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
-                            )
-                        }
-                    }
-                }
+                ProductDetailsImageShimmer(
+                    modifier = Modifier.align(Alignment.Center)
+                )
             } else {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    ProductDetailsMainImage(
-                        imageUrl = selectedImageUrl,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
-                    ProductDetailsSecondaryImages(
-                        images = allImages,
-                        selectedImageUrl = selectedImageUrl,
-                        onImageClick = onSecondaryImageClick,
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                    )
-                }
+                ProductDetailsImageContent(
+                    allImages = allImages,
+                    selectedImageUrl = selectedImageUrl,
+                    onSecondaryImageClick = onSecondaryImageClick,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun ProductDetailsImageShimmer(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        ShimmerBox(
+            width = Dp.Unspecified,
+            height = 288.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Theme.radius.md))
+        )
+
+        Spacer(modifier = Modifier.height(Theme.spacing._16))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
+            repeat(4) {
+                ShimmerBox(
+                    width = 56.dp,
+                    height = 56.dp,
+                    modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductDetailsImageContent(
+    allImages: List<String>,
+    selectedImageUrl: String,
+    onSecondaryImageClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier) {
+        ProductDetailsMainImage(
+            imageUrl = selectedImageUrl,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+        ProductDetailsSecondaryImages(
+            images = allImages,
+            selectedImageUrl = selectedImageUrl,
+            onImageClick = onSecondaryImageClick,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -141,33 +161,46 @@ fun ProductDetailsSecondaryImages(
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(horizontal = Theme.spacing._4)
     ) {
-        items(images) { imageUrl ->
-            val isSelected = (imageUrl == selectedImageUrl)
-            val shape = RoundedCornerShape(Theme.radius.sm)
-
-            val targetBorderColor = if (isSelected) {
-                Theme.colorScheme.primary.primary
-            } else {
-                Color.Transparent
-            }
-
-            val animatedBorderColor by animateColorAsState(
-                targetValue = targetBorderColor,
-                label = "BorderColorAnimation"
-            )
-
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = stringResource(Res.string.product_thumbnail),
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(shape)
-                    .border(1.dp, animatedBorderColor, shape)
-                    .clickable { onImageClick(imageUrl) }
+        items(items = images, key = { it }) { imageUrl ->
+            ProductDetailsSecondaryImageItem(
+                imageUrl = imageUrl,
+                isSelected = (imageUrl == selectedImageUrl),
+                onClick = { onImageClick(imageUrl) }
             )
         }
     }
+}
+
+@Composable
+private fun ProductDetailsSecondaryImageItem(
+    imageUrl: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(Theme.radius.sm)
+
+    val targetBorderColor = if (isSelected) {
+        Theme.colorScheme.primary.primary
+    } else {
+        Color.Transparent
+    }
+
+    val animatedBorderColor by animateColorAsState(
+        targetValue = targetBorderColor,
+        label = "BorderColorAnimation"
+    )
+
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = stringResource(Res.string.product_thumbnail),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(56.dp)
+            .clip(shape)
+            .border(1.dp, animatedBorderColor, shape)
+            .clickable(onClick = onClick)
+    )
 }
 
 @Preview
