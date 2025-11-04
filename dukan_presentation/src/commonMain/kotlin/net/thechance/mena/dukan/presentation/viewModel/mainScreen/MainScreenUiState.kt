@@ -13,6 +13,9 @@ data class MainScreenUiState(
     val categories: List<DukanCategoryUiState> = emptyList(),
     val bestNearestDukans: Flow<PagingData<BestNearestDukanUiState>> = emptyFlow(),
     val editorPickDukans: Flow<PagingData<EditorPickDukanUiState>> = emptyFlow(),
+    val isCategoriesLoading: Boolean = true,
+    val isBestNearestDukanLoading: Boolean = true,
+    val isEditorPickDukanLoading: Boolean = true,
 ) {
     data class DukanState(
         val name: String = "",
@@ -34,6 +37,7 @@ data class MainScreenUiState(
         Loading,
         Pending,
         None,
-        Approved
+        Approved,
+        Default
     }
 }

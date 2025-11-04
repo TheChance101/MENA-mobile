@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 
 internal sealed interface Route {
     @Serializable
@@ -10,7 +11,7 @@ internal sealed interface Route {
     data object UpdateCategories : Route
 
     @Serializable
-    data class ReelDetails(val reelId: String) : Route
+    data class ReelDetails(val reelId: String, val userReelSource: UserReelSource) : Route
 
     @Serializable
     data object ManageReels : Route

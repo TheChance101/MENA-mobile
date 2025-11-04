@@ -6,9 +6,11 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_kaaba
 import mena.faith_presentation.generated.resources.ic_mosque
 import mena.faith_presentation.generated.resources.ic_quran
+import mena.faith_presentation.generated.resources.ic_tilawah
 import mena.faith_presentation.generated.resources.nearby_mosques
 import mena.faith_presentation.generated.resources.qiblah_direction
 import mena.faith_presentation.generated.resources.quran_kareem
+import mena.faith_presentation.generated.resources.tilawah
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import org.jetbrains.compose.resources.StringResource
@@ -65,6 +67,11 @@ fun faithFeatureCards(listener: MainInteractionListener): List<FeatureItem> {
             title = stringResource(Res.string.nearby_mosques),
             icon = painterResource(Res.drawable.ic_mosque),
             onClick = listener::onMosquesClick
-        )
+        ),
+        FeatureItem(
+            title = stringResource(Res.string.tilawah),
+            icon = painterResource(Res.drawable.ic_tilawah),
+            onClick = listener::onTilawahClick,
+        ),
     )
 }

@@ -5,6 +5,9 @@ import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toSurah
+import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
+import net.thechance.mena.faith.data.remote.service.TilawahApiService
+import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
@@ -13,6 +16,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class QuranRepositoryImpl(
     val ayahDao: AyahDao,
+    val tilawahApiService: TilawahApiService,
     val tilawahDataStore: TilawahDataStore
 ) : QuranRepository {
 
@@ -46,4 +50,17 @@ class QuranRepositoryImpl(
         executeLocalSafely {
             ayahDao.searchForAyahInQuran(query).map(AyahDto::toAyah)
         }
+
+    override suspend fun getAyahSoundUrl(
+        ayahNumber: Int,
+        surahNumber: Int,
+        reciterId: Int
+    ): String = executeApiSafely<String> {
+        val requestBody = AyahSoundUrlRequest(
+            ayahNumber = ayahNumber,
+            surahNumber = surahNumber,
+            reciterId = reciterId
+        )
+        tilawahApiService.getAyahSoundUrl(requestBody)
+    }
 }

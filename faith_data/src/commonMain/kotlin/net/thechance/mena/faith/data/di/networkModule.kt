@@ -6,8 +6,10 @@ import io.ktor.client.HttpClient
 import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
+import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.remote.service.createBookmarkApiService
 import net.thechance.mena.faith.data.remote.service.createPrayerTimeApiService
+import net.thechance.mena.faith.data.remote.service.createTilawahApiService
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -33,6 +35,10 @@ val networkModule = module {
 
     single<PrayerTimeApiService> {
         get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createPrayerTimeApiService()
+    }
+
+    single<TilawahApiService> {
+        get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createTilawahApiService()
     }
 }
 

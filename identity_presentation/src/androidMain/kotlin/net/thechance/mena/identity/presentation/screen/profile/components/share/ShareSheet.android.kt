@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import android.content.ClipData
 import android.content.Context

@@ -55,6 +55,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
@@ -75,7 +76,7 @@ internal fun ManageTrendsScreen(
         when (effect) {
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
-                navController.navigate(Route.ReelDetails(effect.reelId))
+                navController.navigate(Route.ReelDetails(effect.reelId, UserReelSource.MANAGE_MY_TRENDS))
             }
         }
     }
