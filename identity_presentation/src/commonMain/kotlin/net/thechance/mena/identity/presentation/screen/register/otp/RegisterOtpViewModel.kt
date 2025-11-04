@@ -28,10 +28,6 @@ class RegisterOtpViewModel(
         startTimer()
     }
 
-    override fun onClickBack() {
-        sendNewEffect(RegisterOtpUIEffect.NavigateBack)
-    }
-
     override fun onClickVerify() {
         tryToExecute(
             function = ::verifyOTPCode,

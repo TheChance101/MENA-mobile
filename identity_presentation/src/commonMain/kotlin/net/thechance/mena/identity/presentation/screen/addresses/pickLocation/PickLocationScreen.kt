@@ -48,6 +48,7 @@ data class PickLocationScreen(
         listener: PickLocationScreenInteractionListener
     ) {
         Scaffold(
+            statusBarColor = Theme.colorScheme.background.surfaceLow,
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.pick_location_title),

@@ -16,6 +16,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.components.ShelfProducts
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -40,6 +41,9 @@ fun ShelfDetailsScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
+            is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
+                DukanRoute.ProductDetails(productId = effect.productId)
+            )
         }
     }
     ShelfDetailsContent(
