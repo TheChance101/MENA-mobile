@@ -81,11 +81,12 @@ class ProductDetailsViewModel(
 
         val productQuantity = state.value.product.inCartQuantity
 
-        val uiRequest = ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
+        val uiRequest =
+            ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(dukanId = args.dukanId)
 
         tryToExecute(
-            onStart = {updateState { copy(isLoading = true) }},
+            onStart = { updateState { copy(isAddToCartLoading = true) } },
             block = { dukanCartRepository.addProductQuantity(domainRequest) },
             onSuccess = ::addProductToCartSuccessfully,
             onError = ::onErrorUpdateProductQuantity
@@ -116,7 +117,7 @@ class ProductDetailsViewModel(
     }
 
     private fun addProductToCartSuccessfully(success: Unit) {
-        updateState { copy(isLoading = false)}
+        updateState { copy(isAddToCartLoading = false) }
         val messageRes = Res.string.add_product_success
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }

@@ -63,6 +63,12 @@ fun AddToCartSection(
             onClick = onAddToCartClick,
             isEnabled = true,
             isLoading = isLoading,
+            loadingColors = listOf(
+                Theme.colorScheme.stroke,
+                Theme.colorScheme.shadeTertiary,
+                Theme.colorScheme.error,
+                Theme.colorScheme.primary.primary
+            ),
             shape = RoundedCornerShape(Theme.radius.md),
             containerColor = Theme.colorScheme.primary.primary,
             contentPadding = PaddingValues(vertical = Theme.spacing._4)

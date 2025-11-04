@@ -5,6 +5,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 data class ProductDetailsUiState(
     val product: ProductInfo = ProductInfo(),
     val isLoading: Boolean = false,
+    val isAddToCartLoading : Boolean = false,
     val errorState: Exception? = null,
     val isFavorite: Boolean = false,
     val selectedImageUrl: String = "",
