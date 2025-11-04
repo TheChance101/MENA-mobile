@@ -17,7 +17,7 @@ class TilawahViewModel(
     private fun updateDefaultReciter() {
         tryToExecute(
             execute = { quranRepository.getDefaultReciter() },
-            onSuccess = { reciterId -> reciterId?.let { updateRecitersState(it) } },
+            onSuccess = { reciterId -> reciterId?.let { updateSelectedReciter(it) } },
             onError = ::handleError
         )
     }
@@ -27,17 +27,15 @@ class TilawahViewModel(
     override fun onSelectReciterClick(reciterId: Int) {
         tryToExecute(
             execute = { quranRepository.saveDefaultReciter(reciterId) },
-            onSuccess = { updateRecitersState(reciterId) },
+            onSuccess = { updateSelectedReciter(reciterId) },
             onError = ::handleError
         )
     }
 
-    private fun updateRecitersState(reciterId: Int) {
+    private fun updateSelectedReciter(reciterId: Int) {
         updateState { state ->
             state.copy(
-                reciters = state.reciters.map {
-                    it.copy(isDefault = (it.id == reciterId))
-                }
+                selectedReciterId = reciterId,
             )
         }
     }

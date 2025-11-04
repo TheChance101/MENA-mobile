@@ -10,5 +10,4 @@ data class ReciterUi(
     val name: String,
     val recitingType: String,
     val isDownloaded: Boolean,
-    val isDefault: Boolean,
 )
