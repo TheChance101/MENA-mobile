@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
+import kotlinx.coroutines.flow.first
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -18,7 +19,7 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
     private fun updateDefaultReciter() {
         tryToExecute(
             execute = { quranRepository.getDefaultReciter() },
-            onSuccess = { reciterId -> reciterId?.let { updateSelectedReciter(it) } },
+            onSuccess = { reciterId -> reciterId.first()?.let { updateSelectedReciter(it) } },
             onError = ::handleError
         )
     }

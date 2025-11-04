@@ -14,6 +14,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -38,6 +39,7 @@ class SurahViewModel(
 
     init {
         loadSurahData(surahArgs.surahId)
+        observeDefaultReciter()
     }
 
     private fun loadSurahData(surahId: Int) {
@@ -49,6 +51,25 @@ class SurahViewModel(
             dispatcher = dispatcher
         )
     }
+
+    private fun observeDefaultReciter() {
+        tryToCollect(
+            onEmitNewValue = ::getDefaultReciter,
+            block = { quranRepository.getDefaultReciter() },
+        )
+    }
+
+    private fun getDefaultReciter(reciterId: Int?) {
+        reciterId?.let { id ->
+            tryToExecute(
+                execute = { quranRepository.getReciterById(id) },
+                onSuccess = ::updateReciterState
+            )
+        } ?: sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen)
+    }
+
+    private fun updateReciterState(reciter: Reciter) =
+        updateState { it.copy(currentReciter = reciter.toUiState()) }
 
     override fun highlightAyah(ayahNumber: Int) {
         updateState {
@@ -173,7 +194,7 @@ class SurahViewModel(
         loadAndPlayAyahSound(
             surahNumber = surahArgs.surahId,
             ayahNumber = ayahNumber,
-            reciterId = 1 //TODO: Get selected reciter id from settings
+            reciterId = uiState.value.currentReciter.id,
         )
         updateState { it.copy(selectedAyahNumber = ayahNumber) }
     }

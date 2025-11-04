@@ -36,10 +36,10 @@ class TilawahDataStoreImpl(private val dataStore: DataStore<Preferences>) : Tila
         }
     }
 
-    override suspend fun getDefaultReciter(): Int? {
+    override suspend fun getDefaultReciter(): Flow<Int?> {
         return dataStore.data.map { prefs ->
             prefs[DEFAULT_RECITER]
-        }.first()
+        }
     }
 
     private companion object {
