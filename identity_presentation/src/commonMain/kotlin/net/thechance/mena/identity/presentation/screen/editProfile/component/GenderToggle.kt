@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.stringResource
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun GenderToggle(gender: Gender, onGenderChange: (Gender) -> Unit) {
+fun GenderToggle(gender: Gender?, onChangeGender: (Gender) -> Unit) {
     Column(modifier = Modifier.padding(top = Theme.spacing._16)) {
         Text(text = stringResource(Res.string.gender), style = Theme.typography.title.small)
 
@@ -44,13 +44,13 @@ fun GenderToggle(gender: Gender, onGenderChange: (Gender) -> Unit) {
             ToggleOption(
                 printer = painterResource(Res.drawable.male),
                 isSelected = gender == Gender.MALE,
-                onChange = { onGenderChange(Gender.MALE) }
+                onChange = { onChangeGender(Gender.MALE) }
             )
 
             ToggleOption(
                 printer = painterResource(Res.drawable.female),
                 isSelected = gender == Gender.FEMALE,
-                onChange = { onGenderChange(Gender.FEMALE) }
+                onChange = { onChangeGender(Gender.FEMALE) }
             )
         }
     }

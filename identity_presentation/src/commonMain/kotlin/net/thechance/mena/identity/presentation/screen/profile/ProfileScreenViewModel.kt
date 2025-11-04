@@ -86,7 +86,7 @@ class ProfileScreenViewModel(
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
 
-    override fun onDismissShareProfileDialog() {
+    override fun onDismissShareDialog() {
         updateState { copy(showShareProfileDialog = false) }
     }
 

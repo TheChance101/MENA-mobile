@@ -8,4 +8,5 @@ sealed interface MainScreenEffect {
     data object NavigateToQiblah : MainScreenEffect
     data object NavigateToMosques : MainScreenEffect
     data object NavigateToPrayerTime : MainScreenEffect
+    data object NavigateToTilawah : MainScreenEffect
 }
