@@ -11,13 +11,18 @@ import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.error
+import mena.core_chat_presentation.generated.resources.no_internet
+import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.exception.ChatException
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -59,6 +64,43 @@ class HomeViewModel(
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
+        observeChats()
+        observeSyncState()
+    }
+
+    private fun observeChats(){
+        tryToCollect(
+            collect = { chatRepository.observeChats() },
+            onCollect = {chatSummaries ->
+                chatSummaries?.let{
+                    println("====> view model collection: new chatSummaries: ${it}")
+                    updateState { state ->
+                        state.copy(
+                            chats = it.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }.map { chatSummary -> chatSummary.toUi() }
+                        )
+                    }
+                    println("====> observeChats: current state ${state.value.chats}")
+                }
+
+            },
+            onError = {
+                println("===> observeChats onError: $it")
+            }
+        )
+    }
+
+    private fun observeSyncState(){
+        tryToCollect(
+            collect = {chatRepository.observeSyncState()},
+            onCollect = {
+                when(it){
+                    is SyncState.Error -> println("====> observeSyncState: Error: ${it.error}")
+                    SyncState.Offline -> showNoInternetSnackBar()
+                    SyncState.Success -> println("====> observeSyncState: Success")
+                    else -> println("====> observeSyncState: unknown state: $it")
+                }
+            }
+        )
     }
 
     private fun listenToMarkAsReadEvent() {
@@ -188,6 +230,14 @@ class HomeViewModel(
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,
+            isError = true
+        )
+    }
+
+    private fun showNoInternetSnackBar(){
+        showSnackBar(
+            titleStringResource = Res.string.no_internet,
+            messageStringResource = Res.string.no_internet_message,
             isError = true
         )
     }
