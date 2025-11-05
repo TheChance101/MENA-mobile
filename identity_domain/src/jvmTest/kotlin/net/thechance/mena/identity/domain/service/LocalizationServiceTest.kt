@@ -6,41 +6,42 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.repository.SettingsRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LocalizationServiceTest {
 
-    private val currentLanguage = "ar"
+    private val currentLanguage = AppLanguage.ENGLISH
 
-    private val userRepository: UserRepository = mockk()
-    private val localizationService = LocalizationService(userRepository)
+    private val settingsRepository: SettingsRepository = mockk()
+    private val localizationService = LocalizationService(settingsRepository)
 
     @Test
-    fun `getCurrentLanguage() should return current language`() = runTest{
-        coEvery { userRepository.getCurrentAppLanguage() } returns currentLanguage
+    fun `getCurrentLanguage() should return current language`() = runTest {
+        coEvery { settingsRepository.getCurrentAppLanguage() } returns currentLanguage
 
         val result = localizationService.getCurrentLanguage()
 
-        assertEquals(currentLanguage ,result)
+        assertEquals(currentLanguage, result)
 
     }
 
     @Test
-    fun `observeAppLanguage() should return current app language`() = runTest{
+    fun `observeAppLanguage() should return current app language`() = runTest {
 
         val fakeLanguageFlow = MutableStateFlow(currentLanguage)
 
-        coEvery { userRepository.observeAppLanguage() } returns fakeLanguageFlow
+        coEvery { settingsRepository.observeAppLanguage() } returns fakeLanguageFlow
 
         val result = localizationService.observeLanguage()
 
         assertEquals(currentLanguage, result.first())
 
         result.test {
-            fakeLanguageFlow.emit("en")
-            assertEquals("en", result.first())
+            fakeLanguageFlow.emit(AppLanguage.ENGLISH)
+            assertEquals(AppLanguage.ENGLISH, result.first())
             cancelAndIgnoreRemainingEvents()
         }
 

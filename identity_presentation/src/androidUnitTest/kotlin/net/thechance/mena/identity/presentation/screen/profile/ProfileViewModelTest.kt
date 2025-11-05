@@ -13,11 +13,12 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.UnknownException
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -34,15 +35,17 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     private val testDispatcher = StandardTestDispatcher()
 
     private val userRepository: UserRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk()
     private lateinit var viewModel: ProfileScreenViewModel
 
     @BeforeTest
     override fun setUp() {
         super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
-        coEvery { userRepository.getCurrentAppLanguage() } returns "en"
+        coEvery { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
         viewModel = ProfileScreenViewModel(
             userRepository,
+            settingsRepository,
             "",
             testDispatcher
         )
@@ -51,7 +54,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `getUserInfo() updates state on success`() = runTest {
-        viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(fakeUser.firstName + " " + fakeUser.lastName, viewModel.state.value.fullName)
@@ -65,7 +68,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         coEvery { userRepository.getUser() } throws UnknownException()
 
-        viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(null, viewModel.state.value.errorMessage)
@@ -182,13 +185,13 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
-        val newAppLanguage = AppLanguage.Arabic
-        coEvery { userRepository.applyLanguage(newAppLanguage.iso) } returns Unit
+        val newAppLanguage = AppLanguage.ARABIC
+        coEvery { settingsRepository.applyLanguage(newAppLanguage) } returns Unit
 
         viewModel.onConfirmLanguageSelection(newAppLanguage)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { userRepository.applyLanguage(newAppLanguage.iso) }
+        coVerify { settingsRepository.applyLanguage(newAppLanguage) }
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.languageDialogUiState.isVisible)

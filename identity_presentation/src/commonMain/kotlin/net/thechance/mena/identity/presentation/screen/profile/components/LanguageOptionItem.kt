@@ -16,6 +16,7 @@ import net.thechance.mena.designsystem.presentation.component.button.radioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.util.mapLanguage
 import org.jetbrains.compose.resources.stringResource
@@ -44,7 +45,7 @@ fun LanguageOptionItem(
                 onClick = {
                     onClick()
                 },
-                indication = null,
+                indication = rippleIndication(),
                 interactionSource = remember { MutableInteractionSource() })
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
     ) {

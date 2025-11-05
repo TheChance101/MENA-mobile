@@ -35,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.util.AppLanguage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -61,17 +62,8 @@ fun ScaffoldScope.LanguageDialog(
         Box(
             contentAlignment = Alignment.TopCenter,
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_close_dialog),
-                contentDescription = stringResource(Res.string.close_dialog_icon),
-                modifier = Modifier.size(Theme.spacing._32).clickable(
-                        onClick = { onDismissRequest() },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() })
-                    .clip(CircleShape).background(Theme.colorScheme.background.surface, CircleShape)
-                    .padding(Theme.spacing._8).align(Alignment.TopStart))
             LazyColumn(
-                modifier = Modifier.padding(top = Theme.spacing._12),
+                modifier = Modifier.padding(vertical = Theme.spacing._12),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
@@ -98,6 +90,15 @@ fun ScaffoldScope.LanguageDialog(
                     )
                 }
             }
+            Icon(
+                painter = painterResource(Res.drawable.ic_close_dialog),
+                contentDescription = stringResource(Res.string.close_dialog_icon),
+                modifier = Modifier.size(Theme.spacing._32).clickable(
+                    onClick = { onDismissRequest() },
+                    indication = rippleIndication(),
+                    interactionSource = remember { MutableInteractionSource() })
+                    .clip(CircleShape).background(Theme.colorScheme.background.surface, CircleShape)
+                    .padding(Theme.spacing._8).align(Alignment.TopStart))
         }
     }
 }
