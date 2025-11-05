@@ -1,7 +1,6 @@
 package net.thechance.mena.identity.presentation.util
 
 import androidx.compose.runtime.Composable
-import kotlinx.datetime.YearMonth
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.month_april
 import mena.identity_presentation.generated.resources.month_august
@@ -16,11 +15,6 @@ import mena.identity_presentation.generated.resources.month_november
 import mena.identity_presentation.generated.resources.month_october
 import mena.identity_presentation.generated.resources.month_september
 import org.jetbrains.compose.resources.stringResource
-
-
-fun getNumberOfDaysInMonth(year: Int, month: Int): Int {
-    return YearMonth(year, month).numberOfDays
-}
 
 @Composable
 fun getDefaultMonthNames(): List<String> {
