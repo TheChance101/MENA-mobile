@@ -15,7 +15,6 @@ internal var Settings.appLanguage: String
     set(value) = putString(APP_LANGUAGE, value)
 
 
-
 //region keys
 
 const val ACCESS_TOKEN = "access_token"

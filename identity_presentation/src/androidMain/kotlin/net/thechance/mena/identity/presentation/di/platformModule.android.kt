@@ -18,12 +18,12 @@ internal actual fun platformModule(): Module = module {
         LocationForegroundPermission(context = get())
     }
 
-    single<LocalizationService> { LocalizationService(userRepository = get()) }
+    single<LocalizationService> { LocalizationService(settingsRepository = get()) }
     single<AppLocalizer> (
         createdAtStart = true
     ){ AppLocalizer(
         context = get(),
-        localizationService = get()
+        settingsRepository = get()
     ) }
 
     single { PermissionManager() }

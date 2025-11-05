@@ -12,10 +12,10 @@ internal actual fun platformModule(): Module = module {
     single<PermissionController>(named(LOCATION_FOREGROUND)) {
         LocationForegroundPermission()
     }
-    single<LocalizationService> { LocalizationService(userRepository = get()) }
+    single<LocalizationService> { LocalizationService(settingsRepository = get()) }
     single<AppLocalizer> (
         createdAtStart = true
     ){ AppLocalizer(
-        localizationService = get()
+        settingsRepository = get()
     ) }
 }

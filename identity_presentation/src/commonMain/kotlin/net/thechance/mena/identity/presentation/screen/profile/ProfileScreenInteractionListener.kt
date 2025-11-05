@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppLanguage
 import androidx.compose.ui.platform.Clipboard
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 

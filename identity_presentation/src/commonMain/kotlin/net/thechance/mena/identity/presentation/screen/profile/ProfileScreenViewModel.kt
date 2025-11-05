@@ -4,22 +4,24 @@ import androidx.compose.ui.platform.Clipboard
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.share.clipEntryOf
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
+    private val settingsRepository: SettingsRepository,
     val appVersion: String,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
         (ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
-                selectedAppLanguage = AppLanguage.entries.find { it.iso == userRepository.getCurrentAppLanguage().iso }?: AppLanguage.English,
+                selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }?: AppLanguage.ENGLISH,
             ),
         )),
     ProfileScreenInteractionListener {
@@ -113,7 +115,7 @@ class ProfileScreenViewModel(
     override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
         tryToExecute(
-            function = { userRepository.applyLanguage(appLanguage.iso) },
+            function = { settingsRepository.applyLanguage(appLanguage) },
             onSuccess = {
                 updateState {
                     copy(

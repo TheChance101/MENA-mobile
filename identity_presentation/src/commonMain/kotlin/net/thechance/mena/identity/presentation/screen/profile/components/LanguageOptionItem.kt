@@ -16,7 +16,7 @@ import net.thechance.mena.designsystem.presentation.component.button.radioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.util.mapLanguage
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -67,7 +67,7 @@ private fun LanguageOptionItemPreview() {
     MenaTheme {
     LanguageOptionItem(
         isSelected = true,
-        selectedAppLanguage = AppLanguage.English,
+        selectedAppLanguage = AppLanguage.ENGLISH,
         onClick = {}
     )
 }

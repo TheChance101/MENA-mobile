@@ -1,15 +1,15 @@
 package net.thechance.mena.identity.domain.service
 
-import kotlinx.coroutines.flow.Flow
-import net.thechance.mena.identity.domain.repository.UserRepository
+import kotlinx.coroutines.flow.StateFlow
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 
 class LocalizationService(
-    private val userRepository: UserRepository
+    private val settingsRepository: SettingsRepository
 ) {
-    fun observeLanguage(): Flow<AppLanguage> =
-        userRepository.observeAppLanguage()
+    fun observeLanguage(): StateFlow<AppLanguage> =
+        settingsRepository.observeAppLanguage()
 
     fun getCurrentLanguage(): AppLanguage =
-        userRepository.getCurrentAppLanguage()
+        settingsRepository.getCurrentAppLanguage()
 }

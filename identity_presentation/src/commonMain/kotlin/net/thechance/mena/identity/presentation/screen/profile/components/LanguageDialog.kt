@@ -35,7 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.designsystem.presentation.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppLanguage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -112,9 +112,9 @@ private fun LanguageDialogPreview() {
             LanguageDialog(
                 isVisible = it,
                 onDismissRequest = {},
-                appLanguages = listOf(AppLanguage.English, AppLanguage.Arabic),
+                appLanguages = listOf(AppLanguage.ENGLISH, AppLanguage.ARABIC),
                 onConfirmLanguageSelection = {},
-                currentAppLanguage = AppLanguage.English,
+                currentAppLanguage = AppLanguage.ENGLISH,
             )
         }
     }, content = {})
