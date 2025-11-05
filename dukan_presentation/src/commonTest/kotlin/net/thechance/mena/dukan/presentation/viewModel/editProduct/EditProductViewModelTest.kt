@@ -11,6 +11,7 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -1415,7 +1416,7 @@ private fun createEditProductViewModel(
     productRepository: ProductRepository,
     shelfRepository: ShelfRepository,
     productId: String = DEFAULT_PRODUCT_ID,
-    dispatcher: kotlinx.coroutines.CoroutineDispatcher = StandardTestDispatcher()
+    dispatcher: CoroutineDispatcher = StandardTestDispatcher()
 ): EditProductViewModel {
     return EditProductViewModel(
         productRepository = productRepository,
@@ -1497,6 +1498,7 @@ private fun fakeProduct(): Product {
         shelfId = testShelfId,
         imageUrls = listOf("image1.jpg", "image2.jpg"),
         createdAt = "2025-09-16T15:06:57.507394",
+        quantityInCart = 4,
     )
 }
 

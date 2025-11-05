@@ -350,7 +350,8 @@ private fun fakeProducts(): List<Product> = listOf(
         price = 1200.0,
         shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
         imageUrls = emptyList(),
-        createdAt = "2025-10-10T12:00:00Z"
+        createdAt = "2025-10-10T12:00:00Z",
+        quantityInCart = 2
     )
 )
 

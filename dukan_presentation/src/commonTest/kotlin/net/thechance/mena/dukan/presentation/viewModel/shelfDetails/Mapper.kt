@@ -20,7 +20,8 @@ class ShelfDetailsMapperTest {
             price = 10.0,
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
         )
 
         val uiState = product.toUiState()
@@ -41,7 +42,8 @@ class ShelfDetailsMapperTest {
             price = 50.0,
             imageUrls = listOf("img.jpg"),
             quantityInCart = 3,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
         )
 
         val uiState = product.toUiState()
