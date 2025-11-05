@@ -20,10 +20,12 @@ import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedAyahActionButtons
+import net.thechance.mena.faith.presentation.feature.quran.surah.component.AnimatedQuranPlayer
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatOfSurah
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.navigation.Route.DownloadedRecitersRoute
+import net.thechance.mena.faith.presentation.navigation.Route.SearchRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,11 +43,15 @@ fun SurahScreen(
             is SurahScreenEffect.ShareAyah -> {}
             is SurahScreenEffect.NavigateToSearchScreen -> {
                 navController.navigate(
-                    Route.SearchRoute(
+                    SearchRoute(
                         effect.surahId,
                         effect.surahName
                     )
                 )
+            }
+
+            SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
+                navController.navigate(DownloadedRecitersRoute)
             }
         }
     }
@@ -89,6 +95,17 @@ private fun Content(
             AyatOfSurah(
                 listener = listener,
                 state = state
+            )
+
+            AnimatedQuranPlayer(
+                state = state,
+                listener = listener,
+                modifier = Modifier
+                    .padding(
+                        bottom = Theme.spacing._24,
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16
+                    ).align(Alignment.BottomCenter)
             )
 
             AnimatedAyahActionButtons(
@@ -167,6 +184,13 @@ private fun Preview() {
                     override fun onBookmarkClick(ayahNumber: Int) {}
                     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                     override fun onSearchClick() {}
+                    override fun onListenClick() {}
+                    override fun onReciterClick() {}
+                    override fun onNextAyahClick() {}
+                    override fun onPlayPauseClick() {}
+                    override fun onRepeatAyahClick() {}
+                    override fun onClosePlayerClick() {}
+                    override fun onPreviousAyahClick() {}
                     override fun onCopyClick(ayahContent: String) {}
                     override fun onInitialAyahScrolled() {}
                     override fun highlightAyah(ayahNumber: Int) {}

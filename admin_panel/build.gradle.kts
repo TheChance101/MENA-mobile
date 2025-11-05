@@ -54,6 +54,9 @@ kotlin {
             // Coil
             implementation(libs.coil.compose)
 
+            //Navigation
+            implementation(libs.androidx.navigation.compose)
+
             //settings
             implementation(libs.multiplatform.settings)
 

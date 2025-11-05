@@ -3,8 +3,6 @@ package net.thechance.mena.identity.presentation.screen.profile
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -22,36 +20,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error
-import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.profile_title
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
-import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
+import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
@@ -72,47 +64,45 @@ class ProfileScreen : BaseScreen<
 
         AnimatedVisibility(state.showShareBottomSheet) {
             ShareSheet(
-                title = "MENA app-download app",
-                url = "https://MENA_app.com",
+                title = stringResource(Res.string.download_app_title),
+                url = state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }
 
-        Scaffold(
-            overlays = {
-                dialog(state.showLanguageDialog) {
-                    Dialog(
-                        isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissLanguageDialog,
-                        actionButtons = {}
-                    )
-                }
-                dialog(state.showThemeDialog) {
-                    Dialog(
-                        isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissThemeDialog,
-                        actionButtons = {}
-                    )
-                }
-                dialog(state.showShareProfileDialog) {
-                    ShareQrCode(
-                        showDialog = it,
-                        qrCodePainter = rememberAsyncImagePainter(
-                            "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                        ),
-                        onDismiss = listener::onDismissShareProfileDialog,
-                        fullName = state.fullName,
-                        onShareProfile = {},
-                        onClipboardContent = { },
-                        onDownload = {},
-                    )
-                }
-
-            },
+        Scaffold(overlays = {
+                    dialog(state.showLanguageDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissLanguageDialog,
+                            actionButtons = {}
+                        )
+                    }
+                    dialog(state.showThemeDialog) {
+                        Dialog(
+                            isVisible = it,
+                            title = "HI",
+                            message = "Not Yet Implemented",
+                            onDismiss = listener::onDismissThemeDialog,
+                            actionButtons = {}
+                        )
+                    }
+                    dialog(state.showShareProfileDialog) {
+                        ShareQrCode(
+                            showDialog = it,
+                            qrCodePainter = rememberAsyncImagePainter(
+                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
+                            ),
+                            onDismiss = listener::onDismissShareProfileDialog,
+                            fullName = state.fullName,
+                            onShareProfile = {},
+                            onClipboardContent = { },
+                            onDownload = {},
+                        )
+                    }
+                },
             snakeBar = {
                 ProfileSnackBar(
                     snackBarState = state.snackBarUiState,

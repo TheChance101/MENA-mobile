@@ -6,8 +6,8 @@ object PreviewMainScreenInteractionListener : MainInteractionListener {
     override fun onDukanButtonClicked() {}
     override fun onViewMoreClicked() {}
     override fun onRetryClicked() {}
-    override fun onDismissSnackBar() {}
-    override fun onCategorySelectedClicked(categoryId: String, categoryName: String) {}
+    override fun onSnackBarDismissed() {}
+    override fun onSelectedCategoryClicked(categoryId: String, categoryName: String) {}
     override fun onNearestDukanClicked(dukanId: String) {}
     override fun onEditorPickDukanClicked(dukanId: String) {}
 }

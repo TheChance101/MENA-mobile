@@ -17,6 +17,7 @@ import net.thechance.mena.identity.data.dto.profile.request.UpdateProfileRequest
 import net.thechance.mena.identity.data.dto.profile.response.ChangePasswordResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postFileWithData
@@ -54,17 +55,29 @@ class UserRepositoryImpl(
     override suspend fun updateUser(
         user: User,
         shouldUpdateImage: Boolean,
-        imageByteArray: ByteArray?,
     ) {
         return safeWrapper {
-            val user: ProfileResponseDto = client.postFileWithData(
+            val user: ProfileResponseDto = client.postJson(
                 path = PROFILE,
-                dataKey = "user",
                 requestDto = user.toRequest(shouldUpdateImage),
+            )
+            userDao.upsert(user.toEntity())
+        }
+    }
+
+    override suspend fun uploadUserProfileImage(imageByteArray: ByteArray?) {
+        return safeWrapper {
+            client.postFileWithData(
+                path = PROFILE_IMAGE,
                 fileKey = "file",
                 imageByteArray = imageByteArray
             )
-            userDao.upsert(user.toEntity())
+        }
+    }
+
+    override suspend fun deleteUserProfileImage() {
+        return safeWrapper {
+            client.deleteJson(path = PROFILE_IMAGE)
         }
     }
 
@@ -102,7 +115,8 @@ class UserRepositoryImpl(
     }
 
     companion object {
-        const val PROFILE = "identity/profile/me"
+        const val PROFILE = "identity/profile"
+        const val PROFILE_IMAGE = "identity/profile/image"
         const val CHANGE_PASSWORD_PATH = "identity/profile/change-password"
 
     }

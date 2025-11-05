@@ -14,7 +14,7 @@ data class ProfileResponseDto(
     @SerialName("lastName")
     val lastName: String,
     @SerialName("imageUrl")
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerialName("birthDate")
     val birthDate: String,
     @SerialName("gender")
