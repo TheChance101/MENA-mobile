@@ -38,8 +38,8 @@ class SurahViewModel(
 ), SurahInteractionListener {
 
     init {
-        loadSurahData(surahArgs.surahId)
         observeDefaultReciter()
+        loadSurahData(surahArgs.surahId)
     }
 
     private fun loadSurahData(surahId: Int) {
@@ -54,12 +54,12 @@ class SurahViewModel(
 
     private fun observeDefaultReciter() {
         tryToCollect(
-            onEmitNewValue = ::getDefaultReciter,
+            onEmitNewValue = ::updateDefaultReciter,
             block = { quranRepository.getDefaultReciter() },
         )
     }
 
-    private fun getDefaultReciter(reciterId: Int) {
+    private fun updateDefaultReciter(reciterId: Int) {
         tryToExecute(
             execute = { quranRepository.getReciterById(reciterId) },
             onSuccess = ::updateReciterState

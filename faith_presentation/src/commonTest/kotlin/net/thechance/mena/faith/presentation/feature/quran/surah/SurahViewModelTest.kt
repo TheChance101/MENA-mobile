@@ -8,12 +8,14 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -371,6 +373,34 @@ class SurahViewModelTest {
         assertEquals(SURAH_BAQARAH, surahArgs.surahName)
     }
 
+    @Test
+    fun `onReciterClick should navigate to downloaded reciters screen`() = runTest {
+        testViewModel.uiEffect.test {
+            testViewModel.onReciterClick()
+            val effect = awaitItem()
+            assertEquals(SurahScreenEffect.NavigateToDownloadedRecitersScreen, effect)
+        }
+    }
+
+    @Test
+    fun `observeDefaultReciter should update reciter state when reciter exists`() = runTest {
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+        everySuspend { quranRepository.getDefaultReciter() } returns flowOf(DUMMY_RECITER.id)
+        everySuspend { quranRepository.getReciterById(any()) } returns DUMMY_RECITER
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            snackbarHandler = SnackbarHandler.Empty,
+            quranPlayer = quranPlayer
+        )
+        advanceUntilIdle()
+
+        assertEquals(DUMMY_RECITER.id, testViewModel.uiState.value.currentReciter.id)
+    }
 
     private companion object {
         const val TRACKED_AYAH_NUMBER = 5
@@ -390,6 +420,12 @@ class SurahViewModelTest {
         const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH = "Al-Baqarah"
         const val SURAH_BAQARAH_ID = 2
+        val DUMMY_RECITER = Reciter(
+            id = 1,
+            name = "Dummy Reciter",
+            arabicName = "داممي ريسيتير",
+            tilawahType = ""
+        )
         private val dummyAyat = listOf(
             Ayah(
                 number = 1,
