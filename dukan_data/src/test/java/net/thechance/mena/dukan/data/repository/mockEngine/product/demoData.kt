@@ -79,5 +79,6 @@ val product1 = Product(
         "http://example.com/image1.jpg",
         "http://example.com/image2.jpg"
     ),
+    shelfId = demoShelfID,
     createdAt = "2025-10-31T12:00:00Z"
 )
