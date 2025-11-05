@@ -7,8 +7,8 @@ import dev.jordond.compass.geolocation.MobileGeolocator
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.addresses.AddressRequestDto
-import net.thechance.mena.identity.data.dto.addresses.AddressResponseDto
+import net.thechance.mena.identity.data.dto.addresses.request.AddressRequestDto
+import net.thechance.mena.identity.data.dto.addresses.response.AddressResponseDto
 import net.thechance.mena.identity.data.mapper.toDto
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.deleteJson

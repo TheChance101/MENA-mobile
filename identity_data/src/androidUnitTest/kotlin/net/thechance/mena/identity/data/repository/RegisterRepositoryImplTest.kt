@@ -6,7 +6,7 @@ import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.data.dto.resetPassword.OtpResponse
+import net.thechance.mena.identity.data.dto.resetPassword.response.OtpResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.PhoneNumber

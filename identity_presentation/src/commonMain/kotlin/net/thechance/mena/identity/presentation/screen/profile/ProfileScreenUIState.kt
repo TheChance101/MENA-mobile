@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error
 import net.thechance.mena.identity.domain.util.AppLanguage
 import org.jetbrains.compose.resources.StringResource
 
@@ -17,6 +19,7 @@ data class ProfileScreenUIState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
+    val snackBarUiState: SnackBarUiState = SnackBarUiState(),
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState()
 )
 data class LanguageDialogUiState(
@@ -24,3 +27,15 @@ data class LanguageDialogUiState(
     val selectedAppLanguage: AppLanguage = AppLanguage.ENGLISH,
     val options: List<AppLanguage> =AppLanguage.entries.filterNot { it == AppLanguage.DEFAULT },
 )
+
+
+data class SnackBarUiState(
+    val isVisible: Boolean = false,
+    val snackBarType: SnackBarType = SnackBarType.ERROR,
+    val message: StringResource = Res.string.error,
+)
+
+enum class SnackBarType {
+    ERROR,
+    SUCCESS,
+}

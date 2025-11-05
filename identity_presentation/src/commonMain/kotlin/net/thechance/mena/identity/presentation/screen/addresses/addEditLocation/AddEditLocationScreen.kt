@@ -24,7 +24,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.Add
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
-import net.thechance.mena.identity.presentation.screen.addresses.component.MapSection
+import net.thechance.mena.identity.presentation.screen.addresses.components.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

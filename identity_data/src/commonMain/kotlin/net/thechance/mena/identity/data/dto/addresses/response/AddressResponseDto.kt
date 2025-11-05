@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.data.dto.addresses
+package net.thechance.mena.identity.data.dto.addresses.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -83,8 +83,15 @@ class ProfileScreenViewModel(
     override fun onInviteFriendsClicked() =
         updateState { copy(showShareBottomSheet = true) }
 
-    override fun onChangePasswordClicked() =
-        sendNewEffect(ProfileScreenUIEffect.NavigateToChangePasswordScreen)
+    override fun onChangePasswordClicked() {
+        sendNewEffect(
+            ProfileScreenUIEffect.NavigateToChangePasswordScreen(
+                onSuccess = ::onChangePasswordSuccess
+
+            )
+        )
+        onDismissSnackBar()
+    }
 
     override fun onAddressesClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateToLocationPickerScreen)
@@ -129,6 +136,16 @@ class ProfileScreenViewModel(
         )
     }
 
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    isVisible = false,
+                )
+            )
+        }
+    }
+
     override fun onDismissLanguageDialog() =
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = false)) }
 
@@ -148,5 +165,11 @@ class ProfileScreenViewModel(
 
     override fun clearErrorMessage() {
         updateState { copy(errorMessage = null) }
+    }
+
+    private fun onChangePasswordSuccess(snackBarUiState: SnackBarUiState?) {
+        updateState {
+            copy(snackBarUiState = snackBarUiState ?: state.value.snackBarUiState)
+        }
     }
 }
