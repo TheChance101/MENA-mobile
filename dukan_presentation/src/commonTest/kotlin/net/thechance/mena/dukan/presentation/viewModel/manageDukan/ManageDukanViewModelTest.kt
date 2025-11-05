@@ -235,6 +235,23 @@ class ManageDukanViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onEditProductClicked SHOULD emit NavigateToEditProduct effect with correct productId`() =
+        runTest {
+            val productId = fakeProducts().first().id.toString()
+
+            manageDukanViewModel.onEditProductClicked(productId)
+
+            manageDukanViewModel.effect.test {
+                val expectedEffect = ManageDukanUiEffect.NavigateToEditProduct(
+                    productId = productId
+                )
+                assertEquals(expectedEffect, awaitItem())
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     @Test
     fun `onDismissSnackBar SHOULD hide snackbar`() = runTest {
         manageDukanViewModel.updateState { copy(snackBarState = snackBarSuccess) }
@@ -653,7 +670,8 @@ private fun fakeProducts(): List<Product> {
             price = 999.99,
             createdAt = "2023-08-01T10:00:00Z",
             imageUrls = listOf("https://example.com/iphone.jpg"),
-            quantityInCart = 10
+            quantityInCart = 10,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123")
         ),
         Product(
             id = Uuid.random(),
@@ -662,7 +680,8 @@ private fun fakeProducts(): List<Product> {
             price = 1999.99,
             imageUrls = listOf("https://example.com/macbook.jpg"),
             createdAt = "2023-08-01T10:00:00Z",
-            quantityInCart = 10
+            quantityInCart = 10,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
         ),
         Product(
             id = Uuid.random(),
@@ -671,7 +690,8 @@ private fun fakeProducts(): List<Product> {
             price = 29.99,
             createdAt = "2023-08-01T10:00:00Z",
             imageUrls = listOf("https://example.com/tshirt.jpg"),
-            quantityInCart = 20
+            quantityInCart = 20,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
         )
     )
 }

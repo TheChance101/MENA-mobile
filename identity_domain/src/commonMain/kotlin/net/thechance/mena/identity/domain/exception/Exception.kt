@@ -36,3 +36,6 @@ class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class FailedToRequestPermissionException() : LocationException("Failed to request permission")
 class AddressNotFoundException() : LocationException("Address not found")
 class NoActiveAddressException() : LocationException("No active address")
+
+// TODO: change Authentication Exception
+class InvalidRequestException() : AuthenticationException("Invalid request")

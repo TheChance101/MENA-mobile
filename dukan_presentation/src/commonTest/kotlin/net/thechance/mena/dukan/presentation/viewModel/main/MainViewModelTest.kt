@@ -52,10 +52,10 @@ class MainViewModelTest {
             dukanDiscoveryRepository = dukanDiscoveryRepository,
             dispatcher = testDispatcher
         )
-
         advanceUntilIdle()
+
         mainViewModel.state.test {
-            val updated = awaitItem() // state after repository returns null
+            val updated = awaitItem()
             assertEquals(
                 expected = MainScreenUiState.DukanState(
                     name = "",
@@ -80,8 +80,8 @@ class MainViewModelTest {
                 dukanDiscoveryRepository = dukanDiscoveryRepository,
                 dispatcher = testDispatcher
             )
-
             advanceUntilIdle()
+
             mainViewModel.state.test {
                 val secondEmit = awaitItem()
                 assertEquals(
@@ -204,7 +204,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onViewMoreButtonClick SHOULD emit NavigateCategoryToScreen`() = runTest {
+    fun `onViewMoreButtonClick SHOULD emit NavigateToDukansCategoriesScreen`() = runTest {
 
         mainViewModel.onViewMoreClicked()
         val actualEffect = mainViewModel.effect.first()
@@ -215,7 +215,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onCategorySelectedClick SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
+    fun `onSelectedCategoryClicked SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
         runTest {
             val categoryId = "1"
             val categoryName = "Category 1"
@@ -228,7 +228,7 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `onNearestDukanClick should emit NavigateSelectedNearsetDukan effect with correct dukanId`() =
+    fun `onNearestDukanClick should emit NavigateToSelectedDukan effect with correct dukanId`() =
         runTest {
             val dukanId = "1"
 
@@ -240,7 +240,7 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `onEditorPickDukanClick should emit NavigateSelectedDukan effect with correct dukanId`() =
+    fun `onEditorPickDukanClick should emit NavigateToSelectedDukan effect with correct dukanId`() =
         runTest {
             val dukanId = "1"
 

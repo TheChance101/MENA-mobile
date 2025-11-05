@@ -3,23 +3,20 @@ package net.thechance.mena.admin_panel.data.mapper.user
 import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.domain.model.SortType
 
-fun buildSortQuery(property: SortType?, direction: SortDirection?): String {
+fun buildSortQueries(property: SortType?, direction: SortDirection?): List<String> {
     val directionStr = convertDirectionToString(direction)
-    val propertyStr=convertTypeToString(property)
-    return "$propertyStr,$directionStr"
+    return when (property) {
+        SortType.USERNAME -> listOf("firstName,$directionStr", "lastName,$directionStr")
+        SortType.LAST_LOGIN_DATE -> listOf("lastLoginAt,$directionStr")
+        SortType.LAST_VISIT_DATE -> listOf("lastVisitAt,$directionStr")
+        else -> listOf("firstName,$directionStr", "lastName,$directionStr")
+    }
 }
-private fun convertDirectionToString(direction: SortDirection?) :String{
+
+private fun convertDirectionToString(direction: SortDirection?): String {
     return when (direction) {
         SortDirection.ASC -> "asc"
         SortDirection.DESC -> "desc"
         null -> "asc"
-    }
-}
-private fun convertTypeToString(type: SortType?):String {
-   return  when (type) {
-        SortType.USERNAME -> "firstName"
-        SortType.LAST_LOGIN_DATE ->"lastLoginAt"
-        SortType.LAST_VISIT_DATE -> "lastVisitAt"
-        else->"firstName"
     }
 }

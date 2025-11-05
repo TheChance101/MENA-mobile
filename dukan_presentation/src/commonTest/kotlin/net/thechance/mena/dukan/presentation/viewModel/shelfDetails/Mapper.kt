@@ -20,7 +20,8 @@ class ShelfDetailsMapperTest {
             price = 10.0,
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
         )
 
         val uiState = product.toUiState()
@@ -30,6 +31,26 @@ class ShelfDetailsMapperTest {
         assertEquals(product.price, uiState.price, 0.0)
         assertEquals("image.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
+        assertEquals(1, uiState.inCartQuantity)
+    }
+
+    @Test
+    fun `toUiState should map Product correctly when quantityInCart is greater than zero`() {
+        val product = Product(
+            id = Uuid.random(),
+            name = "Another Product",
+            description = "Test Desc",
+            price = 50.0,
+            imageUrls = listOf("img.jpg"),
+            quantityInCart = 3,
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+        )
+
+        val uiState = product.toUiState()
+
+        assertEquals(3, uiState.inCartQuantity)
+        assertEquals("img.jpg", uiState.imageUrl)
     }
 
     @Test

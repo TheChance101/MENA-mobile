@@ -7,5 +7,6 @@ sealed interface ManageDukanUiEffect {
         ManageDukanUiEffect
 
     object NavigateToAddProduct : ManageDukanUiEffect
+    data class NavigateToEditProduct(val productId: String) : ManageDukanUiEffect
     object NavigateToProductDetails : ManageDukanUiEffect
 }

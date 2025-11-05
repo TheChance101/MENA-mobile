@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
+import androidx.compose.ui.platform.Clipboard
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -7,6 +8,7 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
+import net.thechance.mena.identity.presentation.screen.profile.components.share.clipEntryOf
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -20,6 +22,17 @@ class ProfileScreenViewModel(
     init {
         getUserInfo()
         setAppVersion()
+        setUrlLinks()
+    }
+
+    private fun setUrlLinks() {
+        // todo: links will not remain hardcoded
+        updateState {
+            copy(
+                shareLinkUrl = "https:mena.dev?uresname=hassan",
+                inviteLinkUrl = "https://MENA_app.com"
+            )
+        }
     }
 
     private fun setAppVersion() {
@@ -50,6 +63,10 @@ class ProfileScreenViewModel(
         updateState { copy(isLoading = false, errorMessage = null) }
     }
 
+    private fun onCopyToClipboardSuccess() {
+        updateState { copy(showCopiedMessage = true, showShareProfileDialog = false) }
+    }
+
     override fun onEditProfileInfoClicked() =
         sendNewEffect(createNavigateToEditProfileEffect())
 
@@ -59,8 +76,15 @@ class ProfileScreenViewModel(
     override fun onInviteFriendsClicked() =
         updateState { copy(showShareBottomSheet = true) }
 
-    override fun onChangePasswordClicked() =
-        sendNewEffect(ProfileScreenUIEffect.NavigateToChangePasswordScreen)
+    override fun onChangePasswordClicked() {
+        sendNewEffect(
+            ProfileScreenUIEffect.NavigateToChangePasswordScreen(
+                onSuccess = ::onChangePasswordSuccess
+
+            )
+        )
+        onDismissSnackBar()
+    }
 
     override fun onAddressesClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateToLocationPickerScreen)
@@ -80,6 +104,24 @@ class ProfileScreenViewModel(
     override fun onContactUsClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
+    override fun onCopyToClipboard(clipboard: Clipboard) {
+        tryToExecute(
+            function = { clipboard.setClipEntry(clipEntryOf(state.value.shareLinkUrl)) },
+            onSuccess = { onCopyToClipboardSuccess() },
+            onError = { onDismissShareDialog() }
+        )
+    }
+
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    isVisible = false,
+                )
+            )
+        }
+    }
+
     override fun onDismissLanguageDialog() =
         updateState { copy(showLanguageDialog = false) }
 
@@ -90,10 +132,20 @@ class ProfileScreenViewModel(
         updateState { copy(showShareProfileDialog = false) }
     }
 
+    override fun onDismissCopyLinkSnackBar() {
+        updateState { copy(showCopiedMessage = false) }
+    }
+
     override fun onDismissThemeDialog() =
         updateState { copy(showThemeDialog = false) }
 
     override fun clearErrorMessage() {
         updateState { copy(errorMessage = null) }
+    }
+
+    private fun onChangePasswordSuccess(snackBarUiState: SnackBarUiState?) {
+        updateState {
+            copy(snackBarUiState = snackBarUiState ?: state.value.snackBarUiState)
+        }
     }
 }

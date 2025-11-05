@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
@@ -68,4 +69,15 @@ class QuranRepositoryImpl(
 
     override suspend fun getReciters(): List<Reciter> =
         executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() }
+
+    override suspend fun getReciterById(reciterId: Int): Reciter =
+        executeApiSafely { tilawahApiService.getReciters()}.first { it.id == reciterId }.toDomain()
+
+
+    override suspend fun saveDefaultReciter(reciterId: Int) =
+        tilawahDataStore.saveDefaultReciter(reciterId)
+
+
+    override suspend fun getDefaultReciter(): Flow<Int> =
+        tilawahDataStore.getDefaultReciter()
 }

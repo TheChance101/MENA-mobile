@@ -17,11 +17,10 @@ import mena.identity_presentation.generated.resources.date_picker_screen_prompt_
 import mena.identity_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.components.WheelDatePicker
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreen
 import org.jetbrains.compose.resources.stringResource
 
@@ -54,7 +53,7 @@ class DatePickerScreen :
                         modifier = Modifier.weight(1f),
                         contentAlignment = Alignment.Center
                     ) {
-                        WheelDatePicker(
+                        GregorianDatePicker(
                             selectedDate = state.selectedDate,
                             onDateChange = listener::onChangeDate
                         )

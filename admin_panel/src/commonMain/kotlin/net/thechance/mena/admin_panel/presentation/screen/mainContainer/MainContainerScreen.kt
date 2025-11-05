@@ -3,9 +3,10 @@ package net.thechance.mena.admin_panel.presentation.screen.mainContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.admin_panel.navigation.Deposit
 import net.thechance.mena.admin_panel.navigation.DukanManagement
@@ -48,11 +49,9 @@ private fun MainContainerContent(
     interactionListener: MainContainerInteractionListener
 ) {
     val navController = LocalNavController.current
-    val isLoginScreen = remember {
-        navController.currentBackStackEntry?.destination?.hasRoute(
-            Login.toString(), null
-        ) == true
-    }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+    val isLoginScreen = currentDestination?.hasRoute(Login::class) ?: true
 
     AdminPanelScaffold(
         state = state,

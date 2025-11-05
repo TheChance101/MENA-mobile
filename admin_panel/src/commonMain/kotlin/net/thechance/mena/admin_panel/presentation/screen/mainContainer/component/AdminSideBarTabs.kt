@@ -25,16 +25,16 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AdminSideBarTabs(
-    selectedTab: MainContainerScreenState.CurrentTab,
-    onTabSelected: (tab: MainContainerScreenState.CurrentTab) -> Unit,
+    selectedTab: MainContainerScreenState.SelectedSidebarTab,
+    onTabSelected: (tab: MainContainerScreenState.SelectedSidebarTab) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val adminPanelSidePBarTabs = remember {
         listOf(
-            MainContainerScreenState.CurrentTab.DUKAN_MANAGEMENT,
-            MainContainerScreenState.CurrentTab.DUKAN_REQUEST,
-            MainContainerScreenState.CurrentTab.DEPOSIT,
-            MainContainerScreenState.CurrentTab.USERS_MANAGEMENT
+            MainContainerScreenState.SelectedSidebarTab.DUKAN_MANAGEMENT,
+            MainContainerScreenState.SelectedSidebarTab.DUKAN_REQUEST,
+            MainContainerScreenState.SelectedSidebarTab.DEPOSIT,
+            MainContainerScreenState.SelectedSidebarTab.USERS_MANAGEMENT
         )
     }
     Column(
@@ -75,10 +75,10 @@ private fun AdminSidebarItem(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Crossfade(targetState = isSelected)
-        { selected ->
+        Crossfade(targetState = isSelected) { selected ->
+            val icon = if (selected) selectedIcon else notSelectedIcon
             Icon(
-                painter = if (selected) selectedIcon else notSelectedIcon,
+                painter = icon,
                 contentDescription = title,
                 modifier = Modifier.size(32.dp)
             )
