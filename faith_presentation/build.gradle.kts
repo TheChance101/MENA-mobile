@@ -40,6 +40,8 @@ kotlin {
             implementation(projects.faithDomain)
             implementation(projects.designSystem)
             implementation(projects.faithApi)
+            implementation(projects.identityDomain)
+            implementation(projects.identityApi)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
