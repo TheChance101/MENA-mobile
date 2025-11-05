@@ -12,7 +12,6 @@ import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
-import kotlin.uuid.ExperimentalUuidApi
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
@@ -24,16 +23,22 @@ internal class NearbyMosquesViewModel(
     ), NearbyMosquesInteractionListener {
 
     init {
-        getNearbyMosques()
+        getUserLocation()
     }
 
     private var searchJob: Job? = null
 
+    private fun getUserLocation() {
+        tryToExecute(
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { handleInvalidAddress() }
+        )
+    }
 
-    private fun getNearbyMosques() {
+    private fun onGetUserLocationSuccess(address: Address) {
         tryToExecute(
             execute = {
-                val address = getValidatedAddress() ?: return@tryToExecute null
                 mosqueRepository.getNearbyMosques(
                     latitude = address.latitude,
                     longitude = address.longitude,
@@ -41,30 +46,11 @@ internal class NearbyMosquesViewModel(
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques -> mosques?.let { mosque -> handleNearbyMosquesSuccess(mosque) } },
+            onSuccess = { mosques -> handleNearbyMosquesSuccess(mosques) },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
 
         )
-    }
-
-    private suspend fun getValidatedAddress(): Address? {
-        val address = locationService.getActiveAddress()
-
-        if (address == null || address.addressLine.isEmpty()) {
-            handleInvalidAddress()
-            return null
-        }
-
-        updateState { state ->
-            state.copy(
-                centerOfMap = Coordinate(
-                    latitude = address.latitude,
-                    longitude = address.longitude
-                )
-            )
-        }
-        return address
     }
 
     override fun onBackClick() {
@@ -147,7 +133,6 @@ internal class NearbyMosquesViewModel(
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun handleNearbyMosquesSuccess(mosques: List<Mosque>) {
         if (mosques.isEmpty()) {
             viewModelScope.launch {
