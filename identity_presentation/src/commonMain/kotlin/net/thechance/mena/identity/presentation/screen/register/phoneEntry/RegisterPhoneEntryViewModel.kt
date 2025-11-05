@@ -36,7 +36,7 @@ class RegisterPhoneEntryViewModel(
         }
     }
 
-    override fun onClickContinue() {
+    override fun onClickRegister() {
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::requestOTP,
@@ -84,10 +84,6 @@ class RegisterPhoneEntryViewModel(
         changeIsContinueEnabled()
     }
 
-    override fun onClickBack() {
-        sendNewEffect(RegisterPhoneEntryUIEffect.NavigateBack)
-    }
-
     override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }
@@ -100,7 +96,7 @@ class RegisterPhoneEntryViewModel(
         updateState {
             val countryCode = currentCountry.callingCode
             val mobileNumberValid = loginUseCase.isMobileNumberValid(countryCode, phoneNumber)
-            copy(isContinueEnabled = mobileNumberValid)
+            copy(isRegisterEnabled = mobileNumberValid)
         }
     }
 

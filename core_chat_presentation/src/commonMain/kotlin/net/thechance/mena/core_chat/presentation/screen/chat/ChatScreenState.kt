@@ -28,7 +28,8 @@ data class ChatScreenState(
 
     val selectedMessage: MessageUiState? = null,
     val isImagePagerVisible: Boolean = false,
-    val selectedImageMessages: List<MessageUiState> = emptyList()
+    val selectedImageMessages: List<MessageUiState> = emptyList(),
+    val paginationError: Boolean = false,
 )
 
 data class UserData(

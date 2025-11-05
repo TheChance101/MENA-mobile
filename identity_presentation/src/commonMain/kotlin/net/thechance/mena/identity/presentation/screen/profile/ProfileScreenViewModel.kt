@@ -53,7 +53,7 @@ class ProfileScreenViewModel(
             copy(
                 userName = user.username,
                 fullName = "${user.firstName} ${user.lastName}",
-                profileImageUrl = user.profileImageUrl,
+                profileImageUrl = user.profileImageUrl.orEmpty(),
                 isSuccess = true
             )
         }

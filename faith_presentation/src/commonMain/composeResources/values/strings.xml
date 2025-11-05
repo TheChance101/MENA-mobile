@@ -101,6 +101,7 @@
     <string name="error">Error</string>
     <string name="success_icon">Success Icon</string>
     <string name="error_icon">Error Icon</string>
+    <string name="surah_download_failed">Failed to download surah</string>
 
     <!-- Navigation and Copy -->
     <string name="navigate_to_sur_screen">Go to Sur Screen</string>"
@@ -155,6 +156,7 @@
     <string name="previous_ayah">previous ayah</string>
     <string name="pause">pause</string>
     <string name="play">play</string>
+    <string name="listen">listen</string>
     <string name="next_ayah">next ayah</string>
     <string name="repeat">repeat</string>
     <string name="surah_ayah_format">%1$s: %2$d aya</string>
@@ -165,6 +167,7 @@
     <string name="mosque_address">Address</string>
     <string name="upload_image">Upload Image</string>
     <string name="add_new_mosque">Add New Mosque</string>
+    <string name="add">Add</string>
     <string name="image_size_required">Image (9:16)</string>
     <string name="view_on_map">View on map</string>
     <string name="icon_location">location icon</string>
