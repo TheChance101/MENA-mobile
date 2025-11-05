@@ -1,10 +1,8 @@
 package net.thechance.mena.admin_panel.presentation.screen.user_managements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -18,14 +16,12 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun UserManagementScreen() {
+fun UserManagementScreen(modifier: Modifier = Modifier) {
     Column(
-        Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier,
     ) {
         Row(
-            modifier = Modifier.padding(start = 114.dp)
+            modifier = Modifier.align(Alignment.Start)
                 .fillMaxWidth()
                 .background(Theme.colorScheme.background.surfaceLow)
                 .padding(16.dp)
@@ -39,7 +35,8 @@ fun UserManagementScreen() {
 
         Text(
             text = "Users Managements Screen",
-            style = Theme.typography.title.large
+            style = Theme.typography.title.large,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
     }
 }

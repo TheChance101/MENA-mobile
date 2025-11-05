@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +28,6 @@ import net.thechance.mena.admin_panel.resources.logout_disc
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import java.lang.System.exit
 
 @Composable
 fun AdminPanelScaffold(
@@ -66,6 +66,7 @@ fun AdminPanelScaffold(
                     )
                 }
                 AdminPanelNavHost(
+                    modifier= Modifier.weight(1f),
                     navController = navController,
                     isUserLoggedIn = state.authenticationStatus
                 )
@@ -81,7 +82,9 @@ private fun AdminPanelScaffoldMainContent(
     interactionListener: MainContainerInteractionListener,
     snackBarState: SnackBarState,
 ) {
-    Box {
+    Box(
+        modifier = Modifier.wrapContentSize()
+    ) {
         Row {
             AdminPanelSideBar(
                 modifier = Modifier.padding(bottom = 34.dp),

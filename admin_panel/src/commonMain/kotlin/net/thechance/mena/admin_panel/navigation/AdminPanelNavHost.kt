@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +20,8 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
 @Composable
 fun AdminPanelNavHost(
     navController: NavHostController = rememberNavController(),
-    isUserLoggedIn: Boolean
+    isUserLoggedIn: Boolean,
+    modifier: Modifier = Modifier
 ) {
 
     NavHost(
@@ -30,16 +32,16 @@ fun AdminPanelNavHost(
             LoginScreen()
         }
         composable<UsersManagement> {
-            UserManagementScreen()
+            UserManagementScreen(modifier)
         }
         composable<Deposit> {
-            DepositScreen()
+            DepositScreen(modifier)
         }
         composable<DukanRequests> {
-            DukanRequestsScreen()
+            DukanRequestsScreen(modifier)
         }
         composable<DukanManagement> {
-            DukanManagementsScreen()
+            DukanManagementsScreen(modifier)
         }
     }
 }
