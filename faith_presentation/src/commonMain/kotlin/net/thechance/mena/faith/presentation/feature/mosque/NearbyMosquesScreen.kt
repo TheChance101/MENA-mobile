@@ -157,12 +157,10 @@ private fun Content(
                 )
                 if (uiState.isSearchButtonVisible) {
                     SearchMosquesButton(onClick = {
-                        listener.onBackClick()
-                        val target = cameraState.position.target
                         listener.onSearchByCoordinatesClick(
                             coordinate = Coordinate(
-                                latitude = target.latitude,
-                                longitude = target.longitude
+                                latitude = cameraState.position.target.latitude,
+                                longitude = cameraState.position.target.longitude
                             )
                         )
                     })
