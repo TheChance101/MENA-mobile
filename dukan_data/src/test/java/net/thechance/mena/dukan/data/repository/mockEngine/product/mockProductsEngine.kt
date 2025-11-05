@@ -50,10 +50,16 @@ fun MockRequestHandleScope.defaultPaginatedProductResponse() = respond(
 fun MockRequestHandleScope.defaultImagesUploadResponse() = respond(
     content = jsonSerialization.encodeToString(
         ListSerializer(String.serializer()),
-        listOf(
-            productDto1.imageUrls.first(),
-            productDto1.imageUrls.last()
-        )
+        dummyImageUrls
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        ProductDto.serializer(),
+        productDto1
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
@@ -70,6 +76,7 @@ fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -83,22 +90,25 @@ fun createProductHttpClient(
             request.url.encodedPath == "/dukan/product" -> paginatedResponse?.invoke(this)
                 ?: defaultPaginatedProductResponse()
 
-            request.url.encodedPath.startsWith("/dukan/product/images/") && 
+            request.url.encodedPath.startsWith("/dukan/product/images/") &&
             request.url.encodedPath.endsWith("/delete") -> deleteImagesResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
             request.url.encodedPath.startsWith("/dukan/product/images/") -> uploadImagesResponse?.invoke(this)
                 ?: defaultImagesUploadResponse()
 
-            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) && 
+            "/dukan/product/$createdProductResponseId" -> productDetailsResponse?.invoke(this)
+                ?: defaultProductDetailsResponse()
+
+            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
             request.method.value == "GET" -> productByIdResponse?.invoke(this)
                 ?: defaultProductByIdResponse()
 
-            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) && 
+            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
             request.method.value == "PUT" -> updateResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
-            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) && 
+            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
             request.method.value == "DELETE" -> deleteResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
@@ -116,6 +126,7 @@ fun createProductRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -126,6 +137,7 @@ fun createProductRepository(
             createResponse = createResponse,
             paginatedResponse = paginatedResponse,
             uploadImagesResponse = uploadImagesResponse,
+            productDetailsResponse = productDetailsResponse
             productByIdResponse = productByIdResponse,
             updateResponse = updateResponse,
             deleteResponse = deleteResponse,

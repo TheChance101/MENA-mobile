@@ -160,6 +160,7 @@ private fun ProductItem(
                     onMinusClick = {}
                 )
             }
-        }
+        },
+        onClick = { listener.onProductClicked(product.id) }
     )
 }

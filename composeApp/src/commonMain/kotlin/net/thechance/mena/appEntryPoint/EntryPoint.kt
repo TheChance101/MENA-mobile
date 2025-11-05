@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -67,8 +66,6 @@ private fun LoggedInContainer(
             .fillMaxSize()
             .background(Theme.colorScheme.background.surfaceLow)
             .navigationBarsPadding()
-            .systemBarsPadding()
-            .background(Theme.colorScheme.background.surfaceHigh)
     ) {
         FeatureContent(activeFeature)
 

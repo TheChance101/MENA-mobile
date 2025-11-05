@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.component.product
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,9 +35,10 @@ fun ProductCard(
     productImageUrl: String,
     productDescription: String,
     productPrice: Double,
+    productAction: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     productCardBackground: Color? = null,
-    productAction: @Composable () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -44,7 +46,10 @@ fun ProductCard(
             .background(
                 color = productCardBackground ?: Color.Transparent,
                 shape = RoundedCornerShape(size = Theme.radius.md)
-            ).height(104.dp)
+            )
+            .height(104.dp)
+            .clip(RoundedCornerShape(size = Theme.radius.md))
+            .clickable(onClick = onClick)
             .padding(Theme.spacing._4),
     ) {
         Box(
@@ -107,6 +112,7 @@ private fun ProductCardPreview() {
             productCardBackground = Theme.colorScheme.background.surfaceLow,
             productAction = { EditProductIcon(onClick = {}) },
             modifier = Modifier.padding(Theme.spacing._12),
+            onClick = {}
         )
     }
 }

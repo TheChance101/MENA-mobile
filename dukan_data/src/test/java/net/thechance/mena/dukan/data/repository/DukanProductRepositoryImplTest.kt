@@ -8,10 +8,12 @@ import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProduc
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultProductByIdResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
+import net.thechance.mena.dukan.data.repository.mockEngine.product.dummyImageUrls
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import net.thechance.mena.dukan.domain.model.UpdateProductParams
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class DukanProductRepositoryImplTest {
@@ -51,6 +53,34 @@ class DukanProductRepositoryImplTest {
             "shelf-123", 0, 10
         )
         assertEquals(expected = demoPagedResult, actual = products)
+    }
+
+    @Test
+    fun `uploadProductImages returns list of image URLs`() = runTest {
+        val fileNames = listOf("image1.jpg", "image2.jpg")
+        val fileBytes = listOf(byteArrayOf(1, 2), byteArrayOf(3, 4))
+
+        val urls = repository.uploadProductImages(
+            fileName = fileNames,
+            fileBytes = fileBytes,
+            productId = createdProductResponseId
+        )
+
+        assertEquals(expected = dummyImageUrls, actual = urls)
+    }
+
+    @Test
+    fun `uploadProductImages throws exception when lists have different sizes`() = runTest {
+        val fileNames = listOf("image1.jpg")
+        val fileBytes = listOf(byteArrayOf(1, 2), byteArrayOf(3, 4))
+
+        assertFailsWith<IllegalArgumentException> {
+            repository.uploadProductImages(
+                fileName = fileNames,
+                fileBytes = fileBytes,
+                productId = createdProductResponseId
+            )
+        }
     }
 
     @Test

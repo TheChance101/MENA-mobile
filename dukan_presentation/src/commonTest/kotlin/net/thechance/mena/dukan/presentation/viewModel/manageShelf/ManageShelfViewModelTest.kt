@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -16,8 +17,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
-import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
+import mena.dukan_presentation.generated.resources.shelf_name_is_not_changed
+import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -68,7 +70,7 @@ class ManageShelfViewModelTest {
     @Test
     fun `init should initialize state with shelf id and title from saved state handle`() {
         val state = manageShelfViewModel.state.value
-        assertEquals(expectedShelfTitle, state.oldShelfTitle)
+        assertEquals(expectedShelfTitle, state.shelfTitle)
     }
 
     @Test
@@ -176,19 +178,26 @@ class ManageShelfViewModelTest {
         manageShelfViewModel.onDismissSnackBar()
 
         val state = manageShelfViewModel.state.value
-        assertTrue(state.snackBarState == null)
+        assertEquals(state.snackBarState, null)
     }
 
     @Test
     fun `onSaveClicked SHOULD show error snackbar when shelf name is same as current`() = runTest {
         manageShelfViewModel.onShelfNameChange(expectedShelfTitle)
 
+        everySuspend {
+            shelfRepository.updateShelf(
+                expectedShelfId,
+                expectedShelfTitle
+            )
+        } throws DuplicateNameException("Shelf name not changed")
+
         manageShelfViewModel.onSaveClicked()
         testScheduler.advanceUntilIdle()
 
         val snackBarState = manageShelfViewModel.state.value.snackBarState
         assertNotNull(snackBarState)
-        assertEquals(Res.string.error_same_name_of_shelf, snackBarState.message)
+        assertEquals(Res.string.shelf_name_is_not_changed, snackBarState.message)
         assertEquals(SnackBarType.ERROR, snackBarState.snackBarType)
     }
 

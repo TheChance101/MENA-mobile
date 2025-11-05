@@ -22,6 +22,7 @@ interface ProductRepository {
         productId: String
     ): List<String>
 
+    suspend fun getProductDetails(productId: String): Product
     suspend fun updateProduct(productId: String, params: UpdateProductParams)
     suspend fun deleteProductImages(productId: String, imageUrls: List<String>)
     suspend fun deleteProduct(productId: String)
