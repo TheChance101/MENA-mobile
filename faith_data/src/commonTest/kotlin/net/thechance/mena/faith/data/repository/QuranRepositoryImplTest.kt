@@ -13,6 +13,7 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
+import net.thechance.mena.faith.data.remote.model.tilawah.RecitersRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
@@ -147,23 +148,70 @@ class QuranRepositoryImplTest {
         assertEquals(expectedUrl, result)
     }
 
-    private fun makeSuccessFakeResponse(
-        body: String? = null,
+    private fun <T> makeSuccessFakeResponse(
+        body: T,
         successStatus: HttpStatusCode = HttpStatusCode.OK
-    ): Response<String> {
+    ): Response<T> {
         val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
             everySuspend { status } returns successStatus
         }
         return Response.success(
             body = body,
             rawResponse = mockHttpResponse
-        ) as Response<String>
+        ) as Response<T>
     }
+
+    @Test
+    fun `getReciters should return mapped reciters`() = runTest {
+        val apiReciters = listOf(
+            RecitersRequest(
+                id = 1,
+                name = FIST_RECITER_NAME,
+                arabicName = FIST_RECITER_ARABIC_NAME,
+                tilawahType = FIRST_TILWAH_TYPE
+            ),
+            RecitersRequest(
+                id = 2,
+                name = SECOND_RECITER_NAME,
+                arabicName = SECOND_RECITER_ARABIC_NAME,
+                tilawahType = SECOND_TILWAH_TYPE
+            )
+        )
+
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(apiReciters)
+
+        val result = repository.getReciters()
+
+        assertEquals(apiReciters.map { it.id }, result.map { it.id })
+        assertEquals(apiReciters.map { it.name }, result.map { it.name })
+        verifySuspend { tilawahApiService.getReciters() }
+    }
+
+    @Test
+    fun `getReciters should return empty list when api returns empty`() = runTest {
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(emptyList())
+
+        val result = repository.getReciters()
+
+        assertTrue(result.isEmpty())
+        verifySuspend { tilawahApiService.getReciters() }
+    }
+
 
     private companion object {
 
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
+        const val FIST_RECITER_NAME = "Mishary"
+        const val SECOND_RECITER_NAME = "Baist"
+        const val FIST_RECITER_ARABIC_NAME = "مشاري"
+        const val SECOND_RECITER_ARABIC_NAME = "مشاري"
+        const val FIRST_TILWAH_TYPE = "Murattal"
+        const val SECOND_TILWAH_TYPE = "Mujawwad"
 
         val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
             number = 3,

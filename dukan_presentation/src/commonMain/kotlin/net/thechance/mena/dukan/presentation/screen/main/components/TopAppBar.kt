@@ -132,7 +132,6 @@ private fun DukanIcon(dukanStatus: MainScreenUiState.DukanStatusUi) {
             MainScreenUiState.DukanStatusUi.Loading -> {
                 LoadingDots(modifier = Modifier.size(size = 20.dp))
             }
-
         }
     }
 }

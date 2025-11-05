@@ -63,11 +63,11 @@ fun ReciterItem(
                 recitingType = recitingType,
                 isDownloaded = isDownloaded
             )
-            RadioButton(
-                isSelected = isSelected,
-                onClick = onSelect
-            )
         }
+        RadioButton(
+            isSelected = isSelected,
+            onClick = onSelect
+        )
     }
 }
 

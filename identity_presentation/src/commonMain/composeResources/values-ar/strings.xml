@@ -153,4 +153,11 @@
     <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
     <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
     <string name="ic_account_shield">أيقونة درع الحساب</string>
+
+    <!-- EnterName -->
+    <string name="complete_profile_title">أكمل ملفك الشخصي</string>
+    <string name="complete_profile_description">يرجى ملء بياناتك</string>
+    <string name="first_name_label">الاسم الأول</string>
+    <string name="last_name_label">اسم العائلة</string>
+    <string name="username_label">اسم المستخدم</string>
 </resources>

@@ -3,12 +3,12 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.FlowPreview
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanAppBar
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelves
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails.NoImageDukanShelvesContent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
@@ -17,7 +17,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun NoImageDukanDetails(
+fun NoImageDukanDetailsContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
@@ -26,53 +26,39 @@ fun NoImageDukanDetails(
         topBar = {
             NoImageDukanAppBar(
                 state = state.dukanInfo,
+                isBadgeVisible = true,
                 listener = listener
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
             )
             return@Scaffold
         }
-        NoImageDukanContent(
+        NoImageDukanShelvesContent(
             state = state,
             listener = listener,
         )
     }
 }
 
-@OptIn(FlowPreview::class)
-@Composable
-private fun NoImageDukanContent(
-    state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
-) {
-    NoImageDukanShelves(
-        state,
-        listener,
-    )
-}
-
 @Preview
 @Composable
 private fun NoImageDukanDetailsPreview() {
     MenaTheme {
-        NoImageDukanDetails(
+        NoImageDukanDetailsContent(
             state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun NoImageDukanDetailsLoadingPreview() {
-    MenaTheme {
-        NoImageDukanDetails(
-            state = fakeDukanDetails.copy(),
             listener = PreviewDukanDetailsInteractionListener,
         )
     }

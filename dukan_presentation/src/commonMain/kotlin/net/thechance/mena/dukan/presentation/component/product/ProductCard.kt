@@ -53,8 +53,7 @@ fun ProductCard(
                 onClick = onProductClick,
                 indication = null,
                 interactionSource = null
-            )
-        ,
+            ),
     ) {
         Box(
             modifier = Modifier.background(

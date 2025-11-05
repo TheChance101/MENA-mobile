@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wid
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +58,11 @@ fun WideImageDukanAppBar(
         },
         onLeadingClick = onBackClicked,
         trailingContent = {
-            AppBarOptionContainer(onClick = { onCartClicked }) {
+            AppBarOptionContainer(
+                // when cart contains products
+                isBadgeVisible = true,
+                onClick = { onCartClicked }
+            ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
                     contentDescription = null
@@ -68,7 +73,7 @@ fun WideImageDukanAppBar(
 }
 
 @Composable
-fun DukanHeader(state: DukanDetailsUiState.DukanInfo) {
+fun WideImageDukanHeader(state: DukanDetailsUiState.DukanInfo) {
     Box(
         modifier = Modifier.fillWidthOfParent(16.dp)
     ) {
@@ -160,9 +165,7 @@ private fun DukanIconButton(
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
-            .clickable(
-                onClick = onIconClick,
-            )
+            .clickable(onClick = onIconClick,indication = null, interactionSource = MutableInteractionSource())
             .background(color = Theme.colorScheme.background.surfaceLow)
             .border(
                 width = 3.dp,

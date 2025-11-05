@@ -652,7 +652,8 @@ private fun fakeProducts(): List<Product> {
             description = "Latest iPhone model",
             price = 999.99,
             createdAt = "2023-08-01T10:00:00Z",
-            imageUrls = listOf("https://example.com/iphone.jpg")
+            imageUrls = listOf("https://example.com/iphone.jpg"),
+            quantityInCart = 10
         ),
         Product(
             id = Uuid.random(),
@@ -661,6 +662,7 @@ private fun fakeProducts(): List<Product> {
             price = 1999.99,
             imageUrls = listOf("https://example.com/macbook.jpg"),
             createdAt = "2023-08-01T10:00:00Z",
+            quantityInCart = 10
         ),
         Product(
             id = Uuid.random(),
@@ -668,7 +670,8 @@ private fun fakeProducts(): List<Product> {
             description = "Cotton t-shirt",
             price = 29.99,
             createdAt = "2023-08-01T10:00:00Z",
-            imageUrls = listOf("https://example.com/tshirt.jpg")
+            imageUrls = listOf("https://example.com/tshirt.jpg"),
+            quantityInCart = 20
         )
     )
 }
