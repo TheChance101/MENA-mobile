@@ -126,6 +126,7 @@
     <string name="categories">الفئات</string>
     <string name="back_to_main_screen_icon">أيقونة العودة للشاشة الرئيسية</string>
     <string name="category_icon">أيقونة الفئة</string>
+    <string name="shelf_name_is_not_changed">لم يتم تغيير اسم الرف، حاول إدخال اسم آخر.</string>
     <string name="something_went_wrong_while_fetching_categories">حدث خطأ أثناء جلب الفئات</string>
     <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
     <string name="view_more">عرض المزيد</string>
