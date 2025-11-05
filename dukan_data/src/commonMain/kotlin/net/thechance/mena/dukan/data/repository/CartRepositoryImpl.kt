@@ -27,7 +27,7 @@ class CartRepositoryImpl (
     }
     override suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {
-            client.post("${CART_BASE_PATH}/items") {
+            client.put("${CART_BASE_PATH}/items") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toDto())
             }
@@ -36,7 +36,7 @@ class CartRepositoryImpl (
 
     override suspend fun addProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {
-            client.put("${CART_BASE_PATH}/items") {
+            client.post("${CART_BASE_PATH}/items") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toDto())
             }

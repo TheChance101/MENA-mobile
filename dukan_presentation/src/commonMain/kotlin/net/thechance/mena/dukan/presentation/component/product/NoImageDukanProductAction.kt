@@ -47,7 +47,7 @@ fun NoImageDukanProductAction(
         label = "CartToQuantity"
     ) {
         if (it) {
-            SetProductQuantity(
+            ProductQuantityButton(
                 inCartQuantity = inCartQuantity,
                 onPlusClick = onPlusClick,
                 onMinusClick = onMinusClick,
@@ -90,7 +90,7 @@ private fun ProductCart(
 }
 
 @Composable
-private fun SetProductQuantity(
+private fun ProductQuantityButton(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     inCartQuantity: Int,

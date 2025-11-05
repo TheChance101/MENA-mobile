@@ -10,9 +10,9 @@ import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
@@ -47,6 +47,7 @@ class ProductDetailsViewModel(
 
     private fun onLoadProductSuccess(product: Product) {
         val productUiInfo = product.toUiState()
+        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 1) }
         updateState {
             copy(
                 isLoading = false,
@@ -87,10 +88,16 @@ class ProductDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(dukanId = args.dukanId)
 
         tryToExecute(
-            block = { dukanCartRepository.addProductQuantity(domainRequest) },
+            onStart = { updateState { copy(isAddToCartLoading = true) } },
+            block = { addToCartBlock(domainRequest) },
             onSuccess = ::addProductToCartSuccessfully,
             onError = ::onErrorUpdateProductQuantity
         )
+    }
+
+    private suspend fun addToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
+        if (state.value.isFirstQuantityOne) dukanCartRepository.addProductQuantity(domainRequest)
+        dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(productId: String) {
@@ -108,14 +115,17 @@ class ProductDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        updateState { copy(isAddToCartLoading = false) }
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun addProductToCartSuccessfully(success: Unit) {
+        updateState { copy(isAddToCartLoading = false) }
         val messageRes = Res.string.add_product_success
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }

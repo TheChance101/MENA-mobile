@@ -479,7 +479,8 @@ class ExportTransactionsViewModel(
             oldState.copy(
                 toast = oldState.toast.copy(
                     isVisible = false
-                )
+                ),
+                hasNoTransactionsError = false
             )
         }
     }

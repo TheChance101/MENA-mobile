@@ -4,10 +4,12 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 
 data class ProductDetailsUiState(
     val product: ProductInfo = ProductInfo(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val isAddToCartLoading : Boolean = false,
     val errorState: Exception? = null,
     val isFavorite: Boolean = false,
     val selectedImageUrl: String = "",
+    val isFirstQuantityOne: Boolean = false,
     val snackBarState: SnackBarUiState? = null
 ) {
     data class ProductInfo(

@@ -114,6 +114,7 @@
     <string name="share_icon_content_description">Share Icon</string>
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
+    <string name="copy_to_clipboard_success">Copied</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -209,6 +210,12 @@
     <string name="error_address_not_found">Address not found</string>
     <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">You have successfully created your account!</string>
+    <string name="success_account_created_description">Welcome to MENA! You're now part of our community and can start exploring the app.</string>
+    <string name="go_to_home">Go to home</string>
+    <string name="ic_account_shield">Account Shield Icon</string>
 
     <string name="title_pick_profile_picture">Pick Profile Picture</string>
     <string name="title_complete_your_profile">Complete your profile</string>

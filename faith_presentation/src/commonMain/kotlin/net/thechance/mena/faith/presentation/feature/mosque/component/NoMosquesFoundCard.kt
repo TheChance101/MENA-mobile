@@ -14,7 +14,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_triangle_warning
-import mena.faith_presentation.generated.resources.no_mosques_found
+import mena.faith_presentation.generated.resources.no_mosques_found_by_keyword
 import mena.faith_presentation.generated.resources.warning_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -26,6 +26,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NoMosquesFoundCard(
+    message: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -51,7 +52,7 @@ fun NoMosquesFoundCard(
         )
 
         Text(
-            text = stringResource(Res.string.no_mosques_found),
+            text = message,
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
         )
@@ -63,6 +64,8 @@ fun NoMosquesFoundCard(
 @Composable
 private fun NoMosquesFoundCardPreview() {
     MenaTheme {
-        NoMosquesFoundCard()
+        NoMosquesFoundCard(
+            message = stringResource(Res.string.no_mosques_found_by_keyword)
+        )
     }
 }

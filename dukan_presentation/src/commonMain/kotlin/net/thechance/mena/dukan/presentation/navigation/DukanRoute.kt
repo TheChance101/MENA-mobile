@@ -40,8 +40,6 @@ sealed interface DukanRoute {
     data class ShelfDetails(
         val shelfId: String,
         val shelfName: String,
-        val dukanStyle: String,
-        val dukancolor: Long,
         val dukanId: String
     ) : DukanRoute
 

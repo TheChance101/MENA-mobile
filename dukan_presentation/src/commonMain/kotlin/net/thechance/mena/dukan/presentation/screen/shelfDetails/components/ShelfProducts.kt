@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -109,7 +110,7 @@ private fun CartProductAction(
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "CartProductIconAnimation"
     ) { currentStyle ->
-        GetProductIconAction(
+        ProductIconAction(
             style = currentStyle,
             state = state,
             listener = listener,
@@ -119,14 +120,14 @@ private fun CartProductAction(
 }
 
 @Composable
-private fun GetProductIconAction(
+private fun ProductIconAction(
     style: Style,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
+    var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {

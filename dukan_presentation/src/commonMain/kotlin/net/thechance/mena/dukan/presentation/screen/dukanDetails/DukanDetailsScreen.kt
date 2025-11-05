@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,11 +29,15 @@ fun DukanDetailsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshProducts()
+    }
+
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
-                ShelfDetails(effect.id, effect.name, effect.style, effect.color, effect.dukanId)
+                ShelfDetails(effect.id, effect.name, effect.dukanId)
             )
 
             is DukanDetailsEffects.NavigateToViewDukanOnMap -> {

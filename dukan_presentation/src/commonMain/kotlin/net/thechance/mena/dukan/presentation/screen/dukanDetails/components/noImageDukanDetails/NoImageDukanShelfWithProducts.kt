@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,8 +68,13 @@ private fun ProductItem(
     dukanColor: Color,
     modifier: Modifier = Modifier
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(false) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
+
+    LaunchedEffect(product) {
+        toggleCartToQuantity = product.inCartQuantity > 1
+        productQuantity = product.inCartQuantity
+    }
 
     ProductCard(
         productName = product.name,

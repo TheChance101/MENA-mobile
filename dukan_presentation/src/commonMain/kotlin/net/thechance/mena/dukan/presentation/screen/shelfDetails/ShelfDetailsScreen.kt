@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.shelfDetails
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -39,17 +40,22 @@ fun ShelfDetailsScreen(
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshProducts()
+    }
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
             is ShelfDetailsEffects.NavigateToCart -> {
                 // navigate to cart screen
             }
+
             is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
                 DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
             )
         }
     }
+
     ShelfDetailsContent(
         state = state,
         listener = viewModel,

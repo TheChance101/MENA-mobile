@@ -1,22 +1,37 @@
-package net.thechance.mena.identity.presentation.screen.profile.components
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.copy_to_clipboard_success
 import mena.identity_presentation.generated.resources.download_icon_content_description
+import mena.identity_presentation.generated.resources.ic_check_circle
 import mena.identity_presentation.generated.resources.ic_download
 import mena.identity_presentation.generated.resources.ic_link
 import mena.identity_presentation.generated.resources.ic_share_02
@@ -31,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.component.dialog.BasicDialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
+import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -44,13 +60,24 @@ import sv.lib.squircleshape.SquircleShape
 fun ScaffoldScope.ShareQrCode(
     showDialog: Boolean,
     fullName: String,
+    urlString: String,
     qrCodePainter: Painter,
     onDismiss: () -> Unit,
     onShareProfile: () -> Unit,
-    onClipboardContent: () -> Unit,
     onDownload: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+    var isCopied by remember { mutableStateOf(false) }
+
+    CopyToClipboardSnackBar(
+        isCopied = isCopied,
+        urlString = urlString,
+        onDismissSnackBar = { isCopied = false },
+    )
+
     BasicDialog(
         onDismiss = onDismiss,
         onCancelClick = onDismiss,
@@ -104,7 +131,14 @@ fun ScaffoldScope.ShareQrCode(
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_link),
                     contentDescription = stringResource(Res.string.link_icon_content_description),
-                    onClick = onClipboardContent
+                    onClick = {
+                        scope.launch {
+                            clipboard.setClipEntry(clipEntryOf(urlString))
+                        }.invokeOnCompletion {
+                            isCopied = true
+                            onDismiss()
+                        }
+                    }
                 )
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_download),
@@ -145,6 +179,42 @@ private fun ShareProfileButton(
     }
 }
 
+@Composable
+private fun CopyToClipboardSnackBar(
+    isCopied: Boolean,
+    urlString: String,
+    duration: Long = 2000L,
+    onDismissSnackBar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isCopied) {
+        if (isCopied) {
+            isVisible = true
+            delay(duration)
+            isVisible = false
+            onDismissSnackBar()
+        }
+    }
+
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = slideInHorizontally(initialOffsetX = { it }),
+        exit = slideOutHorizontally(targetOffsetX = { it }),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        SnackBar(
+            title = stringResource(Res.string.copy_to_clipboard_success),
+            message = urlString,
+            leadingIcon = painterResource(Res.drawable.ic_check_circle),
+            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
+                .padding(horizontal = Theme.spacing._16)
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun ShareProfileQrCodePreview() {
@@ -153,12 +223,12 @@ private fun ShareProfileQrCodePreview() {
             overlays = {
                 dialog(true) {
                     ShareQrCode(
-                        fullName = "Hassan Nabil",
-                        qrCodePainter = painterResource(Res.drawable.male),
                         showDialog = it,
+                        fullName = "Hassan Nabil",
+                        urlString = "",
+                        qrCodePainter = painterResource(Res.drawable.male),
                         onDismiss = {},
                         onShareProfile = {},
-                        onClipboardContent = { },
                         onDownload = { },
                     )
                 }

@@ -5,8 +5,6 @@ sealed class DukanDetailsEffects {
     data class NavigateToViewAllShelfProducts(
         val id: String,
         val name: String,
-        val style: String,
-        val color: Long,
         val dukanId: String
     ) : DukanDetailsEffects()
 

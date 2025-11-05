@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -192,8 +192,6 @@ class DukanDetailsViewModel(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
                 name = name,
-                style = state.value.dukanInfo.style.name,
-                color = state.value.dukanInfo.color,
                 dukanId = args.dukanId
             )
         )
@@ -211,13 +209,18 @@ class DukanDetailsViewModel(
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
-        tryToExecuteWithDebounce(
-            block = {
-                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-                else dukanCartRepository.updateProductQuantity(domainRequest)
-            },
+        tryToExecute(
+            block = { addToCartBlock(domainRequest, productQuantity) },
             onError = ::onErrorUpdateProductQuantity
         )
+    }
+
+    private suspend fun addToCartBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int
+    ) {
+        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
+        dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(
@@ -229,10 +232,7 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
-            block = {
-                dukanCartRepository.updateProductQuantity(domainRequest)
-            },
-            onError = ::onErrorUpdateProductQuantity
+            block = { dukanCartRepository.updateProductQuantity(domainRequest) },
         )
     }
 
@@ -245,32 +245,37 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
-            block = {
-                if (productQuantity == 1) deleteProductFromCart(productId)
-                else dukanCartRepository.updateProductQuantity(domainRequest)
-            },
-            onError = ::onErrorUpdateProductQuantity
+            block = { onMinusClickedBlock(domainRequest, productQuantity, productId) },
         )
     }
 
+    private suspend fun onMinusClickedBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int,
+        productId: String
+    ) {
+        if (productQuantity == 1) deleteProductFromCart(productId)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
+    }
+
     private fun deleteProductFromCart(productId: String) {
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 dukanCartRepository.deleteProductFromCart(
                     dukanId = args.dukanId,
                     productId = productId
                 )
             },
-            onError = ::onErrorUpdateProductQuantity
         )
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
@@ -297,9 +302,8 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
     }
-
 
     override fun onRetryClicked() {
         loadDukanDetails()
@@ -307,4 +311,10 @@ class DukanDetailsViewModel(
 
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
+
+    fun refreshProducts() {
+        loadDukanDetails()
+    }
+
+
 }

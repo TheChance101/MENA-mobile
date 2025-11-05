@@ -17,15 +17,20 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
-import net.thechance.mena.dukan.domain.repository.DukanCartRepository
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,7 +47,7 @@ class DukanDetailsViewModelTest {
         mock<DukanManagementRepository>(mode = MockMode.autofill)
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
-    private val dukanCartRepository = mock<DukanCartRepository>(mode = MockMode.autofill)
+    private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var savedStateHandle: SavedStateHandle
@@ -283,17 +288,6 @@ class DukanDetailsViewModelTest {
     }
 
     @Test
-    fun `when onProductClicked SHOULD emit Navigate to Product details effect`() = runTest {
-        // Then
-        dukanDetailsViewModel.effect.test {
-            // When
-            dukanDetailsViewModel.onProductClicked("1")
-            assertEquals(DukanDetailsEffects.NavigateToProductDetails("1", "20"), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `when onViewDukanOnMapClicked SHOULD emit correct navigation effect`() = runTest {
         // Given
         val lat = 28.0
@@ -321,7 +315,6 @@ class DukanDetailsViewModelTest {
             dukanDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then
@@ -344,7 +337,6 @@ class DukanDetailsViewModelTest {
             dukanDetailsViewModel.onAddToCartClicked(
                 productId,
                 productQuantity = quantity,
-                onComplete = {}
             )
             advanceUntilIdle()
             //Then
@@ -405,6 +397,32 @@ class DukanDetailsViewModelTest {
         advanceUntilIdle()
         //Then
         verifySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) }
+    }
+
+    @Test
+    fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
+
+        dukanDetailsViewModel.onDismissSnackBar()
+
+        assertTrue(dukanDetailsViewModel.state.value.snackBarState == null)
+    }
+
+    @Test
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
+        // Given
+        val productId = "1"
+        val quantity = 5
+
+        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+
+        // When
+        dukanDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+        advanceUntilIdle()
+
+        // Then
+        val state = dukanDetailsViewModel.state.value
+        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
     }
 
 
