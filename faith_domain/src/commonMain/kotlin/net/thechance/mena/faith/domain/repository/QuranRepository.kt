@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.domain.repository
 
+import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
@@ -14,4 +15,7 @@ interface QuranRepository {
     suspend fun searchForAyahInQuran(query: String): List<Ayah>
     suspend fun getAyahSoundUrl(ayahNumber: Int, surahNumber: Int, reciterId: Int): String
     suspend fun getReciters(): List<Reciter>
+    suspend fun getReciterById(reciterId: Int): Reciter
+    suspend fun saveDefaultReciter(reciterId: Int)
+    suspend fun getDefaultReciter(): Flow<Int>
 }

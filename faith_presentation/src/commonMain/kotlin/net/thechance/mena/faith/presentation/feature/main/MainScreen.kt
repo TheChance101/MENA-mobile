@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -97,16 +98,15 @@ private fun Content(
         val faithFeatureCards = faithFeatureCards(listener = listener)
 
         LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    bottom = Theme.spacing._8,
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16
-                ),
+            modifier = Modifier.fillMaxSize(),
             columns = GridCells.Adaptive(minSize = 150.dp),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            contentPadding = PaddingValues(
+                bottom = Theme.spacing._8,
+                start = Theme.spacing._16,
+                end = Theme.spacing._16
+            ),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 PrayerSection(uiState, listener)

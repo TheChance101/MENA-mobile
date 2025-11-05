@@ -1,11 +1,10 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -49,7 +48,7 @@ private fun Content(
             )
         }) {
         LazyColumn(
-            modifier = Modifier.padding(bottom = Theme.spacing._16)
+            contentPadding = PaddingValues(bottom = Theme.spacing._16),
         ) {
             items(uiState.reciters) { reciter ->
                 ReciterItem(
