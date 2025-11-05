@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.createProduct
+package net.thechance.mena.dukan.presentation.screen.editProduct
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,11 +16,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add
-import mena.dukan_presentation.generated.resources.add_product
+import mena.dukan_presentation.generated.resources.manage_product
+import mena.dukan_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.shared.TopAppBar
@@ -32,27 +31,26 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Pric
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
+import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateProductInterfaceListener
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductEffect
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductInteractionListener
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
-import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
+import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
+import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductUiState
+import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CreateProductScreen(
-    viewModel: CreateProductViewModel = koinViewModel()
+fun EditProductScreen(
+    viewModel: EditProductViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(effects = viewModel.effect) { effect ->
         when (effect) {
-            CreateProductEffect.NavigateBack -> navController.navigateUp()
-            CreateProductEffect.NavigateToManageDukanProducts -> {
+            EditProductEffect.NavigateBack -> navController.navigateUp()
+            EditProductEffect.NavigateToManageDukanProducts -> {
                 val navOptions = navOptions {
                     popUpTo(DukanRoute.ManageDukanScreenRoute) { inclusive = true }
                 }
@@ -64,7 +62,7 @@ fun CreateProductScreen(
         }
     }
 
-    CreateProductContent(
+    EditProductContent(
         state = state,
         interactionListener = viewModel
     )
@@ -74,28 +72,32 @@ fun CreateProductScreen(
         onCropImageBack = viewModel::onCroppedImage,
         onBack = viewModel::onCropImageBackClicked,
         selectedImage = state.selectedImage,
-        aspectRatio = CreateProductViewModel.IMAGE_ASPECT_RATIO
+        aspectRatio = EditProductViewModel.IMAGE_ASPECT_RATIO
     )
 }
 
 @Composable
-private fun CreateProductContent(
-    state: CreateProductUiState,
-    interactionListener: CreateProductInteractionListener
+private fun EditProductContent(
+    state: EditProductUiState,
+    interactionListener: EditProductInteractionListener
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = stringResource(resource = Res.string.add_product),
-                onBackClick = interactionListener::onBackClicked
+                onBackClick = interactionListener::onBackClicked,
+                title = stringResource(Res.string.manage_product),
+                onDeleteClick = interactionListener::onDeleteProductClicked
             )
+        },
+        overlays = {
+            editProductDialog(state, interactionListener)
         },
         bottomBar = {
             PrimaryButton(
-                text = stringResource(Res.string.add),
-                onClick = interactionListener::onAddProductClicked,
-                isEnabled = state.isAddButtonEnabled,
-                isLoading = state.isAddButtonLoading,
+                text = stringResource(Res.string.save),
+                onClick = interactionListener::onSaveProductClicked,
+                isEnabled = state.isSaveButtonEnabled,
+                isLoading = state.isSaveButtonLoading,
                 modifier = Modifier
                     .background(color = Theme.colorScheme.background.surface)
                     .padding(bottom = Theme.spacing._16)
@@ -105,7 +107,7 @@ private fun CreateProductContent(
             )
         },
         snakeBar = {
-            CreateProductSnackBar(
+            EditProductSnackBar(
                 state = state,
                 interactionListener = interactionListener
             )
@@ -124,7 +126,7 @@ private fun CreateProductContent(
 
             item {
                 ShelfSection(
-                    shelves = state.shelves,
+                    shelves = state.shelvesForShelfSection,
                     isShelvesLoading = state.isShelvesLoading,
                     onShelfSelect = interactionListener::onShelfSelect
                 )
@@ -149,10 +151,12 @@ private fun CreateProductContent(
             item {
                 ImageSection(
                     images = state.images,
+                    existingImageUrls = state.existingImageUrls,
                     isUploadingImageEnabled = state.isUploadingImageEnabled,
                     isCancelImageEnabled = state.isCancelImageEnabled,
                     onUploadImageClick = interactionListener::onUploadImageClicked,
-                    onCancelImageClick = interactionListener::onCancelImageClicked
+                    onCancelImageClick = interactionListener::onCancelImageClicked,
+                    onCancelImageUrlClick = interactionListener::onCancelExistingImageUrl
                 )
             }
         }
@@ -160,9 +164,9 @@ private fun CreateProductContent(
 }
 
 @Composable
-private fun CreateProductSnackBar(
-    state: CreateProductUiState,
-    interactionListener: CreateProductInteractionListener
+private fun EditProductSnackBar(
+    state: EditProductUiState,
+    interactionListener: EditProductInteractionListener
 ) {
     state.snackBarUiState?.let { snackBarState ->
         SnackBar(
@@ -172,17 +176,6 @@ private fun CreateProductSnackBar(
                 .clickable(onClick = interactionListener::onDismissSnackBar),
             onDismiss = interactionListener::onDismissSnackBar,
             snackBarUiState = snackBarState
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun CreateProductPreview() {
-    MenaTheme {
-        CreateProductContent(
-            state = CreateProductUiState(),
-            interactionListener = PreviewCreateProductInterfaceListener
         )
     }
 }

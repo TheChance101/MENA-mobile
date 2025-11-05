@@ -2,8 +2,10 @@ package net.thechance.mena.dukan.data.mapper
 
 import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
 import net.thechance.mena.dukan.data.dto.product.ProductDto
+import net.thechance.mena.dukan.data.dto.product.UpdateProductRequest
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
+import net.thechance.mena.dukan.domain.model.UpdateProductParams
 import kotlin.uuid.ExperimentalUuidApi
 
 fun CreateProductParams.toCreateProductRequest(): CreateProductRequest {
@@ -15,6 +17,16 @@ fun CreateProductParams.toCreateProductRequest(): CreateProductRequest {
     )
 }
 
+fun UpdateProductParams.toUpdateProductRequest(): UpdateProductRequest {
+    return UpdateProductRequest(
+        name = name?.takeIf { it.isNotBlank() },
+        description = description?.takeIf { it.isNotBlank() },
+        price = price,
+        shelfId = shelfId?.takeIf { it.isNotBlank() },
+        imageUrls = imageUrls?.takeIf { it.isNotEmpty() }
+    )
+}
+
 @OptIn(ExperimentalUuidApi::class)
 fun ProductDto.toDomain(): Product = Product(
     id = id,
@@ -23,5 +35,6 @@ fun ProductDto.toDomain(): Product = Product(
     price = price,
     imageUrls = imageUrls,
     createdAt = createdAt,
-    quantityInCart = quantityInCart
-)
+    quantityInCart = quantityInCart,
+    shelfId = shelfId
+    )
