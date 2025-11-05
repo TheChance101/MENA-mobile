@@ -19,7 +19,7 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
     private fun updateDefaultReciter() {
         tryToExecute(
             execute = { quranRepository.getDefaultReciter() },
-            onSuccess = { reciterId -> reciterId.first()?.let { updateSelectedReciter(it) } },
+            onSuccess = { reciterId -> updateSelectedReciter(reciterId.first()) },
             onError = ::handleError
         )
     }
@@ -37,7 +37,8 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
     private fun getAllReciters() {
         tryToExecute(
             execute = { quranRepository.getReciters() },
-            onSuccess = { ::getAllRecitersSuccessfully })
+            onSuccess = ::getAllRecitersSuccessfully,
+        )
     }
 
     private fun updateSelectedReciter(reciterId: Int) {

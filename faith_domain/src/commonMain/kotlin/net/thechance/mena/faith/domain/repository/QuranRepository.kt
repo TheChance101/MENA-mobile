@@ -17,5 +17,5 @@ interface QuranRepository {
     suspend fun getReciters(): List<Reciter>
     suspend fun getReciterById(reciterId: Int): Reciter
     suspend fun saveDefaultReciter(reciterId: Int)
-    suspend fun getDefaultReciter(): Flow<Int?>
+    suspend fun getDefaultReciter(): Flow<Int>
 }

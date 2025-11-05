@@ -88,8 +88,8 @@ private fun RecitersDetails(
     ) {
         Text(
             text = recitingType,
-            style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.shadeSecondary
         )
         if (isDownloaded) {
             Icon(

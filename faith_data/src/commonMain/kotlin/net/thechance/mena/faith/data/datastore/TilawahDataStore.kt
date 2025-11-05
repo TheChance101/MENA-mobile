@@ -9,5 +9,5 @@ interface TilawahDataStore {
     suspend fun getLastAyah(): LastAyahForTilawah?
 
     suspend fun saveDefaultReciter(reciterId: Int)
-    suspend fun getDefaultReciter(): Flow<Int?>
+    suspend fun getDefaultReciter(): Flow<Int>
 }

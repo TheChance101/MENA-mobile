@@ -59,13 +59,11 @@ class SurahViewModel(
         )
     }
 
-    private fun getDefaultReciter(reciterId: Int?) {
-        reciterId?.let { id ->
-            tryToExecute(
-                execute = { quranRepository.getReciterById(id) },
-                onSuccess = ::updateReciterState
-            )
-        } ?: sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen)
+    private fun getDefaultReciter(reciterId: Int) {
+        tryToExecute(
+            execute = { quranRepository.getReciterById(reciterId) },
+            onSuccess = ::updateReciterState
+        )
     }
 
     private fun updateReciterState(reciter: Reciter) =

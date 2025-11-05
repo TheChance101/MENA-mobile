@@ -78,6 +78,6 @@ class QuranRepositoryImpl(
         tilawahDataStore.saveDefaultReciter(reciterId)
 
 
-    override suspend fun getDefaultReciter(): Flow<Int?> =
+    override suspend fun getDefaultReciter(): Flow<Int> =
         tilawahDataStore.getDefaultReciter()
 }
