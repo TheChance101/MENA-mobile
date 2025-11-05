@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +67,7 @@ fun AdminPanelScaffold(
                     )
                 }
                 AdminPanelNavHost(
-                    modifier= Modifier.weight(1f),
+                    modifier = Modifier.weight(1f),
                     navController = navController,
                     isUserLoggedIn = state.authenticationStatus
                 )
@@ -85,7 +86,7 @@ private fun AdminPanelScaffoldMainContent(
     Box(
         modifier = Modifier.wrapContentSize()
     ) {
-        Row {
+        Box(modifier = Modifier.wrapContentWidth()) {
             AdminPanelSideBar(
                 modifier = Modifier.padding(bottom = 34.dp),
                 selectedTab = state.selectedSidebarTab,
@@ -96,7 +97,6 @@ private fun AdminPanelScaffoldMainContent(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(end = 32.dp, top = 32.dp)
-                .fillMaxWidth(0.3f)
         ) { SnackBarContainer(snackBarState) }
     }
 }
