@@ -302,7 +302,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewCartClicked() {
-        emitEffect(DukanDetailsEffects.NavigateToCartScreen(args.dukanId))
+        emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
     override fun onRetryClicked() {

@@ -142,8 +142,6 @@
     <string name="go_to_checkout">اذهب إلى الدفع</string>
     <string name="sub_total_price">السعر الإجمالي الفرعي</string>
     <string name="from_dukan">من دكان</string>
-
-    <string name="add_to_cart">الأضافه الي السله</string>
     <string name="product_thumbnail">صورة مصغرة للمنتج</string>
     <string name="dukan_management_general_error">إدارة الدكّان غير متاحة حاليًا، يرجى المحاولة لاحقًا.</string>
     <string name="dukan_managment_loading">يرجى الانتظار حتى يكتمل التحميل...</string>
