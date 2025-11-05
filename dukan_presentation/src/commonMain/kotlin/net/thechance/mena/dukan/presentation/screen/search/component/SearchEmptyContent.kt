@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.search.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import mena.dukan_presentation.generated.resources.search_icon
 import mena.dukan_presentation.generated.resources.start_search
 import mena.dukan_presentation.generated.resources.start_search_body
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -68,19 +70,31 @@ fun SearchEmptyContent(
 @Preview(showBackground = true)
 @Composable
 private fun StartSearchContentPreview(){
-    SearchEmptyContent(
-        icon = painterResource(resource = Res.drawable.img_start_search),
-        title = stringResource(resource = Res.string.start_search),
-        body = stringResource(resource = Res.string.start_search_body)
-    )
+    MenaTheme {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SearchEmptyContent(
+                icon = painterResource(resource = Res.drawable.img_start_search),
+                title = stringResource(resource = Res.string.start_search),
+                body = stringResource(resource = Res.string.start_search_body)
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SearchNotFoundContentPreview(){
-    SearchEmptyContent(
-        icon = painterResource(resource = Res.drawable.img_not_found_search),
-        title = stringResource(resource = Res.string.no_result_found),
-        body = stringResource(resource = Res.string.no_result_found_body)
-    )
+    MenaTheme {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SearchEmptyContent(
+                icon = painterResource(resource = Res.drawable.img_not_found_search),
+                title = stringResource(resource = Res.string.no_result_found),
+                body = stringResource(resource = Res.string.no_result_found_body)
+            )
+        }
+    }
 }

@@ -4,6 +4,7 @@ package net.thechance.mena.dukan.presentation.screen.search.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,13 +26,14 @@ import mena.dukan_presentation.generated.resources.no_result_found
 import mena.dukan_presentation.generated.resources.no_result_found_body
 import mena.dukan_presentation.generated.resources.products
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.DukanCard
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.animation.fadeWithSlideHorizontalTransition
-import net.thechance.mena.dukan.presentation.util.animation.fadeWithSlideVerticalTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.previewDukansFlow
 import net.thechance.mena.dukan.presentation.util.stubPreviews.previewProductsFlow
@@ -108,7 +110,7 @@ private fun DukansList(
     AnimatedContent(
         targetState = dukanPagingItems.loadState.refresh,
         label = "Search Success Content",
-        transitionSpec = { fadeWithSlideVerticalTransition() }
+        transitionSpec = { fadeTransitionSpec() }
     ) { resultState ->
         when (resultState) {
             LoadState.Loading -> {
@@ -117,7 +119,7 @@ private fun DukansList(
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
                     contentPadding = PaddingValues(horizontal = Theme.spacing._16)
                 ) {
-                    items(count = 8) {
+                    items(count = 5) {
                         LoadingDukanPlaceholder()
                     }
                 }
@@ -174,7 +176,7 @@ private fun ProductsList(
     AnimatedContent(
         targetState = productPagingItems.loadState.refresh,
         label = "Search Success Content",
-        transitionSpec = { fadeWithSlideVerticalTransition() }
+        transitionSpec = { fadeTransitionSpec() }
     ) { resultState ->
         when (resultState) {
             LoadState.Loading -> {
@@ -183,7 +185,7 @@ private fun ProductsList(
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
                     contentPadding = PaddingValues(horizontal = Theme.spacing._16)
                 ) {
-                    items(count = 8) {
+                    items(count = 5) {
                         LoadingProductCard()
                     }
                 }
@@ -234,23 +236,35 @@ private fun ProductsList(
 @Preview(showBackground = true)
 @Composable
 private fun SearchDukansContentPreview() {
-    SearchCompleteContent(
-        state = SearchUiState(
-            userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans,
-            dukanPagingFlow = previewDukansFlow
-        ),
-        listener = PreviewSearchInteractionListener
-    )
+    MenaTheme {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SearchCompleteContent(
+                state = SearchUiState(
+                    userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans,
+                    dukanPagingFlow = previewDukansFlow
+                ),
+                listener = PreviewSearchInteractionListener
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun SearchProductsContentPreview() {
-    SearchCompleteContent(
-        state = SearchUiState(
-            userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products,
-            productPagingFlow = previewProductsFlow
-        ),
-        listener = PreviewSearchInteractionListener
-    )
+    MenaTheme {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SearchCompleteContent(
+                state = SearchUiState(
+                    userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products,
+                    productPagingFlow = previewProductsFlow
+                ),
+                listener = PreviewSearchInteractionListener
+            )
+        }
+    }
 }

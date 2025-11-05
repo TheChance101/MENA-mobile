@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.search
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -24,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
@@ -150,8 +152,14 @@ private fun SearchContent(
 @Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview() {
-    SearchContent(
-        state = SearchUiState(searchContentState = SearchUiState.SearchContentState.Idle),
-        listener = PreviewSearchInteractionListener
-    )
+    MenaTheme {
+        Box (
+            modifier = Modifier.fillMaxSize()
+        ){
+            SearchContent(
+                state = SearchUiState(searchContentState = SearchUiState.SearchContentState.Idle),
+                listener = PreviewSearchInteractionListener
+            )
+        }
+    }
 }
