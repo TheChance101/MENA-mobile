@@ -147,6 +147,7 @@ class ChatRepositoryImpl(
         ) {
             client.delete("$DELETE_CHAT_ENDPOINT/$chatId")
         }
+        cachedChatSummaryDao.deleteChatSummaryById(chatId.toString())
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
