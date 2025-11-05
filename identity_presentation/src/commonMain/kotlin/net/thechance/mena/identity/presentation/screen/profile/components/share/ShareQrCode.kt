@@ -14,21 +14,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.copy_to_clipboard_success
 import mena.identity_presentation.generated.resources.download_icon_content_description
@@ -55,32 +50,32 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
 
-
 @Composable
 fun ScaffoldScope.ShareQrCode(
     showDialog: Boolean,
+    isCopied: Boolean,
     fullName: String,
     urlString: String,
     qrCodePainter: Painter,
-    onDismiss: () -> Unit,
     onShareProfile: () -> Unit,
+    onCopyToClipboard: (clipboard: Clipboard) -> Unit,
     onDownload: () -> Unit,
+    onDismissShareDialog: () -> Unit,
+    onDismissSnackBar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val clipboard = LocalClipboard.current
-    val scope = rememberCoroutineScope()
-    var isCopied by remember { mutableStateOf(false) }
 
     CopyToClipboardSnackBar(
-        isCopied = isCopied,
+        isVisible = isCopied,
         urlString = urlString,
-        onDismissSnackBar = { isCopied = false },
+        onDismissSnackBar = onDismissSnackBar
     )
 
     BasicDialog(
-        onDismiss = onDismiss,
-        onCancelClick = onDismiss,
+        onDismiss = onDismissShareDialog,
+        onCancelClick = onDismissShareDialog,
         hasDismissButton = true,
         isVisible = showDialog,
         dialogCornerShape = SquircleShape(Theme.radius.xl),
@@ -131,14 +126,7 @@ fun ScaffoldScope.ShareQrCode(
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_link),
                     contentDescription = stringResource(Res.string.link_icon_content_description),
-                    onClick = {
-                        scope.launch {
-                            clipboard.setClipEntry(clipEntryOf(urlString))
-                        }.invokeOnCompletion {
-                            isCopied = true
-                            onDismiss()
-                        }
-                    }
+                    onClick = { onCopyToClipboard(clipboard) }
                 )
                 ShareProfileButton(
                     icon = painterResource(Res.drawable.ic_download),
@@ -181,22 +169,15 @@ private fun ShareProfileButton(
 
 @Composable
 private fun CopyToClipboardSnackBar(
-    isCopied: Boolean,
+    isVisible: Boolean,
     urlString: String,
-    duration: Long = 2000L,
     onDismissSnackBar: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var isVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isCopied) {
-        if (isCopied) {
-            isVisible = true
-            delay(duration)
-            isVisible = false
-            onDismissSnackBar()
-        }
+    LaunchedEffect(isVisible) {
+        delay(2000L)
+        onDismissSnackBar()
     }
 
     AnimatedVisibility(
@@ -224,12 +205,15 @@ private fun ShareProfileQrCodePreview() {
                 dialog(true) {
                     ShareQrCode(
                         showDialog = it,
+                        isCopied = false,
                         fullName = "Hassan Nabil",
                         urlString = "",
                         qrCodePainter = rememberQrCodePainter("Any Text"),
-                        onDismiss = {},
+                        onDismissShareDialog = {},
+                        onDismissSnackBar = {},
+                        onCopyToClipboard = {},
                         onShareProfile = {},
-                        onDownload = { },
+                        onDownload = {},
                     )
                 }
             }
