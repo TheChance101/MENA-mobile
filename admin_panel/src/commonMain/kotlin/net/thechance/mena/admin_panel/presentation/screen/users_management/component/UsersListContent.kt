@@ -99,7 +99,7 @@ private fun UserItemRow(
                     bottomEnd = Theme.radius.lg
                 ) else RectangleShape
             )
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
