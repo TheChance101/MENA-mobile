@@ -5,7 +5,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +26,6 @@ import net.thechance.mena.admin_panel.resources.logout
 import net.thechance.mena.admin_panel.resources.logout_dialog_icon
 import net.thechance.mena.admin_panel.resources.logout_disc
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -56,48 +53,39 @@ fun AdminPanelScaffold(
             }
         },
         content = {
-            AnimatedVisibility(
-                visible = !isLoginScreen,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                AdminPanelHeaderAndSideBar(
-                    state = state,
-                    interactionListener = interactionListener,
-                    snackBarState = snackBarState
+            Row(modifier = Modifier.fillMaxWidth()) {
+                AnimatedVisibility(
+                    visible = !isLoginScreen,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    AdminPanelScaffoldMainContent(
+                        state = state,
+                        interactionListener = interactionListener,
+                        snackBarState = snackBarState
+                    )
+                }
+                AdminPanelNavHost(
+                    navController = navController,
+                    isUserLoggedIn = state.authenticationStatus
                 )
             }
-            AdminPanelNavHost(
-                navController = navController,
-                isUserLoggedIn = state.authenticationStatus
-            )
+
         }
     )
 }
 
 @Composable
-private fun AdminPanelHeaderAndSideBar(
+private fun AdminPanelScaffoldMainContent(
     state: MainContainerScreenState,
     interactionListener: MainContainerInteractionListener,
     snackBarState: SnackBarState,
 ) {
     Box {
-        Row(
-            modifier = Modifier.padding(start = 114.dp)
-                .fillMaxWidth()
-                .background(Theme.colorScheme.background.surfaceLow)
-                .padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(state.currentTab.title),
-                style = Theme.typography.title.medium,
-                color = Theme.colorScheme.shadePrimary
-            )
-        }
         Row {
             AdminPanelSideBar(
                 modifier = Modifier.padding(bottom = 34.dp),
-                selectedTab = state.currentTab,
+                selectedTab = state.selectedSidebarTab,
                 interactionListener = interactionListener
             )
         }

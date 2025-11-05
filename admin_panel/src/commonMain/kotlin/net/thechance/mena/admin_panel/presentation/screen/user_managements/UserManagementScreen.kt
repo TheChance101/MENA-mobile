@@ -16,6 +16,19 @@ fun UserManagementScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Row(
+            modifier = Modifier.padding(start = 114.dp)
+                .fillMaxWidth()
+                .background(Theme.colorScheme.background.surfaceLow)
+                .padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(state.currentTab.title),
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary
+            )
+        }
+
         Text(
             text = "Users Managements Screen",
             style = Theme.typography.title.large
