@@ -3,8 +3,8 @@ package net.thechance.mena.trends.presentation.screen.home.component
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.empty_trends_description
-import mena.trends_presentation.generated.resources.empty_trends_title
+import mena.trends_presentation.generated.resources.empty_favorite_description
+import mena.trends_presentation.generated.resources.empty_favorites_title
 import mena.trends_presentation.generated.resources.ic_empty_trends
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.trends.presentation.shared.component.StatePlaceholder
@@ -13,19 +13,19 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun EmptyTrends(modifier: Modifier = Modifier) {
+fun EmptyFavorites(modifier: Modifier = Modifier) {
     StatePlaceholder(
         icon = painterResource(Res.drawable.ic_empty_trends),
-        title = stringResource(Res.string.empty_trends_title),
-        description = stringResource(Res.string.empty_trends_description),
+        title = stringResource(Res.string.empty_favorites_title),
+        description = stringResource(Res.string.empty_favorite_description),
         modifier = modifier
     )
 }
 
 @Preview
 @Composable
-private fun EmptyTrendsPreview() {
+private fun EmptyFavoritePreview() {
     MenaTheme {
-        EmptyTrends()
+        EmptyFavorites()
     }
 }
