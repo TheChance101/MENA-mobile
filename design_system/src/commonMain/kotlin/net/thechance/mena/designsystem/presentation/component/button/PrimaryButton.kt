@@ -1,7 +1,7 @@
 package net.thechance.mena.designsystem.presentation.component.button
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.button.content.BaseButtonContent
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun PrimaryButton(
@@ -30,7 +31,7 @@ fun PrimaryButton(
         horizontal = Theme.spacing._16,
         vertical = Theme.spacing._8
     ),
-    shape: Shape = RoundedCornerShape(Theme.radius.md)
+    shape: Shape = SquircleShape(Theme.radius.md)
 ) {
     Button(
         isEnabled = isEnabled,
@@ -47,7 +48,7 @@ fun PrimaryButton(
             Theme.colorScheme.primary.onPrimary
         ),
         onClick = onClick,
-        modifier = modifier
+        modifier = modifier.height(48.dp)
     ) {
         BaseButtonContent(
             text = text,
