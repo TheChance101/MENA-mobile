@@ -1,16 +1,6 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.HttpRequestData
-import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanManagementRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
@@ -31,23 +21,6 @@ import kotlin.uuid.Uuid
 class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
         createDukanManagementRepository()
-    private lateinit var capturedRequest: HttpRequestData
-
-    private fun createMockClient(): HttpClient {
-        val mockEngine = MockEngine { request ->
-            capturedRequest = request
-            respond(
-                content = """["https://mock/image.jpg"]""",
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
-        }
-        return HttpClient(mockEngine) {
-            install(ContentNegotiation) {
-                json(Json { ignoreUnknownKeys = true })
-            }
-        }
-    }
 
     @OptIn(ExperimentalUuidApi::class)
     @Test

@@ -19,7 +19,7 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCar
 import kotlin.random.Random
 
 @Composable
-fun NoImageDukanShelvesSkeleton() {
+fun NoImageDukanShelvesContentSkeleton() {
     LazyColumn(
         modifier = Modifier.padding(top = Theme.spacing._16),
         contentPadding = PaddingValues(Theme.spacing._16),

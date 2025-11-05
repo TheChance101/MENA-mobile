@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CategoryDukans(
+fun CategoryDukansContent(
     state: CategoryDukansUiState,
     listener: CategoryDukansInteractionListener,
 ) {
@@ -97,7 +97,7 @@ private fun CategoryDukansAppBar(
 @Composable
 private fun DukansContentPreview() {
     MenaTheme {
-        CategoryDukans(
+        CategoryDukansContent(
             state = CategoryDukansUiState(categoryTitle = "Dukan"),
             listener = PreviewCategoryDukansInteractionListener,
         )

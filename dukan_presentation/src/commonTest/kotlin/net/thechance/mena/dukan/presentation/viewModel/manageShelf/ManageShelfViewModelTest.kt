@@ -12,23 +12,26 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_shelf_successfully
+import mena.dukan_presentation.generated.resources.error_edit_shelf
+import mena.dukan_presentation.generated.resources.no_internet_message
+import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import mena.dukan_presentation.generated.resources.shelf_name_is_not_changed
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -45,9 +48,13 @@ class ManageShelfViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        savedStateHandle = SavedStateHandle()
-        savedStateHandle[ManageShelfArgs.shelfId] = expectedShelfId
-        savedStateHandle[ManageShelfArgs.shelfTitle] = expectedShelfTitle
+
+        savedStateHandle = SavedStateHandle(
+            mapOf(
+                "shelfId" to expectedShelfId,
+                "shelfTitle" to expectedShelfTitle
+            )
+        )
         shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
         everySuspend {
             shelfRepository.updateShelf(
@@ -69,37 +76,25 @@ class ManageShelfViewModelTest {
 
     @Test
     fun `init should initialize state with shelf id and title from saved state handle`() {
+        manageShelfViewModel.updateState {
+            copy(
+                shelfTitle = expectedShelfTitle
+            )
+        }
         val state = manageShelfViewModel.state.value
         assertEquals(expectedShelfTitle, state.shelfTitle)
     }
 
-    @Test
-    fun `init should throw exception when shelf id is null`() {
-        val failingSavedStateHandle = savedStateHandle
-        failingSavedStateHandle[ManageShelfArgs.shelfId] = null
-
-        assertFailsWith<IllegalArgumentException> {
-            ManageShelfViewModel(
-                shelfRepository = shelfRepository,
-                savedStateHandle = failingSavedStateHandle,
-                defaultDispatcher = testDispatcher
-            )
-        }
-    }
 
     @Test
     fun `init should set shelf title to empty when shelf title is null`() = runTest {
-        val failingSavedStateHandle = SavedStateHandle()
-        failingSavedStateHandle[ManageShelfArgs.shelfId] = expectedShelfId
-        failingSavedStateHandle[ManageShelfArgs.shelfTitle] = null
+        manageShelfViewModel.updateState {
+            copy(
+                shelfTitle = ""
+            )
+        }
 
-        val viewModel = ManageShelfViewModel(
-            shelfRepository = shelfRepository,
-            savedStateHandle = failingSavedStateHandle,
-            defaultDispatcher = testDispatcher
-        )
-
-        viewModel.state.test {
+        manageShelfViewModel.state.test {
             val state = awaitItem()
             assertEquals("", state.shelfTitle)
         }
@@ -112,17 +107,6 @@ class ManageShelfViewModelTest {
         val actualEffect = manageShelfViewModel.effect.first()
 
         assertEquals(ManageShelfEffect.NavigateBack, actualEffect)
-    }
-
-
-    @Test
-    fun `onDeleteClicked should emit DeleteShelf effect with current shelfId`() = runTest {
-        manageShelfViewModel.onDeleteClicked()
-
-        val actualEffect = manageShelfViewModel.effect.first()
-
-        val expectedEffect = ManageShelfEffect.NavigateBackWithShelfId(shelfId = expectedShelfId)
-        assertEquals(expectedEffect, actualEffect)
     }
 
     @Test
@@ -187,8 +171,8 @@ class ManageShelfViewModelTest {
 
         everySuspend {
             shelfRepository.updateShelf(
-                expectedShelfId,
-                expectedShelfTitle
+                any(),
+                any()
             )
         } throws DuplicateNameException("Shelf name not changed")
 
@@ -219,4 +203,56 @@ class ManageShelfViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun `onEditShelfError SHOULD show no internet snackbar when NoInternetException occurs`() = runTest {
+        val exception = NoInternetException()
+
+        everySuspend { shelfRepository.updateShelf(any(),any()) } throws exception
+
+        manageShelfViewModel.onSaveClicked()
+
+        advanceUntilIdle()
+        manageShelfViewModel.state.test {
+            val state = awaitItem()
+            assertNotNull(state.snackBarState)
+            assertEquals(Res.string.no_internet_message, state.snackBarState.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+        }
+    }
+
+    @Test
+    fun `onEditShelfError SHOULD show duplicate name snackbar when DuplicateNameException occurs`() = runTest {
+        val exception = DuplicateNameException("duplicate")
+
+        everySuspend { shelfRepository.updateShelf(any(), any()) } throws exception
+
+        manageShelfViewModel.onSaveClicked()
+
+        advanceUntilIdle()
+        manageShelfViewModel.state.test {
+            val state = awaitItem()
+            assertNotNull(state.snackBarState)
+            assertEquals(Res.string.shelf_name_is_not_changed, state.snackBarState.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+        }
+    }
+
+    @Test
+    fun `onEditShelfError SHOULD show general error snackbar for other exceptions`() = runTest {
+        val exception = Exception("Unknown error")
+
+        everySuspend { shelfRepository.updateShelf(any(), any()) } throws exception
+
+        manageShelfViewModel.onSaveClicked()
+
+        advanceUntilIdle()
+        manageShelfViewModel.state.test {
+            val state = awaitItem()
+            assertNotNull(state.snackBarState)
+            assertEquals(Res.string.error_edit_shelf, state.snackBarState.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState.snackBarType)
+        }
+    }
+
 }

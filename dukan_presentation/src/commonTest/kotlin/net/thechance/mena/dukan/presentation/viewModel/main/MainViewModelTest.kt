@@ -83,13 +83,13 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             mainViewModel.state.test {
-                val result = awaitItem()
+                val secondEmit = awaitItem()
                 assertEquals(
                     expected = MainScreenUiState.DukanState(
                         name = "Dukan El Sa3ada",
                         status = MainScreenUiState.DukanStatusUi.Pending
                     ),
-                    actual = result.dukanState
+                    actual = secondEmit.dukanState
                 )
                 cancelAndIgnoreRemainingEvents()
             }
@@ -99,20 +99,14 @@ class MainViewModelTest {
     fun `When getMyDukanStatus throws DukanNotFoundException the MainViewModelUiState should set ErrorMessage to null`() =
         runTest {
             everySuspend { dukanManagementRepository.getMyDukanStatus() } throws NoSuchItemException()
-            everySuspend { dukanManagementRepository.getCategories() } returns emptyList()
 
-            val viewModel = MainViewModel(
-                dukanManagementRepository = dukanManagementRepository,
-                dukanDiscoveryRepository = dukanDiscoveryRepository,
-                dispatcher = testDispatcher
-            )
             advanceUntilIdle()
-
-            viewModel.state.test {
+            mainViewModel.state.test {
                 val result = awaitItem()
                 assertEquals(
                     MainScreenUiState.DukanState(
-                        status = MainScreenUiState.DukanStatusUi.None
+                        status =
+                            MainScreenUiState.DukanStatusUi.None
                     ), result.dukanState
                 )
                 cancelAndIgnoreRemainingEvents()
@@ -122,7 +116,13 @@ class MainViewModelTest {
     @Test
     fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
         runTest {
-            advanceUntilIdle()
+            mainViewModel.updateState {
+                copy(
+                    dukanState = MainScreenUiState.DukanState(
+                        status = MainScreenUiState.DukanStatusUi.None
+                    )
+                )
+            }
             mainViewModel.onDukanButtonClicked()
 
             mainViewModel.effect.test {

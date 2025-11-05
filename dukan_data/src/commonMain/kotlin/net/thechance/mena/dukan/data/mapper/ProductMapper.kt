@@ -34,6 +34,7 @@ fun ProductDto.toDomain(): Product = Product(
     description = description,
     price = price,
     imageUrls = imageUrls,
-    shelfId = shelfId,
-    createdAt = createdAt
-)
+    createdAt = createdAt,
+    quantityInCart = quantityInCart,
+    shelfId = shelfId
+    )

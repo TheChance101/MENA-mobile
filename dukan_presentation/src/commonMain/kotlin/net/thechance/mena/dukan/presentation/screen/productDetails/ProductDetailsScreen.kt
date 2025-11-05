@@ -19,6 +19,8 @@ fun ProductDetailsScreen(
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {
             ProductDetailsEffects.NavigateBack -> navController.popBackStack()
+            is ProductDetailsEffects.NavigateToCart -> {}
+            ProductDetailsEffects.NavigateToFavorites -> {}
         }
     }
 
