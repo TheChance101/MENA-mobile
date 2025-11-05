@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses.component
+package net.thechance.mena.identity.presentation.screen.addresses.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.addresses.component
+package net.thechance.mena.identity.presentation.screen.addresses.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +16,6 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.address_priority_main
 import mena.identity_presentation.generated.resources.address_type_home
 import mena.identity_presentation.generated.resources.address_type_office
-import mena.identity_presentation.generated.resources.address_type_other
 import mena.identity_presentation.generated.resources.ic_home
 import mena.identity_presentation.generated.resources.ic_office
 import mena.identity_presentation.generated.resources.ic_other_address
@@ -28,7 +27,6 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.*
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

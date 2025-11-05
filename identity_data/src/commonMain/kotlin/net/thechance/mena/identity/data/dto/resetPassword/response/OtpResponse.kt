@@ -1,12 +1,10 @@
-package net.thechance.mena.identity.data.dto.resetPassword
+package net.thechance.mena.identity.data.dto.resetPassword.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class VerifyOtpRequestDto (
-    @SerialName("otp")
-    val otp: String,
+data class OtpResponse(
     @SerialName("sessionId")
     val sessionId: String
 )
