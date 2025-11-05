@@ -53,8 +53,8 @@ class MainViewModelTest {
             dispatcher = testDispatcher
         )
 
+        advanceUntilIdle()
         mainViewModel.state.test {
-            awaitItem() // initial Loading state
             val updated = awaitItem() // state after repository returns null
             assertEquals(
                 expected = MainScreenUiState.DukanState(
@@ -81,8 +81,8 @@ class MainViewModelTest {
                 dispatcher = testDispatcher
             )
 
+            advanceUntilIdle()
             mainViewModel.state.test {
-                awaitItem()
                 val secondEmit = awaitItem()
                 assertEquals(
                     expected = MainScreenUiState.DukanState(
@@ -100,6 +100,7 @@ class MainViewModelTest {
         runTest {
             everySuspend { dukanManagementRepository.getMyDukanStatus() } throws NoSuchItemException()
 
+            advanceUntilIdle()
             mainViewModel.state.test {
                 val result = awaitItem()
                 assertEquals(
@@ -115,6 +116,13 @@ class MainViewModelTest {
     @Test
     fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
         runTest {
+            mainViewModel.updateState {
+                copy(
+                    dukanState = MainScreenUiState.DukanState(
+                        status = MainScreenUiState.DukanStatusUi.None
+                    )
+                )
+            }
             mainViewModel.onDukanButtonClicked()
 
             mainViewModel.effect.test {
@@ -200,7 +208,7 @@ class MainViewModelTest {
 
         mainViewModel.onViewMoreClicked()
         val actualEffect = mainViewModel.effect.first()
-        val expectedEffect = MainScreenEffect.NavigateCategoryToScreen
+        val expectedEffect = MainScreenEffect.NavigateToDukansCategoriesScreen
 
         assertEquals(expectedEffect, actualEffect)
 
@@ -212,7 +220,7 @@ class MainViewModelTest {
             val categoryId = "1"
             val categoryName = "Category 1"
 
-            mainViewModel.onCategorySelectedClicked(categoryId, categoryName)
+            mainViewModel.onSelectedCategoryClicked(categoryId, categoryName)
             val actualEffect = mainViewModel.effect.first()
             val expectedEffect =
                 MainScreenEffect.NavigateToDukansScreenByCategory(categoryId, categoryName)
@@ -227,7 +235,7 @@ class MainViewModelTest {
             mainViewModel.onNearestDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)
+            val expectedEffect = MainScreenEffect.NavigateToSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 
@@ -239,7 +247,7 @@ class MainViewModelTest {
             mainViewModel.onEditorPickDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)
+            val expectedEffect = MainScreenEffect.NavigateToSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 

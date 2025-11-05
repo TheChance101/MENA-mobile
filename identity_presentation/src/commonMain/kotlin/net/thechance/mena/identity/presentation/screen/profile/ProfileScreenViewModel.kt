@@ -45,7 +45,7 @@ class ProfileScreenViewModel(
             copy(
                 userName = user.username,
                 fullName = "${user.firstName} ${user.lastName}",
-                profileImageUrl = user.profileImageUrl,
+                profileImageUrl = user.profileImageUrl.orEmpty(),
                 isSuccess = true
             )
         }
@@ -108,7 +108,7 @@ class ProfileScreenViewModel(
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
 
-    override fun onDismissShareProfileDialog() {
+    override fun onDismissShareDialog() {
         updateState { copy(showShareProfileDialog = false) }
     }
 

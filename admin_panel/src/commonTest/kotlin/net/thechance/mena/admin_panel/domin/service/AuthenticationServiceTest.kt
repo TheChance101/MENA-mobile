@@ -15,8 +15,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
+import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
+import net.thechance.mena.admin_panel.data.repository.authentication.AdminAuthenticationRepositoryImpl
 import net.thechance.mena.admin_panel.data.service.AuthenticationService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.refreshToken
@@ -32,12 +33,14 @@ class AuthenticationServiceTest {
     private lateinit var authenticationApiService: AuthenticationApiService
     private lateinit var settings: Settings
     private lateinit var authenticationService: AuthenticationService
+    private lateinit var authenticationRepository: AdminAuthenticationRepositoryImpl
 
     @BeforeTest
     fun setup() {
         authenticationApiService = mock(mode = MockMode.autofill)
         settings = mock(mode = MockMode.autofill)
         authenticationService = AuthenticationService(authenticationApiService, settings)
+        authenticationRepository = AdminAuthenticationRepositoryImpl(authenticationApiService, settings)
     }
 
     @Test
@@ -116,6 +119,7 @@ class AuthenticationServiceTest {
             refreshToken = "fake_refresh_token"
         )
         const val ACCESS_TOKEN_KEY = "access_token"
+        const val REFRESH_TOKEN_KEY = "refresh_token"
 
         @OptIn(InternalAPI::class)
         fun successfulResponse(): Response<AdminAuthenticationResponse> {
@@ -137,6 +141,15 @@ class AuthenticationServiceTest {
                 body = """{"message":"Invalid credentials"}""",
                 rawResponse = mockHttpResponse
             ) as Response<AdminAuthenticationResponse>
+        }
+        private fun successfulLogoutResponse(): Response<Unit> {
+            val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
+                everySuspend { status } returns HttpStatusCode.OK
+            }
+            return Response.success(
+                body = Unit,
+                rawResponse = mockHttpResponse
+            ) as Response<Unit>
         }
     }
 }

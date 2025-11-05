@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.shelfDetails
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,6 +17,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.components.ShelfProducts
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -37,11 +40,22 @@ fun ShelfDetailsScreen(
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshProducts()
+    }
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
+            is ShelfDetailsEffects.NavigateToCart -> {
+                // navigate to cart screen
+            }
+
+            is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
+                DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
+            )
         }
     }
+
     ShelfDetailsContent(
         state = state,
         listener = viewModel,
@@ -66,6 +80,14 @@ private fun ShelfDetailsContent(
                 listener = listener,
                 dukanColor = dukanColor
             )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
         ShelfProducts(
@@ -97,10 +119,7 @@ private fun ShelfDetailsAppBar(
             AppBarOptionContainer(
                 // when the cart contains products
                 isBadgeVisible = false,
-                onClick = {
-                    //navigate to addToCartScreen
-                },
-                badgeColor = Theme.colorScheme.primary.primary
+                onClick = listener::onViewCartClicked
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),

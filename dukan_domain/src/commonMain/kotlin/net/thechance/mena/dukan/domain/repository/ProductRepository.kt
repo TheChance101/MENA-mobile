@@ -18,4 +18,6 @@ interface ProductRepository {
         fileBytes: List<ByteArray>,
         productId: String
     ): List<String>
+
+    suspend fun getProductDetails(productId: String): Product
 }

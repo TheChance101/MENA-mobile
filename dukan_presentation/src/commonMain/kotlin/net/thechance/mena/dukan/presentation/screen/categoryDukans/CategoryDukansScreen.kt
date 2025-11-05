@@ -6,7 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.screen.categoryDukans.content.CategoryDukans
+import net.thechance.mena.dukan.presentation.screen.categoryDukans.content.CategoryDukansContent
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansEffects
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansViewModel
@@ -29,7 +29,7 @@ fun CategoryDukansScreen(
         }
     }
 
-    CategoryDukans(
+    CategoryDukansContent(
         state = state,
         listener = viewModel,
     )

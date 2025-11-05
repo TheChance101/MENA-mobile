@@ -95,9 +95,9 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `showShareProfileDialog should updated to false, when onDismissShareProfileDialog called`() =
+    fun `showShareProfileDialog should updated to false, when onDismissShareDialog called`() =
         runTest {
-            viewModel.onDismissShareProfileDialog()
+            viewModel.onDismissShareDialog()
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {

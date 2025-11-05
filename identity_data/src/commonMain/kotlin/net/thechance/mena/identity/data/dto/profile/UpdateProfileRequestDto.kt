@@ -12,7 +12,7 @@ data class UpdateProfileRequestDto(
     @SerialName("lastName")
     val lastName: String,
     @SerialName("profileImageUrl")
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerialName("birthDate")
     val birthDate: String,
     @SerialName("gender")

@@ -291,6 +291,57 @@ class ShelfRepositoryImplTest {
             repository.getShelvesByDukanId(dukanId, 0, 10)
         }
     }
+
+    @Test
+    fun `updateShelf calls the correct endpoint`() = runTest {
+        // Given
+        var called = false
+        val repository = createShelfRepository(
+            updateShelfResponse = {
+                called = true
+                defaultCreateResponse()
+            }
+        )
+
+        // When
+        repository.updateShelf("1", "Updated Shelf")
+
+        // Then
+        assertTrue(called)
+    }
+
+    @Test
+    fun `updateShelf sends correct request body`() = runTest {
+        // Given
+        var requestBody: String? = null
+        val repository = createShelfRepository(
+            updateShelfResponse = {
+                requestBody = "Updated Shelf"
+                defaultCreateResponse()
+            }
+        )
+
+        // When
+        repository.updateShelf("1", "Updated Shelf")
+
+        // Then
+        assertEquals(requestBody?.contains("Updated Shelf"), true)
+    }
+
+    @Test
+    fun `updateShelf handles error response`() = runTest {
+        // Given
+        val repository = createShelfRepository(
+            updateShelfResponse = {
+                respond("", HttpStatusCode.BadRequest, jsonHeaders)
+            }
+        )
+
+        // When & Then
+        assertFailsWith<Exception> {
+            repository.updateShelf("1", "Updated Shelf")
+        }
+    }
 }
 
 @OptIn(ExperimentalUuidApi::class)

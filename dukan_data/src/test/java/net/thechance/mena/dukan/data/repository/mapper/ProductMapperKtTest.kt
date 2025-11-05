@@ -44,7 +44,8 @@ class ProductMapperKtTest {
             price = 10.5,
             shelfId = shelfId,
             imageUrls = listOf("url1", "url2"),
-            createdAt = "2025-09-26T15:26:41.300823Z"
+            createdAt = "2025-09-26T15:26:41.300823Z",
+            quantityInCart = 10
         )
 
         val product: Product = dto.toDomain()

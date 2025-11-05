@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.images.ImageSrc
 import io.github.dellisd.spatialk.geojson.Position
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.add_new_mosque
 import mena.faith_presentation.generated.resources.back
 import mena.faith_presentation.generated.resources.ic_arrow_left
@@ -26,6 +27,7 @@ import mena.faith_presentation.generated.resources.location
 import mena.faith_presentation.generated.resources.mosque_address
 import mena.faith_presentation.generated.resources.mosque_name
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -50,7 +52,18 @@ internal fun CreateMosqueScreen(viewModel: CreateMosqueViewModel = koinViewModel
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { CreateMosqueAppBar(viewModel) }
+        topBar = { CreateMosqueAppBar(viewModel) },
+        bottomBar = {
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Theme.spacing._16),
+                text = stringResource(Res.string.add),
+                onClick = viewModel::onAddClick,
+                isEnabled = uiState.isButtonEnabled,
+                contentPadding = PaddingValues(vertical = Theme.spacing._12)
+            )
+        }
     ) {
         Content(uiState, viewModel)
     }
@@ -70,7 +83,7 @@ private fun Content(
         item { MosqueLocationHeader(uiState, listener) }
         item { MosqueLocationMapSection(uiState, listener) }
         item { MosqueAddressSection(uiState, listener) }
-        item { AddImage(uiState, listener) }
+        item { UploadMosqueImage(uiState, listener) }
     }
 }
 
@@ -111,7 +124,7 @@ private fun MosqueLocationMapSection(
     LaunchedEffect(cameraState) {
         snapshotFlow { cameraState.position }
             .collect {
-                listener.mapPositionChanged(
+                listener.mapPositionChange(
                     coordinate = Coordinate(
                         latitude = cameraState.position.target.latitude,
                         longitude = cameraState.position.target.longitude
@@ -146,7 +159,7 @@ private fun MosqueAddressSection(
     )
     TextField(
         value = state.address,
-        onValueChanged = listener::onAddressChanged,
+        onValueChanged = listener::onAddressChange,
         hint = "",
         leadingIcon = painterResource(Res.drawable.ic_location),
     )
@@ -158,7 +171,7 @@ private fun CreateMosqueAppBar(
 ) {
     AppBar(
         title = stringResource(Res.string.add_new_mosque),
-        onLeadingClick = listener::onBackClicked,
+        onLeadingClick = listener::onBackClick,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._12,
             vertical = Theme.spacing._8
@@ -173,7 +186,7 @@ private fun CreateMosqueAppBar(
 }
 
 @Composable
-private fun AddImage(
+private fun UploadMosqueImage(
     uiState: CreateMosqueUiState,
     listener: CreateMosqueInteractionListener
 ) {
@@ -202,12 +215,13 @@ private fun MosqueCreateScreenPreview() {
         Content(
             uiState = CreateMosqueUiState(),
             listener = object : CreateMosqueInteractionListener {
-                override fun onBackClicked() {}
-                override fun onEditImageMosqueClicked() {}
+                override fun onBackClick() {}
+                override fun onEditImageMosqueClick() {}
                 override fun onClickUploadImage(image: ImageSrc) {}
+                override fun onAddClick() {}
                 override fun onNameChange(name: String) {}
-                override fun onAddressChanged(address: String) {}
-                override fun mapPositionChanged(coordinate: Coordinate) {}
+                override fun onAddressChange(address: String) {}
+                override fun mapPositionChange(coordinate: Coordinate) {}
             }
         )
     }
