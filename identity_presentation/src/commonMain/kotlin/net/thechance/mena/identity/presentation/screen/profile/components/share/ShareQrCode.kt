@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
@@ -36,7 +37,6 @@ import mena.identity_presentation.generated.resources.ic_download
 import mena.identity_presentation.generated.resources.ic_link
 import mena.identity_presentation.generated.resources.ic_share_02
 import mena.identity_presentation.generated.resources.link_icon_content_description
-import mena.identity_presentation.generated.resources.male
 import mena.identity_presentation.generated.resources.share_icon_content_description
 import mena.identity_presentation.generated.resources.share_profile_description
 import mena.identity_presentation.generated.resources.share_profile_qr_code
@@ -102,7 +102,6 @@ fun ScaffoldScope.ShareQrCode(
                 color = Theme.colorScheme.shadeSecondary,
                 style = Theme.typography.label.small
             )
-            //todo: this will be replaced with the qr code later
             Image(
                 painter = qrCodePainter,
                 colorFilter = ColorFilter.tint(
@@ -110,8 +109,9 @@ fun ScaffoldScope.ShareQrCode(
                 ),
                 contentDescription = stringResource(Res.string.share_profile_qr_code),
                 modifier = Modifier
-                    .padding(top = 32.dp)
                     .size(240.dp)
+                    .padding(all = 20.dp)
+                    .padding(top = 12.dp)
             )
             Text(
                 text = fullName,
@@ -226,7 +226,7 @@ private fun ShareProfileQrCodePreview() {
                         showDialog = it,
                         fullName = "Hassan Nabil",
                         urlString = "",
-                        qrCodePainter = painterResource(Res.drawable.male),
+                        qrCodePainter = rememberQrCodePainter("Any Text"),
                         onDismiss = {},
                         onShareProfile = {},
                         onDownload = { },
@@ -235,5 +235,4 @@ private fun ShareProfileQrCodePreview() {
             }
         ) {}
     }
-
 }
