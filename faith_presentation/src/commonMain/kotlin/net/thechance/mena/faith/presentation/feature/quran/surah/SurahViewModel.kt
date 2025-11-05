@@ -221,6 +221,7 @@ class SurahViewModel(
             )
         }
         quranPlayer.playAyah(ayahSoundUrl)
+        updatePlayPause()
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
@@ -282,5 +283,11 @@ class SurahViewModel(
         val isFatiha = surahId == Surah.SurahOrder.AlFatihah.order
         val shouldShowBasmala = !(isTawbah || isFatiha)
         updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
+    }
+
+    private fun updatePlayPause(){
+        quranPlayer.onAyahCompleted {
+            updateState { it.copy(isAyahSoundPlaying = false) }
+        }
     }
 }
