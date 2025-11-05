@@ -8,6 +8,8 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.SurahDto
@@ -146,6 +148,25 @@ class QuranRepositoryImplTest {
 
         val result = repository.getAyahSoundUrl(1, 1, 1)
         assertEquals(expectedUrl, result)
+    }
+
+    @Test
+    fun `saveDefaultReciter should call datastore saveDefaultReciter`() = runTest {
+        val reciterId = 1
+
+        repository.saveDefaultReciter(reciterId)
+
+        verifySuspend {
+            tilawahDataStore.saveDefaultReciter(reciterId)
+        }
+    }
+
+    @Test
+    fun `getDefaultReciter should call datastore getDefaultReciter`() = runTest {
+        val expectedReciterId = 1
+        everySuspend { tilawahDataStore.getDefaultReciter() } returns flowOf(expectedReciterId)
+        val result = repository.getDefaultReciter()
+        assertEquals(expectedReciterId, result.first())
     }
 
     private fun <T> makeSuccessFakeResponse(
