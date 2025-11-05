@@ -4,14 +4,15 @@ import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.orZero
 import net.thechance.mena.trends.data.util.parseDateStringOrNull
+import net.thechance.mena.trends.data.util.toUrl
 import net.thechance.mena.trends.domain.entity.Reel
 
 
 internal fun ReelDto.toEntity(): Reel {
     return Reel(
         id = id.orEmpty(),
-        thumbnailUrl = reelImageUrl.orEmpty(),
-        videoUrl = videoUrl.orEmpty(),
+        thumbnailUrl = reelImageUrl?.toUrl().orEmpty(),
+        videoUrl = videoUrl?.toUrl().orEmpty(),
         description = description.orEmpty(),
         likesCount = likesCount.orZero(),
         viewsCount = viewsCount.orZero(),

@@ -21,3 +21,7 @@ fun String?.parseDateStringOrNull(
             .toLocalDateTime(TimeZone.currentSystemDefault())
     }.getOrNull()
 }
+
+internal fun String.toUrl(): String{
+    return "https://s3.tebi.io/$this"
+}
