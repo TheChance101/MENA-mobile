@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -65,7 +66,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-private fun CheckoutScreen(
+ fun CheckoutScreen(
     viewModel: CheckoutViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -151,7 +152,7 @@ private fun CheckoutSummaryCard(
                     ) {
                         items(
                             count = products.itemCount,
-                            key = products.itemKey { it.quantity }
+                            key = products.itemKey { it.id }
                         ) { index ->
                             val cartItem = products[index]
                             if (cartItem != null) {
@@ -170,13 +171,13 @@ private fun CheckoutSummaryCard(
                             .padding(horizontal = 2.dp)
                     )
                 }
-                HalfCircle(
+                CircleItem(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
                         .padding(end = 2.dp)
                         .offset(x = -11.dp)
                 )
-                HalfCircle(
+                CircleItem(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(start = 2.dp)
@@ -194,7 +195,7 @@ private fun CheckoutSummaryCard(
                     CheckoutFeeItem(productName = "Total amount", price = 31.99)
 
                 }
-                HalfCircleList(
+                CircleRow(
                     modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 4.dp)
                         .offset(y = 10.5.dp)
                 )
@@ -277,6 +278,54 @@ private fun DeliveryAddressCard(modifier: Modifier = Modifier) {
     }
 }
 
+//@Composable
+//private fun CheckoutProductItem(
+//    cartItem: CartItem,
+//    modifier: Modifier = Modifier
+//) {
+//    Row(
+//        modifier = modifier,
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .size(28.dp)
+//                .clip(CircleShape)
+//                .background(Theme.colorScheme.background.surface)
+//        ) {
+//            Text(
+//                modifier = Modifier.align(Alignment.Center),
+//                text = cartItem.quantity.toString()+"x",
+//                style = Theme.typography.label.small,
+//                color = Theme.colorScheme.shadePrimary
+//            )
+//        }
+//        Text(
+//            modifier = Modifier
+//                .padding(start = 8.dp)
+//                .fillMaxWidth()
+//                .weight(1f),
+//            text = cartItem.name,
+//            maxLines = 1,
+//            style = Theme.typography.label.medium,
+//            color = Theme.colorScheme.shadePrimary
+//        )
+//        Text(
+//            text = cartItem.price.toString(),
+//            style = Theme.typography.label.large,
+//            color = Theme.colorScheme.shadePrimary
+//        )
+//        Icon(
+//            modifier = Modifier
+//                .padding(start = 4.dp)
+//                .size(20.dp),
+//            painter = painterResource(Res.drawable.silver_tc),
+//            contentDescription = ""
+//
+//        )
+//    }
+//}
+
 @Composable
 private fun CheckoutProductItem(
     cartItem: CartItem,
@@ -286,31 +335,50 @@ private fun CheckoutProductItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(Theme.colorScheme.background.surface)
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = cartItem.quantity.toString(),
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadePrimary
-            )
-        }
+        QuantityCircle(cartItem.quantity)
+        ProductName(cartItem.name)
+        ProductPrice(cartItem.price)
+    }
+}
+
+@Composable
+private fun QuantityCircle(quantity: Int) {
+    Box(
+        modifier = Modifier
+            .size(28.dp)
+            .clip(CircleShape)
+            .background(Theme.colorScheme.background.surface)
+    ) {
         Text(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .fillMaxWidth()
-                .weight(1f),
-            text = cartItem.name,
-            maxLines = 1,
-            style = Theme.typography.label.medium,
+            modifier = Modifier.align(Alignment.Center),
+            text = "${quantity}x",
+            style = Theme.typography.label.small,
             color = Theme.colorScheme.shadePrimary
         )
+    }
+}
+
+@Composable
+private fun RowScope.ProductName(name: String) {
+    Text(
+        modifier = Modifier
+            .padding(start = 8.dp)
+            .fillMaxWidth()
+            .weight(1f),
+        text = name,
+        maxLines = 1,
+        style = Theme.typography.label.medium,
+        color = Theme.colorScheme.shadePrimary
+    )
+}
+
+@Composable
+private fun ProductPrice(price: Double) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
-            text = cartItem.price.toString(),
+            text = price.toString(),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
@@ -320,7 +388,6 @@ private fun CheckoutProductItem(
                 .size(20.dp),
             painter = painterResource(Res.drawable.silver_tc),
             contentDescription = ""
-
         )
     }
 }
@@ -362,7 +429,7 @@ private fun CheckoutFeeItem(
 }
 
 @Composable
-fun DashedSeparator(
+private fun DashedSeparator(
     modifier: Modifier = Modifier
 ) {
     Canvas(
@@ -384,7 +451,7 @@ fun DashedSeparator(
 }
 
 @Composable
-private fun HalfCircle(modifier: Modifier = Modifier) {
+private fun CircleItem(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(21.dp)
@@ -394,7 +461,7 @@ private fun HalfCircle(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun HalfCircleList(modifier: Modifier = Modifier) {
+private fun CircleRow(modifier: Modifier = Modifier) {
     var widthDp by remember { mutableStateOf(0.dp) }
 
     BoxWithConstraints(
@@ -415,7 +482,7 @@ fun HalfCircleList(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.spacedBy(spacing),
         ) {
             items(count) {
-                HalfCircle()
+                CircleItem()
             }
         }
     }

@@ -45,6 +45,7 @@ fun DukanDetailsScreen(
 
             is DukanDetailsEffects.NavigateToCartScreen -> {
                 // navigate to cart screen
+                navController.navigate(DukanRoute.CheckoutScreenRoute)
             }
 
             is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(

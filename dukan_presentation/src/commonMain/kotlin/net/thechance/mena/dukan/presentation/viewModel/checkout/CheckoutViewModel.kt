@@ -38,7 +38,7 @@ class CheckoutViewModel(
             mapper = { it.toUiState() }
         ) { pageNumber, pageSize ->
             cartRepository.getCartProducts(
-                dukanId = Uuid.parse(""),
+                dukanId = Uuid.parse("0c419d46-8004-4057-a74b-533513eaecd1"),
                 page = pageNumber,
                 size = pageSize
             ).items

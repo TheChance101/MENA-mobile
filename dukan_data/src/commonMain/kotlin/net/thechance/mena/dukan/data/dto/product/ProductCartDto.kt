@@ -9,9 +9,9 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 @Serializable
 data class ProductCartDto(
-    @SerialName("id")
+    @SerialName("productId")
     val id: Uuid,
-    @SerialName("name")
+    @SerialName("productName")
     val name: String,
     @SerialName("description")
     val description: String,
