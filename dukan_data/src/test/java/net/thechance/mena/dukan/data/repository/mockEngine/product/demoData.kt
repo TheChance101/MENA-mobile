@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.repository.mockEngine.product
 
 
 import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.entity.Product
@@ -11,8 +12,10 @@ import kotlin.uuid.Uuid
 
 
 val createdProductResponseId = "jdoiejdfioewj3229048jsdfjfioewsdfio"
+
 @OptIn(ExperimentalUuidApi::class)
 val demoShelfID = Uuid.random()
+
 @OptIn(ExperimentalUuidApi::class)
 val productDto1 = ProductDto(
 
@@ -26,13 +29,13 @@ val productDto1 = ProductDto(
         "https://picsum.photos/200/200?random=2"
     ),
     createdAt = "2025-09-26T15:26:41.300823Z",
-    quantityInCart =10
+    quantityInCart = 10
 )
 
 
 @OptIn(ExperimentalUuidApi::class)
 val productDto2 = ProductDto(
-    id =  Uuid.random(),
+    id = Uuid.random(),
     name = "Demo Product 2",
     shelfId = demoShelfID,
     price = 19.99,
@@ -42,7 +45,7 @@ val productDto2 = ProductDto(
         "https://picsum.photos/200/200?random=2"
     ),
     createdAt = "2025-09-26T15:26:41.300823Z",
-    quantityInCart =10
+    quantityInCart = 10
 
 )
 
@@ -54,6 +57,38 @@ val productDtos = listOf(
 
 val demoPagedResult: PagedResult<Product> = PageResponseDto(
     content = productDtos,
+    number = 0,
+    size = 2,
+    totalPages = 1,
+    totalElements = 2,
+    first = true,
+    last = true
+).toDomain { it.toDomain() }
+
+
+@OptIn(ExperimentalUuidApi::class)
+val productCartDto1 = ProductCartDto(
+    id = Uuid.random(),
+    name = "Demo Product 1",
+    price = 9.99,
+    description = "This is a demo product",
+    imageUrl = "https://picsum.photos/200/200?random=1",
+    quantityInCart = 10
+)
+
+@OptIn(ExperimentalUuidApi::class)
+val productCartDto2 = ProductCartDto(
+    id = Uuid.random(),
+    name = "Demo Product 2",
+    price = 9.99,
+    description = "This is a demo product",
+    imageUrl = "https://picsum.photos/200/200?random=1",
+    quantityInCart = 10
+)
+
+
+val demoPagedResultProductCart: PagedResult<Product> = PageResponseDto(
+    content = listOf(productCartDto1, productCartDto2),
     number = 0,
     size = 2,
     totalPages = 1,
@@ -81,6 +116,6 @@ val product1 = Product(
         "http://example.com/image2.jpg"
     ),
     createdAt = "2025-10-31T12:00:00Z",
-    quantityInCart =10
+    quantityInCart = 10
 
 )

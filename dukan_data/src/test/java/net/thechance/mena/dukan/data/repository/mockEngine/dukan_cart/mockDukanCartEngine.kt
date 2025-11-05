@@ -11,6 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import net.thechance.mena.dukan.data.dto.cart.CartDto
 import net.thechance.mena.dukan.data.repository.CartRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
@@ -27,16 +28,33 @@ fun MockRequestHandleScope.defaultDeleteProductFromCartResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultCartInfoResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        CartDto.serializer(),
+        cartDto
+    ),
+    status = HttpStatusCode.NoContent,
+    headers = jsonHeaders
+)
+
 fun dukanCartHttpClient(
     addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    getCartInfoResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val dukanId = "10"
     val productId = "5"
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
-            "/dukan/cart/items" -> addOrUpdateProductCartResponse?.invoke(this) ?: defaultAddOrUpdateProductQuantityResponse()
-            "/dukan/cart/$dukanId/items/$productId" -> deleteProductFromCartResponse?.invoke(this) ?:defaultDeleteProductFromCartResponse()
+            "/dukan/cart/items" -> addOrUpdateProductCartResponse?.invoke(this)
+                ?: defaultAddOrUpdateProductQuantityResponse()
+
+            "/dukan/cart/$dukanId/items/$productId" -> deleteProductFromCartResponse?.invoke(this)
+                ?: defaultDeleteProductFromCartResponse()
+
+            "/dukan/cart/$dukanId/items" -> getCartInfoResponse?.invoke(this)
+                ?: defaultCartInfoResponse()
+
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
     }) {
@@ -50,11 +68,13 @@ fun dukanCartHttpClient(
 fun dukanCartRepository(
     addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    getCartInfoResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): CartRepositoryImpl {
     return CartRepositoryImpl(
         client = dukanCartHttpClient(
             addOrUpdateProductCartResponse = addOrUpdateProductCartResponse,
-            deleteProductFromCartResponse = deleteProductFromCartResponse
+            deleteProductFromCartResponse = deleteProductFromCartResponse,
+            getCartInfoResponse = getCartInfoResponse
         )
     )
 }

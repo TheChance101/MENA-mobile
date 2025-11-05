@@ -15,6 +15,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
+import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
@@ -65,13 +66,32 @@ fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultProductCartResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PageResponseDto.serializer(ProductCartDto.serializer()),
+        PageResponseDto(
+            content = listOf(productCartDto1, productCartDto2),
+            number = 0,
+            size = 2,
+            totalPages = 1,
+            totalElements = 2,
+            first = true,
+            last = true
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 
 fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
+    val dukanId = "10"
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/product/create" -> createResponse?.invoke(this)
@@ -85,6 +105,9 @@ fun createProductHttpClient(
 
             "/dukan/product/$createdProductResponseId" -> productDetailsResponse?.invoke(this)
                 ?: defaultProductDetailsResponse()
+
+            "/dukan/cart/$dukanId/items" -> productCartResponse?.invoke(this)
+                ?: defaultProductCartResponse()
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
@@ -100,14 +123,16 @@ fun createProductRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): DukanProductRepositoryImpl {
     return DukanProductRepositoryImpl(
         client = createProductHttpClient(
             createResponse = createResponse,
             paginatedResponse = paginatedResponse,
             uploadImagesResponse = uploadImagesResponse,
-            productDetailsResponse = productDetailsResponse
+            productDetailsResponse = productDetailsResponse,
+            productCartResponse = productCartResponse
         )
     )
 }

@@ -1,11 +1,15 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.cart1
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultAddOrUpdateProductQuantityResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultCartInfoResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultDeleteProductFromCartResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.dukanCartRepository
+import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResultProductCart
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class DukanCartRepositoryImplTest {
@@ -63,8 +67,24 @@ class DukanCartRepositoryImplTest {
             }
         )
 
-        repo.deleteProductFromCart("10","5")
+        repo.deleteProductFromCart("10", "5")
 
         assertTrue(called)
     }
+
+//    @Test
+//    fun `get cart info call success`() = runTest {
+//
+//        var called = false
+//        val repo = dukanCartRepository(
+//            getCartInfoResponse = {
+//                called = true
+//                defaultCartInfoResponse()
+//            }
+//        )
+//
+//        val cartInfo = repo.getCartInfo("10")
+//
+//        assertEquals(expected = cart1, actual = cartInfo)
+//    }
 }
