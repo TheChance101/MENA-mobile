@@ -9,18 +9,46 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
         initialState = NearbyMosquesMapUiState(),
     ), NearbyMosquesInteractionListener {
 
+    init {
+        getNearbyMosques()
+    }
+
     private var searchButtonInactivityJob: Job? = null
     private var searchJob: Job? = null
+
+
+    private fun getNearbyMosques() {
+        tryToExecute(
+            execute = {
+                val address = getValidatedAddress() ?: return@tryToExecute null
+                mosqueRepository.getNearbyMosques(address.latitude, address.longitude, 1.0)
+            },
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onSuccess = { mosques ->
+                mosques?.let { mosque ->
+                    handleNearbyMosquesSuccess(mosque.map {
+                        it.toUiState(0.0)
+                    })
+                }
+            },
+            onFinally = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+
+        )
+    }
+
 
     override fun onBackClick() {
 //        TODO("Not yet implemented")
@@ -30,9 +58,7 @@ internal class NearbyMosquesViewModel(
 //        TODO("Not yet implemented")
     }
 
-    override fun onCurrentUserLocationClick() {
-//        TODO("Not yet implemented")
-    }
+    override fun onCurrentUserLocationClick() = handleInvalidAddress()
 
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
@@ -78,7 +104,25 @@ internal class NearbyMosquesViewModel(
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
+    private suspend fun getValidatedAddress(): Address? {
+        val address = locationService.getActiveAddress()
+
+        if (address == null || address.addressLine.isEmpty()) {
+            handleInvalidAddress()
+            return null
+        }
+
+        updateState { state ->
+            state.copy(
+                centerOfMap = Coordinate(
+                    address.latitude,
+                    address.longitude
+                )
+            )
+        }
+        return address
+    }
+
     private fun handleNearbyMosquesSuccess(mosques: List<MosqueUiState>) {
         if (mosques.isEmpty()) {
             viewModelScope.launch {
@@ -91,7 +135,6 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun handleSearchSuccess(mosques: List<MosqueUiState>) {
         updateState {
             it.copy(
@@ -120,6 +163,8 @@ internal class NearbyMosquesViewModel(
             it.copy(centerOfMap = coordinate)
         }
     }
+
+    private fun handleInvalidAddress() = sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
 
     private companion object {
         const val SEARCH_DEBOUNCE_DELAY = 1000L
