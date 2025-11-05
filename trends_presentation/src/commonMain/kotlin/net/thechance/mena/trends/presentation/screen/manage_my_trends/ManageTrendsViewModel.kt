@@ -51,7 +51,7 @@ internal class ManageTrendsViewModel(
 
     fun getCurrentUserInfo() {
         tryToExecute(
-            block = { userRepository.getUser() },
+            block = { userRepository.observeUser() },
             onSuccess = ::onGetUserSuccess,
             onError = { updateState { copy(error = it) } },
             onStart = { updateState { copy(isLoading = true) } },
