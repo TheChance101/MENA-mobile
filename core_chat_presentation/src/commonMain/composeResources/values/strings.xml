@@ -51,4 +51,5 @@
     <string name="chat_deleted_successfully">Chat deleted successfully</string>
 
     <string name="could_not_get_balance">Could not get current balance</string>
+    <string name="no_internet_connected">You’re not connected to internet, check connection and try again.</string>
 </resources>

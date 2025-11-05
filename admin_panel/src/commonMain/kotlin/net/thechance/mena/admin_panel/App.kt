@@ -1,15 +1,12 @@
 package net.thechance.mena.admin_panel
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
-import net.thechance.mena.admin_panel.presentation.screen.ExampleScreen
-import net.thechance.mena.admin_panel.presentation.screen.login.LoginScreen
+import net.thechance.mena.admin_panel.presentation.screen.mainContainer.MainContainerScreen
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 
 @Composable
-@Preview
-fun App(){
+fun App() {
     MenaTheme {
-        LoginScreen()
+        MainContainerScreen()
     }
 }

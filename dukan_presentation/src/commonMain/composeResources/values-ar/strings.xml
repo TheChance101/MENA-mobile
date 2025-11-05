@@ -125,6 +125,7 @@
     <string name="categories">الفئات</string>
     <string name="back_to_main_screen_icon">أيقونة العودة للشاشة الرئيسية</string>
     <string name="category_icon">أيقونة الفئة</string>
+    <string name="shelf_name_is_not_changed">لم يتم تغيير اسم الرف، حاول إدخال اسم آخر.</string>
     <string name="something_went_wrong_while_fetching_categories">حدث خطأ أثناء جلب الفئات</string>
     <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
     <string name="view_more">عرض المزيد</string>
@@ -135,6 +136,7 @@
     <string name="error_edit_shelf">خطأ في تعديل الرف</string>
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
+    <string name="add_to_cart">الأضافه الي السله</string>
     <string name="all">الجميع</string>
     <string name="cart">عربة</string>
     <string name="go_to_checkout">اذهب إلى الدفع</string>
