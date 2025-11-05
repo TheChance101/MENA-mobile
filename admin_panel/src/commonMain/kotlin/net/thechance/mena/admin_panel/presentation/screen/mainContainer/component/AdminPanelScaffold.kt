@@ -1,10 +1,9 @@
 package net.thechance.mena.admin_panel.presentation.screen.mainContainer.component
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +27,7 @@ import net.thechance.mena.admin_panel.resources.logout_disc
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import java.lang.System.exit
 
 @Composable
 fun AdminPanelScaffold(
@@ -57,7 +57,7 @@ fun AdminPanelScaffold(
                 AnimatedVisibility(
                     visible = !isLoginScreen,
                     enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
+                    exit = ExitTransition.None
                 ) {
                     AdminPanelScaffoldMainContent(
                         state = state,
