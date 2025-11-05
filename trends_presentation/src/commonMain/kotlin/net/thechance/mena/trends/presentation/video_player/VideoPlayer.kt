@@ -9,5 +9,6 @@ expect fun VideoPlayer(
     isReelVisible: Boolean,
     modifier: Modifier,
     onVideoPlaying: () -> Unit,
+    onGetRefreshUrl: () -> String,
     content: @Composable () -> Unit
 )

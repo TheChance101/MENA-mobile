@@ -47,13 +47,14 @@ import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
 import platform.AVFoundation.AVPlayerItemStatusUnknown
 import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 import platform.AVFoundation.AVURLAsset
-import platform.AVFoundation.AVURLAssetMeta
 import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.duration
 import platform.AVFoundation.pause
 import platform.AVFoundation.play
+import platform.AVFoundation.rate
+import platform.AVFoundation.replaceCurrentItemWithPlayerItem
 import platform.AVFoundation.seekToTime
 import platform.AVFoundation.timeControlStatus
 import platform.AVKit.AVPlayerViewController
@@ -61,6 +62,7 @@ import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
+import platform.Foundation.NSURLErrorBadServerResponse
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -69,6 +71,7 @@ actual fun VideoPlayer(
     isReelVisible: Boolean,
     modifier: Modifier,
     onVideoPlaying: () -> Unit,
+    onGetRefreshUrl: () -> String,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -90,16 +93,65 @@ actual fun VideoPlayer(
         targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
         else Color.Transparent,
     )
-    val headers = mapOf("X-ACCESS-DEVICE" to "mobile")
-    val asset = AVURLAsset.URLAssetWithURL(URL = NSURL(string = url), options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers))
-    val avPlayerItem = AVPlayerItem(asset)
+
+    var currentUrl by remember(url) { mutableStateOf(url) }
+
+    val headers = mapOf("X-ACCESS-KEY" to "something")
+
+    val asset = remember(currentUrl) {
+        AVURLAsset.URLAssetWithURL(
+            URL = NSURL(string = url),
+            options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
+        )
+    }
+    val avPlayerItem = remember(currentUrl) { AVPlayerItem(asset) }
+
     val player = remember(url) { AVPlayer(avPlayerItem) }
+
     player.actionAtItemEnd = 1
 
     val playerViewController = remember {
         AVPlayerViewController().apply {
             showsPlaybackControls = false
             videoGravity = AVLayerVideoGravityResizeAspectFill
+        }
+    }
+
+    LaunchedEffect(currentUrl) {
+        if (currentUrl != url) {
+            val currentTime = CMTimeGetSeconds(player.currentTime())
+            val wasPlaying = player.rate > 0.0f
+
+            val newAsset = AVURLAsset.URLAssetWithURL(
+                URL = NSURL(string = currentUrl),
+                options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
+            )
+            val newPlayerItem = AVPlayerItem(newAsset)
+
+            player.replaceCurrentItemWithPlayerItem(newPlayerItem)
+
+            val time = CMTimeMakeWithSeconds(currentTime, 600)
+            player.seekToTime(time)
+
+            if (wasPlaying) {
+                player.play()
+            }
+        }
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val item = player.currentItem
+            if (item?.status == AVPlayerItemStatusFailed) {
+                val error = item.error
+                if (error != null) {
+                    if (error.code == NSURLErrorBadServerResponse ||
+                        error.domain == "NSURLErrorDomain") {
+                        currentUrl = onGetRefreshUrl()
+                    }
+                }
+            }
+            delay(250)
         }
     }
 

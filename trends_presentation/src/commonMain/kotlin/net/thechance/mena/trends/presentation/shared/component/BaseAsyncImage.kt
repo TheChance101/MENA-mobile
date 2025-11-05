@@ -30,7 +30,7 @@ fun BaseAsyncImage(
     val context = LocalPlatformContext.current
 
     val networkHeaders = NetworkHeaders.Builder()
-        .set("X-ACCESS-DEVICE", "mobile")
+        .set("X-ACCESS-KEY", "something")
         .build()
 
     val imageRequest = ImageRequest
