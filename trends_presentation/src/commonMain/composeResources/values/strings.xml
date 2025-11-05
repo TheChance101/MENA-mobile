@@ -99,12 +99,8 @@
 
     <string name="empty_trends_icon">Empty Trends Icon</string>
     <string name="empty_trends_title">No trends yet!</string>
-    <string name="empty_favorites_title">No favorites yet!</string>
     <string name="empty_trends_description">
         Start adding your tagged products to the shelf by clicking the Add button above.</string>
-    <string name="empty_favorite_description">
-        Start by adding your favorite trends to see here. Click the heart icon to add trends to your favorites list.
-    </string>
 
     <string name="no_connection_icon">No Connection Icon</string>
     <string name="no_connection_title">Oops! It looks like you’re offline.</string>
