@@ -152,7 +152,7 @@ class ShelfDetailsViewModel(
         productId: String,
         domainRequest: UpdateProductCartQuantityParams
     ) {
-        if (productQuantity == 1) deleteProductFromCart(productId)
+        if (productQuantity == 0) deleteProductFromCart(productId)
         else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 

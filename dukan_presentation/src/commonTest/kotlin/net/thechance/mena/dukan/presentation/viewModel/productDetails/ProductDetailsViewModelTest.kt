@@ -207,9 +207,9 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onMinusClicked keeps quantity same when equal to 1`() = runTest {
+    fun `onMinusClicked keeps quantity same when equal to 0`() = runTest {
         // Given
-        productDetailsViewModel.updateState { copy(product.copy(inCartQuantity = 1)) }
+        productDetailsViewModel.updateState { copy(product.copy(inCartQuantity = 0)) }
 
         // When
         productDetailsViewModel.onMinusClicked("10")
@@ -217,7 +217,7 @@ class ProductDetailsViewModelTest {
 
         // Then
         val updatedQuantity = productDetailsViewModel.state.value.product.inCartQuantity
-        assertEquals(1, updatedQuantity)
+        assertEquals(0, updatedQuantity)
     }
 
     @Test
@@ -247,7 +247,7 @@ class ProductDetailsViewModelTest {
         }
 
     @Test
-    fun `onAddToCartClicked SHOULD add new product when quantity equal 1`() =
+    fun `onAddToCartClicked SHOULD add new product when quantity equal 0`() =
         runTest {
             // Given
             val productId = "1"
@@ -264,7 +264,7 @@ class ProductDetailsViewModelTest {
             advanceUntilIdle()
             //Then
             verifySuspend {
-                dukanCartRepository.updateProductQuantity(any())
+                dukanCartRepository.addProductQuantity(any())
             }
             assertTrue (productDetailsViewModel.state.value.snackBarState!=null)
 

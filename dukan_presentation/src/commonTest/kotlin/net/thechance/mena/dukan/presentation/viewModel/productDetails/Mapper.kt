@@ -9,42 +9,45 @@ import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
-@Test
-fun `toUiState should map Product correctly`() {
-    val product = Product(
-        id = Uuid.random(),
-        name = "Test Product",
-        description = "Description",
-        price = 10.0,
-        imageUrls = listOf("image.png"),
-        quantityInCart = 0,
-        createdAt = "2023-01-01"
-    )
+class ProductDetailsMapperTest {
 
-    val uiState = product.toUiState()
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `toUiState should map Product correctly`() {
+        val product = Product(
+            id = Uuid.random(),
+            name = "Test Product",
+            description = "Description",
+            price = 10.0,
+            imageUrls = listOf("image.png"),
+            quantityInCart = 0,
+            createdAt = "2023-01-01"
+        )
 
-    assertEquals(product.name, uiState.name)
-    assertEquals(product.description, uiState.description)
-    assertEquals(product.price, uiState.price, 0.0)
-    assertEquals("image.png", uiState.imageUrl)
-    assertEquals(0, uiState.inCartQuantity)
-}
+        val uiState = product.toUiState()
 
-@Test
-fun `toDomainParams should map ProductUiState to domain params correctly`() {
-    val uiProduct = ShelfDetailsUiState.ProductUiState(
-        id = "123",
-        name = "Product",
-        description = "Desc",
-        price = 9.99,
-        imageUrl = "img.png",
-        inCartQuantity = 4
-    )
+        assertEquals(product.name, uiState.name)
+        assertEquals(product.description, uiState.description)
+        assertEquals(product.price, uiState.price, 0.0)
+        assertEquals("image.png", uiState.imageUrl)
+        assertEquals(0, uiState.inCartQuantity)
+    }
 
-    val params = uiProduct.toDomainParams("dukanId_1")
+    @Test
+    fun `toDomainParams should map ProductUiState to domain params correctly`() {
+        val uiProduct = ShelfDetailsUiState.ProductUiState(
+            id = "123",
+            name = "Product",
+            description = "Desc",
+            price = 9.99,
+            imageUrl = "img.png",
+            inCartQuantity = 4
+        )
 
-    assertEquals("123", params.productId)
-    assertEquals(4, params.quantity)
-    assertEquals("dukanId_1", params.dukanId)
+        val params = uiProduct.toDomainParams("dukanId_1")
+
+        assertEquals("123", params.productId)
+        assertEquals(4, params.quantity)
+        assertEquals("dukanId_1", params.dukanId)
+    }
 }

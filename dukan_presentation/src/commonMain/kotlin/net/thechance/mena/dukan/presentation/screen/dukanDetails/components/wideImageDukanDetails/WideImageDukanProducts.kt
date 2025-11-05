@@ -56,7 +56,7 @@ fun LazyGridScope.wideImageProductsGrid(
         key = { index -> productsShelf[index]?.id ?: index }
     ) { index ->
         productsShelf[index]?.let { product ->
-            var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 1) }
+            var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
             var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
             ProductCard(

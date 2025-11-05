@@ -125,7 +125,7 @@ private fun ProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 1) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
