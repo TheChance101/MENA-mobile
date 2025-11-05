@@ -67,8 +67,14 @@ internal fun NearbyMosquesScreen(
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            NearbyMosquesEffect.NavigateBack -> TODO()
-            NearbyMosquesEffect.NavigateToAddMosque -> TODO()
+            NearbyMosquesEffect.NavigateBack -> {
+                //TODO()
+            }
+
+            NearbyMosquesEffect.NavigateToAddMosque -> {
+                //TODO()
+            }
+
             NearbyMosquesEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }
