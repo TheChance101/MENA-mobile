@@ -1,22 +1,20 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageShelf
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_edit_shelf
-import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.no_internet_message
-import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
+import mena.dukan_presentation.generated.resources.shelf_name_is_not_changed
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfArgs
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.jetbrains.compose.resources.StringResource
 
@@ -27,11 +25,11 @@ class ManageShelfViewModel(
 ) : BaseViewModel<ManageShelfUiState, ManageShelfEffect>(
     initialState = ManageShelfUiState(), defaultDispatcher = defaultDispatcher
 ), ManageShelfInteractionListener {
-    private val args = savedStateHandle.toRoute<DukanRoute.ManageShelfScreenRoute>()
-
+    val shelfId: String = requireNotNull(savedStateHandle[ManageShelfArgs.shelfId])
 
     init {
-        updateState { copy(shelfTitle = args.shelfTitle) }
+        val shelfTitle: String = savedStateHandle[ManageShelfArgs.shelfTitle] ?: ""
+        updateState { copy(shelfTitle = shelfTitle) }
     }
 
     override fun onBackClicked() {
@@ -39,7 +37,7 @@ class ManageShelfViewModel(
     }
 
     override fun onDeleteClicked() {
-        emitEffect(ManageShelfEffect.NavigateBackWithShelfId(args.shelfId))
+        emitEffect(ManageShelfEffect.NavigateBackWithShelfId(shelfId))
     }
 
     override fun onShelfNameChange(name: String) {
@@ -54,7 +52,8 @@ class ManageShelfViewModel(
     override fun onSaveClicked() {
         val trimmedTitle = validateShelfTitle() ?: return
         tryToExecute(
-            block = { updateShelfName(args.shelfId, trimmedTitle) },
+            onStart = { setLoadState(true) },
+            block = { updateShelfName(shelfId, trimmedTitle) },
             onSuccess = { onEditShelfSuccess() },
             onError = ::onEditShelfError
         )
@@ -66,11 +65,6 @@ class ManageShelfViewModel(
         return when {
             !isTitleValid(trimmedTitle) -> {
                 showErrorSnackBar(Res.string.shelf_name_is_invalid)
-                null
-            }
-
-            state.value.oldShelfTitle == state.value.shelfTitle -> {
-                showErrorSnackBar(Res.string.error_same_name_of_shelf)
                 null
             }
 
@@ -94,13 +88,22 @@ class ManageShelfViewModel(
     }
 
     private fun onEditShelfSuccess() {
+        setLoadState(false)
         emitEffect(ManageShelfEffect.NavigateBackWithEditedShelfName)
+    }
+
+    private fun setLoadState(loading: Boolean) {
+        updateState {
+            copy(
+                isLoading = loading
+            )
+        }
     }
 
     private fun onEditShelfError(throwable: Throwable) {
         val messageRes = when (throwable) {
             is NoInternetException -> Res.string.no_internet_message
-            is DuplicateNameException -> Res.string.shelf_name_is_already_exist
+            is DuplicateNameException -> Res.string.shelf_name_is_not_changed
             else -> Res.string.error_edit_shelf
         }
         showErrorSnackBar(messageRes)
@@ -112,7 +115,8 @@ class ManageShelfViewModel(
                 snackBarState = SnackBarUiState(
                     snackBarType = SnackBarType.ERROR,
                     message = message
-                )
+                ),
+                isLoading = false
             )
         }
     }

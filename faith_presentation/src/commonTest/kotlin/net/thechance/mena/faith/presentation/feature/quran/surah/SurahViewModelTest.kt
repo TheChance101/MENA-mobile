@@ -13,6 +13,7 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -35,6 +36,7 @@ class SurahViewModelTest {
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
     private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill)
 
+    private val quranPlayer: QuranPlayer = mock(mode = MockMode.autofill)
     private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
 
     @BeforeTest
@@ -46,7 +48,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = SnackbarHandler.Empty
+            snackbarHandler = SnackbarHandler.Empty,
+            quranPlayer = quranPlayer
         )
     }
 
@@ -218,7 +221,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = snackbarHandler
+            snackbarHandler = snackbarHandler,
+            quranPlayer = quranPlayer
         )
         advanceUntilIdle()
 
@@ -239,7 +243,8 @@ class SurahViewModelTest {
                 quranRepository = quranRepository,
                 clipboardManager = clipboardManager,
                 bookmarkRepository = bookmarkRepository,
-                snackbarHandler = snackbarHandler
+                snackbarHandler = snackbarHandler,
+                quranPlayer = quranPlayer
             )
             advanceUntilIdle()
 
@@ -260,7 +265,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = snackbarHandler
+            snackbarHandler = snackbarHandler,
+            quranPlayer = quranPlayer
         )
         advanceUntilIdle()
 
@@ -279,7 +285,8 @@ class SurahViewModelTest {
                 quranRepository = quranRepository,
                 clipboardManager = clipboardManager,
                 bookmarkRepository = bookmarkRepository,
-                snackbarHandler = snackbarHandler
+                snackbarHandler = snackbarHandler,
+                quranPlayer = quranPlayer
             )
             advanceUntilIdle()
 
@@ -299,7 +306,8 @@ class SurahViewModelTest {
                 quranRepository = quranRepository,
                 clipboardManager = clipboardManager,
                 bookmarkRepository = bookmarkRepository,
-                snackbarHandler = snackbarHandler
+                snackbarHandler = snackbarHandler,
+                quranPlayer = quranPlayer
             )
             advanceUntilIdle()
 
@@ -318,7 +326,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = snackbarHandler
+            snackbarHandler = snackbarHandler,
+            quranPlayer = quranPlayer
         )
         advanceUntilIdle()
 
@@ -338,7 +347,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            snackbarHandler = snackbarHandler
+            snackbarHandler = snackbarHandler,
+            quranPlayer = quranPlayer
         )
         advanceUntilIdle()
 

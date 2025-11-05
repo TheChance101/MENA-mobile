@@ -24,6 +24,7 @@ import mena.faith_presentation.generated.resources.error_network
 import mena.faith_presentation.generated.resources.error_no_internet
 import mena.faith_presentation.generated.resources.error_unauthorized
 import mena.faith_presentation.generated.resources.error_unknown
+import mena.faith_presentation.generated.resources.surah_download_failed
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
@@ -115,5 +116,8 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         FaithException.UnknownException -> Res.string.error_unknown
         FaithException.InvalidLatitudeException -> Res.string.error_latitude
         FaithException.InvalidLongitudeException -> Res.string.error_longitude
+        FaithException.FailedToDownloadSurahException -> Res.string.surah_download_failed
+        FaithException.FileCreationException -> Res.string.surah_download_failed
+        FaithException.UrlCreationException -> Res.string.surah_download_failed
     }
 }

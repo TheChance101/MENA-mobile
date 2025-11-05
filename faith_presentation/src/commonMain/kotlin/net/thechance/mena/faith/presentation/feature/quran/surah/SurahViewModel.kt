@@ -12,6 +12,7 @@ import mena.faith_presentation.generated.resources.copied_ayah_failed
 import mena.faith_presentation.generated.resources.copied_ayah_successfully
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
@@ -28,6 +29,7 @@ class SurahViewModel(
     private val clipboardManager: ClipboardManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
+    private val quranPlayer: QuranPlayer,
     snackbarHandler: SnackbarHandler
 ) : BaseViewModel<SurahUiState, SurahScreenEffect>(
     initialState = SurahUiState(surahId = surahArgs.surahId, surahName = surahArgs.surahName),
@@ -82,6 +84,7 @@ class SurahViewModel(
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
         updateState {
             it.copy(
+                isPlayerVisible = false,
                 isAyahActionButtonsVisible = true,
                 selectedAyah = ayahContent,
                 selectedAyahNumber = ayahIndex
@@ -91,6 +94,26 @@ class SurahViewModel(
 
     override fun onSearchClick() {
         sendEffect(SurahScreenEffect.NavigateToSearchScreen(surahArgs.surahId, surahArgs.surahName))
+    }
+
+    override fun onListenClick() = playAyah(uiState.value.selectedAyahNumber ?: 1)
+
+    override fun onReciterClick() = sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen)
+
+    override fun onNextAyahClick() = moveToAyah(offset = 1)
+
+    override fun onPreviousAyahClick() = moveToAyah(offset = -1)
+
+    override fun onPlayPauseClick() = togglePlayPause()
+
+    override fun onRepeatAyahClick() {
+        quranPlayer.repeatCurrentAyah()
+        updateState { it.copy(isAyahSoundPlaying = true) }
+    }
+
+    override fun onClosePlayerClick() {
+        quranPlayer.pauseAyah()
+        onDismissActionButtons()
     }
 
     override fun onCopyClick(ayahContent: String) {
@@ -107,7 +130,8 @@ class SurahViewModel(
             it.copy(
                 isAyahActionButtonsVisible = false,
                 selectedAyah = "",
-                selectedAyahNumber = null
+                selectedAyahNumber = null,
+                isPlayerVisible = false
             )
         }
     }
@@ -143,6 +167,60 @@ class SurahViewModel(
             )
         }
         sendEffect(SurahScreenEffect.ShareAyah(ayahContent))
+    }
+
+    private fun playAyah(ayahNumber: Int) {
+        loadAndPlayAyahSound(
+            surahNumber = surahArgs.surahId,
+            ayahNumber = ayahNumber,
+            reciterId = 1 //TODO: Get selected reciter id from settings
+        )
+        updateState { it.copy(selectedAyahNumber = ayahNumber) }
+    }
+
+    private fun moveToAyah(offset: Int) {
+        val current = uiState.value.selectedAyahNumber ?: 1
+        val next = (current + offset).let {
+            if ((it > uiState.value.ayatOfSurah.size) || (it < 1)) 1 else it
+        }
+        playAyah(next)
+    }
+
+    private fun togglePlayPause() {
+        val currentUrl = uiState.value.currentPlayingAyahUrl ?: return
+        val isPlaying = uiState.value.isAyahSoundPlaying
+
+        if (isPlaying) quranPlayer.pauseAyah()
+        else quranPlayer.playAyah(currentUrl)
+
+        updateState { it.copy(isAyahSoundPlaying = !isPlaying) }
+    }
+
+    private fun loadAndPlayAyahSound(surahNumber: Int, ayahNumber: Int, reciterId: Int) {
+        tryToExecute(
+            execute = {
+                quranRepository.getAyahSoundUrl(
+                    surahNumber = surahNumber,
+                    ayahNumber = ayahNumber,
+                    reciterId = reciterId
+                )
+            },
+            onSuccess = ::onLoadAyahSoundSuccess,
+            dispatcher = Dispatchers.Main
+        )
+    }
+
+    private fun onLoadAyahSoundSuccess(ayahSoundUrl: String) {
+        updateState {
+            it.copy(
+                isAyahSoundPlaying = true,
+                isAyahActionButtonsVisible = false,
+                isPlayerVisible = true,
+                currentPlayingAyahUrl = ayahSoundUrl,
+                currentPlayingAyahNumber = it.selectedAyahNumber
+            )
+        }
+        quranPlayer.playAyah(ayahSoundUrl)
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {

@@ -14,13 +14,11 @@ import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
 
 suspend inline fun <reified T, reified R> HttpClient.postJson(
     requestDto: T,
     path: String,
- ): R {
+): R {
     val response = this.post {
         url(path)
         contentType(ContentType.Application.Json)
@@ -34,24 +32,14 @@ suspend inline fun <reified T, reified R> HttpClient.postJson(
     return response.body()
 }
 
-suspend inline fun <reified T, reified R> HttpClient.postFileWithData(
+suspend fun HttpClient.postFileWithData(
     path: String,
-    dataKey: String,
-    requestDto: T,
     fileKey: String,
     imageByteArray: ByteArray?
-): R {
+) {
     val response: HttpResponse = submitFormWithBinaryData(
         url = path,
         formData = formData {
-            append(
-                key = dataKey,
-                value = Json.encodeToString(serializer<T>(), requestDto),
-                Headers.build {
-                    append(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-                }
-            )
-
             imageByteArray?.let {
                 append(
                     key = fileKey,
