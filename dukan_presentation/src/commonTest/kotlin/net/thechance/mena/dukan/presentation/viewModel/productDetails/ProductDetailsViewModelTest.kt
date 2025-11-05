@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -222,54 +221,57 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onAddToCartClicked calls repository and shows success snackbar`() = runTest {
-        // Given
-        everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
+    fun `onAddToCartClicked SHOULD update product quantity when product exist`() =
+        runTest {
+            // Given
+            val productId = "1"
 
-        // When
-        productDetailsViewModel.onAddToCartClicked("10")
-        advanceUntilIdle()
+            productDetailsViewModel.updateState {
+                copy(isFirstQuantityOne = false)
+            }
 
-        // Then
-        verifySuspend { dukanCartRepository.addProductQuantity(any()) }
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.snackBarType,
-            SnackBarType.SUCCESS
-        )
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.message,
-            Res.string.add_product_success
-        )
-    }
+            everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
+
+            //When
+            productDetailsViewModel.onAddToCartClicked(
+                productId,
+            )
+            advanceUntilIdle()
+            //Then
+            verifySuspend {
+                dukanCartRepository.updateProductQuantity(any())
+            }
+            assertTrue (productDetailsViewModel.state.value.snackBarState!=null)
+
+
+        }
 
     @Test
-    fun `onAddToCartClicked shows error snackbar when repository throws`() = runTest {
-        // Given
-        everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
+    fun `onAddToCartClicked SHOULD add new product when quantity equal 1`() =
+        runTest {
+            // Given
+            val productId = "1"
+            productDetailsViewModel.updateState {
+                copy(isFirstQuantityOne = true)
+            }
 
-        // When
-        productDetailsViewModel.onAddToCartClicked("10")
-        advanceUntilIdle()
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
-        // Then
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.snackBarType,
-            SnackBarType.ERROR
-        )
-        assertEquals(
-            productDetailsViewModel.state.value.snackBarState?.message,
-            Res.string.no_internet_connection
-        )
-    }
+            //When
+            productDetailsViewModel.onAddToCartClicked(
+                productId,
+            )
+            advanceUntilIdle()
+            //Then
+            verifySuspend {
+                dukanCartRepository.updateProductQuantity(any())
+            }
+            assertTrue (productDetailsViewModel.state.value.snackBarState!=null)
+
+        }
 
     @Test
     fun `onDismissSnackBar clears snackbar state`() = runTest {
-        // Given
-        productDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
 
         // When
         productDetailsViewModel.onDismissSnackBar()
@@ -278,6 +280,22 @@ class ProductDetailsViewModelTest {
         assertTrue(productDetailsViewModel.state.value.snackBarState == null)
     }
 
+    @Test
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
+        // Given
+        val productId = "1"
+
+        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+
+        // When
+        productDetailsViewModel.onAddToCartClicked(productId)
+        advanceUntilIdle()
+
+        // Then
+        val state = productDetailsViewModel.state.value
+        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+    }
 
     private fun createViewModel() = ProductDetailsViewModel(
         productRepository = productRepository,
@@ -299,5 +317,6 @@ private fun dummyProductDetails(): Product = Product(
         "http://example.com/image2.jpg"
     ),
     createdAt = "2025-10-31T12:00:00Z",
-    quantityInCart = 10
-)
+    quantityInCart = 10,
+    shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+    )

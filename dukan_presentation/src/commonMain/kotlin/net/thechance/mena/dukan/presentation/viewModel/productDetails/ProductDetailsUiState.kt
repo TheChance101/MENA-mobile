@@ -9,6 +9,7 @@ data class ProductDetailsUiState(
     val errorState: Exception? = null,
     val isFavorite: Boolean = false,
     val selectedImageUrl: String = "",
+    val isFirstQuantityOne: Boolean = false,
     val snackBarState: SnackBarUiState? = null
 ) {
     data class ProductInfo(

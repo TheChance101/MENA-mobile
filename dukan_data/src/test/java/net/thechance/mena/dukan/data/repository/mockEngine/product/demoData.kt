@@ -81,6 +81,6 @@ val product1 = Product(
         "http://example.com/image2.jpg"
     ),
     createdAt = "2025-10-31T12:00:00Z",
-    quantityInCart =10
-
+    quantityInCart =10,
+    shelfId = demoShelfID
 )

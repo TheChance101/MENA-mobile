@@ -32,6 +32,10 @@ fun DukanDetailsScreen(
     val navController = LocalNavController.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    LaunchedEffect(Unit) {
+        viewModel.refreshProducts()
+    }
+
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             DukanDetailsEffects.NavigateBack -> navController.popBackStack()
@@ -45,7 +49,6 @@ fun DukanDetailsScreen(
 
             is DukanDetailsEffects.NavigateToCartScreen -> {
                 // navigate to cart screen
-                navController.navigate(DukanRoute.CheckoutScreenRoute)
             }
 
             is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(

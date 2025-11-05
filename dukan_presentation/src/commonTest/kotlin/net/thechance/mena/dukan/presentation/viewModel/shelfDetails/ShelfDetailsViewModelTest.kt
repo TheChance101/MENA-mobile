@@ -59,8 +59,9 @@ class ShelfDetailsViewModelTest {
             price = 1200.0,
             imageUrls = listOf("https://example.com/laptop.jpg"),
             createdAt = "",
-            quantityInCart = 10
-        ),
+            quantityInCart = 10,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123")
+            ),
         Product(
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
@@ -68,8 +69,9 @@ class ShelfDetailsViewModelTest {
             price = 25.0,
             imageUrls = listOf("https://example.com/mouse.jpg"),
             createdAt = "",
-            quantityInCart = 10
-        ),
+            quantityInCart = 10,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+            ),
         Product(
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
@@ -77,8 +79,9 @@ class ShelfDetailsViewModelTest {
             price = 75.0,
             imageUrls = listOf("https://example.com/keyboard.jpg"),
             createdAt = "",
-            quantityInCart = 10
-        )
+            quantityInCart = 10,
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125")
+            )
     )
 
     @OptIn(ExperimentalUuidApi::class)
@@ -354,56 +357,28 @@ class ShelfDetailsViewModelTest {
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
+
         shelfDetailsViewModel.onDismissSnackBar()
 
         assertTrue(shelfDetailsViewModel.state.value.snackBarState == null)
     }
 
     @Test
-    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-        assertEquals(
-            Res.string.no_internet_connection,
-            shelfDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
-    }
-
-    @Test
-    fun `onErrorUpdateProductQuantity show snack Bar when throw exception`()=runTest {
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
+        // Given
+        val productId = "1"
+        val quantity = 5
 
         everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-        assertEquals(
-            Res.string.no_internet_connection,
-            shelfDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
+
+        // When
+        shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+        advanceUntilIdle()
+
+        // Then
+        val state = shelfDetailsViewModel.state.value
+        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
     }
 
 }

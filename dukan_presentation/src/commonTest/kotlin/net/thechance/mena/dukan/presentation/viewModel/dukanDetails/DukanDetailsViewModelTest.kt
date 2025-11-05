@@ -30,7 +30,6 @@ import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -401,59 +400,31 @@ class DukanDetailsViewModelTest {
 
     @Test
     fun `onDismissSnackBar SHOULD hide snack bar`() = runTest {
-        dukanDetailsViewModel.updateState {
-            copy(
-                snackBarState = null
-            )
-        }
+
         dukanDetailsViewModel.onDismissSnackBar()
 
         assertTrue(dukanDetailsViewModel.state.value.snackBarState == null)
     }
 
     @Test
-    fun `onShowSnackBar SHOULD show snack bar`() = runTest {
-        dukanDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
+
+            everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+
+            // When
+            dukanDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
+
+            // Then
+            val state = dukanDetailsViewModel.state.value
+            assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
         }
 
-        assertEquals(
-            Res.string.no_internet_connection,
-            dukanDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            dukanDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
-    }
-
-    @Test
-    fun `onErrorUpdateProductQuantity show snackBar when throw exception`()=runTest {
-
-        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
-
-        dukanDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-        assertEquals(
-            Res.string.no_internet_connection,
-            dukanDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            dukanDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
-    }
 
     private fun createViewModel() = DukanDetailsViewModel(
         dukanManagementRepository = dukanManagementRepository,
@@ -506,6 +477,7 @@ private fun fakeProducts(): List<Product> = listOf(
         price = 1200.0,
         imageUrls = emptyList(),
         createdAt = "2025-10-10T12:00:00Z",
-        quantityInCart = 10
+        quantityInCart = 10,
+        shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
     )
 )

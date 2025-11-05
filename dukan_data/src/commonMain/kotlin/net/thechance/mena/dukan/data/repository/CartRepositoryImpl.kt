@@ -23,9 +23,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class CartRepositoryImpl(
+class CartRepositoryImpl (
     private val client: HttpClient
-) : CartRepository {
+): CartRepository {
 
     override suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {

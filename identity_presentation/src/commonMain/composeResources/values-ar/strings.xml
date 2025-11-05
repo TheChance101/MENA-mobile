@@ -71,6 +71,7 @@
     <string name="share_icon_content_description">أيقونة المشاركة</string>
     <string name="link_icon_content_description">أيقونة الرابط</string>
     <string name="download_icon_content_description">أيقونة التنزيل</string>
+    <string name="download_app_title">تنزيل تطبيق مينا</string>
     <string name="copy_to_clipboard_success">تم النسخ</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>

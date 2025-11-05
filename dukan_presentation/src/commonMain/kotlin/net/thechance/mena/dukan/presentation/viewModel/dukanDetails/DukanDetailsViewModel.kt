@@ -14,6 +14,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -209,12 +210,17 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = {
-                if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-                dukanCartRepository.updateProductQuantity(domainRequest)
-            },
+            block = { addToCartBlock(domainRequest, productQuantity) },
             onError = ::onErrorUpdateProductQuantity
         )
+    }
+
+    private suspend fun addToCartBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int
+    ) {
+        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
+        dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(
@@ -239,11 +245,17 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecuteWithDebounce(
-            block = {
-                if (productQuantity == 1) deleteProductFromCart(productId)
-                else dukanCartRepository.updateProductQuantity(domainRequest)
-            },
+            block = { onMinusClickedBlock(domainRequest, productQuantity, productId) },
         )
+    }
+
+    private suspend fun onMinusClickedBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int,
+        productId: String
+    ) {
+        if (productQuantity == 1) deleteProductFromCart(productId)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     private fun deleteProductFromCart(productId: String) {
@@ -301,8 +313,7 @@ class DukanDetailsViewModel(
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
     fun refreshProducts() {
-        if(isWideImageStyle())loadProductsPaging()
-        else loadShelvesPaging()
+        loadDukanDetails()
     }
 
 
