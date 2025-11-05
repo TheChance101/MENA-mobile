@@ -165,11 +165,12 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `should navigate back to profile, when on onClickSaveButton is successfully called`() =
         runTest {
             viewModel.userId = fakeUser.id
+            coEvery { userRepository.uploadUserProfileImage(any()) } returns Unit
+            coEvery { userRepository.deleteUserProfileImage() } returns Unit
             coEvery {
                 userRepository.updateUser(
                     user = any(),
-                    shouldUpdateImage = any(),
-                    imageByteArray = any()
+                    shouldUpdateImage = any()
                 )
             } returns Unit
 
@@ -187,8 +188,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             coVerify(exactly = 1) {
                 userRepository.updateUser(
                     user = any(),
-                    shouldUpdateImage = any(),
-                    imageByteArray = any()
+                    shouldUpdateImage = any()
                 )
             }
         }
@@ -198,12 +198,13 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `errorMessage should be updated, when on onClickSaveButton is failed with Exception`() =
         runTest {
             viewModel.userId = fakeUser.id
+            coEvery { userRepository.uploadUserProfileImage(any()) } returns Unit
+            coEvery { userRepository.deleteUserProfileImage() } returns Unit
 
             coEvery {
                 userRepository.updateUser(
                     user = any(),
-                    shouldUpdateImage = any(),
-                    imageByteArray = any()
+                    shouldUpdateImage = any()
                 )
             } throws Exception()
 
@@ -221,8 +222,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             coVerify(exactly = 1) {
                 userRepository.updateUser(
                     user = any(),
-                    shouldUpdateImage = any(),
-                    imageByteArray = any()
+                    shouldUpdateImage = any()
                 )
             }
         }

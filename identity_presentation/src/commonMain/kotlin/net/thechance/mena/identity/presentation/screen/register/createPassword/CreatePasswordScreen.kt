@@ -18,13 +18,12 @@ import mena.identity_presentation.generated.resources.confirm_password_label
 import mena.identity_presentation.generated.resources.create_password_description
 import mena.identity_presentation.generated.resources.create_password_title
 import mena.identity_presentation.generated.resources.new_password_title
-import mena.identity_presentation.generated.resources.register
+import mena.identity_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
@@ -83,7 +82,7 @@ class CreatePasswordScreen : BaseScreen<
                     Spacer(modifier = Modifier.weight(1f))
 
                     PrimaryButton(
-                        text = stringResource(Res.string.register),
+                        text = stringResource(Res.string.next),
                         onClick = listener::onClickCreatePassword,
                         isEnabled = state.isCreateEnabled,
                         isLoading = state.isLoading,
@@ -107,9 +106,7 @@ class CreatePasswordScreen : BaseScreen<
         effect: CreatePasswordUIEffect,
         navigator: Navigator
     ) {
-        when (effect) {
-            CreatePasswordUIEffect.NavigateBack -> navigator.pop()
-        }
+
     }
 }
 
@@ -129,7 +126,6 @@ fun PreviewCreatePasswordScreen() {
                 override fun onToggleNewPasswordVisibility() {}
                 override fun onToggleConfirmPasswordVisibility() {}
                 override fun onClickCreatePassword() {}
-                override fun onClickBack() {}
                 override fun onClearErrorMessage() {}
             }
         )

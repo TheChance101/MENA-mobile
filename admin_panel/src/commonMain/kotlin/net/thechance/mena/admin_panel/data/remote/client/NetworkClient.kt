@@ -16,6 +16,7 @@ import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.accept
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.admin_panel.data.utils.accessToken
@@ -63,6 +64,10 @@ fun provideHttpClient(
                         refreshToken=settings.refreshToken
                     )
                 }
+                sendWithoutRequest { request ->
+                    val path = request.url.encodedPath.removePrefix("/")
+                    path !in listOf(LOGIN_ENDPOINT, REFRESH_ENDPOINT)
+                }
             }
         }
 
@@ -76,3 +81,5 @@ fun provideHttpClient(
 }
 
 private const val TIME_OUT_INTERVAL_MILLI = 15_000L
+private const val REFRESH_ENDPOINT = "identity/admin/authentication/refresh"
+private const val LOGIN_ENDPOINT = "identity/admin/authentication/login"
