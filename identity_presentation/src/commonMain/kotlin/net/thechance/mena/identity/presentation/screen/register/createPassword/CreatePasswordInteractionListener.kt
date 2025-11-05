@@ -8,6 +8,5 @@ interface CreatePasswordInteractionListener : BaseInteractionListener {
     fun onToggleNewPasswordVisibility()
     fun onToggleConfirmPasswordVisibility()
     fun onClickCreatePassword()
-    fun onClickBack()
     fun onClearErrorMessage()
 }

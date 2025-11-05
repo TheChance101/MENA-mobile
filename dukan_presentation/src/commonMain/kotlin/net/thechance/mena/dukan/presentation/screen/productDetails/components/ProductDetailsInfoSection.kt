@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.productDetails.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,7 +45,7 @@ fun ProductDetailsInfoSection(
 }
 
 @Composable
-private fun ColumnScope.ProductDetailsInfoShimmer() {
+private fun ProductDetailsInfoShimmer() {
     ShimmerBox(
         width = 200.dp,
         height = Theme.typography.title.medium.fontSize.value.dp
@@ -69,7 +68,7 @@ private fun ColumnScope.ProductDetailsInfoShimmer() {
 }
 
 @Composable
-private fun ColumnScope.ProductDetailsInfoContent(
+private fun ProductDetailsInfoContent(
     state: ProductDetailsUiState.ProductInfo
 ) {
     Text(

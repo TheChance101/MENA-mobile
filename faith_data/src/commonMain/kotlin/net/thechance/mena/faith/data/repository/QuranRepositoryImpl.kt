@@ -4,6 +4,7 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
+import net.thechance.mena.faith.data.mapper.toDomain
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
@@ -12,6 +13,7 @@ import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 
 class QuranRepositoryImpl(
@@ -63,4 +65,7 @@ class QuranRepositoryImpl(
         )
         tilawahApiService.getAyahSoundUrl(requestBody)
     }
+
+    override suspend fun getReciters(): List<Reciter> =
+        executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() }
 }

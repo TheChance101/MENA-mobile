@@ -5,12 +5,12 @@ sealed class MainScreenEffect {
     object NavigateToPendingDukanScreen : MainScreenEffect()
     object NavigateToManageDukanScreen : MainScreenEffect()
 
-    object NavigateCategoryToScreen : MainScreenEffect()
+    object NavigateToDukansCategoriesScreen : MainScreenEffect()
 
 
     data class NavigateToDukansScreenByCategory(val categoryId: String, val categoryName: String) :
         MainScreenEffect()
 
-    data class NavigateSelectedDukan(val dukanId: String) : MainScreenEffect()
+    data class NavigateToSelectedDukan(val dukanId: String) : MainScreenEffect()
 
 }

@@ -22,9 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.error
 import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.profile_title
@@ -69,8 +70,8 @@ class ProfileScreen : BaseScreen<
 
         AnimatedVisibility(state.showShareBottomSheet) {
             ShareSheet(
-                title = "MENA app-download app",
-                url = "https://MENA_app.com",
+                title = stringResource(Res.string.download_app_title),
+                url = state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }
@@ -97,12 +98,13 @@ class ProfileScreen : BaseScreen<
             dialog(state.showShareProfileDialog) {
                 ShareQrCode(
                     showDialog = it,
+                    isCopied = state.showCopiedMessage,
                     fullName = state.fullName,
-                    urlString = "https:mena.dev?uresname=hassan",
-                    qrCodePainter = rememberAsyncImagePainter(
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                    ),
-                    onDismiss = listener::onDismissShareDialog,
+                    urlString = state.shareLinkUrl,
+                    qrCodePainter = rememberQrCodePainter(data = state.shareLinkUrl),
+                    onDismissShareDialog = listener::onDismissShareDialog,
+                    onDismissSnackBar = listener::onDismissCopyLinkSnackBar,
+                    onCopyToClipboard = listener::onCopyToClipboard,
                     onShareProfile = {},
                     onDownload = {}
                 )

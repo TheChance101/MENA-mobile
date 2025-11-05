@@ -10,6 +10,7 @@
     <string name="type">النوع</string>
     <string name="status">الحالة</string>
     <string name="from">من</string>
+    <string name="payment_to">الى</string>
     <string name="to">الى</string>
     <string name="select_date">اختار التاريخ</string>
     <string name="sent">مرسل</string>

@@ -33,6 +33,7 @@ class AdminAuthenticationRepositoryImpl(
         clearAuthTokens()
     }
 
+    override suspend fun isUserLoggedIn(): Boolean = settings.accessToken.isNotBlank()
     private fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
         settings.accessToken = authenticationInfo.accessToken
         settings.refreshToken = authenticationInfo.refreshToken

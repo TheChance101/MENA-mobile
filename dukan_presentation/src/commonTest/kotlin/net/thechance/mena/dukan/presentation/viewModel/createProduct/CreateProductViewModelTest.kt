@@ -20,6 +20,7 @@ import mena.dukan_presentation.generated.resources.error_image_max_limit
 import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_upload_failed
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
@@ -288,10 +289,10 @@ class CreateProductViewModelTest {
                 description = "Valid description".padEnd(120, 'x'),
                 images = listOf(
                     CreateProductUiState.ProductImageUi(
-                        1234,
-                        mock<ImageBitmap>(),
-                        1.0,
-                        ProductImageState.SUCCESS
+                        id = 1234,
+                        image = mock<ImageBitmap>(),
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
                     )
                 )
             )
@@ -320,10 +321,10 @@ class CreateProductViewModelTest {
                 description = "Nice description".padEnd(120, 'z'),
                 images = listOf(
                     CreateProductUiState.ProductImageUi(
-                        0,
-                        fakeBitmap,
-                        1.0,
-                        ProductImageState.SUCCESS
+                        id = 0,
+                        image = fakeBitmap,
+                        imageSizeInMegaByte = 1.0,
+                        imageState = ProductImageState.SUCCESS
                     )
                 )
             )
@@ -336,6 +337,21 @@ class CreateProductViewModelTest {
         assertTrue(state.showSnackBar)
         assertEquals(Res.string.error_general, state.snackBarUiState?.message)
     }
-
-
 }
+
+// ===== FAKE DATA FUNCTIONS =====
+
+@OptIn(ExperimentalUuidApi::class)
+private fun fakeProducts(): List<Product> = listOf(
+    Product(
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+        name = "Laptop",
+        description = "A cool laptop",
+        price = 1200.0,
+        shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+        imageUrls = emptyList(),
+        createdAt = "2025-10-10T12:00:00Z",
+        quantityInCart = 2
+    )
+)
+

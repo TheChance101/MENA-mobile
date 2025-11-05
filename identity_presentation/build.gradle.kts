@@ -76,6 +76,8 @@ kotlin {
             implementation(libs.moko.permissions)
             implementation(libs.moko.permissions.compose)
 
+            // QR code
+            implementation(libs.qrose)
         }
     }
 }

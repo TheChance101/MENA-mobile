@@ -1,18 +1,23 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+
 data class ProductDetailsUiState(
     val product: ProductInfo = ProductInfo(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val isAddToCartLoading : Boolean = false,
     val errorState: Exception? = null,
-    val inCartQuantity: Int = 0,
     val isFavorite: Boolean = false,
-    val selectedImageUrl: String = ""
+    val selectedImageUrl: String = "",
+    val isFirstQuantityOne: Boolean = false,
+    val snackBarState: SnackBarUiState? = null
 ) {
     data class ProductInfo(
         val id: String = "",
         val name: String = "",
         val price: Double = 0.0,
         val description: String = "",
-        val images: List<String> = emptyList()
+        val images: List<String> = emptyList(),
+        val inCartQuantity: Int = 1
     )
 }

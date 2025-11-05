@@ -24,8 +24,8 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.You_are_about_to_pay
 import mena.wallet_presentation.generated.resources.ic_user
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.payment_to
 import mena.wallet_presentation.generated.resources.silver_coin
-import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.user_img
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -143,7 +143,7 @@ private fun ReceiverInfo(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(Res.string.to),
+            text = stringResource(Res.string.payment_to),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )

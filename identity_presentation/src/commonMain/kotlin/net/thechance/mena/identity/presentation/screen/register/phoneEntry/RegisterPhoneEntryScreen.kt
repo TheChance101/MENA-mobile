@@ -16,19 +16,16 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.`continue`
-import mena.identity_presentation.generated.resources.register
-import mena.identity_presentation.generated.resources.register_prompt
 import mena.identity_presentation.generated.resources.register_prompt_title
 import mena.identity_presentation.generated.resources.you_already_have_account
 import mena.identity_presentation.generated.resources.login
+import mena.identity_presentation.generated.resources.register
 import mena.identity_presentation.generated.resources.register_prompt_description
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
-import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
@@ -79,6 +76,7 @@ class RegisterPhoneEntryScreen : BaseScreen<
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
+                    .padding(top = 24.dp)
             ) {
                 AuthScreenContainer {
                     PageDescription(
@@ -97,14 +95,12 @@ class RegisterPhoneEntryScreen : BaseScreen<
                     Spacer(modifier = Modifier.weight(1f))
 
                     PrimaryButton(
-                        text = stringResource(Res.string.`continue`),
-                        onClick = listener::onClickContinue,
-                        isEnabled = state.isContinueEnabled,
+                        text = stringResource(Res.string.register),
+                        onClick = listener::onClickRegister,
+                        isEnabled = state.isRegisterEnabled,
                         isLoading = state.isLoading,
                         contentPadding = PaddingValues(vertical = 13.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = Theme.spacing._12)
+                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12)
                     )
 
                     AuthPrompt(
@@ -128,7 +124,6 @@ class RegisterPhoneEntryScreen : BaseScreen<
         navigator: Navigator
     ) {
         when (effect) {
-            RegisterPhoneEntryUIEffect.NavigateBack -> navigator.pop()
             is RegisterPhoneEntryUIEffect.NavigateToOTP -> navigator.push(
                 item = RegisterOtpScreen(
                     phoneNumber = effect.phoneNumber,
@@ -149,15 +144,14 @@ fun PreviewRegisterPhoneEntryScreen() {
             state = RegisterPhoneEntryUIState(
                 phoneNumber = "7901234567",
                 currentCountry = MenaCountry.IRAQ,
-                isContinueEnabled = true
+                isRegisterEnabled = true
             ),
             listener = object : RegisterPhoneEntryInteractionListener {
                 override fun onSelectCountryItem(country: MenaCountry) {}
                 override fun onDismissBottomSheet() {}
-                override fun onClickContinue() {}
+                override fun onClickRegister() {}
                 override fun onClickCountry() {}
                 override fun onChangePhone(phone: String) {}
-                override fun onClickBack() {}
                 override fun onClearErrorMessage() {}
                 override fun onClickLogin() {}
             }
