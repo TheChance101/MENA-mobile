@@ -361,25 +361,21 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `onErrorUpdateProductQuantity show snack Bar when throw exception`()=runTest {
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
+        // Given
+        val productId = "1"
+        val quantity = 5
 
         everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
-        shelfDetailsViewModel.updateState {
-            copy(
-                snackBarState = SnackBarUiState(
-                    message = Res.string.no_internet_connection,
-                    snackBarType = SnackBarType.ERROR
-                )
-            )
-        }
-        assertEquals(
-            Res.string.no_internet_connection,
-            shelfDetailsViewModel.state.value.snackBarState?.message
-        )
-        assertEquals(
-            SnackBarType.ERROR,
-            shelfDetailsViewModel.state.value.snackBarState?.snackBarType
-        )
+
+        // When
+        shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+        advanceUntilIdle()
+
+        // Then
+        val state = shelfDetailsViewModel.state.value
+        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
     }
 
 }
