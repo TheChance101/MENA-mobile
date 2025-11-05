@@ -30,10 +30,23 @@ class TilawahDataStoreImpl(private val dataStore: DataStore<Preferences>) : Tila
 
     override suspend fun getLastAyah(): LastAyahForTilawah? = lastAyahFlow.first()
 
+    override suspend fun saveDefaultReciter(reciterId: Int) {
+        dataStore.edit { prefs ->
+            prefs[DEFAULT_RECITER] = reciterId
+        }
+    }
+
+    override suspend fun getDefaultReciter(): Flow<Int> {
+        return dataStore.data.map { prefs ->
+            prefs[DEFAULT_RECITER] ?: 1
+        }
+    }
+
     private companion object {
         val AYAH_NUMBER = intPreferencesKey("ayah_number")
         val SURAH_ID = intPreferencesKey("surah_id")
         val SURAH_NAME = stringPreferencesKey("surah_name")
+        val DEFAULT_RECITER = intPreferencesKey("default_reciter")
 
     }
 }
