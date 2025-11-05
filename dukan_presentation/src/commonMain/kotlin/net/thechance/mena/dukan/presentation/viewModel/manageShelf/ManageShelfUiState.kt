@@ -7,4 +7,5 @@ data class ManageShelfUiState(
     val isSaveButtonEnabled: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
     val showSnackBar: Boolean = false,
+    val isLoading: Boolean = false,
 )

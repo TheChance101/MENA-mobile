@@ -6,9 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_edit_shelf
-import mena.dukan_presentation.generated.resources.error_same_name_of_shelf
 import mena.dukan_presentation.generated.resources.no_internet_message
-import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
 import mena.dukan_presentation.generated.resources.shelf_name_is_invalid
 import mena.dukan_presentation.generated.resources.shelf_name_is_not_changed
 import net.thechance.mena.dukan.domain.exceptions.DuplicateNameException
@@ -54,6 +52,7 @@ class ManageShelfViewModel(
     override fun onSaveClicked() {
         val trimmedTitle = validateShelfTitle() ?: return
         tryToExecute(
+            onStart = { setLoadState(true) },
             block = { updateShelfName(shelfId, trimmedTitle) },
             onSuccess = { onEditShelfSuccess() },
             onError = ::onEditShelfError
@@ -68,6 +67,7 @@ class ManageShelfViewModel(
                 showErrorSnackBar(Res.string.shelf_name_is_invalid)
                 null
             }
+
             else -> trimmedTitle
         }
     }
@@ -88,7 +88,16 @@ class ManageShelfViewModel(
     }
 
     private fun onEditShelfSuccess() {
+        setLoadState(false)
         emitEffect(ManageShelfEffect.NavigateBackWithEditedShelfName)
+    }
+
+    private fun setLoadState(loading: Boolean) {
+        updateState {
+            copy(
+                isLoading = loading
+            )
+        }
     }
 
     private fun onEditShelfError(throwable: Throwable) {
@@ -106,7 +115,8 @@ class ManageShelfViewModel(
                 snackBarState = SnackBarUiState(
                     snackBarType = SnackBarType.ERROR,
                     message = message
-                )
+                ),
+                isLoading = false
             )
         }
     }
