@@ -244,7 +244,7 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
 private fun TrendItem(
     item: ReelUiState,
     onTrendClick: (id: String) -> Unit,
-    onGetRefreshedThumbnail: () -> String,
+    onGetRefreshedThumbnail: (String) -> String,
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f
@@ -264,7 +264,7 @@ private fun TrendItem(
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                callback = onGetRefreshedThumbnail
+                callback = { onGetRefreshedThumbnail(item.id) }
             )
         }
 

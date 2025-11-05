@@ -168,7 +168,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
-    onGetRefreshedThumbnail: () -> String,
+    onGetRefreshedThumbnail: (String) -> String,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
@@ -188,7 +188,7 @@ private fun ReelsListSection(
                     onClickLike = { onClickLike(reel.id, reel.isLiked) },
                     onClickReel = { onClickReel(reel.id) },
                     onExpandDescription = { onExpandDescription(reel.id) },
-                    onGetRefreshedThumbnail = onGetRefreshedThumbnail
+                    onGetRefreshedThumbnail = { onGetRefreshedThumbnail(reel.id) }
                 )
             }
         }
@@ -243,7 +243,7 @@ private fun HomeScreenPreview() {
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
-                    override fun onGetRefreshedThumbnail() = ""
+                    override fun onGetRefreshedThumbnail(reelId: String) = ""
                 }
             )
         }
