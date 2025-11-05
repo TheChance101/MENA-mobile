@@ -93,11 +93,12 @@ fun ScaffoldScope.LanguageDialog(
             Icon(
                 painter = painterResource(Res.drawable.ic_close_dialog),
                 contentDescription = stringResource(Res.string.close_dialog_icon),
-                modifier = Modifier.size(Theme.spacing._32).clickable(
-                    onClick = { onDismissRequest() },
-                    indication = rippleIndication(),
-                    interactionSource = remember { MutableInteractionSource() })
+                modifier = Modifier.size(Theme.spacing._32)
                     .clip(CircleShape).background(Theme.colorScheme.background.surface, CircleShape)
+                    .clickable(
+                        onClick = { onDismissRequest() },
+                        indication = rippleIndication(),
+                        interactionSource = remember { MutableInteractionSource() })
                     .padding(Theme.spacing._8).align(Alignment.TopStart))
         }
     }

@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
@@ -49,7 +48,6 @@ import net.thechance.mena.identity.presentation.screen.profile.components.ShareI
 import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
-import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 
 class ProfileScreen : BaseScreen<
         ProfileScreenViewModel,
@@ -77,13 +75,13 @@ class ProfileScreen : BaseScreen<
 
         Scaffold(
             overlays = {
-                dialog(state.showLanguageDialog) {
-                    Dialog(
+                dialog(state.languageDialogUiState.isVisible) {
+                    LanguageDialog(
                         isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissLanguageDialog,
-                        actionButtons = {}
+                        onDismissRequest = listener::onDismissLanguageDialog,
+                        appLanguages = state.languageDialogUiState.options,
+                        onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
+                        currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
                     )
                 }
                 dialog(state.showThemeDialog) {
