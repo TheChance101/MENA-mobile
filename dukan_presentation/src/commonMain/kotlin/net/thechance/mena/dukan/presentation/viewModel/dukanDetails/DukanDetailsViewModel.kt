@@ -220,7 +220,7 @@ class DukanDetailsViewModel(
         productQuantity: Int
     ) {
         if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-        dukanCartRepository.updateProductQuantity(domainRequest)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(
@@ -254,7 +254,7 @@ class DukanDetailsViewModel(
         productQuantity: Int,
         productId: String
     ) {
-        if (productQuantity == 1) deleteProductFromCart(productId)
+        if (productQuantity == 0) deleteProductFromCart(productId)
         else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -126,8 +125,8 @@ private fun ProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
-    var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {
@@ -153,7 +152,7 @@ private fun ProductIconAction(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity
@@ -184,7 +183,7 @@ private fun ProductIconAction(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity
