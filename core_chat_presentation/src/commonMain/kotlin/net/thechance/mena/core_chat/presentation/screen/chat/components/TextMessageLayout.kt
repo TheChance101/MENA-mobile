@@ -76,7 +76,20 @@ fun TextMessageLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
+    val avatarSize = 24.dp
+    val avatarSpacing = Theme.spacing._8
+    val myMessageMarginStart = Theme.spacing._24
+    val otherMessageMarginEnd = Theme.spacing._8
+
+    val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
+    val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+
+    val infoRowPaddingStart = if (message.isMine) {
+        myMessageMarginStart
+    } else {
+        avatarSize + avatarSpacing
+    }
+    val infoRowPaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
 
     val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
 
@@ -91,13 +104,13 @@ fun TextMessageLayout(
         ) {
             Row(
                 verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+                horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
             ) {
                 if (!message.isMine) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
-                            .size(24.dp),
+                            .size(avatarSize),
                         contentAlignment = Alignment.Center
                     ) {
                         if (isMarkedLastInSeries) {
@@ -115,6 +128,7 @@ fun TextMessageLayout(
 
                 Box(
                     modifier = Modifier
+                        .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
                         .clip(messageShape)
                         .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
                         .combinedClickable(
@@ -137,7 +151,8 @@ fun TextMessageLayout(
             }
 
             Row(
-                modifier = Modifier.align(messageInfoAlignment),
+                modifier = Modifier
+                    .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
