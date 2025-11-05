@@ -165,15 +165,12 @@ UserRepositoryImplTest {
         val client = mockHttpClient(fakeChangePasswordResponse)
         userRepositoryImpl = UserRepositoryImpl(client, userDao)
 
-        try {
+
             userRepositoryImpl.changePassword(
                 currentPassword = "Abcd1234",
                 newPassword = "12345678",
                 confirmPassword = "12345678"
             )
-        }catch (exception: AuthenticationException){
-            fail("Exception: ${exception.message}")
-        }
 
 
     }
