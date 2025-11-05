@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.admin_panel.presentation.screen.users_management.component
 
 import androidx.compose.animation.animateColorAsState
@@ -27,6 +29,7 @@ import net.thechance.mena.admin_panel.presentation.screen.users_management.Users
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
@@ -35,30 +38,23 @@ fun UsersListContent(
     listener: UsersManagementInteractionListener,
     modifier: Modifier = Modifier
 ) {
-    val listState = rememberLazyListState()
 
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         TableHeaderRow(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
         )
-        LazyColumn(state = listState, modifier = Modifier.weight(1f)) {
-            itemsIndexed(state.users) { index, user ->
-                val isLastItem = index == state.users.lastIndex
-                UserItemRow(
-                    index = index + 1,
-                    user = user,
-                    isLastItem = isLastItem,
-                    hasBackground = index % 2 != 0,
-                    onToggleUserStatusClicked = {
-                        listener.onToggleUserStatusClicked(
-                            userId = user.id,
-                            userStatus = user.status
-                        )
-                    }
-                )
-            }
+
+        if (state.isLoading) {
+            UsersLoadingIndicator()
+        } else {
+            UsersListTable(
+                users = state.users,
+                onToggleUserStatusClicked = listener::onToggleUserStatusClicked,
+                modifier = Modifier.weight(1f)
+            )
         }
+
         PagesIndicatorRow(
             currentPage = state.pageInfo.page,
             totalPages = state.pageInfo.totalPages,
@@ -67,6 +63,33 @@ fun UsersListContent(
                 .padding(top = 8.dp, bottom = 14.dp)
                 .align(Alignment.Start)
         )
+    }
+}
+
+@Composable
+private fun UsersListTable(
+    users: List<UsersManagementScreenState.UserItem>,
+    onToggleUserStatusClicked: (userId: Uuid, userStatus: User.Status) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val listState = rememberLazyListState()
+
+    LazyColumn(
+        state = listState,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        itemsIndexed(users) { index, user ->
+            val isLastItem = index == users.lastIndex
+            UserItemRow(
+                index = index + 1,
+                user = user,
+                isLastItem = isLastItem,
+                hasBackground = index % 2 != 0,
+                onToggleUserStatusClicked = {
+                    onToggleUserStatusClicked(user.id, user.status)
+                }
+            )
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,11 +19,11 @@ import net.thechance.mena.admin_panel.presentation.screen.users_management.compo
 import net.thechance.mena.admin_panel.presentation.component.SearchBar
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.search_hint
 import net.thechance.mena.admin_panel.resources.users_management
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -69,9 +68,15 @@ private fun UsersManagementScreenContent(
             )
 
             when {
-                state.isLoading -> UsersLoadingIndicator()
+                state.isLoading && state.users.isEmpty()-> UsersLoadingIndicator()
 
-                state.users.isEmpty() && state.query.isNotEmpty() -> UsersEmptyState()
+                state.users.isEmpty() ->{
+                    if (state.query.isNotEmpty()) {
+                        UsersSearchEmptyState()
+                    } else{
+                        UsersSearchEmptyState() /*TODO() change to users empty state*/
+                    }
+                }
 
                 else ->{
                     UsersListContent(
@@ -95,20 +100,7 @@ private fun UsersManagementTopBar() {
 }
 
 @Composable
-private fun UsersLoadingIndicator() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        DotsProgressIndicator(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = -(76.dp)),
-            dotSize = 16.dp,
-            spaceBetween = 4.dp
-        )
-    }
-}
-
-@Composable
-private fun UsersEmptyState() {
+private fun UsersSearchEmptyState() {
     EmptySearchState(
         modifier = Modifier
             .fillMaxSize()
