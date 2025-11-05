@@ -72,6 +72,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         dukanColor = cartColor,
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
                         onAddToCartClick = {
+                            productQuantity += 1
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
                                 productId = product.id,

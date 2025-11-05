@@ -137,6 +137,7 @@ private fun ProductIconAction(
                 dukanColor = Color(state.dukancolor),
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = {
+                    productQuantity += 1
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,
@@ -167,6 +168,7 @@ private fun ProductIconAction(
                 inCartQuantity = productQuantity,
                 dukanColor = Color(state.dukancolor),
                 onAddToCartClick = {
+                    productQuantity += 1
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,

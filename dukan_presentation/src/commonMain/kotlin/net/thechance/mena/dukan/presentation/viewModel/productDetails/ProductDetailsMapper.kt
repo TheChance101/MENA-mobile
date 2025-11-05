@@ -12,7 +12,8 @@ fun Product.toUiState(): ProductDetailsUiState.ProductInfo {
         price = price,
         description = description,
         images = imageUrls,
-        inCartQuantity = if (quantityInCart == 0) quantityInCart + 1 else quantityInCart)
+        inCartQuantity = quantityInCart
+    )
 }
 
 fun ProductDetailsUiState.ProductInfo.toDomainParams(dukanId: String): UpdateProductCartQuantityParams {

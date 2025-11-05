@@ -175,6 +175,7 @@ private fun ProductItem(
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = {
                     toggleCartToQuantity = true
+                    productQuantity += 1
                     listener.onAddToCartClicked(
                         productId = product.id,
                         productQuantity = productQuantity

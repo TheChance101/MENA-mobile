@@ -91,6 +91,7 @@ private fun ProductItem(
                 dukanColor = dukanColor,
                 onAddToCartClick = {
                     toggleCartToQuantity = true
+                    productQuantity += 1
                     listener.onAddToCartClicked(
                         productId = product.id,
                         productQuantity = productQuantity
