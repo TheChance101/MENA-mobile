@@ -29,7 +29,10 @@ import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
+import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.MapStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -46,6 +49,16 @@ internal fun NearbyMosquesScreen(
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val navController = LocalNavController.current
+
+
+    ObserveAsEffect(viewModel.uiEffect) { effect ->
+        when (effect) {
+            NearbyMosquesEffect.NavigateBack -> TODO()
+            NearbyMosquesEffect.NavigateToAddMosque -> TODO()
+            NearbyMosquesEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
+        }
+    }
 
     Content(
         uiState = state,
