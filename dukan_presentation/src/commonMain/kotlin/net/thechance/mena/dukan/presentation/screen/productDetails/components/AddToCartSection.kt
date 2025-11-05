@@ -66,7 +66,6 @@ fun AddToCartSection(
             loadingColors = listOf(
                 Theme.colorScheme.stroke,
                 Theme.colorScheme.shadeTertiary,
-                Theme.colorScheme.error,
                 Theme.colorScheme.primary.primary
             ),
             shape = RoundedCornerShape(Theme.radius.md),
