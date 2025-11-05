@@ -46,7 +46,7 @@ internal class NearbyMosquesViewModel(
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques -> handleNearbyMosquesSuccess(mosques) },
+            onSuccess = ::handleNearbyMosquesSuccess,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
 
