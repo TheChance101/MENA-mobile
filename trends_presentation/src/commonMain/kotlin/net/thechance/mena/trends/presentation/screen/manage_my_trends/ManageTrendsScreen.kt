@@ -46,6 +46,7 @@ import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
+import mena.trends_presentation.generated.resources.no_favorites_yet
 import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
@@ -56,7 +57,6 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
-import net.thechance.mena.trends.presentation.screen.home.component.EmptyFavorites
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
@@ -200,8 +200,13 @@ private fun ManageTrendsScreenBody(
 
         if (state.selectTab == SelectTab.Favorites) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-
-                EmptyFavorites()
+                Text(
+                    text = stringResource(Res.string.no_favorites_yet),
+                    style = Theme.typography.label.medium,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    textAlign = TextAlign.Center
+                )
             }
             return@LazyVerticalGrid
         }//temporary until we make implementation for it
@@ -209,7 +214,7 @@ private fun ManageTrendsScreenBody(
         item(span = { GridItemSpan(maxLineSpan) }) {
             TrendsAnimatedVisibility(
                 visible = shouldShowEmptyState,
-                content = { EmptyTrends() }
+                content = { EmptyTrends(modifier = Modifier.padding(top = 74.dp)) }
             )
         }
 
