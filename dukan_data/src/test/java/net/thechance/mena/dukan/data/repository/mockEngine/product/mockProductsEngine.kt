@@ -65,18 +65,18 @@ fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
     headers = jsonHeaders
 )
 
-fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = createdProductResponseId) = respond(
-    content = jsonSerialization.encodeToString(ProductDto.serializer(), productDto1),
-    status = HttpStatusCode.OK,
-    headers = jsonHeaders
-)
-
+fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = createdProductResponseId) =
+    respond(
+        content = jsonSerialization.encodeToString(ProductDto.serializer(), productDto1),
+        status = HttpStatusCode.OK,
+        headers = jsonHeaders
+    )
 
 fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -91,25 +91,29 @@ fun createProductHttpClient(
                 ?: defaultPaginatedProductResponse()
 
             request.url.encodedPath.startsWith("/dukan/product/images/") &&
-            request.url.encodedPath.endsWith("/delete") -> deleteImagesResponse?.invoke(this)
+                    request.url.encodedPath.endsWith("/delete") -> deleteImagesResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
-            request.url.encodedPath.startsWith("/dukan/product/images/") -> uploadImagesResponse?.invoke(this)
+            request.url.encodedPath.startsWith("/dukan/product/images/") -> uploadImagesResponse?.invoke(
+                this
+            )
                 ?: defaultImagesUploadResponse()
 
-            "/dukan/product/$createdProductResponseId" -> productDetailsResponse?.invoke(this)
+            request.url.encodedPath == "/dukan/product/$createdProductResponseId" -> productDetailsResponse?.invoke(
+                this
+            )
                 ?: defaultProductDetailsResponse()
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
-            request.method.value == "GET" -> productByIdResponse?.invoke(this)
+                    request.method.value == "GET" -> productByIdResponse?.invoke(this)
                 ?: defaultProductByIdResponse()
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
-            request.method.value == "PUT" -> updateResponse?.invoke(this)
+                    request.method.value == "PUT" -> updateResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
-            request.method.value == "DELETE" -> deleteResponse?.invoke(this)
+                    request.method.value == "DELETE" -> deleteResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
@@ -126,7 +130,7 @@ fun createProductRepository(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -137,7 +141,7 @@ fun createProductRepository(
             createResponse = createResponse,
             paginatedResponse = paginatedResponse,
             uploadImagesResponse = uploadImagesResponse,
-            productDetailsResponse = productDetailsResponse
+            productDetailsResponse = productDetailsResponse,
             productByIdResponse = productByIdResponse,
             updateResponse = updateResponse,
             deleteResponse = deleteResponse,
