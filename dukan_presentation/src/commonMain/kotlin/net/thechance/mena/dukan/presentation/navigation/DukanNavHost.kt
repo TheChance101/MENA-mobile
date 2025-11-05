@@ -12,6 +12,7 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.CreateProductS
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScreen
 import net.thechance.mena.dukan.presentation.screen.dukanCategories.DukanCategoriesScreen
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsScreen
+import net.thechance.mena.dukan.presentation.screen.editProduct.EditProductScreen
 import net.thechance.mena.dukan.presentation.screen.main.MainScreen
 import net.thechance.mena.dukan.presentation.screen.manageDukan.ManageDukanScreen
 import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfScreen
@@ -61,6 +62,9 @@ fun DukanNavHost() {
             }
             composable<DukanRoute.CreateProductScreenRoute> {
                 CreateProductScreen()
+            }
+            composable<DukanRoute.EditProductScreenRoute> {
+                EditProductScreen()
             }
             composable<DukanRoute.DukanDetails> {
                 DukanDetailsScreen()

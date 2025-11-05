@@ -143,4 +143,14 @@
     <string name="dukan_managment_loading">يرجى الانتظار حتى يكتمل التحميل...</string>
     <string name="dukan_main_content_empty_error_title">عذرًا! الشاشة الرئيسية للدكّان غير متاحة حاليًا، يرجى المحاولة مرة أخرى قريبًا.</string>
     <string name="dukan_main_content_empty_error_body">سيظهر هنا عند توفره.</string>
+    <string name="manage_product">إدارة المنتج</string>
+    <string name="product_name_is_already_exist">اسم المنتج موجود بالفعل، جرب اسمًا آخر.</string>
+    <string name="save_product_success">تم حفظ المنتج بنجاح.</string>
+    <string name="error_update_product">فشل في تحديث المنتج. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_product_not_found">المنتج غير موجود.</string>
+    <string name="error_unauthorized_access">غير مصرح لك بتعديل هذا المنتج.</string>
+    <string name="delete_product_success">تم حذف المنتج بنجاح.</string>
+    <string name="error_delete_product">فشل في حذف المنتج. يرجى المحاولة مرة أخرى.</string>
+    <string name="delete_product_title">حذف المنتج</string>
+    <string name="delete_product_description">هل أنت متأكد أنك تريد حذف هذا المنتج؟</string>
 </resources>

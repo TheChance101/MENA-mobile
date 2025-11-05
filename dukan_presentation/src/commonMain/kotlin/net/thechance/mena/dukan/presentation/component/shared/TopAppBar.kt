@@ -1,14 +1,18 @@
-package net.thechance.mena.dukan.presentation.screen.createProduct.component
+package net.thechance.mena.dukan.presentation.component.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.add_product_
+import mena.dukan_presentation.generated.resources.add_product
 import mena.dukan_presentation.generated.resources.back_arrow
+import mena.dukan_presentation.generated.resources.delete_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
+import mena.dukan_presentation.generated.resources.ic_delete
+import mena.dukan_presentation.generated.resources.manage_product
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -18,14 +22,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TopAppBar(
-    onBackClick: () -> Unit
+    title: String,
+    onBackClick: () -> Unit,
+    onDeleteClick: (() -> Unit)? = null
 ) {
     AppBar(
-        title = stringResource(resource = Res.string.add_product_),
+        title = title,
         titleColor = Theme.colorScheme.shadePrimary,
         modifier = Modifier
             .background(color = Theme.colorScheme.background.surface)
-            .padding(top = Theme.spacing._16, bottom = Theme.spacing._8),
+            .padding(bottom = Theme.spacing._8),
         leadingContent = {
             Icon(
                 painter = painterResource(resource = Res.drawable.ic_arrow_left),
@@ -33,6 +39,19 @@ fun TopAppBar(
             )
         },
         onLeadingClick = onBackClick,
+        trailingContent = onDeleteClick?.let { deleteClick ->
+            {
+                AppBarOptionContainer(
+                    onClick = deleteClick,
+                    content = {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_delete),
+                            contentDescription = stringResource(Res.string.delete_icon),
+                        )
+                    }
+                )
+            }
+        }
     )
 }
 
@@ -41,7 +60,20 @@ fun TopAppBar(
 private fun AppBarPreview() {
     MenaTheme {
         TopAppBar(
-            onBackClick = {}
+            title = stringResource(Res.string.add_product),
+            onBackClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun AppBarWithDeletePreview() {
+    MenaTheme {
+        TopAppBar(
+            onBackClick = {},
+            title = stringResource(Res.string.manage_product),
+            onDeleteClick = {}
         )
     }
 }

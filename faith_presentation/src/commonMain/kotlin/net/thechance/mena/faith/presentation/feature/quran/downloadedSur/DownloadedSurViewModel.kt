@@ -1,9 +1,7 @@
-package net.thechance.mena.faith.presentation.feature.downloadedSur
+package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
 import androidx.lifecycle.viewModelScope
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.bookmark_removed_successfully
-import mena.faith_presentation.generated.resources.delete
 import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas

@@ -115,6 +115,7 @@
     <string name="share_icon_content_description">Share Icon</string>
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
+    <string name="download_app_title">MENA app-download app</string>
     <string name="copy_to_clipboard_success">Copied</string>
 
     <string name="enable_location_title">Enable location</string>

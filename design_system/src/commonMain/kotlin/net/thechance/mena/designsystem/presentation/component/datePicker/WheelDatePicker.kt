@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.components
+package net.thechance.mena.designsystem.presentation.component.datePicker
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -24,7 +24,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.distinctUntilChanged
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,64 +38,45 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.util.AppMonth
-import net.thechance.mena.identity.presentation.util.getNumberOfDaysInMonth
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
 import kotlin.math.absoluteValue
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 @Composable
 fun WheelDatePicker(
-    selectedDate: LocalDate?,
+    selectedDayIndex: Int,
+    selectedMonthIndex: Int,
+    selectedYearIndex: Int,
+    days: List<String>,
+    months: List<String>,
+    years: List<String>,
     modifier: Modifier = Modifier,
-    minYear: Int = 1920,
-    maxYear: Int = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).year,
-    onDateChange: (day: Int, month: Int, year: Int) -> Unit,
+    onDateChange: (dayIndex: Int, monthIndex: Int, yearIndex: Int) -> Unit,
 ) {
-    if (selectedDate == null)
-        return
+    val dayPagerState = rememberPagerState(
+        initialPage = selectedDayIndex.coerceIn(0, days.size - 1),
+        pageCount = { days.size }
+    )
 
     val monthPagerState = rememberPagerState(
-        initialPage = (selectedDate.month.number) - 1, pageCount = { 12 }
+        initialPage = selectedMonthIndex.coerceIn(0, months.size - 1),
+        pageCount = { months.size }
     )
 
     val yearPagerState = rememberPagerState(
-        initialPage = (selectedDate.year) - minYear,
-        pageCount = { maxYear - minYear + 1 }
+        initialPage = selectedYearIndex.coerceIn(0, years.size - 1),
+        pageCount = { years.size }
     )
-
-    val currentMonth = monthPagerState.currentPage + 1
-    val currentYear = minYear + yearPagerState.currentPage
-    val daysInMonth = remember(currentMonth, currentYear) {
-        getNumberOfDaysInMonth(currentYear, currentMonth)
-    }
-
-    val dayPagerState = rememberPagerState(
-        initialPage = (selectedDate.day) - 1,
-        pageCount = { daysInMonth }
-    )
-
-    val days = remember(daysInMonth) {
-        (1..daysInMonth).map { it.toString().padStart(2, '0') }
-    }
 
     var rowWidth by remember { mutableStateOf(0) }
 
-    LaunchedEffect(selectedDate) {
-        val targetYearPage = selectedDate.year - minYear
-        val targetMonthPage = selectedDate.month.number - 1
-        val targetDayPage = selectedDate.day - 1
+    LaunchedEffect(selectedDayIndex, selectedMonthIndex, selectedYearIndex) {
+        val targetDayPage = selectedDayIndex.coerceIn(0, days.size - 1)
+        val targetMonthPage = selectedMonthIndex.coerceIn(0, months.size - 1)
+        val targetYearPage = selectedYearIndex.coerceIn(0, years.size - 1)
 
         coroutineScope {
             if (yearPagerState.currentPage != targetYearPage) {
@@ -129,40 +112,38 @@ fun WheelDatePicker(
         ) {
             VerticalPicker(
                 state = monthPagerState,
-                options = AppMonth.entries.map { stringResource(it.res) },
+                options = months,
                 modifier = Modifier.padding(end = Theme.spacing._32),
-            ) {
-                val day = dayPagerState.currentPage + 1
-                val month = monthPagerState.currentPage + 1
-                val year = minYear + yearPagerState.currentPage
-                onDateChange(day, month, year)
-            }
+            )
 
             VerticalPicker(
                 state = dayPagerState,
                 options = days,
                 modifier = Modifier.padding(end = 52.dp)
-            ) {
-                val day = dayPagerState.currentPage + 1
-                val month = monthPagerState.currentPage + 1
-                val year = minYear + yearPagerState.currentPage
-                onDateChange(day, month, year)
-            }
+            )
 
             VerticalPicker(
                 state = yearPagerState,
-                options = (minYear..maxYear).map { it.toString() },
+                options = years,
                 isYearPicker = true
-            ) {
-                val day = dayPagerState.currentPage + 1
-                val month = monthPagerState.currentPage + 1
-                val year = minYear + yearPagerState.currentPage
-                onDateChange(day, month, year)
-            }
+            )
         }
     }
-}
 
+    LaunchedEffect(dayPagerState, monthPagerState, yearPagerState) {
+        snapshotFlow {
+            Triple(
+                dayPagerState.currentPage,
+                monthPagerState.currentPage,
+                yearPagerState.currentPage
+            )
+        }
+            .distinctUntilChanged()
+            .collect { (dayIndex, monthIndex, yearIndex) ->
+                onDateChange(dayIndex, monthIndex, yearIndex)
+            }
+    }
+}
 
 @Composable
 private fun ChoiceIndicator(modifier: Modifier = Modifier) {
@@ -179,8 +160,7 @@ private fun VerticalPicker(
     state: PagerState,
     options: List<String>,
     isYearPicker: Boolean = false,
-    modifier: Modifier = Modifier,
-    onDateChange: () -> Unit
+    modifier: Modifier = Modifier
 ) {
     val textMeasurer = rememberTextMeasurer()
     val baseStyle = Theme.typography.body.large
@@ -222,8 +202,6 @@ private fun VerticalPicker(
                 else -> 0.2f
             }
 
-            onDateChange()
-
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -247,11 +225,17 @@ private fun VerticalPicker(
 
 @Preview
 @Composable
-private fun DatePickerBottomSheetContentPreview() {
+private fun WheelDatePickerPreview() {
     MenaTheme {
         WheelDatePicker(
-            selectedDate = LocalDate(2023, 1, 1),
-            onDateChange = { day, month, year -> },
+            selectedDayIndex = 14,
+            selectedMonthIndex = 5,
+            selectedYearIndex = 104,
+            days = (1..31).map { it.toString().padStart(2, '0') },
+            months = listOf("January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"),
+            years = (1920..2024).map { it.toString() },
+            onDateChange = { _, _, _ -> },
         )
     }
 }

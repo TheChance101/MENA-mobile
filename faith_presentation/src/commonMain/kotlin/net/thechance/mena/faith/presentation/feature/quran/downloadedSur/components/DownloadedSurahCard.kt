@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.downloadedSur.components
+package net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.downloadedSur.DownloadedSurUiState
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

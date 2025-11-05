@@ -317,5 +317,6 @@ private fun dummyProductDetails(): Product = Product(
         "http://example.com/image2.jpg"
     ),
     createdAt = "2025-10-31T12:00:00Z",
-    quantityInCart = 10
-)
+    quantityInCart = 10,
+    shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+    )
