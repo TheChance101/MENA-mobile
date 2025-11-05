@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.category_publish
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,6 +35,7 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -70,11 +70,10 @@ private fun CategoryPublishContent(
     state: CategoryPublishState,
     listener: CategoryPublishInteractionListener,
 ) {
-    AnimatedVisibility(visible = !state.isLoading) {
+    TrendsAnimatedVisibility(visible = !state.isLoading) {
         Scaffold(
             modifier = Modifier.padding(bottom = Theme.spacing._24),
             topBar = { CategoryPublishAppBar(listener::onClickBack) },
-            content = { CategoryPublishScreenBody(state = state, listener = listener) },
             bottomBar = {
                 PrimaryButton(
                     modifier = Modifier
@@ -86,11 +85,12 @@ private fun CategoryPublishContent(
                     isLoading = state.isPublishButtonLoadingVisible,
                     contentPadding = PaddingValues(vertical = 13.dp)
                 )
-            }
+            },
+            content = { CategoryPublishScreenBody(state = state, listener = listener) }
         )
     }
 
-    AnimatedVisibility(visible = state.isLoading) {
+    TrendsAnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }
@@ -156,7 +156,7 @@ private fun CategoryPublishScreenBody(
         }
     }
 
-   AnimatedVisibility(visible = state.isLoading) {
+   TrendsAnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }

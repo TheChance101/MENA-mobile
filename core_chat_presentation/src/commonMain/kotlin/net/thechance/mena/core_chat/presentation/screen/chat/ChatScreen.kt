@@ -37,7 +37,6 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImag
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -152,6 +151,7 @@ fun ChatScreenContent(
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
+                paginationError = state.paginationError,
             )
         }
 

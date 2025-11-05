@@ -33,7 +33,10 @@ import mena.faith_presentation.generated.resources.copy
 import mena.faith_presentation.generated.resources.ic_all_bookmark
 import mena.faith_presentation.generated.resources.ic_copy
 import mena.faith_presentation.generated.resources.ic_link_forward
+import mena.faith_presentation.generated.resources.icon_play
 import mena.faith_presentation.generated.resources.link_forward
+import mena.faith_presentation.generated.resources.listen
+import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.send_to
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -63,7 +66,8 @@ internal fun AnimatedAyahActionButtons(
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
-                onShareClick = { listener.onShareClick(state.selectedAyah) }
+                onShareClick = { listener.onShareClick(state.selectedAyah) },
+                onListenClick = { listener.onListenClick() }
             )
         }
     }
@@ -74,6 +78,7 @@ internal fun AyahActionButtons(
     onBookmarkClick: () -> Unit,
     onCopyClick: () -> Unit,
     onShareClick: () -> Unit,
+    onListenClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -109,6 +114,14 @@ internal fun AyahActionButtons(
             contentDescription = stringResource(Res.string.copy),
             text = stringResource(Res.string.copy),
             onClick = onCopyClick
+        )
+        VerticalDivider()
+
+        IconTextButton(
+            icon = painterResource(Res.drawable.icon_play),
+            contentDescription = stringResource(Res.string.play),
+            text = stringResource(Res.string.listen),
+            onClick = onListenClick
         )
     }
 }
@@ -171,7 +184,8 @@ private fun Preview() {
             AyahActionButtons(
                 onBookmarkClick = {},
                 onCopyClick = {},
-                onShareClick = {}
+                onShareClick = {},
+                onListenClick = {}
             )
         }
     }

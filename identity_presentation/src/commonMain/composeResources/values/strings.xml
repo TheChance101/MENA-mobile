@@ -15,7 +15,8 @@
     <string name="create_password">Set your password</string>
     <string name="create_password_title">Complete your profile</string>
     <string name="create_password_description">Set your password</string>
-    <string name="register">Next</string>
+    <string name="next">Next</string>
+    <string name="register">Register</string>
     <string name="you_already_have_account">You already have an account?</string>
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
@@ -114,6 +115,8 @@
     <string name="share_icon_content_description">Share Icon</string>
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
+    <string name="download_app_title">MENA app-download app</string>
+    <string name="copy_to_clipboard_success">Copied</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -210,11 +213,31 @@
     <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
 
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">You have successfully created your account!</string>
+    <string name="success_account_created_description">Welcome to MENA! You're now part of our community and can start exploring the app.</string>
+    <string name="go_to_home">Go to home</string>
+    <string name="ic_account_shield">Account Shield Icon</string>
+
     <string name="title_pick_profile_picture">Pick Profile Picture</string>
     <string name="title_complete_your_profile">Complete your profile</string>
     <string name="desc_upload_profile_image">Upload a profile image so people can recognize you</string>
     <string name="click_to_upload">Click to Upload</string>
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
+
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">Complete your profile</string>
+    <string name="date_picker_screen_prompt">Select your date of birth, only allowed for 14+ years</string>
+
+    <!-- select gender   -->
+    <string name="select_gender_screen_prompt_title">Complete your profile</string>
+    <string name="select_gender_screen_prompt">Select your gender</string>
+    <!-- EnterName -->
+    <string name="complete_profile_title">Complete your profile</string>
+    <string name="complete_profile_description">Please fill your informations</string>
+    <string name="first_name_label">First name</string>
+    <string name="last_name_label">Last name</string>
+    <string name="username_label">Username</string>
 
 </resources>

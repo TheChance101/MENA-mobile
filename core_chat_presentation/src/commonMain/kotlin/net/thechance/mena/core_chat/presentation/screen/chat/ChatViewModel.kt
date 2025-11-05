@@ -84,8 +84,8 @@ class ChatViewModel(
             onLoadUpdated = { },
             onRequest = ::getChatHistory,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = { showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true) },
-            onSuccess = { result, newPage -> onGetChatHistorySuccess(result) },
+            onError = { handleChatHistoryError() },
+            onSuccess = { result, _ -> handleChatHistorySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
     }
@@ -740,6 +740,15 @@ class ChatViewModel(
         messagesMutex.withLock {
             _messages.update(block)
         }
+    }
+
+    private fun handleChatHistoryError() {
+        updateState { state -> state.copy(paginationError = true) }
+    }
+
+    private suspend fun handleChatHistorySuccess(result: PagedData<Message>) {
+        updateState { state -> state.copy(paginationError = false) }
+        onGetChatHistorySuccess(result)
     }
 
     companion object {

@@ -25,7 +25,8 @@ val productDto1 = ProductDto(
         "https://picsum.photos/200/200?random=1",
         "https://picsum.photos/200/200?random=2"
     ),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
 )
 
 
@@ -36,15 +37,19 @@ val productDto2 = ProductDto(
     shelfId = demoShelfID,
     price = 19.99,
     description = "Another demo product",
-    imageUrls = listOf("https://picsum.photos/200/200?random=1","https://picsum.photos/200/200?random=2"),
-    createdAt = "2025-09-26T15:26:41.300823Z"
+    imageUrls = listOf(
+        "https://picsum.photos/200/200?random=1",
+        "https://picsum.photos/200/200?random=2"
+    ),
+    createdAt = "2025-09-26T15:26:41.300823Z",
+    quantityInCart =10
+
 )
 
 val productDtos = listOf(
     productDto1,
     productDto2
 )
-
 
 
 val demoPagedResult: PagedResult<Product> = PageResponseDto(
@@ -56,3 +61,26 @@ val demoPagedResult: PagedResult<Product> = PageResponseDto(
     first = true,
     last = true
 ).toDomain { it.toDomain() }
+
+val dummyImageUrls = listOf(
+    "http://example.com/image1.jpg",
+    "http://example.com/image2.jpg"
+)
+
+@OptIn(ExperimentalUuidApi::class)
+val dummyProductId2: Uuid = Uuid.parse("a1b2c3d4-e5f6-7890-1234-567890abcdef")
+
+@OptIn(ExperimentalUuidApi::class)
+val product1 = Product(
+    id = dummyProductId2,
+    name = "Vintage T-Shirt",
+    description = "A very cool vintage t-shirt.",
+    price = 29.99,
+    imageUrls = listOf(
+        "http://example.com/image1.jpg",
+        "http://example.com/image2.jpg"
+    ),
+    createdAt = "2025-10-31T12:00:00Z",
+    quantityInCart =10,
+    shelfId = demoShelfID
+)

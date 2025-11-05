@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -23,8 +24,8 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.You_are_about_to_pay
 import mena.wallet_presentation.generated.resources.ic_user
 import mena.wallet_presentation.generated.resources.img_silver
+import mena.wallet_presentation.generated.resources.payment_to
 import mena.wallet_presentation.generated.resources.silver_coin
-import mena.wallet_presentation.generated.resources.to
 import mena.wallet_presentation.generated.resources.user_img
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -113,8 +114,10 @@ private fun PaymentAmount(
     ) {
         Text(
             text = amount,
-            style = Theme.typography.headline.medium,
-            color = Theme.colorScheme.shadeSecondary
+            style = Theme.typography.headline.medium.copy(
+                fontWeight = FontWeight.SemiBold
+            ),
+            color = Theme.colorScheme.shadePrimary
         )
         Icon(
             modifier = Modifier
@@ -140,7 +143,7 @@ private fun ReceiverInfo(
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = stringResource(Res.string.to),
+            text = stringResource(Res.string.payment_to),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -182,9 +185,14 @@ private fun PaymentDetailsSectionPreview() {
     MenaTheme {
         Scaffold {
             PaymentDetailsSection(
-                payment = PaymentUiState(),
-                userMessage = "",
-                receiver = ReceiverUiState()
+                payment = PaymentUiState(
+                    amount = "530,320",
+                    status = true
+                ),
+                userMessage = "You have 1,230.25 silvers in wallet",
+                receiver = ReceiverUiState(
+                    name = "Ahmed Ali"
+                )
             )
         }
     }

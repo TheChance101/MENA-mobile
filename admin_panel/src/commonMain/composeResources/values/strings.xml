@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="app_name">MENA Admin Panel</string>
+    <string name="cancel">Cancel</string>
+    <string name="logout">Logout</string>
+    <string name="logout_disc">Are you sure you want to logout your account? you can login again using yours credential.</string>
+    <string name="users_management">Users Management</string>
+    <string name="dukans_management">Dukans Management</string>
+    <string name="dukan_requests">Dukan Requests</string>
+    <string name="deposit">Deposit</string>
+    <string name="mena">MENA</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">login</string>
+    <string name="login_header">Welcome Back to MENA</string>
+    <string name="login_sub_title">Enter your credentials to log in</string>
+    <string name="login_background_img">login background image</string>
+    <string name="no_internet_title">Oops! It looks like you’re offline.</string>
+    <string name="no_internet_content">Check your connection and try again</string>
+    <string name="unknown_error_title">Unknown error</string>
+    <string name="unknown_error_description">An unknown error occurred. Please try again.</string>
+    <string name="error_invalid_credentials_title">Wrong credentials.</string>
+    <string name="error_invalid_credentials_description">Please check your username and password.</string>
 </resources>
