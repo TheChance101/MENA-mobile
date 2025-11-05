@@ -28,7 +28,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 
 @Composable
-fun NoImageDukanShelves(
+fun NoImageDukanShelvesContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
@@ -57,48 +57,65 @@ fun NoImageDukanShelves(
     AnimatedContent(
         targetState = shelves.loadState.refresh,
         label = "ShelvesContentAnimation"
-    ) { loadingState ->
-        when (loadingState) {
-            LoadState.Loading -> NoImageDukanShelvesSkeleton()
-            is LoadState.NotLoading -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = Theme.spacing._8),
-                    state = lazyColumnListState
-                ) {
-
-                    item(key = "BestSelling") {
-                        BestSellingNoImageDukan(
-                            state = state,
-                            listener = listener
-                        )
-                    }
-                    stickyHeader(key = "ShelvesChips") {
-                        NoImageDukanShelvesChips(
-                            shelfs = shelves,
-                            onClick = { shelfId, index ->
-                                listener.onShelfClicked(shelfId)
-                                coroutineScope.launch {
-                                    lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
-                                }
-                            },
-                            alpha = chipsAlpha,
-                            selectedShelfId = state.shelfIdSelected,
-                            dukanColor = state.dukanInfo.color
-                        )
-                    }
-
-                    items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
-                        val shelf = shelves[it] ?: return@items
-                        NoImageDukanShelfWithProducts(
-                            shelf = shelf,
-                            listener = listener,
-                            dukanColor = state.dukanInfo.color
-                        )
-                    }
-                }
-            }
+    ) {
+        when (it) {
+            LoadState.Loading -> NoImageDukanShelvesContentSkeleton()
+            is LoadState.NotLoading -> NoImageDukanShelvesContentLoaded(
+                state = state,
+                listener = listener,
+                shelves = shelves,
+                lazyColumnListState = lazyColumnListState,
+                coroutineScope = coroutineScope,
+                chipsAlpha = chipsAlpha
+            )
             is LoadState.Error -> {}
+        }
+    }
+}
+
+@Composable
+private fun NoImageDukanShelvesContentLoaded(
+    state: DukanDetailsUiState,
+    listener: DukanDetailsInteractionListener,
+    shelves: LazyPagingItems<ShelfUiState>,
+    lazyColumnListState: LazyListState,
+    coroutineScope: CoroutineScope,
+    chipsAlpha: Float
+){
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        state = lazyColumnListState
+    ) {
+
+        item(key = "BestSelling") {
+            BestSellingNoImageDukan(
+                state = state,
+                listener = listener
+            )
+        }
+        stickyHeader(key = "ShelvesChips") {
+            NoImageDukanShelvesChips(
+                shelfs = shelves,
+                onClick = { shelfId, index ->
+                    listener.onShelfClicked(shelfId)
+                    coroutineScope.launch {
+                        lazyColumnListState.animateScrollToItem(index + SHELVES_OFFSET)
+                    }
+                },
+                alpha = chipsAlpha,
+                selectedShelfId = state.shelfIdSelected,
+                dukanColor = state.dukanInfo.color
+            )
+        }
+
+        items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
+            val shelf = shelves[it] ?: return@items
+            NoImageDukanShelfWithProducts(
+                shelf = shelf,
+                listener = listener,
+                dukanColor = state.dukanInfo.color
+            )
         }
     }
 }

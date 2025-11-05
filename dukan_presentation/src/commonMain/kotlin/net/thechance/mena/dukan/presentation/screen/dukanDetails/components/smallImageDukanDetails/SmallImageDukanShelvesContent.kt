@@ -13,25 +13,34 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SmallImageDukanShelves(
+fun SmallImageDukanShelvesContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
     modifier: Modifier = Modifier,
@@ -44,12 +53,12 @@ fun SmallImageDukanShelves(
     ) {
         when (it) {
             LoadState.Loading -> SmallImageProductSkeleton()
-            is LoadState.NotLoading -> ShelvesContent(
+            is LoadState.NotLoading -> ShelfContent(
                 shelves = shelves,
-                dukanInfo = state.dukanInfo,
-                listener = listener,
+                dukanColor = Color(state.dukanInfo.color),
                 lazyListState = lazyListState,
-                modifier = modifier
+                listener = listener,
+                modifier = modifier,
             )
 
             is LoadState.Error -> {}
@@ -58,9 +67,9 @@ fun SmallImageDukanShelves(
 }
 
 @Composable
-private fun ShelvesContent(
+private fun ShelfContent(
     shelves: LazyPagingItems<ShelfUiState>,
-    dukanInfo: DukanDetailsUiState.DukanInfo,
+    dukanColor: Color,
     listener: DukanDetailsInteractionListener,
     lazyListState: LazyListState,
     modifier: Modifier,
@@ -77,14 +86,9 @@ private fun ShelvesContent(
         ) { index ->
             shelves[index]?.let { shelf ->
                 ProductsHeader(
-                    viewAllColor = Color(dukanInfo.color),
+                    viewAllColor = dukanColor,
                     shelfName = shelf.name,
-                    onClick = {
-                        listener.onViewAllProductsShelfClicked(
-                            shelf.id,
-                            shelf.name
-                        )
-                    },
+                    onClick = { listener.onViewAllProductsShelfClicked(shelf.id, shelf.name) },
                     modifier = Modifier.padding(
                         start = Theme.spacing._16,
                         end = Theme.spacing._16,
@@ -94,7 +98,7 @@ private fun ShelvesContent(
                 ShelfProducts(
                     shelf = shelf,
                     listener = listener,
-                    cartColor = Color(dukanInfo.color)
+                    cartColor = dukanColor
                 )
             }
         }
@@ -105,8 +109,9 @@ private fun ShelvesContent(
 private fun ShelfProducts(
     shelf: ShelfUiState,
     listener: DukanDetailsInteractionListener,
-    cartColor: Color? = null
+    cartColor: Color
 ) {
+
     val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
     val lazyListState = rememberLazyListState()
     val flingBehavior = rememberSnapFlingBehavior(
@@ -121,14 +126,18 @@ private fun ShelfProducts(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         flingBehavior = flingBehavior
     ) {
-        itemsIndexed(productPairs) { _, pair ->
+        itemsIndexed(productPairs) { index, pair ->
             Column(
-                modifier = Modifier.fillParentMaxWidth(0.95f),
+                modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 pair.forEach { product ->
                     key(product.id) {
-                        ProductItem(product = product, listener = listener, cartColor = cartColor)
+                        ProductItem(
+                            product = product,
+                            cartColor = cartColor,
+                            listener = listener
+                        )
                     }
                 }
             }
@@ -141,26 +150,52 @@ private fun ShelfProducts(
 private fun ProductItem(
     product: ProductUiState,
     listener: DukanDetailsInteractionListener,
-    cartColor: Color?
+    cartColor: Color
 ) {
-    val isCartButtonVisible = false  // TODO: Remove when implement Cart
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
+
+    LaunchedEffect(product) {
+        toggleCartToQuantity = product.inCartQuantity > 1
+        productQuantity = product.inCartQuantity
+    }
+
     ProductCard(
         productName = product.name,
         productImageUrl = product.imageUrl,
         productDescription = product.description,
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
+        onClick = { listener.onProductClicked(product.id) },
         productAction = {
-            if (isCartButtonVisible) {
-                ProductActionIconSmallImageDukan(
-                    inCartQuantity = product.inCartQuantity,
-                    cartColor = cartColor,
-                    onAddClick = { listener.onAddToCartClicked(product.id) },
-                    onPlusClick = {},
-                    onMinusClick = {}
-                )
-            }
-        },
-        onClick = { listener.onProductClicked(product.id) }
+            SmallAndWideImageDukanProductAction(
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = cartColor,
+                cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
+                onAddToCartClick = {
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    else productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                }
+            )
+        }
     )
 }

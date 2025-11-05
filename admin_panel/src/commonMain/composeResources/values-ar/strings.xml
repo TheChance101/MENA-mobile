@@ -40,6 +40,13 @@
     <string name="block_user">حظر المستخدم</string>
     <string name="block_user_confirmation_message">هل أنت متأكد من أنك تريد المتابعة بالحظر؟</string>
     <string name="cancel">إلغاء</string>
+    <string name="cancel">إلغاء</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="logout_disc">هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟ يمكنك تسجيل الدخول مرة أخرى باستخدام بيانات الاعتماد الخاصة بك.</string>
+    <string name="users_management">إدارة المستخدمين</string>
+    <string name="dukans_management">إدارة الدكانات</string>
+    <string name="dukan_requests">طلبات الدكان</string>
+    <string name="deposit">الإيداع</string>
     <string name="username">اسم المستخدم</string>
     <string name="password">كلمة السر</string>
     <string name="login">تسجيل الدخول</string>

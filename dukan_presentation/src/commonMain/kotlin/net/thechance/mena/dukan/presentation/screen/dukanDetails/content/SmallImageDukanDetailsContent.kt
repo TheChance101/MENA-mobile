@@ -22,10 +22,11 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanIconButton
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelves
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanStoreImage
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanImageAndTitle
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails.SmallImageDukanShelvesContent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
@@ -36,7 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun SmallImageDukanDetails(
+fun SmallImageDukanDetailsContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
@@ -44,10 +45,21 @@ fun SmallImageDukanDetails(
 
     Scaffold(
         topBar = {
-            SmallImageAppBar(listener)
+            SmallImageDukanAppBar(
+                isBadgeVisible = true,
+                listener = listener
+            )
+        },
+        snakeBar = {
+            state.snackBarState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onDismissSnackBar
+                )
+            }
         }
     ) {
-        if (state.dukanDetailsState==DukanDetailsUiState.DukanDetailsState.ERROR){
+        if (state.dukanDetailsState == DukanDetailsUiState.DukanDetailsState.ERROR) {
             NoInternetContent(
                 onRetry = listener::onRetryClicked,
                 modifier = Modifier.fillMaxSize()
@@ -55,7 +67,7 @@ fun SmallImageDukanDetails(
             return@Scaffold
         }
         Column {
-            SmallImageDukanStoreImage(
+            SmallImageDukanImageAndTitle(
                 dukanInfoState = state.dukanInfo,
                 modifier = Modifier.padding(
                     start = Theme.spacing._16,
@@ -84,7 +96,7 @@ fun SmallImageDukanDetails(
                     modifier = Modifier.weight(1f)
                 )
             }
-            SmallImageDukanShelves(
+            SmallImageDukanShelvesContent(
                 state = state,
                 listener = listener,
                 modifier = Modifier.padding(top = Theme.spacing._16)
@@ -94,7 +106,8 @@ fun SmallImageDukanDetails(
 }
 
 @Composable
-private fun SmallImageAppBar(
+private fun SmallImageDukanAppBar(
+    isBadgeVisible: Boolean,
     listener: DukanDetailsInteractionListener
 ) {
     AppBar(
@@ -107,7 +120,11 @@ private fun SmallImageAppBar(
         },
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
-            AppBarOptionContainer {
+            AppBarOptionContainer(
+                // when cart contains products
+                isBadgeVisible = isBadgeVisible,
+                onClick = listener::onViewCartClicked
+            ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
                     contentDescription = stringResource(Res.string.shopping_basket_icon)
@@ -121,18 +138,7 @@ private fun SmallImageAppBar(
 @Composable
 private fun SmallImageDukanDetailsPreview() {
     MenaTheme {
-        SmallImageDukanDetails(
-            state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun SmallImageDukanDetailsLoadingPreview() {
-    MenaTheme {
-        SmallImageDukanDetails(
+        SmallImageDukanDetailsContent(
             state = fakeDukanDetails,
             listener = PreviewDukanDetailsInteractionListener,
         )
