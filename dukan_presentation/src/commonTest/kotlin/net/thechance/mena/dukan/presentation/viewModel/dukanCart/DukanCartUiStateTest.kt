@@ -117,7 +117,7 @@ class DukanCartUiStateTest {
         val values = DukanCartUiState.CartState.entries.toSet()
         assertTrue(values.contains(DukanCartUiState.CartState.LOADING))
         assertTrue(values.contains(DukanCartUiState.CartState.LOADED))
-        assertTrue(values.contains(DukanCartUiState.CartState.ERROR))
+        assertTrue(values.contains(DukanCartUiState.CartState.NO_INTERNET))
     }
 
     @Test

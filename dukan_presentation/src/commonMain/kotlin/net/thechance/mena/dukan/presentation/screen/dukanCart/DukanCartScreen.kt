@@ -41,7 +41,7 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
     ) { targetState ->
         when (targetState) {
             CartState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
-            CartState.ERROR -> NoInternetContent(
+            CartState.NO_INTERNET -> NoInternetContent(
                 onRetry = viewModel::onRetryLoadCartClicked,
                 modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
             )

@@ -6,7 +6,6 @@ import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultAdd
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultCartInfoResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.defaultDeleteProductFromCartResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart.dukanCartRepository
-import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResultProductCart
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -72,19 +71,14 @@ class DukanCartRepositoryImplTest {
         assertTrue(called)
     }
 
-//    @Test
-//    fun `get cart info call success`() = runTest {
-//
-//        var called = false
-//        val repo = dukanCartRepository(
-//            getCartInfoResponse = {
-//                called = true
-//                defaultCartInfoResponse()
-//            }
-//        )
-//
-//        val cartInfo = repo.getCartInfo("10")
-//
-//        assertEquals(expected = cart1, actual = cartInfo)
-//    }
+    @Test
+    fun `get cart info call success`() = runTest {
+        val repo = dukanCartRepository(
+            getCartInfoResponse = { defaultCartInfoResponse() }
+        )
+
+        val cartInfo = repo.getCartInfo("10")
+
+        assertEquals(expected = cart1, actual = cartInfo)
+    }
 }

@@ -33,7 +33,7 @@ fun MockRequestHandleScope.defaultCartInfoResponse() = respond(
         CartDto.serializer(),
         cartDto
     ),
-    status = HttpStatusCode.NoContent,
+    status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
 
@@ -52,7 +52,7 @@ fun dukanCartHttpClient(
             "/dukan/cart/$dukanId/items/$productId" -> deleteProductFromCartResponse?.invoke(this)
                 ?: defaultDeleteProductFromCartResponse()
 
-            "/dukan/cart/$dukanId/items" -> getCartInfoResponse?.invoke(this)
+            "/dukan/cart/$dukanId/info" -> getCartInfoResponse?.invoke(this)
                 ?: defaultCartInfoResponse()
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)

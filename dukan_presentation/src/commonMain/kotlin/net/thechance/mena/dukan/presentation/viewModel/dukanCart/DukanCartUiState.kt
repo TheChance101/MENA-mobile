@@ -36,6 +36,6 @@ data class DukanCartUiState(
     enum class CartState {
         LOADING,
         LOADED,
-        ERROR
+        NO_INTERNET
     }
 }

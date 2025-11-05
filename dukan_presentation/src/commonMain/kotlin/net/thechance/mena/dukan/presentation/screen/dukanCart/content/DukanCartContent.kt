@@ -123,7 +123,9 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                     LoadingProductCard()
                 }
             } else {
-                items(count = products.itemCount, key = { products[it]?.id.orEmpty() }) { index ->
+                items(
+                    count = products.itemCount,
+                    key = { products[it]?.id.orEmpty() }) { index ->
                     val product = products[index] ?: return@items
                     SwipeableItem(
                         actionButton = {
@@ -141,7 +143,11 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                                         )
                                     )
                                     .background(Theme.colorScheme.background.bgError)
-                                    .clickable(onClick = { listener.onRemoveItemClicked(product.id) })
+                                    .clickable(onClick = {
+                                        listener.onRemoveItemClicked(
+                                            product.id
+                                        )
+                                    })
                                     .padding(
                                         vertical = Theme.spacing._32,
                                         horizontal = Theme.spacing._12
@@ -304,13 +310,7 @@ private fun BottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
             onClick = onCheckoutClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .shadow(
-                    elevation = 12.dp,
-                    spotColor = Color.White.copy(.16f),
-                    ambientColor = Color.White.copy(.16f),
-                    shape = RoundedCornerShape(Theme.radius.md)
-                ),
+                .height(48.dp),
             isEnabled = totalPrice > 0.0
         )
     }

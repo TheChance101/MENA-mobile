@@ -23,6 +23,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -117,14 +118,26 @@ class DukanCartViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `init SHOULD set cartState to ERROR when repository fails`() = runTest {
-        everySuspend { cartRepository.getCartInfo(any()) } throws Exception("Network Error")
+    fun `init SHOULD set cartState to ERROR NO_INTERNET when repository fails`() = runTest {
+        everySuspend { cartRepository.getCartInfo(any()) } throws NoInternetException("No Internet")
 
         val errorVm = createViewModel()
         advanceUntilIdle()
 
         val state = errorVm.state.value
-        assertEquals(DukanCartUiState.CartState.ERROR, state.cartState)
+        assertEquals(DukanCartUiState.CartState.NO_INTERNET, state.cartState)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `init SHOULD set cartState to ERROR NoSuchItemException when repository fails`() = runTest {
+        everySuspend { cartRepository.getCartInfo(any()) } throws NoSuchItemException("Item Not Found")
+
+        val errorVm = createViewModel()
+        advanceUntilIdle()
+
+        val state = errorVm.state.value
+        assertEquals(0.0, state.totalPrice)
     }
 
     @Test

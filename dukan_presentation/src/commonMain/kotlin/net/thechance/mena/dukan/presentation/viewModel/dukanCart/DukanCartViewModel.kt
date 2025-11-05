@@ -16,6 +16,7 @@ import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
@@ -64,11 +65,7 @@ class DukanCartViewModel(
             block = {
                 cartRepository.getCartInfo(dukanId)
             },
-            onError = {
-                updateState {
-                    copy(cartState = CartState.ERROR)
-                }
-            },
+            onError = ::onCartInfoError,
             onSuccess = ::onLoadCartSuccess
         )
     }
@@ -78,9 +75,20 @@ class DukanCartViewModel(
             block = {
                 cartRepository.getCartInfo(dukanId)
             },
-            onError = ::onErrorUpdateProductQuantity,
+            onError = ::onCartInfoError,
             onSuccess = ::onLoadCartSuccess
         )
+    }
+
+    private fun onCartInfoError(throwable: Throwable) {
+        when (throwable) {
+            is NoSuchItemException -> updateState {
+                copy(totalPrice = 0.0, cartState = CartState.LOADED)
+            }
+
+            is NoInternetException -> updateState { copy(cartState = CartState.NO_INTERNET) }
+            else -> showSnackBar(message = Res.string.something_went_wrong)
+        }
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
