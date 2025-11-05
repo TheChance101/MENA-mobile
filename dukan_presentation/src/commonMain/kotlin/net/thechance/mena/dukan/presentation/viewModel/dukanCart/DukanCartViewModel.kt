@@ -103,11 +103,11 @@ class DukanCartViewModel(
             block = {
                 dukanRepository.getDukanDetailsByDukanId(dukanId)
             },
-            onSuccess = ::onDukanInfoLoaded
+            onSuccess = ::onDukanInfoSuccess
         )
     }
 
-    private fun onDukanInfoLoaded(dukan: Dukan) {
+    private fun onDukanInfoSuccess(dukan: Dukan) {
         updateState {
             copy(
                 dukanInfo = dukan.toUiState(),
@@ -117,10 +117,18 @@ class DukanCartViewModel(
     }
 
 
+    private fun updateProducts() {
+        updateState {
+            copy(
+                products = productsMutableStateFlow
+            )
+        }
+    }
+
     private fun loadProductsPaging() {
         tryToCollect(
             block = ::getProductPagingFlow,
-            onCollect = ::onProductsLoaded
+            onCollect = ::onProductsSuccess
         )
     }
 
@@ -134,11 +142,9 @@ class DukanCartViewModel(
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<ProductUiState>) {
+    private fun onProductsSuccess(products: PagingData<ProductUiState>) {
         productsMutableStateFlow.value = products
-        updateState {
-            copy(products = productsMutableStateFlow)
-        }
+        updateProducts()
     }
 
 
@@ -173,26 +179,26 @@ class DukanCartViewModel(
         }
 
         productsMutableStateFlow.value = updateProducts
-        updateState {
-            copy(
-                products = productsMutableStateFlow
-            )
-        }
+        updateProducts()
     }
 
     private fun updateProductQuantityInServer(productId: String, newQuantity: Int) {
         tryToExecuteWithDebounce(
             block = {
-                cartRepository.addProductQuantity(
-                    UpdateProductCartQuantityParams(
-                        dukanId = dukanId,
-                        productId = productId,
-                        quantity = newQuantity
-                    )
-                )
+                uploadNewQuantityInServer(productId, newQuantity)
             },
             onError = ::onErrorUpdateProductQuantity,
             onSuccess = { updateTotalPrice() }
+        )
+    }
+
+    private suspend fun uploadNewQuantityInServer(productId: String, newQuantity: Int) {
+        cartRepository.updateProductQuantity(
+            UpdateProductCartQuantityParams(
+                dukanId = dukanId,
+                productId = productId,
+                quantity = newQuantity
+            )
         )
     }
 
@@ -206,13 +212,8 @@ class DukanCartViewModel(
         val updateProducts = productsMutableStateFlow.value.filter {
             it.id != productId
         }
-
         productsMutableStateFlow.value = updateProducts
-        updateState {
-            copy(
-                products = productsMutableStateFlow
-            )
-        }
+        updateProducts()
     }
 
     private fun removeProductInServer(productId: String) {

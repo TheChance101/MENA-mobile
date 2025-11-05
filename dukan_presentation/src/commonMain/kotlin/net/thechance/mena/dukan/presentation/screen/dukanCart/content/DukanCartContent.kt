@@ -60,9 +60,10 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
-import net.thechance.mena.dukan.presentation.component.product.SetProductQuantity
+import net.thechance.mena.dukan.presentation.component.product.ProductQuantityButton
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCartInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.dukanCartUiState
@@ -77,6 +78,7 @@ import kotlin.math.roundToInt
 fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionListener) {
     val products = state.products.collectAsLazyPagingItems()
     val lazyListState = rememberLazyListState()
+
     Scaffold(
         topBar = { TopBar(listener::onBackClicked) },
         bottomBar = {
@@ -116,59 +118,65 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                 }
             }
 
-            items(count = products.itemCount, key = { products[it]?.id.orEmpty() }) { index ->
-                val product = products[index] ?: return@items
-                SwipeableItem(
-                    actionButton = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_delete),
-                            contentDescription = stringResource(Res.string.delete_icon),
-                            tint = Theme.colorScheme.error,
-                            modifier = Modifier
-                                .padding(vertical = Theme.spacing._8)
-                                .width(48.dp)
-                                .clip(
-                                    RoundedCornerShape(
-                                        topEnd = Theme.radius.md,
-                                        bottomEnd = Theme.radius.md
+            if (products.loadState.refresh is androidx.paging.LoadState.Loading) {
+                items(count = 8) {
+                    LoadingProductCard()
+                }
+            } else {
+                items(count = products.itemCount, key = { products[it]?.id.orEmpty() }) { index ->
+                    val product = products[index] ?: return@items
+                    SwipeableItem(
+                        actionButton = {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_delete),
+                                contentDescription = stringResource(Res.string.delete_icon),
+                                tint = Theme.colorScheme.error,
+                                modifier = Modifier
+                                    .padding(vertical = Theme.spacing._8)
+                                    .width(48.dp)
+                                    .clip(
+                                        RoundedCornerShape(
+                                            topEnd = Theme.radius.md,
+                                            bottomEnd = Theme.radius.md
+                                        )
                                     )
-                                )
-                                .background(Theme.colorScheme.background.bgError)
-                                .clickable(onClick = { listener.onRemoveItemClicked(product.id) })
-                                .padding(
-                                    vertical = Theme.spacing._32,
-                                    horizontal = Theme.spacing._12
-                                )
-                        )
-                    }
-                ) {
-                    ProductCard(
-                        productName = product.name,
-                        productDescription = product.description,
-                        productImageUrl = product.imageUrl,
-                        productPrice = product.price,
-                        productCardBackground = Theme.colorScheme.background.surfaceLow,
-                        modifier = Modifier.fillMaxWidth(),
-                        productAction = {
-                            SetProductQuantity(
-                                onPlusClick = {
-                                    listener.onIncreaseItemQuantityClicked(
-                                        product.id,
-                                        product.quantity + 1
+                                    .background(Theme.colorScheme.background.bgError)
+                                    .clickable(onClick = { listener.onRemoveItemClicked(product.id) })
+                                    .padding(
+                                        vertical = Theme.spacing._32,
+                                        horizontal = Theme.spacing._12
                                     )
-                                },
-                                onMinusClick = {
-                                    listener.onDecreaseItemQuantityClicked(
-                                        product.id,
-                                        product.quantity - 1
-                                    )
-                                },
-                                inCartQuantity = product.quantity
                             )
                         }
-                    )
-                }
+                    ) {
+                        ProductCard(
+                            productName = product.name,
+                            productDescription = product.description,
+                            productImageUrl = product.imageUrl,
+                            productPrice = product.price,
+                            productCardBackground = Theme.colorScheme.background.surfaceLow,
+                            modifier = Modifier.fillMaxWidth(),
+                            productAction = {
+                                ProductQuantityButton(
+                                    onPlusClick = {
+                                        listener.onIncreaseItemQuantityClicked(
+                                            product.id,
+                                            product.quantity + 1
+                                        )
+                                    },
+                                    onMinusClick = {
+                                        listener.onDecreaseItemQuantityClicked(
+                                            product.id,
+                                            product.quantity - 1
+                                        )
+                                    },
+                                    inCartQuantity = product.quantity
+                                )
+                            }
+                        )
+                    }
 
+                }
             }
         }
     }

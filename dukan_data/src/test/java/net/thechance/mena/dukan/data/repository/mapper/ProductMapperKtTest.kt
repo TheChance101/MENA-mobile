@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
+import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
@@ -56,6 +57,30 @@ class ProductMapperKtTest {
         assertEquals(10.5, product.price)
         assertEquals(listOf("url1", "url2"), product.imageUrls)
         assertEquals("2025-09-26T15:26:41.300823Z", product.createdAt)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `ProductCartDto toDomain Product maps correctly`() {
+        val id = Uuid.random()
+
+        val dto = ProductCartDto(
+            id = id,
+            name = "Demo Product",
+            description = "A description",
+            price = 10.5,
+            quantityInCart = 10,
+            imageUrl = "url1"
+        )
+
+        val product: Product = dto.toDomain()
+
+        assertEquals(id, product.id)
+        assertEquals("Demo Product", product.name)
+        assertEquals("A description", product.description)
+        assertEquals(10.5, product.price)
+        assertEquals(listOf("url1"), product.imageUrls)
+        assertEquals(10, product.quantityInCart)
     }
 
 }
