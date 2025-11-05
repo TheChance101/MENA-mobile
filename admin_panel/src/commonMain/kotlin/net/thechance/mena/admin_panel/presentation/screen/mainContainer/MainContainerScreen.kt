@@ -51,9 +51,7 @@ private fun MainContainerContent(
     val navController = LocalNavController.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-
     val isLoginScreen = currentDestination?.hasRoute(Login::class) ?: true
-
 
     AdminPanelScaffold(
         state = state,
