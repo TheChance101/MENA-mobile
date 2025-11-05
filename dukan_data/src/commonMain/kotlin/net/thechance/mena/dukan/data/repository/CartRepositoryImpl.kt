@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
@@ -23,9 +24,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class CartRepositoryImpl (
+class CartRepositoryImpl(
     private val client: HttpClient
-): CartRepository {
+) : CartRepository {
 
     override suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {
@@ -42,7 +43,7 @@ class CartRepositoryImpl (
         size: Int
     ): PagedResult<ProductCart> {
         return safeApiCall<PageResponseDto<ProductCartDto>> {
-            client.post("$CART_BASE_PATH/${dukanId}/items")
+            client.get("$CART_BASE_PATH/${dukanId}/items")
         }.toDomain(mapper = ProductCartDto::toProductCart)
     }
 
