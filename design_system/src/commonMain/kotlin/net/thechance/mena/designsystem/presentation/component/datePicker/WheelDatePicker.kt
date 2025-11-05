@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
@@ -225,7 +226,7 @@ private fun VerticalPicker(
 @Preview
 @Composable
 private fun WheelDatePickerPreview() {
-    net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme {
+    MenaTheme {
         WheelDatePicker(
             selectedDayIndex = 14,
             selectedMonthIndex = 5,
