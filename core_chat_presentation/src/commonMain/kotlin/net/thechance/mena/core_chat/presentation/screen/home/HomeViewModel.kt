@@ -59,13 +59,23 @@ class HomeViewModel(
     }
 
     init {
+        loadInitialData()
+    }
+
+    fun loadInitialData(){
         getBalanceAmount()
-        onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
         observeChats()
         observeSyncState()
+        refreshChats()
+    }
+
+    fun refreshChats() {
+        updateState { it.copy(chats = emptyList()) }
+        paginator.reset()
+        onChatsListScrolled()
     }
 
     private fun observeChats(){
