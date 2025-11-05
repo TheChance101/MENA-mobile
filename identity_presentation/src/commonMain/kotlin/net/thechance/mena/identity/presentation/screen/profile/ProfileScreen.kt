@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error
@@ -99,9 +99,7 @@ class ProfileScreen : BaseScreen<
                     showDialog = it,
                     fullName = state.fullName,
                     urlString = "https:mena.dev?uresname=hassan",
-                    qrCodePainter = rememberAsyncImagePainter(
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                    ),
+                    qrCodePainter = rememberQrCodePainter(data = ""),
                     onDismiss = listener::onDismissShareDialog,
                     onShareProfile = {},
                     onDownload = {}
