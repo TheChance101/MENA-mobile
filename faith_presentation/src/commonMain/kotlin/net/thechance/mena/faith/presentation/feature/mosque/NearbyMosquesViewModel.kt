@@ -32,7 +32,7 @@ internal class NearbyMosquesViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { handleInvalidAddress() }
+            onError = { sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen) }
         )
     }
 
@@ -61,7 +61,9 @@ internal class NearbyMosquesViewModel(
 //        TODO("Not yet implemented")
     }
 
-    override fun onCurrentUserLocationClick() = handleInvalidAddress()
+    override fun onCurrentUserLocationClick() {
+//        TODO("Not yet implemented")
+    }
 
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
@@ -167,8 +169,6 @@ internal class NearbyMosquesViewModel(
     private fun handleSearchError() {
         // TODO: show snack bar with error message (Res.string.no_mosques_found) to the user
     }
-
-    private fun handleInvalidAddress() = sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
 
     private companion object {
         const val SEARCH_DEBOUNCE_DELAY = 1000L
