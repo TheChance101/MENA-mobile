@@ -28,7 +28,7 @@ class ProfileScreenViewModel(
 
     private fun getUserInfo() {
         tryToCollect(
-            function = { userRepository.getUser() },
+            function = { userRepository.observeUser() },
             onNewValue = ::onUserInfoSuccess,
             onError = ::onUserInfoError,
             dispatcher = dispatcher

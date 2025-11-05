@@ -5,6 +5,7 @@ import dev.icerock.moko.permissions.DeniedAlwaysException
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
+import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -47,9 +48,9 @@ class EditUserProfileViewModel(
 
     private fun getUserInfo() {
         tryToCollect(
-            function = { userRepository.getUser() },
+            function = { userRepository.observeUser() },
             onNewValue = ::updateUserInfo,
-            onError = ::onGetUserInfoError,
+            onError = ::onErrorOccurred,
             dispatcher = dispatcher
         )
     }
@@ -69,7 +70,7 @@ class EditUserProfileViewModel(
         }
     }
 
-    private fun onGetUserInfoError(throwable: Throwable) {
+    private fun onErrorOccurred(throwable: Throwable) {
         updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
@@ -94,7 +95,7 @@ class EditUserProfileViewModel(
 
         updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
-            function = { saveUserProfile() },
+            function = ::saveUserProfile,
             onSuccess = { handleSaveSuccess() },
             onError = ::handleSaveError,
             dispatcher = dispatcher
@@ -143,7 +144,7 @@ class EditUserProfileViewModel(
         userRepository.updateUser(
             user = user,
             shouldUpdateImage = value.shouldUpdateImage,
-            imageByteArray = value.profileImageBitmap?.let{imageDecoder.encodeImage(it)}
+            imageByteArray = value.profileImageBitmap?.encodeToByteArray()
         )
     }
 

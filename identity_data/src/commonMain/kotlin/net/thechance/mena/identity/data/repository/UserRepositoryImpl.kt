@@ -30,17 +30,16 @@ class UserRepositoryImpl(
     private val userDao: UserDao,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UserRepository {
-    override suspend fun getUser(): Flow<User?> {
+    override suspend fun observeUser(): Flow<User?> {
         CoroutineScope(dispatcher).launch {
             try {
                 val user: ProfileResponseDto = client.getJson(path = PROFILE)
                 userDao.upsert(user.toEntity())
             } catch (_: Exception) {
-
             }
         }
 
-        return userDao.getUser()
+        return userDao.observeUser()
             .map { userEntity ->
                 userEntity?.toDomain()
             }

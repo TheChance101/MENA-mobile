@@ -11,13 +11,10 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.icerock.moko.permissions.PermissionsController
-import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -30,9 +27,7 @@ import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.helper.createUser
-import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
-import org.jetbrains.compose.resources.decodeToImageBitmap
 import kotlin.test.Test
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -60,19 +55,19 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
 
     @Test
     fun `user information should be updated, when init called`() = runTest {
-        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { userRepository.observeUser() } returns flowOf(fakeUser)
 
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {
             assertThat(awaitItem().firstName).isEqualTo("User")
         }
-        coVerify(exactly = 1) { userRepository.getUser() }
+        coVerify(exactly = 1) { userRepository.observeUser() }
     }
 
     @Test
     fun `errorMessage should be updated, when init throws Exception`() = runTest {
-        coEvery { userRepository.getUser() } throws Exception()
+        coEvery { userRepository.observeUser() } throws Exception()
 
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -80,7 +75,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
         }
 
-        coVerify(exactly = 1) { userRepository.getUser() }
+        coVerify(exactly = 1) { userRepository.observeUser() }
     }
 
     @Test
@@ -308,7 +303,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     @Test
     fun `should navigate to CropScreen, when onRequireCropImage is called`() = runTest {
 
-        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { userRepository.observeUser() } returns flowOf(fakeUser)
         coEvery { cachedImageRepository.cacheImage(any(), any()) } returns Unit
         coEvery { imageDecoder.encodeImage(mockkImageBitmap) } returns byteArrayOf()
         coEvery { imageDecoder.decodeImage(any()) } returns mockkImageBitmap
