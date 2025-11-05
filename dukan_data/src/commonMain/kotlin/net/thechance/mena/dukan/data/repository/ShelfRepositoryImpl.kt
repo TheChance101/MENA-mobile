@@ -13,10 +13,12 @@ import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.mapper.toCreateShelfRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
+import net.thechance.mena.dukan.data.mapper.toRequest
 import net.thechance.mena.dukan.data.mapper.toShelf
 import net.thechance.mena.dukan.data.util.constants.EndPoints.SHELF_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.model.UpdateShelfName
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 
@@ -51,7 +53,7 @@ class ShelfRepositoryImpl(
         safeApiCall<Unit> {
             client.put(urlString = "$SHELF_BASE_PATH/$shelfId") {
                 contentType(ContentType.Application.Json)
-                setBody(mapOf("title" to newShelfName))
+                setBody(UpdateShelfName(newShelfName).toRequest())
             }
         }
     }
