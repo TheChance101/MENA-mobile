@@ -56,9 +56,29 @@ class DukanCartViewModel(
 
     private fun loadCartInfo() {
         tryToExecute(
+            onStart = {
+                updateState {
+                    copy(cartState = CartState.LOADING)
+                }
+            },
             block = {
                 cartRepository.getCartInfo(dukanId)
             },
+            onError = {
+                updateState {
+                    copy(cartState = CartState.ERROR)
+                }
+            },
+            onSuccess = ::onLoadCartSuccess
+        )
+    }
+
+    private fun updateTotalPrice() {
+        tryToExecute(
+            block = {
+                cartRepository.getCartInfo(dukanId)
+            },
+            onError = ::onErrorUpdateProductQuantity,
             onSuccess = ::onLoadCartSuccess
         )
     }
@@ -172,7 +192,7 @@ class DukanCartViewModel(
                 )
             },
             onError = ::onErrorUpdateProductQuantity,
-            onSuccess = { loadCartInfo() }
+            onSuccess = { updateTotalPrice() }
         )
     }
 
@@ -204,7 +224,7 @@ class DukanCartViewModel(
                 )
             },
             onError = ::onErrorUpdateProductQuantity,
-            onSuccess = { loadCartInfo() }
+            onSuccess = { updateTotalPrice() }
         )
     }
 
@@ -217,10 +237,10 @@ class DukanCartViewModel(
             is NoInternetException -> Res.string.no_internet_connection
             else -> Res.string.something_went_wrong
         }
-        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+        showSnackBar(message = messageRes)
     }
 
-    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+    private fun showSnackBar(message: StringResource, type: SnackBarType = SnackBarType.ERROR) {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(

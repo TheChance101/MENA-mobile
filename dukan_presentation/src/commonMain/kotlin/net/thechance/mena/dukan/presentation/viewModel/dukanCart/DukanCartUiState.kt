@@ -11,10 +11,8 @@ data class DukanCartUiState(
     val dukanInfoState: DukanInfoState = DukanInfoState.LOADING,
     val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val totalPrice: Double = 0.0,
-    val error: String? = null,
-    val snackBarState: SnackBarUiState? = null,
-    ) {
-
+    val snackBarState: SnackBarUiState? = null
+) {
     data class DukanInfoUiState(
         val id: String = "",
         val name: String = "",
@@ -38,7 +36,6 @@ data class DukanCartUiState(
     enum class CartState {
         LOADING,
         LOADED,
-        ERROR,
-        EMPTY
+        ERROR
     }
 }

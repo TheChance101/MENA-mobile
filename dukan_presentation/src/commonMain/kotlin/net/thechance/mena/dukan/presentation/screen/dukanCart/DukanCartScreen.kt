@@ -7,13 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.empty_shelf
-import mena.dukan_presentation.generated.resources.shelf_empty_body
-import mena.dukan_presentation.generated.resources.shelf_empty_title
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
-import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -46,13 +41,6 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
     ) { targetState ->
         when (targetState) {
             CartState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
-            CartState.EMPTY -> EmptyStateContent(
-                image = Res.drawable.empty_shelf,
-                title = Res.string.shelf_empty_title,
-                body = Res.string.shelf_empty_body,
-                modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
-            )
-
             CartState.ERROR -> NoInternetContent(
                 onRetry = viewModel::onRetryLoadCartClicked,
                 modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
