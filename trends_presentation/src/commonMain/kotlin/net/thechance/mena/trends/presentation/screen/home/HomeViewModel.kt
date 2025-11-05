@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -125,5 +124,9 @@ internal class HomeViewModel(
                 reel.takeIf { it.id != reelId }
                     ?: reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
             }
+    }
+
+    override fun onGetRefreshedThumbnail(): String {
+        return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg"
     }
 }

@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlinx.serialization.json.JsonNull.content
+import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -131,7 +130,8 @@ private fun HomeScreenContent(
                         reels = reels,
                         onClickLike = listener::onClickLike,
                         onClickReel = listener::onClickReel,
-                        onExpandDescription = listener::onClickExpandDescription
+                        onExpandDescription = listener::onClickExpandDescription,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
             )
@@ -168,6 +168,7 @@ private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: () -> String,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
@@ -186,7 +187,8 @@ private fun ReelsListSection(
                     reel = reel,
                     onClickLike = { onClickLike(reel.id, reel.isLiked) },
                     onClickReel = { onClickReel(reel.id) },
-                    onExpandDescription = { onExpandDescription(reel.id) }
+                    onExpandDescription = { onExpandDescription(reel.id) },
+                    onGetRefreshedThumbnail = onGetRefreshedThumbnail
                 )
             }
         }
@@ -241,6 +243,7 @@ private fun HomeScreenPreview() {
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
+                    override fun onGetRefreshedThumbnail() = ""
                 }
             )
         }

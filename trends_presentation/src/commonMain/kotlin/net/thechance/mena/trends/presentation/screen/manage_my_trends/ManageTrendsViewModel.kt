@@ -94,4 +94,8 @@ internal class ManageTrendsViewModel(
         updateState { copy(selectTab = tab) }
     }
 
+    override fun onGetRefreshedThumbnail(): String {
+        return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg"
+    }
+
 }

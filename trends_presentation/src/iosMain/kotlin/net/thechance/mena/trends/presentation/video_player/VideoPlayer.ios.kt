@@ -40,11 +40,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
 import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
 import platform.AVFoundation.AVPlayerItemStatusUnknown
 import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+import platform.AVFoundation.AVURLAsset
+import platform.AVFoundation.AVURLAssetMeta
 import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
@@ -87,8 +90,10 @@ actual fun VideoPlayer(
         targetValue = if (isInitialBuffering) Theme.colorScheme.brand.brand
         else Color.Transparent,
     )
-
-    val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
+    val headers = mapOf("X-ACCESS-DEVICE" to "mobile")
+    val asset = AVURLAsset.URLAssetWithURL(URL = NSURL(string = url), options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers))
+    val avPlayerItem = AVPlayerItem(asset)
+    val player = remember(url) { AVPlayer(avPlayerItem) }
     player.actionAtItemEnd = 1
 
     val playerViewController = remember {

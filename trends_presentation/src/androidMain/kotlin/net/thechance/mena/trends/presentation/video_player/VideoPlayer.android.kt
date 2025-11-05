@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.video_player
 
+import android.os.FileObserver.ACCESS
 import android.view.View
 import androidx.annotation.OptIn
 import androidx.compose.animation.animateColorAsState
@@ -36,9 +37,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
@@ -73,6 +76,13 @@ actual fun VideoPlayer(
         )
         .build()
 
+    val source = DefaultHttpDataSource.Factory()
+
+
+    source.setDefaultRequestProperties(mapOf("X-ACCESS-DEVICE" to "mobile"))
+
+    val mediaSource = ProgressiveMediaSource.Factory(source)
+        .createMediaSource(MediaItem.fromUri(url))
     var isLoading by remember { mutableStateOf(true) }
     var isPause by remember { mutableStateOf(false) }
 
@@ -123,7 +133,7 @@ actual fun VideoPlayer(
 
     LaunchedEffect(isReelVisible) {
         if (isReelVisible) {
-            exoPlayer.setMediaItem(MediaItem.fromUri(url))
+            exoPlayer.setMediaSource(mediaSource)
             exoPlayer.prepare()
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true
