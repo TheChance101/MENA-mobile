@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -184,7 +187,9 @@ private fun CopyToClipboardSnackBar(
         visible = isVisible,
         enter = slideInHorizontally(initialOffsetX = { it }),
         exit = slideOutHorizontally(targetOffsetX = { it }),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.statusBars)
     ) {
         SnackBar(
             title = stringResource(Res.string.copy_to_clipboard_success),
