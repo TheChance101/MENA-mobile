@@ -129,15 +129,9 @@ class DukanDetailsViewModel(
         var products: List<Product> = emptyList()
         return shelves.map { shelf ->
             tryToExecute(
-                block = {
-                    productRepository.getProductsByShelfId(shelf.id, page, maxProducts).items
-                },
-                onSuccess = {
-                    products = it
-                },
-                onError = { throwable ->
-                    onLoadProductsPagingError(throwable)
-                }
+                block = { productRepository.getProductsByShelfId(shelf.id, page, maxProducts).items },
+                onSuccess = { products = it },
+                onError = { throwable -> onLoadProductsPagingError(throwable) }
             )
             shelf.copy(products = products.map { it.toUiState() })
         }.filter { it.products.isNotEmpty() }
