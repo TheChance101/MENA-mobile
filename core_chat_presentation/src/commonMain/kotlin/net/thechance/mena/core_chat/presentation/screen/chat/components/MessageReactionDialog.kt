@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.react_to_message
@@ -110,7 +111,9 @@ fun MessageToReactDisplay(
             modifier = Modifier.padding(Theme.spacing._12),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
-            textAlign = TextAlign.Start
+            textAlign = TextAlign.Start,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -145,7 +148,7 @@ private fun ReactionContent(
                 Text(
                     text = reaction,
                     style = Theme.typography.appName,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
                 )
             }
         }
