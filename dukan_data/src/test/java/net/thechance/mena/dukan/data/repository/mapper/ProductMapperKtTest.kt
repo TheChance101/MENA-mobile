@@ -104,4 +104,54 @@ class ProductMapperKtTest {
     fun `ProductCartDto toDomain quantityInCart maps correctly`() {
         assertEquals(10, product.quantityInCart)
     }
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `toDomain maps isFavorite correctly when true`() {
+        val id = Uuid.random()
+        val shelfId = Uuid.random()
+
+        val dto = ProductDto(
+            id = id,
+            name = "Demo Product",
+            description = "A description",
+            price = 10.5,
+            shelfId = shelfId,
+            imageUrls = listOf("url1", "url2"),
+            createdAt = "2025-09-26T15:26:41.300823Z",
+            quantityInCart = 10,
+            isFavorite = true
+        )
+
+        val product: Product = dto.toDomain()
+
+        assertEquals(true, product.isFavorite)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `toDomain maps isFavorite correctly when false`() {
+        val id = Uuid.random()
+        val shelfId = Uuid.random()
+
+        val dto = ProductDto(
+            id = id,
+            name = "Demo Product",
+            description = "A description",
+            price = 10.5,
+            shelfId = shelfId,
+            imageUrls = listOf("url1", "url2"),
+            createdAt = "2025-09-26T15:26:41.300823Z",
+            quantityInCart = 10,
+            isFavorite = false
+        )
+
+        val product: Product = dto.toDomain()
+
+        assertEquals(false, product.isFavorite)
+    }
+
+    @Test
+    fun `ProductCartDto toDomain isFavorite maps correctly`() {
+        assertEquals(false, product.isFavorite)
+    }
 }

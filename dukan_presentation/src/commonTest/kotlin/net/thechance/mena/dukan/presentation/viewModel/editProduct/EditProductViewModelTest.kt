@@ -1499,6 +1499,7 @@ private fun fakeProduct(): Product {
         imageUrls = listOf("image1.jpg", "image2.jpg"),
         createdAt = "2025-09-16T15:06:57.507394",
         quantityInCart = 4,
+        isFavorite = false
     )
 }
 

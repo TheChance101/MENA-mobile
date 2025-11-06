@@ -28,10 +28,7 @@ import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-enum class PasswordPage(val index:Int) {
-    CURRENT_PASSWORD(0),
-    NEW_PASSWORD(1)
-}
+
 class ChangePasswordScreen(
     val onSuccess: (SnackBarUiState?) -> Unit,
 ) : BaseScreen<ChangePasswordScreenViewModel,
@@ -50,10 +47,10 @@ class ChangePasswordScreen(
         state: ChangePasswordScreenUIState,
         listener: ChangePasswordScreenInteractionListener
     ) {
-        val pagerState = rememberPagerState(initialPage = state.currentPage, pageCount = { 2 })
+        val pagerState = rememberPagerState(initialPage = state.currentPage.index, pageCount = { 2 })
 
         LaunchedEffect(state.currentPage) {
-            pagerState.animateScrollToPage(state.currentPage)
+            pagerState.animateScrollToPage(state.currentPage.index)
         }
         Scaffold(
             topBar = {

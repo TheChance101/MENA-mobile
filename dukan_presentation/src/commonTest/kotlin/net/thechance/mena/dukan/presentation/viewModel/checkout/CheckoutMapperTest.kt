@@ -19,7 +19,8 @@ class CheckoutMapperTest {
             imageUrls = listOf("test image url"),
             description = "test description",
             shelfId = null,
-            createdAt = ""
+            createdAt = "",
+            isFavorite = false
         )
 
         val cartItem = productCart.toUiState()

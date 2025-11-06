@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -102,6 +103,11 @@ fun MainScreen(
             }
         }
     }
+
+    LaunchedEffect(state.value.editorPickDukans) {
+        viewModel.loadEditorPicksDukans()
+    }
+
     MainContent(
         listener = viewModel,
         state = state.value,
@@ -244,8 +250,10 @@ fun MainScreenSections(
             }
             editorPickDukanItems(
                 dukans = dukans,
-                onDukanClick = listener::onEditorPickDukanClicked
-            )
+                onDukanClick = listener::onEditorPickDukanClicked,
+                    onClickFavorite = listener::onFavoriteDukanClicked
+                )
+
         }
     }
 }

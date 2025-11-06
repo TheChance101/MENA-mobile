@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.itemKey
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.DukanCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
+import net.thechance.mena.dukan.presentation.component.shared.DukanCard
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
 
@@ -34,7 +34,7 @@ fun CategoryDukansList(
                 dukan = dukan,
                 isFavorite = dukan.isFavorite,
                 onClick = { listener.onDukanClicked(dukan) },
-                onFavoriteClick = { listener.onFavoriteClicked(dukan) },
+                onFavoriteClick = { listener.onFavoriteDukanClicked(dukan.id) },
                 isLoading = isLoading
             )
         }

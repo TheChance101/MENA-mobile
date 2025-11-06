@@ -10,4 +10,5 @@ interface MainInteractionListener {
     fun onNearestDukanClicked(dukanId: String)
 
     fun onEditorPickDukanClicked(dukanId: String)
+    fun onFavoriteDukanClicked(dukanId: String)
 }

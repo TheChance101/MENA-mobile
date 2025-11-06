@@ -71,7 +71,8 @@ class DukanCartViewModelTest {
         ),
         style = Dukan.Style.WIDE_IMAGE,
         categories = emptySet(),
-        status = Dukan.Status.APPROVED
+        status = Dukan.Status.APPROVED,
+        isFavorite = false
     )
 
     private val dummyProduct1 = Product(
@@ -82,7 +83,8 @@ class DukanCartViewModelTest {
         imageUrls = listOf("phone.png"),
         createdAt = "2025-10-10T12:00:00Z",
         quantityInCart = 2,
-        shelfId = null
+        shelfId = null,
+        isFavorite = false
     )
 
     private fun dummyPagedProducts() = PagedResult(

@@ -4,9 +4,11 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 
 import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadResponse
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
@@ -15,7 +17,9 @@ import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import kotlin.time.ExperimentalTime
@@ -39,7 +43,16 @@ fun MessageDto.toDomain(): Message? {
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
         content = content,
+        reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
+    )
+}
+
+fun MessageReactionDto.toDomain(): MessageReaction {
+    return MessageReaction(
+        emoji = emoji,
+        userId = getUuidOrNull(userId) ?: error("Invalid user ID"),
+        messageId = getUuidOrNull(messageId) ?: error("Invalid message ID")
     )
 }
 
@@ -112,11 +125,17 @@ fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
     }
 }
 
-fun MarkAsReadResponse.toEntity(): MarkMessageAsReadEvent {
+fun MarkAsReadDto.toDomain(): MarkMessageAsReadEvent {
     return MarkMessageAsReadEvent(
         readByUserId = Uuid.parse(readByUserId),
         chatId = Uuid.parse(chatId),
         readByMe = readByMe
+    )
+}
+
+fun DeleteChatDto.toDomain(): DeleteChatEvent {
+    return DeleteChatEvent(
+        chatId = Uuid.parse(chatId),
     )
 }
 

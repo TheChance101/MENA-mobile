@@ -163,4 +163,7 @@
     <string name="delete_product_description">هل أنت متأكد أنك تريد حذف هذا المنتج؟</string>
     <string name="silver_tier_icon">أيقونة الفئة الفضية</string>
     <string name="desc_edit_address_icon">ايقونة تعديل العنوان</string>
+    <string name="added_to_favorites">تمت الإضافة إلى المفضلة</string>
+    <string name="removed_from_favorites">تمت الإزالة من المفضلة</string>
+    <string name="error_updating_favorites">تعذر تحديث المفضلة</string>
 </resources>

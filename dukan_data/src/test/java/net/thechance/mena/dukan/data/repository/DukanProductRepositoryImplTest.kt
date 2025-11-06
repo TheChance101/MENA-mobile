@@ -171,5 +171,19 @@ class DukanProductRepositoryImplTest {
 
         assertTrue(called, "Expected the mock engine to be called")
     }
+    @Test
+    fun `toggleProductToFavorites calls correct endpoint`() = runTest {
+        var called = false
+        val repo = createProductRepository(
+            toggleFavoriteResponse = {
+                called = true
+                respond("", io.ktor.http.HttpStatusCode.OK, jsonHeaders)
+            }
+        )
+
+        repo.toggleProductToFavorites("product-123")
+
+        assertTrue(called, "Expected the mock engine to be called")
+    }
 
 }

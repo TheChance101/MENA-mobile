@@ -2,6 +2,7 @@ package net.thechance.mena.identity.presentation.mapper
 
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_bad_request
+import mena.identity_presentation.generated.resources.error_incorrect_password
 import mena.identity_presentation.generated.resources.error_invalid_country_code
 import mena.identity_presentation.generated.resources.error_invalid_mobile_number
 import mena.identity_presentation.generated.resources.error_invalid_otp
@@ -27,6 +28,7 @@ internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): S
         AuthenticationErrorState.PhoneNumberAlreadyExists -> Res.string.error_phone_number_already_exists
         AuthenticationErrorState.NoNetwork -> Res.string.error_no_network
         AuthenticationErrorState.InvalidRequest -> Res.string.error_bad_request
+        AuthenticationErrorState.IncorrectPassword -> Res.string.error_incorrect_password
         is AuthenticationErrorState.SomethingWentWrong -> Res.string.error_something_went_wrong
     }
 }

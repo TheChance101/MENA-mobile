@@ -337,6 +337,21 @@ class DukanDetailsViewModel(
         loadDukanDetails()
     }
 
+    override fun onFavoriteDukanClicked(dukanId: String) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onSuccess = { isFavorite -> setFavoriteState(isFavorite) }
+        )
+    }
+
+    private fun setFavoriteState(isFavorite: Boolean) {
+        updateState {
+            copy(
+                dukanInfo = dukanInfo.copy(isFavorite = isFavorite)
+            )
+        }
+    }
+
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
@@ -344,6 +359,4 @@ class DukanDetailsViewModel(
         loadDukanDetails()
         loadCartInfo()
     }
-
-
 }

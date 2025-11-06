@@ -9,7 +9,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
+import mena.dukan_presentation.generated.resources.added_to_favorites
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.removed_from_favorites
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -80,7 +83,8 @@ class ProductDetailsViewModel(
                 isLoading = false,
                 product = productUiInfo,
                 selectedImageUrl = productUiInfo.images.firstOrNull() ?: "",
-                errorState = null
+                errorState = null,
+                isFavorite = product.isFavorite
             )
         }
     }
@@ -181,17 +185,41 @@ class ProductDetailsViewModel(
     }
 
     override fun onShareClicked() {
-
+        //TODO
     }
 
-    override fun onAddToFavoritesClicked() {
+    override fun onToggleProductToFavoriteClicked() {
+        val currentProduct = state.value.product
+        val isCurrentlyFavorite = state.value.isFavorite
 
+        tryToExecute(
+            block = { productRepository.toggleProductToFavorites(currentProduct.id) },
+            onSuccess = { onFavoriteToggleSuccess(!isCurrentlyFavorite) },
+            onError = ::onFavoriteToggleError
+        )
+    }
+
+    private fun onFavoriteToggleSuccess(newFavoriteState: Boolean) {
+        updateState { copy(isFavorite = newFavoriteState) }
+        showSnackBar(
+            message = if (newFavoriteState) {
+                Res.string.added_to_favorites
+            } else {
+                Res.string.removed_from_favorites
+            },
+            type = SnackBarType.SUCCESS
+        )
+    }
+
+    private fun onFavoriteToggleError(throwable: Throwable) {
+        showSnackBar(
+            message = Res.string.error_updating_favorites,
+            type = SnackBarType.ERROR
+        )
     }
 
     fun refreshData(){
         loadProductDetails()
         loadCartInfo()
     }
-
-
 }

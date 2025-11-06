@@ -163,6 +163,7 @@
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
     <string name="error_permission_not_granted">لم يتم منح الإذن</string>
+    <string name="error_incorrect_password">كلمة المرور القديمة غير صحيحة</string>
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
