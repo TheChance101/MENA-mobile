@@ -151,9 +151,19 @@ internal class NearbyMosquesViewModel(
         updateState { it.copy(isSearchResultsBottomSheetVisible = false) }
     }
 
-    override fun onBackClick() {TODO("Not yet implemented") }
-    override fun onAddMosqueClick()  {TODO("Not yet implemented") }
-    override fun onCurrentUserLocationClick()  {TODO("Not yet implemented") }
-    override fun onViewMosqueDetailsClick(mosque: MosqueUiState)  {TODO("Not yet implemented") }
-    override fun onViewMosqueOnMapClick(coordinate: Coordinate)  {TODO("Not yet implemented") }
+    override fun onBackClick() {
+        // TODO("Not yet implemented")
+    }
+    override fun onAddMosqueClick()  {
+        // TODO("Not yet implemented")
+    }
+    override fun onCurrentUserLocationClick()  {
+        // TODO("Not yet implemented")
+    }
+    override fun onViewMosqueDetailsClick(mosque: MosqueUiState)  {
+        // TODO("Not yet implemented")
+    }
+    override fun onViewMosqueOnMapClick(coordinate: Coordinate)  {
+        // TODO("Not yet implemented")
+    }
 }

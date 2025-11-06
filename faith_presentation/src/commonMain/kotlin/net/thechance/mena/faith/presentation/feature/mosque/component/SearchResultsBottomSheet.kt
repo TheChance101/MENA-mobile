@@ -26,6 +26,7 @@ import androidx.paging.PagingData
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_arrow_right
 import mena.faith_presentation.generated.resources.ic_mosque
+import mena.faith_presentation.generated.resources.kilometer_unit
 import mena.faith_presentation.generated.resources.mosque_details
 import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.search_results
@@ -137,7 +138,7 @@ private fun SearchResultItem(
             )
 
             Text(
-                text = "${mosque.distance} km",
+                text = "${mosque.distance} ${stringResource(Res.string.kilometer_unit)}",
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadeTertiary
             )

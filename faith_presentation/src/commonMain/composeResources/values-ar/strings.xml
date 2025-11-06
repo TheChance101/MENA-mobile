@@ -123,4 +123,7 @@
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
     <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
     <string name="listen">استماع</string>
+
+    <string name="kilometer_unit">كم</string>
+
 </resources>
