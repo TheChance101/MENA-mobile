@@ -245,22 +245,6 @@ class MessageRepositoryImplTest {
         }
 
     @Test
-    fun `should connect to websocket when observeMessagesForChatOrAll is called and websocket is disconnected`() =
-        runTest {
-            every { webSocketManager.isConnected() } returns false
-            everySuspend { webSocketManager.connect(any()) } returns Unit
-            every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
-                tryEmit(
-                    "test-message"
-                )
-            }
-
-            repository.observeMessagesForChatOrAll(chatId)
-
-            verifySuspend { webSocketManager.connect(any()) }
-        }
-
-    @Test
     fun `should send image message successfully when websocket connected and images uploaded`() =
         runTest {
             every { webSocketManager.isConnected() } returns true

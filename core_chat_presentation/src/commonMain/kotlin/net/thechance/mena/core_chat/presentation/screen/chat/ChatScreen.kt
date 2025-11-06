@@ -32,11 +32,12 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.Attachme
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
-import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -44,7 +45,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
-import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
 
 @Composable
 fun ChatScreen() {
@@ -130,29 +130,18 @@ fun ChatScreenContent(
                 }
             },
             overlays = {
-                ChatScreenOverlays(
+                resendFailedMessageDialog(
                     showResendMessageDialog = state.isResendMessageDialogVisible,
                     onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
 
-                chatActionsMenuOverlay(
+                chatActionsMenuDialog(
                     showChatActionsDialog = state.isChatActionsDialogVisible,
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
-
-                messageReactionDialog(
-                    isVisible = state.isReactionDialogVisible,
-                    message = state.messageToReactTo,
-                    currentUserId = state.chatRequesterId,
-                    onDismiss = { interactions.onReactionDialogDismissed() },
-                    onReactionClicked = { messageId, emoji ->
-                        interactions.onReactionSelected(messageId, emoji)
-                    }
-                )
-
             }
         ) {
             ChatList(
@@ -204,6 +193,14 @@ fun ChatScreenContent(
         listState = chatListState,
         remainingItemsToLoadNextPage = 15,
         loadNextItems = interactions::onMessagesScrolled
+    )
+
+    messageReactionDialog(
+        isVisible = state.isReactionDialogVisible,
+        message = state.messageToReactTo,
+        currentUserId = state.chatRequesterId,
+        onDismiss = interactions::onReactionDialogDismissed,
+        onReactionClicked = interactions::onReactionSelected
     )
 }
 
