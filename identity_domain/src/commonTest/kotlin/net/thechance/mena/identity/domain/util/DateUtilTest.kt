@@ -5,6 +5,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -29,7 +30,7 @@ class DateUtilTest {
     @Test
     fun `getCurrentDate should return LocalDate type`() {
         val result = getCurrentDate()
-        assert(result is LocalDate)
+        assertIs<LocalDate>(result )
     }
 
     @Test
@@ -50,7 +51,7 @@ class DateUtilTest {
     fun `getCurrentDate should have correct day`() {
         val currentDateTime = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
         val result = getCurrentDate()
-        assertEquals(currentDateTime.dayOfMonth, result.dayOfMonth)
+        assertEquals(currentDateTime.day, result.day)
     }
 
     @Test

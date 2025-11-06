@@ -4,9 +4,9 @@ import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import net.thechance.mena.identity.data.dto.auth.AuthenticationResponse
-import net.thechance.mena.identity.data.dto.auth.LoginRequestDto
-import net.thechance.mena.identity.data.dto.auth.RefreshRequestDto
+import net.thechance.mena.identity.data.dto.auth.response.AuthenticationResponse
+import net.thechance.mena.identity.data.dto.auth.request.LoginRequestDto
+import net.thechance.mena.identity.data.dto.auth.request.RefreshRequestDto
 import net.thechance.mena.identity.data.dataSource.local.setting.accessToken
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.dataSource.local.setting.refreshToken

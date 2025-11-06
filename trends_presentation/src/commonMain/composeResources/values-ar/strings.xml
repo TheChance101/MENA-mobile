@@ -103,7 +103,6 @@
     <string name="empty_trends_title">لا توجد تريندات حتى الآن</string>
     <string name="empty_trends_description">
     يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
-
     <string name="no_connection_icon">أيقونة عدم الاتصال</string>
     <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="no_connection_description">تحقق من اتصالك وحاول مرة أخرى</string>
