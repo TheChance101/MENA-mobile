@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.presentation.api
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
@@ -15,6 +16,9 @@ fun ChatEntryPoint(
     viewModel: ChatEntryViewModel = koinViewModel<ChatEntryViewModel>(),
     onNavigateBack: () -> Unit
 ) {
+    LaunchedEffect(Unit){
+        viewModel.getChatByUserId(userId)
+    }
     viewModel.getChatByUserId(userId)
     val state by viewModel.state.collectAsStateWithLifecycle()
     if (state.chatId != null && state.chatName != null) {
