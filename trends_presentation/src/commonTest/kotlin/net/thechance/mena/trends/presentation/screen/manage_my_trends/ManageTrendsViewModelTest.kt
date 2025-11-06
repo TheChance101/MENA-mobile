@@ -126,11 +126,12 @@ class ManageTrendsViewModelTest {
         )
 
         advanceUntilIdle()
-        advanceUntilIdle()
-        viewModel.onGetRefreshedThumbnail(REEL_ID)
-        advanceUntilIdle()
 
         viewModel.state.test {
+            skipItems(1)
+
+            viewModel.onGetRefreshedThumbnail(REEL_ID)
+
             val state = awaitItem()
             val reelsSnapshot = state.reels.asSnapshot().first()
 
