@@ -19,7 +19,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -45,14 +47,21 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
+    val navController = LocalNavController.current
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
     BindEffect(controller)
+
+    BackHandler(enabled = true) {
+        onClickBackFromChat()
+        navController.popBackStack()
+    }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val effects = viewModel.effect
@@ -209,7 +218,6 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.ShowSnackBar -> {
                 snackBarHostController.showSnackBar(effect.snackBarData)
-                onClickBackFromChat()
             }
         }
     }
