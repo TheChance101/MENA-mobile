@@ -122,11 +122,12 @@ fun ImageMessagesLayout(
                                     is ImageData.ImageByteArray -> images.byteArray
                                 }
 
+                            }
+
+                            is MessageContent.Text -> return@Column
+                            is MessageContent.Audio -> return@Column
                         }
-                        is MessageContent.Text -> return@Column
-                        is MessageContent.Audio -> return@Column
                     }
-                }
 
                     ImageMessageContent(
                         images = imageDataList,
@@ -134,21 +135,20 @@ fun ImageMessagesLayout(
                         onImageClick = { index -> onMessageImageClick(messages, index) }
                     )
                 }
-
             }
+
             AnimatedVisibility(
                 visible = showMessageInfo,
-                modifier = Modifier
-                    .align(messageInfoAlignment)
+                modifier = Modifier.align(messageInfoAlignment)
             ) {
                 val lastMessage = messages.last()
 
-                    MessageInfo(
-                        messageTime = lastMessage.sendTime,
-                        messageStatus = lastMessage.status,
-                        messageIsMine = lastMessage.isMine,
-                        onFailClick = { onFailClick(lastMessage) },
-                    )
+                MessageInfo(
+                    messageTime = lastMessage.sendTime,
+                    messageStatus = lastMessage.status,
+                    messageIsMine = lastMessage.isMine,
+                    onFailClick = { onFailClick(lastMessage) },
+                )
             }
         }
     }

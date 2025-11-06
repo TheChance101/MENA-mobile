@@ -26,12 +26,12 @@ import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
 import mena.core_chat_presentation.generated.resources.error_get_user_info
+import mena.core_chat_presentation.generated.resources.error_invalid_recording
+import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
-import mena.core_chat_presentation.generated.resources.error_recording_failed
-import mena.core_chat_presentation.generated.resources.error_invalid_recording
-import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
@@ -51,9 +51,9 @@ import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
@@ -725,9 +725,7 @@ class ChatViewModel(
     private fun startRecording() {
         tryToExecute(
             execute = { audioRecordRepository.startRecording() },
-            onSuccess = {
-                updateState { it.copy(isRecordingVoice = true) }
-            },
+            onSuccess = { updateState { it.copy(isRecordingVoice = true) } },
             onError = { onRecordingStartFailed() }
         )
     }
