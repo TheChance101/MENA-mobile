@@ -24,6 +24,7 @@ import net.thechance.mena.dukan.presentation.screen.dukanCart.components.DukanCa
 import net.thechance.mena.dukan.presentation.screen.dukanCart.components.DukanCartInfo
 import net.thechance.mena.dukan.presentation.screen.dukanCart.components.DukanCartInfoSkeleton
 import net.thechance.mena.dukan.presentation.screen.dukanCart.components.DukanCartTopBar
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanCartInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.dukanCartUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartInteractionListener
@@ -34,6 +35,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionListener) {
     val products = state.products.collectAsLazyPagingItems()
     val lazyListState = rememberLazyListState()
+    OnSystemBackPressed(listener::onBackClicked)
 
     Scaffold(
         topBar = { DukanCartTopBar(listener::onBackClicked) },
