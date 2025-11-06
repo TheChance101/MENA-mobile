@@ -100,7 +100,7 @@ internal class NearbyMosquesViewModel(
 
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
-        }
+    }
     private fun handleSearchSuccess(mosques: List<Mosque>, query: String) {
         if (mosques.isEmpty()) {
             updateState {
@@ -162,9 +162,6 @@ internal class NearbyMosquesViewModel(
         updateState { it.copy(isSearchResultsBottomSheetVisible = false) }
     }
 
-    override fun onBackClick() {
-        // TODO("Not yet implemented")
-    }
     override fun selectMosque(mosque: MosqueUiState) {
         updateState {
             it.copy(
@@ -185,15 +182,5 @@ internal class NearbyMosquesViewModel(
 
     override fun onViewOnMapClick(coordinate: Coordinate) {
         sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
-    }
-
-    override fun onAddMosqueClick()  {
-        // TODO("Not yet implemented")
-    }
-    override fun onCurrentUserLocationClick()  {
-        // TODO("Not yet implemented")
-    }
-    override fun onViewMosqueDetailsClick(mosque: MosqueUiState)  {
-        // TODO("Not yet implemented")
     }
 }
