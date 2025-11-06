@@ -15,7 +15,7 @@ fun ChatEntryPoint(
     viewModel: ChatEntryViewModel = koinViewModel<ChatEntryViewModel>(),
     onNavigateBack: () -> Unit
 ) {
-    viewModel.getChatId(userId)
+    viewModel.getChatByUserId(userId)
     val state by viewModel.state.collectAsStateWithLifecycle()
     if (state.chatId != null && state.chatName != null) {
         ChatNavHost(

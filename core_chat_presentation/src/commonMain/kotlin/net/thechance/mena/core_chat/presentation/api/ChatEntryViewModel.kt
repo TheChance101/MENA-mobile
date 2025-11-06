@@ -8,7 +8,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class ChatEntryViewModel(private val chatRepository: ChatRepository) :
     BaseViewModel<ChatEntryState, Unit>(ChatEntryState()) {
-    fun getChatId(userId: String) {
+    fun getChatByUserId(userId: String) {
         tryToExecute(
             execute = { chatRepository.getChatByContactUserId(Uuid.parse(userId)) },
             onSuccess = { chat -> updateState { it.copy(chatId = chat.id, chatName = chat.name) } },
