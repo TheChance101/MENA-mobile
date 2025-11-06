@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
+import net.thechance.mena.core_chat.presentation.api.ChatEntryViewModel
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
@@ -42,5 +43,8 @@ internal val viewModelModule = module {
             imageDownloaderService = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
         )
+    }
+    viewModel {
+        ChatEntryViewModel(get())
     }
 }
