@@ -42,7 +42,7 @@ import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun ChatScreen() {
+fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
 
@@ -53,7 +53,7 @@ fun ChatScreen() {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val effects = viewModel.effect
 
-    EffectsHandler(effects = effects)
+    EffectsHandler(effects = effects, onClickBackFromChat = onClickBackFromChat)
 
     ChatScreenContent(
         state = state,
@@ -170,18 +170,20 @@ fun ChatScreenContent(
 @Composable
 private fun EffectsHandler(
     effects: SharedFlow<ChatScreenEffect>,
+    onClickBackFromChat: () -> Unit
 ) {
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
-
-    EffectHandler(effects) { effect ->
+    EffectHandler(effects, key1 = navController.currentBackStackEntry) { effect ->
         when (effect) {
             is ChatScreenEffect.NavigateBack -> {
+                onClickBackFromChat()
                 navController.popBackStack()
             }
 
             is ChatScreenEffect.ShowSnackBar -> {
                 snackBarHostController.showSnackBar(effect.snackBarData)
+                onClickBackFromChat()
             }
         }
     }

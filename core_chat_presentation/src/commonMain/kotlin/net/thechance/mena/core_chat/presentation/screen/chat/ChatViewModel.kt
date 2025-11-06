@@ -9,6 +9,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -174,12 +175,15 @@ class ChatViewModel(
     }
 
     private fun onGetChatError() {
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.error_cant_get_messages,
-            isError = true
-        )
-        emitEffect(ChatScreenEffect.NavigateBack)
+        viewModelScope.launch {
+            delay(100)
+            showSnackBar(
+                titleStringResource = Res.string.error,
+                messageStringResource = Res.string.error_cant_get_messages,
+                isError = true
+            )
+            emitEffect(ChatScreenEffect.NavigateBack)
+        }
     }
 
     override fun onBackClicked() {
