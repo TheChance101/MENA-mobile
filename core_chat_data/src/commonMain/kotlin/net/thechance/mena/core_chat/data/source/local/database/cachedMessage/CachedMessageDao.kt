@@ -16,7 +16,11 @@ interface CachedMessageDao {
     suspend fun insertAllMessages(message: List<CachedMessageLocalDto>)
 
     @Query("SELECT * FROM cached_messages WHERE chat_id = :chatId ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")
-    suspend fun getMessagesByChatIdWithOffset(chatId: String, limit: Int, offset: Int): List<CachedMessageLocalDto>
+    suspend fun getMessagesByChatIdWithOffset(
+        chatId: String,
+        limit: Int,
+        offset: Int
+    ): List<CachedMessageLocalDto>
 
     @Query("UPDATE cached_messages SET status = :status WHERE id = :id")
     suspend fun updateMessageStatus(id: String, status: MessageStatus)
@@ -33,13 +37,15 @@ interface CachedMessageDao {
     @Update
     suspend fun updateMessage(message: CachedMessageLocalDto)
 
-    @Query("""
+    @Query(
+        """
     UPDATE cached_messages 
     SET status = :newStatus 
     WHERE chat_id = :chatId
       AND sender_id != :readerId
       AND status != :newStatus
-""")
+"""
+    )
     suspend fun markMessagesAsReadByReader(
         chatId: String,
         readerId: String,

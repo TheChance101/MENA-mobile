@@ -244,7 +244,8 @@ class MessageRepositoryImpl(
             ADD_REACTION -> {
                 val reaction = json.decodeFromString<MessageReactionDto>(body).toDomain()
 
-                val message = cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
+                val message =
+                    cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
                 val updatedReactions = message.reactions.toMutableList().apply {
                     removeAll { it.userId == reaction.userId && it.emoji == reaction.emoji }
                     add(reaction.toLocalDto())
@@ -257,7 +258,8 @@ class MessageRepositoryImpl(
             REMOVE_REACTION -> {
                 val reaction = json.decodeFromString<MessageReactionDto>(body).toDomain()
 
-                val message = cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
+                val message =
+                    cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
                 val updatedReactions = message.reactions.filterNot { it.userId == reaction.userId }
                 cachedMessageDao.updateMessage(message.copy(reactions = updatedReactions))
 

@@ -135,7 +135,8 @@ fun MessageReaction.toLocalDto(): MessageReactionLocalDto {
     )
 }
 
-fun List<MessageReaction>.toLocalDto(): List<MessageReactionLocalDto> = map(MessageReaction::toLocalDto)
+fun List<MessageReaction>.toLocalDto(): List<MessageReactionLocalDto> =
+    map(MessageReaction::toLocalDto)
 
 fun MessageReactionLocalDto.toDomain(): MessageReaction {
     return MessageReaction(
@@ -145,9 +146,11 @@ fun MessageReactionLocalDto.toDomain(): MessageReaction {
     )
 }
 
-fun List<MessageReactionLocalDto>.toDomainMessageReaction(): List<MessageReaction> = map(MessageReactionLocalDto::toDomain)
+fun List<MessageReactionLocalDto>.toDomainMessageReaction(): List<MessageReaction> =
+    map(MessageReactionLocalDto::toDomain)
 
-fun List<Message>.toCachedMessageLocalDto(): List<CachedMessageLocalDto> = map { it.toCachedMessageLocalDto() }
+fun List<Message>.toCachedMessageLocalDto(): List<CachedMessageLocalDto> =
+    map { it.toCachedMessageLocalDto() }
 
 fun CachedMessageLocalDto.toDomain(): Message {
     val content = if (text != null) {
@@ -190,7 +193,7 @@ fun PendingMessageLocalDto.toDomain(): Message {
     )
 }
 
-fun List<PendingMessageLocalDto>.toDomain(): List<Message> = map { it.toDomain() }
+fun List<PendingMessageLocalDto>.toDomain(): List<Message> = map(PendingMessageLocalDto::toDomain)
 
 fun MarkAsReadDto.toDomain(): MarkMessageAsReadEvent {
     return MarkMessageAsReadEvent(
