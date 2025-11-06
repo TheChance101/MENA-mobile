@@ -7,6 +7,7 @@ import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.no_mosques_found_by_keyword
@@ -31,6 +32,7 @@ internal class NearbyMosquesViewModel(
 
     private val queryFlow = MutableStateFlow("")
     private var userCoordinate: Coordinate? = null
+    private var searchJob: Job? = null
 
     init {
         getUserLocation()
@@ -153,7 +155,51 @@ internal class NearbyMosquesViewModel(
 
     override fun onBackClick() {
         // TODO("Not yet implemented")
+        }
+    override fun selectMosque(mosque: MosqueUiState) {
+        updateState {
+            it.copy(
+                selectedMosque = mosque,
+                isMosqueBottomSheetVisible = true
+            )
+        }
     }
+
+    override fun unselectMosque() {
+        updateState {
+            it.copy(
+                selectedMosque = null,
+                isMosqueBottomSheetVisible = false
+            )
+        }
+    }
+
+    override fun onViewOnMapClick(coordinate: Coordinate) {
+        sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
+    }
+
+    private fun performSearch(query: String) {
+        searchJob = tryToExecute(
+            execute = { mosqueRepository.getMosquesByName(query) },
+            onSuccess = ::handleSearchSuccess,
+            onError = { handleSearchError() },
+            dispatcher = dispatcher,
+            delayMillis = SEARCH_DEBOUNCE_DELAY,
+        )
+    }
+
+    private fun handleSearchSuccess(mosques: List<Mosque>) {
+        updateState {
+            it.copy(
+                mosquesSearchResults = mosques.map { mosque ->
+                    mosque.toUiState(0.0)
+                },
+                isSearchResultsBottomSheetVisible = mosques.isNotEmpty()
+            )
+        }
+        // TODO: remove all markers from the map and add new markers
+    }
+
     override fun onAddMosqueClick()  {
         // TODO("Not yet implemented")
     }
@@ -165,5 +211,9 @@ internal class NearbyMosquesViewModel(
     }
     override fun onViewMosqueOnMapClick(coordinate: Coordinate)  {
         // TODO("Not yet implemented")
+    }
+    private companion object {
+        const val SEARCH_DEBOUNCE_DELAY = 1000L
+        const val SEARCH_RADIUS_KM = 1.0
     }
 }

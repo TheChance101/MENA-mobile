@@ -35,6 +35,7 @@ internal val dukanRepositoryModule = module {
         )
     }
     single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
+    single<CartRepository> { CartRepositoryImpl(get(named("dukanClient"))) }
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
     single<CartRepository>{ CartRepositoryImpl(client = get (named("dukanClient"))) }

@@ -12,6 +12,7 @@ import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.CachedImageRepositoryImpl
 import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
+import net.thechance.mena.identity.data.repository.SettingsRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
@@ -21,6 +22,7 @@ import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.CachedImageRepository
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.service.AuthorizationService
 import org.koin.core.module.Module
@@ -37,8 +39,10 @@ val identityDataModule = module {
     single { CIO.create() }
     singleOf(::Settings)
 
+    single<SettingsRepository>(createdAtStart = true) { SettingsRepositoryImpl(settings = get()) }
     single<UserRepository> {
-        UserRepositoryImpl(client = get(named(IDENTITY_CLIENT)), userDao = get())
+        UserRepositoryImpl(
+            client = get(named(IDENTITY_CLIENT)), userDao = get())
     }
 
     single<AuthenticationRepository> {

@@ -111,6 +111,7 @@
 
     <!-- Error Messages -->
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_coordinates">Invalid coordinates</string>
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>

@@ -14,6 +14,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_no_internet
+import mena.wallet_presentation.generated.resources.no_internet_content
+import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.retry
 import mena.wallet_presentation.generated.resources.unknown_error_description
 import mena.wallet_presentation.generated.resources.unknown_error_title
@@ -25,9 +27,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun ErrorView(
-    image: Painter = painterResource(Res.drawable.img_no_internet),
-    title: String = stringResource(Res.string.unknown_error_title),
-    description: String = stringResource(Res.string.unknown_error_description),
+    image: Painter,
+    title: String,
+    description: String,
     onRetry: () -> Unit,
 ) {
     Column(
@@ -61,6 +63,11 @@ internal fun ErrorView(
 @Composable
 private fun NoInternetScreenPreview() {
     MenaTheme {
-        ErrorView(onRetry = {})
+        ErrorView(
+            image = painterResource(Res.drawable.img_no_internet),
+            title = stringResource(Res.string.no_internet_title),
+            description = stringResource(Res.string.no_internet_content),
+            onRetry = {}
+        )
     }
 }

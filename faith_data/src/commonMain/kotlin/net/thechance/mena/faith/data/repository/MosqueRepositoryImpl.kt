@@ -20,9 +20,10 @@ class MosqueRepositoryImpl(
         latitude: Double,
         longitude: Double,
         radius: Double
-    ): List<Mosque> {
-        return emptyList()
-    }
+    ): List<Mosque> = executeApiSafely<List<MosqueDto>> {
+        mosqueApiService.getNearbyMosques(latitude, longitude, radius)
+    }.map { it.toMosque() }
+
 
     override suspend fun getMosquesByName(query: String, page: Int, size: Int): List<Mosque> {
         val response = executeApiSafely<PageResponse<MosqueDto>> {

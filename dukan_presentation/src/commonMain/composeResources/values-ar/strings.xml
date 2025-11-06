@@ -104,12 +104,9 @@
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و3000 حرفًا.</string>
     <string name="all">الكل</string>
-    <string name="arrow_right_icon">أيقونة السهم لليمين</string>
     <string name="best_selling">الأكثر مبيعًا</string>
     <string name="shopping_basket_icon">أيقونة سلة التسوق</string>
     <string name="favorite_icon">أيقونة المفضلة</string>
-    <string name="share_icon">أيقونة المشاركة</string>
-    <string name="remove_product">إزالة المنتج</string>
     <string name="wide_dukan_image">صورة دكان عريضة</string>
     <string name="wide_product_image">صورة منتج عريضة</string>
     <string name="wide_discount_icon">أيقونة الخصم</string>
@@ -131,6 +128,13 @@
     <string name="no_internet_connection">لا يوجد اتصال بالإنترنت</string>
     <string name="view_more">عرض المزيد</string>
     <string name="heart_icon">أيقونة القلب</string>
+    <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
+    <string name="share_icon">أيقونة المشاركة</string>
+    <string name="remove_product">حذف المنتج</string>
+    <string name="checkout">Checkout</string>
+    <string name="confirm_order">تأكيد الطلب</string>
+    <string name="deliver_to">التوصيل إلى</string>
+    <string name="summary_details">تفاصيل الملخص</string>
     <string name="favorites">المفضلة</string>
     <string name="no_dukans_title">لا يوجد دكان متعلق بهذه الفئة!</string>
     <string name="no_dukans_body">سيظهر هنا عند إضافته.</string>
@@ -153,4 +157,6 @@
     <string name="error_delete_product">فشل في حذف المنتج. يرجى المحاولة مرة أخرى.</string>
     <string name="delete_product_title">حذف المنتج</string>
     <string name="delete_product_description">هل أنت متأكد أنك تريد حذف هذا المنتج؟</string>
+    <string name="silver_tier_icon">أيقونة الفئة الفضية</string>
+    <string name="desc_edit_address_icon">ايقونة تعديل العنوان</string>
 </resources>

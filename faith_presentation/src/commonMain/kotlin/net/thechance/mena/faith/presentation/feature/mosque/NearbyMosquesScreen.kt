@@ -47,14 +47,17 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
 import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResultsBottomSheet
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.utils.MapNavigator
 import net.thechance.mena.faith.presentation.utils.MapStyle
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
@@ -63,7 +66,8 @@ import org.maplibre.compose.style.BaseStyle
 
 @Composable
 internal fun NearbyMosquesScreen(
-    viewModel: NearbyMosquesViewModel = koinViewModel()
+    mapNavigator: MapNavigator = koinInject(),
+    viewModel: NearbyMosquesViewModel = koinViewModel(),
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,6 +85,8 @@ internal fun NearbyMosquesScreen(
             }
 
             NearbyMosquesEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
+
+            is NearbyMosquesEffect.NavigateToMap -> mapNavigator.openMapAtCoordinate(coordinate = effect.coordinate)
         }
     }
 
@@ -153,6 +159,18 @@ private fun Content(
                     onMosqueClick = listener::onSearchResultClick,
                     onDismiss = listener::onDismissSearchBottomSheet
                 )
+            }
+            bottomSheet(isVisible = uiState.isMosqueBottomSheetVisible) { isVisible ->
+                uiState.selectedMosque?.let { mosque ->
+                    MosqueDetailsBottomSheet(
+                        isVisible = isVisible,
+                        mosque = mosque,
+                        onNavigationClick = {
+                            listener.onViewOnMapClick(mosque.coordinate)
+                        },
+                        onDismiss = listener::unselectMosque
+                    )
+                }
             }
         }
     ) {
@@ -245,7 +263,7 @@ private fun NearbyMosquesScreenPreview() {
             override fun onAddMosqueClick() {}
             override fun onCurrentUserLocationClick() {}
             override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-            override fun onViewMosqueOnMapClick(coordinate: Coordinate) {}
+            override fun onViewOnMapClick(coordinate: Coordinate) {}
             override fun onSearchByCoordinatesClick(coordinate: Coordinate) {}
             override fun onSearchResultClick(mosque: MosqueUiState) {}
             override fun mapPositionChanged(coordinate: Coordinate) {}
@@ -253,6 +271,8 @@ private fun NearbyMosquesScreenPreview() {
             override fun onSearchSubmit() {}
             override fun changeSearchButtonVisibility(isVisible: Boolean) {}
             override fun onDismissSearchBottomSheet() {}
+            override fun selectMosque(mosque: MosqueUiState) {}
+            override fun unselectMosque() {}
         }
     )
 }

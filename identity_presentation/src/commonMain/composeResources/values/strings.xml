@@ -21,7 +21,7 @@
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can't Delete Active Address</string>
+    <string name="is_main_address_error">Can\'t Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -94,8 +94,8 @@
     <string name="profile_privacy_settings">Privacy settings</string>
     <string name="profile_app_settings_header">App settings</string>
     <string name="profile_language">Language</string>
-    <string name="profile_language_english">ENGLISH</string>
-    <string name="profile_language_arabic">ARABIC</string>
+    <string name="profile_language_english">English</string>
+    <string name="profile_language_arabic">Arabic</string>
     <string name="profile_theme">Theme</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
@@ -232,6 +232,7 @@
     <string name="click_to_upload">Click to Upload</string>
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
+    <string name="close_dialog_icon">Close Language Dialog Icon</string>
 
     <!-- date picker -->
     <string name="date_picker_screen_prompt_title">Complete your profile</string>
