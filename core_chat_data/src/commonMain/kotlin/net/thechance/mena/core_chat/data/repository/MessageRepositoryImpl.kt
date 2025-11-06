@@ -1,5 +1,11 @@
+@file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.core_chat.data.repository
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -12,6 +18,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -36,6 +43,9 @@ import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -45,6 +55,7 @@ class MessageRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
+    private val dataStore: DataStore<Preferences>,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -82,6 +93,15 @@ class MessageRepositoryImpl(
         var currentPage = startingPage
         var shouldContinueFetching = true
 
+        val now = Clock.System.now().toString()
+        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull()
+
+        if (startingPage == 0 && lastSyncTime == null) {
+            dataStore.edit { preferences ->
+                preferences[LAST_SYNC_TIME_KEY] = now
+            }
+        }
+
         do {
             try {
                 val networkResponse = tryNetworkCall<PagedDataDto<MessageDto>>(
@@ -115,6 +135,30 @@ class MessageRepositoryImpl(
             }
 
         } while (shouldContinueFetching && localIds.isNotEmpty())
+
+        if (localIds.isNotEmpty()) {
+            syncAfterLastUpdate(chatId, now)
+        }
+    }
+
+    suspend fun syncAfterLastUpdate(chatId: Uuid, newSyncTime: String) {
+        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull() ?: return
+
+        val response = tryNetworkCall<List<MessageDto>>(
+            bodyType = typeInfo<PagedDataDto<MessageDto>>()
+        ) {
+            client.get(getMessagesUpdatesEndPoint(chatId)) {
+                parameter(UPDATED_AFTER_PARAMETER, Instant.parse(lastSyncTime))
+            }
+        }
+
+        if (response != null) {
+            dataStore.edit { preferences ->
+                preferences[LAST_SYNC_TIME_KEY] = newSyncTime
+            }
+
+            messageFlows.emitAll(response.mapNotNull (MessageDto::toDomain ).asFlow())
+        }
     }
 
     override suspend fun deleteMessage(message: Message) {
@@ -198,8 +242,10 @@ class MessageRepositoryImpl(
     }
 
     private companion object {
+        val LAST_SYNC_TIME_KEY = stringPreferencesKey("last_sync_time")
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
+        const val UPDATED_AFTER_PARAMETER = "updatedAfter"
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
@@ -207,5 +253,7 @@ class MessageRepositoryImpl(
         fun getChatMessagesEndpoint(chatId:Uuid): String {
             return "/chat/${chatId}/messages"
         }
+
+        fun getMessagesUpdatesEndPoint(chatId: Uuid): String = "/chat/${chatId}/messages/updates"
     }
 }

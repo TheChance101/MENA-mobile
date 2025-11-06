@@ -37,7 +37,8 @@ internal val repositoryModule = module {
             pendingMessageDao = get(),
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON)),
-            cachedMessageDao = get()
+            cachedMessageDao = get(),
+            dataStore = get()
         )
     }
 
