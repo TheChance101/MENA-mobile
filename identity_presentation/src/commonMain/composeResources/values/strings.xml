@@ -200,7 +200,7 @@
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
-
+    <string name="error_incorrect_password">Old password is incorrect</string>
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
