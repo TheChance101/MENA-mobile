@@ -31,9 +31,13 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiStat
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionListener) {
+fun DukanCartContent(
+    state: DukanCartUiState,
+    listener: DukanCartInteractionListener
+) {
     val products = state.products.collectAsLazyPagingItems()
     val lazyListState = rememberLazyListState()
+
 
     Scaffold(
         topBar = { DukanCartTopBar(listener::onBackClicked) },
@@ -83,6 +87,9 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                     count = products.itemCount,
                     key = { products[it]?.id.orEmpty() }) { index ->
                     val product = products[index] ?: return@items
+                    val productQuantityInCart =
+                        state.productQuantity[product.id] ?: product.quantity
+
                     SwipeableItem(
                         actionButton = {
                             DukanCartDeleteActionButton(
@@ -104,21 +111,20 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
                                     onPlusClick = {
                                         listener.onIncreaseItemQuantityClicked(
                                             product.id,
-                                            product.quantity + 1
+                                            productQuantityInCart + 1
                                         )
                                     },
                                     onMinusClick = {
                                         listener.onDecreaseItemQuantityClicked(
                                             product.id,
-                                            product.quantity - 1
+                                            productQuantityInCart - 1
                                         )
                                     },
-                                    inCartQuantity = product.quantity
+                                    inCartQuantity = productQuantityInCart
                                 )
                             }
                         )
                     }
-
                 }
             }
         }
@@ -130,7 +136,10 @@ fun DukanCartContent(state: DukanCartUiState, listener: DukanCartInteractionList
 @Composable
 private fun DukanCartContentPreview() {
     MenaTheme {
-        DukanCartContent(state = dukanCartUiState, listener = PreviewDukanCartInteractionListener)
+        DukanCartContent(
+            state = dukanCartUiState,
+            listener = PreviewDukanCartInteractionListener
+        )
     }
 }
 
@@ -138,6 +147,9 @@ private fun DukanCartContentPreview() {
 @Composable
 private fun DukanCartContentLoadingPreview() {
     MenaTheme {
-        DukanCartContent(state = DukanCartUiState(), listener = PreviewDukanCartInteractionListener)
+        DukanCartContent(
+            state = DukanCartUiState(),
+            listener = PreviewDukanCartInteractionListener
+        )
     }
 }

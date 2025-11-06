@@ -22,7 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
-    OnSystemBackPressed { viewModel::onBackClicked }
+    OnSystemBackPressed(viewModel::onBackClicked)
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
