@@ -11,6 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -64,16 +66,15 @@ private fun Content(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             SearchEmptyState(
+                subtitle = Res.string.search_reciter,
                 isStartState = state.query.isBlank(),
                 isResultsState = state.searchResults.isEmpty(),
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                isReciter = true
             )
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),
                 isNotEmptyResult = state.searchResults.isNotEmpty(),
                 results = state.searchResults,
-                onSearchClick = listener::onSearchResultClick
             )
         }
     }
@@ -84,21 +85,19 @@ private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
     results: List<ReciterUi>,
-    onSearchClick: (reciterId: Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val shouldShowResults = isNotBlankQuery && isNotEmptyResult
     if (!shouldShowResults) return
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth().padding(top=Theme.spacing._16),
+        modifier = modifier.fillMaxWidth().padding(top = Theme.spacing._16),
     ) {
         items(results) { result ->
             ReciterItem(
                 reciter = result.name,
                 recitingType = result.recitingType,
                 isDownloaded = result.isDownloaded,
-                onSelect = { onSearchClick(result.id) },
                 isSelectedShown = false
             )
         }
@@ -116,7 +115,6 @@ private fun SearchScreenPreview() {
                 override fun onBackClick() {}
                 override fun onClearQueryClick() {}
                 override fun onQueryChange(query: String) {}
-                override fun onSearchResultClick(reciterId: Int) {}
             })
     }
 }

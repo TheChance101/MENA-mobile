@@ -33,7 +33,7 @@ fun ReciterItem(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
-    onSelect: () -> Unit,
+    onSelect: () -> Unit = {},
     isSelectedShown: Boolean,
     isSelected: Boolean = false,
     modifier: Modifier = Modifier

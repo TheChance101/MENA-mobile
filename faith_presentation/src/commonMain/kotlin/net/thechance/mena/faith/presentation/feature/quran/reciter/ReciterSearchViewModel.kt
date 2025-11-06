@@ -34,17 +34,12 @@ class ReciterSearchViewModel(
         cancelPreviousSearch()
 
         if (isQueryTooShort(query)) return
+        if (query == uiState.value.lastSearchedQuery) return
 
         performSearchWithDelay(query)
     }
 
-    override fun onSearchResultClick(reciterId: Int) {
-
-    }
-
-    private fun cancelPreviousSearch() {
-        searchJob?.cancel()
-    }
+    private fun cancelPreviousSearch() = searchJob?.cancel()
 
     private fun performSearchWithDelay(query: String) {
         searchJob = tryToExecute(
@@ -71,9 +66,7 @@ class ReciterSearchViewModel(
         return isTooShort
     }
 
-    private fun clearSearchResults() {
-        updateState { it.copy(searchResults = emptyList()) }
-    }
+    private fun clearSearchResults() = updateState { it.copy(searchResults = emptyList()) }
 
     private fun initializeSearchHint() {
         tryToExecute(

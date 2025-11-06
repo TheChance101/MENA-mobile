@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.start_searching_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -71,16 +73,16 @@ private fun Content(
 ) {
     Scaffold(
         topBar = {
-        SearchHeader(
-            query = state.query,
-            hint = state.queryHint,
-            onQueryChange = listener::onQueryChange,
-            clearQuery = listener::onClearQueryClick,
-            onBackClick = listener::onBackClick,
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
-        )
-    }) {
+            SearchHeader(
+                query = state.query,
+                hint = state.queryHint,
+                onQueryChange = listener::onQueryChange,
+                clearQuery = listener::onClearQueryClick,
+                onBackClick = listener::onBackClick,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
+            )
+        }) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,7 +91,7 @@ private fun Content(
                 isStartState = state.query.isBlank(),
                 isResultsState = state.searchResults.isEmpty(),
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                isReciter = false
+                subtitle = Res.string.start_searching_title
             )
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),
@@ -100,6 +102,7 @@ private fun Content(
         }
     }
 }
+
 @Composable
 private fun ResultList(
     isNotBlankQuery: Boolean,
@@ -134,7 +137,6 @@ private fun ResultList(
         }
     }
 }
-
 
 
 @Composable
