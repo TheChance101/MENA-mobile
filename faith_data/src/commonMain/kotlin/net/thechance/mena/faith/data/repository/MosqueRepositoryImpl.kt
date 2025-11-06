@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.data.repository
 
-import net.thechance.mena.faith.data.mapper.mosque.toDomain
+import net.thechance.mena.faith.data.mapper.mosque.toMosque
 import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
 import net.thechance.mena.faith.data.remote.service.MosqueApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
@@ -21,7 +21,8 @@ class MosqueRepositoryImpl(
         radius: Double
     ): List<Mosque> = executeApiSafely<List<MosqueDto>> {
         mosqueApiService.getNearbyMosques(latitude, longitude, radius)
-    }.toDomain()
+    }.map { it.toMosque() }
+
 
     override suspend fun getMosquesByName(query: String): List<Mosque> {
         return emptyList()

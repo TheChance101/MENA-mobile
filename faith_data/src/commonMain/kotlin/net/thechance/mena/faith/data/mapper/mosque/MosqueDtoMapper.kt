@@ -6,7 +6,7 @@ import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
 import net.thechance.mena.faith.domain.entity.Mosque
 
 @OptIn(ExperimentalUuidApi::class)
-fun MosqueDto.toDomain(): Mosque = Mosque(
+fun MosqueDto.toMosque() = Mosque(
     id = Uuid.parse(id),
     name = name,
     address = address,
@@ -17,4 +17,3 @@ fun MosqueDto.toDomain(): Mosque = Mosque(
     )
 )
 
-fun List<MosqueDto>.toDomain(): List<Mosque> = map { it.toDomain() }

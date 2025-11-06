@@ -10,6 +10,5 @@ data class MosqueDto(
     val latitude: Double,
     val longitude: Double,
     val imageUrl: String,
-    val distanceKm: Double? = null,
     val createdAt: String
 )
