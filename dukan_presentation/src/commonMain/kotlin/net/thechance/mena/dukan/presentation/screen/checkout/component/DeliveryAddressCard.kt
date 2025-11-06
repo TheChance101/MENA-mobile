@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.deliver_to
+import mena.dukan_presentation.generated.resources.desc_edit_address_icon
 import mena.dukan_presentation.generated.resources.ic_home
 import mena.dukan_presentation.generated.resources.ic_maps_editing
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -87,7 +88,7 @@ private fun DeliveryAddressIcon() {
 private fun RowScope.DeliveryAddressDetails(title: String, address: String) {
     Column(
         modifier = Modifier
-            .padding(start = 8.dp)
+            .padding(start = Theme.spacing._8)
             .weight(1f),
         verticalArrangement = Arrangement.Center
     ) {
@@ -109,7 +110,7 @@ private fun EditAddressIcon() {
     Image(
         modifier = Modifier.padding(end = 6.dp),
         painter = painterResource(Res.drawable.ic_maps_editing),
-        contentDescription = ""
+        contentDescription = stringResource(Res.string.desc_edit_address_icon)
     )
 }
 

@@ -159,4 +159,5 @@
     <string name="delete_product_title">Delete product</string>
     <string name="delete_product_description">Are you sure you want to delete this product?</string>
     <string name="silver_tier_icon">Silver tier icon</string>
+    <string name="desc_edit_address_icon">Edit address icon</string>
 </resources>

@@ -158,4 +158,5 @@
     <string name="delete_product_title">حذف المنتج</string>
     <string name="delete_product_description">هل أنت متأكد أنك تريد حذف هذا المنتج؟</string>
     <string name="silver_tier_icon">أيقونة الفئة الفضية</string>
+    <string name="desc_edit_address_icon">ايقونة تعديل العنوان</string>
 </resources>

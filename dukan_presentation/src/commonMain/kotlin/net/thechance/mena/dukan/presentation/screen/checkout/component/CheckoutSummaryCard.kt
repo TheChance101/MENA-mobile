@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
@@ -57,15 +56,15 @@ fun CheckoutSummaryCard(
         )
         Column(
             modifier = Modifier
-                .padding(top = 8.dp)
+                .padding(top = Theme.spacing._8)
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .clip(
                     RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 8.dp,
-                        bottomEnd = 8.dp
+                        topStart = Theme.spacing._16,
+                        topEnd = Theme.spacing._16,
+                        bottomStart = Theme.spacing._8,
+                        bottomEnd = Theme.spacing._8
                     )
                 )
                 .background(Theme.colorScheme.background.surfaceLow)
@@ -84,11 +83,11 @@ private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp)
-            .padding(horizontal = 12.dp),
+            .padding(top = Theme.spacing._24)
+            .padding(horizontal = Theme.spacing._12),
     ) {
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
             userScrollEnabled = false
         ) {
             items(
@@ -102,7 +101,7 @@ private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
             }
         }
         CheckoutFeeItem(
-            modifier = Modifier.padding(top = 13.dp, bottom = 24.dp),
+            modifier = Modifier.padding(top = 13.dp, bottom = Theme.spacing._24),
             productName = "Platform fees",
             price = 1.99
         )
@@ -137,7 +136,7 @@ private fun SummaryBottomSection() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 13.dp, bottom = 33.dp)
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = Theme.spacing._12)
         ) {
             CheckoutFeeItem(productName = "Total amount", price = 31.99)
         }
@@ -187,7 +186,7 @@ private fun QuantityCircle(quantity: Int) {
 private fun RowScope.ProductName(name: String) {
     Text(
         modifier = Modifier
-            .padding(start = 8.dp)
+            .padding(start = Theme.spacing._8)
             .fillMaxWidth()
             .weight(1f),
         text = name,
@@ -229,7 +228,7 @@ private fun CheckoutFeeItem(
     ) {
         Text(
             modifier = Modifier
-                .padding(start = 8.dp)
+                .padding(start = Theme.spacing._8)
                 .fillMaxWidth()
                 .weight(1f),
             text = productName,
@@ -257,13 +256,14 @@ private fun CheckoutFeeItem(
 private fun DashedSeparator(
     modifier: Modifier = Modifier
 ) {
+    val dashColor = Theme.colorScheme.stroke
     Canvas(
         modifier = modifier
             .fillMaxWidth()
             .height(1.dp)
     ) {
         drawLine(
-            color = Color(0XFFEAECF0),
+            color = dashColor,
             start = Offset(0f, size.height / 2),
             end = Offset(size.width, size.height / 2),
             strokeWidth = 1.dp.toPx(),
