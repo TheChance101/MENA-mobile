@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search.component
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

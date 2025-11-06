@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,9 +21,9 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchEmptyState
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchHeader
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchResultCard
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchHeader
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchResultCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview

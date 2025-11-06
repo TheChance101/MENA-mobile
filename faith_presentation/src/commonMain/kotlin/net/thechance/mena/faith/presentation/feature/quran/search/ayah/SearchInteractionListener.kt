@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
 interface SearchInteractionListener {
     fun onQueryChange(query: String)
