@@ -1,7 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen
 
+import androidx.compose.ui.graphics.ImageBitmap
 import com.attafitamim.krop.core.images.ImageSrc
 
-class UploadImageUiState(
-    val selectedImage: ImageSrc? = null,
+data class UploadImageUiState(
+    val imageSrc: ImageSrc? = null,
+    val croppedImage: ImageBitmap? = null,
 )

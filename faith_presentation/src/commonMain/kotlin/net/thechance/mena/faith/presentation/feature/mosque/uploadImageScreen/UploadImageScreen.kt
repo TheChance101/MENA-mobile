@@ -6,17 +6,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropView
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun UploadImageScreen(
-    viewModel: UploadImageViewModel
+internal fun UploadImageScreen(
+    viewModel: UploadImageViewModel = koinViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     MosqueImageCropView(
         aspectRatio = 16f / 9f,
-        selectedImage = state.selectedImage,
+        selectedImage = state.imageSrc,
         onImageCrop = { image ->
             viewModel.onImageCrop(image)
         }
@@ -24,9 +25,7 @@ fun UploadImageScreen(
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            is UploadImageEffect.NavigateBack -> {
-                // TODO: This is where we would pass the cropped image back to the previous screen.
-            }
+            is UploadImageEffect.NavigateBack -> navController.popBackStack()
         }
     }
 }

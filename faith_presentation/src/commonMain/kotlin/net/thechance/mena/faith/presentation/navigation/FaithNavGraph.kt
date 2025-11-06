@@ -11,6 +11,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
+import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageScreen
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassScreen
@@ -63,6 +64,9 @@ fun FaithNavigation() {
                 }
                 composable<Route.DownloadedRecitersRoute> {
                     DownloadedReciterScreen()
+                }
+                composable<Route.UploadImageRoute> {
+                    UploadImageScreen()
                 }
             }
         }

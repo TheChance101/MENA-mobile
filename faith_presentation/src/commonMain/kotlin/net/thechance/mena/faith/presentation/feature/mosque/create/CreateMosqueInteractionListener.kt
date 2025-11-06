@@ -10,5 +10,4 @@ internal interface CreateMosqueInteractionListener {
     fun onNameChange(name: String)
     fun onAddressChanged(address: String)
     fun mapPositionChanged(coordinate: Coordinate)
-
 }

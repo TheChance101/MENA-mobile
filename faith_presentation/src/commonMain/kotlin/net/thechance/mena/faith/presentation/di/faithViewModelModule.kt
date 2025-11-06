@@ -10,6 +10,7 @@ import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropViewModel
+import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageViewModel
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
@@ -24,6 +25,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahViewModel
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -44,9 +46,10 @@ internal val faithViewModelModule = module {
     viewModelOf(::PrayerTimeViewModel)
     viewModelOf(::NearbyMosquesViewModel)
     viewModelOf(::TilawahViewModel)
-    viewModelOf(::CreateMosqueViewModel)
     viewModelOf(::DownloadedSurViewModel)
+    viewModelOf(::CreateMosqueViewModel)
     viewModelOf(::MosqueImageCropViewModel)
     viewModelOf(::UploadImageViewModel)
+    singleOf(::SharedImageViewModel)
 }
 
