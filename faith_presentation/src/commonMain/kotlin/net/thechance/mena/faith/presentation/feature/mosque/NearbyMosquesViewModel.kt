@@ -61,7 +61,7 @@ internal class NearbyMosquesViewModel(
                 val mosques = mosqueRepository.getNearbyMosques(
                     latitude = userLocation?.latitude ?: 0.0,
                     longitude = userLocation?.longitude ?: 0.0,
-                    radius = 50.0
+                    radius = 1.0
                 )
                 emit(
                     PagingData.from(
