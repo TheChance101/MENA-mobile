@@ -9,13 +9,13 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
 import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-
 
 fun Message.toUi(): MessageUiState {
     return MessageUiState(
@@ -83,20 +83,34 @@ fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (Message
     }
 
     for (msg in this) {
-        if (msg.content is MessageContent.Image) {
-            val last = tempImages.lastOrNull()
-            if (last != null && last.isMine == msg.isMine && last.status == msg.status && shouldGroupMessages(
-                    msg
-                )
-            ) {
-                tempImages.add(msg)
-            } else {
-                groupAndClear()
-                tempImages.add(msg)
+        when (msg.content) {
+            is MessageContent.Image -> {
+                val last = tempImages.lastOrNull()
+                if (last != null && last.isMine == msg.isMine && last.status == msg.status && shouldGroupMessages(
+                        msg
+                    )
+                ) {
+                    tempImages.add(msg)
+                } else {
+                    groupAndClear()
+                    tempImages.add(msg)
+                }
             }
-        } else {
-            groupAndClear()
-            grouped.add(ChatListItem.TextMessage(msg))
+            is MessageContent.Audio -> {
+                groupAndClear()
+                grouped.add(ChatListItem.VoiceMessage(
+                    data = msg,
+                    isPlaying = false,
+                    isLoading = false,
+                    progress = 0f,
+                    duration = 0L,
+                    waveformData = generateWaveformData()
+                ))
+            }
+            is MessageContent.Text -> {
+                groupAndClear()
+                grouped.add(ChatListItem.TextMessage(msg))
+            }
         }
     }
 
@@ -124,6 +138,9 @@ private fun LocalDate.toLabel(
     else -> UiText.DynamicString(format())
 }
 
+fun generateWaveformData(): List<Float> {
+    return List(50) { kotlin.random.Random.nextFloat() * 0.8f + 0.2f }
+}
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
     if (item is ChatListItem.TextMessage && item.data.id == messageId)

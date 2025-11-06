@@ -23,9 +23,11 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
 import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.createMessageRepository
+import net.thechance.mena.core_chat.data.defaultAudioResponse
 import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
 import net.thechance.mena.core_chat.data.jsonSerialization
+import net.thechance.mena.core_chat.data.messagesender.AudioMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
@@ -36,6 +38,7 @@ import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
@@ -55,6 +58,7 @@ class MessageRepositoryImplTest {
     private lateinit var messageSenderFactory: MessageSenderFactory
     private lateinit var textMessageSender: TextMessageSender
     private lateinit var imageMessageSender: ImageMessageSender
+    private lateinit var audioMessageSender: AudioMessageSender
     private lateinit var messageDao: MessageDao
 
     @BeforeTest
@@ -68,8 +72,10 @@ class MessageRepositoryImplTest {
             json = jsonSerialization
         )
         imageMessageSender = ImageMessageSender(client = httpClient)
+        audioMessageSender = AudioMessageSender(client = httpClient)
 
-        messageSenderFactory = MessageSenderFactory(textMessageSender, imageMessageSender)
+        messageSenderFactory =
+            MessageSenderFactory(textMessageSender, imageMessageSender, audioMessageSender)
 
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
@@ -276,6 +282,78 @@ class MessageRepositoryImplTest {
             content = MessageContent.Image(ImageData.ImageByteArray(byteArray))
         )
 
+        assertFailsWith<SendMessageFailedException> {
+            repository.sendMessage(message)
+        }
+
+        verifySuspend {
+            messageDao.updateMessageStatus(
+                any(),
+                MessageLocalDto.MessageStatus.FAILED
+            )
+        }
+    }
+
+    @Test
+    fun `should send audio message successfully when websocket connected and audio uploaded`() =
+        runTest {
+            // Given
+            every { webSocketManager.isConnected() } returns true
+            everySuspend { messageDao.insertMessage(any()) } returns Unit
+            everySuspend { messageDao.deleteMessage(any()) } returns Unit
+
+            httpClient = createHttpClient(
+                audioResponse = { defaultAudioResponse() }
+            )
+
+            repository = createMessageRepository(
+                httpClient = httpClient,
+                webSocketManager = webSocketManager,
+                messageSenderFactory = messageSenderFactory,
+                messageDao = messageDao,
+            )
+
+            val audioBytes = ByteArray(1024) { it.toByte() }
+            val message = createMessage(
+                senderId = userId,
+                chatId = chatId,
+                content = MessageContent.Audio(AudioData.AudioByteArray(audioBytes))
+            )
+
+            // When
+            repository.sendMessage(message)
+
+            // Then
+            verifySuspend { messageDao.insertMessage(any()) }
+            verifySuspend { messageDao.deleteMessage(any()) }
+        }
+
+    @Test
+    fun `should mark message as FAILED when audio upload throws exception`() = runTest {
+        // Given
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { messageDao.insertMessage(any()) } returns Unit
+        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
+
+        httpClient = createHttpClient(
+            audioResponse = { respondError(HttpStatusCode.InternalServerError) }
+        )
+
+        repository = createMessageRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            messageSenderFactory = messageSenderFactory,
+            messageDao = messageDao,
+        )
+
+        val audioBytes = ByteArray(1024) { it.toByte() }
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+            content = MessageContent.Audio(AudioData.AudioByteArray(audioBytes))
+        )
+
+        // When & Then
         assertFailsWith<SendMessageFailedException> {
             repository.sendMessage(message)
         }

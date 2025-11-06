@@ -9,6 +9,7 @@ import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -28,7 +29,11 @@ import mena.core_chat_presentation.generated.resources.error_failed_to_download_
 import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
+import mena.core_chat_presentation.generated.resources.error_recording_failed
+import mena.core_chat_presentation.generated.resources.error_invalid_recording
+import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
 import mena.core_chat_presentation.generated.resources.success
+import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -38,6 +43,7 @@ import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
@@ -46,6 +52,8 @@ import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBa
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
+import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import net.thechance.mena.core_chat.presentation.utils.now
@@ -53,14 +61,15 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
+    private val audioRecordRepository: AudioRecordRepository,
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
-    chatArgs: ChatArgs,
     private val permissionsController: PermissionsController,
+    private val audioPlayer: AudioPlayer,
+    chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ChatScreenState, ChatScreenEffect>(ChatScreenState(), dispatcher),
     ChatInteractionListener {
@@ -122,7 +131,13 @@ class ChatViewModel(
                     updateState { state ->
                         state.copy(
                             chatListItems = uiList
-                                .buildListItems { msg -> msg.status != MessageStatus.FAILED && msg.status != MessageStatus.LOADING && msg.sendTime < earliestUnReadMessageTime }
+                                .buildListItems(
+                                    shouldGroupImageMessages = { msg ->
+                                        msg.status != MessageStatus.FAILED &&
+                                                msg.status != MessageStatus.LOADING &&
+                                                msg.sendTime < earliestUnReadMessageTime
+                                    }
+                                )
                         )
                     }
                 }
@@ -409,6 +424,8 @@ class ChatViewModel(
         }
     }
 
+
+
     override fun onChatActionsMenuClicked() {
         updateState { it.copy(isChatActionsDialogVisible = true) }
     }
@@ -457,6 +474,214 @@ class ChatViewModel(
             titleStringResource = Res.string.error,
             messageStringResource = Res.string.could_not_delete_chat,
             isError = true
+        )
+    }
+
+    override fun onMessageVoiceClicked(messageId: Uuid) {
+        val voiceMessageItem = state.value.chatListItems.find {
+            it is ChatListItem.VoiceMessage && it.data.id == messageId
+        } as? ChatListItem.VoiceMessage ?: return
+
+        val message = voiceMessageItem.data
+
+        if (voiceMessageItem.isPlaying) {
+            audioPlayer.pause()
+            updateVoiceMessageState(messageId, isPlaying = false)
+            return
+        }
+
+        stopAnyPlayingVoiceMessage(messageId)
+
+        val audioContent = (message.content as? MessageContent.Audio) ?: return
+        val audioPath = (audioContent.data as? AudioData.AudioUrl) ?: return
+
+        val needsLoading = voiceMessageItem.duration <= 0
+
+        updateVoiceMessageState(
+            messageId,
+            isPlaying = true,
+            isLoading = needsLoading
+        )
+
+        tryToExecute(
+            execute = { audioRecordRepository.getAudioFilePath(audioPath.url) },
+            onSuccess = { filePath ->
+                if (needsLoading) {
+                    val duration = audioPlayer.getDuration(filePath)
+                    audioPlayer.play(filePath)
+                    updateVoiceMessageState(messageId, duration = duration, isLoading = false)
+                    startProgressTracking(messageId, duration)
+                } else {
+                    audioPlayer.play(filePath)
+                    startProgressTracking(messageId, voiceMessageItem.duration)
+                }
+            },
+            onError = {
+                updateVoiceMessageState(
+                    messageId,
+                    isPlaying = false,
+                    isLoading = false
+                )
+            }
+        )
+    }
+
+    private fun startProgressTracking(messageId: Uuid, duration: Long) {
+        viewModelScope.launch {
+            while (true) {
+                delay(100)
+
+                val voiceMessageItem = state.value.chatListItems.find {
+                    it is ChatListItem.VoiceMessage && it.data.id == messageId
+                } as? ChatListItem.VoiceMessage
+
+                if (voiceMessageItem == null || !voiceMessageItem.isPlaying) break
+
+                val currentPositionSeconds = audioPlayer.getCurrentPosition()
+
+                if (duration in 1..currentPositionSeconds) {
+                    audioPlayer.stop()
+                    updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
+                    break
+                }
+
+                val progress = if (duration > 0) {
+                    currentPositionSeconds.toFloat() / duration.toFloat()
+                } else 0f
+
+                updateVoiceMessageState(messageId, progress = progress)
+            }
+        }
+    }
+
+    private fun stopAnyPlayingVoiceMessage(excludeMessageId: Uuid) {
+        state.value.chatListItems.forEach { item ->
+            if (item is ChatListItem.VoiceMessage && item.data.id != excludeMessageId && (item.isPlaying || item.progress > 0f)) {
+                updateVoiceMessageState(item.data.id, isPlaying = false, progress = 0f)
+            }
+        }
+        audioPlayer.pause()
+    }
+
+    private fun updateVoiceMessageState(
+        messageId: Uuid,
+        isPlaying: Boolean? = null,
+        isLoading: Boolean? = null,
+        progress: Float? = null,
+        duration: Long? = null
+    ) {
+        updateState { currentState ->
+            val updatedItems = currentState.chatListItems.map { item ->
+                if (item is ChatListItem.VoiceMessage && item.data.id == messageId) {
+                    item.copy(
+                        isPlaying = isPlaying ?: item.isPlaying,
+                        isLoading = isLoading ?: item.isLoading,
+                        progress = progress ?: item.progress,
+                        duration = duration ?: item.duration
+                    )
+                } else {
+                    item
+                }
+            }
+            currentState.copy(chatListItems = updatedItems)
+        }
+    }
+
+    override fun onRecordClicked() {
+        if (audioRecordRepository.isRecording()) {
+            stopAndPlayRecording()
+        } else {
+            requestRecordPermissionAndStart()
+        }
+    }
+
+    private fun stopAndPlayRecording() {
+        val filePath = audioRecordRepository.stopRecording()
+        updateState { it.copy(isRecordingVoice = false) }
+        audioPlayer.play(filePath)
+    }
+
+    private fun requestRecordPermissionAndStart() {
+        tryToExecute(
+            execute = { permissionsController.providePermission(Permission.RECORD_AUDIO) },
+            onSuccess = { startRecording() },
+            onError = { onRecordPermissionDenied() }
+        )
+    }
+
+    private fun startRecording() {
+        tryToExecute(
+            execute = { audioRecordRepository.startRecording() },
+            onSuccess = {
+                updateState { it.copy(isRecordingVoice = true) }
+            },
+            onError = { onRecordingStartFailed() }
+        )
+    }
+
+    private fun onRecordPermissionDenied() {
+        showSnackBar(Res.string.error, Res.string.permission_denied_title, true)
+    }
+
+    private fun onRecordingStartFailed() {
+        showSnackBar(Res.string.error, Res.string.error_recording_failed, true)
+        updateState { it.copy(isRecordingVoice = false) }
+    }
+
+    override fun onCancelRecordClicked() {
+        audioRecordRepository.stopRecording()
+        updateState { it.copy(isRecordingVoice = false) }
+    }
+
+    override fun onSendRecordClicked() {
+        val filePath = audioRecordRepository.stopRecording()
+        updateState { it.copy(isRecordingVoice = false) }
+
+        if (!validateRecordingData(filePath)) {
+            return
+        }
+
+        processAndSendAudioMessage(filePath)
+    }
+
+    private fun validateRecordingData(filePath: String): Boolean {
+        val chatId = state.value.chatId
+        val senderId = state.value.chatRequesterId
+
+        if (chatId == null || senderId == null) {
+            showSnackBar(Res.string.error, Res.string.error_invalid_recording, true)
+            return false
+        }
+
+        if (filePath.isEmpty()) {
+            showSnackBar(Res.string.error, Res.string.error_invalid_recording, true)
+            return false
+        }
+
+        return true
+    }
+
+    private fun processAndSendAudioMessage(filePath: String) {
+        val audioByteArray = convertAudioFileToByteArray(filePath)
+
+        if (audioByteArray.isEmpty()) {
+            showSnackBar(Res.string.error, Res.string.error_failed_to_process_audio, true)
+            return
+        }
+
+        val message = createAudioMessage(audioByteArray)
+        sendMessage(message)
+    }
+
+    private fun createAudioMessage(audioByteArray: ByteArray): MessageUiState {
+        val chatId = state.value.chatId!!
+        val senderId = state.value.chatRequesterId!!
+        val content = MessageContent.Audio(AudioData.AudioByteArray(byteArray = audioByteArray))
+
+        return MessageUiState(
+            chatId = chatId,
+            senderId = senderId,
+            content = content
         )
     }
 

@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
@@ -41,6 +40,7 @@ import net.thechance.mena.identity.presentation.screen.notImplemented.NotImpleme
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
+import net.thechance.mena.identity.presentation.screen.profile.components.LanguageDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
@@ -75,13 +75,13 @@ class ProfileScreen : BaseScreen<
 
         Scaffold(
             overlays = {
-                dialog(state.showLanguageDialog) {
-                    Dialog(
+                dialog(state.languageDialogUiState.isVisible) {
+                    LanguageDialog(
                         isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissLanguageDialog,
-                        actionButtons = {}
+                        onDismissRequest = listener::onDismissLanguageDialog,
+                        appLanguages = state.languageDialogUiState.options,
+                        onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
+                        currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
                     )
                 }
                 dialog(state.showThemeDialog) {
@@ -177,7 +177,8 @@ class ProfileScreen : BaseScreen<
                     item {
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
-                            onThemeClicked = listener::onThemeClicked
+                            onThemeClicked = listener::onThemeClicked,
+                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso
                         )
                     }
                     item {

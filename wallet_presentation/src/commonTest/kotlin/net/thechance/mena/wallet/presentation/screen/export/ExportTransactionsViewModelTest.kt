@@ -104,27 +104,6 @@ class ExportTransactionsViewModelTest {
     }
 
     @Test
-    fun `onDownloadClicked with empty pdf should show toast`() = runTest {
-        everySuspend { repository.getStatementWithMetadata(any()) } returns createMockStatementWithMetadata(
-            byteArray = byteArrayOf()
-        )
-
-
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(2)
-
-            val toastState = awaitItem().toast
-            assertToastState(isVisible = true, toastState = toastState)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-
-    @Test
     fun `should toggle type in state when onTypeSelected is called`() = runTest {
         initViewModel()
         val type = FilterType.SENT
@@ -261,7 +240,7 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             viewModel.onDownloadClicked()
-            skipItems(5)
+            skipItems(3)
             val state = awaitItem()
 
             assertSnackBarState(
@@ -283,7 +262,7 @@ class ExportTransactionsViewModelTest {
 
         viewModel.state.test {
             viewModel.onDownloadClicked()
-            skipItems(5)
+            skipItems(3)
 
             val state = awaitItem()
 
@@ -310,7 +289,7 @@ class ExportTransactionsViewModelTest {
         viewModel.state.test {
             viewModel.onDownloadClicked()
             advanceUntilIdle()
-            skipItems(5)
+            skipItems(3)
 
             val state = awaitItem()
             assertSnackBarState(true, state.snackBar)
@@ -334,30 +313,11 @@ class ExportTransactionsViewModelTest {
         viewModel.state.test {
             viewModel.onDownloadClicked()
             advanceUntilIdle()
-            skipItems(5)
+            skipItems(3)
 
             val state = awaitItem()
             assertSnackBarState(true, state.snackBar)
             assertFalse(state.snackBar.isSuccess)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `toast should disappear after duration`() = runTest {
-        initViewModel()
-
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(2)
-
-            val toastVisible = awaitItem().toast
-            assertToastState(true, toastVisible)
-
-            advanceTimeBy(2000L)
-            val toastHidden = awaitItem().toast
-            assertToastState(false, toastHidden)
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -503,7 +463,7 @@ class ExportTransactionsViewModelTest {
         initViewModel()
         viewModel.state.test {
             viewModel.onDownloadClicked()
-            skipItems(4)
+            skipItems(2)
 
             val state = awaitItem()
             assertFalse(state.isDownloadLoading)
@@ -537,25 +497,6 @@ class ExportTransactionsViewModelTest {
             assertTrue(state.isDownloadButtonEnabled)
             assertTrue(state.isViewAndShareButtonEnabled)
             assertFalse(state.isCustomFilterCardSelected)
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `hideToast should hide toast`() = runTest {
-        initViewModel()
-        viewModel.state.test {
-            viewModel.onDownloadClicked()
-            skipItems(2)
-
-            val toastVisible = awaitItem().toast
-            assertTrue(toastVisible.isVisible)
-
-            advanceTimeBy(2000L)
-
-            val toastHidden = awaitItem().toast
-            assertFalse(toastHidden.isVisible)
 
             cancelAndIgnoreRemainingEvents()
         }

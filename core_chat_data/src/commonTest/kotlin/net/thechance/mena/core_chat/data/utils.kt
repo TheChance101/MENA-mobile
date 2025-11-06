@@ -18,6 +18,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
+import io.ktor.utils.io.ByteReadChannel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
@@ -159,6 +160,21 @@ fun MockRequestHandleScope.defaultDeleteChatResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultAudioResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        MessageDto.serializer(),
+        createMessageDto()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+fun MockRequestHandleScope.defaultAudioDownloadResponse(audioBytes: ByteArray) = respond(
+    content = ByteReadChannel(audioBytes),
+    status = HttpStatusCode.OK,
+    headers = headersOf(HttpHeaders.ContentType, "audio/m4a")
+)
+
 fun createRepository(
     contactsProvider: ContactsProvider,
     contactsDataStore: DataStore<Preferences>,
@@ -197,6 +213,7 @@ fun createChatRepository(
     )
 
 }
+
 fun createMessageRepository(
     httpClient: HttpClient,
     webSocketManager: WebSocketManager,
@@ -206,7 +223,7 @@ fun createMessageRepository(
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
         messageDao = messageDao,
-        client =httpClient,
+        client = httpClient,
         messageSenderFactory = messageSenderFactory,
         json = jsonSerialization
     )
@@ -218,6 +235,8 @@ fun createHttpClient(
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     imagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    audioResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    audioDownloadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatsSummariesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -246,6 +265,12 @@ fun createHttpClient(
 
             path.contains(IMAGES_ENDPOINT) ->
                 imagesResponse?.invoke(this) ?: defaultUploadImagesResponse()
+
+            path.contains(AUDIO_ENDPOINT) && request.method.value == "POST" ->
+                audioResponse?.invoke(this) ?: defaultAudioResponse()
+
+            path.contains(".m4a") || path.contains(".wav") || path.contains(".mp3") ->
+                audioDownloadResponse?.invoke(this) ?: defaultAudioDownloadResponse(ByteArray(1024))
 
             path.contains(USER_ENDPOINT) ->
                 userResponse?.invoke(this) ?: defaultUserInfoResponse()
@@ -280,4 +305,5 @@ private const val CHAT_ENDPOINT = "/chat"
 private const val USER_ENDPOINT = "/chat/user"
 private const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
+private const val AUDIO_ENDPOINT = "/chat/audio"
 private const val DELETE_CHAT_ENDPOINT = "/chat/delete"
