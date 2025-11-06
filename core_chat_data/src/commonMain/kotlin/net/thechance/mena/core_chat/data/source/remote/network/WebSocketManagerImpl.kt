@@ -39,6 +39,8 @@ class WebSocketManagerImpl(
     private val _incomingMessages = MutableSharedFlow<String>(extraBufferCapacity = 64)
     override val incomingMessages: SharedFlow<String> = _incomingMessages
 
+    private var subscriptionCounter = 0
+
     override fun connect(
         onConnected: suspend () -> Unit
     ) {
@@ -114,9 +116,10 @@ class WebSocketManagerImpl(
     }
 
     override suspend fun subscribe(destination: String) {
+        val id = "sub-${subscriptionCounter++}"
         val frame =
             "$SUBSCRIBE\n" +
-                    "id:sub-0\n" +
+                    "id:$id\n" +
                     "$DESTINATION:$destination\n" +
                     "\n\u0000"
         sendFrame(frame)

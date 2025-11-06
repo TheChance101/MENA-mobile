@@ -33,6 +33,7 @@ import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
@@ -476,6 +477,76 @@ class ChatViewModel(
             messageStringResource = Res.string.could_not_delete_chat,
             isError = true
         )
+    }
+
+    override fun onMessageLongClicked(message: MessageUiState) {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = true,
+                messageToReactTo = message
+            )
+        }
+    }
+
+    override fun onReactionDialogDismissed() {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = false,
+                messageToReactTo = null
+            )
+        }
+    }
+
+
+    override fun onReactionSelected(messageId: Uuid, reaction: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        val message = _messages.value.firstOrNull { it.id == messageId } ?: return
+        val hasSameReaction = message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+
+        if (hasSameReaction) {
+            tryToExecute(
+                execute = { messageRepository.removeMessageReaction(messageId, reaction) },
+                onSuccess = { removeReactionFromMessages(messageId, reaction) }
+            )
+        } else {
+            tryToExecute(
+                execute = { messageRepository.addMessageReaction(messageId, reaction) },
+                onSuccess = { updateReactionInMessages(messageId, reaction) }
+            )
+        }
+    }
+    private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val updatedReactions = message.reactions.filterNot {
+                        it.userId == currentUserId && it.emoji == emoji
+                    }
+                    message.copy(reactions = updatedReactions)
+                } else message
+            }
+        }
+    }
+
+
+    private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val newReaction = MessageReaction(emoji, currentUserId, messageId)
+                    val updatedReactions = message.reactions
+                        .filter { it.userId != currentUserId }
+                        .toMutableList()
+                        .apply { add(newReaction) }
+
+                    message.copy(reactions = updatedReactions)
+                } else {
+                    message
+                }
+            }
+        }
     }
 
     override fun onDownloadImageClicked(url: String) {

@@ -134,18 +134,33 @@ fun ImageMessagesLayout(
                         onImageClick = { index -> onMessageImageClick(messages, index) }
                     )
                 }
-            }
 
+            }
             AnimatedVisibility(
                 visible = showMessageInfo,
-                modifier = Modifier.align(messageInfoAlignment)
+                modifier = Modifier
+                    .align(messageInfoAlignment)
             ) {
-                MessageInfo(
-                    messageTime = messages.last().sendTime,
-                    messageStatus = messages.last().status,
-                    messageIsMine = messages.last().isMine,
-                    onFailClick = { onFailClick(messages.last()) },
-                )
+                val lastMessage = messages.last()
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                ) {
+                    if (!lastMessage.isMine && lastMessage.reactions.isNotEmpty()) {
+                        ReactionBubble(reactions = lastMessage.reactions)
+                    }
+
+                    MessageInfo(
+                        messageTime = lastMessage.sendTime,
+                        messageStatus = lastMessage.status,
+                        messageIsMine = lastMessage.isMine,
+                        onFailClick = { onFailClick(lastMessage) },
+                    )
+
+                    if (lastMessage.isMine && lastMessage.reactions.isNotEmpty()) {
+                        ReactionBubble(reactions = lastMessage.reactions)
+                    }
+                }
             }
         }
     }
@@ -191,4 +206,3 @@ private fun Preview() {
         }
     }
 }
-

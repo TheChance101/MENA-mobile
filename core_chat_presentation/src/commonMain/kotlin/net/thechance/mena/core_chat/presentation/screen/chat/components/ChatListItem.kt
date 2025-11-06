@@ -23,6 +23,7 @@ fun ChatListItem(
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
+    onMessageLongClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (item) {
@@ -47,6 +48,7 @@ fun ChatListItem(
                 showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
                 isMarkedLastInSeries = markedMessage.isLastInSeries,
                 onMessageClick = { onMessageClick(markedMessage.id) },
+                onMessageLongClick = { onMessageLongClick(markedMessage) },
                 onFailClick = { onFailedMessageClick(markedMessage) },
             )
         }

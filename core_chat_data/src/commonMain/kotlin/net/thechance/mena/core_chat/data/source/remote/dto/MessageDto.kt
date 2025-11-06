@@ -9,6 +9,7 @@ data class MessageDto(
     val chatId: String,
     val text: String? = null,
     val imageUrl: String? = null,
+    val reactions: List<MessageReactionDto> = emptyList(),
     val sendAt: String,
     val isRead: Boolean,
     val isMine: Boolean
@@ -26,7 +27,7 @@ data class MarkAsReadRequest(
 )
 
 @Serializable
-data class MarkAsReadResponse(
+data class MarkAsReadDto(
     val readByUserId: String,
     val chatId: String,
     val readByMe: Boolean

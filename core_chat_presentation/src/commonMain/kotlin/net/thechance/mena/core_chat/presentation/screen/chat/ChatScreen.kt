@@ -32,6 +32,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScre
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -40,6 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
 
 @Composable
 fun ChatScreen() {
@@ -116,6 +118,17 @@ fun ChatScreenContent(
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
+
+                messageReactionDialog(
+                    isVisible = state.isReactionDialogVisible,
+                    message = state.messageToReactTo,
+                    currentUserId = state.chatRequesterId,
+                    onDismiss = { interactions.onReactionDialogDismissed() },
+                    onReactionClicked = { messageId, emoji ->
+                        interactions.onReactionSelected(messageId, emoji)
+                    }
+                )
+
             }
         ) {
             ChatList(
@@ -126,6 +139,7 @@ fun ChatScreenContent(
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 paginationError = state.paginationError,
+                onMessageLongClick = interactions::onMessageLongClicked,
             )
         }
 
@@ -143,6 +157,7 @@ fun ChatScreenContent(
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,
                 onCloseClick = interactions::onCloseImageViewClicked,
+                onImageLongClick = interactions::onMessageLongClicked,
                 onDownloadClick = interactions::onDownloadImageClicked,
             )
         }

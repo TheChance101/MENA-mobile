@@ -164,10 +164,27 @@ class MessageRepositoryImplTest {
         }
     }
 
-
     @Test
     fun `should observe read messages`() = runTest {
         val flow = repository.observeReadMessages()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe delete chat event`() = runTest {
+        val flow = repository.observeDeleteChat()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe add message reaction event`() = runTest {
+        val flow = repository.observeMessageReactions()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe remove message reaction event`() = runTest {
+        val flow = repository.observeRemovedMessageReactions()
         assertThat(flow).isNotNull()
     }
 
@@ -219,6 +236,22 @@ class MessageRepositoryImplTest {
             val flow = repository.observeMessagesForChatOrAll(chatId)
 
             assertThat(flow).isNotNull()
+        }
+
+    @Test
+    fun `should connect to websocket when observeMessagesForChatOrAll is called and websocket is disconnected`() =
+        runTest {
+            every { webSocketManager.isConnected() } returns false
+            everySuspend { webSocketManager.connect(any()) } returns Unit
+            every { webSocketManager.incomingMessages } returns MutableSharedFlow<String>().apply {
+                tryEmit(
+                    "test-message"
+                )
+            }
+
+            repository.observeMessagesForChatOrAll(chatId)
+
+            verifySuspend { webSocketManager.connect(any()) }
         }
 
     @Test
