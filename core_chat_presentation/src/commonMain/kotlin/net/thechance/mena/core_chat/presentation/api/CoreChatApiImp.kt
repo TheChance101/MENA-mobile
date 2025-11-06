@@ -6,7 +6,7 @@ import net.thechance.mena.core_chat.presentation.navigation.ChatNavHost
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-class CoreChatApiImp(private val chatEntryViewModel: ChatEntryViewModel) : CoreChatApi {
+class CoreChatApiImp() : CoreChatApi {
     @Composable
     override fun TabEntry() {
         ChatNavHost()
@@ -14,6 +14,6 @@ class CoreChatApiImp(private val chatEntryViewModel: ChatEntryViewModel) : CoreC
 
     @Composable
     override fun ChatEntry(userId: String, onNavigateBack: () -> Unit) {
-        ChatEntryPoint(userId = userId, viewModel = chatEntryViewModel, onNavigateBack = onNavigateBack)
+        ChatEntryPoint(userId = userId, onNavigateBack = onNavigateBack)
     }
 }
