@@ -209,6 +209,7 @@ private fun PagerOverlay(
         }
         Row(
             modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             if (message.reactions.isNotEmpty()) {
