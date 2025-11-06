@@ -23,5 +23,5 @@ fun String?.parseDateStringOrNull(
 }
 
 internal fun String.toUrl(): String{
-    return "https://s3.tebi.io/$this"
+    return "https://mena-trends.fra1.cdn.digitaloceanspaces.com/$this"
 }
