@@ -176,6 +176,7 @@ class ChatViewModel(
         updateState { state ->
             state.copy(
                 chatId = chat.id,
+                chatName = chat.name,
                 chatAvatarUrl = chat.imageUrl.orEmpty(),
                 chatRequesterId = chat.requesterId,
             )
