@@ -95,17 +95,16 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-    var currentUrl by remember(url) { mutableStateOf(url) }
 
     val headers = mapOf("X-ACCESS-KEY" to "something")
 
-    val asset = remember(currentUrl) {
+    val asset = remember(url) {
         AVURLAsset.URLAssetWithURL(
             URL = NSURL(string = url),
             options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
         )
     }
-    val avPlayerItem = remember(currentUrl) { AVPlayerItem(asset) }
+    val avPlayerItem = remember(url) { AVPlayerItem(asset) }
 
     val player = remember(url) { AVPlayer(avPlayerItem) }
 
@@ -118,26 +117,26 @@ actual fun VideoPlayer(
         }
     }
 
-    LaunchedEffect(currentUrl) {
-        if (currentUrl != url) {
-            val currentTime = CMTimeGetSeconds(player.currentTime())
-            val wasPlaying = player.rate > 0.0f
+    LaunchedEffect(url) {
 
-            val newAsset = AVURLAsset.URLAssetWithURL(
-                URL = NSURL(string = currentUrl),
-                options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
-            )
-            val newPlayerItem = AVPlayerItem(newAsset)
+        val currentTime = CMTimeGetSeconds(player.currentTime())
+        val wasPlaying = player.rate > 0.0f
 
-            player.replaceCurrentItemWithPlayerItem(newPlayerItem)
+        val newAsset = AVURLAsset.URLAssetWithURL(
+            URL = NSURL(string = url),
+            options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
+        )
+        val newPlayerItem = AVPlayerItem(newAsset)
 
-            val time = CMTimeMakeWithSeconds(currentTime, 600)
-            player.seekToTime(time)
+        player.replaceCurrentItemWithPlayerItem(newPlayerItem)
 
-            if (wasPlaying) {
-                player.play()
-            }
+        val time = CMTimeMakeWithSeconds(currentTime, 600)
+        player.seekToTime(time)
+
+        if (wasPlaying) {
+            player.play()
         }
+
     }
 
     LaunchedEffect(player) {
@@ -147,7 +146,8 @@ actual fun VideoPlayer(
                 val error = item.error
                 if (error != null) {
                     if (error.code == NSURLErrorBadServerResponse ||
-                        error.domain == "NSURLErrorDomain") {
+                        error.domain == "NSURLErrorDomain"
+                    ) {
                         onRequestRefresh()
                     }
                 }
