@@ -57,14 +57,8 @@ class DukanCartViewModel(
 
     private fun loadCartInfo() {
         tryToExecute(
-            onStart = {
-                updateState {
-                    copy(cartState = CartState.LOADING)
-                }
-            },
-            block = {
-                cartRepository.getCartInfo(dukanId)
-            },
+            onStart = { updateState { copy(cartState = CartState.LOADING) } },
+            block = { cartRepository.getCartInfo(dukanId) },
             onError = ::onCartInfoError,
             onSuccess = ::onLoadCartSuccess
         )
@@ -72,9 +66,7 @@ class DukanCartViewModel(
 
     private fun updateTotalPrice() {
         tryToExecute(
-            block = {
-                cartRepository.getCartInfo(dukanId)
-            },
+            block = { cartRepository.getCartInfo(dukanId) },
             onError = ::onCartInfoError,
             onSuccess = ::onLoadCartSuccess
         )
@@ -103,14 +95,8 @@ class DukanCartViewModel(
 
     private fun loadDukanInfo() {
         tryToExecute(
-            onStart = {
-                updateState {
-                    copy(dukanInfoState = DukanInfoState.LOADING)
-                }
-            },
-            block = {
-                dukanRepository.getDukanDetailsByDukanId(dukanId)
-            },
+            onStart = { updateState { copy(dukanInfoState = DukanInfoState.LOADING) } },
+            block = { dukanRepository.getDukanDetailsByDukanId(dukanId) },
             onSuccess = ::onDukanInfoSuccess
         )
     }
@@ -126,11 +112,7 @@ class DukanCartViewModel(
 
 
     private fun updateProducts() {
-        updateState {
-            copy(
-                products = productsMutableStateFlow
-            )
-        }
+        updateState { copy(products = productsMutableStateFlow) }
     }
 
     private fun loadProductsPaging() {
@@ -193,9 +175,7 @@ class DukanCartViewModel(
 
     private fun updateProductQuantityInServer(productId: String, newQuantity: Int) {
         tryToExecuteWithDebounce(
-            block = {
-                uploadNewQuantityInServer(productId, newQuantity)
-            },
+            block = { uploadNewQuantityInServer(productId, newQuantity) },
             onError = ::onErrorUpdateProductQuantity,
             onSuccess = { updateTotalPrice() }
         )
@@ -262,10 +242,6 @@ class DukanCartViewModel(
     }
 
     override fun onDismissSnackBar() {
-        updateState {
-            copy(
-                snackBarState = null
-            )
-        }
+        updateState { copy(snackBarState = null) }
     }
 }

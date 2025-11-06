@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.component
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,12 +13,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
-import kotlinx.coroutines.launch
+import net.thechance.mena.dukan.presentation.util.modifiers.swipeableItem
 import kotlin.math.roundToInt
 
 @Composable
@@ -48,38 +46,14 @@ fun SwipeableItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(-offset.value.roundToInt(), 0) }
-                .pointerInput(true) {
-                    detectHorizontalDragGestures(
-                        onHorizontalDrag = { _, dragAmount ->
-                            coroutineScope.launch {
-                                val adjustedDragAmount = if (isRtl) -dragAmount else dragAmount
-                                val newOffset =
-                                    (offset.value - adjustedDragAmount).coerceIn(
-                                        0f,
-                                        actionButtonWidth
-                                    )
-                                offset.snapTo(newOffset)
-                            }
-                        },
-                        onDragEnd = {
-                            when {
-                                offset.value >= actionButtonWidth / 2f -> {
-                                    coroutineScope.launch {
-                                        offset.animateTo(actionButtonWidth)
-                                        onExpanded()
-                                    }
-                                }
-
-                                else -> {
-                                    coroutineScope.launch {
-                                        offset.animateTo(0f)
-                                        onCollapsed()
-                                    }
-                                }
-                            }
-                        }
-                    )
-                }
+                .swipeableItem(
+                    actionButtonWidth = actionButtonWidth,
+                    isRtl = isRtl,
+                    onExpanded = onExpanded,
+                    onCollapsed = onCollapsed,
+                    offset = offset,
+                    coroutineScope = coroutineScope
+                )
         ) {
             content()
         }
