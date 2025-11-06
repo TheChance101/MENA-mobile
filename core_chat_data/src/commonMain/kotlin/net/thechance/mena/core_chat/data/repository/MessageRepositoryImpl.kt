@@ -23,21 +23,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionRequestDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
-import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
-import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -97,7 +93,12 @@ class MessageRepositoryImpl(
 
     }
 
-    private suspend fun syncRemoteMessages(chatId: Uuid, startingPage: Int, pageSize: Int, localMessages: List<Message>) {
+    private suspend fun syncRemoteMessages(
+        chatId: Uuid,
+        startingPage: Int,
+        pageSize: Int,
+        localMessages: List<Message>
+    ) {
         val localIds = localMessages.map { it.id }.toSet()
         var currentPage = startingPage
         var shouldContinueFetching = true
@@ -131,7 +132,7 @@ class MessageRepositoryImpl(
                 if (notExisting.isNotEmpty()) {
                     cachedMessageDao.insertAllMessages(notExisting.toCachedMessageLocalDto())
 
-                    messageFlows.emitAll(notExisting.asFlow())
+                    messagesFlow.emitAll(notExisting.asFlow())
                 }
 
                 if (existing.isNotEmpty()) shouldContinueFetching = false
@@ -166,7 +167,7 @@ class MessageRepositoryImpl(
                 preferences[LAST_SYNC_TIME_KEY] = newSyncTime
             }
 
-            messageFlows.emitAll(response.mapNotNull (MessageDto::toDomain ).asFlow())
+            messagesFlow.emitAll(response.mapNotNull(MessageDto::toDomain).asFlow())
         }
     }
 
@@ -277,6 +278,7 @@ class MessageRepositoryImpl(
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
     }
+
     override fun observeConnectionStatus(): Flow<Boolean> {
         return webSocketManager.connectionStatus
     }
@@ -289,9 +291,13 @@ class MessageRepositoryImpl(
         sendMessageReactionEvent(REMOVE_REACTION_DESTINATION, messageId, emoji)
     }
 
-    override fun observeMessageReactions(): Flow<MessageReaction> { return addReactionFlow }
+    override fun observeMessageReactions(): Flow<MessageReaction> {
+        return addReactionFlow
+    }
 
-    override fun observeRemovedMessageReactions(): Flow<MessageReaction> { return deleteReactionFlow }
+    override fun observeRemovedMessageReactions(): Flow<MessageReaction> {
+        return deleteReactionFlow
+    }
 
     private suspend fun sendMessageReactionEvent(
         destination: String,
@@ -316,21 +322,14 @@ class MessageRepositoryImpl(
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
-
         const val MARK_AS_READ = "/private/markAsRead"
-        const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
-
         const val ADD_REACTION = "/private/addReaction"
         const val ADD_REACTION_DESTINATION = "/app/chat.addMessageReaction"
         const val REMOVE_REACTION = "/private/deleteReaction"
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
-
         const val DELETE_CHAT = "/private/deleteChat"
 
-        const val PAGE_NUMBER_PARAMETER = "page"
-        const val PAGE_SIZE_PARAMETER = "size"
-
-        fun getChatMessagesEndpoint(chatId:Uuid): String {
+        fun getChatMessagesEndpoint(chatId: Uuid): String {
             return "/chat/${chatId}/messages"
         }
 
