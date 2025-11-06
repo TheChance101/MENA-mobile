@@ -22,7 +22,7 @@ fun ReciterDto.toDomain(): Reciter {
     )
 }
 
-fun Reciter.toDomain(): ReciterDto {
+fun Reciter.toDto(): ReciterDto {
     return ReciterDto(
         id = id,
         name = name,

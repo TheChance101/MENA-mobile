@@ -6,6 +6,7 @@ import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toDomain
+import net.thechance.mena.faith.data.mapper.toDto
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
@@ -78,7 +79,7 @@ class QuranRepositoryImpl(
         },
         networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() } },
         syncBlock = { reciters ->
-            executeLocalSafely { ayahDao.insertReciters(reciters.map { it.toDomain() }) }
+            executeLocalSafely { ayahDao.insertReciters(reciters.map { it.toDto() }) }
         }
     )
 
