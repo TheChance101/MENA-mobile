@@ -6,7 +6,9 @@ import net.thechance.mena.admin_panel.data.remote.dto.authentication.RefreshToke
 import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
+import net.thechance.mena.admin_panel.data.utils.observableToken
 import net.thechance.mena.admin_panel.data.utils.refreshToken
+import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import org.koin.core.annotation.Single
 
 @Single
@@ -16,10 +18,14 @@ class AuthenticationService(
 ) {
     suspend fun refreshAccessToken(): String {
         val refreshResponse: AdminAuthenticationResponse =
-            executeApiSafely<AdminAuthenticationResponse> {
-                authenticationApiService.refreshAccessToken(
-                    RefreshTokenRequestDto(settings.refreshToken)
-                )
+            try {
+                executeApiSafely<AdminAuthenticationResponse> {
+                    authenticationApiService.refreshAccessToken(
+                        RefreshTokenRequestDto(settings.refreshToken)
+                    )
+                }
+            }catch (_: UnauthorizedException){
+                AdminAuthenticationResponse("", "")
             }
         saveAuthTokens(authenticationInfo = refreshResponse)
         return settings.accessToken
@@ -29,8 +35,8 @@ class AuthenticationService(
         return settings.accessToken
     }
 
-    private fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
-        settings.accessToken = authenticationInfo.accessToken
+    private suspend fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
+        settings.accessToken = authenticationInfo.accessToken.also { observableToken.emit(it) }
         settings.refreshToken = authenticationInfo.refreshToken
     }
 }

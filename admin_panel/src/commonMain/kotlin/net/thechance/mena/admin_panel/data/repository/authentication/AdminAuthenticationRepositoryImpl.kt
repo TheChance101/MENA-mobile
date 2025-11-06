@@ -1,11 +1,13 @@
 package net.thechance.mena.admin_panel.data.repository.authentication
 
 import com.russhwolf.settings.Settings
+import kotlinx.coroutines.flow.StateFlow
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
 import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
+import net.thechance.mena.admin_panel.data.utils.observableToken
 import net.thechance.mena.admin_panel.data.utils.refreshToken
 import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import org.koin.core.annotation.Single
@@ -34,13 +36,15 @@ class AdminAuthenticationRepositoryImpl(
     }
 
     override suspend fun isUserLoggedIn(): Boolean = settings.accessToken.isNotBlank()
-    private fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
-        settings.accessToken = authenticationInfo.accessToken
+
+    override fun observeToken(): StateFlow<String> = observableToken
+    private suspend fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
+        settings.accessToken = authenticationInfo.accessToken.also { observableToken.emit(it) }
         settings.refreshToken = authenticationInfo.refreshToken
     }
 
-    private fun clearAuthTokens() {
-        settings.accessToken = ""
+    private suspend fun clearAuthTokens() {
+        settings.accessToken = "".also { observableToken.emit(it) }
         settings.refreshToken = ""
     }
 }
