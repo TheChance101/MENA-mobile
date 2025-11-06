@@ -21,7 +21,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.PaymentResultScreenRoute
@@ -81,34 +80,28 @@ private fun ConfirmPaymentScreenContent(
         errorState = state.errorState,
         onRetry = { interactionListener.onRefresh() }
     ) {
-        when {
-            state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = 24.dp)
-                ) {
-                    PaymentDetailsSection(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        userMessage = state.userMessage,
-                        payment = state.paymentUiState,
-                        receiver = state.receiverUiState
-                    )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 24.dp)
+        ) {
+            PaymentDetailsSection(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                userMessage = state.userMessage,
+                payment = state.paymentUiState,
+                receiver = state.receiverUiState
+            )
 
-                    PayButton(
-                        isLoading = state.isPayButtonLoading,
-                        isEnabled = state.paymentUiState.status,
-                        onClick = interactionListener::onPayButtonClicked,
-                        payAmount = state.paymentUiState.amount
-                    )
-                }
-            }
+            PayButton(
+                isLoading = state.isPayButtonLoading,
+                isEnabled = state.paymentUiState.status,
+                onClick = interactionListener::onPayButtonClicked,
+                payAmount = state.paymentUiState.amount
+            )
         }
     }
-
 }
 
 private fun onConfirmPaymentEffect(
@@ -117,7 +110,9 @@ private fun onConfirmPaymentEffect(
     navigateBack: () -> Unit,
 ) {
     when (effect) {
-        ConfirmPaymentEffect.NavigateBack -> { navigateBack() }
+        ConfirmPaymentEffect.NavigateBack -> {
+            navigateBack()
+        }
 
         is ConfirmPaymentEffect.NavigateToPaymentResultScreen -> {
             navController.navigate(

@@ -39,6 +39,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ScaffoldScope.BasicDialog(
@@ -50,7 +51,7 @@ fun ScaffoldScope.BasicDialog(
     dismissOnClickOutside: Boolean = true,
     contentColor: Color = Theme.colorScheme.background.surfaceLow,
     scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
-    dialogCornerShape: Shape = RoundedCornerShape(Theme.radius.xl),
+    dialogCornerShape: Shape = SquircleShape(Theme.radius.xl),
     cancelBackgroundShape: Shape = RoundedCornerShape(Theme.radius.full),
     contentPadding: PaddingValues = PaddingValues(12.dp),
     onCancelClick: () -> Unit = {},

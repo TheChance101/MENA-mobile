@@ -30,6 +30,7 @@ data class ChatScreenState(
     val isImagePagerVisible: Boolean = false,
     val selectedImageMessages: List<MessageUiState> = emptyList(),
     val paginationError: Boolean = false,
+    val isRecordingVoice : Boolean = false
 )
 
 data class UserData(
@@ -42,6 +43,14 @@ sealed interface ChatListItem {
     data class DateSeparator(val label: UiText) : ChatListItem
     data class TextMessage(val data: MessageUiState) : ChatListItem
     data class ImageMessages(val data: List<MessageUiState>) : ChatListItem
+    data class VoiceMessage(
+        val data: MessageUiState,
+        val isPlaying: Boolean,
+        val isLoading: Boolean,
+        val progress: Float,
+        val duration: Long,
+        val waveformData: List<Float> = emptyList()
+    ) : ChatListItem
 }
 
 data class MessageUiState(

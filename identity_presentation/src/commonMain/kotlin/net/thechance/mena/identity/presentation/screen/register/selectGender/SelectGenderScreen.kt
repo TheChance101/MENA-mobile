@@ -20,7 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.editProfile.component.GenderToggle
+import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
 import org.jetbrains.compose.resources.stringResource
 
 class SelectGenderScreen() :

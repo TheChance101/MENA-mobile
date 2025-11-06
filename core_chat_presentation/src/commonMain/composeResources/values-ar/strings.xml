@@ -51,4 +51,7 @@
     <string name="chat_deleted_successfully">تم حذف المحادثة بنجاح</string>
     <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
     <string name="no_internet_connected">أنت غير متصل بالإنترنت، تحقق من الاتصال وحاول مرة أخرى.</string>
+    <string name="error_recording_failed">فشل بدء التسجيل. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_invalid_recording">تسجيل غير صالح. يرجى محاولة التسجيل مرة أخرى.</string>
+    <string name="error_failed_to_process_audio">فشل معالجة ملف الصوت. يرجى المحاولة مرة أخرى.</string>
 </resources>

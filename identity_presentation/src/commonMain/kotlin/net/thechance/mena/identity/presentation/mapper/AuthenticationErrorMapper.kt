@@ -1,7 +1,7 @@
 package net.thechance.mena.identity.presentation.mapper
 
-import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_bad_request
 import mena.identity_presentation.generated.resources.error_invalid_country_code
 import mena.identity_presentation.generated.resources.error_invalid_mobile_number
 import mena.identity_presentation.generated.resources.error_invalid_otp
@@ -12,6 +12,7 @@ import mena.identity_presentation.generated.resources.error_phone_number_already
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import mena.identity_presentation.generated.resources.error_too_many_requests
 import mena.identity_presentation.generated.resources.error_user_blocked
+import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
 import org.jetbrains.compose.resources.StringResource
 
 internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): StringResource {
@@ -25,6 +26,7 @@ internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): S
         AuthenticationErrorState.OTPExpired -> Res.string.error_otp_expired
         AuthenticationErrorState.PhoneNumberAlreadyExists -> Res.string.error_phone_number_already_exists
         AuthenticationErrorState.NoNetwork -> Res.string.error_no_network
+        AuthenticationErrorState.InvalidRequest -> Res.string.error_bad_request
         is AuthenticationErrorState.SomethingWentWrong -> Res.string.error_something_went_wrong
     }
 }

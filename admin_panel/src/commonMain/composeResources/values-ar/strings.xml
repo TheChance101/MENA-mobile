@@ -1,23 +1,58 @@
 <resources>
     <string name="app_name">MENA Admin Panel</string>
+    <string name="mena">مينا</string>
+
+    <!-- Error Messages -->
+    <string name="unknown_error_title">خطأ غير معروف</string>
+    <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="no_internet_title">عذراً! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
+
+    <!-- Navigation -->
+    <string name="dukans_management">إدارة الدكان</string>
+    <string name="dukan_requests">طلبات الدكان</string>
+    <string name="deposit">الإيداع</string>
+    <string name="log_out">تسجيل الخروج</string>
+
+    <!-- Users Management -->
+    <string name="users_management">إدارة المستخدمين</string>
+    <string name="search_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
+
+    <!-- Table Headers -->
+    <string name="user_name">اسم المستخدم</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="last_login_date">تاريخ آخر تسجيل دخول</string>
+    <string name="last_visit_date">تاريخ آخر زيارة</string>
+    <string name="status">الحالة</string>
+
+    <!-- User Status -->
+    <string name="active">نشط</string>
+    <string name="blocked">محظور</string>
+    <string name="block">حظر</string>
+    <string name="activate">تفعيل</string>
+
+    <!-- Search -->
+    <string name="no_search_result">لا توجد نتائج بحث!</string>
+    <string name="no_search_result_description">يرجى المحاولة بكلمة بحث أخرى.</string>
+
+    <!-- Dialogs -->
+    <string name="block_user">حظر المستخدم</string>
+    <string name="block_user_confirmation_message">هل أنت متأكد من أنك تريد المتابعة بالحظر؟</string>
     <string name="cancel">إلغاء</string>
     <string name="logout">تسجيل الخروج</string>
     <string name="logout_disc">هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟ يمكنك تسجيل الدخول مرة أخرى باستخدام بيانات الاعتماد الخاصة بك.</string>
-    <string name="users_management">إدارة المستخدمين</string>
-    <string name="dukans_management">إدارة الدكانات</string>
-    <string name="dukan_requests">طلبات الدكان</string>
-    <string name="deposit">الإيداع</string>
-    <string name="mena">MENA</string>
     <string name="username">اسم المستخدم</string>
     <string name="password">كلمة السر</string>
     <string name="login">تسجيل الدخول</string>
     <string name="login_header">مرحبًا بكم مرة أخرى في MENA</string>
     <string name="login_sub_title">أدخل بيانات الخاصة بك لتسجيل الدخول</string>
     <string name="login_background_img">صورة خلفية لتسجيل الدخول</string>
-    <string name="no_internet_title">عفواً! يبدو أنك غير متصل بالإنترنت.</string>
-    <string name="no_internet_content">تحقق من اتصالك وحاول مرة أخرى</string>
-    <string name="unknown_error_title">خطأ غير معروف</string>
-    <string name="unknown_error_description">حدث خطأ غير معروف. يرجى المحاولة مرة أخرى.</string>
     <string name="error_invalid_credentials_title">بيانات اعتماد غير صحيحة.</string>
     <string name="error_invalid_credentials_description">يرجى التحقق من اسم المستخدم وكلمة المرور الخاصة بك.</string>
+
+    <string name="status_updated_title">تم تحديث الحالة</string>
+    <string name="user_activated">تم تفعيل المستخدم</string>
+    <string name="user_blocked">تم حظر المستخدم</string>
+    <string name="sort">ترتيب</string>
 </resources>
