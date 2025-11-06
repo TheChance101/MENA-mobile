@@ -5,4 +5,5 @@ data class CompassUiState(
     val qiblahAngleValue: Float = 0f,
     val angleToQiblah: Float = 0f,
     val city: String = ""
+
 )

@@ -6,8 +6,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
@@ -27,8 +25,6 @@ class PrayerTimeViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PrayerTimeUiState, PrayerTimeEffect>(PrayerTimeUiState()),
     PrayerTimeInteractionListener {
-
-    private val currentTimeZone = TimeZone.currentSystemDefault()
 
     init {
         loadTodayPrayerTimes()

@@ -14,6 +14,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
             implementation(projects.identityDomain)
+            implementation(libs.kotlinx.coroutines.core)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
