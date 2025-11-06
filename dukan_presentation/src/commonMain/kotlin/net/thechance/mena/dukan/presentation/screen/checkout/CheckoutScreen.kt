@@ -6,10 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutAppBar
 import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutSummaryCard
@@ -61,10 +61,13 @@ private fun CheckoutContent(state: CheckoutUiState, listener: CheckoutViewModel)
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = Theme.spacing._16)
         ) {
-            DeliveryAddressCard(modifier = Modifier.padding(top = 8.dp))
-            CheckoutSummaryCard(products = products, modifier = Modifier.padding(top = 16.dp))
+            DeliveryAddressCard(modifier = Modifier.padding(top = Theme.spacing._8))
+            CheckoutSummaryCard(
+                products = products,
+                modifier = Modifier.padding(top = Theme.spacing._16)
+            )
         }
     }
 }
