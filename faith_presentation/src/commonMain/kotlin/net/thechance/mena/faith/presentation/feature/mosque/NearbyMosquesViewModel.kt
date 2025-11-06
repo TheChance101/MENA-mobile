@@ -30,7 +30,6 @@ internal class NearbyMosquesViewModel(
 ), NearbyMosquesInteractionListener {
 
     private val queryFlow = MutableStateFlow("")
-    private var userCoordinate: Coordinate? = null
 
     init {
         getUserLocation()
@@ -45,9 +44,10 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun onGetUserLocationSuccess(address: Address) {
-        userCoordinate = Coordinate(address.latitude, address.longitude)
+        val coordinate = Coordinate(address.latitude, address.longitude)
         updateState {
             it.copy(
+                centerOfMap = coordinate,
                 mosquesSearchResults = createMosquesPagingSource(""),
                 isLoading = false
             )
@@ -55,7 +55,7 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
-        val userLocation = userCoordinate
+        val userLocation = uiState.value.centerOfMap
         return if (query.isBlank()) {
             flow {
                 val mosques = mosqueRepository.getNearbyMosques(
@@ -146,7 +146,6 @@ internal class NearbyMosquesViewModel(
     override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
         updateState {
             it.copy(
-                centerOfMap = coordinate,
                 mosquesSearchResults = createMosquesPagingSource(queryFlow.value),
                 isLoading = false,
             )
