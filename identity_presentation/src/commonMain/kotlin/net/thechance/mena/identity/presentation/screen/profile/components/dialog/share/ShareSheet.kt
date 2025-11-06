@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.share
+package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
 
 import androidx.compose.runtime.Composable
 

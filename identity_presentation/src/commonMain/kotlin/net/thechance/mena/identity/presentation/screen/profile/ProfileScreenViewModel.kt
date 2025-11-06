@@ -10,7 +10,7 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
-import net.thechance.mena.identity.presentation.screen.profile.components.share.clipEntryOf
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,

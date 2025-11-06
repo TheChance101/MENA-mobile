@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.share
+package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
 
 import android.content.ClipData
 import android.content.Context
@@ -24,7 +24,7 @@ actual fun ShareSheet(title: String, url: String, onDismiss: () -> Unit) {
         val contentPreviewUri = getAndCacheImageFile(context = context).toImageUri(context)
 
         val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
+            Intent.setAction = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, url)
             putExtra(Intent.EXTRA_TITLE, title)
 
