@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
@@ -44,6 +46,32 @@ class DukanDetailsViewModel(
 
     init {
         loadDukanDetails()
+        loadCartInfo()
+    }
+
+    private fun loadCartInfo() {
+        tryToExecute(
+            block = { dukanCartRepository.getCartInfo(args.dukanId) },
+            onError = ::onCartInfoError,
+            onSuccess = ::onLoadCartSuccess
+        )
+    }
+
+    private fun onCartInfoError(throwable: Throwable) {
+        when (throwable) {
+            is NoSuchItemException -> updateState { copy(totalPrice = 0.0) }
+            is NoInternetException -> updateState { copy(totalPrice = 0.0) }
+            else -> updateState { copy(totalPrice = 0.0) }
+        }
+    }
+
+    private fun onLoadCartSuccess(cart: Cart) {
+        updateState {
+            copy(
+                totalPrice = cart.totalPrice,
+            )
+        }
+        println("totalprice "+state.value.totalPrice)
     }
 
     private fun loadDukanDetails() {

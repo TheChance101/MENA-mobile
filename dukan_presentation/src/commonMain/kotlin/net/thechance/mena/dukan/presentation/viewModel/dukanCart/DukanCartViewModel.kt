@@ -206,7 +206,7 @@ class DukanCartViewModel(
     }
 
     private fun removeProductInServer(productId: String) {
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 cartRepository.deleteProductFromCart(
                     dukanId = dukanId,

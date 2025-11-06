@@ -10,7 +10,8 @@ data class ProductDetailsUiState(
     val isFavorite: Boolean = false,
     val selectedImageUrl: String = "",
     val isFirstQuantityOne: Boolean = false,
-    val snackBarState: SnackBarUiState? = null
+    val snackBarState: SnackBarUiState? = null,
+    val totalPrice: Double = 0.0
 ) {
     data class ProductInfo(
         val id: String = "",
