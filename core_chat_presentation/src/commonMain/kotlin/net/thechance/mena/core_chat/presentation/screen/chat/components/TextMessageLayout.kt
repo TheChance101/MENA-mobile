@@ -80,6 +80,7 @@ fun TextMessageLayout(
     val avatarSpacing = Theme.spacing._8
     val myMessageMarginStart = Theme.spacing._24
     val otherMessageMarginEnd = Theme.spacing._8
+    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
 
     val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
     val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
@@ -151,7 +152,7 @@ fun TextMessageLayout(
             }
 
             Row(
-                modifier = Modifier
+                modifier = Modifier.align(messageInfoAlignment)
                     .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
