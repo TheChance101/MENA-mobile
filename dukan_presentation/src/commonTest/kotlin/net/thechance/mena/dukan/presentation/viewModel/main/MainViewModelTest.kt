@@ -50,8 +50,7 @@ class MainViewModelTest {
             MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
         everySuspend {
             dukanManagementRepository.updateFavoriteDukanStatus(
-                fakeDukans[0].id.toString(),
-                true
+                fakeDukans[0].id.toString()
             )
         } returns Unit
 

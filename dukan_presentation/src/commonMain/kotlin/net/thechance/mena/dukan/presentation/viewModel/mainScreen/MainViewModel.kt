@@ -297,7 +297,7 @@ class MainViewModel(
 
     override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
         tryToExecute(
-            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !isFavorite) },
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
             onSuccess = {
                 updateFavoriteDukanPagingData(
                     dukanId = dukanId,

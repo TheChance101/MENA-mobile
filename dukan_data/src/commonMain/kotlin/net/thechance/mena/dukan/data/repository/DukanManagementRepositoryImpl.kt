@@ -97,7 +97,9 @@ class DukanManagementRepositoryImpl(
         }
     }
 
-    override suspend fun updateFavoriteDukanStatus(dukanId: String, isFavorite: Boolean) {
-        true
+    override suspend fun updateFavoriteDukanStatus(dukanId: String) {
+       return safeApiCall{
+            client.post("$DUKAN_BASE_PATH/$dukanId/toggle_favorite")
+        }
     }
 }

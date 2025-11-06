@@ -312,7 +312,7 @@ class DukanDetailsViewModelTest {
             val dukanId = initialState.dukanInfo.dukanId
 
             everySuspend {
-                dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !initialFavorite)
+                dukanManagementRepository.updateFavoriteDukanStatus(dukanId)
             } returns Unit
 
             // When

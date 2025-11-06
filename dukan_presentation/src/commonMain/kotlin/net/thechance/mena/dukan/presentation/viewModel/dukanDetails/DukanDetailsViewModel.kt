@@ -82,9 +82,6 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
     private fun loadShelvesPaging() {
         tryToCollect(
             block = ::getShelvesPagingFlow,
@@ -314,7 +311,7 @@ class DukanDetailsViewModel(
 
     override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
         tryToExecute(
-            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId, !isFavorite) },
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
             onSuccess = { setFavoriteState(!isFavorite) }
         )
     }
@@ -333,6 +330,4 @@ class DukanDetailsViewModel(
     fun refreshProducts() {
         loadDukanDetails()
     }
-
-
 }

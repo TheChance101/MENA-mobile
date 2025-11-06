@@ -185,8 +185,7 @@ class DukansViewModelTest {
         val targetDukan = dummyDukanPreviews[0]
         everySuspend {
             dukanManagementRepository.updateFavoriteDukanStatus(
-                targetDukan.id.toString(),
-                !targetDukan.isFavorite
+                targetDukan.id.toString()
             )
         } returns Unit
 
