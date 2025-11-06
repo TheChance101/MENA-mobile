@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -65,6 +66,20 @@ class ProductDetailsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `init SHOULD load cart info successfully`() = runTest {
+        everySuspend { dukanCartRepository.getCartInfo(any()) } returns dummyCart()
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(500.0, state.totalPrice)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
     @Test
     fun `init SHOULD set isLoading to false after successful load`() = runTest {
         advanceUntilIdle()
@@ -305,6 +320,12 @@ class ProductDetailsViewModelTest {
 
     )
 }
+
+@OptIn(ExperimentalUuidApi::class)
+private fun dummyCart() = Cart(
+    id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+    totalPrice = 500.0,
+)
 
 @OptIn(ExperimentalUuidApi::class)
 private fun dummyProductDetails(): Product = Product(
