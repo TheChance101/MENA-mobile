@@ -2,7 +2,7 @@ package net.thechance.mena.identity.data.mapper
 
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
-import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
@@ -16,7 +16,7 @@ fun ProfileResponseDto.toDomain(): User {
         id = Uuid.parse(this.id),
         firstName = this.firstName,
         lastName = this.lastName,
-        profileImageUrl = this.imageUrl,
+        profileImageUrl = normalizeUrl(this.imageUrl),
         username = this.username.lowercase(),
         birthDate = LocalDate.parse(this.birthDate),
         gender = when (this.gender) {
@@ -32,7 +32,7 @@ fun ProfileResponseDto.toEntity(): UserEntity {
         firstName = this.firstName,
         lastName = this.lastName,
         username = this.username.lowercase(),
-        profileImageUrl = this.imageUrl,
+        profileImageUrl = normalizeUrl(this.imageUrl),
         birthDate = this.birthDate,
         gender = this.gender,
     )
@@ -68,4 +68,19 @@ fun User.toEntity(): UserEntity {
             else -> UserEntity.FEMALE
         }
     )
+}
+
+private fun normalizeUrl(url: String?): String {
+    if (url == null)
+        return ""
+    val regex = Regex("^(https?://[^/]+)(/.*)?$")
+    val match = regex.find(url)
+
+    return if (match != null) {
+        val domainPart = match.groupValues[1]
+        val pathPart = match.groupValues.getOrNull(2)?.replace(Regex("/{2,}"), "/") ?: ""
+        domainPart + pathPart
+    } else {
+        url
+    }
 }

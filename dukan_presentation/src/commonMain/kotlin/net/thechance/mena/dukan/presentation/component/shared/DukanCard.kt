@@ -35,7 +35,7 @@ fun DukanCard(
     dukan: CategoryDukansUiState.DukanUiState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isFavorite: Boolean = false,
+    isFavorite: Boolean,
     onFavoriteClick: () -> Unit = {},
     isLoading: Boolean = false
 ) {
@@ -123,6 +123,7 @@ private fun DukanCardLoadingPreview() {
         DukanCard(
             dukan = CategoryDukansUiState.DukanUiState(),
             onClick = {},
+            isFavorite = false,
             isLoading = true
         )
     }
@@ -154,6 +155,7 @@ private fun DukanCardEmptyImagePreview() {
                 name = "Dukan Without Image",
                 imageUrl = ""
             ),
+            isFavorite = false,
             onClick = {}
         )
     }

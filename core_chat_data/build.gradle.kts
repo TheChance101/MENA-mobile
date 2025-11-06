@@ -33,6 +33,8 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(projects.identityDomain)
+
+            implementation(libs.record.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -80,7 +82,8 @@ kover.reports {
             "*.dto" ,
             "*.database",
             "*.utils",
-            "*.network"
+            "*.network",
+            "*.audio"
         )
     }
 }

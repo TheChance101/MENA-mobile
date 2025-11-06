@@ -64,6 +64,7 @@
         <item quantity="other">منذ %1$d عام</item>
     </plurals>
     <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_coordinates">الإحداثيات غير صحيحة</string>
     <string name="error_no_internet">لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.</string>
     <string name="error_unauthorized">لست مخولاً للقيام بهذا الإجراء.</string>
     <string name="error_network">خطأ في الشبكة. يرجى المحاولة لاحقاً.</string>
@@ -110,8 +111,17 @@
     <string name="next_prayer_time_icon">يقونة المصلي</string>
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="search_hint">ابحث...</string>
-    <string name="no_mosques_found">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
+    <string name="no_mosques_found_by_keyword">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
     <string name="downloaded">تم التنزيل</string>
     <string name="reciters">القراء</string>
     <string name="search_results">نتائج البحث</string>
+    <string name="no_nearby_mosques_found">لم يتم العثور على أي مساجد بالجوار، ابحث بمكان آخر</string>
+    <!--  Downloaded sur  -->
+    <string name="downloaded_sur">السور المحمله</string>
+    <string name="reciter_list">قائمة القرآء</string>
+    <string name="delete_surah">حذف السوره</string>
+    <string name="delete">حذف</string>
+    <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
+    <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
+    <string name="listen">استماع</string>
 </resources>

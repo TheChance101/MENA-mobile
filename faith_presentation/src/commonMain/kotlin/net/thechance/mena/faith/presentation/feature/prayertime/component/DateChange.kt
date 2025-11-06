@@ -25,6 +25,7 @@ import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiStat
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.ExperimentalTime
 
 @Composable
 internal fun DateChange(
@@ -76,6 +77,7 @@ internal fun DateChange(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun Preview() {

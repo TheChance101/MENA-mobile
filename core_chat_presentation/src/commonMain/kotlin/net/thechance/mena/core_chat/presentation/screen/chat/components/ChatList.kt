@@ -2,14 +2,17 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
@@ -25,7 +28,10 @@ fun ChatList(
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
-    onFailedMessageClick: (MessageUiState) -> Unit
+    onFailedMessageClick: (MessageUiState) -> Unit,
+    onMessageLongClick: (MessageUiState) -> Unit,
+    paginationError: Boolean,
+    onMessageVoiceClick: (Uuid) -> Unit,
 ) {
     if (items.isNotEmpty()) {
         LaunchedEffect(items[0]) {
@@ -60,9 +66,23 @@ fun ChatList(
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
                 onMessageImageClick = onMessageImageClick,
+                onMessageVoiceClick = onMessageVoiceClick,
                 onFailedMessageClick = onFailedMessageClick,
+                onMessageLongClick = onMessageLongClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
+        }
+
+        if (paginationError) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    NoInternetConnection()
+                }
+            }
         }
     }
 }

@@ -2,6 +2,13 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 
 interface SurahInteractionListener {
     fun onBackClick()
+    fun onListenClick()
+    fun onReciterClick()
+    fun onNextAyahClick()
+    fun onPlayPauseClick()
+    fun onRepeatAyahClick()
+    fun onClosePlayerClick()
+    fun onPreviousAyahClick()
     fun onDismissActionButtons()
     fun onShareClick(ayahContent: String)
     fun onBookmarkClick(ayahNumber: Int)

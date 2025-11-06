@@ -48,6 +48,7 @@ fun ManageShelfContent(
                 text = stringResource(Res.string.save),
                 onClick = listener::onSaveClicked,
                 isEnabled = state.isSaveButtonEnabled,
+                isLoading = state.isLoading,
                 contentPadding = PaddingValues(vertical = Theme.spacing._12)
             )
         },

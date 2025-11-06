@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.cancel_icon
@@ -40,6 +41,8 @@ fun ReciterBox(
             text = reciterName,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             modifier = Modifier.weight(1f)
         )
 

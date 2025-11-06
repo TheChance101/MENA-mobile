@@ -23,7 +23,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
@@ -92,40 +91,23 @@ private fun StatementDetailsContent(
         isLoading = state.isLoading,
         bottomContent = {
             if (state.statement.isNotEmpty()) {
-                if (!state.statement.isNotEmpty()) {
-                    PrimaryButton(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                            .padding(bottom = 24.dp)
-                            .height(48.dp),
-                        text = stringResource(Res.string.share_button_title),
-                        onClick = listener::onShareClicked,
-                        trailingIcon = painterResource(Res.drawable.ic_share_),
-                        iconSize = 20.dp,
-                        isLoading = false,
-                    )
-                }
+                PrimaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 24.dp)
+                        .height(48.dp),
+                    text = stringResource(Res.string.share_button_title),
+                    onClick = listener::onShareClicked,
+                    trailingIcon = painterResource(Res.drawable.ic_share_),
+                    iconSize = 20.dp,
+                    isLoading = false,
+                )
             }
         },
+        errorState = state.errorState
     ) {
-        StatementViewer(state = state, onRetry = { listener.onRetryClicked() })
-    }
-}
-
-@Composable
-private fun StatementViewer(
-    state: StatementDetailsScreenState,
-    onRetry: () -> Unit
-) {
-    when {
-        state.errorState != null -> {
-            ErrorView(onRetry = onRetry)
-        }
-
-        else -> {
-            PdfViewer(pdf = state.statement)
-        }
+        PdfViewer(pdf = state.statement)
     }
 }
 

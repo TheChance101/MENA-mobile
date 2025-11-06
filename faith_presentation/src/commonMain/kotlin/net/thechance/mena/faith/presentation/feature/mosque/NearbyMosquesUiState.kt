@@ -6,12 +6,14 @@ import kotlin.uuid.Uuid
 
 internal data class NearbyMosquesMapUiState(
     val mosques: List<MosqueUiState> = emptyList(),
+    val selectedMosque: MosqueUiState? = null,
     val mosquesSearchResults: List<MosqueUiState> = emptyList(),
     val centerOfMap: Coordinate? = null,
     val isLoading: Boolean = true,
     val isMosqueBottomSheetVisible: Boolean = false,
     val isSearchResultsBottomSheetVisible: Boolean = false,
     val isSearchButtonVisible: Boolean = false,
+    val isNoMosquesCardVisible: Boolean = false,
     val error: String? = null,
     val query: String = "",
 )

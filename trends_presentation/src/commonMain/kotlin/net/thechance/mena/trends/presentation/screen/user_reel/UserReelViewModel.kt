@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -44,10 +45,27 @@ internal class UserReelViewModel(
     private fun createPager(): Flow<PagingData<UserReelUiState>> {
         return createPager(
             scope = viewModelScope,
-            loadPage = { page -> reelsRepository.getFeedReels(page, userReelArgs.realId) }
+            loadPage = { page ->
+                getReelsBasedOnSource(
+                    isFromHome = userReelArgs.isFromHome,
+                    isFromManageTrends = userReelArgs.isFromManageTrends,
+                    page = page
+                )
+            }
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
+    private suspend fun getReelsBasedOnSource(
+        isFromHome: Boolean,
+        isFromManageTrends: Boolean,
+        page: Int
+    ): List<Reel> {
+        return when {
+            isFromHome -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+            isFromManageTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
+            else -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+        }
+    }
 
     fun addReelLike(reelId: String) {
         tryToExecute(

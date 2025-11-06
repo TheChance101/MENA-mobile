@@ -3,22 +3,29 @@ package net.thechance.mena.designsystem.presentation.component.scaffold
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
 fun Scaffold(
     modifier: Modifier = Modifier,
+    backgroundColor: Color = Theme.colorScheme.background.surface,
+    statusBarColor: Color = backgroundColor,
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     snakeBar: @Composable () -> Unit = {},
@@ -35,10 +42,11 @@ fun Scaffold(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Theme.colorScheme.background.surface)
             .then(
                 if (hasBlur) Modifier.blur(4.dp) else Modifier
             )
+            .background(statusBarColor)
+            .windowInsetsPadding(WindowInsets.statusBars)
             .navigationBarsPadding()
             .systemBarsPadding(),
         contentAlignment = Alignment.Center
@@ -47,6 +55,8 @@ fun Scaffold(
             topBar()
             Box(
                 modifier = Modifier
+                    .background(backgroundColor)
+                    .windowInsetsPadding(WindowInsets.safeDrawing)
                     .fillMaxWidth()
                     .weight(1f)
             ) {
@@ -65,6 +75,6 @@ fun Scaffold(
     }
 
     scope.items.forEach {
-            it.content(scope, it.isVisible)
+        it.content(scope, it.isVisible)
     }
 }

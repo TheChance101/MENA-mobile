@@ -24,7 +24,7 @@ internal class UpdateCategoriesViewModel(
         getCategories()
     }
 
-    fun getCategories() {
+    private fun getCategories() {
         tryToExecute(
             block = { repository.getAllCategories() },
             onSuccess = ::handleLoadCategoriesSuccess,

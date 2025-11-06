@@ -8,29 +8,52 @@ internal class CreateMosqueViewModel() :
     BaseViewModel<CreateMosqueUiState, CreateMosqueEffect>(
         CreateMosqueUiState()
     ), CreateMosqueInteractionListener {
-    override fun onBackClicked() {
+
+    override fun onBackClick() {
         //TODO("Not yet implemented")
     }
 
-    override fun onEditImageMosqueClicked() {
+    override fun onEditImageMosqueClick() {
         //TODO("Not yet implemented")
     }
 
     override fun onClickUploadImage(image: ImageSrc) {
+        updateState {
+            it.copy(
+                selectedImage = image,
+                isImageBeingCropped = false
+            )
+        }
+        checkIfFormIsComplete()
+    }
+
+    override fun onAddClick() {
         //TODO("Not yet implemented")
     }
 
     override fun onNameChange(name: String) {
-        //TODO("Not yet implemented")
+        updateState { it.copy(name = name) }
+        checkIfFormIsComplete()
     }
 
-    override fun onAddressChanged(address: String) {
-        //TODO("Not yet implemented")
+    override fun onAddressChange(address: String) {
+        updateState { it.copy(address = address) }
+        checkIfFormIsComplete()
     }
 
-    override fun mapPositionChanged(coordinate: Coordinate) {
-        //TODO("Not yet implemented")
+    override fun mapPositionChange(coordinate: Coordinate) {
+        updateState { it.copy(location = coordinate) }
+        checkIfFormIsComplete()
     }
 
-
+    private fun checkIfFormIsComplete() {
+        updateState { currentState ->
+            currentState.copy(
+                isButtonEnabled = currentState.name.isNotBlank() &&
+                        currentState.address.isNotBlank() &&
+                        currentState.location != null &&
+                        currentState.croppedImage != null
+            )
+        }
+    }
 }

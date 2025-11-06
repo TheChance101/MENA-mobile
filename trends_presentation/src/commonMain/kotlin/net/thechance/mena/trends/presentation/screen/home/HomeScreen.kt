@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,7 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlinx.serialization.json.JsonNull.content
+import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -62,7 +63,7 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId))
+                navController.navigate(Route.ReelDetails(effect.trendId, isFromHome = true))
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
@@ -99,6 +100,7 @@ private fun HomeScreenContent(
         }
     ) {
         val reels = state.reels.collectAsLazyPagingItems()
+        val listState = rememberLazyListState()
 
         val hasNetworkError = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet
                 && reels.itemSnapshotList.isEmpty()
@@ -130,7 +132,8 @@ private fun HomeScreenContent(
                         reels = reels,
                         onClickLike = listener::onClickLike,
                         onClickReel = listener::onClickReel,
-                        onExpandDescription = listener::onClickExpandDescription
+                        onExpandDescription = listener::onClickExpandDescription,
+                        listState = listState,
                     )
                 }
             )
@@ -165,6 +168,7 @@ private fun AddTrendFAB(
 @Composable
 private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
+    listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
     onExpandDescription: (reelId: String) -> Unit
@@ -173,6 +177,7 @@ private fun ReelsListSection(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._16),
+        state = listState,
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {

@@ -7,6 +7,5 @@ sealed interface RegisterPhoneEntryUIEffect {
         val countryCode: String
     ) : RegisterPhoneEntryUIEffect
 
-    data object NavigateBack : RegisterPhoneEntryUIEffect
     data object NavigateToLogin : RegisterPhoneEntryUIEffect
 }
