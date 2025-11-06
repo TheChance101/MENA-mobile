@@ -30,7 +30,7 @@ class ReciterSearchViewModel(
     override fun onClearQueryClick() = updateState { it.copy(query = "") }
 
     override fun onQueryChange(query: String) {
-        val lastSearchedQuery = ""
+        val lastSearchedQuery = uiState.value.query
         updateState { it.copy(query = query) }
         cancelPreviousSearch()
 
