@@ -11,6 +11,7 @@ import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
+import net.thechance.mena.faith.data.utils.loadFromCacheOrFetch
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
@@ -54,6 +55,9 @@ class QuranRepositoryImpl(
             ayahDao.searchForAyahInQuran(query).map(AyahDto::toAyah)
         }
 
+    override suspend fun searchForReciter(query: String): List<Reciter> =
+        executeLocalSafely { ayahDao.searchReciters(query).map { it.toDomain() } }
+
     override suspend fun getAyahSoundUrl(
         ayahNumber: Int,
         surahNumber: Int,
@@ -67,16 +71,28 @@ class QuranRepositoryImpl(
         tilawahApiService.getAyahSoundUrl(requestBody)
     }
 
-    override suspend fun getReciters(): List<Reciter> =
-        executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() }
+    override suspend fun getReciters(): List<Reciter> = loadFromCacheOrFetch(
+        cacheBlock = {
+            executeLocalSafely { ayahDao.getAllReciters() }.takeIf { it.isNotEmpty() }
+                ?.map { it.toDomain() }
+        },
+        networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() } },
+        syncBlock = { reciters ->
+            executeLocalSafely { ayahDao.insertReciters(reciters.map { it.toDomain() }) }
+        }
+    )
 
-    override suspend fun getReciterById(reciterId: Int): Reciter =
-        executeApiSafely { tilawahApiService.getReciters()}.first { it.id == reciterId }.toDomain()
-
+    override suspend fun getReciterById(reciterId: Int): Reciter = loadFromCacheOrFetch(
+        cacheBlock = { executeLocalSafely { ayahDao.getReciterById(reciterId) }.toDomain() },
+        networkBlock = {
+            executeApiSafely { tilawahApiService.getReciters() }
+                .first { it.id == reciterId }
+                .toDomain()
+        }
+    )
 
     override suspend fun saveDefaultReciter(reciterId: Int) =
         tilawahDataStore.saveDefaultReciter(reciterId)
-
 
     override suspend fun getDefaultReciter(): Flow<Int> =
         tilawahDataStore.getDefaultReciter()
