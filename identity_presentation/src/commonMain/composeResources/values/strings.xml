@@ -21,7 +21,7 @@
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can\'t Delete Active Address</string>
+    <string name="is_main_address_error">Can't Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -219,7 +219,7 @@
     <string name="error_failed_to_open_settings">Failed to open settings</string>
     <string name="error_permission_not_granted">Permission not granted</string>
     <string name="error_address_not_found">Address not found</string>
-    <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
+    <string name="error_cannot_delete_active_address">Can't Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
 
     <!-- Account Created Successfully -->
