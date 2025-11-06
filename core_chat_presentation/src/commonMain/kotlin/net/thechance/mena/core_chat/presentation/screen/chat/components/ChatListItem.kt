@@ -24,7 +24,7 @@ fun ChatListItem(
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
-    onMessageVoiceClick : (Uuid) -> Unit,
+    onMessageVoiceClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
@@ -69,7 +69,7 @@ fun ChatListItem(
             )
         }
 
-        is ChatListItem.VoiceMessage ->{
+        is ChatListItem.VoiceMessage -> {
             val markedMessage = item.data
             Row(
                 modifier = modifier.fillMaxWidth(),
@@ -82,8 +82,10 @@ fun ChatListItem(
                     isMarkedLastInSeries = markedMessage.isLastInSeries,
                     isMessageLoading = item.isLoading || item.isPlaying,
                     progress = item.progress,
-                    totalSeconds = item.duration.div(1000) ,
+                    totalSeconds = item.duration.div(1000),
                     waveformData = item.waveformData,
+                    onMessageClick = { onMessageClick(markedMessage.id) },
+                    onMessageLongClick = { onMessageLongClick(markedMessage) },
                     onPlayClick = { onMessageVoiceClick(markedMessage.id) },
                     onFailClick = { onFailedMessageClick(markedMessage) },
                 )

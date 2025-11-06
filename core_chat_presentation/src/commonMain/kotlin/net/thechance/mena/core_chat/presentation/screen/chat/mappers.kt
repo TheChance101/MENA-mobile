@@ -147,6 +147,8 @@ fun generateWaveformData(): List<Float> {
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
     if (item is ChatListItem.TextMessage && item.data.id == messageId)
         item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
+    else if (item is ChatListItem.VoiceMessage && item.data.id == messageId)
+        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
     else item
 }
 
