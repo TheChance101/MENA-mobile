@@ -83,6 +83,7 @@ internal fun mapErrorResponseToException(errorResponse: ErrorResponse): Exceptio
         DukanErrorCodes.SHELF_DELETION_NOT_ALLOWED -> DeletionNotAllowedException("Shelf deletion not allowed: ${errorResponse.message}")
         DukanErrorCodes.SHELF_NOT_FOUND -> NoSuchItemException("Shelf not found: ${errorResponse.message}")
         DukanErrorCodes.SHELF_NAME_ALREADY_TAKEN -> DuplicateNameException("Shelf name already taken: ${errorResponse.message}")
+        DukanErrorCodes.SHELF_NAME_NOT_CHANGED -> DuplicateNameException("Shelf name not changed: ${errorResponse.message}")
         else -> DukanException(errorResponse.message)
     }
 }

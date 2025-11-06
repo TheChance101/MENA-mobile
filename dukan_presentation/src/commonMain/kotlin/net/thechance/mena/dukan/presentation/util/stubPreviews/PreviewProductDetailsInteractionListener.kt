@@ -9,6 +9,16 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
     override fun onAddToCartClicked(productId: String) {
     }
 
+    override fun onPlusClicked(productId: String) {
+
+    }
+
+    override fun onMinusClicked(productId: String) {
+    }
+
+    override fun onDismissSnackBar() {
+    }
+
     override fun onShareClicked() {
     }
 

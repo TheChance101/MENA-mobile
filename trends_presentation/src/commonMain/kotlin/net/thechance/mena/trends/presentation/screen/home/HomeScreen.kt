@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -99,6 +101,7 @@ private fun HomeScreenContent(
         }
     ) {
         val reels = state.reels.collectAsLazyPagingItems()
+        val listState = rememberLazyListState()
 
         val hasNetworkError = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet
                 && reels.itemSnapshotList.isEmpty()
@@ -131,7 +134,8 @@ private fun HomeScreenContent(
                         onClickLike = listener::onClickLike,
                         onClickReel = listener::onClickReel,
                         onExpandDescription = listener::onClickExpandDescription,
-                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail,
+                        listState = listState
                     )
                 }
             )
@@ -166,6 +170,7 @@ private fun AddTrendFAB(
 @Composable
 private fun ReelsListSection(
     reels: LazyPagingItems<ReelUiState>,
+    listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
     onGetRefreshedThumbnail: (String) -> Unit,
@@ -175,6 +180,7 @@ private fun ReelsListSection(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._16),
+        state = listState,
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {

@@ -68,6 +68,12 @@ fun ManageDukanScreen(
                 navController.navigate(DukanRoute.CreateProductScreenRoute)
             }
 
+            is ManageDukanUiEffect.NavigateToEditProduct -> {
+                navController.navigate(
+                    DukanRoute.EditProductScreenRoute(productId = effect.productId)
+                )
+            }
+
             ManageDukanUiEffect.NavigateToProductDetails -> {}
         }
     }

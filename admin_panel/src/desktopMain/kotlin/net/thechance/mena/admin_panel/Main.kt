@@ -1,7 +1,9 @@
 package net.thechance.mena.admin_panel
 
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import net.thechance.mena.admin_panel.di.AppModule
 import net.thechance.mena.admin_panel.di.networkModule
 import net.thechance.mena.admin_panel.resources.Res
@@ -19,11 +21,13 @@ fun main() = application {
             networkModule
         )
     }
+
     Window(
         onCloseRequest = ::exitApplication,
         title = stringResource(Res.string.app_name),
         alwaysOnTop = true,
-        icon = painterResource(Res.drawable.mena_logo)
+        icon = painterResource(Res.drawable.mena_logo),
+        state = rememberWindowState(placement = WindowPlacement.Maximized)
     ) {
         App()
     }

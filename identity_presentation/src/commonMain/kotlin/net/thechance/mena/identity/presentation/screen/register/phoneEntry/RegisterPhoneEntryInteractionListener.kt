@@ -6,10 +6,9 @@ import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountri
 interface RegisterPhoneEntryInteractionListener : BaseInteractionListener {
     fun onSelectCountryItem(country: MenaCountry)
     fun onDismissBottomSheet()
-    fun onClickContinue()
+    fun onClickRegister()
     fun onClickCountry()
     fun onChangePhone(phone: String)
-    fun onClickBack()
     fun onClearErrorMessage()
     fun onClickLogin()
 }

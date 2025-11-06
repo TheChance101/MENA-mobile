@@ -49,7 +49,6 @@ fun LazyListScope.editorPickDukanItems(
                     dukanImage = dukan.imageUrl,
                     onClick = { onDukanClick(dukan.id) },
                     modifier = Modifier.padding(
-                        horizontal = Theme.spacing._16,
                         vertical = Theme.spacing._8
                     )
                 )

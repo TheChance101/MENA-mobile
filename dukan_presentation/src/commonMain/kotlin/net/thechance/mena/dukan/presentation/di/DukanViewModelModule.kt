@@ -10,6 +10,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createShelf.CreateShelfVi
 import net.thechance.mena.dukan.presentation.viewModel.cropImage.ImageCropViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanCategories.DukanCategoriesViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsViewModel
+import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductViewModel
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageShelf.ManageShelfViewModel
@@ -20,11 +21,14 @@ import org.koin.dsl.module
 
 internal val dukanViewModelModule = module {
     single<CoroutineDispatcher> { Dispatchers.IO }
+
+
     viewModelOf(::CreateDukanViewModel)
     viewModelOf(::ManageDukanViewModel)
     viewModelOf(::ImageCropViewModel)
     viewModelOf(::MainViewModel)
     viewModelOf(::CreateProductViewModel)
+    viewModelOf(::EditProductViewModel)
     viewModelOf(::ManageShelfViewModel)
     viewModelOf(::CreateShelfViewModel)
     viewModelOf(::DukanDetailsViewModel)

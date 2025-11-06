@@ -132,6 +132,12 @@ fun MockRequestHandleScope.defaultShelvesResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultUpdateShelfResponse() = respond(
+    content = """{}""",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 @OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultPagedShelvesResponse() = respond(
     content = jsonSerialization.encodeToString(
@@ -185,6 +191,7 @@ fun createDukanHttpClient(
     shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    updateShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val shelfId = "1"
     val dukanId = "dukan123"
@@ -200,7 +207,11 @@ fun createDukanHttpClient(
             "/dukan/statues" -> statusResponse?.invoke(this) ?: defaultStatusResponse()
             "/dukan/image" -> uploadResponse?.invoke(this) ?: defaultUploadResponse()
             "/dukan/available" -> nameResponse?.invoke(this) ?: defaultNameAvailableResponse(false)
-            "/dukan/shelf/$shelfId" -> deleteResponse?.invoke(this) ?: defaultDeleteShelfResponse()
+            "/dukan/shelf/$shelfId" -> when (request.method.value) {
+                "DELETE" -> deleteResponse?.invoke(this) ?: defaultDeleteShelfResponse()
+                "PUT" -> updateShelfResponse?.invoke(this) ?: defaultUpdateShelfResponse()
+                else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
+            }
             "/dukan/shelf/$dukanId" ->
                 pagedShelvesResponse?.invoke(this, request) ?: defaultPagedShelvesResponse()
 
@@ -219,13 +230,15 @@ fun createShelfRepository(
     deleteShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     shelvesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
+    updateShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): ShelfRepositoryImpl {
     return ShelfRepositoryImpl(
         client = createDukanHttpClient(
             createResponse = createResponse,
             deleteResponse = deleteShelfResponse,
             shelvesResponse = shelvesResponse,
-            pagedShelvesResponse = pagedShelvesResponse
+            pagedShelvesResponse = pagedShelvesResponse,
+            updateShelfResponse = updateShelfResponse
         )
     )
 }

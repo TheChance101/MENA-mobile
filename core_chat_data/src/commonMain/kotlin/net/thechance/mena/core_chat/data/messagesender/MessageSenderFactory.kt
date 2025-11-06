@@ -4,10 +4,12 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 
 class MessageSenderFactory(
     private val textMessageSender: TextMessageSender,
-    private val imageMessageSender: ImageMessageSender
+    private val imageMessageSender: ImageMessageSender,
+    private val audioMessageSender: AudioMessageSender,
 ) {
     fun create(content: MessageContent) = when (content) {
         is MessageContent.Text -> textMessageSender
         is MessageContent.Image -> imageMessageSender
+        is MessageContent.Audio -> audioMessageSender
     }
 }
