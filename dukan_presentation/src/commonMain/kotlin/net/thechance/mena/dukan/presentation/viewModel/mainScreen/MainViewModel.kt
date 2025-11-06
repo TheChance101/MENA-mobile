@@ -299,7 +299,7 @@ class MainViewModel(
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
             onSuccess = { isFavorite ->
-                updateFavoriteDukanPagingData(
+                setFavoriteState(
                     dukanId = dukanId,
                     isFavorite = isFavorite
                 )
@@ -307,7 +307,7 @@ class MainViewModel(
         )
     }
 
-    private fun updateFavoriteDukanPagingData(
+    private fun setFavoriteState(
         dukanId: String,
         isFavorite: Boolean
     ) {

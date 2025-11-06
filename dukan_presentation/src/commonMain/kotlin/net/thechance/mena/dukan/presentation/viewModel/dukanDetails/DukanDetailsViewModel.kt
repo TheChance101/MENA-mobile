@@ -312,9 +312,7 @@ class DukanDetailsViewModel(
     override fun onFavoriteDukanClicked(dukanId: String) {
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = { isFavorite ->
-                setFavoriteState(isFavorite)
-            }
+            onSuccess = { isFavorite -> setFavoriteState(isFavorite) }
         )
     }
 

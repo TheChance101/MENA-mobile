@@ -40,19 +40,17 @@ class CategoryDukansViewModel(
     override fun onFavoriteDukanClicked(dukanId: String) {
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = { isFavorite ->
-                updateFavoriteDukanPagingData(dukanId) { it.copy(isFavorite = isFavorite) }
-            }
+            onSuccess = { isFavorite -> updateFavoriteDukanPagingData(dukanId, isFavorite) }
         )
     }
 
     private fun updateFavoriteDukanPagingData(
         dukanId: String,
-        transform: (DukanUiState) -> DukanUiState
+        isFavorite: Boolean
     ) {
         val currentData = dukansState.value
         val updatedData = currentData.map { dukan ->
-            if (dukan.id == dukanId) transform(dukan) else dukan
+            if (dukan.id == dukanId) dukan.copy(isFavorite = isFavorite) else dukan
         }
         dukansState.value = updatedData
         updateState { copy(dukans = dukansState) }
