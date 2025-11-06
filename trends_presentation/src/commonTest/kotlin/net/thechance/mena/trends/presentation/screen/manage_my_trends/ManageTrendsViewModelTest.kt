@@ -126,6 +126,7 @@ class ManageTrendsViewModelTest {
         )
 
         advanceUntilIdle()
+        advanceUntilIdle()
         viewModel.onGetRefreshedThumbnail(REEL_ID)
         advanceUntilIdle()
 
