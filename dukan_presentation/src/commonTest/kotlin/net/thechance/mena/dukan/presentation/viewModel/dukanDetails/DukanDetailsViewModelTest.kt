@@ -479,5 +479,6 @@ private fun fakeProducts(): List<Product> = listOf(
         createdAt = "2025-10-10T12:00:00Z",
         quantityInCart = 10,
         shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+        isFavorite = false
     )
 )

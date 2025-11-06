@@ -60,7 +60,8 @@ class DukanDetailsMapperTest {
             imageUrls = listOf("img.png"),
             quantityInCart = 0,
             createdAt = "2023-01-01",
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
         )
 
         val uiState = product.toUiState()
@@ -82,7 +83,8 @@ class DukanDetailsMapperTest {
             imageUrls = listOf("laptop.png"),
             quantityInCart = 3,
             createdAt = "2023-01-01",
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
         )
 
         val uiState = product.toUiState()

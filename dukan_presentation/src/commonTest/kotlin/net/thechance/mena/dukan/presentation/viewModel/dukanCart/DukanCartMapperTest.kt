@@ -20,7 +20,8 @@ class DukanCartMapperTest {
             imageUrls = listOf("headphones.png"),
             quantityInCart = 2,
             createdAt = "2023-01-01",
-            shelfId = null
+            shelfId = null,
+            isFavorite = false
         )
 
         val uiState = product.toUiState()
@@ -43,7 +44,8 @@ class DukanCartMapperTest {
             imageUrls = emptyList(),
             quantityInCart = 1,
             createdAt = "2023-01-01",
-            shelfId = null
+            shelfId = null,
+            isFavorite = false
         )
 
         val uiState = product.toUiState()

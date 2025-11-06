@@ -28,7 +28,8 @@ val productDto1 = ProductDto(
         "https://picsum.photos/200/200?random=2"
     ),
     createdAt = "2025-09-26T15:26:41.300823Z",
-    quantityInCart = 10
+    quantityInCart = 10,
+    isFavorite = true
 )
 
 
@@ -44,7 +45,8 @@ val productDto2 = ProductDto(
         "https://picsum.photos/200/200?random=2"
     ),
     createdAt = "2025-09-26T15:26:41.300823Z",
-    quantityInCart = 10
+    quantityInCart = 10,
+    isFavorite = false
 
 )
 
