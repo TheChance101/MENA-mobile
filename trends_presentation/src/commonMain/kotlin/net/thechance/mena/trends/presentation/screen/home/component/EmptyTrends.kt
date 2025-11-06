@@ -24,7 +24,7 @@ fun EmptyTrends(modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
-fun EmptyTrendsPreview() {
+private fun EmptyTrendsPreview() {
     MenaTheme {
         EmptyTrends()
     }

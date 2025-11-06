@@ -392,6 +392,8 @@ class PrayerTimeViewModelTest {
         assertTrue(viewModel.uiState.value.prayerTimes.isEmpty())
     }
 
+
+
     private companion object {
         private val now = Clock.System.now()
 

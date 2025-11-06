@@ -37,7 +37,7 @@ fun CategorySection(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridLayout.columnsCount),
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(horizontal = Theme.spacing._8),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         modifier = modifier.heightIn(max = 200.dp),

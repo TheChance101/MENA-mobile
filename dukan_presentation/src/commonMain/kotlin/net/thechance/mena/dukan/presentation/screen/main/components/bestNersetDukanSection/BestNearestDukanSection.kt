@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
@@ -54,12 +54,13 @@ private fun BestNearestDukanList(
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(start = Theme.spacing._16 , top = Theme.spacing._8)
-    ) {
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        ) {
         items(
             count = dukans.itemCount,
             key = { index -> dukans[index]?.id ?: index },
             contentType = { "BestNearDukanCard" },
+
             ) {
             val dukan = dukans[it] ?: return@items
             BestNearDukanCard(
