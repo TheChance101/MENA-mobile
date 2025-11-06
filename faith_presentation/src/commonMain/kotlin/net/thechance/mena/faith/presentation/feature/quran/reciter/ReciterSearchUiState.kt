@@ -7,4 +7,4 @@ data class ReciterSearchUiState(
     val queryHint: String = "",
     val lastSearchedQuery: String = "",
     val searchResults: List<ReciterUi> = emptyList(),
-    )
+)
