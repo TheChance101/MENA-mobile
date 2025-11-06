@@ -15,5 +15,5 @@ data class DukanResponseDto(
     @SerialName("imageUrl")
     val imageUrl: String,
     @SerialName("isFavorite")
-    val isFavorite: Boolean? = null,
+    val isFavorite: Boolean,
 )

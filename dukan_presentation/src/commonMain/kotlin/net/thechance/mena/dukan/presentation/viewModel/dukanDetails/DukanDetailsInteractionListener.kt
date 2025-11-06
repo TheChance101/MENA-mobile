@@ -13,5 +13,5 @@ interface DukanDetailsInteractionListener {
     fun onViewCartClicked()
     fun onRetryClicked()
     fun onProductClicked(productId: String)
-    fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean)
+    fun onFavoriteDukanClicked(dukanId: String)
 }

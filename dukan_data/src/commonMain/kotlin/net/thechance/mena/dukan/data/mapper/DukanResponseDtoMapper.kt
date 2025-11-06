@@ -12,7 +12,7 @@ fun DukanResponseDto.toEntity(): Dukan {
     return Dukan(
         id = id,
         name = name,
-        isFavorite = isFavorite ?: false,
+        isFavorite = isFavorite,
         imageUrl = imageUrl,
         address = "",
         coordinates = Dukan.Coordinates(

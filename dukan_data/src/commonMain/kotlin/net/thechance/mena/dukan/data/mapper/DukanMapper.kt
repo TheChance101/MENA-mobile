@@ -60,7 +60,7 @@ fun DukanDetailsDto.toDukan(): Dukan {
         id = id,
         name = name,
         imageUrl = imageUrl,
-        isFavorite = isFavourite ?: false,
+        isFavorite = isFavorite,
         address = address,
         coordinates = Dukan.Coordinates(
             latitude = latitude,

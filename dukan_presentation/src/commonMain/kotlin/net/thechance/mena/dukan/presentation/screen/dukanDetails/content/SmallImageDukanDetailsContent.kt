@@ -99,7 +99,6 @@ fun SmallImageDukanDetailsContent(
                         onIconClick = {
                             listener.onFavoriteDukanClicked(
                                 dukanId = state.dukanInfo.dukanId,
-                                isFavorite = state.dukanInfo.isFavorite
                             )
                         },
                         modifier = Modifier.fillMaxWidth()

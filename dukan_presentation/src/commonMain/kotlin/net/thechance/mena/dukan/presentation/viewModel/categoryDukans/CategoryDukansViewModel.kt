@@ -37,10 +37,12 @@ class CategoryDukansViewModel(
         emitEffect(CategoryDukansEffects.NavigateToDukanDetails(dukan.id))
     }
 
-    override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
+    override fun onFavoriteDukanClicked(dukanId: String) {
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = { updateFavoriteDukanPagingData(dukanId) { it.copy(isFavorite = !isFavorite) } }
+            onSuccess = { isFavorite ->
+                updateFavoriteDukanPagingData(dukanId) { it.copy(isFavorite = isFavorite) }
+            }
         )
     }
 
@@ -86,7 +88,7 @@ class CategoryDukansViewModel(
         }
     }
 
-    private fun loadCategory() {
+    fun loadCategory() {
         val (categoryId, categoryTitle) = getCategoryArguments()
         updateCategoryState(categoryId, categoryTitle)
         collectDukans(categoryId)

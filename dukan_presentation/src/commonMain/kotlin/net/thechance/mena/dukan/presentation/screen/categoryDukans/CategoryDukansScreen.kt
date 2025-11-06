@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.categoryDukans
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -27,6 +28,10 @@ fun CategoryDukansScreen(
                 DukanRoute.DukanDetails(effect.dukanId)
             )
         }
+    }
+
+    LaunchedEffect(state.dukans) {
+        viewModel.loadCategory()
     }
 
     CategoryDukansContent(

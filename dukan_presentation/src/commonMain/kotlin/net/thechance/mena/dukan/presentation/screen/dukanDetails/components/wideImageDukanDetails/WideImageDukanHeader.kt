@@ -4,7 +4,6 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -76,7 +75,7 @@ fun WideImageDukanAppBar(
 @Composable
 fun WideImageDukanHeader(
     state: DukanDetailsUiState.DukanInfo,
-    onFavoriteClicked: (dukanId: String, isFavorite: Boolean) -> Unit,
+    onFavoriteClicked: (dukanId: String) -> Unit,
 ) {
     Box(
         modifier = Modifier.fillWidthOfParent(16.dp)
@@ -98,7 +97,7 @@ fun WideImageDukanHeader(
 @Composable
 private fun DukanActionButtons(
     state: DukanDetailsUiState.DukanInfo,
-    onFavoriteClicked: (dukanId: String, isFavorite: Boolean) -> Unit,
+    onFavoriteClicked: (dukanId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -117,7 +116,7 @@ private fun DukanActionButtons(
             DukanIconButton(
                 icon = painterResource(favoriteIcon),
                 iconColor = Color(state.color),
-                onIconClick = { onFavoriteClicked(state.dukanId, state.isFavorite) }
+                onIconClick = { onFavoriteClicked(state.dukanId) }
             )
         }
     }
@@ -207,7 +206,7 @@ private fun DukanActionButtonsPreview() {
         ) {
             DukanActionButtons(
                 state = fakeDukanInfo,
-                onFavoriteClicked = { _, _ -> },
+                onFavoriteClicked = {},
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }

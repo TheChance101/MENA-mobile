@@ -159,7 +159,7 @@ class MainViewModel(
         }
     }
 
-    private fun loadEditorPicksDukans() {
+    fun loadEditorPicksDukans() {
         tryToCollect(
             block = ::createLoadEditorPagingSource,
             onCollect = ::onLoadedEditorPicksDukan,
@@ -295,13 +295,13 @@ class MainViewModel(
         emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
     }
 
-    override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {
+    override fun onFavoriteDukanClicked(dukanId: String) {
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = {
+            onSuccess = { isFavorite ->
                 updateFavoriteDukanPagingData(
                     dukanId = dukanId,
-                    isFavorite = !isFavorite
+                    isFavorite = isFavorite
                 )
             }
         )

@@ -81,7 +81,6 @@ fun NoImageDukanAppBar(
                     onClick = {
                         listener.onFavoriteDukanClicked(
                             dukanId = state.dukanId,
-                            isFavorite = isFavorite
                         )
                     }
                 )
