@@ -40,6 +40,7 @@ fun WideImageDukanDetailsContent(
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
+                isBadgeVisible = state.totalPrice > 0,
                 onBackClicked = listener::onBackClicked,
                 onCartClicked = listener::onViewCartClicked
             )

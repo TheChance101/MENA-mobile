@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
@@ -87,6 +88,13 @@ class ShelfDetailsViewModelTest {
     )
 
     @OptIn(ExperimentalUuidApi::class)
+    private fun dummyCart() = Cart(
+        id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+        totalPrice = 500.0,
+    )
+
+
+    @OptIn(ExperimentalUuidApi::class)
     private fun dummyDukanDetails() = Dukan(
         id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Test Dukan",
@@ -100,6 +108,16 @@ class ShelfDetailsViewModelTest {
         isFavorite = false
     )
 
+    fun createViewModel() =
+        ShelfDetailsViewModel(
+            productRepository = productRepository,
+            defaultDispatcher = testDispatcher,
+            dukanManagementRepository = dukanManagementRepository,
+            dukanCartRepository = dukanCartRepository,
+            savedStateHandle = savedStateHandle
+        )
+
+
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -111,15 +129,6 @@ class ShelfDetailsViewModelTest {
                 "shelfId" to "20"
             )
         )
-
-        fun createViewModel() =
-            ShelfDetailsViewModel(
-                productRepository = productRepository,
-                defaultDispatcher = testDispatcher,
-                dukanManagementRepository = dukanManagementRepository,
-                dukanCartRepository = dukanCartRepository,
-                savedStateHandle = savedStateHandle
-            )
 
         everySuspend {
             productRepository.getProductsByShelfId(any(), any(), any())
@@ -137,6 +146,21 @@ class ShelfDetailsViewModelTest {
     @AfterTest
     fun cleanup() {
         Dispatchers.resetMain()
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `init SHOULD load cart info successfully`() = runTest {
+        everySuspend { dukanCartRepository.getCartInfo(any()) } returns dummyCart()
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(500.0, state.totalPrice)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test

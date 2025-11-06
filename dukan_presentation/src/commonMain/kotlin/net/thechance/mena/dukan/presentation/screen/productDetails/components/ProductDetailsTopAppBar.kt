@@ -69,11 +69,15 @@ fun ProductDetailsAppBar(
                 contentDescription = stringResource(Res.string.favorite_icon),
                 onClick = listener::onToggleProductToFavoriteClicked
             )
-            AppBarIcon(
-                painter = painterResource(Res.drawable.ic_shopping_basket),
-                contentDescription = stringResource(Res.string.shopping_basket_icon),
+            AppBarOptionContainer(
+                isBadgeVisible = state.totalPrice > 0,
                 onClick = listener::onViewCartClicked
-            )
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.ic_shopping_basket),
+                    contentDescription = stringResource(Res.string.shopping_basket_icon),
+                )
+            }
         }
     }
 }

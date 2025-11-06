@@ -51,7 +51,7 @@ fun SmallImageDukanDetailsContent(
     Scaffold(
         topBar = {
             SmallImageDukanAppBar(
-                isBadgeVisible = true,
+                isBadgeVisible = state.totalPrice > 0,
                 listener = listener
             )
         },
@@ -141,7 +141,6 @@ private fun SmallImageDukanAppBar(
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                // when cart contains products
                 isBadgeVisible = isBadgeVisible,
                 onClick = listener::onViewCartClicked
             ) {

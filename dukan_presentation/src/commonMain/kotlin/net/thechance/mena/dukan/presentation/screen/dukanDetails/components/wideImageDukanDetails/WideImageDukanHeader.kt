@@ -46,6 +46,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun WideImageDukanAppBar(
+    isBadgeVisible : Boolean,
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
@@ -60,7 +61,7 @@ fun WideImageDukanAppBar(
         onLeadingClick = onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                isBadgeVisible = true,
+                isBadgeVisible = isBadgeVisible,
                 onClick = { onCartClicked() }
             ) {
                 Icon(
