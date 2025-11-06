@@ -342,6 +342,7 @@ class DukanDetailsViewModel(
 
     fun refreshProducts() {
         loadDukanDetails()
+        loadCartInfo()
     }
 
 

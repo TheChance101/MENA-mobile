@@ -232,6 +232,7 @@ class ShelfDetailsViewModel(
 
     fun refreshProducts() {
         loadProductsFromRepository()
+        loadCartInfo()
     }
 
 }

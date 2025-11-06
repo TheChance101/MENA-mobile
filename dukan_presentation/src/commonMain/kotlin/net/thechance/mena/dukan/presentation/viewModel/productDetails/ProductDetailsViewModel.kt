@@ -188,5 +188,10 @@ class ProductDetailsViewModel(
 
     }
 
+    fun refreshData(){
+        loadProductDetails()
+        loadCartInfo()
+    }
+
 
 }
