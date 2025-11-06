@@ -109,4 +109,12 @@ class DukanProductRepositoryImpl(
             client.delete("${PRODUCT_BASE_PATH}/$productId")
         }
     }
+
+    override suspend fun toggleProductToFavorites(productId: String) {
+        safeApiCall<Unit> {
+            client.post("${PRODUCT_BASE_PATH}/$productId/favorite") {
+                contentType(ContentType.Application.Json)
+            }
+        }
+    }
 }

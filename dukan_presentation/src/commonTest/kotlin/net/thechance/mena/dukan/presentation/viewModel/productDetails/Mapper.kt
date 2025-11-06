@@ -1,0 +1,55 @@
+package net.thechance.mena.dukan.presentation.viewModel.productDetails
+
+import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toDomainParams
+import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toUiState
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+class ProductDetailsMapperTest {
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `toUiState should map Product correctly`() {
+        val product = Product(
+            id = Uuid.random(),
+            name = "Test Product",
+            description = "Description",
+            price = 10.0,
+            imageUrls = listOf("image.png"),
+            quantityInCart = 0,
+            createdAt = "2023-01-01",
+            shelfId = null,
+            isFavorite = false
+        )
+
+        val uiState = product.toUiState()
+
+        assertEquals(product.name, uiState.name)
+        assertEquals(product.description, uiState.description)
+        assertEquals(product.price, uiState.price, 0.0)
+        assertEquals("image.png", uiState.imageUrl)
+        assertEquals(0, uiState.inCartQuantity)
+    }
+
+    @Test
+    fun `toDomainParams should map ProductUiState to domain params correctly`() {
+        val uiProduct = ShelfDetailsUiState.ProductUiState(
+            id = "123",
+            name = "Product",
+            description = "Desc",
+            price = 9.99,
+            imageUrl = "img.png",
+            inCartQuantity = 4
+        )
+
+        val params = uiProduct.toDomainParams("dukanId_1")
+
+        assertEquals("123", params.productId)
+        assertEquals(4, params.quantity)
+        assertEquals("dukanId_1", params.dukanId)
+    }
+}

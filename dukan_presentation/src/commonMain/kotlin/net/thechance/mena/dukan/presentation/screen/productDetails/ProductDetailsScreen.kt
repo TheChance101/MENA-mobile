@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.productDetails
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsEffects
@@ -19,7 +20,10 @@ fun ProductDetailsScreen(
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {
             ProductDetailsEffects.NavigateBack -> navController.popBackStack()
-            is ProductDetailsEffects.NavigateToCart -> {}
+            is ProductDetailsEffects.NavigateToCart -> {
+                navController.navigate(DukanRoute.DukanCart(effects.dukanId))
+            }
+
             ProductDetailsEffects.NavigateToFavorites -> {}
         }
     }

@@ -22,7 +22,7 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
     override fun onShareClicked() {
     }
 
-    override fun onAddToFavoritesClicked() {
+    override fun onToggleProductToFavoriteClicked() {
     }
 
     override fun onViewCartClicked() {

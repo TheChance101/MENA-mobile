@@ -671,7 +671,8 @@ private fun fakeProducts(): List<Product> {
             createdAt = "2023-08-01T10:00:00Z",
             imageUrls = listOf("https://example.com/iphone.jpg"),
             quantityInCart = 10,
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+            isFavorite = false
         ),
         Product(
             id = Uuid.random(),
@@ -682,6 +683,7 @@ private fun fakeProducts(): List<Product> {
             createdAt = "2023-08-01T10:00:00Z",
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
         ),
         Product(
             id = Uuid.random(),
@@ -692,6 +694,7 @@ private fun fakeProducts(): List<Product> {
             imageUrls = listOf("https://example.com/tshirt.jpg"),
             quantityInCart = 20,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
+            isFavorite = false
         )
     )
 }

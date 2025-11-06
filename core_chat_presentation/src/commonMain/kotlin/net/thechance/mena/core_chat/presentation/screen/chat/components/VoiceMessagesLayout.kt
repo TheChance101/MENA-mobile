@@ -4,6 +4,7 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,8 @@ fun VoiceMessageLayout(
     totalSeconds: Long = 0,
     waveformData: List<Float> = emptyList(),
     chatAvatarUrl: String? = null,
+    onMessageClick: () -> Unit = {},
+    onMessageLongClick: () -> Unit = {},
     onPlayClick: (MessageUiState) -> Unit = {},
     onFailClick: (MessageUiState) -> Unit = {},
 ) {
@@ -122,8 +125,12 @@ fun VoiceMessageLayout(
                 modifier = Modifier
                     .clip(messageShape)
                     .background(color = messageBackground, shape = messageShape)
+                    .combinedClickable(
+                        onClick = onMessageClick,
+                        onLongClick = onMessageLongClick
+                    )
                     .padding(
-                        horizontal =  Theme.spacing._8,
+                        horizontal = Theme.spacing._8,
                         vertical = Theme.spacing._4
                     )
             ) {
@@ -140,7 +147,8 @@ fun VoiceMessageLayout(
                     VoiceMessageWaveform(
                         waveData = waveformData.ifEmpty { generateRandomWaveformData() },
                         progress = progress,
-                        modifier = Modifier.weight(1f).height(44.dp).padding(vertical = Theme.spacing._4)
+                        modifier = Modifier.weight(1f).height(44.dp)
+                            .padding(vertical = Theme.spacing._4)
                     )
 
                     Text(
@@ -152,19 +160,27 @@ fun VoiceMessageLayout(
             }
         }
 
-        AnimatedVisibility(
-            visible = showMessageInfo,
-            modifier = Modifier.align(messageInfoAlignment)
+        Row(
+            modifier = Modifier.align(messageInfoAlignment),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            MessageInfo(
-                messageTime = message.sendTime,
-                messageStatus = message.status,
-                messageIsMine = message.isMine,
-                onFailClick = { onFailClick(message) },
-                modifier = Modifier
-                    .align(messageInfoAlignment)
+            if (!message.isMine && message.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.reactions)
+            }
 
-            )
+            AnimatedVisibility(visible = showMessageInfo) {
+                MessageInfo(
+                    messageTime = message.sendTime,
+                    messageStatus = message.status,
+                    messageIsMine = message.isMine,
+                    onFailClick = { onFailClick(message) }
+                )
+            }
+
+            if (message.isMine && message.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.reactions)
+            }
         }
     }
 }

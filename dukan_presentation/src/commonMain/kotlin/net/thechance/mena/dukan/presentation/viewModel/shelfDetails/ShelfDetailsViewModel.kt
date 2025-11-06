@@ -109,8 +109,8 @@ class ShelfDetailsViewModel(
         domainRequest: UpdateProductCartQuantityParams,
         productQuantity: Int
     ) {
-        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-        dukanCartRepository.updateProductQuantity(domainRequest)
+        if (productQuantity == 0) dukanCartRepository.addProductQuantity(domainRequest)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(
@@ -152,7 +152,7 @@ class ShelfDetailsViewModel(
         productId: String,
         domainRequest: UpdateProductCartQuantityParams
     ) {
-        if (productQuantity == 1) deleteProductFromCart(productId)
+        if (productQuantity == 0) deleteProductFromCart(productId)
         else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 

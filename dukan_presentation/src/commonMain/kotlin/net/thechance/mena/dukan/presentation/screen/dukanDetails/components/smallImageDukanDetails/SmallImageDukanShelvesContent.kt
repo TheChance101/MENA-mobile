@@ -152,11 +152,11 @@ private fun ProductItem(
     listener: DukanDetailsInteractionListener,
     cartColor: Color
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     LaunchedEffect(product) {
-        toggleCartToQuantity = product.inCartQuantity > 1
+        toggleCartToQuantity = product.inCartQuantity > 0
         productQuantity = product.inCartQuantity
     }
 
@@ -175,6 +175,7 @@ private fun ProductItem(
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = {
                     toggleCartToQuantity = true
+                    productQuantity += 1
                     listener.onAddToCartClicked(
                         productId = product.id,
                         productQuantity = productQuantity
@@ -189,7 +190,7 @@ private fun ProductItem(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity

@@ -16,6 +16,7 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_favorite_filled
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.share_icon
@@ -58,9 +59,15 @@ fun ProductDetailsAppBar(
                 onClick = listener::onShareClicked
             )
             AppBarIcon(
-                painter = painterResource(Res.drawable.ic_favorite),
+                painter = painterResource(
+                    if (state.isFavorite) {
+                        Res.drawable.ic_favorite_filled
+                    } else {
+                        Res.drawable.ic_favorite
+                    }
+                ),
                 contentDescription = stringResource(Res.string.favorite_icon),
-                onClick = listener::onAddToFavoritesClicked
+                onClick = listener::onToggleProductToFavoriteClicked
             )
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),

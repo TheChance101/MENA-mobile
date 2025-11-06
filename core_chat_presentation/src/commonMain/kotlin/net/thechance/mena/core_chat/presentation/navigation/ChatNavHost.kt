@@ -31,7 +31,9 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 
 @Composable
 fun ChatNavHost(
-    walletApi: WalletApi = koinInject()
+    walletApi: WalletApi = koinInject(),
+    onNavigateBackFromChat: () -> Unit = {},
+    startDestination: ChatRoute = HomeRoute
 ) {
 
     val navController = rememberNavController()
@@ -47,12 +49,12 @@ fun ChatNavHost(
             NavHost(
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,
-                startDestination = HomeRoute,
+                startDestination = startDestination,
             ) {
                 composable<HomeRoute> { HomeScreen() }
                 composable<ContactsRoute> { ContactsScreen() }
                 composable<SyncContactsRoute> { SyncContactsScreen() }
-                composable<ChatDetailsRoute> { ChatScreen() }
+                composable<ChatDetailsRoute> { ChatScreen(onClickBackFromChat = onNavigateBackFromChat) }
                 composable<WalletRoute> {
                     walletApi.WalletEntry(navigateBack = {
                         navController.popBackStack()

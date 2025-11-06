@@ -18,6 +18,6 @@ data class ProductDetailsUiState(
         val price: Double = 0.0,
         val description: String = "",
         val images: List<String> = emptyList(),
-        val inCartQuantity: Int = 1
+        val inCartQuantity: Int = 0
     )
 }
