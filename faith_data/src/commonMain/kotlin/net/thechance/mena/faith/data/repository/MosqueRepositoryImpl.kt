@@ -1,6 +1,6 @@
 package net.thechance.mena.faith.data.repository
 
-import net.thechance.mena.faith.data.mapper.mosque.toDomain
+import net.thechance.mena.faith.data.mapper.mosque.toMosque
 import net.thechance.mena.faith.data.remote.model.PageResponse
 import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
 import net.thechance.mena.faith.data.remote.service.MosqueApiService
@@ -28,6 +28,6 @@ class MosqueRepositoryImpl(
         val response = executeApiSafely<PageResponse<MosqueDto>> {
             mosqueApiService.searchMosquesByName(query, page, size)
         }
-        return response.items?.toDomain() ?: emptyList()
+        return response.items?.map { it.toMosque() } ?: emptyList()
     }
 }

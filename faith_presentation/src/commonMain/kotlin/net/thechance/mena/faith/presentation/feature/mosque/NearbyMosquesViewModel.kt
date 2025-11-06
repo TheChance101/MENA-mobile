@@ -9,20 +9,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.no_mosques_found_by_keyword
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
-import net.thechance.mena.faith.domain.usecase.CalculateDistanceBetweenLocationsUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.roundTo2Decimals
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
     private val locationService: LocationService,
-    private val calculateDistanceUseCase: CalculateDistanceBetweenLocationsUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
     initialState = NearbyMosquesMapUiState()
@@ -163,17 +159,7 @@ internal class NearbyMosquesViewModel(
                 it.copy(
                     isLoading = false,
                     mosques = mosques.map { mosque ->
-                        val distance = calculateDistanceUseCase.execute(
-                            userLocation = Location(
-                                latitude = userLocation.latitude,
-                                longitude = userLocation.longitude
-                            ),
-                            mosqueLocation = Location(
-                                latitude = mosque.coordinates.latitude,
-                                longitude = mosque.coordinates.longitude
-                            )
-                        ).roundTo2Decimals()
-                        mosque.toUiState(distance)
+                        mosque.toUiState(0.0)
                     }
                 )
             }
@@ -184,18 +170,7 @@ internal class NearbyMosquesViewModel(
         updateState {
             it.copy(
                 mosquesSearchResults = mosques.map { mosque ->
-                    val distance = calculateDistanceUseCase.execute(
-                        userLocation = Location(
-                            latitude = userLocation.latitude,
-                            longitude = userLocation.longitude
-                        ),
-                        mosqueLocation = Location(
-                            latitude = mosque.coordinates.latitude,
-                            longitude = mosque.coordinates.longitude
-                        )
-                    ).roundTo2Decimals()
-
-                    mosque.toUiState(distance)
+                    mosque.toUiState(0.0)
                 },
                 isSearchResultsBottomSheetVisible = mosques.isNotEmpty(),
                 isLoading = false,
