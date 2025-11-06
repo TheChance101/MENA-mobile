@@ -12,5 +12,6 @@ data class Product(
     val imageUrls: List<String>,
     val createdAt: String,
     val quantityInCart: Int,
-    val shelfId: Uuid?
+    val shelfId: Uuid?,
+    val isFavorite: Boolean
 )
