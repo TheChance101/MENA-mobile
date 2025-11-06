@@ -5,5 +5,5 @@ internal interface ManageTrendsInteractionListener {
     fun onClickBack()
     fun onClickRetry()
     fun onSelectTab(tab: SelectTab)
-    fun onGetRefreshedThumbnail(reelId: String): String
+    fun onGetRefreshedThumbnail(reelId: String)
 }

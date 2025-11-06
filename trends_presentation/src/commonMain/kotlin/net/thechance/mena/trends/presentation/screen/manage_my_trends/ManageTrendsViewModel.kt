@@ -94,8 +94,22 @@ internal class ManageTrendsViewModel(
         updateState { copy(selectTab = tab) }
     }
 
-    override fun onGetRefreshedThumbnail(reelId: String): String {
-        return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg"
+    override fun onGetRefreshedThumbnail(reelId: String) {
+        tryToExecute(
+            block = { repository.getReelUrls(reelId).thumbnailUrl },
+            onSuccess = { refreshedUrl ->
+                updateState {
+                    copy(
+                        reels = state.value.reels.map { pagingData ->
+                            pagingData.map { reel ->
+                                reel.takeIf { it.id != reelId }
+                                    ?: reel.copy(thumbnailUrl = refreshedUrl)
+                            }
+                        }
+                    )
+                }
+            },
+        )
     }
 
 }
