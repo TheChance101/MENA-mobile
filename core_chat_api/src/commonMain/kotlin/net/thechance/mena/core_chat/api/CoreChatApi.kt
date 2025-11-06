@@ -7,7 +7,6 @@ interface CoreChatApi {
     @Composable
     fun TabEntry()
 
-    @OptIn(ExperimentalUuidApi::class)
     @Composable
-    fun Chat(userId: String,onNavigateBack: () -> Unit)
+    fun ChatEntry(userId: String, onNavigateBack: () -> Unit)
 }

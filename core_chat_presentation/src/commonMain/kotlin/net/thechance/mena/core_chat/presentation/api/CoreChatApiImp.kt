@@ -12,9 +12,8 @@ class CoreChatApiImp(private val chatEntryViewModel: ChatEntryViewModel) : CoreC
         ChatNavHost()
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @Composable
-    override fun Chat(userId: String, onNavigateBack: () -> Unit) {
+    override fun ChatEntry(userId: String, onNavigateBack: () -> Unit) {
         ChatEntryPoint(userId = userId, viewModel = chatEntryViewModel, onNavigateBack = onNavigateBack)
     }
 }
