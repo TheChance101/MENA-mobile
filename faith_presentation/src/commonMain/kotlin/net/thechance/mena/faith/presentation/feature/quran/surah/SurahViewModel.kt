@@ -94,6 +94,7 @@ class SurahViewModel(
     }
 
     override fun onInitialAyahScrolled() {
+        if (uiState.value.isAyahSoundPlaying) return
         viewModelScope.launch {
             delay(2000L)
             updateState { it.copy(selectedAyahNumber = null, initialAyahToScroll = null) }
@@ -194,7 +195,6 @@ class SurahViewModel(
             ayahNumber = ayahNumber,
             reciterId = uiState.value.currentReciter.id,
         )
-        updateState { it.copy(selectedAyahNumber = ayahNumber) }
     }
 
     private fun moveToAyah(offset: Int) {
@@ -225,7 +225,15 @@ class SurahViewModel(
                 )
             },
             onSuccess = ::onLoadAyahSoundSuccess,
-            dispatcher = Dispatchers.Main
+            onFinally = {
+                updateState {
+                    it.copy(
+                        selectedAyahNumber = ayahNumber,
+                        initialAyahToScroll = ayahNumber
+                    )
+                }
+            },
+            dispatcher = Dispatchers.Main,
         )
     }
 
@@ -240,6 +248,7 @@ class SurahViewModel(
             )
         }
         quranPlayer.playAyah(ayahSoundUrl)
+        updatePlayPause()
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
@@ -301,5 +310,11 @@ class SurahViewModel(
         val isFatiha = surahId == Surah.SurahOrder.AlFatihah.order
         val shouldShowBasmala = !(isTawbah || isFatiha)
         updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
+    }
+
+    private fun updatePlayPause(){
+        quranPlayer.onAyahCompleted {
+            updateState { it.copy(isAyahSoundPlaying = false) }
+        }
     }
 }
