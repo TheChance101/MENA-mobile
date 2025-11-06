@@ -55,10 +55,10 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
-import net.thechance.mena.identity.presentation.screen.editProfile.component.AtPrefixTransformation
-import net.thechance.mena.identity.presentation.screen.editProfile.component.EditProfileImage
-import net.thechance.mena.identity.presentation.screen.editProfile.component.GenderToggle
-import net.thechance.mena.identity.presentation.screen.editProfile.component.ProfileEditText
+import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
+import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileImage
+import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
+import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
 import net.thechance.mena.identity.presentation.screen.editProfile.dialog.GetImageDialog
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker

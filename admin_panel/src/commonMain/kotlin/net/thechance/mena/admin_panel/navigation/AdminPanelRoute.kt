@@ -3,19 +3,19 @@ package net.thechance.mena.admin_panel.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed class AdminPanelRoute
+sealed interface AdminPanelRoute
 
 @Serializable
-data object Login : AdminPanelRoute()
+data object Login : AdminPanelRoute
 
 @Serializable
-data object UsersManagement : AdminPanelRoute()
+data object UsersManagement : AdminPanelRoute
 
 @Serializable
-data object Deposit : AdminPanelRoute()
+data object Deposit : AdminPanelRoute
 
 @Serializable
-data object DukanRequests : AdminPanelRoute()
+data object DukanRequests : AdminPanelRoute
 
 @Serializable
-data object DukanManagement : AdminPanelRoute()
+data object DukanManagement : AdminPanelRoute

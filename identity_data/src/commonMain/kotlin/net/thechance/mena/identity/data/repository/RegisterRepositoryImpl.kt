@@ -3,10 +3,10 @@ package net.thechance.mena.identity.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.resetPassword.OtpRequestDto
-import net.thechance.mena.identity.data.dto.resetPassword.OtpResponse
-import net.thechance.mena.identity.data.dto.resetPassword.ResetPasswordRequestDto
-import net.thechance.mena.identity.data.dto.resetPassword.VerifyOtpRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.request.OtpRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.request.ResetPasswordRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.request.VerifyOtpRequestDto
+import net.thechance.mena.identity.data.dto.resetPassword.response.OtpResponse
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
