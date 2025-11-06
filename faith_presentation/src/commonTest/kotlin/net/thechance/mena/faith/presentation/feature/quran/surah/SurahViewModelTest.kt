@@ -15,7 +15,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
-import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -26,6 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -411,6 +411,25 @@ class SurahViewModelTest {
             assertEquals(SurahScreenEffect.NavigateToDownloadedRecitersScreen, effect)
         }
     }
+
+    @Test
+    fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
+        testViewModel.uiEffect.test {
+            testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+            assertEquals(testViewModel.uiState.value.selectedAyahNumber, TRACKED_AYAH_NUMBER)
+            assertEquals(testViewModel.uiState.value.initialAyahToScroll, TRACKED_AYAH_NUMBER)
+        }
+    }
+
+    @Test
+    fun `onInitialAyahScrolled should update initialAyahToScroll and selectedAyahNumber to be null`() =
+        runTest {
+            testViewModel.uiEffect.test {
+                testViewModel.onInitialAyahScrolled()
+                assertNull(testViewModel.uiState.value.selectedAyahNumber)
+                assertNull(testViewModel.uiState.value.initialAyahToScroll)
+            }
+        }
 
 
     private companion object {
