@@ -11,27 +11,32 @@ import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 
 actual class AppLocalizer(
-    context: Context,
-    settingsRepository: SettingsRepository
+    private val context: Context,
+    private val settingsRepository: SettingsRepository
 ) {
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private var currentLanguage: String = AppLanguage.DEFAULT.iso
 
     init {
         coroutineScope.launch {
-            settingsRepository.observeAppLanguage().collectLatest { currentLanguage ->
-                val iso = currentLanguage.iso.ifEmpty {
+            settingsRepository.observeAppLanguage().collectLatest { lang ->
+                currentLanguage = lang.iso.ifEmpty {
                     val deviceLocale = androidx.core.os.LocaleListCompat.getDefault()[0]
-                    val deviceIso = deviceLocale?.language ?: "en"
+                    val deviceIso = deviceLocale?.language ?: AppLanguage.ENGLISH.iso
                     settingsRepository.applyLanguage(AppLanguage.fromIso(deviceIso))
+                    applyLocaleToContext(deviceIso)
                     deviceIso
                 }
-
-                val localeList = LocaleList.forLanguageTags(iso)
-                LocaleList.setDefault(localeList)
-                val config = context.resources.configuration
-                config.setLocales(localeList)
-                context.createConfigurationContext(config)
+                applyLocaleToContext(currentLanguage)
             }
         }
     }
+
+    fun applyLocaleToContext(iso: String = currentLanguage) {
+        val localeList = LocaleList.forLanguageTags(iso)
+        LocaleList.setDefault(localeList)
+        val config = context.resources.configuration
+        config.setLocales(localeList)
     }
+}
+

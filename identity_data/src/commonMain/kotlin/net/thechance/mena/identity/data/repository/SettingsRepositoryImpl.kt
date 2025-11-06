@@ -20,16 +20,19 @@ class SettingsRepositoryImpl(
         MutableStateFlow(settings.appLanguage)
 
     override suspend fun applyLanguage(appLanguage: AppLanguage) {
+        println("applyLanguage: $appLanguage")
         settings.appLanguage = appLanguage.iso.also { observableLanguage.emit(appLanguage.iso) }
     }
 
-    override fun observeAppLanguage(): StateFlow<AppLanguage> =
-        observableLanguage.map { it.toAppLanguage() }
+    override fun observeAppLanguage(): StateFlow<AppLanguage> {
+        println("observeAppLanguage: ${observableLanguage.value.toAppLanguage()}")
+      return  observableLanguage.map { it.toAppLanguage() }
             .stateIn(
                 scope = CoroutineScope(Dispatchers.IO),
                 started = SharingStarted.Eagerly,
                 initialValue = observableLanguage.value.toAppLanguage()
             )
+    }
 
     override fun getCurrentAppLanguage(): AppLanguage = settings.appLanguage.toAppLanguage()
     private fun String.toAppLanguage(): AppLanguage {
