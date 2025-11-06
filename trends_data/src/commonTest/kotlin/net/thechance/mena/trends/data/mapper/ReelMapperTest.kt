@@ -6,6 +6,7 @@ import assertk.assertions.isNull
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.util.toUrl
 import kotlin.test.Test
 
 internal class ReelMapperTest {
@@ -14,8 +15,8 @@ internal class ReelMapperTest {
         val entity = reelDto.toEntity()
 
         assertThat(entity.id).isEqualTo(reelDto.id)
-        assertThat(entity.thumbnailUrl).isEqualTo(reelDto.reelImageUrl)
-        assertThat(entity.videoUrl).isEqualTo(reelDto.videoUrl)
+        assertThat(entity.thumbnailUrl).isEqualTo(reelDto.reelImageUrl?.toUrl())
+        assertThat(entity.videoUrl).isEqualTo(reelDto.videoUrl?.toUrl())
         assertThat(entity.description).isEqualTo(reelDto.description)
         assertThat(entity.likesCount).isEqualTo(reelDto.likesCount)
         assertThat(entity.viewsCount).isEqualTo(reelDto.viewsCount)

@@ -14,11 +14,14 @@ import net.thechance.mena.trends.data.repository.util.addViewReelResponse
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
+import net.thechance.mena.trends.data.repository.util.fakeReelUrls
+import net.thechance.mena.trends.data.repository.util.getReelUrlsResponse
 import net.thechance.mena.trends.data.repository.util.getReelsResponse
 import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.data.util.toUrl
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import kotlin.test.Test
 import kotlin.test.assertFails
@@ -217,6 +220,22 @@ internal class ReelRepositoryImplTest {
         }
 
         assertThat(result).isSuccess()
+    }
+
+
+    @Test
+    fun `should get Reel Urls when getReelUrls called successfully`() = runTest {
+        networkClient = createReelsHttpClient {
+            getReelUrlsResponse()
+        }
+
+        repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+
+        val result = repository.getReelUrls(REEL_ID)
+
+
+        assertThat(result.videoUrl).isEqualTo(fakeReelUrls.videoPath.toUrl())
+        assertThat(result.thumbnailUrl).isEqualTo(fakeReelUrls.thumbnailPath.toUrl())
     }
 
     private companion object {
