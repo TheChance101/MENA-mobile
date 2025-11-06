@@ -9,5 +9,9 @@ interface MosqueRepository {
         longitude: Double,
         radius: Double,
     ): List<Mosque>
-    suspend fun getMosquesByName(query: String): List<Mosque>
+    suspend fun getMosquesByName(
+        query: String,
+        page: Int = 0,
+        size: Int = 50
+    ): List<Mosque>
 }

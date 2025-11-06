@@ -5,9 +5,11 @@ import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
 import net.thechance.mena.faith.data.remote.client.NetworkClient
 import net.thechance.mena.faith.data.remote.service.BookmarkApiService
+import net.thechance.mena.faith.data.remote.service.MosqueApiService
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.remote.service.createBookmarkApiService
+import net.thechance.mena.faith.data.remote.service.createMosqueApiService
 import net.thechance.mena.faith.data.remote.service.createPrayerTimeApiService
 import net.thechance.mena.faith.data.remote.service.createTilawahApiService
 import org.koin.core.qualifier.named
@@ -39,6 +41,10 @@ val networkModule = module {
 
     single<TilawahApiService> {
         get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createTilawahApiService()
+    }
+
+    single<MosqueApiService> {
+        get<Ktorfit>(named(FAITH_KTORFIT_KEY)).createMosqueApiService()
     }
 }
 
