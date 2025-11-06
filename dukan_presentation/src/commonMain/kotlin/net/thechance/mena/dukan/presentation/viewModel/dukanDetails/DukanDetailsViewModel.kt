@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -115,24 +116,31 @@ class DukanDetailsViewModel(
     private fun loadProductsLimited(shelves: PagingData<ShelfUiState>) {
         tryToExecute(
             block = { updateProductsLimited(shelves) },
-            onSuccess = ::onProductsLimitedLoaded
+            onSuccess = ::onProductsLimitedLoaded,
+            onError = ::onLoadProductsPagingError
         )
     }
 
-    private fun updateProductsLimited(
+    private suspend fun updateProductsLimited(
         shelves: PagingData<ShelfUiState>
     ): PagingData<ShelfUiState> {
-        return shelves.map { shelf ->
-            val products = getProductsLimitedByShelfId(shelf.id)
-            shelf.copy(products = products)
-        }.filter { it.products.isNotEmpty() }
-    }
-
-    private suspend fun getProductsLimitedByShelfId(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
         val page = 0
-        val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
-        return product.map { it.toUiState() }
+        var products: List<Product> = emptyList()
+        return shelves.map { shelf ->
+            tryToExecute(
+                block = {
+                    productRepository.getProductsByShelfId(shelf.id, page, maxProducts).items
+                },
+                onSuccess = {
+                    products = it
+                },
+                onError = { throwable ->
+                    onLoadProductsPagingError(throwable)
+                }
+            )
+            shelf.copy(products = products.map { it.toUiState() })
+        }.filter { it.products.isNotEmpty() }
     }
 
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
@@ -147,8 +155,19 @@ class DukanDetailsViewModel(
     private fun loadProductsPaging() {
         tryToCollect(
             block = ::getProductPagingFlow,
-            onCollect = ::onProductsLoaded
+            onCollect = ::onProductsLoaded,
+            onError = ::onLoadProductsPagingError
         )
+    }
+
+    private fun onLoadProductsPagingError(throwable: Throwable) {
+        updateState {
+            copy(
+                error = throwable,
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
     }
 
     private fun getProductPagingFlow(): Flow<PagingData<ProductUiState>> {

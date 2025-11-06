@@ -14,6 +14,7 @@ data class DukanDetailsUiState(
     val shelfIdSelected: String? = null,
     val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
     val snackBarState: SnackBarUiState? = null,
+    val error: Throwable? =null
 ) {
     data class DukanInfo(
         val dukanId: String = "",
