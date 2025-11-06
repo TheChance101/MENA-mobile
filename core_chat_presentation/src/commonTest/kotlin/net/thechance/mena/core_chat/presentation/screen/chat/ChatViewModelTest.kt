@@ -420,7 +420,7 @@ class ChatViewModelTest {
         advanceUntilIdle()
 
         assertThat(viewModel.state.value.isReactionDialogVisible).isFalse()
-        assertThat(viewModel.state.value.messageToReactTo).isNull()
+        assertThat(viewModel.state.value.messageToReactTo).isEqualTo(null)
     }
 
     @Test
