@@ -68,7 +68,7 @@ private fun ProductItem(
     dukanColor: Color,
     modifier: Modifier = Modifier
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 1) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     LaunchedEffect(product) {

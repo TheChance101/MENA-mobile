@@ -77,5 +77,5 @@ val dukanCartUiState = DukanCartUiState(
         name = "Calvin Klein store ",
         imageUrl = "https://dukan.photos/200"
     ),
-    products = flowOf(PagingData.from(fakeProductsDukanCart))
+    products = flowOf(PagingData.from(fakeProductsDukanCart)),
 )

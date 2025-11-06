@@ -152,7 +152,7 @@ private fun ProductItem(
     listener: DukanDetailsInteractionListener,
     cartColor: Color
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 1) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     LaunchedEffect(product) {
