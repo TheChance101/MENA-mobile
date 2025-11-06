@@ -18,6 +18,12 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onMessageLongClicked(message: MessageUiState)
     fun onReactionDialogDismissed()
     fun onReactionSelected(messageId: Uuid, reaction: String)
+
+    fun onMessageVoiceClicked(messageId: Uuid)
+
+    fun onRecordClicked()
+    fun onCancelRecordClicked()
+    fun onSendRecordClicked()
 }
 
 interface MessageListInteractionListener {
