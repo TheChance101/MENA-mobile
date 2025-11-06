@@ -65,6 +65,7 @@ class LoginViewModel(
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
+        updateState { it.copy(isLoginButtonLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
