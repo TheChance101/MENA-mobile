@@ -18,36 +18,32 @@ class CompassViewModel(
     CompassInteractionListener {
 
     init {
-        loadCompassData()
+        getUserLocation()
     }
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
-    override fun onChangeLocation() = handleInvalidAddress()
+    override fun onChangeLocation() = sendEffect(CompassEffect.NavigateToAddressesScreen)
 
-    private fun loadCompassData() {
+    private fun getUserLocation() {
         tryToExecute(
-            dispatcher = dispatcher,
-            execute = {
-                val address = getValidatedAddress() ?: return@tryToExecute null
-                bearingCalculatorUseCase.calculateQiblahAngle(address)
-            },
-            onSuccess = { angle ->
-                angle?.let { onGetQiblahSuccess(it) }
-            }
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(CompassEffect.NavigateToAddressesScreen) }
         )
     }
 
-    private suspend fun getValidatedAddress(): Address? {
-        val address = locationService.getActiveAddress()
+    private fun onGetUserLocationSuccess(address: Address) {
+        updateState { it.copy(address = address.addressLine) }
+        loadQiblahAngle(address)
+    }
 
-        if (address == null || address.addressLine.isEmpty()) {
-            handleInvalidAddress()
-            return null
-        }
-
-        updateState { it.copy(city = address.addressLine) }
-        return address
+    private fun loadQiblahAngle(address: Address) {
+        tryToExecute(
+            dispatcher = dispatcher,
+            execute = { bearingCalculatorUseCase.calculateQiblahAngle(address) },
+            onSuccess = ::onGetQiblahSuccess
+        )
     }
 
     private fun onGetQiblahSuccess(angle: Double) {
@@ -83,9 +79,7 @@ class CompassViewModel(
         )
     }
 
-    private fun handleInvalidAddress() = sendEffect(CompassEffect.NavigateToAddressesScreen)
-
     fun refreshAddress() {
-        loadCompassData()
+        getUserLocation()
     }
 }

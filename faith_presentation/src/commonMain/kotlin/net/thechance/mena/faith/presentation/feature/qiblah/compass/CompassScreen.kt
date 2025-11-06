@@ -280,7 +280,7 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
         )
 
         Text(
-            text = uiState.city,
+            text = uiState.address,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -318,7 +318,7 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                city = "Cairo, Egypt",
+                address = "Cairo, Egypt",
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}

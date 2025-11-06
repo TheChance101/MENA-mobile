@@ -27,38 +27,30 @@ class PrayerTimeViewModel(
     PrayerTimeInteractionListener {
 
     init {
-        loadTodayPrayerTimes()
+        getUserLocation()
     }
 
-    override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
-
-    override fun onPrevDateClick() = sendEffect(PrayerTimeEffect.NavigatePrevDate)
-
-    override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
-
-    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
-    override fun onChangeLocation() = handleInvalidAddress()
-
-    private fun loadTodayPrayerTimes() {
+    private fun getUserLocation() {
         tryToExecute(
-            execute = {
-                val address = getValidatedAddress() ?: return@tryToExecute null
-                prayerTimeRepository.getPrayerTimes(date = Clock.System.now(), address = address)
-            },
-            onSuccess = { prayerTimes -> prayerTimes?.let(::onPrayerTimesSuccess) },
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(PrayerTimeEffect.NavigateToAddressesScreen) }
         )
     }
 
-    private suspend fun getValidatedAddress(): Address? {
-        val address = locationService.getActiveAddress()
-
-        if (address == null || address.addressLine.isEmpty()) {
-            handleInvalidAddress()
-            return null
-        }
-
+    private fun onGetUserLocationSuccess(address: Address) {
         updateState { state -> state.copy(address = address.addressLine) }
-        return address
+
+        tryToExecute(
+            execute = {
+                prayerTimeRepository.getPrayerTimes(
+                    date = Clock.System.now(),
+                    address = address
+                )
+            },
+            onSuccess = ::onPrayerTimesSuccess,
+            dispatcher = dispatcher
+        )
     }
 
     private fun onPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
@@ -137,7 +129,15 @@ class PrayerTimeViewModel(
         }
     }
 
-    private fun handleInvalidAddress() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
+    override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
+
+    override fun onPrevDateClick() = sendEffect(PrayerTimeEffect.NavigatePrevDate)
+
+    override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
+
+    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
+
+    override fun onChangeLocation() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
 
     private companion object {
         const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
