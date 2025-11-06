@@ -59,9 +59,8 @@ fun WideImageDukanAppBar(
         onLeadingClick = onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                // when cart contains products
                 isBadgeVisible = true,
-                onClick = { onCartClicked }
+                onClick = { onCartClicked() }
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),

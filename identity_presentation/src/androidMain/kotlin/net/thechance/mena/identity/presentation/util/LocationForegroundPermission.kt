@@ -9,6 +9,7 @@ import net.thechance.mena.identity.presentation.util.permissionHandler.Permissio
 
 internal class LocationForegroundPermission(
     private val context: Context,
+    private val permissionManager: PermissionManager
 ) : PermissionController {
 
     override fun getPermissionState(): PermissionState {
@@ -21,6 +22,10 @@ internal class LocationForegroundPermission(
 
     override fun openSettingPage() {
         context.openAppSettingsPage()
+    }
+
+    override fun requestPermission() {
+        permissionManager.requestPermission(fineLocationPermissions){}
     }
 }
 

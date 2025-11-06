@@ -10,5 +10,6 @@ sealed class FaithException : Throwable() {
     data object FailedToDownloadSurahException : FaithException()
     data object UrlCreationException : FaithException()
     data object FileCreationException : FaithException()
+    data object InvalidCoordinates: FaithException()
 }
 

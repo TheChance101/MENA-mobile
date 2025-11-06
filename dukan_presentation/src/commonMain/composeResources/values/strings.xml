@@ -114,10 +114,8 @@
     <string name="wide_dukan_image">Dukan Image</string>
     <string name="wide_product_image">Product Image</string>
     <string name="wide_discount_icon">Discount Icon</string>
-
     <string name="dukan_creation_failed">Dukan creation failed</string>"
     <string name="invalid_image_format">Invalid image format</string>"
-
     <string name="no_internet_title">Oops! It looks like you’re offline.</string>
     <string name="no_internet_message">Check your connection and try again</string>
     <string name="retry_button">Re-try</string>
@@ -141,6 +139,11 @@
     <string name="error_same_name_of_shelf">You cannot use the same name as the current shelf.</string>
     <string name="add_to_cart">Add to cart</string>
     <string name="product_thumbnail"> Product thumbnail</string>
+    <string name="cart">Cart</string>
+    <string name="go_to_checkout">Go to checkout</string>
+    <string name="sub_total_price">Sub total price</string>
+    <string name="from_dukan">From dukan</string>
+
     <string name="dukan_management_general_error">Dukan Management isn’t available right now. Please try again later!</string>
     <string name="dukan_managment_loading">Please wait until loading is complete...</string>
     <string name="dukan_main_content_empty_error_title">Oops! The Dukan Main Screen is currently unavailable. Please check back soon.</string>

@@ -5,18 +5,25 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.share.clipEntryOf
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
+    private val settingsRepository: SettingsRepository,
     val appVersion: String,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
-        (ProfileScreenUIState()),
+        (ProfileScreenUIState(
+            languageDialogUiState = LanguageDialogUiState(
+                selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }?: AppLanguage.ENGLISH,
+            ),
+        )),
     ProfileScreenInteractionListener {
 
     init {
@@ -93,7 +100,7 @@ class ProfileScreenViewModel(
         sendNewEffect(ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen)
 
     override fun onLanguageClicked() =
-        updateState { copy(showLanguageDialog = true) }
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = true)) }
 
     override fun onThemeClicked() =
         updateState { copy(showThemeDialog = true) }
@@ -112,6 +119,23 @@ class ProfileScreenViewModel(
         )
     }
 
+    override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
+        tryToExecute(
+            function = { settingsRepository.applyLanguage(appLanguage) },
+            onSuccess = {
+                updateState {
+                    copy(
+                        languageDialogUiState = languageDialogUiState.copy(
+                            isVisible = false
+                        )
+                    )
+                }
+            },
+            onError = ::onUserInfoError,
+        )
+    }
+
     override fun onDismissSnackBar() {
         updateState {
             copy(
@@ -123,7 +147,7 @@ class ProfileScreenViewModel(
     }
 
     override fun onDismissLanguageDialog() =
-        updateState { copy(showLanguageDialog = false) }
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = false)) }
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }

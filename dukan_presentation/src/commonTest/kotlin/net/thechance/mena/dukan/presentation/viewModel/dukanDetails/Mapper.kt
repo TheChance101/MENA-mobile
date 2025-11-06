@@ -51,7 +51,7 @@ class DukanDetailsMapperTest {
     }
 
     @Test
-    fun `toUiState should map Product correctly when quantityInCart is zero`() {
+    fun `toUiState should map Product correctly`() {
         val product = Product(
             id = Uuid.random(),
             name = "Phone",
@@ -69,7 +69,7 @@ class DukanDetailsMapperTest {
          assertEquals("Android device", uiState.description)
          assertEquals(15000.0, uiState.price, 0.0)
          assertEquals("img.png", uiState.imageUrl)
-         assertEquals(1, uiState.inCartQuantity)
+         assertEquals(0, uiState.inCartQuantity)
     }
 
     @Test

@@ -12,4 +12,7 @@ object DukanErrorCodes {
     const val SHELF_NOT_FOUND = 1402
     const val SHELF_NAME_ALREADY_TAKEN = 1403
     const val SHELF_NAME_NOT_CHANGED = 1404
+    const val CART_NOT_FOUND = 1501
+    const val PRODUCT_NOT_IN_CART = 1502
+    const val PRODUCT_ALREADY_IN_CART = 1503
 }

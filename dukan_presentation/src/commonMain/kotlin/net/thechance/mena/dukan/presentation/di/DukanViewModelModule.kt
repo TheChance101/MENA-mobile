@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.di
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansViewModel
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
@@ -37,5 +38,6 @@ internal val dukanViewModelModule = module {
     viewModelOf(::CategoryDukansViewModel)
     viewModelOf(::ShelfDetailsViewModel)
     viewModelOf(::ProductDetailsViewModel)
+    viewModelOf(::DukanCartViewModel)
     viewModelOf(::CheckoutViewModel)
 }

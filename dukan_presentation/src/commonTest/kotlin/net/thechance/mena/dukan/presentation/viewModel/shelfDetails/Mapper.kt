@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 class ShelfDetailsMapperTest {
 
     @Test
-    fun `toUiState should map Product correctly when quantityInCart is zero`() {
+    fun `toUiState should map Product correctly`() {
         val product = Product(
             id = Uuid.random(),
             name = "Test Product",
@@ -30,7 +30,7 @@ class ShelfDetailsMapperTest {
         assertEquals(product.description, uiState.description)
         assertEquals(product.price, uiState.price, 0.0)
         assertEquals("image.png", uiState.imageUrl)
-        assertEquals(1, uiState.inCartQuantity)
+        assertEquals(0, uiState.inCartQuantity)
     }
 
     @Test

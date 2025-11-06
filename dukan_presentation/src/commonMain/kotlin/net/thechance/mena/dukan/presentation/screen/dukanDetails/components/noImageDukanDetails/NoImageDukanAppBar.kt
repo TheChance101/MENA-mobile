@@ -76,7 +76,7 @@ fun NoImageDukanAppBar(
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
                 // when cart contains products
                 isBadgeVisible = isBadgeVisible ,
-                onClick = {listener.onViewCartClicked()}
+                onClick = listener::onViewCartClicked
             )
         }
     }

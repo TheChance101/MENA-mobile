@@ -386,7 +386,7 @@ class DukanDetailsViewModelTest {
 
         //Given
         val productId = "1"
-        val quantity = 1
+        val quantity = 0
 
         everySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) } returns Unit
 

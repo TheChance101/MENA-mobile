@@ -47,7 +47,9 @@ fun ShelfDetailsScreen(
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
             is ShelfDetailsEffects.NavigateToCart -> {
-                // navigate to cart screen
+                navController.navigate(
+                    DukanRoute.DukanCart(dukanId = effect.dukanId)
+                )
             }
 
             is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(

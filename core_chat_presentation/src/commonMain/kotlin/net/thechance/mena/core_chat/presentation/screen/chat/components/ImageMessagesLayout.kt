@@ -122,11 +122,12 @@ fun ImageMessagesLayout(
                                     is ImageData.ImageByteArray -> images.byteArray
                                 }
 
+                            }
+
+                            is MessageContent.Text -> return@Column
+                            is MessageContent.Audio -> return@Column
                         }
-                        is MessageContent.Text -> return@Column
-                        is MessageContent.Audio -> return@Column
                     }
-                }
 
                     ImageMessageContent(
                         images = imageDataList,
@@ -140,11 +141,13 @@ fun ImageMessagesLayout(
                 visible = showMessageInfo,
                 modifier = Modifier.align(messageInfoAlignment)
             ) {
+                val lastMessage = messages.last()
+
                 MessageInfo(
-                    messageTime = messages.last().sendTime,
-                    messageStatus = messages.last().status,
-                    messageIsMine = messages.last().isMine,
-                    onFailClick = { onFailClick(messages.last()) },
+                    messageTime = lastMessage.sendTime,
+                    messageStatus = lastMessage.status,
+                    messageIsMine = lastMessage.isMine,
+                    onFailClick = { onFailClick(lastMessage) },
                 )
             }
         }
@@ -191,4 +194,3 @@ private fun Preview() {
         }
     }
 }
-

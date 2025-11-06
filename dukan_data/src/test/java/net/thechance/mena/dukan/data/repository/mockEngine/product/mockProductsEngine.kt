@@ -65,6 +65,7 @@ fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
     headers = jsonHeaders
 )
 
+
 fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = createdProductResponseId) =
     respond(
         content = jsonSerialization.encodeToString(ProductDto.serializer(), productDto1),
@@ -76,12 +77,13 @@ fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
+    val dukanId = "10"
     return HttpClient(MockEngine { request ->
         when {
             request.url.encodedPath == "/dukan/product/create" -> createResponse?.invoke(this)
@@ -103,6 +105,7 @@ fun createProductHttpClient(
                 this
             )
                 ?: defaultProductDetailsResponse()
+
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
                     request.method.value == "GET" -> productByIdResponse?.invoke(this)

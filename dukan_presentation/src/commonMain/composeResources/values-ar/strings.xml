@@ -103,7 +103,6 @@
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و3000 حرفًا.</string>
-    <string name="all">الكل</string>
     <string name="best_selling">الأكثر مبيعًا</string>
     <string name="shopping_basket_icon">أيقونة سلة التسوق</string>
     <string name="favorite_icon">أيقونة المفضلة</string>
@@ -142,6 +141,11 @@
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
     <string name="add_to_cart">الأضافه الي السله</string>
+    <string name="all">الجميع</string>
+    <string name="cart">عربة</string>
+    <string name="go_to_checkout">اذهب إلى الدفع</string>
+    <string name="sub_total_price">السعر الإجمالي الفرعي</string>
+    <string name="from_dukan">من دكان</string>
     <string name="product_thumbnail">صورة مصغرة للمنتج</string>
     <string name="dukan_management_general_error">إدارة الدكّان غير متاحة حاليًا، يرجى المحاولة لاحقًا.</string>
     <string name="dukan_managment_loading">يرجى الانتظار حتى يكتمل التحميل...</string>

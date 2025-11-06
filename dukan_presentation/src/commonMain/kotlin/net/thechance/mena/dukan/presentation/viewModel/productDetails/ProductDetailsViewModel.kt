@@ -47,7 +47,7 @@ class ProductDetailsViewModel(
 
     private fun onLoadProductSuccess(product: Product) {
         val productUiInfo = product.toUiState()
-        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 1) }
+        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 0) }
         updateState {
             copy(
                 isLoading = false,
@@ -97,7 +97,7 @@ class ProductDetailsViewModel(
 
     private suspend fun addToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
         if (state.value.isFirstQuantityOne) dukanCartRepository.addProductQuantity(domainRequest)
-        dukanCartRepository.updateProductQuantity(domainRequest)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(productId: String) {
@@ -109,7 +109,7 @@ class ProductDetailsViewModel(
     override fun onMinusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
             updateState {
-                copy(product.copy(inCartQuantity = if (product.inCartQuantity > 1) product.inCartQuantity - 1 else product.inCartQuantity))
+                copy(product.copy(inCartQuantity = if (product.inCartQuantity > 0) product.inCartQuantity - 1 else product.inCartQuantity))
             }
         }
     }

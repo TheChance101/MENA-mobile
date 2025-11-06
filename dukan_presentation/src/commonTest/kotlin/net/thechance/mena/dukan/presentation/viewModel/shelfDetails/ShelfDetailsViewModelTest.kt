@@ -263,7 +263,7 @@ class ShelfDetailsViewModelTest {
         runTest {
             // Given
             val productId = "1"
-            val quantity = 1
+            val quantity = 0
 
             everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
@@ -343,7 +343,7 @@ class ShelfDetailsViewModelTest {
 
         //Given
         val productId = "1"
-        val quantity = 1
+        val quantity = 0
 
         everySuspend { dukanCartRepository.deleteProductFromCart(any(), any()) } returns Unit
 
