@@ -39,6 +39,9 @@ internal sealed interface Route {
 
     @Serializable
     data object ReciterSearch: Route
+    
+    @Serializable
+    data object UserAddresses : Route
 
     @Serializable
     data class SearchRoute(

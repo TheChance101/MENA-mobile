@@ -29,8 +29,8 @@ class MainContainerViewmodel(
         checkAuthenticationStatus()
     }
 
-    override fun onTabSelected(tab: MainContainerScreenState.CurrentTab) {
-        updateState { it.copy(currentTab = tab) }
+    override fun onTabSelected(tab: MainContainerScreenState.SelectedSidebarTab) {
+        updateState { it.copy(selectedSidebarTab = tab) }
         sendEffect(determineEffect(tab))
     }
 
@@ -131,18 +131,18 @@ class MainContainerViewmodel(
         }
     }
 
-    private fun determineEffect(currentTab: MainContainerScreenState.CurrentTab): MainContainerEffect =
-        when (currentTab) {
-            MainContainerScreenState.CurrentTab.USERS_MANAGEMENT ->
+    private fun determineEffect(selectedSidebarTab: MainContainerScreenState.SelectedSidebarTab): MainContainerEffect =
+        when (selectedSidebarTab) {
+            MainContainerScreenState.SelectedSidebarTab.USERS_MANAGEMENT ->
                 MainContainerEffect.NavigateToUsersManagementScreen
 
-            MainContainerScreenState.CurrentTab.DUKAN_MANAGEMENT ->
+            MainContainerScreenState.SelectedSidebarTab.DUKAN_MANAGEMENT ->
                 MainContainerEffect.NavigateToDukanManagementScreen
 
-            MainContainerScreenState.CurrentTab.DUKAN_REQUEST ->
+            MainContainerScreenState.SelectedSidebarTab.DUKAN_REQUEST ->
                 MainContainerEffect.NavigateToDukanRequestsScreen
 
-            MainContainerScreenState.CurrentTab.DEPOSIT ->
+            MainContainerScreenState.SelectedSidebarTab.DEPOSIT ->
                 MainContainerEffect.NavigateToDepositScreen
         }
 }

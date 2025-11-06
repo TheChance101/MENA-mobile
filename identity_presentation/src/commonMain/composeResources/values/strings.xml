@@ -182,6 +182,12 @@
 
     <string name="pick_location_title">Pick Location</string>
 
+    <!-- Change Password Screen -->
+    <string name="verify_current_password">Verify current password</string>
+    <string name="please_enter_your_password_to_change_it">Please enter your password to change it</string>
+    <string name="enter_your_new_password">Enter your new password</string>
+    <string name="changed_password_successfully"> Changed password successfully</string>
+
     <!-- //Error Messages -->
     <string name="error_invalid_country_code">Invalid country code</string>
     <string name="error_invalid_mobile_number">Invalid mobile number</string>
@@ -193,6 +199,7 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
 
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>

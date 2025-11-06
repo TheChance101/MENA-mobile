@@ -10,9 +10,9 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 
 @Composable
-fun DukanManagementsScreen() {
+fun DukanManagementsScreen(modifier: Modifier = Modifier) {
     Column(
-        Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
