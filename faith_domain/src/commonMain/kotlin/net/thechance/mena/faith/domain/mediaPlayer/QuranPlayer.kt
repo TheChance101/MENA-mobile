@@ -4,4 +4,5 @@ interface QuranPlayer {
     fun playAyah(ayahUrl: String)
     fun pauseAyah()
     fun repeatCurrentAyah()
+    fun onAyahCompleted(listener: () -> Unit)
 }

@@ -13,11 +13,11 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.download_complete
 import mena.wallet_presentation.generated.resources.download_failed
 import mena.wallet_presentation.generated.resources.download_success
-import mena.wallet_presentation.generated.resources.downloading_started
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.error_failed_view
 import mena.wallet_presentation.generated.resources.error_no_transactions
 import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
+import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.something_went_wrong
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
@@ -297,7 +297,6 @@ class ExportTransactionsViewModel(
         updateState { oldState ->
             oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
         }
-        showToast(messageRes = Res.string.downloading_started)
     }
 
     @OptIn(ExperimentalTime::class)
@@ -405,8 +404,8 @@ class ExportTransactionsViewModel(
                     )
                 }
                 showSnackBar(
-                    title = stringProvider.getString(Res.string.download_failed),
-                    message = stringProvider.getString(Res.string.no_internet_title),
+                    title = stringProvider.getString(Res.string.no_internet_title),
+                    message = stringProvider.getString(Res.string.no_internet_content),
                     isSuccess = false
                 )
             }

@@ -86,6 +86,8 @@ fun createMessageDto(
     senderId: String = Uuid.random().toString(),
     chatId: String = Uuid.random().toString(),
     text: String = "Hello from history",
+    imageUrl: String = "http://example.com/image.jpg",
+    audioUrl: String = "http://example.com/audio.m4a",
     sendAt: String = "2025-10-01T12:00:00Z",
     isRead: Boolean = false,
     isMine: Boolean = true
@@ -94,6 +96,8 @@ fun createMessageDto(
     senderId = senderId,
     chatId = chatId,
     text = text,
+    imageUrl = imageUrl,
+    audioUrl = audioUrl,
     sendAt = sendAt,
     isRead = isRead,
     isMine = isMine

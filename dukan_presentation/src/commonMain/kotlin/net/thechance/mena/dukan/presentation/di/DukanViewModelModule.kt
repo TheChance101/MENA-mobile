@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansViewModel
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createShelf.CreateShelfViewModel
@@ -38,4 +39,5 @@ internal val dukanViewModelModule = module {
     viewModelOf(::ShelfDetailsViewModel)
     viewModelOf(::ProductDetailsViewModel)
     viewModelOf(::DukanCartViewModel)
+    viewModelOf(::CheckoutViewModel)
 }

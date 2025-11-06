@@ -1,12 +1,9 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_details
 
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -21,7 +18,6 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.wallet.presentation.component.ErrorView
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
@@ -94,22 +90,12 @@ private fun TransactionDetailsScreenContent(
         isLoading = state.isLoading,
         onRetry = { interactionListener.onRefresh() }
     ) {
-        Crossfade(
-            targetState = state,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            when {
-                state.errorState != null -> ErrorView(onRetry = { interactionListener.onRefresh() })
 
-                else -> {
-                    TransactionDetailsSuccessContent(
-                        state = state,
-                        interactionListener = interactionListener,
-                        captureController = captureController
-                    )
-                }
-            }
-        }
+        TransactionDetailsSuccessContent(
+            state = state,
+            interactionListener = interactionListener,
+            captureController = captureController
+        )
     }
 }
 

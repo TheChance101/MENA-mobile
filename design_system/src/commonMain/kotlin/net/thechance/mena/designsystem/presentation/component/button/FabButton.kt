@@ -2,7 +2,6 @@ package net.thechance.mena.designsystem.presentation.component.button
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -12,6 +11,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun FabButton(
@@ -23,7 +23,7 @@ fun FabButton(
     containerColor: Color = Theme.colorScheme.primary.primary,
     contentColor: Color = Theme.colorScheme.primary.onPrimary,
     contentPadding: PaddingValues = PaddingValues(16.dp),
-    shape: Shape = RoundedCornerShape(Theme.radius.md)
+    shape: Shape = SquircleShape(Theme.radius.md)
 ) {
     Button(
         onClick = onClick,
