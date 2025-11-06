@@ -34,6 +34,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -155,7 +156,7 @@ class MessageRepositoryImpl(
         val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull() ?: return
 
         val response = tryNetworkCall<List<MessageDto>>(
-            bodyType = typeInfo<PagedDataDto<MessageDto>>()
+            bodyType = typeInfo<List<MessageDto>>()
         ) {
             client.get(getMessagesUpdatesEndPoint(chatId)) {
                 parameter(UPDATED_AFTER_PARAMETER, Instant.parse(lastSyncTime))
@@ -241,22 +242,39 @@ class MessageRepositoryImpl(
     private suspend fun handleDestinations(body: String, destination: String) {
         when (destination) {
             ADD_REACTION -> {
-                val dto = json.decodeFromString<MessageReactionDto>(body)
-                addReactionFlow.emit(dto.toDomain())
+                val reaction = json.decodeFromString<MessageReactionDto>(body).toDomain()
+
+                val message = cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
+                val updatedReactions = message.reactions.toMutableList().apply {
+                    removeAll { it.userId == reaction.userId && it.emoji == reaction.emoji }
+                    add(reaction.toLocalDto())
+                }
+                cachedMessageDao.updateMessage(message.copy(reactions = updatedReactions))
+
+                addReactionFlow.emit(reaction)
             }
 
             REMOVE_REACTION -> {
-                val dto = json.decodeFromString<MessageReactionDto>(body)
-                deleteReactionFlow.emit(dto.toDomain())
+                val reaction = json.decodeFromString<MessageReactionDto>(body).toDomain()
+
+                val message = cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
+                val updatedReactions = message.reactions.filterNot { it.userId == reaction.userId }
+                cachedMessageDao.updateMessage(message.copy(reactions = updatedReactions))
+
+                deleteReactionFlow.emit(reaction)
             }
 
             PRIVATE_MESSAGES -> {
-                val dto = json.decodeFromString<MessageDto>(body)
-                dto.toDomain()?.let { messagesFlow.emit(it) }
+                val message = json.decodeFromString<MessageDto>(body).toDomain()
+                message?.let {
+                    cachedMessageDao.insertMessage(it.toCachedMessageLocalDto())
+                    messagesFlow.emit(it)
+                }
             }
 
             MARK_AS_READ -> {
                 val dto = json.decodeFromString<MarkAsReadDto>(body)
+                cachedMessageDao.markMessagesAsReadByReader(dto.chatId, dto.readByUserId)
                 markMessagesAsRead.emit(dto.toDomain())
             }
 

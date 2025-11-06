@@ -4,6 +4,7 @@ package net.thechance.mena.core_chat.data.source.remote.mapper
 
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.MessageReactionLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
@@ -118,12 +119,33 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         senderId = this.senderId.toString(),
         text = text,
         imageUrl = image,
+        reactions = reactions.toLocalDto(),
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         isMine = this.isMine,
         status = status
     )
 }
+
+fun MessageReaction.toLocalDto(): MessageReactionLocalDto {
+    return MessageReactionLocalDto(
+        emoji = emoji,
+        userId = userId,
+        messageId = messageId
+    )
+}
+
+fun List<MessageReaction>.toLocalDto(): List<MessageReactionLocalDto> = map(MessageReaction::toLocalDto)
+
+fun MessageReactionLocalDto.toDomain(): MessageReaction {
+    return MessageReaction(
+        emoji = emoji,
+        userId = userId,
+        messageId = messageId
+    )
+}
+
+fun List<MessageReactionLocalDto>.toDomainMessageReaction(): List<MessageReaction> = map(MessageReactionLocalDto::toDomain)
 
 fun List<Message>.toCachedMessageLocalDto(): List<CachedMessageLocalDto> = map { it.toCachedMessageLocalDto() }
 
@@ -141,6 +163,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
         senderId = Uuid.parse(this.senderId),
         chatId = Uuid.parse(this.chatId),
         content = content,
+        reactions = reactions.toDomainMessageReaction(),
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
         status = status,
         isMine = isMine
