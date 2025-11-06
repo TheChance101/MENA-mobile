@@ -27,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Deprecated("Use new Dialog instead")
 @Composable
@@ -114,7 +115,7 @@ fun ScaffoldScope.Dialog(
     onCancelClick: () -> Unit = {},
     contentColor: Color = Theme.colorScheme.background.surfaceLow,
     scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
-    dialogCornerShape: Shape = RoundedCornerShape(Theme.radius.xl),
+    dialogCornerShape: Shape = SquircleShape(Theme.radius.xl),
     cancelBackgroundShape: Shape = RoundedCornerShape(Theme.radius.full),
     contentPadding: PaddingValues = PaddingValues(12.dp),
 ) {

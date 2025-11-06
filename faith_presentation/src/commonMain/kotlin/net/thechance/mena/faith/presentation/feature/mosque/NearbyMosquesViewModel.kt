@@ -7,20 +7,50 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) :
-    BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
+) : BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
         initialState = NearbyMosquesMapUiState(),
     ), NearbyMosquesInteractionListener {
 
-    private var searchButtonInactivityJob: Job? = null
+    init {
+        getUserLocation()
+    }
+
     private var searchJob: Job? = null
+
+    override fun getUserLocation() {
+        tryToExecute(
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen) }
+        )
+    }
+
+    private fun onGetUserLocationSuccess(address: Address) {
+        tryToExecute(
+            execute = {
+                mosqueRepository.getNearbyMosques(
+                    latitude = address.latitude,
+                    longitude = address.longitude,
+                    radius = 1.0
+                )
+            },
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onSuccess = ::handleNearbyMosquesSuccess,
+            onFinally = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+
+        )
+    }
 
     override fun onBackClick() {
 //        TODO("Not yet implemented")
@@ -30,25 +60,37 @@ internal class NearbyMosquesViewModel(
 //        TODO("Not yet implemented")
     }
 
-    override fun onCurrentUserLocationClick() {
-//        TODO("Not yet implemented")
-    }
-
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
     }
 
-    override fun onViewMosqueOnMapClick(coordinate: Coordinate) {
-//        TODO("Not yet implemented")
+    override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
+        val center = uiState.value.centerOfMap ?: return
+        updateState { it.copy(isLoading = true) }
+        tryToExecute(
+            dispatcher = dispatcher,
+            execute = {
+                mosqueRepository.getNearbyMosques(
+                    latitude = center.latitude,
+                    longitude = center.longitude,
+                    radius = SEARCH_RADIUS_KM,
+                )
+            },
+            onSuccess = ::handleNearbyMosquesSuccess,
+        )
     }
 
-    override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
-//        TODO("Not yet implemented")
+    override fun onSearchResultClick(mosque: MosqueUiState) {
+        updateState {
+            it.copy(
+                isSearchResultsBottomSheetVisible = false,
+                centerOfMap = mosque.coordinate
+            )
+        }
     }
 
     override fun mapPositionChanged(coordinate: Coordinate) {
-        updateCenterOfMap(coordinate = coordinate)
-        handleSearchButtonVisibilityOnInteraction()
+        updateState { it.copy(centerOfMap = coordinate) }
     }
 
     override fun onQueryChange(query: String) {
@@ -66,11 +108,39 @@ internal class NearbyMosquesViewModel(
         }
     }
 
+    override fun changeSearchButtonVisibility(isVisible: Boolean) {
+        updateState { it.copy(isSearchButtonVisible = isVisible) }
+    }
+
+    override fun onDismissSearchBottomSheet() {
+        updateState { it.copy(isSearchResultsBottomSheetVisible = false) }
+    }
+
+    override fun selectMosque(mosque: MosqueUiState) {
+        updateState {
+            it.copy(
+                selectedMosque = mosque,
+                isMosqueBottomSheetVisible = true
+            )
+        }
+    }
+
+    override fun unselectMosque() {
+        updateState {
+            it.copy(
+                selectedMosque = null,
+                isMosqueBottomSheetVisible = false
+            )
+        }
+    }
+
+    override fun onViewOnMapClick(coordinate: Coordinate) {
+        sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
+    }
+
     private fun performSearch(query: String) {
         searchJob = tryToExecute(
-            execute = {
-                mosqueRepository.getMosquesByName(query).map { it.toUiState(0.0) }
-            },
+            execute = { mosqueRepository.getMosquesByName(query) },
             onSuccess = ::handleSearchSuccess,
             onError = { handleSearchError() },
             dispatcher = dispatcher,
@@ -78,8 +148,7 @@ internal class NearbyMosquesViewModel(
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    private fun handleNearbyMosquesSuccess(mosques: List<MosqueUiState>) {
+    private fun handleNearbyMosquesSuccess(mosques: List<Mosque>) {
         if (mosques.isEmpty()) {
             viewModelScope.launch {
                 updateState { it.copy(isNoMosquesCardVisible = true) }
@@ -87,15 +156,23 @@ internal class NearbyMosquesViewModel(
                 updateState { it.copy(isNoMosquesCardVisible = false) }
             }
         } else {
-            // TODO: handle non-empty list case
+            updateState {
+                it.copy(
+                    isLoading = false,
+                    mosques = mosques.map { mosque ->
+                        mosque.toUiState(distance = 0.0)
+                    },
+                )
+            }
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    private fun handleSearchSuccess(mosques: List<MosqueUiState>) {
+    private fun handleSearchSuccess(mosques: List<Mosque>) {
         updateState {
             it.copy(
-                mosquesSearchResults = mosques,
+                mosquesSearchResults = mosques.map { mosque ->
+                    mosque.toUiState(0.0)
+                },
                 isSearchResultsBottomSheetVisible = mosques.isNotEmpty()
             )
         }
@@ -106,22 +183,8 @@ internal class NearbyMosquesViewModel(
         // TODO: show snack bar with error message (Res.string.no_mosques_found) to the user
     }
 
-    private fun handleSearchButtonVisibilityOnInteraction() {
-        updateState { it.copy(isSearchButtonVisible = false) }
-        searchButtonInactivityJob?.cancel()
-        searchButtonInactivityJob = viewModelScope.launch {
-            delay(500)
-            updateState { it.copy(isSearchButtonVisible = true) }
-        }
-    }
-
-    private fun updateCenterOfMap(coordinate: Coordinate) {
-        updateState {
-            it.copy(centerOfMap = coordinate)
-        }
-    }
-
     private companion object {
         const val SEARCH_DEBOUNCE_DELAY = 1000L
+        const val SEARCH_RADIUS_KM = 1.0
     }
 }

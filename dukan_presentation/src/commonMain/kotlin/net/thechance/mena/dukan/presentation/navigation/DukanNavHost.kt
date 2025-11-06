@@ -6,12 +6,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartScreen
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.CategoryDukansScreen
+import net.thechance.mena.dukan.presentation.screen.checkout.CheckoutScreen
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.CreateProductScreen
 import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScreen
 import net.thechance.mena.dukan.presentation.screen.dukanCategories.DukanCategoriesScreen
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsScreen
+import net.thechance.mena.dukan.presentation.screen.editProduct.EditProductScreen
 import net.thechance.mena.dukan.presentation.screen.main.MainScreen
 import net.thechance.mena.dukan.presentation.screen.manageDukan.ManageDukanScreen
 import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfScreen
@@ -62,6 +65,9 @@ fun DukanNavHost() {
             composable<DukanRoute.CreateProductScreenRoute> {
                 CreateProductScreen()
             }
+            composable<DukanRoute.EditProductScreenRoute> {
+                EditProductScreen()
+            }
             composable<DukanRoute.DukanDetails> {
                 DukanDetailsScreen()
             }
@@ -74,8 +80,14 @@ fun DukanNavHost() {
             composable<DukanRoute.DukansScreenRoute> {
                 CategoryDukansScreen()
             }
+            composable<DukanRoute.DukanCart> {
+                DukanCartScreen()
+            }
             composable<DukanRoute.ProductDetails> {
                 ProductDetailsScreen()
+            }
+            composable <DukanRoute.CheckoutScreenRoute> {
+                CheckoutScreen()
             }
         }
     }

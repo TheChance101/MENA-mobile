@@ -8,20 +8,28 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
-import net.thechance.mena.dukan.presentation.component.product.ProductActionIconSmallImageDukan
-import net.thechance.mena.dukan.presentation.component.product.ProductActionNoImageDukan
+import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
+import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState.Style
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun ShelfProducts(
@@ -32,7 +40,6 @@ fun ShelfProducts(
     val productCardBackground = if (dukanStyle == Style.NO_IMAGE) null
     else Theme.colorScheme.background.surfaceLow
 
-    val isAddToCartVisible = false // TODO: Remove when implement the Cart
 
     val products = state.productsShelf.collectAsLazyPagingItems()
     AnimatedContent(
@@ -44,11 +51,11 @@ fun ShelfProducts(
             LoadState.Loading -> LoadingVerticalList { LoadingProductCard() }
             is LoadState.NotLoading -> ProductCardLoaded(
                 productCardBackground = productCardBackground,
-                isAddToCartVisible = isAddToCartVisible,
                 products = products,
                 listener = listener,
                 state = state
             )
+
             is LoadState.Error -> {}
         }
     }
@@ -56,12 +63,11 @@ fun ShelfProducts(
 
 @Composable
 private fun ProductCardLoaded(
-    productCardBackground : Color?,
-    isAddToCartVisible: Boolean,
+    productCardBackground: Color?,
     products: LazyPagingItems<ShelfDetailsUiState.ProductUiState>,
     listener: ShelfDetailsInteractionListener,
-    state : ShelfDetailsUiState
-){
+    state: ShelfDetailsUiState
+) {
     LazyColumn(
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -79,33 +85,31 @@ private fun ProductCardLoaded(
                     productPrice = product.price,
                     productAction = {
                         CartProductAction(
-                            isVisible = isAddToCartVisible,
                             state = state,
                             listener = listener,
                             product = product
                         )
                     },
-                    onClick = {listener.onProductClicked(product.id)},
-                                    )
+                    onClick = { listener.onProductClicked(product.id) },
+                )
             }
         }
     }
 }
+
 @Composable
 private fun CartProductAction(
-    isVisible: Boolean,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    if (isVisible.not()) return
 
     AnimatedContent(
         targetState = state.dukanStyle,
         transitionSpec = { fadeIn() togetherWith fadeOut() },
         label = "CartProductIconAnimation"
     ) { currentStyle ->
-        GetProductIconAction(
+        ProductIconAction(
             style = currentStyle,
             state = state,
             listener = listener,
@@ -115,35 +119,76 @@ private fun CartProductAction(
 }
 
 @Composable
-private fun GetProductIconAction(
+private fun ProductIconAction(
     style: Style,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    val lazyItems = state.productsShelf.collectAsLazyPagingItems()
-    val inCartQuantity = lazyItems.itemSnapshotList.items
-        .firstOrNull { it.id == product.id }
-        ?.inCartQuantity ?: 0
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {
-            ProductActionIconSmallImageDukan(
-                inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { },
-                onMinusClick = { },
-                cartColor = Color(state.dukancolor)
+            SmallAndWideImageDukanProductAction(
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = Color(state.dukancolor),
+                cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
+                onAddToCartClick = {
+                    productQuantity += 1
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                }
             )
         }
 
         else -> {
-            ProductActionNoImageDukan(
-                inCartQuantity = inCartQuantity,
-                onAddClick = { listener.onAddToCartClicked(product.id) },
-                onPlusClick = { },
-                onMinusClick = { },
-                dukanColor = state.dukancolor,
+            NoImageDukanProductAction(
+                showProductQuantity = toggleCartToQuantity,
+                inCartQuantity = productQuantity,
+                dukanColor = Color(state.dukancolor),
+                onAddToCartClick = {
+                    productQuantity += 1
+                    toggleCartToQuantity = true
+                    listener.onAddToCartClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onPlusClick = {
+                    productQuantity += 1
+                    listener.onPlusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                },
+                onMinusClick = {
+                    if (productQuantity == 1) toggleCartToQuantity = false
+                    productQuantity -= 1
+                    listener.onMinusClicked(
+                        productId = product.id,
+                        productQuantity = productQuantity
+                    )
+                }
             )
         }
     }

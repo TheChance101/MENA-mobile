@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun RoundIconButton(
+internal fun RoundIconButton(
     icon: Painter,
     contentDescription: String,
     onClick: () -> Unit,

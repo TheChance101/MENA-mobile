@@ -9,6 +9,7 @@ data class MessageDto(
     val chatId: String,
     val text: String? = null,
     val imageUrl: String? = null,
+    val audioUrl: String? = null,
     val sendAt: String,
     val isRead: Boolean,
     val isMine: Boolean

@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.faith.presentation.base.snackbar.DefaultSnackbarHandlerImpl
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
-import net.thechance.mena.faith.presentation.feature.downloadedSur.DownloadedSurViewModel
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurViewModel
 import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueViewModel

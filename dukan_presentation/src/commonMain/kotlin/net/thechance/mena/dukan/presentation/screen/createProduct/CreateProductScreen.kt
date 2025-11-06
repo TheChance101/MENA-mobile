@@ -17,19 +17,20 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add
+import mena.dukan_presentation.generated.resources.add_product
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.shared.TopAppBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
-import net.thechance.mena.dukan.presentation.screen.createProduct.component.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.DescriptionSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ImageSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.PriceSection
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
+import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCreateProductInterfaceListener
@@ -83,7 +84,12 @@ private fun CreateProductContent(
     interactionListener: CreateProductInteractionListener
 ) {
     Scaffold(
-        topBar = { TopAppBar(onBackClick = interactionListener::onBackClicked) },
+        topBar = {
+            TopAppBar(
+                title = stringResource(resource = Res.string.add_product),
+                onBackClick = interactionListener::onBackClicked
+            )
+        },
         bottomBar = {
             PrimaryButton(
                 text = stringResource(Res.string.add),
@@ -146,7 +152,7 @@ private fun CreateProductContent(
                     isUploadingImageEnabled = state.isUploadingImageEnabled,
                     isCancelImageEnabled = state.isCancelImageEnabled,
                     onUploadImageClick = interactionListener::onUploadImageClicked,
-                    onCancelImageClick = interactionListener::onCancelImageClicked,
+                    onCancelImageClick = interactionListener::onCancelImageClicked
                 )
             }
         }

@@ -18,11 +18,13 @@ import mena.faith_presentation.generated.resources.ic_prayer_man
 import mena.faith_presentation.generated.resources.next_prayer_in
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.getPrayerDisplayNameResource
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.ExperimentalTime
 
 @Composable
 internal fun NextPrayerCard(uiState: PrayerTimeUiState) {
@@ -70,10 +72,13 @@ internal fun NextPrayerCard(uiState: PrayerTimeUiState) {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Preview
 @Composable
 private fun Preview() {
-    NextPrayerCard(
-        uiState = PrayerTimeUiState()
-    )
+    QuranTheme {
+        NextPrayerCard(
+            uiState = PrayerTimeUiState()
+        )
+    }
 }

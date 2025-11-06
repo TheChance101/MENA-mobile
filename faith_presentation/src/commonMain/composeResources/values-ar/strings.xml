@@ -64,6 +64,7 @@
         <item quantity="other">منذ %1$d عام</item>
     </plurals>
     <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
+    <string name="error_coordinates">الإحداثيات غير صحيحة</string>
     <string name="error_no_internet">لا يوجد اتصال بالإنترنت. يرجى التحقق من الشبكة.</string>
     <string name="error_unauthorized">لست مخولاً للقيام بهذا الإجراء.</string>
     <string name="error_network">خطأ في الشبكة. يرجى المحاولة لاحقاً.</string>

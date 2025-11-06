@@ -29,7 +29,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun MosqueImageCropView(
+internal fun MosqueImageCropView(
     selectedImage: ImageSrc?,
     aspectRatio: Float,
     onImageCrop: (ImageBitmap) -> Unit,

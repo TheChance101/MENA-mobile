@@ -3,7 +3,7 @@ package net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop
 import com.attafitamim.krop.core.crop.ImageCropper
 import com.attafitamim.krop.core.crop.imageCropper
 
-data class MosqueImageCropUiState(
+internal data class MosqueImageCropUiState(
     val cropper: ImageCropper = imageCropper(),
 ) {
     companion object Companion {

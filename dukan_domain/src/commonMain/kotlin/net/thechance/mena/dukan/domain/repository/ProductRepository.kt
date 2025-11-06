@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.domain.repository
 
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
+import net.thechance.mena.dukan.domain.model.UpdateProductParams
 import net.thechance.mena.dukan.domain.util.PagedResult
 
 interface ProductRepository {
@@ -13,6 +14,8 @@ interface ProductRepository {
         size: Int
     ): PagedResult<Product>
 
+    suspend fun getProductById(productId: String): Product
+
     suspend fun uploadProductImages(
         fileName: List<String>,
         fileBytes: List<ByteArray>,
@@ -20,4 +23,8 @@ interface ProductRepository {
     ): List<String>
 
     suspend fun getProductDetails(productId: String): Product
+
+    suspend fun updateProduct(productId: String, params: UpdateProductParams)
+    suspend fun deleteProductImages(productId: String, imageUrls: List<String>)
+    suspend fun deleteProduct(productId: String)
 }

@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun VerticalDivider(
+internal fun VerticalDivider(
     color: Color,
     thickness: Dp,
     height: Dp = 20.dp,

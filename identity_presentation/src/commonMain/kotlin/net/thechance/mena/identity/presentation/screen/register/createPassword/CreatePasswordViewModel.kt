@@ -49,10 +49,6 @@ class CreatePasswordViewModel(
         updateState { copy(isConfirmPasswordVisible = !isConfirmPasswordVisible) }
     }
 
-    override fun onClickBack() {
-        sendNewEffect(CreatePasswordUIEffect.NavigateBack)
-    }
-
     override fun onClearErrorMessage() {
         updateState { copy(errorMessage = null) }
     }

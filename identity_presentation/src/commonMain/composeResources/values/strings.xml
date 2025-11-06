@@ -15,12 +15,13 @@
     <string name="create_password">Set your password</string>
     <string name="create_password_title">Complete your profile</string>
     <string name="create_password_description">Set your password</string>
-    <string name="register">Next</string>
+    <string name="next">Next</string>
+    <string name="register">Register</string>
     <string name="you_already_have_account">You already have an account?</string>
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can't Delete Active Address</string>
+    <string name="is_main_address_error">Can\'t Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -93,8 +94,8 @@
     <string name="profile_privacy_settings">Privacy settings</string>
     <string name="profile_app_settings_header">App settings</string>
     <string name="profile_language">Language</string>
-    <string name="profile_language_english">ENGLISH</string>
-    <string name="profile_language_arabic">ARABIC</string>
+    <string name="profile_language_english">English</string>
+    <string name="profile_language_arabic">Arabic</string>
     <string name="profile_theme">Theme</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
@@ -114,7 +115,9 @@
     <string name="share_icon_content_description">Share Icon</string>
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
+    <string name="download_app_title">MENA app-download app</string>
     <string name="copy_to_clipboard_success">Copied</string>
+    <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -147,6 +150,7 @@
 
     <string name="upload_another_image">Upload another image</string>
     <string name="image_preview">Image preview</string>
+    <string name="image_crop_failed">Image crop failed</string>
 
     <string name="edit_profile_information">Edit profile information</string>
     <string name="options">Options</string>
@@ -180,6 +184,12 @@
 
     <string name="pick_location_title">Pick Location</string>
 
+    <!-- Change Password Screen -->
+    <string name="verify_current_password">Verify current password</string>
+    <string name="please_enter_your_password_to_change_it">Please enter your password to change it</string>
+    <string name="enter_your_new_password">Enter your new password</string>
+    <string name="changed_password_successfully"> Changed password successfully</string>
+
     <!-- //Error Messages -->
     <string name="error_invalid_country_code">Invalid country code</string>
     <string name="error_invalid_mobile_number">Invalid mobile number</string>
@@ -191,6 +201,7 @@
     <string name="error_unknown">Something went wrong. Please try again later.</string>
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
+    <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
 
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
@@ -223,5 +234,20 @@
     <string name="click_to_upload">Click to Upload</string>
     <string name="button_upload">Upload</string>
     <string name="button_skip_for_now">Skip for now</string>
+    <string name="close_dialog_icon">Close Language Dialog Icon</string>
+
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">Complete your profile</string>
+    <string name="date_picker_screen_prompt">Select your date of birth, only allowed for 14+ years</string>
+
+    <!-- select gender   -->
+    <string name="select_gender_screen_prompt_title">Complete your profile</string>
+    <string name="select_gender_screen_prompt">Select your gender</string>
+    <!-- EnterName -->
+    <string name="complete_profile_title">Complete your profile</string>
+    <string name="complete_profile_description">Please fill your informations</string>
+    <string name="first_name_label">First name</string>
+    <string name="last_name_label">Last name</string>
+    <string name="username_label">Username</string>
 
 </resources>

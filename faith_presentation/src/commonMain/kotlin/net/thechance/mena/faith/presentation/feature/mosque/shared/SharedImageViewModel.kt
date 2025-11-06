@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class SharedImageViewModel : ViewModel() {
+internal class SharedImageViewModel : ViewModel() {
     private val _imageSrc = MutableStateFlow<ImageSrc?>(null)
     val imageSrc: StateFlow<ImageSrc?> = _imageSrc.asStateFlow()
 

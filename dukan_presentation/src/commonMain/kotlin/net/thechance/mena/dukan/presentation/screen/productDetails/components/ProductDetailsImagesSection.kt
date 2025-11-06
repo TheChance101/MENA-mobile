@@ -161,7 +161,7 @@ fun ProductDetailsSecondaryImages(
         verticalAlignment = Alignment.CenterVertically,
         contentPadding = PaddingValues(horizontal = Theme.spacing._4)
     ) {
-        items(items = images, key = { it }) { imageUrl ->
+        items(items = images) { imageUrl ->
             ProductDetailsSecondaryImageItem(
                 imageUrl = imageUrl,
                 isSelected = (imageUrl == selectedImageUrl),

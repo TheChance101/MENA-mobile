@@ -49,7 +49,7 @@ fun ProductCard(
             )
             .height(104.dp)
             .clip(RoundedCornerShape(size = Theme.radius.md))
-            .clickable(onClick = onClick)
+            .clickable(onClick = onClick,indication = null, interactionSource = null)
             .padding(Theme.spacing._4),
     ) {
         Box(

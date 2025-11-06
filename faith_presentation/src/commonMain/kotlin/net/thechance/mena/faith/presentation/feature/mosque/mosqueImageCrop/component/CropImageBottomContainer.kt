@@ -18,7 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun CropImageBottomContainer(
+internal fun CropImageBottomContainer(
     onUploadAnotherImageClicked: (imageSrc: ImageSrc?) -> Unit,
     onSaveClicked: () -> Unit,
 ) {

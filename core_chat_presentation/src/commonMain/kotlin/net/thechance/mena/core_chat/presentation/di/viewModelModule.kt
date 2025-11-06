@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.di
 
+import net.thechance.mena.core_chat.presentation.api.ChatEntryViewModel
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
@@ -36,11 +37,16 @@ internal val viewModelModule = module {
         ChatViewModel(
             chatRepository = get(),
             userRepository =  get(),
+            audioRecordRepository = get(),
             chatArgs =  get(),
             permissionsController = get(),
             messageRepository = get(),
             imageDownloaderService = get(),
+            audioPlayer = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
         )
+    }
+    viewModel {
+        ChatEntryViewModel(get())
     }
 }

@@ -9,21 +9,21 @@ import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.data.dto.addresses.response.AddressResponseDto
 import net.thechance.mena.identity.data.repository.location.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
-import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.model.AddressInput
-import net.thechance.mena.identity.domain.model.Coordinates as DomainCoordinates
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import net.thechance.mena.identity.domain.model.Coordinates as DomainCoordinates
 
 @OptIn(ExperimentalUuidApi::class)
 class AddressesRepositoryImplTest {
@@ -167,7 +167,7 @@ class AddressesRepositoryImplTest {
         longitude = 31.2357
     )
     
-    val fakeAddressResponseDto = net.thechance.mena.identity.data.dto.addresses.AddressResponseDto(
+    val fakeAddressResponseDto = AddressResponseDto(
         id = fakeAddressId.toString(),
         addressLine = "Cairo",
         addressType = "Home",

@@ -1,5 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen
 
-sealed interface UploadImageEffect {
+internal sealed interface UploadImageEffect {
     data object NavigateBack : UploadImageEffect
 }

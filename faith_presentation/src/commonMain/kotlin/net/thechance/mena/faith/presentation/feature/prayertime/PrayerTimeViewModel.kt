@@ -1,18 +1,22 @@
 package net.thechance.mena.faith.presentation.feature.prayertime
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
 import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.findNextPrayer
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 class PrayerTimeViewModel(
@@ -22,10 +26,10 @@ class PrayerTimeViewModel(
     PrayerTimeInteractionListener {
 
     private val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
+    private val currentTimeZone = TimeZone.currentSystemDefault()
 
     init {
         loadTodayPrayerTimes()
-        updateNextPrayerInfo()
     }
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
@@ -38,14 +42,13 @@ class PrayerTimeViewModel(
 
     override fun onChangeLocation() = sendEffect(PrayerTimeEffect.NavigateToChangeLocation)
 
-
     private fun loadTodayPrayerTimes() {
         tryToExecute(
-            dispatcher = dispatcher,
             execute = {
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    location = defaultLocation
+                    location = defaultLocation,
+                    timeZone = currentTimeZone
                 )
             },
             onSuccess = ::onPrayerTimesSuccess,
@@ -58,38 +61,78 @@ class PrayerTimeViewModel(
 
         updateState {
             it.copy(
-                prayerTimes = filteredPrayerTimes.map { prayer ->
-                    prayer.copy(time = prayer.time)
-                },
+                prayerTimes = filteredPrayerTimes,
                 currentDate = hijriDate
             )
         }
+        updateNextPrayerInfo()
+        startCountdownTimer()
     }
 
     private fun updateNextPrayerInfo() {
         val prayerTimes = uiState.value.prayerTimes
+
+        if (prayerTimes.isEmpty()) return
+
+
         val currentTime = Clock.System.now()
         val nextPrayer = findNextPrayer(prayerTimes, currentTime)
 
-        nextPrayer?.let { prayer ->
-            val remainingMillis =
-                prayer.time.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
+        if (nextPrayer != null) updateStateWithNextPrayer(nextPrayer, currentTime)
+        else handleTomorrowFirstPrayer(prayerTimes, currentTime)
+    }
 
-            if (remainingMillis > 0) {
-                updateState { state ->
-                    state.copy(
-                        nextPrayerName = prayer.name,
-                        nextPrayerCountdown = formatCountdown(remainingMillis)
-                    )
-                }
-            } else {
-                updateState { state ->
-                    state.copy(
-                        nextPrayerName = prayerTimes.firstOrNull()?.name ?: PrayerName.DHUHR,
-                        nextPrayerCountdown = "--:--:--"
-                    )
-                }
+    private fun findNextPrayer(prayerTimes: List<PrayerTime>, currentTime: Instant): PrayerTime? {
+        return prayerTimes.firstOrNull {
+            it.time.toEpochMilliseconds() > currentTime.toEpochMilliseconds()
+        }
+    }
+
+    private fun updateStateWithNextPrayer(nextPrayer: PrayerTime, currentTime: Instant) {
+        val remainingMillis = calculateRemainingTime(nextPrayer.time, currentTime)
+
+        updateState { state ->
+            state.copy(
+                nextPrayerName = nextPrayer.name,
+                nextPrayerCountdown = formatCountdown(remainingMillis)
+            )
+        }
+    }
+
+    private fun handleTomorrowFirstPrayer(prayerTimes: List<PrayerTime>, currentTime: Instant) {
+        val firstPrayer = prayerTimes.firstOrNull() ?: return
+
+        val tomorrowFirstPrayerTime = calculateNextFajrTime(firstPrayer.time)
+        val remainingMillis = calculateRemainingTime(tomorrowFirstPrayerTime, currentTime)
+
+        updateState { state ->
+            state.copy(
+                nextPrayerName = firstPrayer.name,
+                nextPrayerCountdown = formatCountdown(remainingMillis)
+            )
+        }
+    }
+
+    private fun calculateRemainingTime(prayerTime: Instant, currentTime: Instant): Long {
+        return prayerTime.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
+    }
+
+    private fun calculateNextFajrTime(todayPrayerTime: Instant): Instant {
+        val oneDayInMillis = ONE_DAY_IN_MILLIS
+        return Instant.fromEpochMilliseconds(todayPrayerTime.toEpochMilliseconds() + oneDayInMillis)
+    }
+
+    private fun startCountdownTimer() {
+        viewModelScope.launch(dispatcher) {
+            while (true) {
+                delay(COUNTDOWN_UPDATE_INTERVAL)
+                updateNextPrayerInfo()
             }
         }
+    }
+
+    private companion object {
+        const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L
+        const val COUNTDOWN_UPDATE_INTERVAL = 1000L
     }
 }

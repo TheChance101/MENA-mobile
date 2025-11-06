@@ -11,10 +11,10 @@ import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropUiState.Companion.MAX_ZOOM
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropUiState.Companion.MIN_ZOOM
 
-class MosqueImageCropViewModel() : BaseViewModel<
-        MosqueImageCropUiState, MosqueImageCropEffect>(
-    initialState = MosqueImageCropUiState()
-), MosqueImageCropInteractionListener {
+internal class MosqueImageCropViewModel() :
+    BaseViewModel<MosqueImageCropUiState, MosqueImageCropEffect>(
+        initialState = MosqueImageCropUiState()
+    ), MosqueImageCropInteractionListener {
 
     fun onSelectImage(imageSrc: ImageSrc?) {
         tryToExecute(

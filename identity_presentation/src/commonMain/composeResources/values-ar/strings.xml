@@ -1,4 +1,17 @@
 <resources>
+    <string name="app_name">MENA</string>
+    <string name="welcome_back">مرحباً بك مجدداً في MENA</string>
+    <string name="login_prompt">املأ معلوماتك لتسجيل الدخول</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="password">كلمة المرور</string>
+    <string name="forget_password">هل نسيت كلمة المرور؟</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="register_new_prompt">هل أنت جديد؟</string>
+    <string name="register_now">سجل الآن</string>
+    <string name="unexpected_error">حدث خطأ ما</string>
+    <string name="success">نجاح</string>
+    <string name="add_location_successfully">تمت إضافة الموقع بنجاح</string>
+    <string name="edit_location_successfully">تم تعديل الموقع بنجاح</string>
     <string name="pick_your_country">اختر دولتك</string>
     <string name="country_flag_image">صورة علم الدولة</string>
     <string name="confirm">تأكيد</string>
@@ -30,14 +43,27 @@
     <string name="create_password">تعيين كلمة المرور</string>
     <string name="create_password_title">إكمال ملفك الشخصي</string>
     <string name="create_password_description">تعيين كلمة المرور</string>
-    <string name="register">التالي</string>
+    <string name="next">التالي</string>
+    <string name="register">تسجيل</string>
     <string name="you_already_have_account">لديك حساب بالفعل؟</string>
     <string name="validation_code">رمز التحقق</string>
+    <string name="forget_password_prompt">الرجاء إدخال رقم الهاتف المرتبط بحسابك، وسنرسل لك رمز OTP لمساعدتك في استعادة الوصول</string>
+    <string name="forget_password_prompt_title">إعادة تعيين كلمة المرور الخاصة بك</string>
     <string name="reset_password">إعادة تعيين كلمة المرور</string>
+    <string name="otp_code">رمز OTP</string>
+    <string name="verify">تحقق</string>
+    <string name="resend">إعادة الإرسال</string>
+    <string name="resend_timer">إعادة الإرسال في %1$d:%2$s</string>
+    <string name="continue">متابعة</string>
+    <string name="did_not_receive_code">ألم تستلم الرمز؟</string>
+    <string name="otp_prompt_title">أدخل رمز التحقق</string>
+    <string name="otp_prompt">الرجاء إدخال رمز OTP الذي تم إرساله إلى رقم هاتفك الذي ينتهي بـ **%1$s لإعادة تعيين كلمة المرور الخاصة بك.</string>
     <string name="new_password_title">كلمة المرور الجديدة</string>
     <string name="reset_password_description">يرجى إدخال كلمة المرور الجديدة والتأكد من تذكرها في المرة القادمة</string>
     <string name="new_password_label">كلمة المرور الجديدة</string>
     <string name="confirm_password_label">تأكيد كلمة المرور</string>
+    <string name="reset_password_dialog_title">نجاح!</string>
+    <string name="reset_password_dialog_message">تمت إعادة تعيين كلمة المرور بنجاح.</string>
     <string name="reset">إعادة تعيين</string>
     <string name="error">خطأ</string>
     <!-- Profile Screen Strings -->
@@ -70,7 +96,9 @@
     <string name="share_icon_content_description">أيقونة المشاركة</string>
     <string name="link_icon_content_description">أيقونة الرابط</string>
     <string name="download_icon_content_description">أيقونة التنزيل</string>
+    <string name="download_app_title">تنزيل تطبيق مينا</string>
     <string name="copy_to_clipboard_success">تم النسخ</string>
+    <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
@@ -107,6 +135,13 @@
     <string name="save">حفظ</string>
     <string name="upload_another_image">رفع صورة أخرى</string>
     <string name="image_preview">عرض الصوره</string>
+    <string name="image_crop_failed">حدث خطأ اثناء قص الصوره</string>
+
+    <!-- Change Password Screen -->
+    <string name="verify_current_password">تحقق من كلمة المرور الحالية</string>
+    <string name="please_enter_your_password_to_change_it">من فضلك أدخل كلمة المرور الخاصة بك لتتمكن من تغييرها</string>
+    <string name="enter_your_new_password">أدخل كلمة المرور الجديدة</string>
+    <string name="changed_password_successfully">تم تغيير كلمة المرور بنجاح</string>
 
     <!-- Error Messages -->
 
@@ -123,6 +158,7 @@
     <string name="error_invalid_otp">رمز التحقق (OTP) غير صحيح.</string>
     <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
     <string name="error_phone_number_already_exists">رقم الهاتف مسجل بالفعل.</string>
+    <string name="invalid_request_message">بعض المعلومات التي أدخلتها غير صحيحة. يرجى التحقق من البيانات والمحاولة مرة أخرى.</string>
 
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
@@ -139,9 +175,69 @@
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
 
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="date_picker_screen_prompt">اختر تاريخ ميلادك، يُسمح فقط لمن هم بعمر 14 سنة أو أكثر</string>
+
+    <!-- select gender -->
+    <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="select_gender_screen_prompt">اختر جنسك</string>
+
+    <string name="address_type_home">المنزل</string>
+    <string name="address_type_office">العمل</string>
+    <string name="address_type_other">أخرى</string>
+    <string name="address_priority_main">رئيسي</string>
+    <string name="address_edit">تعديل</string>
+    <string name="delete_address_description">هل أنت متأكد أنك تريد حذف هذا الموقع؟</string>
+    <string name="delete_address_title">حذف الموقع</string>
+    <string name="confirmation_dialog_delete">حذف</string>
+    <string name="my_location_app_bar_title">مواقعي</string>
+    <string name="address_deleted_successfully">تم حذف العنوان بنجاح</string>
+    <string name="address_activated_successfully">تم تفعيل العنوان بنجاح</string>
+    <string name="edit_profile_information">تعديل معلومات الملف الشخصي</string>
+    <string name="options">خيارات</string>
+    <string name="back">رجوع</string>
+    <string name="pick_start_date">اختر تاريخ البدء</string>
+    <string name="pick_end_date">اختر تاريخ الانتهاء</string>
+    <string name="month_january">يناير</string>
+    <string name="month_february">فبراير</string>
+    <string name="month_march">مارس</string>
+    <string name="month_april">أبريل</string>
+    <string name="month_may">مايو</string>
+    <string name="month_june">يونيو</string>
+    <string name="month_july">يوليو</string>
+    <string name="month_august">أغسطس</string>
+    <string name="month_september">سبتمبر</string>
+    <string name="month_october">أكتوبر</string>
+    <string name="month_november">نوفمبر</string>
+    <string name="month_december">ديسمبر</string>
+    <string name="first_name">الاسم الأول</string>
+    <string name="last_name">اسم العائلة</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="date_of_birth">تاريخ الميلاد</string>
+    <string name="save_changes">حفظ التغييرات</string>
+    <string name="cancel">إلغاء</string>
+    <string name="gender">الجنس</string>
+    <string name="dismiss">تجاهل</string>
+    <string name="version">الإصدار</string>
+    <string name="ok">موافق</string>
+    <string name="error_wrong_password">%1$s</string>
+    <string name="error_something_went_wrong">حدث خطأ ما</string>
+    <string name="error_no_network">لا يوجد اتصال بالإنترنت</string>
+    <string name="error_cannot_delete_active_address">لا يمكن حذف العنوان النشط</string>
+    <string name="error_location_is_turned_off">"الموقع مغلق"</string>
+
     <!-- Account Created Successfully -->
     <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
     <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
     <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
     <string name="ic_account_shield">أيقونة درع الحساب</string>
+
+    <!-- EnterName -->
+    <string name="complete_profile_title">أكمل ملفك الشخصي</string>
+    <string name="complete_profile_description">يرجى ملء بياناتك</string>
+    <string name="first_name_label">الاسم الأول</string>
+    <string name="last_name_label">اسم العائلة</string>
+    <string name="username_label">اسم المستخدم</string>
+    <string name="close_dialog_icon">أيقونة إغلاق نافذة تغيير الغة</string>
 </resources>

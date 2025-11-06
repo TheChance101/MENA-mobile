@@ -42,7 +42,7 @@ import net.thechance.mena.faith.presentation.utils.imageCrop.createCropperStyle
 import net.thechance.mena.faith.presentation.utils.imageCrop.toAspectRatio
 
 @Composable
-fun ImageCropBox(
+internal fun ImageCropBox(
     cropState: CropState,
     aspectRatio: Float,
     modifier: Modifier = Modifier,

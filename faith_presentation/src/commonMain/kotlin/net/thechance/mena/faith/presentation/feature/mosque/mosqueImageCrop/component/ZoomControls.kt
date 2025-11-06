@@ -22,7 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ZoomControls(
+internal fun ZoomControls(
     onZoomInClicked: () -> Unit,
     onZoomOutClicked: () -> Unit,
     onResetClicked: () -> Unit,

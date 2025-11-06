@@ -24,6 +24,10 @@ class PermissionHandler(
     fun openSettingPage() {
         permissionController.openSettingPage()
     }
+
+    fun requestPermission() {
+        permissionController.requestPermission()
+    }
 }
 
 private const val PERMISSION_CHECK_FLOW_FREQUENCY = 1000L

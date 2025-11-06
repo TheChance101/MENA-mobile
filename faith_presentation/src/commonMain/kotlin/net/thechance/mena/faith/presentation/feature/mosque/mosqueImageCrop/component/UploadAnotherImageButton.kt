@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun UploadAnotherImageButton(
+internal fun UploadAnotherImageButton(
     onClick: (imageSrc: ImageSrc?) -> Unit,
     isEnabled: Boolean = true,
     modifier: Modifier = Modifier,

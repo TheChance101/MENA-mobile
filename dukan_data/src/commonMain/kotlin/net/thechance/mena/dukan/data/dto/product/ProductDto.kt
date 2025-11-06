@@ -27,5 +27,8 @@ data class ProductDto(
     val imageUrls: List<String>,
 
     @SerialName("createdAt")
-    val createdAt: String
+    val createdAt: String,
+
+    @SerialName("quantityInCart")
+    val quantityInCart : Int
 )
