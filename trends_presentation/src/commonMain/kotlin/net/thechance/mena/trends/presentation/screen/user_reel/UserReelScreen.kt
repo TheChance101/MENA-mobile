@@ -1,12 +1,9 @@
 package net.thechance.mena.trends.presentation.screen.user_reel
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -72,6 +70,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.shared.util.asString
@@ -190,6 +189,14 @@ private fun UserReelScreenContent(
             pageCount = { reels.itemCount },
         )
 
+        LaunchedEffect(pagerState.currentPage) {
+            if(reels.itemCount > 0) {
+                reels[pagerState.currentPage]?.let { reel ->
+                    listener.onChangeCurrentReel(reel.id)
+                }
+            }
+        }
+
         TopAppBar(onBackClick = listener::onClickBack, modifier = Modifier.zIndex(5f))
 
         VerticalPager(
@@ -249,7 +256,7 @@ private fun ReelContent(
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
-        modifier = Modifier.background(Color.Black),
+        modifier = Modifier.background(Theme.colorScheme.primary.primary),
         url = reel.videoUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount
@@ -339,11 +346,7 @@ private fun PublisherInfo(
             }
         }
 
-        AnimatedVisibility(
-            visible = description.isNotBlank(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
+        TrendsAnimatedVisibility(visible = description.isNotBlank()) {
             Text(
                 text = description,
                 modifier = Modifier
@@ -391,11 +394,7 @@ private fun UsersReact(
             label = viewCount
         )
 
-        AnimatedVisibility(
-            visible = isCurrentUserOwner,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
+        TrendsAnimatedVisibility(visible = isCurrentUserOwner) {
             ReActIcon(
                 icon = painterResource(resource = Res.drawable.ic_delete),
                 label = stringResource(Res.string.delete),

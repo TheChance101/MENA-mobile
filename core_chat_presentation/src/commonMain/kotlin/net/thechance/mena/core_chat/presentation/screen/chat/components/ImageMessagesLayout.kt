@@ -122,11 +122,11 @@ fun ImageMessagesLayout(
                                     is ImageData.ImageByteArray -> images.byteArray
                                 }
 
-                            }
-
-                            is MessageContent.Text -> return@Column
                         }
+                        is MessageContent.Text -> return@Column
+                        is MessageContent.Audio -> return@Column
                     }
+                }
 
                     ImageMessageContent(
                         images = imageDataList,

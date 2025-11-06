@@ -60,7 +60,11 @@ fun WideImageDukanAppBar(
         },
         onLeadingClick = onBackClicked,
         trailingContent = {
-            AppBarOptionContainer(onClick = { onCartClicked }) {
+            AppBarOptionContainer(
+                // when cart contains products
+                isBadgeVisible = true,
+                onClick = { onCartClicked }
+            ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
                     contentDescription = null
@@ -71,7 +75,7 @@ fun WideImageDukanAppBar(
 }
 
 @Composable
-fun DukanHeader(
+fun WideImageDukanHeader(
     state: DukanDetailsUiState.DukanInfo,
     onFavoriteClicked: (dukanId: String, isFavorite: Boolean) -> Unit,
 ) {

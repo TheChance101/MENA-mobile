@@ -8,19 +8,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.download_complete
 import mena.wallet_presentation.generated.resources.download_failed
 import mena.wallet_presentation.generated.resources.download_success
-import mena.wallet_presentation.generated.resources.downloading_started
 import mena.wallet_presentation.generated.resources.error
 import mena.wallet_presentation.generated.resources.error_failed_view
 import mena.wallet_presentation.generated.resources.error_no_transactions
 import mena.wallet_presentation.generated.resources.failed_to_load_date_picker
+import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
 import mena.wallet_presentation.generated.resources.something_went_wrong
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
@@ -33,7 +30,6 @@ import net.thechance.mena.wallet.presentation.base.BaseViewModel
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
-import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionFilterState
 import net.thechance.mena.wallet.presentation.utils.FileManager
 import net.thechance.mena.wallet.presentation.utils.MimeType
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
@@ -301,7 +297,6 @@ class ExportTransactionsViewModel(
         updateState { oldState ->
             oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
         }
-        showToast(messageRes = Res.string.downloading_started)
     }
 
     @OptIn(ExperimentalTime::class)
@@ -315,22 +310,12 @@ class ExportTransactionsViewModel(
         }
     }
 
-    private fun getTransactionFilterParams(): TransactionFilterParams {
-        val formatter = LocalDate.Format {
-            year(); char('-'); monthNumber(); char('-')
-            day(padding = Padding.ZERO)
-        }
-        val startDateTime =
-            currentState.filterState.startDate?.toString().toStartOfDayLocalDateTime(formatter)
-        val endDateTime =
-            currentState.filterState.endDate?.toString().toStartOfDayLocalDateTime(formatter)
-
-        return TransactionFilterParams(
+    private fun getTransactionFilterParams(): TransactionFilterParams =
+        TransactionFilterParams(
             types = currentState.filterState.selectedTransactionsTypes.map { it.toDomain() },
-            startDate = startDateTime,
-            endDate = endDateTime
+            startDate = currentState.filterState.startDate,
+            endDate = currentState.filterState.endDate
         )
-    }
 
     private suspend fun handleDownloadError(error: ErrorState) {
         resetDownloadState()
@@ -404,7 +389,6 @@ class ExportTransactionsViewModel(
         )
     }
 
-
     private suspend fun handleError(
         error: ErrorState,
         title: String,
@@ -420,8 +404,8 @@ class ExportTransactionsViewModel(
                     )
                 }
                 showSnackBar(
-                    title = stringProvider.getString(Res.string.download_failed),
-                    message = stringProvider.getString(Res.string.no_internet_title),
+                    title = stringProvider.getString(Res.string.no_internet_title),
+                    message = stringProvider.getString(Res.string.no_internet_content),
                     isSuccess = false
                 )
             }
@@ -494,7 +478,8 @@ class ExportTransactionsViewModel(
             oldState.copy(
                 toast = oldState.toast.copy(
                     isVisible = false
-                )
+                ),
+                hasNoTransactionsError = false
             )
         }
     }
@@ -511,17 +496,8 @@ class ExportTransactionsViewModel(
         }
     }
 
-
     @OptIn(ExperimentalTime::class)
     private fun getUniqueStatementFileName(): String {
         return "statement_${Clock.System.now().epochSeconds}.pdf"
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private fun String?.toStartOfDayLocalDateTime(formatter: DateTimeFormat<LocalDate>):
-            LocalDate? {
-        return this
-            ?.takeIf { it.isNotEmpty() }
-            ?.let { LocalDate.parse(it, formatter) }
     }
 }

@@ -10,6 +10,7 @@ import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 internal data class UserReelState(
     val reels: Flow<PagingData<UserReelUiState>> = flowOf(),
     val isLoading: Boolean = false,
+    val currentReelId: String = "",
     val error: ErrorState? = null,
     val isConfirmationDialogVisible: Boolean = false,
     val isReelDeleted: Boolean? = null,

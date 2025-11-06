@@ -1,14 +1,19 @@
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_management_general_error
+import mena.dukan_presentation.generated.resources.dukan_managment_loading
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -33,6 +38,8 @@ class MainViewModel(
     defaultDispatcher = dispatcher
 ), MainInteractionListener {
 
+    private var fetchJob: Job? = null
+
     private var editorPickState: MutableStateFlow<PagingData<MainScreenUiState.EditorPickDukanUiState>> =
         MutableStateFlow(PagingData.empty())
 
@@ -41,17 +48,122 @@ class MainViewModel(
     }
 
     private fun fetchData() {
-        getDukanState()
-        getCategories()
-        loadEditorPicksDukans()
-        loadBestNearestDukans()
+        if (fetchJob?.isActive == true) return
+        fetchJob = viewModelScope.launch(defaultDispatcher) {
+            getDukanState()
+            getCategories()
+            loadEditorPicksDukans()
+            loadBestNearestDukans()
+        }.also { job ->
+            job.invokeOnCompletion { fetchJob = null }
+        }
+    }
+
+    private fun getDukanState() {
+        tryToExecute(
+            onStart = ::onGetDukanStateStart,
+            block = ::getDukanStateBlock,
+            onSuccess = ::onGetDukanStateSuccess,
+            onError = ::onGetDukanStateError
+        )
+    }
+
+    private fun onGetDukanStateStart() {
+        updateState {
+            copy(
+                dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Loading),
+                isContentLoading = true,
+                isConnected = true,
+                snackBarState = null
+            )
+        }
+    }
+
+    private suspend fun getDukanStateBlock(): MainScreenUiState.DukanState? {
+        return dukanManagementRepository.getMyDukanStatus()?.toUiState()
+    }
+
+    private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
+        updateState { copy(isConnected = true, snackBarState = null) }
+        if (dukanState == null) {
+            updateState {
+                copy(
+                    dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None),
+
+                    )
+            }
+        } else {
+            updateState { copy(dukanState = dukanState) }
+        }
+    }
+
+    private fun onGetDukanStateError(error: Throwable) {
+        updateState { copy(isContentLoading = false) }
+        fetchJob?.cancel()
+        when (error) {
+            is NoSuchItemException -> updateState {
+                copy(
+                    dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None)
+                )
+            }
+
+            is NoInternetException -> {
+                updateState {
+                    copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
+                }
+                updateToNoInternetState()
+            }
+
+            else -> updateState {
+                copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Default))
+            }
+        }
+    }
+
+    private fun getCategories() {
+        tryToExecute(
+            block = ::getCategoriesBlock,
+            onSuccess = ::onGetCategoriesSuccess,
+            onError = ::handleGetCategoriesError
+        )
+    }
+
+    private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
+        return dukanManagementRepository.getCategories().toUiState()
+    }
+
+    private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
+        updateState {
+            copy(
+                categories = categoryUiState,
+                snackBarState = null,
+                isContentLoading = false
+            )
+        }
+    }
+
+    private fun handleGetCategoriesError(error: Throwable) {
+        updateState { copy(isContentLoading = false) }
+        fetchJob?.cancel()
+        when (error) {
+            is NoInternetException -> {
+                updateToNoInternetState()
+            }
+
+            else -> {
+                showSnackBar(
+                    message = Res.string.error_general,
+                    type = SnackBarType.ERROR,
+                )
+            }
+        }
     }
 
     private fun loadEditorPicksDukans() {
         tryToCollect(
             block = ::createLoadEditorPagingSource,
             onCollect = ::onLoadedEditorPicksDukan,
-            onError = ::handleNetworkError
+            onError = ::handleGetEditorPicksDukanError
         )
     }
 
@@ -69,8 +181,25 @@ class MainViewModel(
         updateState {
             copy(
                 editorPickDukans = editorPickState,
-                snackBarState = null
+                snackBarState = null,
             )
+        }
+    }
+
+    private fun handleGetEditorPicksDukanError(error: Throwable) {
+        updateState { copy(isContentLoading = false) }
+        fetchJob?.cancel()
+        when (error) {
+            is NoInternetException -> {
+                updateToNoInternetState()
+            }
+
+            else -> {
+                showSnackBar(
+                    message = Res.string.error_general,
+                    type = SnackBarType.ERROR,
+                )
+            }
         }
     }
 
@@ -78,7 +207,7 @@ class MainViewModel(
         tryToCollect(
             block = ::createLoadBestDukanPagingSource,
             onCollect = ::onLoadedBestNearestDukans,
-            onError = ::handleNetworkError
+            onError = ::handleGetBestNearestDukansError
         )
     }
 
@@ -95,139 +224,75 @@ class MainViewModel(
         updateState {
             copy(
                 bestNearestDukans = flowOf(dukans),
-                snackBarState = null
+                snackBarState = null,
+                isContentLoading = false
             )
         }
     }
 
-    private fun handleNetworkError(error: Throwable) {
+    private fun handleGetBestNearestDukansError(error: Throwable) {
+        updateState { copy(isContentLoading = false) }
+        fetchJob?.cancel()
         when (error) {
-            is NoInternetException -> updateState {
+            is NoInternetException -> {
                 updateToNoInternetState()
             }
 
             else -> {
                 showSnackBar(
                     message = Res.string.error_general,
-                    type = SnackBarType.ERROR
+                    type = SnackBarType.ERROR,
                 )
             }
         }
     }
 
-    private fun getCategories() {
-        tryToExecute(
-            onStart = {
-                setLoadingState()
-            },
-            block = ::getCategoriesBlock,
-            onSuccess = ::onGetCategoriesSuccess,
-            onError = ::handleNetworkError
-        )
+    private fun updateToNoInternetState() {
+        showSnackBar(message = Res.string.no_internet_connection, type = SnackBarType.ERROR)
+        updateState { copy(isConnected = false) }
     }
-
-
-    private suspend fun getCategoriesBlock(): List<DukanCategoryUiState> {
-        return dukanManagementRepository.getCategories().toUiState()
-    }
-
-    private fun onGetCategoriesSuccess(categoryUiState: List<DukanCategoryUiState>) {
-        updateState {
-            copy(
-                categories = categoryUiState,
-                snackBarState = null
-            )
-        }
-    }
-
-    private fun getDukanState() {
-        tryToExecute(
-            onStart = ::setLoadingState,
-            block = ::getDukanStateBlock,
-            onSuccess = ::onGetDukanStateSuccess,
-            onError = ::onGetDukanStateError
-        )
-    }
-
-    private fun setLoadingState() {
-        updateState { copy(dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.Loading)) }
-    }
-
-    private suspend fun getDukanStateBlock(): MainScreenUiState.DukanState? {
-        return dukanManagementRepository.getMyDukanStatus()?.toUiState()
-    }
-
-    private fun onGetDukanStateSuccess(dukanState: MainScreenUiState.DukanState?) {
-        if (dukanState == null) {
-            updateState {
-                copy(
-                    dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None),
-                    isConnected = true,
-                    snackBarState = null
-                )
-            }
-        } else {
-            updateState { copy(dukanState = dukanState, isConnected = true) }
-        }
-    }
-
-    private fun onGetDukanStateError(error: Throwable) {
-        when (error) {
-            is NoSuchItemException -> updateState {
-                copy(
-                    dukanState = MainScreenUiState.DukanState(status = DukanStatusUi.None)
-                )
-            }
-
-            is NoInternetException -> {
-                updateState {
-                    updateToNoInternetState()
-                }
-            }
-        }
-    }
-
-    private fun MainScreenUiState.updateToNoInternetState(): MainScreenUiState = copy(
-        isConnected = false,
-        snackBarState = SnackBarUiState(
-            message = Res.string.no_internet_connection,
-            snackBarType = SnackBarType.ERROR
-        )
-    )
 
     override fun onDukanButtonClicked() {
         when (state.value.dukanState.status) {
             DukanStatusUi.None -> emitEffect(MainScreenEffect.NavigateToAddDukanScreen)
             DukanStatusUi.Pending -> emitEffect(MainScreenEffect.NavigateToPendingDukanScreen)
             DukanStatusUi.Approved -> emitEffect(MainScreenEffect.NavigateToManageDukanScreen)
-            DukanStatusUi.Loading -> {}
+            DukanStatusUi.Default -> showSnackBar(
+                message = Res.string.dukan_management_general_error,
+                type = SnackBarType.ERROR
+            )
+
+            DukanStatusUi.Loading -> showSnackBar(
+                message = Res.string.dukan_managment_loading,
+                type = SnackBarType.ERROR
+            )
         }
     }
 
     override fun onViewMoreClicked() {
-        emitEffect(MainScreenEffect.NavigateCategoryToScreen)
+        emitEffect(MainScreenEffect.NavigateToDukansCategoriesScreen)
     }
 
     override fun onRetryClicked() {
         fetchData()
     }
 
-    override fun onDismissSnackBar() {
+    override fun onSnackBarDismissed() {
         updateState {
             copy(snackBarState = null)
         }
     }
 
-    override fun onCategorySelectedClicked(categoryId: String, categoryName: String) {
+    override fun onSelectedCategoryClicked(categoryId: String, categoryName: String) {
         emitEffect(MainScreenEffect.NavigateToDukansScreenByCategory(categoryId, categoryName))
     }
 
     override fun onNearestDukanClicked(dukanId: String) {
-        emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
+        emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
     }
 
     override fun onEditorPickDukanClicked(dukanId: String) {
-        emitEffect(MainScreenEffect.NavigateSelectedDukan(dukanId))
+        emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
     }
 
     override fun onFavoriteDukanClicked(dukanId: String, isFavorite: Boolean) {

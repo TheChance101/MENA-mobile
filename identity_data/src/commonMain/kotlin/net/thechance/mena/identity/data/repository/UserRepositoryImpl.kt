@@ -11,13 +11,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
-import net.thechance.mena.identity.data.dto.profile.ProfileResponseDto
-import net.thechance.mena.identity.data.dto.profile.UpdateProfileRequestDto
+import net.thechance.mena.identity.data.dto.profile.request.ChangePasswordRequestDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
+import net.thechance.mena.identity.data.dto.profile.request.UpdateProfileRequestDto
+import net.thechance.mena.identity.data.dto.profile.response.ChangePasswordResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postFileWithData
+import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
@@ -51,18 +55,48 @@ class UserRepositoryImpl(
     override suspend fun updateUser(
         user: User,
         shouldUpdateImage: Boolean,
-        imageByteArray: ByteArray?,
     ) {
         return safeWrapper {
-            val user: ProfileResponseDto = client.postFileWithData(
+            val user: ProfileResponseDto = client.postJson(
                 path = PROFILE,
-                dataKey = "user",
                 requestDto = user.toRequest(shouldUpdateImage),
-                fileKey = "file",
-                imageByteArray = imageByteArray
             )
             userDao.upsert(user.toEntity())
         }
+    }
+
+    override suspend fun uploadUserProfileImage(imageByteArray: ByteArray?) {
+        return safeWrapper {
+            client.postFileWithData(
+                path = PROFILE_IMAGE,
+                fileKey = "file",
+                imageByteArray = imageByteArray
+            )
+        }
+    }
+
+    override suspend fun deleteUserProfileImage() {
+        return safeWrapper {
+            client.deleteJson(path = PROFILE_IMAGE)
+        }
+    }
+
+    override suspend fun changePassword(
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ) {
+        return safeWrapper {
+            client.postJson<ChangePasswordRequestDto, ChangePasswordResponseDto>(
+                requestDto = ChangePasswordRequestDto(
+                    currentPassword = currentPassword,
+                    newPassword = newPassword,
+                    confirmPassword = confirmPassword
+                ),
+                path = CHANGE_PASSWORD_PATH
+            )
+        }
+
     }
 
     fun User.toRequest(shouldUpdateImage: Boolean): UpdateProfileRequestDto {
@@ -81,6 +115,9 @@ class UserRepositoryImpl(
     }
 
     companion object {
-        const val PROFILE = "identity/profile/me"
+        const val PROFILE = "identity/profile"
+        const val PROFILE_IMAGE = "identity/profile/image"
+        const val CHANGE_PASSWORD_PATH = "identity/profile/change-password"
+
     }
 }

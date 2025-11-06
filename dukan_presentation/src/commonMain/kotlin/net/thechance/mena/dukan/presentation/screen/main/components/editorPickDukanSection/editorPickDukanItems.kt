@@ -52,7 +52,6 @@ fun LazyListScope.editorPickDukanItems(
                     isFavorite = dukan.isFavorite,
                     onClickFavorite = { onClickFavorite(dukan.id, dukan.isFavorite) },
                     modifier = Modifier.padding(
-                        horizontal = Theme.spacing._16,
                         vertical = Theme.spacing._8
                     )
                 )

@@ -31,6 +31,22 @@ class PrayerTimeRepositoryImpl(
         )
     }.toDomain()
 
+    override suspend fun getPrayerTimeWithHijriDate(
+        date: String,
+        location: Location,
+        timeZone: TimeZone,
+        isHijri: Boolean
+
+    ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
+        prayerTimeApiService.getPrayerTimes(
+            date = date,
+            latitude = location.latitude,
+            longitude = location.longitude,
+            isHijri = isHijri
+        )
+    }.toDomain()
+
+
     private fun Instant.toDateString(timeZone: TimeZone): String =
         this.toLocalDateTime(timeZone = timeZone).date.format(
             format = LocalDate.Formats.ISO

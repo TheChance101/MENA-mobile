@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.util
 
-import kotlinx.datetime.YearMonth
+import androidx.compose.runtime.Composable
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.month_april
 import mena.identity_presentation.generated.resources.month_august
@@ -14,23 +14,22 @@ import mena.identity_presentation.generated.resources.month_may
 import mena.identity_presentation.generated.resources.month_november
 import mena.identity_presentation.generated.resources.month_october
 import mena.identity_presentation.generated.resources.month_september
-import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
-fun getNumberOfDaysInMonth(year: Int, month: Int): Int {
-    return YearMonth(year, month).numberOfDays
-}
-
-enum class AppMonth(val number: Int, val res: StringResource) {
-    January(1, Res.string.month_january),
-    February(2, Res.string.month_february),
-    March(3, Res.string.month_march),
-    April(4, Res.string.month_april),
-    May(5, Res.string.month_may),
-    June(6, Res.string.month_june),
-    July(7, Res.string.month_july),
-    August(8, Res.string.month_august),
-    September(9, Res.string.month_september),
-    October(10, Res.string.month_october),
-    November(11, Res.string.month_november),
-    December(12, Res.string.month_december)
+@Composable
+fun getDefaultMonthNames(): List<String> {
+    return listOf(
+        stringResource(Res.string.month_january),
+        stringResource(Res.string.month_february),
+        stringResource(Res.string.month_march),
+        stringResource(Res.string.month_april),
+        stringResource(Res.string.month_may),
+        stringResource(Res.string.month_june),
+        stringResource(Res.string.month_july),
+        stringResource(Res.string.month_august),
+        stringResource(Res.string.month_september),
+        stringResource(Res.string.month_october),
+        stringResource(Res.string.month_november),
+        stringResource(Res.string.month_december)
+    )
 }

@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
@@ -11,6 +12,7 @@ import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
@@ -52,7 +54,8 @@ private fun BestNearestDukanList(
 ) {
     LazyRow(
         modifier = modifier.fillMaxWidth(),
-    ) {
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        ) {
         items(
             count = dukans.itemCount,
             key = { index -> dukans[index]?.id ?: index },

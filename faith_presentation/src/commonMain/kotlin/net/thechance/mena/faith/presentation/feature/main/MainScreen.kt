@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -75,6 +76,8 @@ fun MainScreen(
             MainScreenEffect.NavigateToQuran -> navController.navigate(Route.SurRoute)
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
+            MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
+            MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
         }
     }
 
@@ -95,16 +98,15 @@ private fun Content(
         val faithFeatureCards = faithFeatureCards(listener = listener)
 
         LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    bottom = Theme.spacing._8,
-                    start = Theme.spacing._16,
-                    end = Theme.spacing._16
-                ),
+            modifier = Modifier.fillMaxSize(),
             columns = GridCells.Adaptive(minSize = 150.dp),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            contentPadding = PaddingValues(
+                bottom = Theme.spacing._8,
+                start = Theme.spacing._16,
+                end = Theme.spacing._16
+            ),
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 PrayerSection(uiState, listener)
@@ -130,7 +132,10 @@ private fun PrayerSection(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        PrayerTimesCard(prayerTimesUiState = uiState.prayerTimesUiState)
+        PrayerTimesCard(
+            prayerTimesUiState = uiState.prayerTimesUiState,
+            onClick = listener::onPrayerTimeClick
+        )
         if (uiState.hijriDate.isNotBlank()) {
             Text(
                 text = uiState.hijriDate,
@@ -222,6 +227,8 @@ private fun Preview() {
                 override fun onQuranClick() {}
                 override fun onQiblahClick() {}
                 override fun onMosquesClick() {}
+                override fun onPrayerTimeClick() {}
+                override fun onTilawahClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,

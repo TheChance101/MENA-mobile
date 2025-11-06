@@ -9,11 +9,25 @@ import platform.CoreLocation.kCLAuthorizationStatusDenied
 import platform.CoreLocation.kCLAuthorizationStatusNotDetermined
 import platform.CoreLocation.kCLAuthorizationStatusRestricted
 
+private typealias AuthorizeStateInt = Int
+
 internal class LocationForegroundPermission : PermissionController {
     private var locationManager = CLLocationManager()
 
     override fun getPermissionState(): PermissionState {
-        return when (locationManager.authorizationStatus()) {
+        return locationManager.authorizationStatus().toPermissionState()
+    }
+
+    override fun openSettingPage() {
+        openAppSettingsPage()
+    }
+
+    override fun requestPermission() {
+        locationManager.requestWhenInUseAuthorization()
+    }
+
+    private fun AuthorizeStateInt.toPermissionState(): PermissionState {
+        return when (this) {
             kCLAuthorizationStatusAuthorizedAlways,
             kCLAuthorizationStatusAuthorizedWhenInUse,
             kCLAuthorizationStatusRestricted -> PermissionState.GRANTED
@@ -21,9 +35,5 @@ internal class LocationForegroundPermission : PermissionController {
             kCLAuthorizationStatusDenied -> PermissionState.DENIED
             else -> PermissionState.NOT_DETERMINED
         }
-    }
-
-    override fun openSettingPage() {
-        openAppSettingsPage()
     }
 }
