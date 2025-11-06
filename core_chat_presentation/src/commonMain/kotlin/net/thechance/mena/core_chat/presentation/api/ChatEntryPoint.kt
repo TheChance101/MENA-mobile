@@ -21,20 +21,11 @@ fun ChatEntryPoint(
     }
     viewModel.getChatByUserId(userId)
     val state by viewModel.state.collectAsStateWithLifecycle()
-    if (state.chatId != null && state.chatName != null) {
+    if (state.isContentVisible){
         ChatNavHost(
             startDestination = ChatDetailsRoute(
                 chatId = state.chatId?.toString() ?: "",
                 chatName = state.chatName.orEmpty(),
-            ),
-            onNavigateBackFromChat = onNavigateBack
-        )
-    }
-    if (state.isError) {
-        ChatNavHost(
-            startDestination = ChatDetailsRoute(
-                chatId = "",
-                chatName = "",
             ),
             onNavigateBackFromChat = onNavigateBack
         )
