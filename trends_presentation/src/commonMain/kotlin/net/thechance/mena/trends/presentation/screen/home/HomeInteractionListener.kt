@@ -8,5 +8,5 @@ interface HomeInteractionListener {
     fun onClickReel(reelId: String)
     fun onClickRetry()
     fun onClickExpandDescription(reelId: String)
-    fun onGetRefreshedThumbnail(reelId: String): String
+    fun onGetRefreshedThumbnail(reelId: String)
 }

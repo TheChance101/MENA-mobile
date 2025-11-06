@@ -58,7 +58,7 @@ internal fun FeedReelCard(
     reel: ReelUiState,
     onClickLike: () -> Unit,
     onClickReel: () -> Unit,
-    onGetRefreshedThumbnail: () -> String,
+    onRequestRefresh: () -> Unit,
     onExpandDescription: (String) -> Unit,
 ) {
     Column(
@@ -72,7 +72,7 @@ internal fun FeedReelCard(
             reel = reel,
             timeAgoText = reel.timeAgo?.asString() ?: stringResource(Res.string.just_now),
             onClickReel = onClickReel,
-            onGetRefreshedThumbnail = onGetRefreshedThumbnail
+            onRequestRefresh = onRequestRefresh
         )
 
         ReelFooterSection(
@@ -87,7 +87,7 @@ internal fun FeedReelCard(
 private fun ReelHeaderSection(
     reel: ReelUiState,
     timeAgoText: String,
-    onGetRefreshedThumbnail: () -> String,
+    onRequestRefresh: () -> Unit,
     onClickReel: () -> Unit
 ) {
     Column {
@@ -139,7 +139,8 @@ private fun ReelHeaderSection(
                     .background(Theme.colorScheme.background.surfaceHigh)
                     .noRippleClickable { onClickReel() },
                 alignment = Alignment.Center,
-                callback = onGetRefreshedThumbnail
+                onRequestRefresh = onRequestRefresh,
+                imageCacheKey = reel.id
             )
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),

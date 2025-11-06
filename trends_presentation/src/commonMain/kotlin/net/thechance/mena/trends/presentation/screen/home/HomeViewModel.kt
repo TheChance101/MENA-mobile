@@ -126,7 +126,16 @@ internal class HomeViewModel(
             }
     }
 
-    override fun onGetRefreshedThumbnail(reelId: String): String {
-        return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg"
+    override fun onGetRefreshedThumbnail(reelId: String) {
+        tryToExecute(
+            block = { repository.getReelUrls(reelId).thumbnailUrl },
+            onSuccess = { refreshedUrl ->
+                state.value.reelsStateFlow.value =
+                    state.value.reelsStateFlow.value.map { reel ->
+                        reel.takeIf { it.id != reelId }
+                            ?: reel.copy(thumbnailUrl = refreshedUrl)
+                    }
+            },
+        )
     }
 }
