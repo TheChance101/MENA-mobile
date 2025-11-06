@@ -31,7 +31,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
-class CompassViewModelAdditionalTests {
+class CompassViewModelTests {
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var viewModel: CompassViewModel
     private lateinit var useCase: QiblahBearingCalculatorUseCase
@@ -57,9 +57,8 @@ class CompassViewModelAdditionalTests {
     }
 
     @Test
-    fun `init should navigate to enable location when address has empty addressLine`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns addressWithEmptyLine
+    fun `init should navigate to addresses screen when address is null`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns null
 
         createViewModel()
 
@@ -71,19 +70,28 @@ class CompassViewModelAdditionalTests {
     }
 
     @Test
-    fun `init should update city state when address has empty addressLine`() = runTest {
-
+    fun `init should not update city state when address has empty addressLine`() = runTest {
         everySuspend { addressesRepository.getActiveAddress() } returns addressWithEmptyLine
 
         createViewModel()
         advanceUntilIdle()
 
-        assertEquals("", viewModel.uiState.value.city)
+        assertEquals("", viewModel.uiState.value.address)
     }
 
     @Test
-    fun `onChangeLocation should navigate to enable location when city is not empty`() = runTest {
+    fun `init should update address state when address is valid`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
+        createViewModel()
+        advanceUntilIdle()
+
+        assertEquals("Cairo, Egypt", viewModel.uiState.value.address)
+    }
+
+    @Test
+    fun `onChangeLocation should navigate to addresses screen when city is not empty`() = runTest {
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
@@ -100,8 +108,7 @@ class CompassViewModelAdditionalTests {
     }
 
     @Test
-    fun `onChangeLocation should navigate to my location when city is empty`() = runTest {
-
+    fun `onChangeLocation should navigate to addresses screen when city is empty`() = runTest {
         everySuspend { addressesRepository.getActiveAddress() } returns addressWithEmptyCity
         everySuspend { azimuthProvider.startListening() } returns emptyAzimuthFlow
 
@@ -123,7 +130,6 @@ class CompassViewModelAdditionalTests {
 
     @Test
     fun `azimuth changes should calculate continuous azimuth correctly`() = runTest {
-
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf(45f)
 
@@ -137,7 +143,6 @@ class CompassViewModelAdditionalTests {
 
     @Test
     fun `angle to qiblah should use shortest angle difference calculation`() = runTest {
-
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf(350f)
 
@@ -153,7 +158,6 @@ class CompassViewModelAdditionalTests {
 
     @Test
     fun `multiple azimuth changes should update state progressively`() = runTest {
-
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf(0f, 90f, 180f, 270f)
 
@@ -170,53 +174,67 @@ class CompassViewModelAdditionalTests {
 
     @Test
     fun `init should handle repository errors gracefully`() = runTest {
-
         everySuspend { addressesRepository.getActiveAddress() } throws Exception("Repository error")
 
         createViewModel()
-        advanceUntilIdle()
+
+        viewModel.uiEffect.test {
+            advanceUntilIdle()
+            assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
 
         val state = viewModel.uiState.value
-        assertEquals("", state.city)
+        assertEquals("", state.address)
         assertEquals(0f, state.qiblahAngleValue)
     }
 
     @Test
-    fun `refreshAddress should maintain city when switching between valid addresses`() = runTest {
-
+    fun `refreshAddress should reload location and update city`() = runTest {
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
 
         createViewModel()
         advanceUntilIdle()
 
-        assertEquals("Cairo, Egypt", viewModel.uiState.value.city)
+        assertEquals("Cairo, Egypt", viewModel.uiState.value.address)
 
         everySuspend { addressesRepository.getActiveAddress() } returns makkahAddress
 
         viewModel.refreshAddress()
         advanceUntilIdle()
 
-        assertEquals("Makkah, Saudi Arabia", viewModel.uiState.value.city)
+        assertEquals("Makkah, Saudi Arabia", viewModel.uiState.value.address)
     }
 
     @Test
     fun `city and qiblah angle should remain unchanged during azimuth updates`() = runTest {
-
         everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
         everySuspend { azimuthProvider.startListening() } returns flowOf(0f, 45f, 90f)
 
         createViewModel()
         advanceUntilIdle()
 
-        val initialCity = viewModel.uiState.value.city
+        val initialCity = viewModel.uiState.value.address
         val initialQiblah = viewModel.uiState.value.qiblahAngleValue
 
         advanceUntilIdle()
 
         val finalState = viewModel.uiState.value
-        assertEquals(initialCity, finalState.city)
+        assertEquals(initialCity, finalState.address)
         assertEquals(initialQiblah, finalState.qiblahAngleValue)
+    }
+
+    @Test
+    fun `init should load qiblah angle after getting user location`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns cairoAddress
+        everySuspend { azimuthProvider.startListening() } returns singleAzimuthFlow
+
+        createViewModel()
+        advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertTrue(state.qiblahAngleValue > 0f)
     }
 
     private fun createViewModel() {
