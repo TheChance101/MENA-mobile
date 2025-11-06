@@ -56,20 +56,32 @@ internal class NearbyMosquesViewModel(
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
         val userLocation = userCoordinate
-        return createPagingSourceFlow { pageNumber, pageSize ->
-            if (query.isBlank()) {
-                mosqueRepository.getNearbyMosques(
+        return if (query.isBlank()) {
+            flow {
+                val mosques = mosqueRepository.getNearbyMosques(
                     latitude = userLocation?.latitude ?: 0.0,
                     longitude = userLocation?.longitude ?: 0.0,
-                    radius = 20.0
+                    radius = 50.0
                 )
-            } else {
-                mosqueRepository.getMosquesByName(query, page = pageNumber, size = pageSize)
-            }
-        }.map { pagingData ->
-            pagingData.map { mosque -> mosque.toUiState(0.0) }
-        }.cachedIn(viewModelScope)
+                emit(
+                    PagingData.from(
+                        mosques.map { it.toUiState(0.0) }
+                    )
+                )
+            }.cachedIn(viewModelScope)
+        } else {
+            createPagingSourceFlow { pageNumber, pageSize ->
+                mosqueRepository.getMosquesByName(
+                    query = query,
+                    page = pageNumber,
+                    size = pageSize
+                )
+            }.map { pagingData ->
+                pagingData.map { mosque -> mosque.toUiState(0.0) }
+            }.cachedIn(viewModelScope)
+        }
     }
+
 
     override fun onQueryChange(query: String) {
         queryFlow.update { query }
