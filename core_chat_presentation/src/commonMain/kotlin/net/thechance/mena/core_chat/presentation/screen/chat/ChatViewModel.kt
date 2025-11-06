@@ -187,6 +187,7 @@ class ChatViewModel(
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
         observeDeleteChat()
+        observeMessageReactions()
     }
 
     private fun onGetChatError() {
@@ -547,6 +548,47 @@ class ChatViewModel(
             }
         }
     }
+    private fun observeMessageReactions() {
+        tryToCollect(
+            collect = { messageRepository.observeMessageReactions() },
+            onCollect = ::onCollectAddReaction
+        )
+
+        tryToCollect(
+            collect = { messageRepository.observeRemovedMessageReactions() },
+            onCollect = ::onCollectRemoveReaction
+        )
+    }
+
+
+    private suspend fun onCollectAddReaction(reaction: MessageReaction?) {
+        if (reaction == null) return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == reaction.messageId) {
+                    val filtered = message.reactions.filter { it.userId != reaction.userId }
+                        .toMutableList()
+                    filtered.add(reaction)
+                    message.copy(reactions = filtered)
+                } else message
+            }
+        }
+    }
+
+    private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
+        if (reaction == null) return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == reaction.messageId) {
+                    val filtered = message.reactions.filterNot {
+                        it.userId == reaction.userId && it.emoji == reaction.emoji
+                    }
+                    message.copy(reactions = filtered)
+                } else message
+            }
+        }
+    }
+
 
     override fun onMessageVoiceClicked(messageId: Uuid) {
         val voiceMessageItem = state.value.chatListItems.find {
