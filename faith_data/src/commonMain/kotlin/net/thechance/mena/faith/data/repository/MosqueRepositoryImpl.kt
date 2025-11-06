@@ -12,7 +12,7 @@ class MosqueRepositoryImpl(
 ) : MosqueRepository {
 
     override suspend fun addMosque(mosque: Mosque) {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 
     override suspend fun getNearbyMosques(
