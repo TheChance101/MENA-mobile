@@ -60,7 +60,8 @@ class ShelfDetailsViewModelTest {
             imageUrls = listOf("https://example.com/laptop.jpg"),
             createdAt = "",
             quantityInCart = 10,
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
+            isFavorite = false
             ),
         Product(
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
@@ -70,7 +71,8 @@ class ShelfDetailsViewModelTest {
             imageUrls = listOf("https://example.com/mouse.jpg"),
             createdAt = "",
             quantityInCart = 10,
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
             ),
         Product(
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
@@ -80,7 +82,8 @@ class ShelfDetailsViewModelTest {
             imageUrls = listOf("https://example.com/keyboard.jpg"),
             createdAt = "",
             quantityInCart = 10,
-            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125")
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
+            isFavorite = false
             )
     )
 
