@@ -16,7 +16,8 @@ class DukanResponseDtoMapperTest {
         val dto = DukanResponseDto(
             id = id,
             name = "Dukan Name",
-            imageUrl = "https://example.com/image.png"
+            imageUrl = "https://example.com/image.png",
+            isFavorite = false
         )
 
         // Act

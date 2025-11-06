@@ -114,7 +114,7 @@ class DukanMappersTest {
             id = dukanId,
             name = "Favorite Dukan",
             imageUrl = "fav.png",
-            isFavourite = true,
+            isFavorite = true,
             address = "Cairo",
             latitude = 30.0,
             longitude = 31.0,

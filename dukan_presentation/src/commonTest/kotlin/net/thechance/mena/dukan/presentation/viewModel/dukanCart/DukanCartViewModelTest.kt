@@ -71,7 +71,8 @@ class DukanCartViewModelTest {
         ),
         style = Dukan.Style.WIDE_IMAGE,
         categories = emptySet(),
-        status = Dukan.Status.APPROVED
+        status = Dukan.Status.APPROVED,
+        isFavorite = false
     )
 
     private val dummyProduct1 = Product(

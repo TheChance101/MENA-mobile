@@ -52,7 +52,7 @@ class MainViewModelTest {
             dukanManagementRepository.updateFavoriteDukanStatus(
                 fakeDukans[0].id.toString()
             )
-        } returns Unit
+        } returns true
 
     }
 
@@ -312,7 +312,7 @@ class MainViewModelTest {
             MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
         advanceUntilIdle()
 
-        mainViewModel.onFavoriteDukanClicked(fakeDukan1.id.toString(), isFavorite = false)
+        mainViewModel.onFavoriteDukanClicked(fakeDukan1.id.toString())
         advanceUntilIdle()
 
         val updatedDukan1 = mainViewModel.state.value.editorPickDukans.asSnapshot()

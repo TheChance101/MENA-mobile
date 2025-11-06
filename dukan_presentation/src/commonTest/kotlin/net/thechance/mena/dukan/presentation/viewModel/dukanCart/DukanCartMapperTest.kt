@@ -64,7 +64,8 @@ class DukanCartMapperTest {
             style = Dukan.Style.SMALL_IMAGE,
             status = Dukan.Status.APPROVED,
             address = "Cairo, Egypt",
-            categories = emptySet()
+            categories = emptySet(),
+            isFavorite = false
         )
 
         val uiState = dukan.toUiState()

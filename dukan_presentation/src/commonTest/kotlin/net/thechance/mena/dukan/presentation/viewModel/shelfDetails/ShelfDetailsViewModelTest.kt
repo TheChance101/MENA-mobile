@@ -28,7 +28,6 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -98,6 +97,7 @@ class ShelfDetailsViewModelTest {
         style = Dukan.Style.WIDE_IMAGE,
         categories = emptySet(),
         status = Dukan.Status.APPROVED,
+        isFavorite = false
     )
 
     @BeforeTest

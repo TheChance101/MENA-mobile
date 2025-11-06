@@ -313,15 +313,15 @@ class DukanDetailsViewModelTest {
 
             everySuspend {
                 dukanManagementRepository.updateFavoriteDukanStatus(dukanId)
-            } returns Unit
+            } returns true
 
             // When
-            dukanDetailsViewModel.onFavoriteDukanClicked(dukanId, initialFavorite)
+            dukanDetailsViewModel.onFavoriteDukanClicked(dukanId)
             advanceUntilIdle()
 
             // Then
             val updatedState = dukanDetailsViewModel.state.value
-            assertEquals(!initialFavorite, updatedState.dukanInfo.isFavorite)
+            assertEquals(initialFavorite, updatedState.dukanInfo.isFavorite)
         }
 
     @Test

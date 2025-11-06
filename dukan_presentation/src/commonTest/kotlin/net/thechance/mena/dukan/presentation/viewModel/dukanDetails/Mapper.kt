@@ -25,6 +25,7 @@ class DukanDetailsMapperTest {
             status = Dukan.Status.APPROVED,
             address = "Test Address",
             categories = emptySet(),
+            isFavorite = false
         )
 
         val uiState = dukan.toUiState()
