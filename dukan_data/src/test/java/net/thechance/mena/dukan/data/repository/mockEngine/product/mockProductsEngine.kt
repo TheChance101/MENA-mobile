@@ -124,7 +124,7 @@ fun createProductHttpClient(
             )
                 ?: defaultProductDetailsResponse()
 
-            "/dukan/cart/$dukanId/items" -> productCartResponse?.invoke(this)
+            request.url.encodedPath == "/dukan/cart/$dukanId/items" -> productCartResponse?.invoke(this)
                 ?: defaultProductCartResponse()
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&

@@ -48,5 +48,6 @@ fun ProductCartDto.toDomain(): Product = Product(
     price = price,
     imageUrls = listOf(imageUrl),
     quantityInCart = quantityInCart,
-    createdAt = ""
+    createdAt = "",
+    shelfId = null
 )

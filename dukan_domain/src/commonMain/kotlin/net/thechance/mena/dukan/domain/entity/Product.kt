@@ -11,6 +11,6 @@ data class Product(
     val price: Double,
     val imageUrls: List<String>,
     val createdAt: String,
-    val quantityInCart : Int,
-    val shelfId: Uuid,
-    )
+    val quantityInCart: Int,
+    val shelfId: Uuid?
+)
