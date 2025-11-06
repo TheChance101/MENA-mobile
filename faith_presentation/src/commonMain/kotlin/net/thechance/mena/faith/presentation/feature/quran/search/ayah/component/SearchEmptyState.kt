@@ -17,7 +17,8 @@ import mena.faith_presentation.generated.resources.icon_shadow
 import mena.faith_presentation.generated.resources.no_results_found_subtitle
 import mena.faith_presentation.generated.resources.no_results_found_title
 import mena.faith_presentation.generated.resources.shadow
-import mena.faith_presentation.generated.resources.start_searching_subtitle
+import mena.faith_presentation.generated.resources.start_searching_subtitle_for_ayah
+import mena.faith_presentation.generated.resources.start_searching_subtitle_for_reciter
 import mena.faith_presentation.generated.resources.start_searching_title
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -31,6 +32,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 internal fun SearchEmptyState(
     isStartState: Boolean,
+    isReciter: Boolean,
     isResultsState: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -52,7 +54,7 @@ internal fun SearchEmptyState(
         )
 
         Text(
-            text = stringResource(getSubtitleResource(isStartState)),
+            text = stringResource(getSubtitleResource(isStartState, isReciter)),
             style = Theme.typography.body.small,
             textAlign = TextAlign.Center,
             color = Theme.colorScheme.shadeSecondary,
@@ -90,8 +92,12 @@ private fun getTitleResource(isStartState: Boolean): StringResource {
     return if (isStartState) Res.string.start_searching_title else Res.string.no_results_found_title
 }
 
-private fun getSubtitleResource(isStartState: Boolean): StringResource {
-    return if (isStartState) Res.string.start_searching_subtitle else Res.string.no_results_found_subtitle
+private fun getSubtitleResource(isStartState: Boolean, isReciter: Boolean): StringResource {
+    return when {
+        !isStartState -> Res.string.no_results_found_subtitle
+        isReciter -> Res.string.start_searching_subtitle_for_reciter
+        else -> Res.string.start_searching_subtitle_for_ayah
+    }
 }
 
 @Preview
@@ -101,6 +107,7 @@ private fun SearchEmptyStateStartPreview() {
         SearchEmptyState(
             isStartState = true,
             isResultsState = false,
+            isReciter = false,
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -113,6 +120,7 @@ private fun SearchEmptyStateNoResultsPreview() {
         SearchEmptyState(
             isStartState = false,
             isResultsState = true,
+            isReciter = false,
             modifier = Modifier.fillMaxSize()
         )
     }

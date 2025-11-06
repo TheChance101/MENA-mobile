@@ -13,6 +13,7 @@ import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueV
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
+import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearchViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgsImpl
@@ -44,5 +45,6 @@ internal val faithViewModelModule = module {
     viewModelOf(::TilawahViewModel)
     viewModelOf(::CreateMosqueViewModel)
     viewModelOf(::DownloadedSurViewModel)
+    viewModelOf(::ReciterSearchViewModel)
 }
 

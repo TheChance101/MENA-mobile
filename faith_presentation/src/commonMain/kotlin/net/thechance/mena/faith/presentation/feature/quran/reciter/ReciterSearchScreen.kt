@@ -1,8 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,7 +66,8 @@ private fun Content(
             SearchEmptyState(
                 isStartState = state.query.isBlank(),
                 isResultsState = state.searchResults.isEmpty(),
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                isReciter = true
             )
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),
@@ -92,12 +91,7 @@ private fun ResultList(
     if (!shouldShowResults) return
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(
-            horizontal = Theme.spacing._16,
-            vertical = Theme.spacing._12
-        ),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        modifier = modifier.fillMaxWidth().padding(top=Theme.spacing._16),
     ) {
         items(results) { result ->
             ReciterItem(
@@ -105,7 +99,7 @@ private fun ResultList(
                 recitingType = result.recitingType,
                 isDownloaded = result.isDownloaded,
                 onSelect = { onSearchClick(result.id) },
-                isSelectedShown = true
+                isSelectedShown = false
             )
         }
     }

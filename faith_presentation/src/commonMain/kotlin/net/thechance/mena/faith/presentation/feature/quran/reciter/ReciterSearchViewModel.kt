@@ -3,8 +3,14 @@ package net.thechance.mena.faith.presentation.feature.quran.reciter
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.search_reciter
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.toUi
+import org.jetbrains.compose.resources.getString
 
 class ReciterSearchViewModel(
     private val repository: QuranRepository,
@@ -12,16 +18,74 @@ class ReciterSearchViewModel(
 ) : BaseViewModel<ReciterSearchUiState, ReciterSearchEffect>(
     ReciterSearchUiState()
 ), ReciterSearchInteractionListener {
-    override fun onBackClick() = sendEffect(ReciterSearchEffect.NavigateBack)
-    override fun onClearQueryClick() {
-        TODO("Not yet implemented")
+
+    private var searchJob: Job? = null
+
+    init {
+        initializeSearchHint()
     }
 
+    override fun onBackClick() = sendEffect(ReciterSearchEffect.NavigateBack)
+
+    override fun onClearQueryClick() = updateState { it.copy(query = "") }
+
     override fun onQueryChange(query: String) {
-        TODO("Not yet implemented")
+        updateState { it.copy(query = query) }
+        cancelPreviousSearch()
+
+        if (isQueryTooShort(query)) return
+
+        performSearchWithDelay(query)
     }
 
     override fun onSearchResultClick(reciterId: Int) {
-        TODO("Not yet implemented")
+
+    }
+
+    private fun cancelPreviousSearch() {
+        searchJob?.cancel()
+    }
+
+    private fun performSearchWithDelay(query: String) {
+        searchJob = tryToExecute(
+            execute = { searchForReciter(query) },
+            onSuccess = ::onSearchResultSuccess,
+            dispatcher = dispatcher,
+            delayMillis = SEARCH_DEBOUNCE_DELAY
+        )
+    }
+
+    private suspend fun searchForReciter(query: String): List<Reciter> =
+        repository.searchForReciter(query)
+
+    private fun onSearchResultSuccess(reciters: List<Reciter>) {
+        val searchResults = reciters.map { it.toUi() }
+        updateState { it.copy(searchResults = searchResults) }
+    }
+
+    private fun isQueryTooShort(query: String): Boolean {
+        val isTooShort = query.length < MIN_SEARCH_QUERY_LENGTH
+        if (isTooShort) {
+            clearSearchResults()
+        }
+        return isTooShort
+    }
+
+    private fun clearSearchResults() {
+        updateState { it.copy(searchResults = emptyList()) }
+    }
+
+    private fun initializeSearchHint() {
+        tryToExecute(
+            execute = {
+                val hint = getString(Res.string.search_reciter)
+                updateState { it.copy(queryHint = hint) }
+            }
+        )
+    }
+
+    private companion object {
+        const val MIN_SEARCH_QUERY_LENGTH = 2
+        const val SEARCH_DEBOUNCE_DELAY = 1000L
     }
 }
