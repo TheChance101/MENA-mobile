@@ -1,10 +1,8 @@
 package net.thechance.mena.trends.presentation.shared.component
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -22,37 +20,40 @@ fun BaseAsyncImage(
     contentScale: ContentScale,
     modifier: Modifier = Modifier,
     alignment: Alignment = Alignment.Center,
-    callback: () -> String
+    imageCacheKey: String? = null,
+    onRequestRefresh: () -> Unit
 ){
-
-    var currentUrl by remember { mutableStateOf(url) }
-
     val context = LocalPlatformContext.current
 
     val networkHeaders = NetworkHeaders.Builder()
         .set("X-ACCESS-KEY", "something")
         .build()
 
-    val imageRequest = ImageRequest
-        .Builder(context)
-        .httpHeaders(networkHeaders)
-        .data(currentUrl)
-        .build()
+    val imageRequest = remember(url) {
+        ImageRequest
+            .Builder(context)
+            .httpHeaders(networkHeaders)
+            .data(url)
+            .diskCacheKey(imageCacheKey)
+            .memoryCacheKey(imageCacheKey)
+            .build()
+    }
 
-    AsyncImage(
-        model = imageRequest,
-        onError = { error ->
-            val throwable = error.result.throwable
-            if (throwable is HttpException){
-                if (throwable.response.code == 403){
-                    val refreshedUrl = callback()
-                    currentUrl = refreshedUrl
+    key(url){
+        AsyncImage(
+            model = imageRequest,
+            onError = { error ->
+                val throwable = error.result.throwable
+                if (throwable is HttpException){
+                    if (throwable.response.code == 403){
+                        onRequestRefresh()
+                    }
                 }
-            }
-        },
-        alignment = alignment,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        modifier = modifier,
-    )
+            },
+            alignment = alignment,
+            contentDescription = contentDescription,
+            contentScale = contentScale,
+            modifier = modifier,
+        )
+    }
 }
