@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.data.dto.dukan_cart
+package net.thechance.mena.dukan.data.dto.cart
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

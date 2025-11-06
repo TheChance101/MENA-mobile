@@ -1,9 +1,8 @@
 package net.thechance.mena.dukan.domain.repository
 
 import net.thechance.mena.dukan.domain.entity.Cart
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
-import net.thechance.mena.dukan.domain.entity.Cart
-import net.thechance.mena.dukan.domain.entity.ProductCart
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -16,8 +15,7 @@ interface CartRepository {
 
     suspend fun addProductQuantity(params: UpdateProductCartQuantityParams)
 
-    suspend fun deleteProductFromCart(dukanId: String,productId: String)
+    suspend fun deleteProductFromCart(dukanId: String, productId: String)
 
-    suspend fun getCartProducts(dukanId: Uuid, page: Int, size: Int): PagedResult<ProductCart>
-    suspend fun getCartInfo(): Cart
+    suspend fun getCartProducts(dukanId: Uuid, page: Int, size: Int): PagedResult<Product>
 }

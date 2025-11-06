@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.data.dto.product
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.thechance.mena.dukan.domain.entity.ProductCart
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -15,8 +14,6 @@ data class ProductCartDto(
     @SerialName("productName")
     val name: String,
 
-    @SerialName("quantity")
-    val quantity: Int,
     @SerialName("price")
     val price: Double,
 
@@ -27,14 +24,5 @@ data class ProductCartDto(
     val imageUrl: String,
 
     @SerialName("quantity")
-    val quantityInCart: Int,
-)
-@OptIn(ExperimentalUuidApi::class)
-fun ProductCartDto.toProductCart() = ProductCart(
-    id =id,
-    name = name,
-    description = description,
-    quantity = quantity,
-    price = price,
-    imageUrl = imageUrl,
+    val quantityInCart: Int
 )

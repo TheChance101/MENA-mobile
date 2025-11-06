@@ -12,12 +12,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
-import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.DeleteProductImagesRequest
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
-import net.thechance.mena.dukan.data.util.constants.EndPoints.CART_BASE_PATH
 import net.thechance.mena.dukan.data.mapper.toUpdateProductRequest
 import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
@@ -111,18 +109,4 @@ class DukanProductRepositoryImpl(
             client.delete("${PRODUCT_BASE_PATH}/$productId")
         }
     }
-    override suspend fun getProductsCart(
-        dukanId: String,
-        page: Int,
-        size: Int
-    ): PagedResult<Product> {
-        val response: PageResponseDto<ProductCartDto> = safeApiCall {
-            client.get("$CART_BASE_PATH/$dukanId/items") {
-                parameter("page", page)
-                parameter("size", size)
-            }
-        }
-        return response.toDomain(mapper = ProductCartDto::toDomain)
-    }
-
 }

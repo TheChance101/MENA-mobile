@@ -38,7 +38,7 @@ fun ProductDto.toDomain(): Product = Product(
     createdAt = createdAt,
     quantityInCart = quantityInCart,
     shelfId = shelfId
-    )
+)
 
 @OptIn(ExperimentalUuidApi::class)
 fun ProductCartDto.toDomain(): Product = Product(

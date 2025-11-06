@@ -26,7 +26,6 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
-import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
@@ -43,7 +42,6 @@ class DukanCartViewModelTest {
 
     private val cartRepository = mock<CartRepository>(mode = MockMode.autofill)
     private val dukanRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
-    private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     private lateinit var savedStateHandle: SavedStateHandle
@@ -52,7 +50,6 @@ class DukanCartViewModelTest {
     private fun createViewModel() = DukanCartViewModel(
         cartRepository = cartRepository,
         dukanRepository = dukanRepository,
-        productRepository = productRepository,
         savedStateHandle = savedStateHandle,
         defaultDispatcher = testDispatcher
     )
@@ -105,7 +102,7 @@ class DukanCartViewModelTest {
         everySuspend { cartRepository.getCartInfo(dummyDukan().id.toString()) } returns dummyCart()
         everySuspend { dukanRepository.getDukanDetailsByDukanId(dummyDukan().id.toString()) } returns dummyDukan()
         everySuspend {
-            productRepository.getProductsCart(dummyDukan().id.toString(), any(), any())
+            cartRepository.getCartProducts(Uuid.parse(dummyDukan().id.toString()), any(), any())
         } returns dummyPagedProducts()
 
         viewModel = createViewModel()

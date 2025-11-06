@@ -6,10 +6,8 @@ import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createProductRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProductResponseId
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse
-import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultProductCartResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultProductByIdResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
-import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResultProductCart
 import net.thechance.mena.dukan.data.repository.mockEngine.product.dummyImageUrls
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import net.thechance.mena.dukan.domain.model.UpdateProductParams
@@ -172,23 +170,6 @@ class DukanProductRepositoryImplTest {
         )
 
         assertTrue(called, "Expected the mock engine to be called")
-    }
-
-
-    @Test
-    fun `getProductsCart returns mapped products`() = runTest {
-        val repo = createProductRepository(
-            productCartResponse = {
-                defaultProductCartResponse()
-            }
-        )
-        val productsCart = repo.getProductsCart(
-            dukanId = "10",
-            page = 0,
-            size = 10
-        )
-
-        assertEquals(expected = demoPagedResultProductCart, actual = productsCart)
     }
 
 }

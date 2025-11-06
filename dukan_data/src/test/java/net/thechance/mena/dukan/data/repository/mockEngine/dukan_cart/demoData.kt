@@ -1,7 +1,11 @@
 package net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart
 
+import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.cart.CartDto
+import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.mapper.toDomain
+import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -12,3 +16,34 @@ val cartDto = CartDto(
 )
 
 val cart1 = cartDto.toDomain()
+
+@OptIn(ExperimentalUuidApi::class)
+val productCartDto1 = ProductCartDto(
+    id = Uuid.random(),
+    name = "Demo Product 1",
+    price = 9.99,
+    description = "This is a demo product",
+    imageUrl = "https://picsum.photos/200/200?random=1",
+    quantityInCart = 10
+)
+
+@OptIn(ExperimentalUuidApi::class)
+val productCartDto2 = ProductCartDto(
+    id = Uuid.random(),
+    name = "Demo Product 2",
+    price = 9.99,
+    description = "This is a demo product",
+    imageUrl = "https://picsum.photos/200/200?random=1",
+    quantityInCart = 10
+)
+
+
+val demoPagedResultProductCart: PagedResult<Product> = PageResponseDto(
+    content = listOf(productCartDto1, productCartDto2),
+    number = 0,
+    size = 2,
+    totalPages = 1,
+    totalElements = 2,
+    first = true,
+    last = true
+).toDomain { it.toDomain() }

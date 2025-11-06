@@ -20,7 +20,6 @@ import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
-import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -29,11 +28,12 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiStat
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.DukanInfoState
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.ProductUiState
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class DukanCartViewModel(
     private val cartRepository: CartRepository,
     private val dukanRepository: DukanManagementRepository,
-    private val productRepository: ProductRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DukanCartUiState, DukanCartEffects>(
@@ -140,10 +140,11 @@ class DukanCartViewModel(
         )
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun getProductPagingFlow(): Flow<PagingData<ProductUiState>> {
         return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
-            productRepository.getProductsCart(
-                dukanId = dukanId,
+            cartRepository.getCartProducts(
+                dukanId = Uuid.parse(dukanId),
                 page = pageNumber,
                 size = pageSize
             ).items

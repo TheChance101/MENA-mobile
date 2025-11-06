@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class ProductMapperKtTest {
 
     @Test
@@ -59,28 +60,48 @@ class ProductMapperKtTest {
         assertEquals("2025-09-26T15:26:41.300823Z", product.createdAt)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
+
+    private val id = Uuid.random()
+    private val dto = ProductCartDto(
+        id = id,
+        name = "Demo Product",
+        description = "A description",
+        price = 10.5,
+        quantityInCart = 10,
+        imageUrl = "url1"
+    )
+    private val product = dto.toDomain()
+
+
     @Test
-    fun `ProductCartDto toDomain Product maps correctly`() {
-        val id = Uuid.random()
-
-        val dto = ProductCartDto(
-            id = id,
-            name = "Demo Product",
-            description = "A description",
-            price = 10.5,
-            quantityInCart = 10,
-            imageUrl = "url1"
-        )
-
-        val product: Product = dto.toDomain()
-
+    fun `ProductCartDto toDomain id maps correctly`() {
         assertEquals(id, product.id)
-        assertEquals("Demo Product", product.name)
-        assertEquals("A description", product.description)
-        assertEquals(10.5, product.price)
-        assertEquals(listOf("url1"), product.imageUrls)
-        assertEquals(10, product.quantityInCart)
     }
 
+    @Test
+    fun `ProductCartDto toDomain name maps correctly`() {
+        assertEquals("Demo Product", product.name)
+    }
+
+
+    @Test
+    fun `ProductCartDto toDomain description maps correctly`() {
+        assertEquals("A description", product.description)
+    }
+
+    @Test
+    fun `ProductCartDto toDomain price maps correctly`() {
+        assertEquals(10.5, product.price)
+    }
+
+    @Test
+    fun `ProductCartDto toDomain imageUrls maps correctly`() {
+        assertEquals(listOf("url1"), product.imageUrls)
+    }
+
+
+    @Test
+    fun `ProductCartDto toDomain quantityInCart maps correctly`() {
+        assertEquals(10, product.quantityInCart)
+    }
 }

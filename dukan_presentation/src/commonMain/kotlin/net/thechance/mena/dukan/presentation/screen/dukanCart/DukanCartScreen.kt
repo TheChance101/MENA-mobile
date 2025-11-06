@@ -30,7 +30,10 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.effect) {
         when (it) {
             DukanCartEffects.NavigateBack -> navController.popBackStack()
-            is DukanCartEffects.NavigateToCheckout -> {}
+
+            is DukanCartEffects.NavigateToCheckout ->
+                navController.navigate(DukanRoute.CheckoutScreenRoute(it.dukanId))
+
             is DukanCartEffects.NavigateToDukanDetails ->
                 navController.navigate(DukanRoute.DukanDetails(it.dukanId))
         }

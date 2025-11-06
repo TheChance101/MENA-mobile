@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.data.repository.mockEngine.product
 
 
 import net.thechance.mena.dukan.data.dto.PageResponseDto
-import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.entity.Product
@@ -66,56 +65,7 @@ val demoPagedResult: PagedResult<Product> = PageResponseDto(
 ).toDomain { it.toDomain() }
 
 
-@OptIn(ExperimentalUuidApi::class)
-val productCartDto1 = ProductCartDto(
-    id = Uuid.random(),
-    name = "Demo Product 1",
-    price = 9.99,
-    description = "This is a demo product",
-    imageUrl = "https://picsum.photos/200/200?random=1",
-    quantityInCart = 10
-)
-
-@OptIn(ExperimentalUuidApi::class)
-val productCartDto2 = ProductCartDto(
-    id = Uuid.random(),
-    name = "Demo Product 2",
-    price = 9.99,
-    description = "This is a demo product",
-    imageUrl = "https://picsum.photos/200/200?random=1",
-    quantityInCart = 10
-)
-
-
-val demoPagedResultProductCart: PagedResult<Product> = PageResponseDto(
-    content = listOf(productCartDto1, productCartDto2),
-    number = 0,
-    size = 2,
-    totalPages = 1,
-    totalElements = 2,
-    first = true,
-    last = true
-).toDomain { it.toDomain() }
-
 val dummyImageUrls = listOf(
     "http://example.com/image1.jpg",
     "http://example.com/image2.jpg"
-)
-
-@OptIn(ExperimentalUuidApi::class)
-val dummyProductId2: Uuid = Uuid.parse("a1b2c3d4-e5f6-7890-1234-567890abcdef")
-
-@OptIn(ExperimentalUuidApi::class)
-val product1 = Product(
-    id = dummyProductId2,
-    name = "Vintage T-Shirt",
-    description = "A very cool vintage t-shirt.",
-    price = 29.99,
-    imageUrls = listOf(
-        "http://example.com/image1.jpg",
-        "http://example.com/image2.jpg"
-    ),
-    createdAt = "2025-10-31T12:00:00Z",
-    quantityInCart = 10,
-    shelfId = demoShelfID
 )

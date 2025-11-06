@@ -1,7 +1,7 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import net.thechance.mena.dukan.data.dto.cart.CartDto
-import net.thechance.mena.dukan.data.dto.dukan_cart.UpdateProductCartQuantityRequest
+import net.thechance.mena.dukan.data.dto.cart.UpdateProductCartQuantityRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toDto
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams

@@ -15,7 +15,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
-import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
@@ -66,22 +65,6 @@ fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
     headers = jsonHeaders
 )
 
-fun MockRequestHandleScope.defaultProductCartResponse() = respond(
-    content = jsonSerialization.encodeToString(
-        PageResponseDto.serializer(ProductCartDto.serializer()),
-        PageResponseDto(
-            content = listOf(productCartDto1, productCartDto2),
-            number = 0,
-            size = 2,
-            totalPages = 1,
-            totalElements = 2,
-            first = true,
-            last = true
-        )
-    ),
-    status = HttpStatusCode.OK,
-    headers = jsonHeaders
-)
 
 fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = createdProductResponseId) =
     respond(
@@ -99,7 +82,6 @@ fun createProductHttpClient(
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
     val dukanId = "10"
     return HttpClient(MockEngine { request ->
@@ -124,8 +106,6 @@ fun createProductHttpClient(
             )
                 ?: defaultProductDetailsResponse()
 
-            request.url.encodedPath == "/dukan/cart/$dukanId/items" -> productCartResponse?.invoke(this)
-                ?: defaultProductCartResponse()
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
                     request.method.value == "GET" -> productByIdResponse?.invoke(this)
@@ -158,7 +138,6 @@ fun createProductRepository(
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): DukanProductRepositoryImpl {
     return DukanProductRepositoryImpl(
         client = createProductHttpClient(
@@ -166,7 +145,6 @@ fun createProductRepository(
             paginatedResponse = paginatedResponse,
             uploadImagesResponse = uploadImagesResponse,
             productDetailsResponse = productDetailsResponse,
-            productCartResponse = productCartResponse,
             productByIdResponse = productByIdResponse,
             updateResponse = updateResponse,
             deleteResponse = deleteResponse,
