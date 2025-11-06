@@ -117,6 +117,7 @@
     <string name="download_icon_content_description">Download Icon</string>
     <string name="download_app_title">MENA app-download app</string>
     <string name="copy_to_clipboard_success">Copied</string>
+    <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -149,6 +150,7 @@
 
     <string name="upload_another_image">Upload another image</string>
     <string name="image_preview">Image preview</string>
+    <string name="image_crop_failed">Image crop failed</string>
 
     <string name="edit_profile_information">Edit profile information</string>
     <string name="options">Options</string>

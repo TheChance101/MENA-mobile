@@ -36,7 +36,7 @@ internal class NearbyMosquesViewModel(
         getUserLocation()
     }
 
-    private fun getUserLocation() {
+    override fun getUserLocation() {
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
@@ -90,6 +90,17 @@ internal class NearbyMosquesViewModel(
         )
     }
 
+    override fun onBackClick() {
+//        TODO("Not yet implemented")
+    }
+
+    override fun onAddMosqueClick() {
+//        TODO("Not yet implemented")
+    }
+
+    override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
+//        TODO("Not yet implemented")
+        }
     private fun handleSearchSuccess(mosques: List<Mosque>, query: String) {
         if (mosques.isEmpty()) {
             updateState {

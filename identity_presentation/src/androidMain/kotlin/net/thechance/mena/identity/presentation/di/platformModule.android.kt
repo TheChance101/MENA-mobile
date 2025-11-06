@@ -14,10 +14,6 @@ import org.koin.dsl.module
 internal actual fun platformModule(): Module = module {
     single { get<Context>().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
-    single<PermissionController>(named(LOCATION_FOREGROUND)) {
-        LocationForegroundPermission(context = get())
-    }
-
     single<LocalizationService> { LocalizationService(settingsRepository = get()) }
     single<AppLocalizer> (
         createdAtStart = true
@@ -27,4 +23,8 @@ internal actual fun platformModule(): Module = module {
     ) }
 
     single { PermissionManager() }
+
+    single<PermissionController>(named(LOCATION_FOREGROUND)) {
+        LocationForegroundPermission(context = get(), permissionManager = get())
+    }
 }

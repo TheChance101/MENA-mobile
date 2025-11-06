@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,9 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.ic_add
+import mena.faith_presentation.generated.resources.ic_gps
 import mena.faith_presentation.generated.resources.ic_outline_search
+import mena.faith_presentation.generated.resources.icon_location
 import mena.faith_presentation.generated.resources.nearby_mosques
 import mena.faith_presentation.generated.resources.no_nearby_mosques_found
 import mena.faith_presentation.generated.resources.search_area
@@ -69,11 +72,8 @@ internal fun NearbyMosquesScreen(
     mapNavigator: MapNavigator = koinInject(),
     viewModel: NearbyMosquesViewModel = koinViewModel(),
 ) {
-
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-
-
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             NearbyMosquesEffect.NavigateBack -> {
@@ -89,7 +89,6 @@ internal fun NearbyMosquesScreen(
             is NearbyMosquesEffect.NavigateToMap -> mapNavigator.openMapAtCoordinate(coordinate = effect.coordinate)
         }
     }
-
     Content(
         uiState = state,
         listener = viewModel
@@ -229,6 +228,17 @@ private fun Content(
                         .padding(bottom = Theme.spacing._24)
                 )
             }
+            Icon(
+                modifier = Modifier
+                    .padding(Theme.spacing._16)
+                    .clip(shape = RoundedCornerShape(Theme.radius.md))
+                    .background(color = Theme.colorScheme.primary.primary)
+                    .clickable(onClick = listener::getUserLocation)
+                    .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
+                    .align(Alignment.BottomStart),
+                painter = painterResource(Res.drawable.ic_gps),
+                contentDescription = stringResource(Res.string.icon_location)
+            )
         }
     }
 }
@@ -261,7 +271,7 @@ private fun NearbyMosquesScreenPreview() {
         listener = object : NearbyMosquesInteractionListener {
             override fun onBackClick() {}
             override fun onAddMosqueClick() {}
-            override fun onCurrentUserLocationClick() {}
+            override fun getUserLocation() {}
             override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
             override fun onViewOnMapClick(coordinate: Coordinate) {}
             override fun onSearchByCoordinatesClick(coordinate: Coordinate) {}

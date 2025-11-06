@@ -98,6 +98,7 @@
     <string name="download_icon_content_description">أيقونة التنزيل</string>
     <string name="download_app_title">تنزيل تطبيق مينا</string>
     <string name="copy_to_clipboard_success">تم النسخ</string>
+    <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
@@ -134,6 +135,7 @@
     <string name="save">حفظ</string>
     <string name="upload_another_image">رفع صورة أخرى</string>
     <string name="image_preview">عرض الصوره</string>
+    <string name="image_crop_failed">حدث خطأ اثناء قص الصوره</string>
 
     <!-- Change Password Screen -->
     <string name="verify_current_password">تحقق من كلمة المرور الحالية</string>

@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.data.dataSource.local.database
+package net.thechance.mena.identity.data.dataSource.local.memory
 
 expect class ImageCacheManager {
 

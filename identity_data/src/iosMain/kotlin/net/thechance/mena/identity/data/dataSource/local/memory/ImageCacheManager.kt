@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.data.dataSource.local.database
+package net.thechance.mena.identity.data.dataSource.local.memory
 
 import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.NSCache
