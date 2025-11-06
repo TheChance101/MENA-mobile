@@ -7,12 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.composeapp.generated.resources.Res
@@ -43,6 +39,7 @@ import net.thechance.mena.wallet.api.WalletApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
@@ -60,51 +57,54 @@ fun EntryPoint() {
 }
 
 @Composable
-private fun LoggedInContainer() {
-    var activeFeature: Feature by remember { mutableStateOf(Feature.CHAT) }
+private fun LoggedInContainer(
+    viewModel: MainEntryViewModel = koinViewModel()
+) {
+    val activeFeature: Feature by viewModel.activeFeature.collectAsStateWithLifecycle()
     Column(
         Modifier
             .fillMaxSize()
             .background(Theme.colorScheme.background.surfaceLow)
             .navigationBarsPadding()
-            .systemBarsPadding()
-            .background(Theme.colorScheme.background.surfaceHigh)
     ) {
         FeatureContent(activeFeature)
-        BottomNavigationBar {
+
+        BottomNavigationBar(
+            selectedItemIndex = getSelectedNavigationIndex(activeFeature)
+        ) {
             bottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_home_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_home),
                 title = stringResource(Res.string.home),
-                entry = { activeFeature = Feature.CHAT }
+                entry = { viewModel.setActiveFeature(Feature.CHAT) }
             )
 
             bottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_dukan_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_dukan),
                 title = stringResource(Res.string.dukan),
-                entry = { activeFeature = Feature.DUKAN }
+                entry = { viewModel.setActiveFeature(Feature.DUKAN) }
             )
 
             bottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_trends_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_trends),
                 title = stringResource(Res.string.trends),
-                entry = { activeFeature = Feature.TREND }
+                entry = { viewModel.setActiveFeature(Feature.TREND) }
             )
 
             bottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_faith_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_faith),
                 title = stringResource(Res.string.faith),
-                entry = { activeFeature = Feature.FAITH }
+                entry = { viewModel.setActiveFeature(Feature.FAITH) }
             )
 
             bottomNavigationItem(
                 selectedIcon = painterResource(Res.drawable.ic_profile_selected),
                 notSelectedIcon = painterResource(Res.drawable.ic_profile),
                 title = stringResource(Res.string.profile),
-                entry = { activeFeature = Feature.PROFILE }
+                entry = { viewModel.setActiveFeature(Feature.PROFILE) }
             )
         }
     }
@@ -133,6 +133,17 @@ private fun ColumnScope.FeatureContent(activeFeature: Feature) {
     }
 }
 
-private enum class Feature {
+enum class Feature {
     CHAT, DUKAN, TREND, FAITH, PROFILE, WALLET
+}
+
+private fun getSelectedNavigationIndex(activeFeature: Feature): Int {
+    return when (activeFeature) {
+        Feature.CHAT -> 0
+        Feature.DUKAN -> 1
+        Feature.TREND -> 2
+        Feature.FAITH -> 3
+        Feature.PROFILE -> 4
+        Feature.WALLET -> -1 // Not in bottom nav
+    }
 }

@@ -30,7 +30,8 @@
     <string name="create_password">تعيين كلمة المرور</string>
     <string name="create_password_title">إكمال ملفك الشخصي</string>
     <string name="create_password_description">تعيين كلمة المرور</string>
-    <string name="register">التالي</string>
+    <string name="next">التالي</string>
+    <string name="register">تسجيل</string>
     <string name="you_already_have_account">لديك حساب بالفعل؟</string>
     <string name="validation_code">رمز التحقق</string>
     <string name="reset_password">إعادة تعيين كلمة المرور</string>
@@ -70,6 +71,8 @@
     <string name="share_icon_content_description">أيقونة المشاركة</string>
     <string name="link_icon_content_description">أيقونة الرابط</string>
     <string name="download_icon_content_description">أيقونة التنزيل</string>
+    <string name="download_app_title">تنزيل تطبيق مينا</string>
+    <string name="copy_to_clipboard_success">تم النسخ</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
     <string name="enable_location_message">يرجى تفعيل الموقع في الإعدادات لضمان الحصول على أسعار دقيقة في موقعك الحالي.</string>
@@ -107,6 +110,12 @@
     <string name="upload_another_image">رفع صورة أخرى</string>
     <string name="image_preview">عرض الصوره</string>
 
+    <!-- Change Password Screen -->
+    <string name="verify_current_password">تحقق من كلمة المرور الحالية</string>
+    <string name="please_enter_your_password_to_change_it">من فضلك أدخل كلمة المرور الخاصة بك لتتمكن من تغييرها</string>
+    <string name="enter_your_new_password">أدخل كلمة المرور الجديدة</string>
+    <string name="changed_password_successfully">تم تغيير كلمة المرور بنجاح</string>
+
     <!-- Error Messages -->
 
     <string name="error_unknown">حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقًا.</string>
@@ -122,6 +131,7 @@
     <string name="error_invalid_otp">رمز التحقق (OTP) غير صحيح.</string>
     <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
     <string name="error_phone_number_already_exists">رقم الهاتف مسجل بالفعل.</string>
+    <string name="invalid_request_message">بعض المعلومات التي أدخلتها غير صحيحة. يرجى التحقق من البيانات والمحاولة مرة أخرى.</string>
 
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
@@ -129,7 +139,7 @@
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
-    
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">اسم المستخدم مطلوب</string>
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
@@ -137,4 +147,25 @@
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>
+
+    <!-- date picker -->
+    <string name="date_picker_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="date_picker_screen_prompt">اختر تاريخ ميلادك، يُسمح فقط لمن هم بعمر 14 سنة أو أكثر</string>
+
+    <!-- select gender -->
+    <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
+    <string name="select_gender_screen_prompt">اختر جنسك</string>
+
+    <!-- Account Created Successfully -->
+    <string name="success_account_created_title">تم إنشاء حسابك بنجاح!</string>
+    <string name="success_account_created_description">أهلاً بك في مينا! أنت الآن جزء من مجتمعنا ويمكنك البدء في استكشاف التطبيق.</string>
+    <string name="go_to_home">الذهاب للصفحة الرئيسية</string>
+    <string name="ic_account_shield">أيقونة درع الحساب</string>
+
+    <!-- EnterName -->
+    <string name="complete_profile_title">أكمل ملفك الشخصي</string>
+    <string name="complete_profile_description">يرجى ملء بياناتك</string>
+    <string name="first_name_label">الاسم الأول</string>
+    <string name="last_name_label">اسم العائلة</string>
+    <string name="username_label">اسم المستخدم</string>
 </resources>

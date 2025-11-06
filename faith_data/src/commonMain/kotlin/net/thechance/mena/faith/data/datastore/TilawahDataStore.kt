@@ -7,4 +7,7 @@ interface TilawahDataStore {
     suspend fun saveLastAyah(ayah: LastAyahForTilawah)
     val lastAyahFlow: Flow<LastAyahForTilawah?>
     suspend fun getLastAyah(): LastAyahForTilawah?
+
+    suspend fun saveDefaultReciter(reciterId: Int)
+    suspend fun getDefaultReciter(): Flow<Int>
 }

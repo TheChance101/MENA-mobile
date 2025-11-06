@@ -3,16 +3,17 @@ package net.thechance.mena.identity.presentation.screen.profile
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -20,38 +21,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import coil3.compose.rememberAsyncImagePainter
+import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error
-import mena.identity_presentation.generated.resources.ic_close_circle
+import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.profile_title
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
+import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
+import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
-import net.thechance.mena.identity.presentation.screen.profile.components.ShareQrCode
-import net.thechance.mena.identity.presentation.screen.profile.components.bottomSheet.ShareSheet
-import org.jetbrains.compose.resources.painterResource
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-    ProfileScreenViewModel,
-    ProfileScreenUIState,
-    ProfileScreenUIEffect,
-    ProfileScreenInteractionListener>() {
+        ProfileScreenViewModel,
+        ProfileScreenUIState,
+        ProfileScreenUIEffect,
+        ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -64,46 +66,54 @@ class ProfileScreen : BaseScreen<
     ) {
 
         AnimatedVisibility(state.showShareBottomSheet) {
-                    ShareSheet(
-                        title = "MENA app-download app",
-                url = "https://MENA_app.com",
+            ShareSheet(
+                title = stringResource(Res.string.download_app_title),
+                url = state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }
 
-        Scaffold(overlays = {
-                    dialog(state.showLanguageDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissLanguageDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showThemeDialog) {
-                        Dialog(
-                            isVisible = it,
-                            title = "HI",
-                            message = "Not Yet Implemented",
-                            onDismiss = listener::onDismissThemeDialog,
-                            actionButtons = {}
-                        )
-                    }
-                    dialog(state.showShareProfileDialog) {
-                        ShareQrCode(
-                            showDialog = it,
-                            qrCodePainter = rememberAsyncImagePainter(
-                                "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/QR_Code_Example.svg/2048px-QR_Code_Example.svg.png"
-                            ),
-                            onDismiss = listener::onDismissShareProfileDialog,
-                            fullName = state.fullName,
-                            onShareProfile = {},
-                            onClipboardContent = { },
-                            onDownload = {},
-                        )
-                    }
-                }) {
+        Scaffold(
+            overlays = {
+                dialog(state.showLanguageDialog) {
+                    Dialog(
+                        isVisible = it,
+                        title = "HI",
+                        message = "Not Yet Implemented",
+                        onDismiss = listener::onDismissLanguageDialog,
+                        actionButtons = {}
+                    )
+                }
+                dialog(state.showThemeDialog) {
+                    Dialog(
+                        isVisible = it,
+                        title = "HI",
+                        message = "Not Yet Implemented",
+                        onDismiss = listener::onDismissThemeDialog,
+                        actionButtons = {}
+                    )
+                }
+                dialog(state.showShareProfileDialog) {
+                    ShareQrCode(
+                        showDialog = it,
+                        isCopied = state.showCopiedMessage,
+                        fullName = state.fullName,
+                        urlString = state.shareLinkUrl,
+                        qrCodePainter = rememberQrCodePainter(data = state.shareLinkUrl),
+                        onDismissShareDialog = listener::onDismissShareDialog,
+                        onDismissSnackBar = listener::onDismissCopyLinkSnackBar,
+                        onCopyToClipboard = listener::onCopyToClipboard,
+                        onShareProfile = {},
+                        onDownload = {}
+                    )
+                }
+            },
+            snakeBar = {
+                ProfileSnackBar(
+                    snackBarState = state.snackBarUiState,
+                    onDismiss = listener::onDismissSnackBar,
+                )
+            }) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -123,6 +133,20 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     item {
+                        Box {
+                            ProfileImage(
+                                profileImageUrl = state.profileImageUrl,
+                                profileImageBitmap = null
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .padding(end = 15.dp, bottom = 3.dp)
+                                    .align(Alignment.BottomEnd)
+                                    .size(10.dp)
+                                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                    .background(Theme.colorScheme.success, CircleShape)
+                            )
+                        }
                         AnimatedVisibility(
                             visible = state.isSuccess,
                             enter = expandVertically(),
@@ -130,11 +154,10 @@ class ProfileScreen : BaseScreen<
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             ProfileInfoContainer(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                profilePicture = state.profileImageUrl,
                                 fullName = state.fullName,
                                 userName = state.userName,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
                             )
                         }
                     }
@@ -174,21 +197,6 @@ class ProfileScreen : BaseScreen<
                     }
                 }
 
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it }),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SnackBar(
-                        title = stringResource(Res.string.error),
-                        message = stringResource(state.errorMessage!!),
-                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-                            .padding(horizontal = Theme.spacing._16)
-                    )
-                }
-
                 LaunchedEffect(state.errorMessage) {
                     delay(3000)
                     listener.clearErrorMessage()
@@ -213,8 +221,8 @@ class ProfileScreen : BaseScreen<
                 navigator.push(NotImplementedScreen())
             }
 
-            ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {
-                navigator.push(NotImplementedScreen())
+            is ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {
+                navigator.push(ChangePasswordScreen(effect.onSuccess))
             }
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {

@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +33,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
@@ -56,9 +57,13 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
+import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -75,7 +80,7 @@ internal fun ManageTrendsScreen(
         when (effect) {
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
-                navController.navigate(Route.ReelDetails(effect.reelId))
+                navController.navigate(Route.ReelDetails(effect.reelId, UserReelSource.MANAGE_MY_TRENDS))
             }
         }
     }
@@ -97,24 +102,27 @@ private fun ManageTrendsScreenContent(
 ) {
     Scaffold(
         topBar = {
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.isLoading.not(),
-                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) })
+                content = { ManageMyTrendsAppBar(onBackClick = listener::onClickBack) }
+            )
         },
         content = {
-            AnimatedVisibility(
-                visible = state.isLoading,
+            val reels = state.reels.collectAsLazyPagingItems()
+
+            TrendsAnimatedVisibility(
+                visible = reels.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.error == ErrorState.NoInternet,
                 content = { NoConnection { listener.onClickRetry() } }
             )
 
-            AnimatedVisibility(
+            TrendsAnimatedVisibility(
                 visible = state.error == null && state.isLoading.not(),
-                content = { ManageTrendsScreenBody(listener, state) }
+                content = { ManageTrendsScreenBody(listener, state, reels) }
             )
         }
     )
@@ -123,10 +131,13 @@ private fun ManageTrendsScreenContent(
 @Composable
 private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
-    state: ManageTrendsScreenState
+    state: ManageTrendsScreenState,
+    reels: LazyPagingItems<ReelUiState>
 ) {
-    val reels = state.reels.collectAsLazyPagingItems()
     val cardWidth = 106.dp
+    val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
+            reels.loadState.refresh is LoadState.NotLoading &&
+            reels.loadState.refresh.toErrorState() == null
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = cardWidth),
@@ -200,12 +211,21 @@ private fun ManageTrendsScreenBody(
             return@LazyVerticalGrid
         }//temporary until we make implementation for it
 
-        items(key = reels.itemKey(), count = reels.itemCount) { index ->
-            reels[index]?.let { reel ->
-                TrendItem(
-                    item = reel,
-                    onTrendClick = listener::onClickReel
-                )
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            TrendsAnimatedVisibility(
+                visible = shouldShowEmptyState,
+                content = { EmptyTrends(modifier = Modifier.padding(top = 74.dp)) }
+            )
+        }
+
+        if (reels.itemSnapshotList.isNotEmpty()) {
+            items(key = reels.itemKey(), count = reels.itemCount) { index ->
+                reels[index]?.let { reel ->
+                    TrendItem(
+                        item = reel,
+                        onTrendClick = listener::onClickReel
+                    )
+                }
             }
         }
     }
@@ -253,7 +273,7 @@ private fun TrendItem(
         contentAlignment = Alignment.Center
 
     ) {
-        AnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
             AsyncImage(
                 model = item.thumbnailUrl,
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
@@ -262,7 +282,7 @@ private fun TrendItem(
             )
         }
 
-        AnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),

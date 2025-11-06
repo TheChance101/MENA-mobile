@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
@@ -17,6 +18,7 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScre
 import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
 
 @Composable
 fun FaithNavigation() {
@@ -55,6 +57,12 @@ fun FaithNavigation() {
                 }
                 composable<Route.NearbyMosquesRoute> {
                     NearbyMosquesScreen()
+                }
+                composable<Route.TilawahRoute> {
+                    DownloadedSurScreen()
+                }
+                composable<Route.DownloadedRecitersRoute> {
+                    DownloadedReciterScreen()
                 }
             }
         }

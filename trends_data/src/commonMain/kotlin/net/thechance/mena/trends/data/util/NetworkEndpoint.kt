@@ -9,9 +9,6 @@ internal object NetworkEndpoint {
     const val VIEW_REEL_ENDPOINT = "view"
     const val CATEGORIES_ENDPOINT = "$TRENDS_PATH/categories"
     const val PROFILE_REELS_ENDPOINT = "$TRENDS_PATH/user"
-    const val IDENTITY_PATH = "identity"
-    const val PROFILE_ENDPOINT = "$IDENTITY_PATH/profile"
-    const val USER_INFO_ENDPOINT = "$PROFILE_ENDPOINT/me"
 
     // Parameters
     const val PAGE_PARAMETER = "page"

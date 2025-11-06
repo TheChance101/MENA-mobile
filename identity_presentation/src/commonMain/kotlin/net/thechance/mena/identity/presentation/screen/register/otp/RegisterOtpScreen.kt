@@ -119,7 +119,6 @@ data class RegisterOtpScreen(
         navigator: Navigator
     ) {
         when (effect) {
-            RegisterOtpUIEffect.NavigateBack -> navigator.pop()
             is RegisterOtpUIEffect.NavigateToCreatePassword -> {
                 navigator.push(CreatePasswordScreen())
             }
@@ -152,7 +151,6 @@ fun PreviewRegisterOtpScreen() {
                 isResendEnabled = false
             ),
             listener = object : RegisterOtpInteractionListener {
-                override fun onClickBack() {}
                 override fun onClickVerify() {}
                 override fun onClickResend() {}
                 override fun onChangeOtp(otp: String) {}

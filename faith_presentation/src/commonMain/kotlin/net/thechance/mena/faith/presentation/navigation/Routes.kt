@@ -31,6 +31,14 @@ internal sealed interface Route {
 
     @Serializable
     data object NearbyMosquesRoute : Route
+    @Serializable
+    data object TilawahRoute : Route
+
+    @Serializable
+    data object DownloadedRecitersRoute : Route
+
+    @Serializable
+    data object UserAddresses : Route
 
     @Serializable
     data class SearchRoute(
