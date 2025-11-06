@@ -27,6 +27,7 @@ internal fun mapAuthenticationErrorToMessage(error: AuthenticationErrorState): S
         AuthenticationErrorState.PhoneNumberAlreadyExists -> Res.string.error_phone_number_already_exists
         AuthenticationErrorState.NoNetwork -> Res.string.error_no_network
         AuthenticationErrorState.InvalidRequest -> Res.string.error_bad_request
+        AuthenticationErrorState.IncorrectPassword -> TODO()
         is AuthenticationErrorState.SomethingWentWrong -> Res.string.error_something_went_wrong
     }
 }
