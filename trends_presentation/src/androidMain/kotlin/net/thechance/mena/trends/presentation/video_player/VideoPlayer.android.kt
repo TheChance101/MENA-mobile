@@ -42,7 +42,7 @@ import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
@@ -61,8 +61,9 @@ actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    cacheKey: String?,
     onVideoPlaying: () -> Unit,
-    onGetRefreshUrl: () -> String,
+    onRequestRefresh: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -78,15 +79,17 @@ actual fun VideoPlayer(
         )
         .build()
 
-    val source = DefaultHttpDataSource.Factory()
+    val source = remember {
+        DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to "something"))
+    }
 
-    var currentUrl by remember(url) { mutableStateOf(url) }
 
-    source.setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to "something"))
-
-    val mediaSource = remember(currentUrl) {
-        ProgressiveMediaSource.Factory(source)
-            .createMediaSource(MediaItem.fromUri(currentUrl))
+    val mediaItem = remember(url) {
+        MediaItem.Builder()
+            .setUri(url)
+            .setCustomCacheKey(cacheKey)
+            .build()
     }
 
     var isLoading by remember { mutableStateOf(true) }
@@ -111,6 +114,9 @@ actual fun VideoPlayer(
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(source)
+            )
             .build().apply {
                 setSeekParameters(SeekParameters.EXACT)
                 repeatMode = Player.REPEAT_MODE_ONE
@@ -118,12 +124,13 @@ actual fun VideoPlayer(
                 addListener(object : Player.Listener {
                     override fun onPlayerError(error: PlaybackException) {
                         val cause = error.cause
-                        if (cause is HttpDataSource.InvalidResponseCodeException){
-                            if (cause.responseCode == 403){
-                                currentUrl = onGetRefreshUrl()
+                        if (cause is HttpDataSource.InvalidResponseCodeException) {
+                            if (cause.responseCode == 403) {
+                                onRequestRefresh()
                             }
                         } else super.onPlayerError(error)
                     }
+
                     override fun onPlaybackStateChanged(state: Int) {
                         isLoading = when (state) {
                             Player.STATE_IDLE -> true
@@ -145,23 +152,20 @@ actual fun VideoPlayer(
             }
     }
 
-    LaunchedEffect(currentUrl, mediaSource) {
-        if (currentUrl != url) {
-            val currentPosition = exoPlayer.currentPosition
-            val wasPlaying = exoPlayer.isPlaying
-
-            exoPlayer.replaceMediaItem(0, MediaItem.fromUri(currentUrl))
-            exoPlayer.seekTo(currentPosition)
-
-            if (wasPlaying) {
-                exoPlayer.play()
-            }
+    LaunchedEffect(url) {
+        val savedPosition = exoPlayer.currentPosition
+        exoPlayer.setMediaItem(mediaItem, false)
+        exoPlayer.prepare()
+        exoPlayer.seekTo(savedPosition)
+        if (isReelVisible) {
+            exoPlayer.playWhenReady = true
+            exoPlayer.play()
         }
     }
 
     LaunchedEffect(isReelVisible) {
         if (isReelVisible) {
-            exoPlayer.setMediaSource(mediaSource)
+            exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true

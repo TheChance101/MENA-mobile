@@ -262,6 +262,7 @@ private fun ReelContent(
         url = reel.videoUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount,
+        cacheKey = reel.id,
         onRequestRefresh = { onGetRefreshUrl(reel.id) }
     ) {
         BoxWithConstraints(

@@ -70,8 +70,9 @@ actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    cacheKey: String?,
     onVideoPlaying: () -> Unit,
-    onGetRefreshUrl: () -> String,
+    onRequestRefresh: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -147,7 +148,7 @@ actual fun VideoPlayer(
                 if (error != null) {
                     if (error.code == NSURLErrorBadServerResponse ||
                         error.domain == "NSURLErrorDomain") {
-                        currentUrl = onGetRefreshUrl()
+                        onRequestRefresh()
                     }
                 }
             }
