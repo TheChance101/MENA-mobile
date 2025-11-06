@@ -21,7 +21,8 @@ class ProductDetailsMapperTest {
             price = 10.0,
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = null
         )
 
         val uiState = product.toUiState()

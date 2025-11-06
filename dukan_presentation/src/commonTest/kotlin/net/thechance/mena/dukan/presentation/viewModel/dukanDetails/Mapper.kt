@@ -70,7 +70,6 @@ class DukanDetailsMapperTest {
          assertEquals(15000.0, uiState.price, 0.0)
          assertEquals("img.png", uiState.imageUrl)
          assertEquals(0, uiState.inCartQuantity)
-         assertEquals(1, uiState.inCartQuantity)
     }
 
     @Test

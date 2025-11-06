@@ -84,7 +84,8 @@ class DukanCartViewModelTest {
         price = 200.0,
         imageUrls = listOf("phone.png"),
         createdAt = "2025-10-10T12:00:00Z",
-        quantityInCart = 2
+        quantityInCart = 2,
+        shelfId = null
     )
 
     private fun dummyPagedProducts() = PagedResult(

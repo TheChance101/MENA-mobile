@@ -19,7 +19,8 @@ class DukanCartMapperTest {
             price = 999.99,
             imageUrls = listOf("headphones.png"),
             quantityInCart = 2,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = null
         )
 
         val uiState = product.toUiState()
@@ -41,7 +42,8 @@ class DukanCartMapperTest {
             price = 50.0,
             imageUrls = emptyList(),
             quantityInCart = 1,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = null
         )
 
         val uiState = product.toUiState()
