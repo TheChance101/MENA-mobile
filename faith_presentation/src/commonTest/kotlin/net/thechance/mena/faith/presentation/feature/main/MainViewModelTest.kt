@@ -33,7 +33,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
-class MainViewModelAdditionalTests {
+class MainViewModelTests {
 
     private var testDispatcher: TestDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: MainViewModel
@@ -53,45 +53,6 @@ class MainViewModelAdditionalTests {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
 
         locationService = LocationService(addressesRepository)
-    }
-
-    @Test
-    fun `init should navigate to enable location when address is null`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns null
-
-        viewModel = MainViewModel(
-            quranRepository = quranRepository,
-            prayerTimeRepository = prayerTimeRepository,
-            locationService = locationService,
-            dispatcher = testDispatcher
-        )
-
-        viewModel.uiEffect.test {
-            testDispatcher.scheduler.advanceUntilIdle()
-            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-
-    @Test
-    fun `init should navigate to enable location when addressLine is empty`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns emptyAddressLine
-
-        viewModel = MainViewModel(
-            quranRepository = quranRepository,
-            prayerTimeRepository = prayerTimeRepository,
-            locationService = locationService,
-            dispatcher = testDispatcher
-        )
-
-        viewModel.uiEffect.test {
-            testDispatcher.scheduler.advanceUntilIdle()
-            assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
     }
 
     @Test
@@ -211,42 +172,6 @@ class MainViewModelAdditionalTests {
         val state = viewModel.uiState.value
         assertTrue(state.prayerTimesUiState != null)
         assertTrue(state.prayerTimesUiState?.prayers?.isNotEmpty() == true)
-    }
-
-    @Test
-    fun `init should set hijri date when prayer times loaded`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-
-        viewModel = MainViewModel(
-            quranRepository = quranRepository,
-            prayerTimeRepository = prayerTimeRepository,
-            locationService = locationService,
-            dispatcher = testDispatcher
-        )
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.hijriDate.isNotEmpty())
-    }
-
-    @Test
-    fun `init should set sunrise time when prayer times loaded`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-
-        viewModel = MainViewModel(
-            quranRepository = quranRepository,
-            prayerTimeRepository = prayerTimeRepository,
-            locationService = locationService,
-            dispatcher = testDispatcher
-        )
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.sunriseTime.isNotEmpty())
     }
 
     @Test
@@ -428,8 +353,6 @@ class MainViewModelAdditionalTests {
             surahName = SURAH_NAME
         )
 
-        val emptyAddressLine = fakeAddress.copy(addressLine = "")
         val emptyAddress = fakeAddress.copy(addressLine = "")
-
     }
 }

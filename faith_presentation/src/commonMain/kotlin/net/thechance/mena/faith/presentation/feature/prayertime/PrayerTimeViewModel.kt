@@ -34,7 +34,8 @@ class PrayerTimeViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { sendEffect(PrayerTimeEffect.NavigateToAddressesScreen) }
+            onError = { sendEffect(PrayerTimeEffect.NavigateToAddressesScreen) },
+            dispatcher = dispatcher
         )
     }
 

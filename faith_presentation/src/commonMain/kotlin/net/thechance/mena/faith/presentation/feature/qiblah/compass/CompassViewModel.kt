@@ -29,7 +29,8 @@ class CompassViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { sendEffect(CompassEffect.NavigateToAddressesScreen) }
+            onError = { sendEffect(CompassEffect.NavigateToAddressesScreen) },
+            dispatcher = dispatcher
         )
     }
 

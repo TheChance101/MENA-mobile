@@ -34,7 +34,8 @@ class MainViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { sendEffect(MainScreenEffect.NavigateToAddressesScreen) }
+            onError = { sendEffect(MainScreenEffect.NavigateToAddressesScreen) },
+            dispatcher = dispatcher
         )
     }
 
