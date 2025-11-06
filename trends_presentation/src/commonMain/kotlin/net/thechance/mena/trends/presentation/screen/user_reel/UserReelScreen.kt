@@ -254,7 +254,7 @@ private fun ReelContent(
     onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     onPublisherInfoClick: () -> Unit,
     incrementViewsCount: () -> Unit,
-    onGetRefreshUrl: (String) -> String,
+    onGetRefreshUrl: (String) -> Unit,
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
@@ -262,7 +262,7 @@ private fun ReelContent(
         url = reel.videoUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount,
-        onGetRefreshUrl = { onGetRefreshUrl(reel.id) }
+        onRequestRefresh = { onGetRefreshUrl(reel.id) }
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()

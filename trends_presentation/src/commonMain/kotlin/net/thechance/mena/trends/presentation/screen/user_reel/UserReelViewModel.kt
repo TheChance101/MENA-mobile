@@ -109,8 +109,17 @@ internal class UserReelViewModel(
         }
     }
 
-    override fun onGetRefreshVideoUrl(reelId: String): String {
-        return "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    override fun onGetRefreshVideoUrl(reelId: String) {
+        tryToExecute(
+            block = { reelsRepository.getReelUrls(reelId).videoUrl },
+            onSuccess = { refreshedUrl ->
+                state.value.reelsStateFlow.value =
+                    state.value.reelsStateFlow.value.map { reel ->
+                        reel.takeIf { it.id != reelId }
+                            ?: reel.copy(videoUrl = refreshedUrl)
+                    }
+            },
+        )
     }
 
     private fun onLikeClickFailed(reelId: String) {
