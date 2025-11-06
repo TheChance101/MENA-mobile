@@ -10,17 +10,48 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
         initialState = NearbyMosquesMapUiState(),
     ), NearbyMosquesInteractionListener {
 
+    init {
+        getUserLocation()
+    }
+
     private var searchJob: Job? = null
+
+    private fun getUserLocation() {
+        tryToExecute(
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen) }
+        )
+    }
+
+    private fun onGetUserLocationSuccess(address: Address) {
+        tryToExecute(
+            execute = {
+                mosqueRepository.getNearbyMosques(
+                    latitude = address.latitude,
+                    longitude = address.longitude,
+                    radius = 1.0
+                )
+            },
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onSuccess = ::handleNearbyMosquesSuccess,
+            onFinally = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+
+        )
+    }
 
     override fun onBackClick() {
 //        TODO("Not yet implemented")
@@ -104,7 +135,6 @@ internal class NearbyMosquesViewModel(
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun handleNearbyMosquesSuccess(mosques: List<Mosque>) {
         if (mosques.isEmpty()) {
             viewModelScope.launch {
@@ -124,7 +154,6 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun handleSearchSuccess(mosques: List<Mosque>) {
         updateState {
             it.copy(

@@ -22,8 +22,8 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.component.AddressCard
-import net.thechance.mena.identity.presentation.screen.addresses.component.MyAddressesAppBar
+import net.thechance.mena.identity.presentation.screen.addresses.components.AddressCard
+import net.thechance.mena.identity.presentation.screen.addresses.components.MyAddressesAppBar
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi

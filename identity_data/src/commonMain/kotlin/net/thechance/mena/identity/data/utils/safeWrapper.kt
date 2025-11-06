@@ -5,6 +5,7 @@ import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.network.UnresolvedAddressException
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
+import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
@@ -20,6 +21,7 @@ suspend fun <T> safeWrapper(block: suspend () -> T): T {
             HttpStatusCode.NotFound -> throw InvalidCredentialsException()
             HttpStatusCode.Forbidden -> throw UserIsBlockedException()
             HttpStatusCode.TooManyRequests -> throw TooManyRequestsException()
+            HttpStatusCode.BadRequest -> throw InvalidRequestException()
             else -> throw UnknownException()
         }
     } catch (e: Exception) {

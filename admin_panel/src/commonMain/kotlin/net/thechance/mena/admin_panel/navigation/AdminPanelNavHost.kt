@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +11,7 @@ import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementsScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreen
 import net.thechance.mena.admin_panel.presentation.screen.login.LoginScreen
-import net.thechance.mena.admin_panel.presentation.screen.user_managements.UserManagementScreen
+import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreen
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("Admin NavController not provided")
@@ -18,10 +19,10 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
 
 @Composable
 fun AdminPanelNavHost(
+    isUserLoggedIn: Boolean,
     navController: NavHostController = rememberNavController(),
-    isUserLoggedIn: Boolean
+    modifier: Modifier = Modifier
 ) {
-
     NavHost(
         navController = navController,
         startDestination = if (isUserLoggedIn) UsersManagement else Login
@@ -30,16 +31,16 @@ fun AdminPanelNavHost(
             LoginScreen()
         }
         composable<UsersManagement> {
-            UserManagementScreen()
+            UsersManagementScreen()
         }
         composable<Deposit> {
-            DepositScreen()
+            DepositScreen(modifier)
         }
         composable<DukanRequests> {
-            DukanRequestsScreen()
+            DukanRequestsScreen(modifier)
         }
         composable<DukanManagement> {
-            DukanManagementsScreen()
+            DukanManagementsScreen(modifier)
         }
     }
 }

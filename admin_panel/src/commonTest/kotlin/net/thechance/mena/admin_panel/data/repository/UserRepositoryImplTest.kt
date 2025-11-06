@@ -17,10 +17,9 @@ import net.thechance.mena.admin_panel.data.remote.dto.PagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.user.UserResponse
 import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.repository.user.UserRepositoryImpl
-import net.thechance.mena.admin_panel.domain.entity.user.Status
+import net.thechance.mena.admin_panel.domain.entity.user.User
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
-import net.thechance.mena.admin_panel.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.domain.model.SortType
 import net.thechance.mena.admin_panel.domain.model.UserQueryParams
@@ -76,8 +75,8 @@ class UserRepositoryImplTest {
             )
         )
 
-        assertEquals(1, result.size)
-        assertEquals("Test", result.first().firstName)
+        assertEquals(1, result.items.size)
+        assertEquals("Test", result.items.first().firstName)
     }
 
 
@@ -88,7 +87,7 @@ class UserRepositoryImplTest {
         } throws IOException("No internet")
 
         assertFailsWith<NoInternetException> {
-            userRepository.getUsers(null).first()
+            userRepository.getUsers(null).items.first()
         }
     }
 
@@ -99,7 +98,7 @@ class UserRepositoryImplTest {
         } returns unauthorizedResponse()
 
         val exception = assertFailsWith<UnauthorizedException> {
-            userRepository.getUsers(null).first()
+            userRepository.getUsers(null).items.first()
         }
 
         assertTrue(exception.message?.contains("Unauthorized") == true)
@@ -109,7 +108,7 @@ class UserRepositoryImplTest {
     @Test
     fun `updateUserStatus should call api with correct parameters`() = runTest {
         val fakeUuid = Uuid.random()
-        val status = Status.ACTIVE
+        val status = User.Status.ACTIVE
 
         everySuspend {
             userApiService.updateUserStatus(any(), any())
