@@ -130,12 +130,16 @@ internal class HomeViewModel(
         tryToExecute(
             block = { repository.getReelUrls(reelId).thumbnailUrl },
             onSuccess = { refreshedUrl ->
-                state.value.reelsStateFlow.value =
-                    state.value.reelsStateFlow.value.map { reel ->
-                        reel.takeIf { it.id != reelId }
-                            ?: reel.copy(thumbnailUrl = refreshedUrl)
-                    }
+                onGetRefreshedThumbnailSuccess(refreshedUrl, reelId)
             },
         )
+    }
+
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String){
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(thumbnailUrl = refreshedUrl)
+            }
     }
 }

@@ -113,13 +113,17 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.getReelUrls(reelId).videoUrl },
             onSuccess = { refreshedUrl ->
-                state.value.reelsStateFlow.value =
-                    state.value.reelsStateFlow.value.map { reel ->
-                        reel.takeIf { it.id != reelId }
-                            ?: reel.copy(videoUrl = refreshedUrl)
-                    }
+                onGetRefreshVideoUrl(refreshedUrl, reelId)
             },
         )
+    }
+
+    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String){
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(videoUrl = refreshedUrl)
+            }
     }
 
     private fun onLikeClickFailed(reelId: String) {
