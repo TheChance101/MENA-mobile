@@ -1,10 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.main
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,12 +20,15 @@ import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -33,6 +38,7 @@ class MainViewModelTest {
     private lateinit var dukanDiscoveryRepository: DukanDiscoveryRepository
     private val testDispatcher = StandardTestDispatcher()
 
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -42,6 +48,12 @@ class MainViewModelTest {
         everySuspend { dukanManagementRepository.getCategories() } returns emptyList()
         mainViewModel =
             MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
+        everySuspend {
+            dukanManagementRepository.updateFavoriteDukanStatus(
+                fakeDukans[0].id.toString()
+            )
+        } returns true
+
     }
 
     @Test
@@ -52,10 +64,10 @@ class MainViewModelTest {
             dukanDiscoveryRepository = dukanDiscoveryRepository,
             dispatcher = testDispatcher
         )
+        advanceUntilIdle()
 
         mainViewModel.state.test {
-            awaitItem() // initial Loading state
-            val updated = awaitItem() // state after repository returns null
+            val updated = awaitItem()
             assertEquals(
                 expected = MainScreenUiState.DukanState(
                     name = "",
@@ -80,9 +92,9 @@ class MainViewModelTest {
                 dukanDiscoveryRepository = dukanDiscoveryRepository,
                 dispatcher = testDispatcher
             )
+            advanceUntilIdle()
 
             mainViewModel.state.test {
-                awaitItem()
                 val secondEmit = awaitItem()
                 assertEquals(
                     expected = MainScreenUiState.DukanState(
@@ -100,6 +112,7 @@ class MainViewModelTest {
         runTest {
             everySuspend { dukanManagementRepository.getMyDukanStatus() } throws NoSuchItemException()
 
+            advanceUntilIdle()
             mainViewModel.state.test {
                 val result = awaitItem()
                 assertEquals(
@@ -115,6 +128,13 @@ class MainViewModelTest {
     @Test
     fun `When the user doesnt have Dukan and clicks on the Dukan button, then it should emit NavigateToAddDukanScreen`() =
         runTest {
+            mainViewModel.updateState {
+                copy(
+                    dukanState = MainScreenUiState.DukanState(
+                        status = MainScreenUiState.DukanStatusUi.None
+                    )
+                )
+            }
             mainViewModel.onDukanButtonClicked()
 
             mainViewModel.effect.test {
@@ -196,23 +216,23 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `onViewMoreButtonClick SHOULD emit NavigateCategoryToScreen`() = runTest {
+    fun `onViewMoreButtonClick SHOULD emit NavigateToDukansCategoriesScreen`() = runTest {
 
         mainViewModel.onViewMoreClicked()
         val actualEffect = mainViewModel.effect.first()
-        val expectedEffect = MainScreenEffect.NavigateCategoryToScreen
+        val expectedEffect = MainScreenEffect.NavigateToDukansCategoriesScreen
 
         assertEquals(expectedEffect, actualEffect)
 
     }
 
     @Test
-    fun `onCategorySelectedClick SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
+    fun `onSelectedCategoryClicked SHOULD emit NavigateToDukansScreenByCategory with correct categoryId`() =
         runTest {
             val categoryId = "1"
             val categoryName = "Category 1"
 
-            mainViewModel.onCategorySelectedClicked(categoryId, categoryName)
+            mainViewModel.onSelectedCategoryClicked(categoryId, categoryName)
             val actualEffect = mainViewModel.effect.first()
             val expectedEffect =
                 MainScreenEffect.NavigateToDukansScreenByCategory(categoryId, categoryName)
@@ -220,26 +240,26 @@ class MainViewModelTest {
         }
 
     @Test
-    fun `onNearestDukanClick should emit NavigateSelectedNearsetDukan effect with correct dukanId`() =
+    fun `onNearestDukanClick should emit NavigateToSelectedDukan effect with correct dukanId`() =
         runTest {
             val dukanId = "1"
 
             mainViewModel.onNearestDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)
+            val expectedEffect = MainScreenEffect.NavigateToSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 
     @Test
-    fun `onEditorPickDukanClick should emit NavigateSelectedDukan effect with correct dukanId`() =
+    fun `onEditorPickDukanClick should emit NavigateToSelectedDukan effect with correct dukanId`() =
         runTest {
             val dukanId = "1"
 
             mainViewModel.onEditorPickDukanClicked(dukanId)
 
             val actualEffect = mainViewModel.effect.first()
-            val expectedEffect = MainScreenEffect.NavigateSelectedDukan(dukanId)
+            val expectedEffect = MainScreenEffect.NavigateToSelectedDukan(dukanId)
             assertEquals(expectedEffect, actualEffect)
         }
 
@@ -270,4 +290,54 @@ class MainViewModelTest {
             }
         }
 
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onFavoriteDukanClicked should toggle isFavorite`() = runTest {
+        val fakeDukan1 = fakeDukans[0]
+
+        everySuspend {
+            dukanDiscoveryRepository.getEditorPicksDukans(
+                any(),
+                any()
+            )
+        } returns PagedResult(
+            items = listOf(fakeDukan1),
+            currentPage = 1,
+            totalItems = 1,
+            pageSize = 10,
+            totalPages = 1
+        )
+
+        mainViewModel =
+            MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
+        advanceUntilIdle()
+
+        mainViewModel.onFavoriteDukanClicked(fakeDukan1.id.toString())
+        advanceUntilIdle()
+
+        val updatedDukan1 = mainViewModel.state.value.editorPickDukans.asSnapshot()
+        assertEquals(true, updatedDukan1[0].isFavorite)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    val fakeDukans = listOf(
+        Dukan(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
+            name = "Tech Hub",
+            imageUrl = "https://example.com/tech.jpg",
+            categories = emptySet(),
+            isFavorite = false,
+            coordinates = Dukan.Coordinates(
+                latitude = 12.34,
+                longitude = 56.78
+            ),
+            address = "123 Tech Street",
+            status = Dukan.Status.PENDING,
+            color = net.thechance.mena.dukan.domain.entity.Color(
+                id = Uuid.random(),
+                hexCode = "#FF5733"
+            ),
+            style = Dukan.Style.WIDE_IMAGE
+        )
+    )
 }

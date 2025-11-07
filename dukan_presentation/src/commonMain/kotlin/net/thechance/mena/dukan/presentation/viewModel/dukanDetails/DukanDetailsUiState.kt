@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
@@ -11,11 +12,16 @@ data class DukanDetailsUiState(
     val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelfIdSelected: String? = null,
-    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING
+    val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
+    val snackBarState: SnackBarUiState? = null,
+    val totalPrice: Double = 0.0
 ) {
     data class DukanInfo(
+        val dukanId: String = "",
         val name: String = "",
         val imageUrl: String = "",
+        val isFavorite: Boolean = false,
+
         val style: Style = Style.NO_IMAGE,
         val color: Long = 0L,
         val coordinates: Coordinates = Coordinates(),
@@ -36,7 +42,6 @@ data class DukanDetailsUiState(
         val id: String = "",
         val name: String = "",
         val products: List<ProductUiState> = emptyList(),
-        val showProductQuantity: Boolean = false,
         val isProductsLoaded: Boolean = false
     )
 
@@ -47,7 +52,8 @@ data class DukanDetailsUiState(
         val imageUrl: String = "",
         val price: Double = 0.0,
         val description: String = "",
-        val inCartQuantity: Int = 0
+        val showProductQuantity: Boolean = false,
+        val inCartQuantity: Int = 1
     )
 
     enum class DukanDetailsState {

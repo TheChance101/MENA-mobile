@@ -10,6 +10,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import net.thechance.mena.admin_panel.navigation.LocalNavController
+import net.thechance.mena.admin_panel.navigation.Login
+import net.thechance.mena.admin_panel.navigation.UsersManagement
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginHeader
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginScaffold
 import net.thechance.mena.admin_panel.presentation.screen.login.component.PasswordInputField
@@ -25,10 +29,11 @@ import org.koin.compose.viewmodel.koinViewModel
 internal fun LoginScreen(viewModel: LoginViewModel = koinViewModel()) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val adminPanelNavController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
-        onEffect = { effect -> onLoginEffect(effect) }
+        onEffect = { effect -> onLoginEffect(effect, adminPanelNavController) }
     )
 
     LoginScreenContent(state = state, interactionListener = viewModel)
@@ -39,7 +44,7 @@ private fun LoginScreenContent(
     state: LoginScreenState,
     interactionListener: LoginInteractionListener
 ) {
-    LoginScaffold(snackBarState = state.snackBar){
+    LoginScaffold(snackBarState = state.snackBar) {
         LoginHeader(modifier = Modifier.padding(top = 64.dp))
         Column(modifier = Modifier.padding(top = 40.dp)) {
             UsernameInputField(
@@ -67,8 +72,15 @@ private fun LoginScreenContent(
     }
 }
 
-private fun onLoginEffect(effect: LoginEffect) {
+private fun onLoginEffect(
+    effect: LoginEffect,
+    navController: NavController
+) {
     when (effect) {
-        LoginEffect.NavigateToAdminPanel -> {}
+        LoginEffect.NavigateToAdminPanel -> {
+            navController.navigate(UsersManagement) {
+                popUpTo(Login) { inclusive = true }
+            }
+        }
     }
 }

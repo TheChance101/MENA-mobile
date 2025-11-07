@@ -62,8 +62,8 @@ fun List<PrayerTime>.toUi(now: Instant): PrayerTimesUiState {
 @OptIn(ExperimentalTime::class)
 private fun PrayerTime.toUi(): PrayerUiModel = PrayerUiModel(
     name = this.name,
-    displayName = getPrayerDisplayNameResource(this.name),
-    time = formatInstantToTimeString(this.time),
+    displayName = getPrayerDisplayNameResource(prayerName = this.name),
+    time = this.time.formatInstantToTimeString(withISPM = false),
     isAM = isAM(this.time)
 )
 

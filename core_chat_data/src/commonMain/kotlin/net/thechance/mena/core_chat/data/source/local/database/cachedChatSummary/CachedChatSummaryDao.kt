@@ -4,13 +4,15 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Dao
 interface CachedChatSummaryDao {
     @Upsert
     suspend fun insertChatSummary(chatSummary: CachedChatSummaryDto)
 
-    @Query("SELECT * FROM cached_chat_summary ORDER BY last_message_send_at ASC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM cached_chat_summary WHERE last_message IS NOT NULL ORDER BY last_message_send_at DESC LIMIT :pageSize OFFSET :offset")
     suspend fun getChatSummaries(pageSize: Int, offset: Int): List<CachedChatSummaryDto>
 
     @Query("SELECT COUNT(*) FROM cached_chat_summary")
@@ -19,8 +21,9 @@ interface CachedChatSummaryDao {
     @Upsert
     suspend fun insertMultipleChatSummaries(chatSummaries: List<CachedChatSummaryDto>)
 
-    @Delete
-    suspend fun deleteChatSummary(chatSummary: CachedChatSummaryDto)
+    @OptIn(ExperimentalUuidApi::class)
+    @Query("DELETE FROM cached_chat_summary WHERE id IN (:chatsId)")
+    fun deleteMultipleChatSummaries(chatsId: List<String>)
 
     @Query("DELETE FROM cached_chat_summary WHERE id = :chatId")
     suspend fun deleteChatSummaryById(chatId: String)

@@ -30,15 +30,15 @@ private suspend fun <T> runCatchingWithException(
 ): T? {
     return try {
         block()
-    } catch (e: ContactsPermissionDeniedException) {
+    } catch (_: ContactsPermissionDeniedException) {
         throw ContactsPermissionDeniedException("Contacts Permission Denied!")
     }
-    catch (e: IOException) {
+    catch (_: IOException) {
         throw NoInternetException()
     }
     catch (e: ChatException) {
         throw e
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         throw defaultException
     }
 }

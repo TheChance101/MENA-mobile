@@ -3,10 +3,14 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiColor
 import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
+    dukanId = id.toString(),
+    isFavorite = isFavorite,
     name = name,
     imageUrl = imageUrl,
     coordinates = DukanDetailsUiState.Coordinates(
@@ -31,6 +35,15 @@ fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
     name = name,
     description = description,
     price = price,
-    imageUrl = imageUrls.firstOrNull().orEmpty()
+    imageUrl = imageUrls.firstOrNull().orEmpty(),
+    inCartQuantity = quantityInCart,
 )
+
+fun DukanDetailsUiState.ProductUiState.toDomainParams(dukanId: String): UpdateProductCartQuantityParams {
+    return UpdateProductCartQuantityParams(
+        productId = id,
+        quantity = inCartQuantity,
+        dukanId = dukanId
+    )
+}
 

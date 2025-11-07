@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.component.product
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,23 +35,27 @@ fun ProductCard(
     productImageUrl: String,
     productDescription: String,
     productPrice: Double,
+    productAction: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     productCardBackground: Color? = null,
-    productAction: @Composable () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = productCardBackground?: Color.Transparent,
+                color = productCardBackground ?: Color.Transparent,
                 shape = RoundedCornerShape(size = Theme.radius.md)
-            ).height(104.dp)
+            )
+            .height(104.dp)
+            .clip(RoundedCornerShape(size = Theme.radius.md))
+            .clickable(onClick = onClick,indication = null, interactionSource = null)
             .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape( Theme.radius.md)
+                shape = RoundedCornerShape(Theme.radius.md)
             )
         ) {
             AsyncImage(
@@ -105,8 +110,9 @@ private fun ProductCardPreview() {
             productDescription = "Girls Crochet Tank Top description text here for this product",
             productPrice = 39.5,
             productCardBackground = Theme.colorScheme.background.surfaceLow,
-            productAction = {EditProductIcon(onClick = {}) },
+            productAction = { EditProductIcon(onClick = {}) },
             modifier = Modifier.padding(Theme.spacing._12),
+            onClick = {}
         )
     }
 }

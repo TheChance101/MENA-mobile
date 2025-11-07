@@ -19,8 +19,6 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
-import net.thechance.mena.core_chat.domain.exception.ChatException
-import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -59,55 +57,37 @@ class HomeViewModel(
     }
 
     init {
-        loadInitialData()
-    }
-
-    fun loadInitialData(){
         getBalanceAmount()
+        onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
-        observeChats()
-        observeSyncState()
-        refreshChats()
+        observeChatSummariesSyncState()
     }
-
-    fun refreshChats() {
-        updateState { it.copy(chats = emptyList()) }
-        paginator.reset()
-        onChatsListScrolled()
-    }
-
-    private fun observeChats(){
+    private fun observeChatSummariesSyncState() {
         tryToCollect(
-            collect = { chatRepository.observeChats() },
-            onCollect = {chatSummaries ->
-                chatSummaries?.let{
-                    println("====> view model collection: new chatSummaries: ${it}")
-                    updateState { state ->
-                        state.copy(
-                            chats = it.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }.map { chatSummary -> chatSummary.toUi() }
-                        )
-                    }
-                    println("====> observeChats: current state ${state.value.chats}")
-                }
-
-            },
-            onError = {
-                println("===> observeChats onError: $it")
-            }
-        )
-    }
-
-    private fun observeSyncState(){
-        tryToCollect(
-            collect = {chatRepository.observeSyncState()},
+            collect = { chatRepository.observeChatSummariesSyncState() },
             onCollect = {
-                when(it){
-                    is SyncState.Error -> println("====> observeSyncState: Error: ${it.error}")
-                    SyncState.Offline -> showNoInternetSnackBar()
-                    SyncState.Success -> println("====> observeSyncState: Success")
-                    else -> println("====> observeSyncState: unknown state: $it")
+                when (it) {
+                    is SyncState.Error -> showErrorLoadingChatsSnackBar()
+                    is SyncState.Offline -> showNoInternetSnackBar()
+                    is SyncState.ChatsSummariesSynced -> {
+                        updateState { state ->
+                            state.copy(
+                                chats = it.chatSummaries.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }
+                                    .map { chatSummary -> chatSummary.toUi() }
+                            )
+                        }
+                    }
+                    is SyncState.DeletedChatsSynced -> {
+                        val deletedChatIdsSet = it.chatIds.toSet()
+                        updateState { state ->
+                            state.copy(
+                                chats = state.chats.filter { chat -> chat.id !in deletedChatIdsSet }
+                            )
+                        }
+                    }
+                    else -> Unit
                 }
             }
         )
@@ -198,7 +178,7 @@ class HomeViewModel(
 
     private fun getBalanceAmount() {
         tryToExecute(
-            onStart = { updateState { it.copy(isBalanceLoading = true) }},
+            onStart = { updateState { it.copy(isBalanceLoading = true) } },
             execute = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceAmountSuccess,
             onError = { onGetBalanceAmountError() }
@@ -244,10 +224,17 @@ class HomeViewModel(
         )
     }
 
-    private fun showNoInternetSnackBar(){
+    private fun showNoInternetSnackBar() {
         showSnackBar(
             titleStringResource = Res.string.no_internet,
             messageStringResource = Res.string.no_internet_message,
+            isError = true
+        )
+    }
+    private fun showErrorLoadingChatsSnackBar(){
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_chats,
             isError = true
         )
     }

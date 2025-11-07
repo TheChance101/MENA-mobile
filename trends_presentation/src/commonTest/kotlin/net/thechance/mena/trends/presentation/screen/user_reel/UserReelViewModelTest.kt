@@ -31,7 +31,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -52,6 +51,7 @@ class UserReelViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
+        every { userReelArgs.isFromHome } returns true
         viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 

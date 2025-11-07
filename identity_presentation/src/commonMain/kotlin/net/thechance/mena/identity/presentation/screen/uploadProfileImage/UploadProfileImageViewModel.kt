@@ -6,18 +6,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import net.thechance.mena.identity.domain.exception.AuthenticationException
-import net.thechance.mena.identity.domain.repository.CachedImageRepository
+import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel.Companion.PROFILE_IMAGE
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.jetbrains.compose.resources.StringResource
 
 class UploadProfileImageViewModel(
-    val cachedImageRepository: CachedImageRepository,
+    val imagesRepository: ImagesRepository,
     private val imageDecoder: ImageDecoder,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseScreenModel<UploadProfileImageUIState, UploadProfileImageUIEffect>
@@ -76,7 +75,7 @@ class UploadProfileImageViewModel(
     private fun cacheRequiredCropImage(imageBitmap: ImageBitmap) {
         tryToExecute(
             function = {
-                cachedImageRepository.cacheImage(
+                imagesRepository.cacheImage(
                     IMAGE_KEY,
                     imageDecoder.encodeImage(imageBitmap)
                 )
@@ -92,7 +91,7 @@ class UploadProfileImageViewModel(
             UploadProfileImageUIEffect.NavigateToCropScreen(
                 imageKey = IMAGE_KEY,
                 onResult = { croppedImageKey ->
-                    val imageByteArray = cachedImageRepository.getCachedImage(croppedImageKey)
+                    val imageByteArray = imagesRepository.getCachedImage(croppedImageKey)
                     updateState {
                         copy(
                             imageBitmap = imageByteArray?.let { imageDecoder.decodeImage(it) },

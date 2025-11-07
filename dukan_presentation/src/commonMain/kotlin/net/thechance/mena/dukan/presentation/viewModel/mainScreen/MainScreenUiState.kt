@@ -13,6 +13,7 @@ data class MainScreenUiState(
     val categories: List<DukanCategoryUiState> = emptyList(),
     val bestNearestDukans: Flow<PagingData<BestNearestDukanUiState>> = emptyFlow(),
     val editorPickDukans: Flow<PagingData<EditorPickDukanUiState>> = emptyFlow(),
+    val isContentLoading: Boolean = false,
 ) {
     data class DukanState(
         val name: String = "",
@@ -29,11 +30,13 @@ data class MainScreenUiState(
         val id: String,
         val name: String,
         val imageUrl: String,
+        val isFavorite: Boolean
     )
     enum class DukanStatusUi {
         Loading,
         Pending,
         None,
-        Approved
+        Approved,
+        Default
     }
 }

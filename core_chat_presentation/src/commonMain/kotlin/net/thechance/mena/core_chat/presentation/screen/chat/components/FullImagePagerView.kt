@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,7 @@ fun FullImagePagerView(
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
+    onImageLongClick: (message: MessageUiState) -> Unit,
     onDownloadClick: (String) -> Unit,
 ) {
     if (messages.isEmpty() || messages.first().content !is MessageContent.Image) return onCloseClick()
@@ -65,8 +67,13 @@ fun FullImagePagerView(
         initialPage = initialPage,
         pageCount = { messages.size }
     )
+    val message = messages[pagerState.currentPage]
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
+            .combinedClickable(
+                onClick = {},
+                onLongClick = { onImageLongClick(message) }
+            )
     ) {
         if (messages[pagerState.currentPage].content !is MessageContent.Image) return onCloseClick()
 
@@ -94,6 +101,7 @@ fun FullImagePagerView(
             senderImageUrl = senderImageUrl,
             time = message.sendTime,
             isDownloadButtonVisible = isUrlImage,
+            message = message,
             onDownloadClicked = { if (isUrlImage) onDownloadClick((message.content.data as ImageData.ImageUrl).url) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
@@ -154,6 +162,7 @@ private fun PagerOverlay(
     senderName: String,
     senderImageUrl: String,
     time: LocalDateTime,
+    message: MessageUiState,
     onDownloadClicked: () -> Unit,
     modifier: Modifier = Modifier,
     isDownloadButtonVisible: Boolean,
@@ -198,16 +207,23 @@ private fun PagerOverlay(
                 color = Theme.colorScheme.primary.onPrimaryBody
             )
         }
-
-        if (isDownloadButtonVisible) {
-            FabButton(
-                onClick = onDownloadClicked,
-                painter = painterResource(Res.drawable.ic_download),
-                iconSize = 32.dp,
-                containerColor = Color.Transparent,
-                contentColor = Theme.colorScheme.primary.onPrimary,
-                contentPadding = PaddingValues(0.dp)
-            )
+        Row(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        ) {
+            if (message.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.reactions)
+            }
+            if (isDownloadButtonVisible) {
+                FabButton(
+                    onClick = onDownloadClicked,
+                    painter = painterResource(Res.drawable.ic_download),
+                    iconSize = 32.dp,
+                    containerColor = Color.Transparent,
+                    contentColor = Theme.colorScheme.primary.onPrimary,
+                    contentPadding = PaddingValues(0.dp)
+                )
+            }
         }
     }
 }

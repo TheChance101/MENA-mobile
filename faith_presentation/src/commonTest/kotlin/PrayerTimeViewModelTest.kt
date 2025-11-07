@@ -31,21 +31,6 @@ class PrayerTimeViewModelTest {
         viewModel = PrayerTimeViewModel(prayerTimeRepository, testDispatcher)
     }
 
-    @OptIn(ExperimentalTime::class)
-    @Test
-    fun `initialize view model should load today's prayer times size successfully`() = runTest {
-        everySuspend {
-            prayerTimeRepository.getPrayerTimes(any(), any<Location>())
-        } returns samplePrayerTimes
-        testDispatcher.scheduler.advanceTimeBy(100)
-
-        val state = viewModel.uiState.value
-
-        assertEquals(
-            samplePrayerTimes.filter { it.name != PrayerName.SUNRISE }.size,
-            state.prayerTimes.size
-        )
-    }
 
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest {
@@ -91,6 +76,26 @@ class PrayerTimeViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `initialize view model should filter out SUNRISE prayer`() = runTest {
+        everySuspend {
+            prayerTimeRepository.getPrayerTimes(any(), any<Location>(), any())
+        } returns samplePrayerTimes
+
+        val viewModel = PrayerTimeViewModel(
+            prayerTimeRepository = prayerTimeRepository,
+            dispatcher = testDispatcher
+        )
+
+        testDispatcher.scheduler.runCurrent()
+
+        val state = viewModel.uiState.value
+
+        assertEquals(false, state.prayerTimes.any { it.name == PrayerName.SUNRISE })
+    }
+
 
     private companion object {
         @OptIn(ExperimentalTime::class)

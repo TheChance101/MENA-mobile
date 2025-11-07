@@ -24,6 +24,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
@@ -47,7 +48,7 @@ fun TopAppBar(
         trailingContent = {
             DukanIconButton(
                 dukanButtonStatus = dukanButtonStatus,
-                onDukanIconClicked = onDukanIconClicked
+                onDukanIconClicked = onDukanIconClicked,
             )
         }
     )
@@ -58,58 +59,61 @@ private fun DukanIconButton(
     dukanButtonStatus: MainScreenUiState.DukanStatusUi,
     onDukanIconClicked: () -> Unit,
 ) {
-    AnimatedContent(
-        targetState = dukanButtonStatus,
-        transitionSpec = { fadeTransitionSpec() },
-        label = stringResource(resource = Res.string.dukan_button)
-    )
-    { dukanStatus ->
-        when (dukanStatus) {
-            MainScreenUiState.DukanStatusUi.Loading -> {}
-            else -> {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(
-                            color = Theme.colorScheme.background.surfaceLow,
-                            shape = RoundedCornerShape(Theme.radius.md)
-                        )
-                        .clip(shape = RoundedCornerShape(Theme.radius.md))
-                        .clickable(onClick = onDukanIconClicked),
-                    contentAlignment = Alignment.Center
-                ) {
-                    DukanIcon(dukanStatus)
-                }
-            }
-        }
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .background(
+                color = Theme.colorScheme.background.surfaceLow,
+                shape = RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(shape = RoundedCornerShape(Theme.radius.md))
+            .clickable(onClick = onDukanIconClicked),
+        contentAlignment = Alignment.Center
+    ) {
+        DukanIcon(dukanStatus = dukanButtonStatus)
     }
 }
 
 @Composable
 private fun DukanIcon(dukanStatus: MainScreenUiState.DukanStatusUi) {
-    when (dukanStatus) {
-        MainScreenUiState.DukanStatusUi.None -> {
-            Icon(
-                painter = painterResource(resource = Res.drawable.ic_add_dukan),
-                contentDescription = stringResource(resource = Res.string.add_dukan_icon)
-            )
-        }
+    AnimatedContent(
+        targetState = dukanStatus,
+        transitionSpec = { fadeTransitionSpec() },
+        label = stringResource(resource = Res.string.dukan_button)
+    ) { dukanStatus ->
+        when (dukanStatus) {
+            MainScreenUiState.DukanStatusUi.None -> {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_add_dukan),
+                    contentDescription = stringResource(resource = Res.string.add_dukan_icon)
+                )
+            }
 
-        MainScreenUiState.DukanStatusUi.Pending -> {
-            Icon(
-                painter = painterResource(resource = Res.drawable.ic_dukan),
-                contentDescription = stringResource(resource = Res.string.dukan_icon)
-            )
-        }
+            MainScreenUiState.DukanStatusUi.Pending -> {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_dukan),
+                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                )
+            }
 
-        MainScreenUiState.DukanStatusUi.Approved -> {
-            Icon(
-                painter = painterResource(resource = Res.drawable.ic_dukan),
-                contentDescription = stringResource(resource = Res.string.dukan_icon)
-            )
-        }
+            MainScreenUiState.DukanStatusUi.Approved -> {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_dukan),
+                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                )
+            }
 
-        MainScreenUiState.DukanStatusUi.Loading -> {}
+            MainScreenUiState.DukanStatusUi.Default -> {
+                Icon(
+                    painter = painterResource(resource = Res.drawable.ic_dukan),
+                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                )
+            }
+
+            MainScreenUiState.DukanStatusUi.Loading -> {
+                LoadingDots(modifier = Modifier.size(size = 20.dp))
+            }
+        }
     }
 }
 

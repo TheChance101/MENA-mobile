@@ -22,7 +22,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.enableLocationScreen.EnableLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.PickLocationMap
@@ -32,7 +32,8 @@ import org.koin.core.parameter.parametersOf
 data class PickLocationScreen(
     private val addressModel: AddressUIState?,
     private val onUpdateLocation: (AddressUIState) -> Unit,
-) : BaseScreen<PickLocationScreenViewModel,
+) : BaseScreen<
+        PickLocationScreenViewModel,
         PickLocationScreenUIState,
         PickLocationScreenUIEffect,
         PickLocationScreenInteractionListener>() {
@@ -48,6 +49,7 @@ data class PickLocationScreen(
         listener: PickLocationScreenInteractionListener
     ) {
         Scaffold(
+            statusBarColor = Theme.colorScheme.background.surfaceLow,
             topBar = {
                 AuthAppBar(
                     title = stringResource(Res.string.pick_location_title),

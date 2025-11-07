@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
 import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.paging.map
@@ -8,22 +9,32 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
+import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
-import net.thechance.mena.dukan.presentation.screen.dukanDetails.DuaknDetailsArgs.DUKAN_ID
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.Style
+import org.jetbrains.compose.resources.StringResource
 
 class DukanDetailsViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
+    private val dukanCartRepository: CartRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DukanDetailsUiState, DukanDetailsEffects>(
@@ -31,16 +42,42 @@ class DukanDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), DukanDetailsInteractionListener {
 
-    val dukanId: String = requireNotNull(savedStateHandle[DUKAN_ID])
+    private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
 
     init {
         loadDukanDetails()
+        loadCartInfo()
+    }
+
+    private fun loadCartInfo() {
+        tryToExecute(
+            block = { dukanCartRepository.getCartInfo(args.dukanId) },
+            onError = ::onCartInfoError,
+            onSuccess = ::onLoadCartSuccess
+        )
+    }
+
+    private fun onCartInfoError(throwable: Throwable) {
+        when (throwable) {
+            is NoSuchItemException -> updateState { copy(totalPrice = 0.0) }
+            is NoInternetException -> updateState { copy(totalPrice = 0.0) }
+            else -> updateState { copy(totalPrice = 0.0) }
+        }
+    }
+
+    private fun onLoadCartSuccess(cart: Cart) {
+        updateState {
+            copy(
+                totalPrice = cart.totalPrice,
+            )
+        }
+        println("totalprice "+state.value.totalPrice)
     }
 
     private fun loadDukanDetails() {
         tryToExecute(
             onStart = ::onLoadDukanDetailsStart,
-            block = { dukanManagementRepository.getDukanDetailsByDukanId(dukanId) },
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
             onSuccess = ::onLoadDukanDetailsSuccess,
             onError = ::onLoadDukanDetailsError
         )
@@ -73,9 +110,6 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
     private fun loadShelvesPaging() {
         tryToCollect(
             block = ::getShelvesPagingFlow,
@@ -86,7 +120,7 @@ class DukanDetailsViewModel(
     private fun getShelvesPagingFlow(): Flow<PagingData<ShelfUiState>> {
         return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
             shelfRepository.getShelvesByDukanId(
-                dukanId = dukanId,
+                dukanId = args.dukanId,
                 pageNumber = pageNumber,
                 pageSize = pageSize
             ).items
@@ -186,8 +220,7 @@ class DukanDetailsViewModel(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
                 name = name,
-                style = state.value.dukanInfo.style.name,
-                color = state.value.dukanInfo.color
+                dukanId = args.dukanId
             )
         )
     }
@@ -196,38 +229,134 @@ class DukanDetailsViewModel(
         emitEffect(DukanDetailsEffects.NavigateToViewDukanOnMap(latitude, longitude))
     }
 
-    override fun onAddToCartClicked(productId: String) {
+    override fun onAddToCartClicked(
+        productId: String,
+        productQuantity: Int,
+    ) {
+
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
+
+        tryToExecute(
+            block = { addToCartBlock(domainRequest, productQuantity) },
+            onError = ::onErrorUpdateProductQuantity
+        )
+    }
+
+    private suspend fun addToCartBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int
+    ) {
+        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
+    }
+
+    override fun onPlusClicked(
+        productId: String,
+        productQuantity: Int,
+    ) {
+
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
+
+        tryToExecuteWithDebounce(
+            block = { dukanCartRepository.updateProductQuantity(domainRequest) },
+        )
+    }
+
+    override fun onMinusClicked(
+        productId: String,
+        productQuantity: Int,
+    ) {
+
+        val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
+        val domainRequest = uiRequest.toDomainParams(args.dukanId)
+
+        tryToExecuteWithDebounce(
+            block = { onMinusClickedBlock(domainRequest, productQuantity, productId) },
+        )
+    }
+
+    private suspend fun onMinusClickedBlock(
+        domainRequest: UpdateProductCartQuantityParams,
+        productQuantity: Int,
+        productId: String
+    ) {
+        if (productQuantity == 0) deleteProductFromCart(productId)
+        else dukanCartRepository.updateProductQuantity(domainRequest)
+    }
+
+    private fun deleteProductFromCart(productId: String) {
         tryToExecute(
             block = {
-                state.value.shelves.collectLatest {
-                    updateShelvesWithAddedProduct(
-                        it,
-                        productId
-                    )
-                }
-            }
+                dukanCartRepository.deleteProductFromCart(
+                    dukanId = args.dukanId,
+                    productId = productId
+                )
+            },
         )
+    }
+
+    private fun onErrorUpdateProductQuantity(throwable: Throwable) {
+        if (throwable is NoInternetException) {
+            showSnackBar(
+                message = Res.string.no_internet_connection,
+                type = SnackBarType.ERROR
+            )
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
+            )
+        }
+    }
+
+    override fun onDismissSnackBar() {
+        updateState {
+            copy(
+                snackBarState = null
+            )
+        }
+    }
+
+    override fun onProductClicked(productId: String) {
+        emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
+    }
+
+    override fun onViewCartClicked() {
+        emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
     override fun onRetryClicked() {
         loadDukanDetails()
     }
 
-    private fun updateShelvesWithAddedProduct(
-        shelves: PagingData<ShelfUiState>,
-        productId: String
-    ): PagingData<ShelfUiState> {
-        return shelves.map { shelf ->
-            shelf.copy(products = updateProductsWithAddedItem(shelf.products, productId))
+    override fun onFavoriteDukanClicked(dukanId: String) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onSuccess = { isFavorite -> setFavoriteState(isFavorite) }
+        )
+    }
+
+    private fun setFavoriteState(isFavorite: Boolean) {
+        updateState {
+            copy(
+                dukanInfo = dukanInfo.copy(isFavorite = isFavorite)
+            )
         }
     }
 
-    private fun updateProductsWithAddedItem(
-        products: List<ProductUiState>,
-        productId: String
-    ): List<ProductUiState> {
-        return products.map { product ->
-            if (product.id == productId) product.copy(inCartQuantity = 1) else product
-        }
+    private fun isWideImageStyle() =
+        state.value.dukanInfo.style == Style.WIDE_IMAGE
+
+    fun refreshProducts() {
+        loadDukanDetails()
+        loadCartInfo()
     }
 }

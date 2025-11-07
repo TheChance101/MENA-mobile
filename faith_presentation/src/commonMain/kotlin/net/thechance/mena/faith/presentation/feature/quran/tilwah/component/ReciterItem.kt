@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.downloaded
@@ -22,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.component.button.radioButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -33,7 +35,7 @@ fun ReciterItem(
     isDownloaded: Boolean,
     isSelected: Boolean,
     onSelect: () -> Unit,
-    modifier: Modifier =Modifier
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
@@ -56,18 +58,20 @@ fun ReciterItem(
             Text(
                 text = reciter,
                 style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary
+                color = Theme.colorScheme.shadePrimary,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
 
             RecitersDetails(
                 recitingType = recitingType,
                 isDownloaded = isDownloaded
             )
-            RadioButton(
-                isSelected = isSelected,
-                onClick = onSelect
-            )
         }
+        RadioButton(
+            isSelected = isSelected,
+            onClick = onSelect
+        )
     }
 }
 
@@ -84,8 +88,8 @@ private fun RecitersDetails(
     ) {
         Text(
             text = recitingType,
-            style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.shadeSecondary
         )
         if (isDownloaded) {
             Icon(
@@ -106,11 +110,13 @@ private fun RecitersDetails(
 @Preview
 @Composable
 private fun Preview() {
-    ReciterItem(
-        reciter = "Muhammad Siddiq Al-Minshawi",
-        recitingType = "Teacher - Tajweed",
-        isDownloaded = true,
-        isSelected = true,
-        onSelect = {}
-    )
+    QuranTheme {
+        ReciterItem(
+            reciter = "Muhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-Minshawi",
+            recitingType = "Teacher - Tajweed",
+            isDownloaded = true,
+            isSelected = true,
+            onSelect = {}
+        )
+    }
 }

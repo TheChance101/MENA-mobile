@@ -13,5 +13,6 @@ interface PrayerTimeApiService {
         @Path("date") date: String,
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
+        @Query("isHijri") isHijri: Boolean = false
     ): Response<PrayerTimesDto>
 }
