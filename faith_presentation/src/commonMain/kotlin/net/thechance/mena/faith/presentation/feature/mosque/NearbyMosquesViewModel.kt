@@ -7,9 +7,11 @@ import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -115,6 +117,14 @@ internal class NearbyMosquesViewModel(
                     isLoading = false
                 )
             }
+            viewModelScope.launch {
+                delay(3000L)
+                updateState {
+                    it.copy(
+                        isNoMosquesCardVisible = false,
+                    )
+                }
+            }
         } else {
             updateState {
                 it.copy(
@@ -126,6 +136,7 @@ internal class NearbyMosquesViewModel(
             }
         }
     }
+
 
     override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
         updateState {
