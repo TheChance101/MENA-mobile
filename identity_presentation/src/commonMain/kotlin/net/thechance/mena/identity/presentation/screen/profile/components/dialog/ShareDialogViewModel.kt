@@ -105,14 +105,14 @@ class ShareDialogViewModel(
     }
 
     private fun onDownloadSuccess() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             updateState { copy(isLoading = false) }
             sendNewEffect(ShareQrCodeUIEffect.OnClickDownload)
         }
     }
 
     private fun onCopyToClipboardSuccess() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             updateState { copy(isLoading = false) }
             sendNewEffect(ShareQrCodeUIEffect.OnCopyToClipBoard)
         }

@@ -1,7 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.profile.components.dialog
 
-import androidx.compose.ui.graphics.ImageBitmap
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -12,10 +14,10 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertNull
@@ -26,18 +28,18 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
 
     private val imagesRepository = mockk<ImagesRepository>(relaxed = true)
     private val galleryPermissionHandler = mockk<PermissionHandler>(relaxed = true)
-    private val imageDecoder = mockk<ImageDecoder>(relaxed = true)
+    private val userRepository = mockk<UserRepository>(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: ShareQrCodeViewModel
-    private val imageBitmap: ImageBitmap = mockk<ImageBitmap>(relaxed = true)
+    private lateinit var viewModel: ShareDialogViewModel
+    private val byteArray = ByteArray(0)
 
     @Before
     override fun setUp() {
         super.setUp()
-        viewModel = ShareQrCodeViewModel(
+        viewModel = ShareDialogViewModel(
             imagesRepository = imagesRepository,
             galleryPermissionHandler = galleryPermissionHandler,
-            imageDecoder = imageDecoder,
+            userRepository = userRepository,
             dispatcher = testDispatcher
         )
     }
@@ -45,29 +47,25 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
     @Test
     fun `onClickDownload should save image when permission is granted`() = runTest(testDispatcher) {
         every { galleryPermissionHandler.checkPermission() } returns PermissionState.GRANTED
-        coEvery { imageDecoder.encodeImage(imageBitmap) } returns byteArrayOf(1, 2, 3)
         coEvery { imagesRepository.saveImageToGallery(any()) } returns Unit
 
-        viewModel.onClickDownload(imageBitmap)
-        advanceUntilIdle()
+        viewModel.onClickDownload(byteArray)
+        testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify(exactly = 1) { imagesRepository.saveImageToGallery(byteArrayOf(1, 2, 3)) }
+        coVerify(exactly = 1) { imagesRepository.saveImageToGallery(any()) }
     }
 
     @Test
     fun `onClickDownload should emit OnClickDownload effect when permission is granted and save succeeds`() =
         runTest(testDispatcher) {
             every { galleryPermissionHandler.checkPermission() } returns PermissionState.GRANTED
-            coEvery { imageDecoder.encodeImage(imageBitmap) } returns byteArrayOf(1, 2, 3)
             coEvery { imagesRepository.saveImageToGallery(any()) } returns Unit
 
             viewModel.effect.test {
-                viewModel.onClickDownload(imageBitmap)
-                advanceUntilIdle()
+                viewModel.onClickDownload(byteArray)
+                testDispatcher.scheduler.advanceUntilIdle()
 
-                val effect = awaitItem()
-                assertTrue(effect is ShareQrCodeUIEffect.OnClickDownload)
-                cancelAndConsumeRemainingEvents()
+                assertThat(awaitItem()).isEqualTo(ShareQrCodeUIEffect.OnClickDownload)
             }
         }
 
@@ -76,7 +74,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
         runTest(testDispatcher) {
             every { galleryPermissionHandler.checkPermission() } returns PermissionState.NOT_DETERMINED
 
-            viewModel.onClickDownload(imageBitmap)
+            viewModel.onClickDownload(byteArray)
 
             verify { galleryPermissionHandler.requestPermission() }
         }
@@ -86,7 +84,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
         runTest(testDispatcher) {
             every { galleryPermissionHandler.checkPermission() } returns PermissionState.DENIED
 
-            viewModel.onClickDownload(imageBitmap)
+            viewModel.onClickDownload(byteArray)
 
             verify { galleryPermissionHandler.requestPermission() }
         }
@@ -96,7 +94,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
         runTest(testDispatcher) {
             every { galleryPermissionHandler.checkPermission() } returns PermissionState.DENIED_PERMANENTLY
 
-            viewModel.onClickDownload(imageBitmap)
+            viewModel.onClickDownload(byteArray)
 
             verify { galleryPermissionHandler.openSettingPage() }
         }
@@ -104,10 +102,9 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
     @Test
     fun `onClickDownload should set error message when save fails`() = runTest(testDispatcher) {
         every { galleryPermissionHandler.checkPermission() } returns PermissionState.GRANTED
-        coEvery { imageDecoder.encodeImage(imageBitmap) } returns byteArrayOf(1, 2, 3)
         coEvery { imagesRepository.saveImageToGallery(any()) } throws Exception("Save failed")
 
-        viewModel.onClickDownload(imageBitmap)
+        viewModel.onClickDownload(byteArray)
         advanceUntilIdle()
 
         assertTrue(viewModel.state.value.errorMessage != null)
@@ -120,6 +117,6 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `initial state should have null qrCodeUrl`() {
-        assertNull(viewModel.state.value.qrCodeUrl)
+        assertThat(viewModel.state.value.shareLinkUrl).isEmpty()
     }
 }
