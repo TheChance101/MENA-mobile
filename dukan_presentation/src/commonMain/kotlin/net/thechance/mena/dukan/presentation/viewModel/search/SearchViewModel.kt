@@ -11,10 +11,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.search_general_error
+import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.DukanPreview
-import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -154,30 +155,14 @@ class SearchViewModel(
         updateState {
             copy(
                 dukanPagingFlow = flowOf(value = dukanPagingData),
-                isInternetConnectionNotAvailable = false
             )
         }
     }
 
     private fun onGetDukansByQueryError(exception: Exception) {
-        println("DukanError: $exception")
         when (exception) {
-            is NoInternetException -> updateState {
-                copy(
-                    searchContentState = SearchUiState.SearchContentState.Empty,
-                    isInternetConnectionNotAvailable = true
-                )
-            }
-
-            else -> updateState {
-                copy(
-                    searchContentState = SearchUiState.SearchContentState.Empty,
-                    snackBarUiState = SnackBarUiState(
-                        message = Res.string.search_general_error,
-                        snackBarType = SnackBarType.ERROR
-                    )
-                )
-            }
+            is NoInternetException -> handleNoInternetException()
+            else ->  handleGeneralSearchException()
         }
     }
 
@@ -207,29 +192,38 @@ class SearchViewModel(
         updateState {
             copy(
                 productPagingFlow = flowOf(value = searchedProducts),
-                isInternetConnectionNotAvailable = false
             )
         }
     }
 
     private fun onGetProductsByQueryError(exception: Exception) {
         when (exception) {
-            is NoInternetException -> updateState {
-                copy(
-                    searchContentState = SearchUiState.SearchContentState.Empty,
-                    isInternetConnectionNotAvailable = true
-                )
-            }
+            is NoInternetException -> handleNoInternetException()
+            else ->  handleGeneralSearchException()
+        }
+    }
 
-            else -> updateState {
-                copy(
-                    searchContentState = SearchUiState.SearchContentState.Empty,
-                    snackBarUiState = SnackBarUiState(
-                        message = Res.string.search_general_error,
-                        snackBarType = SnackBarType.ERROR
-                    )
+    private fun handleNoInternetException() {
+        updateState {
+            copy(
+                searchContentState = SearchUiState.SearchContentState.Empty,
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.no_internet_message,
+                    snackBarType = SnackBarType.ERROR
                 )
-            }
+            )
+        }
+    }
+
+    private fun handleGeneralSearchException() {
+        updateState {
+            copy(
+                searchContentState = SearchUiState.SearchContentState.Empty,
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.search_general_error,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
         }
     }
 }

@@ -15,7 +15,6 @@ data class SearchUiState(
     val searchQuery: String = "",
     val dukanPagingFlow: Flow<PagingData<DukanUiState>> = emptyFlow(),
     val productPagingFlow: Flow<PagingData<ProductUiState>> = emptyFlow(),
-    val isInternetConnectionNotAvailable: Boolean = false,
     val userSelectionSearchList : UserSelectionSearchList = UserSelectionSearchList.Dukans,
 ){
     enum class SearchContentState {

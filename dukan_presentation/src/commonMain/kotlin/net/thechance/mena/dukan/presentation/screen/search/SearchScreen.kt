@@ -49,7 +49,12 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
             }
 
             is SearchEffect.NavigateToProductDetails -> {
-                navController.navigate(route = DukanRoute.ProductDetails(productId = effect.productId,""))
+                navController.navigate(
+                    route = DukanRoute.ProductDetails(
+                        productId = effect.productId,
+                        ""
+                    )
+                )
             }
         }
     }
@@ -102,18 +107,11 @@ private fun SearchContent(
                 )
 
                 SearchUiState.SearchContentState.Empty -> {
-                    if (state.isInternetConnectionNotAvailable) {
-                        NoInternetContent(
-                            modifier = Modifier.fillMaxSize(),
-                            onRetry = listener::onRetryClicked
-                        )
-                    } else {
-                        SearchEmptyContent(
-                            icon = painterResource(resource = Res.drawable.img_not_found_search),
-                            title = stringResource(resource = Res.string.no_result_found),
-                            body = stringResource(resource = Res.string.no_result_found_body)
-                        )
-                    }
+                    SearchEmptyContent(
+                        icon = painterResource(resource = Res.drawable.img_not_found_search),
+                        title = stringResource(resource = Res.string.no_result_found),
+                        body = stringResource(resource = Res.string.no_result_found_body)
+                    )
                 }
             }
         }
@@ -124,9 +122,9 @@ private fun SearchContent(
 @Composable
 private fun SearchScreenPreview() {
     MenaTheme {
-        Box (
+        Box(
             modifier = Modifier.fillMaxSize()
-        ){
+        ) {
             SearchContent(
                 state = SearchUiState(searchContentState = SearchUiState.SearchContentState.Idle),
                 listener = PreviewSearchInteractionListener
