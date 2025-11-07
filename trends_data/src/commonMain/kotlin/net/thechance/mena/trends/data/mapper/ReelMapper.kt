@@ -28,7 +28,7 @@ internal fun ReelDto.toEntity(): Reel {
 
 internal fun ReelPathUrlsDto.toReelUrls(): ReelUrls{
     return ReelUrls(
-        videoUrl = videoPath.toUrl(),
-        thumbnailUrl = thumbnailPath.toUrl()
+        videoUrl = videoPath?.toUrl().orEmpty(),
+        thumbnailUrl = thumbnailPath?.toUrl().orEmpty()
     )
 }

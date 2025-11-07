@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ReelPathUrlsDto(
-    @SerialName("videoPath") val videoPath: String,
-    @SerialName("thumbnailPath") val thumbnailPath: String
+    @SerialName("videoPath") val videoPath: String? = null,
+    @SerialName("thumbnailPath") val thumbnailPath: String? = null
 )
