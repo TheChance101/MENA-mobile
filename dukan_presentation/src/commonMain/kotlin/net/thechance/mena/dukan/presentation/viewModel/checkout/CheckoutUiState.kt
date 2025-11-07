@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.viewModel.checkout
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 
 data class CheckoutUiState(
     val deliveryAddress: Address = Address(),
@@ -11,7 +12,8 @@ data class CheckoutUiState(
     val discountPercentage: Int = 0,
     val platformFees: Double = 0.0,
     val totalAmount: Double = 0.0,
-) {
+    val snackBarState: SnackBarUiState? = null,
+    ) {
     data class Address(
         val label: String = "",
         val street: String = ""
