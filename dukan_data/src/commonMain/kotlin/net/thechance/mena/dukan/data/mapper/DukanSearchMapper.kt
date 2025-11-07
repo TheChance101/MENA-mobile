@@ -11,5 +11,6 @@ fun DukanSearchDto.toEntity(): DukanPreview {
         id = id,
         name = name,
         imageUrl = imageUrl,
+        isFavorite = false // Todo ( need to add in response of search endpoint )
     )
 }

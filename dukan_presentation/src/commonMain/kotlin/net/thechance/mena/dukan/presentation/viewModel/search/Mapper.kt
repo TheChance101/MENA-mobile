@@ -12,7 +12,7 @@ fun DukanPreview.toSearchUiState(): SearchUiState.DukanUiState{
         id = id,
         title = name,
         imageUrl = imageUrl,
-        isFavorite = false // Todo (handle with is favorite story )
+        isFavorite = isFavorite
     )
 }
 

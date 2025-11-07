@@ -9,4 +9,5 @@ data class DukanPreview(
     val id: Uuid,
     val name: String,
     val imageUrl: String,
+    val isFavorite: Boolean,
 )

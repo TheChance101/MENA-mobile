@@ -170,7 +170,7 @@ private fun DukansList(
                                 title = dukan.title,
                                 imageUrl = dukan.imageUrl,
                                 onClick = { onDukanClicked(dukan.id) },
-                                isFavorite = dukan.isFavorite, // Todo (handle with user favorites story)
+                                isFavorite = dukan.isFavorite,
                                 onFavoriteClick = { onDukanFavoriteClicked(dukan.id,dukan.isFavorite) },
                             )
                         }
