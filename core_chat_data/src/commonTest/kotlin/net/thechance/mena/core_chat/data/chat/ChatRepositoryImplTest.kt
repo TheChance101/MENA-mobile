@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
+import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
@@ -15,8 +16,13 @@ import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import net.thechance.mena.core_chat.data.contacts.fakes.createCachedChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
@@ -26,13 +32,18 @@ import net.thechance.mena.core_chat.data.defaultChatResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
+import net.thechance.mena.core_chat.data.mockSuccessPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -275,6 +286,140 @@ class ChatRepositoryImplTest {
         assertFailsWith<Exception> {
             repository.deleteChatById(testChatId)
         }
+    }
+
+    @Test
+    fun `should sync chat data successfully and emit ChatsSummariesSynced`() = runTest {
+        val pageNumber = 0
+        val pageSize = 20
+        val chatSummaries = listOf(
+            createChatSummaryDto(id = Uuid.random().toString(), name = "Chat 1"),
+            createChatSummaryDto(id = Uuid.random().toString(), name = "Chat 2")
+        )
+        val pagedData = PagedDataDto(
+            data = chatSummaries,
+            totalItems = 2,
+            totalPages = 1,
+            pageNumber = pageNumber,
+            pageSize = pageSize
+        )
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = {
+                mockSuccessPagedResponse(pagedData)
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
+
+        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+
+        var capturedState: SyncState? = null
+        val job = launch {
+            repository.observeChatSummariesSyncState().collect { state ->
+                capturedState = state
+            }
+        }
+
+        repository.getChatsSummary(pageNumber, pageSize)
+
+        withContext(Dispatchers.Default.limitedParallelism(1)) {
+            withTimeout(1000) {
+                while (capturedState == null) {
+                    delay(50)
+                }
+            }
+        }
+
+        job.cancel()
+
+        assertThat(capturedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
+    }
+
+    @Test
+    fun `should emit Offline when network is unavailable during chat sync`() = runTest {
+        val pageNumber = 0
+        val pageSize = 20
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = { throw NoInternetException() }
+        )
+
+        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
+
+        var capturedState: SyncState? = null
+        val job = launch {
+            repository.observeChatSummariesSyncState().collect { state ->
+                capturedState = state
+            }
+        }
+
+        repository.getChatsSummary(pageNumber, pageSize)
+
+        withContext(Dispatchers.Default.limitedParallelism(1)) {
+            withTimeout(1000) {
+                while (capturedState == null) delay(100)
+            }
+        }
+
+        job.cancel()
+
+        assertThat(capturedState).isEqualTo(SyncState.Offline)
+    }
+
+    @Test
+    fun `should emit Error when unknown exception occurs during chat sync`() = runTest {
+        val pageNumber = 0
+        val pageSize = 20
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = { throw Exception("Unexpected failure") }
+        )
+
+        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
+
+        var capturedState: SyncState? = null
+        val job = launch {
+            repository.observeChatSummariesSyncState().collect { state ->
+                capturedState = state
+            }
+        }
+
+        repository.getChatsSummary(pageNumber, pageSize)
+
+        withContext(Dispatchers.Default.limitedParallelism(1)) {
+            withTimeout(1000) {
+                while (capturedState == null) delay(100)
+            }
+        }
+
+        job.cancel()
+
+        assertThat(capturedState is SyncState.Error).isTrue()
     }
 
     private companion object {
