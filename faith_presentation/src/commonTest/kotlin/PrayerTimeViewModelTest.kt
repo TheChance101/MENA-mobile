@@ -136,7 +136,7 @@ class PrayerTimeViewModelTest {
             viewModel.onDateDropdownClick()
             assertEquals(PrayerTimeEffect.NavigateCalenderDialog, awaitItem())
 
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             assertEquals(PrayerTimeEffect.NavigateToAddressesScreen, awaitItem())
 
             cancelAndIgnoreRemainingEvents()

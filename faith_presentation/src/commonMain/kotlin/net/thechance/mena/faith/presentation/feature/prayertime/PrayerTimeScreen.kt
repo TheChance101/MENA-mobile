@@ -68,7 +68,7 @@ private fun Content(uiState: PrayerTimeUiState, listener: PrayerTimeInteractionL
                     )
                 },
                 onLeadingClick = listener::onBackClick,
-                trailingContent = { PrayerTimeTopBar(uiState, listener::onChangeLocation) }
+                trailingContent = { PrayerTimeTopBar(uiState, listener::onLocationClick) }
             )
         },
     ) {

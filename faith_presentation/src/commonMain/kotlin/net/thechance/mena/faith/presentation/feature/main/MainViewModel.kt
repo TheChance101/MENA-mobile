@@ -98,7 +98,7 @@ class MainViewModel(
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
     override fun onPrayerTimeClick() = sendEffect(MainScreenEffect.NavigateToPrayerTime)
     override fun onTilawahClick() = sendEffect(MainScreenEffect.NavigateToTilawah)
-    override fun onChangeLocation() = sendEffect(MainScreenEffect.NavigateToAddressesScreen)
+    override fun onLocationClick() = sendEffect(MainScreenEffect.NavigateToAddressesScreen)
 
     fun refreshTilawah() {
         loadLastAyahForTilawah()

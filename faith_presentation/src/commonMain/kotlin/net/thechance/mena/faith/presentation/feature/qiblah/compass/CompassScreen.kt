@@ -96,7 +96,7 @@ private fun Content(
                 },
                 onLeadingClick = listener::onBackClick,
                 trailingContent = {
-                    QiblahTopBar(uiState, onChangeLocation = listener::onChangeLocation)
+                    QiblahTopBar(uiState, onChangeLocation = listener::onLocationClick)
                 }
             )
         },
@@ -323,7 +323,7 @@ private fun CompassScreenPreview() {
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}
-                override fun onChangeLocation() {}
+                override fun onLocationClick() {}
             }
         )
     }

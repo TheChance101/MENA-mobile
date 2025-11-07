@@ -98,7 +98,7 @@ private fun Content(
         topBar = {
             MainTopBar(
                 locationName = uiState.address.takeCityAndCountry(),
-                onLocationChange = listener::onChangeLocation
+                onLocationChange = listener::onLocationClick
             )
         }
     ) {
@@ -237,7 +237,7 @@ private fun Preview() {
                 override fun onMosquesClick() {}
                 override fun onPrayerTimeClick() {}
                 override fun onTilawahClick() {}
-                override fun onChangeLocation() {}
+                override fun onLocationClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,

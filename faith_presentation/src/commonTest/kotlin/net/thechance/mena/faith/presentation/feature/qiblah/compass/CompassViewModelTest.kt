@@ -99,7 +99,7 @@ class CompassViewModelTests {
         advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             advanceUntilIdle()
 
             assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())
@@ -120,7 +120,7 @@ class CompassViewModelTests {
         }
 
         viewModel.uiEffect.test {
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             advanceUntilIdle()
 
             assertEquals(CompassEffect.NavigateToAddressesScreen, awaitItem())

@@ -88,7 +88,7 @@ class MainViewModelTests {
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.uiEffect.test {
-                viewModel.onChangeLocation()
+                viewModel.onLocationClick()
                 assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
@@ -111,7 +111,7 @@ class MainViewModelTests {
         assertEquals("", viewModel.uiState.value.address)
 
         viewModel.uiEffect.test {
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -274,7 +274,7 @@ class MainViewModelTests {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
@@ -313,7 +313,7 @@ class MainViewModelTests {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onChangeLocation()
+            viewModel.onLocationClick()
             assertEquals(MainScreenEffect.NavigateToAddressesScreen, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }

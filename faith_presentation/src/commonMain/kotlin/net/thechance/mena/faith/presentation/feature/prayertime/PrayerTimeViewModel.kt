@@ -138,7 +138,7 @@ class PrayerTimeViewModel(
 
     override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
 
-    override fun onChangeLocation() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
+    override fun onLocationClick() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
 
     private companion object {
         const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L

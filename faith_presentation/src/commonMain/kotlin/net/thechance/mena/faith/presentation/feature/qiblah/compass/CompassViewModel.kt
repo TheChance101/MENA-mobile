@@ -23,7 +23,7 @@ class CompassViewModel(
 
     override fun onBackClick() = sendEffect(CompassEffect.NavigateBack)
 
-    override fun onChangeLocation() = sendEffect(CompassEffect.NavigateToAddressesScreen)
+    override fun onLocationClick() = sendEffect(CompassEffect.NavigateToAddressesScreen)
 
     private fun getUserLocation() {
         tryToExecute(
