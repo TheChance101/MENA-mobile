@@ -1,21 +1,24 @@
 package net.thechance.mena.admin_panel.data.repository.authentication
 
-import com.russhwolf.settings.Settings
-import kotlinx.coroutines.flow.StateFlow
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.coroutines.FlowSettings
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.LoginRequestDto
-import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.executeApiSafely
-import net.thechance.mena.admin_panel.data.utils.observableToken
-import net.thechance.mena.admin_panel.data.utils.refreshToken
+import net.thechance.mena.admin_panel.data.utils.putAccessToken
+import net.thechance.mena.admin_panel.data.utils.putRefreshToken
 import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import org.koin.core.annotation.Single
 
+@OptIn(ExperimentalSettingsApi::class)
 @Single
 class AdminAuthenticationRepositoryImpl(
     private val authenticationApiService: AuthenticationApiService,
-    private val settings: Settings
+    private val settings: FlowSettings
 ) : AdminAuthenticationRepository {
 
     override suspend fun login(userName: String, password: String) {
@@ -35,16 +38,16 @@ class AdminAuthenticationRepositoryImpl(
         clearAuthTokens()
     }
 
-    override suspend fun isUserLoggedIn(): Boolean = settings.accessToken.isNotBlank()
+    override suspend fun isUserLoggedIn(): Boolean = settings.accessToken.first().isNotBlank()
 
-    override fun observeToken(): StateFlow<String> = observableToken
+    override fun observeToken(): Flow<String> = settings.accessToken
     private suspend fun saveAuthTokens(authenticationInfo: AdminAuthenticationResponse) {
-        settings.accessToken = authenticationInfo.accessToken.also { observableToken.emit(it) }
-        settings.refreshToken = authenticationInfo.refreshToken
+        settings.putAccessToken(authenticationInfo.accessToken)
+        settings.putRefreshToken(authenticationInfo.refreshToken)
     }
 
     private suspend fun clearAuthTokens() {
-        settings.accessToken = "".also { observableToken.emit(it) }
-        settings.refreshToken = ""
+        settings.putAccessToken("")
+        settings.putRefreshToken("")
     }
 }

@@ -3,7 +3,7 @@ package net.thechance.mena.admin_panel.presentation.screen.mainContainer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -82,17 +82,13 @@ class MainContainerViewmodel(
         )
     }
 
-    private suspend fun onSuccessCheckedAuthentication(token: StateFlow<String>) {
+    private suspend fun onSuccessCheckedAuthentication(token: Flow<String>) {
         token.collect { it->
             if (it.isNotBlank()) {
-                updateState {
-                    it.copy(authenticationStatus = true)
-                }
+                updateState { it.copy(authenticationStatus = true) }
                 sendEffect(MainContainerEffect.NavigateToAdminPanelScreen)
             } else {
-                updateState {
-                    it.copy(authenticationStatus = false)
-                }
+                updateState { it.copy(authenticationStatus = false) }
                 sendEffect(MainContainerEffect.NavigateToLogInScreen)
             }
         }
