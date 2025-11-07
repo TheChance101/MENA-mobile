@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.data.repository
 
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.coroutines.FlowSettings
 import de.jensklingenberg.ktorfit.Response
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
@@ -8,7 +9,6 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
@@ -18,17 +18,18 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
 import net.thechance.mena.admin_panel.data.remote.dto.authentication.AdminAuthenticationResponse
 import net.thechance.mena.admin_panel.data.repository.authentication.AdminAuthenticationRepositoryImpl
-import net.thechance.mena.admin_panel.data.utils.accessToken
-import net.thechance.mena.admin_panel.data.utils.refreshToken
+import net.thechance.mena.admin_panel.data.utils.putAccessToken
+import net.thechance.mena.admin_panel.data.utils.putRefreshToken
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
+@OptIn(ExperimentalSettingsApi::class)
 class AdminAuthenticationRepositoryImplTest {
     private lateinit var authenticationApiService: AuthenticationApiService
-    private lateinit var settings: Settings
+    private lateinit var settings: FlowSettings
 
     private lateinit var adminAuthenticationRepositoryImpl: AdminAuthenticationRepositoryImpl
 
@@ -36,7 +37,7 @@ class AdminAuthenticationRepositoryImplTest {
     fun setup() {
         authenticationApiService =
             mock<AuthenticationApiService>(mode = MockMode.autofill)
-        settings = mock<Settings>(mode = MockMode.autofill)
+        settings = mock<FlowSettings>(mode = MockMode.autofill)
         adminAuthenticationRepositoryImpl =
             AdminAuthenticationRepositoryImpl(
                 authenticationApiService = authenticationApiService,
@@ -52,8 +53,7 @@ class AdminAuthenticationRepositoryImplTest {
         } returns successfulLoginResponse()
 
         adminAuthenticationRepositoryImpl.login(TEST_USERNAME, TEST_PASSWORD)
-
-        verify { settings.accessToken = fakeResponse.accessToken }
+        verifySuspend { settings.putAccessToken(fakeResponse.accessToken) }
     }
 
     @Test
@@ -65,7 +65,7 @@ class AdminAuthenticationRepositoryImplTest {
 
         adminAuthenticationRepositoryImpl.login(TEST_USERNAME, TEST_PASSWORD)
 
-        verify { settings.refreshToken = fakeResponse.refreshToken }
+        verifySuspend { settings.putRefreshToken(fakeResponse.refreshToken) }
     }
 
     @Test
@@ -109,8 +109,8 @@ class AdminAuthenticationRepositoryImplTest {
 
         adminAuthenticationRepositoryImpl.logout()
 
-        verify { settings.accessToken = "" }
-        verify { settings.refreshToken = "" }
+        verifySuspend { settings.putAccessToken("") }
+        verifySuspend { settings.putRefreshToken("") }
     }
 
     @Test
