@@ -77,6 +77,7 @@ class CheckoutViewModelTest {
 
     private fun createViewModel() = CheckoutViewModel(
         cartRepository = cartRepository,
+        locationService = mock(),
         savedStateHandle = savedStateHandle,
         dispatcher = testDispatcher
     )

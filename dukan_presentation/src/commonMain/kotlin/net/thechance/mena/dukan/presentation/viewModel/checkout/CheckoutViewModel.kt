@@ -11,11 +11,14 @@ import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class CheckoutViewModel(
     private val cartRepository: CartRepository,
+    private val locationService: LocationService,
     private val savedStateHandle: SavedStateHandle,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) :
@@ -27,6 +30,7 @@ class CheckoutViewModel(
 
     init {
         loadCartProductsFromRepository()
+        loadDeliveryAddress()
     }
 
     private fun loadCartProductsFromRepository() {
@@ -37,7 +41,7 @@ class CheckoutViewModel(
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    private fun createPagingSource(): Flow<PagingData<CartItem>> {
+    private fun createPagingSource(): Flow<PagingData<CheckoutUiState.CartItem>> {
         val args = savedStateHandle.toRoute<DukanRoute.CheckoutScreenRoute>()
         return createPagingSourceFlow(
             mapper = { it.toUiState() }
@@ -50,17 +54,41 @@ class CheckoutViewModel(
         }
     }
 
-    private fun onProductsLoaded(products: PagingData<CartItem>) =
+    private fun onProductsLoaded(products: PagingData<CheckoutUiState.CartItem>) =
         updateState {
             copy(items = flowOf(products))
         }
+
+    fun loadDeliveryAddress() {
+        tryToExecute(
+            block = ::getActiveAddress,
+            onSuccess = ::getActiveAddressSuccess,
+            onError = ::getActiveAddressError
+        )
+    }
+
+    private suspend fun getActiveAddress(): Address? {
+        return locationService.getActiveAddress()
+    }
+
+    private fun getActiveAddressSuccess(activeAddress: Address?) {
+        updateState { copy(deliveryAddress = activeAddress.toUiState()) }
+    }
+
+    private fun getActiveAddressError(throwable: Throwable) {
+
+    }
 
     override fun onBackClicked() {
         emitEffect(effect = CheckoutEffect.NavigateBack)
     }
 
     override fun onConfirmOrderClicked() {
-        // TODO add confirm order logic
+        updateState { copy(isCheckoutImplementedDialogVisible = true) }
+    }
+
+    override fun onDismissCheckoutDialog() {
+        updateState { copy(isCheckoutImplementedDialogVisible = false) }
     }
 
     override fun onChangeLocationClicked() {

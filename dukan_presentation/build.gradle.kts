@@ -52,6 +52,7 @@ kotlin {
             implementation(projects.designSystem)
             implementation(projects.dukanApi)
             implementation(projects.identityApi)
+            implementation(projects.identityDomain)
             implementation(projects.walletApi)
 
             implementation(compose.runtime)

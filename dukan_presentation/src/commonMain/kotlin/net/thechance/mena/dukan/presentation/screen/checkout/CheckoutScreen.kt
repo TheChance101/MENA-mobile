@@ -3,10 +3,15 @@ package net.thechance.mena.dukan.presentation.screen.checkout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.cash.paging.compose.collectAsLazyPagingItems
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.checkout_dialog_description
+import mena.dukan_presentation.generated.resources.checkout_dialog_title
+import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -21,6 +26,7 @@ import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutEffect
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -31,6 +37,9 @@ fun CheckoutScreen(
     val state by viewModel.state.collectAsState()
     val navController = LocalNavController.current
 
+    LaunchedEffect(Unit) {
+        viewModel.loadDeliveryAddress()
+    }
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             CheckoutEffect.NavigateBack -> {
@@ -62,7 +71,20 @@ private fun CheckoutContent(
             CheckoutAppBar(listener)
         },
         bottomBar = {
-            ConfirmOrderButton()
+            ConfirmOrderButton(listener::onConfirmOrderClicked)
+        },
+        overlays = {
+            dialog(state.isCheckoutImplementedDialogVisible) {
+                Dialog(
+                    title = stringResource(Res.string.checkout_dialog_title),
+                    message = stringResource(Res.string.checkout_dialog_description),
+                    isVisible = state.isCheckoutImplementedDialogVisible,
+                    onDismiss = listener::onDismissCheckoutDialog,
+                    onCancelClick = listener::onDismissCheckoutDialog,
+                    hasDismissButton = true,
+                    actionButtons = {},
+                )
+            }
         }
     ) {
         Column(
@@ -70,8 +92,8 @@ private fun CheckoutContent(
                 .padding(horizontal = Theme.spacing._16)
         ) {
             DeliveryAddressCard(
-                modifier = Modifier
-                    .padding(top = Theme.spacing._8),
+                modifier = Modifier.padding(top = Theme.spacing._8),
+                state = state,
                 onChangeAddressClicked = listener::onChangeLocationClicked
             )
             CheckoutSummaryCard(
