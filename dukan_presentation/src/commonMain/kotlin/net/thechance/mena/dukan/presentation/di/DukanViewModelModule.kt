@@ -17,6 +17,7 @@ import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageShelf.ManageShelfViewModel
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsViewModel
+import net.thechance.mena.dukan.presentation.viewModel.search.SearchViewModel
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -40,4 +41,5 @@ internal val dukanViewModelModule = module {
     viewModelOf(::ProductDetailsViewModel)
     viewModelOf(::DukanCartViewModel)
     viewModelOf(::CheckoutViewModel)
+    viewModelOf(::SearchViewModel)
 }

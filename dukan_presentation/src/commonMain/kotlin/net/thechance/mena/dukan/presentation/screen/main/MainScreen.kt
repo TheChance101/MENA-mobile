@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -40,6 +41,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.*
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -90,7 +92,7 @@ fun MainScreen(
 
             is MainScreenEffect.NavigateToDukansScreenByCategory -> {
                 navController.navigate(
-                    DukanRoute.DukansScreenRoute(
+                    DukansScreenRoute(
                         categoryId = effect.categoryId,
                         categoryTitle = effect.categoryName
                     )
@@ -98,10 +100,19 @@ fun MainScreen(
             }
 
             is MainScreenEffect.NavigateToSelectedDukan -> {
-                navController.navigate(DukanRoute.DukanDetails(effect.dukanId))
+                navController.navigate(DukanDetails(effect.dukanId))
+            }
+
+            MainScreenEffect.NavigateToSearchScreen -> {
+                navController.navigate(route = SearchScreenRoute)
             }
         }
     }
+
+    LaunchedEffect(state.value.editorPickDukans) {
+        viewModel.loadEditorPicksDukans()
+    }
+
     MainContent(
         listener = viewModel,
         state = state.value,
@@ -146,8 +157,9 @@ private fun MainContent(
                 if (!isConnected  || isEmptyContent) return@AnimatedContent
                 TopAppBar(
                     modifier = Modifier.statusBarsPadding(),
+                    dukanButtonStatus = state.dukanState.status,
                     onDukanIconClicked = listener::onDukanButtonClicked,
-                    dukanButtonStatus = state.dukanState.status
+                    onSearchIconClicked = listener::onSearchButtonClicked
                 )
             }
         },
@@ -244,8 +256,10 @@ fun MainScreenSections(
             }
             editorPickDukanItems(
                 dukans = dukans,
-                onDukanClick = listener::onEditorPickDukanClicked
-            )
+                onDukanClick = listener::onEditorPickDukanClicked,
+                    onClickFavorite = listener::onFavoriteDukanClicked
+                )
+
         }
     }
 }

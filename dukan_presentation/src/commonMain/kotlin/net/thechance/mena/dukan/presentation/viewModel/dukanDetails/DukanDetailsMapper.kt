@@ -7,7 +7,10 @@ import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiColor
 import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 fun Dukan.toUiState() = DukanDetailsUiState.DukanInfo(
+    dukanId = id.toString(),
+    isFavorite = isFavorite,
     name = name,
     imageUrl = imageUrl,
     coordinates = DukanDetailsUiState.Coordinates(

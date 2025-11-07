@@ -59,24 +59,25 @@ fun AddLocationMap(
             maxHeight = maxHeight,
         )
 
-        MaplibreMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraState = camera,
-            baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
-            onMapClick = { _, _ ->
-                if (longitude == 29.0) {
-                    onClickMap()
-                }
-                ClickResult.Consume
-            },
-            options =
-                MapOptions(
-                    gestureOptions = GestureOptions.AllDisabled,
-                    ornamentOptions = OrnamentOptions.AllDisabled,
-                    renderOptions = RenderOptions.Standard
-                )
-        )
-        Anchor(anchorLocation = anchorLocation)
+            MaplibreMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraState = camera,
+                baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
+                onMapClick = { _, _ ->
+                    if (longitude == 29.0) {
+                        onClickMap()
+                    }
+                    ClickResult.Consume
+                },
+                options =
+                    MapOptions(
+                        gestureOptions = GestureOptions.AllDisabled,
+                        ornamentOptions = OrnamentOptions.AllDisabled,
+                        renderOptions = RenderOptions.Standard
+                    )
+            )
+        Anchor(anchorLocation = anchorLocation, sreenWidth = maxWidth)
+
         EditMapButton(
             anchorLocation != null,
             onEditClick = onEditClick,

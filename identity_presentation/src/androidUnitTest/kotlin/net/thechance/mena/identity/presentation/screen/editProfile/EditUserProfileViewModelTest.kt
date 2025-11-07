@@ -168,10 +168,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             coEvery { userRepository.uploadUserProfileImage(any()) } returns Unit
             coEvery { userRepository.deleteUserProfileImage() } returns Unit
             coEvery {
-                userRepository.updateUser(
-                    user = any(),
-                    shouldUpdateImage = any()
-                )
+                userRepository.updateUser(user = any())
             } returns Unit
 
             viewModel.onChangeFirstName("new User")
@@ -186,10 +183,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             }
 
             coVerify(exactly = 1) {
-                userRepository.updateUser(
-                    user = any(),
-                    shouldUpdateImage = any()
-                )
+                userRepository.updateUser(user = any())
             }
         }
 
@@ -202,10 +196,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             coEvery { userRepository.deleteUserProfileImage() } returns Unit
 
             coEvery {
-                userRepository.updateUser(
-                    user = any(),
-                    shouldUpdateImage = any()
-                )
+                userRepository.updateUser(user = any())
             } throws Exception()
 
             viewModel.onChangeFirstName("new User")
@@ -220,10 +211,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             }
 
             coVerify(exactly = 1) {
-                userRepository.updateUser(
-                    user = any(),
-                    shouldUpdateImage = any()
-                )
+                userRepository.updateUser(user = any())
             }
         }
 

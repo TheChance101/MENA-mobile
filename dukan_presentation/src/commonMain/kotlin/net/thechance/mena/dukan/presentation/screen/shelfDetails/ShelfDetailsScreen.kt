@@ -119,8 +119,7 @@ private fun ShelfDetailsAppBar(
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                // when the cart contains products
-                isBadgeVisible = false,
+                isBadgeVisible = state.totalPrice > 0,
                 onClick = listener::onViewCartClicked
             ) {
                 Icon(

@@ -2,6 +2,7 @@ package net.thechance.mena.identity.presentation.screen.editProfile.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
@@ -98,7 +101,11 @@ private fun Option(
             .fillMaxWidth()
             .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
-            .clickable(onClick = onClick)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rippleIndication(),
+                onClick = onClick
+            )
             .padding(Theme.spacing._12),
         verticalAlignment = Alignment.CenterVertically,
     ) {

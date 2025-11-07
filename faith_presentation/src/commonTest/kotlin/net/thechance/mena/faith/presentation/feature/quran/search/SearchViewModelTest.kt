@@ -15,7 +15,9 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
-import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgs
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchEffect
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchViewModel
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals

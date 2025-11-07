@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_favorite_filled
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.share_icon
@@ -66,11 +68,23 @@ fun NoImageDukanAppBar(
                 contentDescription = stringResource(Res.string.share_icon),
                 onClick = {}
             )
-            AppBarIcon(
-                painter = painterResource(Res.drawable.ic_favorite),
-                contentDescription = stringResource(Res.string.favorite_icon),
-                onClick = {}
-            )
+            Crossfade(
+                targetState = state.isFavorite,
+                label = "favoriteCrossfade"
+            ) { isFavorite ->
+                val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
+                else Res.drawable.ic_favorite
+
+                AppBarIcon(
+                    painter = painterResource(favoriteIcon),
+                    contentDescription = stringResource(Res.string.favorite_icon),
+                    onClick = {
+                        listener.onFavoriteDukanClicked(
+                            dukanId = state.dukanId,
+                        )
+                    }
+                )
+            }
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
@@ -87,7 +101,8 @@ private fun AppBarIcon(
     painter: Painter,
     contentDescription: String,
     isBadgeVisible: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AppBarOptionContainer(
         onClick = onClick,
@@ -97,7 +112,7 @@ private fun AppBarIcon(
             painter = painter,
             tint = Theme.colorScheme.primary.primary,
             contentDescription = contentDescription,
-            modifier = Modifier.size(40.dp)
+            modifier = modifier.size(40.dp)
         )
     }
 }

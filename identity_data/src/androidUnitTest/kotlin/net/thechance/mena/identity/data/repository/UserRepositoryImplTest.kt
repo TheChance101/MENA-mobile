@@ -30,14 +30,12 @@ import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
-import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -156,7 +154,7 @@ UserRepositoryImplTest {
     fun `updateUser() should call upsert user when try to update user`() = runTest {
         val client = mockHttpClient(fakeProfileResponse)
         userRepositoryImpl = UserRepositoryImpl(client, userDao )
-        userRepositoryImpl.updateUser(fakeUser, false)
+        userRepositoryImpl.updateUser(fakeUser)
         coVerify { userDao.upsert(any()) }
     }
 

@@ -69,10 +69,6 @@ class EditUserProfileViewModel(
         }
     }
 
-    private fun onGetUserInfoError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
-    }
-
     override fun onChangeFirstName(firstName: String) {
         updateState { copy(firstName = firstName) }
     }
@@ -99,6 +95,65 @@ class EditUserProfileViewModel(
             onError = ::handleSaveError,
             dispatcher = dispatcher
         )
+    }
+
+    override fun onClickCancelButton() {
+        sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
+    }
+
+    override fun onClickShowLogoutOptions() {
+        updateState { copy(showLogoutDialog = true) }
+    }
+
+    override fun onChangeDate(day: Int, month: Int, year: Int) {
+        updateState { copy(birthDate = LocalDate(year, month, day)) }
+    }
+
+    override fun clearErrorMessage() {
+        updateState { copy(errorMessage = null) }
+    }
+
+    override fun onClickEditImage() {
+        updateState { copy(showEditImageDialog = true) }
+    }
+
+    override fun onDismissEditImageDialog() {
+        updateState { copy(showEditImageDialog = false) }
+    }
+
+    override fun onDismissLogoutDialog() {
+        updateState { copy(showLogoutDialog = false) }
+    }
+
+    override fun onRemoveProfileImage() {
+        updateState {
+            copy(
+                profileImageUrl = "",
+                profileImageBitmap = null,
+                profileImageAction = EditUserProfileUIState.ProfileImageAction.DELETE
+            )
+        }
+    }
+
+    override fun onRequireCropImage(imageBitmap: ImageBitmap) {
+        cacheRequiredCropImage(imageBitmap)
+    }
+
+    override fun onOpenCamera() {
+        updateState { copy(showCamera = false) }
+    }
+
+    override fun onTakeImageFromCamera() {
+        tryToExecute(
+            function = ::requestCameraPermission,
+            onSuccess = { onCameraPermissionSuccess() },
+            onError = ::handleCameraPermissionError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetUserInfoError(throwable: Throwable) {
+        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
     private fun validateFormInputs(): Boolean {
@@ -140,17 +195,28 @@ class EditUserProfileViewModel(
             birthDate = value.birthDate ?: getCurrentDate(),
             gender = value.gender,
         )
+        updateProfileImage()
+        userRepository.updateUser(user = user)
+    }
 
-        value.profileImageBitmap?.let {
-            userRepository.uploadUserProfileImage(
-                imageByteArray = imageDecoder.encodeImage(it)
-            )
+    private suspend fun updateProfileImage() {
+        val imageBitmap = state.value.profileImageBitmap
+        val action = state.value.profileImageAction
+        when (action) {
+            EditUserProfileUIState.ProfileImageAction.UPDATE -> {
+                imageBitmap?.let {
+                    userRepository.uploadUserProfileImage(
+                        imageByteArray = imageDecoder.encodeImage(it)
+                    )
+                }
+            }
+
+            EditUserProfileUIState.ProfileImageAction.DELETE -> {
+                userRepository.deleteUserProfileImage()
+            }
+
+            EditUserProfileUIState.ProfileImageAction.NONE -> Unit
         }
-
-        userRepository.updateUser(
-            user = user,
-            shouldUpdateImage = value.shouldUpdateImage,
-        )
     }
 
     private fun handleSaveSuccess() {
@@ -160,47 +226,6 @@ class EditUserProfileViewModel(
 
     private fun handleSaveError(throwable: Throwable) {
         updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
-    }
-
-    override fun onClickCancelButton() {
-        sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
-    }
-
-    override fun onClickShowLogoutOptions() {
-        updateState { copy(showLogoutDialog = true) }
-    }
-
-    override fun onChangeDate(day: Int, month: Int, year: Int) {
-        updateState { copy(birthDate = LocalDate(year, month, day)) }
-    }
-
-    override fun clearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
-    override fun onClickEditImage() {
-        updateState { copy(showEditImageDialog = true) }
-    }
-
-    override fun onDismissEditImageDialog() {
-        updateState { copy(showEditImageDialog = false) }
-    }
-
-    override fun onDismissLogoutDialog() {
-        updateState { copy(showLogoutDialog = false) }
-    }
-
-    override fun onRemoveProfileImage() {
-        updateState {
-            copy(
-                profileImageUrl = "",
-                profileImageBitmap = null,
-            )
-        }
-    }
-
-    override fun onRequireCropImage(imageBitmap: ImageBitmap) {
-        cacheRequiredCropImage(imageBitmap)
     }
 
     private fun cacheRequiredCropImage(imageBitmap: ImageBitmap) {
@@ -226,7 +251,7 @@ class EditUserProfileViewModel(
                     updateState {
                         copy(
                             profileImageBitmap = imageByteArray?.let { imageDecoder.decodeImage(it) },
-                            shouldUpdateImage = true
+                            profileImageAction = EditUserProfileUIState.ProfileImageAction.UPDATE
                         )
                     }
                 }
@@ -237,15 +262,6 @@ class EditUserProfileViewModel(
 
     private fun onCacheCropImageError(throwable: Throwable) {
         updateState { copy(errorMessage = mapErrorMessage(throwable)) }
-    }
-
-    override fun onTakeImageFromCamera() {
-        tryToExecute(
-            function = ::requestCameraPermission,
-            onSuccess = { onCameraPermissionSuccess() },
-            onError = ::handleCameraPermissionError,
-            dispatcher = dispatcher
-        )
     }
 
     private suspend fun requestCameraPermission() {
@@ -270,10 +286,6 @@ class EditUserProfileViewModel(
 
             else -> updateState { copy(errorMessage = mapErrorMessage(throwable)) }
         }
-    }
-
-    override fun onOpenCamera() {
-        updateState { copy(showCamera = false) }
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {

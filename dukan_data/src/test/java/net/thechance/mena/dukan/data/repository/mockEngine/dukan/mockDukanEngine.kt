@@ -172,7 +172,8 @@ fun MockRequestHandleScope.defaultDukanDetailsResponse() = respond(
             color = DukanColorDto(Uuid.random(), "#FF0000"),
             style = "WIDE_IMAGE",
             latitude = 30.0444,
-            longitude = 31.2357
+            longitude = 31.2357,
+            isFavorite = false
         )
     ),
     status = HttpStatusCode.OK,

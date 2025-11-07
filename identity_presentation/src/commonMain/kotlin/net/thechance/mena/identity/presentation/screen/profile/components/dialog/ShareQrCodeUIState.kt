@@ -3,6 +3,11 @@ package net.thechance.mena.identity.presentation.screen.profile.components.dialo
 import org.jetbrains.compose.resources.StringResource
 
 data class ShareQrCodeUIState(
-    val qrCodeUrl: String? = null,
+    val showDialog: Boolean = false,
+    val isLoading: Boolean = false,
+    val showSnackBar: Boolean = false,
+    val snackBarTitle: StringResource? = null,
+    val snackBarMessage: StringResource? = null,
+    val shareLinkUrl: String = "",
     val errorMessage: StringResource? = null
 )

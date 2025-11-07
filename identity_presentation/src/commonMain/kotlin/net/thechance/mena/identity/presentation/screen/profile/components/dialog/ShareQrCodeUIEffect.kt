@@ -2,4 +2,5 @@ package net.thechance.mena.identity.presentation.screen.profile.components.dialo
 
 interface ShareQrCodeUIEffect {
     data object OnClickDownload: ShareQrCodeUIEffect
+    data object OnCopyToClipBoard: ShareQrCodeUIEffect
 }

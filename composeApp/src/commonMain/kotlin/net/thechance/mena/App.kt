@@ -16,10 +16,9 @@ fun App() {
     val currentLanguage by localizationService.observeLanguage().collectAsStateWithLifecycle()
     MenaTheme(
         language = currentLanguage.iso,
-        content =
-            {
-                SetStatusBarIconsDark()
-                EntryPoint()
-            }
+        content = {
+            SetStatusBarIconsDark()
+            EntryPoint()
+        }
     )
 }

@@ -39,6 +39,7 @@ fun MobileNumberTextField(
     onValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
     leadingContent: (@Composable () -> Unit)? = null,
+    maxCharacters: Int = 16,
     title: String? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -71,7 +72,8 @@ fun MobileNumberTextField(
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
         visualTransformation = visualTransformation,
-        modifier = modifier
+        modifier = modifier,
+        maxCharacters = maxCharacters,
     )
 }
 

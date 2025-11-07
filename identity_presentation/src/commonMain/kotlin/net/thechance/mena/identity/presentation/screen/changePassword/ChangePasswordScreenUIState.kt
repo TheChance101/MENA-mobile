@@ -1,11 +1,12 @@
 package net.thechance.mena.identity.presentation.screen.changePassword
 
+import cafe.adriel.voyager.navigator.CurrentScreen
 import org.jetbrains.compose.resources.StringResource
 
 data class ChangePasswordScreenUIState(
     val currentPasswordUIState: CurrentPasswordContentUIState = CurrentPasswordContentUIState(),
     val newPasswordUIState: NewPasswordContentUIState = NewPasswordContentUIState(),
-    val currentPage: Int = 0 ,
+    val currentPage: PasswordPage = PasswordPage.CURRENT_PASSWORD,
     val errorMessage: StringResource? = null,
     val isLoading: Boolean = false,
 ){
@@ -25,5 +26,12 @@ data class ChangePasswordScreenUIState(
         val newPasswordErrorMessage: StringResource? = null,
         val confirmPasswordErrorMessage: StringResource? = null,
     )
+
 }
+
+enum class PasswordPage(val index:Int) {
+    CURRENT_PASSWORD(0),
+    NEW_PASSWORD(1)
+}
+
 

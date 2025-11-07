@@ -55,8 +55,8 @@ internal fun PhoneNumberInput(
 }
 
 private val defaultPhoneMasks = mapOf(
-    8 to "## ### ###",
-    9 to "### ### ###",
-    10 to "### ### ####",
-    11 to "#### #### ###",
+    8 to "##\u00A0###\u00A0###",
+    9 to "###\u00A0###\u00A0###",
+    10 to "###\u00A0###\u00A0####",
+    11 to "####\u00A0####\u00A0###",
 )

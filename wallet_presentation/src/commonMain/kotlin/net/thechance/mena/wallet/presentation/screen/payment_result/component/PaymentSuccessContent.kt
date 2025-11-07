@@ -1,13 +1,12 @@
 package net.thechance.mena.wallet.presentation.screen.payment_result.component
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
@@ -27,28 +26,24 @@ internal fun PaymentSuccessContent(
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
-    Box(
+    Column (
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp)  
+            .padding(top = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .heightIn(min = 500.dp)
-        ) {
-            PaymentResultCard(
-                modifier = Modifier.align(Alignment.Center),
-                image = painterResource(Res.drawable.transaction_success),
-                title = stringResource(Res.string.transaction_successful),
-                name = state.receiverName,
-                amount = state.amount,
-                paymentStatus = state.paymentStatus,
-            )
-        }
+        Spacer(modifier = Modifier.weight(1f))
+        PaymentResultCard(
+            image = painterResource(Res.drawable.transaction_success),
+            title = stringResource(Res.string.transaction_successful),
+            name = state.receiverName,
+            amount = state.amount,
+            paymentStatus = state.paymentStatus,
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
         PaymentActionButtons(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier.padding(top = 12.dp),
             primaryButtonText = stringResource(Res.string.show_transaction_details),
             onPrimaryButtonClick = interactionListener::onShowTransactionDetailsClicked,
             onCancelClicked = interactionListener::onCloseClicked,
