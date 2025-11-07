@@ -9,10 +9,10 @@ interface SearchInteractionListener {
     fun onBackClicked()
     fun onClearSearchClicked()
     fun onRetryClicked()
-    fun onSelectDukans()
-    fun onSelectProducts()
+    fun onDukansSelected()
+    fun onProductsSelected()
     fun onDukanClicked(dukanId: Uuid)
-    fun onDukanFavoriteClicked(dukanId: Uuid,isFavorite:Boolean)
+    fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite:Boolean)
     fun onProductClicked(productId: Uuid)
     fun onSnackBarDismissed()
 }

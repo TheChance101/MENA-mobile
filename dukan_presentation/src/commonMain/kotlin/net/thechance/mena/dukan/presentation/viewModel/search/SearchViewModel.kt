@@ -6,12 +6,15 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.search_general_error
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.model.DukanPreview
+import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -20,9 +23,11 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class SearchViewModel(
-    private val searchRepository: SearchRepository
+    private val searchRepository: SearchRepository,
+    defaultDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<SearchUiState, SearchEffect>(
-    initialState = SearchUiState()
+    initialState = SearchUiState(),
+    defaultDispatcher = defaultDispatcher
 ), SearchInteractionListener {
 
     override fun onSearchChanged(query: String) {
@@ -48,7 +53,7 @@ class SearchViewModel(
         }
     }
 
-    override fun onSelectDukans() {
+    override fun onDukansSelected() {
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans
@@ -57,7 +62,7 @@ class SearchViewModel(
         searchWithQuery(query = state.value.searchQuery)
     }
 
-    override fun onSelectProducts() {
+    override fun onProductsSelected() {
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products
@@ -70,7 +75,7 @@ class SearchViewModel(
         emitEffect(effect = SearchEffect.NavigateToDukanDetails(dukanId = dukanId.toString()))
     }
 
-    override fun onDukanFavoriteClicked(dukanId: Uuid,isFavorite:Boolean) {
+    override fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite: Boolean) {
 
         // Todo ( add to dukan favorites in repository of favorites user Story )
 
@@ -132,20 +137,20 @@ class SearchViewModel(
     }
 
     private fun getDukansByQueryBlock(validQuery: String): Flow<PagingData<SearchUiState.DukanUiState>> {
-         return createPagingSourceFlow(
-             mapper = { it.toSearchUiState() },
-             onError = { exception -> onGetDukansByQueryError(exception) },
-             block = { pageNumber,_ ->
-                 searchRepository.findDukansByQuery(
+        return createPagingSourceFlow(
+            mapper = DukanPreview::toSearchUiState,
+            onError = { exception -> onGetDukansByQueryError(exception) },
+            block = { pageNumber, _ ->
+                searchRepository.findDukansByQuery(
                     query = validQuery,
                     page = pageNumber,
                     size = 15
-                 ).items
-             }
-         )
+                ).items
+            }
+        )
     }
 
-    private fun onGetDukansByQueryCollect(dukanPagingData:PagingData<SearchUiState.DukanUiState> ) {
+    private fun onGetDukansByQueryCollect(dukanPagingData: PagingData<SearchUiState.DukanUiState>) {
         updateState {
             copy(
                 dukanPagingFlow = flowOf(value = dukanPagingData),
@@ -155,6 +160,7 @@ class SearchViewModel(
     }
 
     private fun onGetDukansByQueryError(exception: Exception) {
+        println("DukanError: $exception")
         when (exception) {
             is NoInternetException -> updateState {
                 copy(
@@ -185,9 +191,9 @@ class SearchViewModel(
 
     private fun getProductsByQueryBlock(validQuery: String): Flow<PagingData<SearchUiState.ProductUiState>> {
         return createPagingSourceFlow(
-            mapper = { it.toSearchUiState() },
+            mapper = ProductSearch::toSearchUiState,
             onError = { exception -> onGetProductsByQueryError(exception) },
-            block = { pageNumber,_ ->
+            block = { pageNumber, _ ->
                 searchRepository.findProductsByQuery(
                     query = validQuery,
                     page = pageNumber,

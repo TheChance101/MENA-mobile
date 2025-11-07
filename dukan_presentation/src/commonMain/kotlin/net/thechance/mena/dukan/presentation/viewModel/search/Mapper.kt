@@ -2,12 +2,12 @@
 
 package net.thechance.mena.dukan.presentation.viewModel.search
 
-import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.entity.Product
+import net.thechance.mena.dukan.domain.model.DukanPreview
+import net.thechance.mena.dukan.domain.entity.ProductSearch
 import kotlin.uuid.ExperimentalUuidApi
 
 
-fun Dukan.toSearchUiState(): SearchUiState.DukanUiState{
+fun DukanPreview.toSearchUiState(): SearchUiState.DukanUiState{
     return SearchUiState.DukanUiState(
         id = id,
         title = name,
@@ -16,12 +16,12 @@ fun Dukan.toSearchUiState(): SearchUiState.DukanUiState{
     )
 }
 
-fun Product.toSearchUiState(): SearchUiState.ProductUiState{
+fun ProductSearch.toSearchUiState(): SearchUiState.ProductUiState{
     return SearchUiState.ProductUiState(
         id = id,
         name = name,
-        imageUrl = imageUrls.first(),
-        dukanName = description,
+        imageUrl = imageUrl,
+        dukanName = dukanName,
         price = price
     )
 }
