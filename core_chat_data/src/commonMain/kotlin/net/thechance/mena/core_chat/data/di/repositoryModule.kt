@@ -31,6 +31,7 @@ internal val repositoryModule = module {
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
+            dataStore = get()
         )
     }
 
