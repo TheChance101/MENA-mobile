@@ -154,7 +154,7 @@ class ProfileScreen : BaseScreen<
                                     modifier = Modifier.fillMaxWidth(),
                                 )
                                 InviteFriendsCard(
-                                    onCLick = listener::onInviteFriendsClicked
+                                    onClick = listener::onInviteFriendsClicked
                                 )
                             }
                         }
