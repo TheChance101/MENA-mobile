@@ -54,11 +54,6 @@ fun ProductDetailsAppBar(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         ) {
             AppBarIcon(
-                painter = painterResource(Res.drawable.ic_share),
-                contentDescription = stringResource(Res.string.share_icon),
-                onClick = listener::onShareClicked
-            )
-            AppBarIcon(
                 painter = painterResource(
                     if (state.isFavorite) {
                         Res.drawable.ic_favorite_filled

@@ -8,7 +8,6 @@ interface ProductDetailsInteractionListener {
     fun onMinusClicked(productId: String)
     fun onDismissSnackBar()
     fun onViewCartClicked()
-    fun onShareClicked()
     fun onToggleProductToFavoriteClicked()
     fun onSecondaryImageClicked(imageUrl: String)
     fun onRetryClicked()

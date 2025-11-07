@@ -184,10 +184,6 @@ class ProductDetailsViewModel(
         emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId))
     }
 
-    override fun onShareClicked() {
-        //TODO
-    }
-
     override fun onToggleProductToFavoriteClicked() {
         val currentProduct = state.value.product
         val isCurrentlyFavorite = state.value.isFavorite
