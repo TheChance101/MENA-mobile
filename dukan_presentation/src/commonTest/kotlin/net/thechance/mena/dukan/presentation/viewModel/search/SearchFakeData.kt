@@ -17,7 +17,8 @@ val fakeDefactoDukanPaged = PagedResult(
         DukanPreview(
             id = Uuid.random(),
             name = "Defacto",
-            imageUrl = "https://example.com/dukan1.jpg"
+            imageUrl = "https://example.com/dukan1.jpg",
+            isFavorite = false,
         ),
     )
 )
