@@ -109,16 +109,18 @@ internal class NearbyMosquesViewModel(
 //        TODO("Not yet implemented")
     }
     private fun handleSearchSuccess(mosques: List<Mosque>, query: String) {
-        if (mosques.isEmpty()) {
-            updateState {
-                it.copy(
-                    isNoMosquesCardVisible = true,
-                    isSearchResultsBottomSheetVisible = false,
-                    isLoading = false
-                )
-            }
+        if (mosques.isEmpty()&& !uiState.value.isSearchResultsBottomSheetVisible) {
             viewModelScope.launch {
-                delay(3000L)
+                updateState {
+                    it.copy(
+                        isNoMosquesCardVisible = true,
+                        isSearchResultsBottomSheetVisible = false,
+                        isLoading = false
+                    )
+                }
+                if (uiState.value.isNoMosquesCardVisible) {
+                    delay(3000L)
+                }
                 updateState {
                     it.copy(
                         isNoMosquesCardVisible = false,
