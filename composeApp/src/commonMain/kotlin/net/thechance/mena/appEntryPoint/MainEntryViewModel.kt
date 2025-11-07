@@ -32,7 +32,9 @@ class MainEntryViewModel(
 
     private fun getUserAccessToken() {
         viewModelScope.launch {
-            _state.update { it.copy(userAccessToken = authorizationService.getAccessToken()) }
+            authorizationService.observeAccessToken().collect { userAccessToken ->
+                _state.update { it.copy(userAccessToken = userAccessToken) }
+            }
         }
     }
 }
