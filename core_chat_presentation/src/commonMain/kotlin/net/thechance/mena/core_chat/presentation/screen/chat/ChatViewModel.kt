@@ -80,7 +80,6 @@ class ChatViewModel(
     private val messagesMutex = Mutex()
 
     private var hasResentPendingMessages = false
-    private var isInitialConnection = true
     private val chatHistoryPaginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
@@ -191,24 +190,17 @@ class ChatViewModel(
         observeConnectionStatus(chat.id)
         observeMessageReactions()
     }
+
     private fun observeConnectionStatus(chatId: Uuid) {
         tryToCollect(
-            collect = { messageRepository.observeConnectionStatus() },
-            onCollect = { isConnected ->
-                if (isConnected == true) {
-                    if (isInitialConnection) {
-                        isInitialConnection = false
-                    } else {
-                        val result = getChatHistory(INITIAL_PAGE)
-                        onGetChatHistorySuccess(result)
-                    }
-                }
-            },
+            collect = { messageRepository.observeConnectionStatus(chatId) },
+            onCollect = { },
             onError = {
                 showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
             }
         )
     }
+
     private fun onGetChatError() {
         viewModelScope.launch {
             delay(100)
@@ -389,7 +381,11 @@ class ChatViewModel(
     }
 
     private suspend fun getChatHistory(page: Int): PagedData<Message> {
-        val chatId = state.value.chatId ?: return PagedData(emptyList(), 0, false)
+        val chatId = state.value.chatId ?: return PagedData(
+            data = emptyList(),
+            totalItems = 0,
+            isLastPage = false
+        )
         return messageRepository.loadMessages(
             chatId = chatId,
             page = page,
@@ -521,7 +517,8 @@ class ChatViewModel(
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
         val currentUserId = state.value.chatRequesterId ?: return
         val message = _messages.value.firstOrNull { it.id == messageId } ?: return
-        val hasSameReaction = message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+        val hasSameReaction =
+            message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
 
         if (hasSameReaction) {
             tryToExecute(
@@ -535,6 +532,7 @@ class ChatViewModel(
             )
         }
     }
+
     private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
         val currentUserId = state.value.chatRequesterId ?: return
         safeUpdateMessages { messages ->
@@ -568,6 +566,7 @@ class ChatViewModel(
             }
         }
     }
+
     private fun observeMessageReactions() {
         tryToCollect(
             collect = { messageRepository.observeMessageReactions() },

@@ -9,7 +9,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 
 @Dao
 interface PendingMessageDao {
-    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessage(message: PendingMessageLocalDto)
 
     @Query("SELECT * FROM pending_messages WHERE chat_id = :chatId ORDER BY timestamp ASC")

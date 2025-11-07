@@ -10,6 +10,7 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import org.koin.core.qualifier.named
 import org.koin.core.scope.Scope
@@ -24,6 +25,7 @@ internal val localDataModule = module {
     single<PendingMessageDao> { get<ChatDatabase>().getPendingMessageDao() }
     single<CachedMessageDao> { get<ChatDatabase>().getCachedMessageDao() }
     single<CachedChatDao> { get<ChatDatabase>().getChatDao() }
+    single<ChatSyncTimeDao> { get<ChatDatabase>().getChatSyncTimeDao() }
 }
 
 expect fun Scope.createContactsProvider(): ContactsProvider

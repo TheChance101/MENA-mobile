@@ -2,10 +2,6 @@
 
 package net.thechance.mena.core_chat.data.repository
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -18,12 +14,14 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
@@ -34,6 +32,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
@@ -60,7 +59,7 @@ class MessageRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
-    private val dataStore: DataStore<Preferences>,
+    private val chatSyncTimeDao: ChatSyncTimeDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -85,25 +84,19 @@ class MessageRepositoryImpl(
         }
 
         val now = Clock.System.now().toString()
-        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull()
+        val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
         if (lastSyncTime != null) {
-            syncAfterLastUpdate(chatId, lastSyncTime)
+            syncAfterLastUpdate(chatId)
         } else {
-            dataStore.edit { preferences ->
-                preferences[LAST_SYNC_TIME_KEY] = now
-            }
+            chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
         }
 
-        val isLastPage = messages.size < pageSize && cachedMessages.isNotEmpty()
-
         val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
-
         return PagedData(
             data = messages,
             totalItems = totalCachedItems,
-            isLastPage = isLastPage,
+            isLastPage = false,
         )
-
     }
 
     private suspend fun getFromRemote(
@@ -127,23 +120,30 @@ class MessageRepositoryImpl(
         return page
     }
 
-    suspend fun syncAfterLastUpdate(chatId: Uuid, newSyncTime: String) {
-        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull() ?: return
+    suspend fun syncAfterLastUpdate(chatId: Uuid) {
+        try {
+            val now = Clock.System.now()
+            val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString()) ?: return
 
-        val response = tryNetworkCall<List<MessageDto>>(
-            bodyType = typeInfo<List<MessageDto>>()
-        ) {
-            client.get(getMessagesUpdatesEndPoint(chatId)) {
-                parameter(UPDATED_AFTER_PARAMETER, Instant.parse(lastSyncTime))
-            }
-        }
-
-        if (response != null) {
-            dataStore.edit { preferences ->
-                preferences[LAST_SYNC_TIME_KEY] = newSyncTime
+            val response = tryNetworkCall<List<MessageDto>>(
+                bodyType = typeInfo<List<MessageDto>>()
+            ) {
+                client.get(getMessagesUpdatesEndPoint(chatId)) {
+                    parameter(UPDATED_AFTER_PARAMETER, Instant.parse(lastSyncTime))
+                }
             }
 
-            messagesFlow.emitAll(response.mapNotNull(MessageDto::toDomain).asFlow())
+            if (response != null) {
+                chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
+
+                cachedMessageDao.insertAllMessages(
+                    response.toListOfMessages().toCachedMessageLocalDto()
+                )
+
+                messagesFlow.emitAll(response.mapNotNull(MessageDto::toDomain).asFlow())
+            }
+        } catch (e: Throwable) {
+            println("Sync Messages After Last Update Error : ${e.printStackTrace()}")
         }
     }
 
@@ -274,8 +274,10 @@ class MessageRepositoryImpl(
         )
     }
 
-    override fun observeConnectionStatus(): Flow<Boolean> {
-        return webSocketManager.connectionStatus
+    override fun observeConnectionStatus(chatId: Uuid): Flow<Boolean> {
+        return webSocketManager.connectionStatus.onEach { isConnected ->
+            if (isConnected) syncAfterLastUpdate(chatId)
+        }
     }
 
     override suspend fun addMessageReaction(messageId: Uuid, emoji: String) {
@@ -310,7 +312,6 @@ class MessageRepositoryImpl(
     }
 
     private companion object {
-        val LAST_SYNC_TIME_KEY = stringPreferencesKey("last_sync_time")
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
         const val UPDATED_AFTER_PARAMETER = "updatedAfter"
