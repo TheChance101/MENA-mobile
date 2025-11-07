@@ -52,15 +52,11 @@ fun ReciterItem(
                 isSelected = isSelected,
                 onSelect = onSelect,
                 modifier = contentModifier
-                    .background(
-                        color = Theme.colorScheme.background.surfaceLow,
-                        shape = RoundedCornerShape(Theme.radius.md),
-                    ).clip(
-                        shape = RoundedCornerShape(Theme.radius.md),
-                    ).clickable(onClick = onSelect)
             )
         },
         modifier = modifier
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._8)
     )
 }
 
@@ -75,8 +71,12 @@ private fun CardContent(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._8)
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .background(
+                color = Theme.colorScheme.background.surfaceLow,
+                shape = RoundedCornerShape(Theme.radius.md)
+            )
+            .clickable(onClick = onSelect)
             .padding(Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)

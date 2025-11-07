@@ -9,14 +9,17 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.args.TilawahArgs
 
 class TilawahViewModel(
     val quranRepository: QuranRepository,
-    private val tilawahArgs: TilawahArgs
+    private val tilawahArgs: TilawahArgs,
+    snackBarHandler: SnackbarHandler,
 ) :
     BaseViewModel<TilawahUiState, TilawahEffect>(
-        TilawahUiState()
+        initialState = TilawahUiState(),
+        snackbarHandler = snackBarHandler,
     ), TilawahInteractionListener {
 
     init {
@@ -119,6 +122,6 @@ class TilawahViewModel(
 
     private fun filterRecitersForSurah(reciters: List<Reciter>, surahId: Int?): List<Reciter> {
         // TODO: After the domain is done, integrate this function to load the real data
-          return  emptyList()
+        return emptyList()
     }
 }

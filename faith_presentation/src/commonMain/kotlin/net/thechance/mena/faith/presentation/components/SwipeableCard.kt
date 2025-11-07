@@ -69,7 +69,9 @@ fun SwappableCard(
             visible = animatedOffsetX < 0f,
             enter = fadeIn(tween()),
             exit = fadeOut(tween()),
-            modifier = Modifier.matchParentSize()
+            modifier = Modifier
+                .matchParentSize()
+                .padding(vertical = Theme.spacing._4)
         ) {
             SwipeBackground(
                 painter = backgroundIcon,
