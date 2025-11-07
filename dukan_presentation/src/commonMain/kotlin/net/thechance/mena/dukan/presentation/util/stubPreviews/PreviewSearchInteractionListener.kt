@@ -11,10 +11,10 @@ object PreviewSearchInteractionListener: SearchInteractionListener {
     override fun onBackClicked() {}
     override fun onClearSearchClicked() {}
     override fun onRetryClicked() {}
-    override fun onSelectDukans() {}
-    override fun onSelectProducts() {}
+    override fun onDukansSelected() {}
+    override fun onProductsSelected() {}
     override fun onDukanClicked(dukanId: Uuid) {}
-    override fun onDukanFavoriteClicked(dukanId: Uuid, isFavorite: Boolean) {}
+    override fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite: Boolean) {}
     override fun onProductClicked(productId: Uuid) {}
     override fun onSnackBarDismissed() {}
 }
