@@ -165,6 +165,5 @@ class PrayerTimeViewModelTest {
             addressType = AddressType.Home
         )
 
-        val emptyAddressLine = fakeAddress.copy(addressLine = "")
     }
 }
