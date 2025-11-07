@@ -75,6 +75,8 @@ private fun Content(
                 isNotBlankQuery = state.query.isNotBlank(),
                 isNotEmptyResult = state.searchResults.isNotEmpty(),
                 results = state.searchResults,
+                modifier = Modifier.fillMaxWidth().weight(1f).padding(top = Theme.spacing._16)
+
             )
         }
     }
@@ -91,7 +93,7 @@ private fun ResultList(
     if (!shouldShowResults) return
 
     LazyColumn(
-        modifier = modifier.fillMaxWidth().padding(top = Theme.spacing._16),
+        modifier = modifier,
     ) {
         items(results) { result ->
             ReciterItem(

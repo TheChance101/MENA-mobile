@@ -5,8 +5,8 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
-import net.thechance.mena.faith.data.mapper.toDomain
-import net.thechance.mena.faith.data.mapper.toDto
+import net.thechance.mena.faith.data.mapper.toReciter
+import net.thechance.mena.faith.data.mapper.toReciterDto
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
@@ -57,7 +57,7 @@ class QuranRepositoryImpl(
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
-        executeLocalSafely { ayahDao.searchReciters(query).map { it.toDomain() } }
+        executeLocalSafely { ayahDao.searchReciters(query).map { it.toReciter() } }
 
     override suspend fun getAyahSoundUrl(
         ayahNumber: Int,
@@ -75,20 +75,20 @@ class QuranRepositoryImpl(
     override suspend fun getReciters(): List<Reciter> = loadFromCacheOrFetch(
         cacheBlock = {
             executeLocalSafely { ayahDao.getAllReciters() }.takeIf { it.isNotEmpty() }
-                ?.map { it.toDomain() }
+                ?.map { it.toReciter() }
         },
-        networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toDomain() } },
+        networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toReciter() } },
         syncBlock = { reciters ->
-            executeLocalSafely { ayahDao.insertReciters(reciters.map { it.toDto() }) }
+            executeLocalSafely { ayahDao.insertReciters(reciters.map { it.toReciterDto() }) }
         }
     )
 
     override suspend fun getReciterById(reciterId: Int): Reciter = loadFromCacheOrFetch(
-        cacheBlock = { executeLocalSafely { ayahDao.getReciterById(reciterId) }.toDomain() },
+        cacheBlock = { executeLocalSafely { ayahDao.getReciterById(reciterId) }.toReciter() },
         networkBlock = {
             executeApiSafely { tilawahApiService.getReciters() }
                 .first { it.id == reciterId }
-                .toDomain()
+                .toReciter()
         }
     )
 

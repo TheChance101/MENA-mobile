@@ -46,8 +46,7 @@ class ReciterSearchViewModel(
         searchJob = tryToExecute(
             execute = { searchForReciter(query) },
             onSuccess = ::onSearchResultSuccess,
-            dispatcher = dispatcher,
-            delayMillis = SEARCH_DEBOUNCE_DELAY
+            dispatcher = dispatcher
         )
     }
 
@@ -80,6 +79,5 @@ class ReciterSearchViewModel(
 
     private companion object {
         const val MIN_SEARCH_QUERY_LENGTH = 2
-        const val SEARCH_DEBOUNCE_DELAY = 1000L
     }
 }
