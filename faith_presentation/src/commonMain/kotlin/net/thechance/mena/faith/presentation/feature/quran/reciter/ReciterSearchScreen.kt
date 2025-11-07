@@ -19,7 +19,7 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchHeader
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.ReciterUi
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahUiState
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.ReciterItem
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -86,7 +86,7 @@ private fun Content(
 private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
-    results: List<ReciterUi>,
+    results: List<TilawahUiState.ReciterUi>,
     modifier: Modifier = Modifier
 ) {
     val shouldShowResults = isNotBlankQuery && isNotEmptyResult
@@ -97,10 +97,10 @@ private fun ResultList(
     ) {
         items(results) { result ->
             ReciterItem(
-                reciter = result.name,
-                recitingType = result.recitingType,
-                isDownloaded = result.isDownloaded,
-                isSelectedShown = false
+                reciterDetails = result,
+                isSelected = false,
+                onSelect = {},
+                isSelectedShown = true,
             )
         }
     }

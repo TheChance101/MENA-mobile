@@ -18,8 +18,6 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScre
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchScreen
-import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
-import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen

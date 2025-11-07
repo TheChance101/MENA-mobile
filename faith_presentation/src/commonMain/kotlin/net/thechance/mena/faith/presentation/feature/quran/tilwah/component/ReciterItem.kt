@@ -37,6 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ReciterItem(
     reciterDetails: TilawahUiState.ReciterUi,
     isSelected: Boolean,
+    isSelectedShown: Boolean,
     onSelect: () -> Unit,
     onDeleteReciterClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -51,7 +52,8 @@ fun ReciterItem(
                 reciterDetails = reciterDetails,
                 isSelected = isSelected,
                 onSelect = onSelect,
-                modifier = contentModifier
+                modifier = contentModifier,
+                isSelectedShown = isSelectedShown
             )
         },
         modifier = modifier
