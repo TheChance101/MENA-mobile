@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -22,7 +22,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
-    OnSystemBackPressed { viewModel::onBackClicked }
+    OnSystemBackPressed(viewModel::onBackClicked)
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -43,7 +43,7 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
         targetState = state.cartState
     ) { targetState ->
         when (targetState) {
-            CartState.LOADING -> DotsProgressIndicator(modifier = Modifier.fillMaxSize())
+            CartState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
             CartState.NO_INTERNET -> NoInternetContent(
                 onRetry = viewModel::onRetryLoadCartClicked,
                 modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)

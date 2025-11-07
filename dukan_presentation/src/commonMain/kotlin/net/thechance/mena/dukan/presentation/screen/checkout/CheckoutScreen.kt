@@ -16,6 +16,7 @@ import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutS
 import net.thechance.mena.dukan.presentation.screen.checkout.component.ConfirmOrderButton
 import net.thechance.mena.dukan.presentation.screen.checkout.component.DeliveryAddressCard
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutEffect
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
@@ -51,6 +52,7 @@ fun CheckoutScreen(
 @Composable
 private fun CheckoutContent(state: CheckoutUiState, listener: CheckoutViewModel) {
     val products = state.items.collectAsLazyPagingItems()
+    OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
         topBar = {
             CheckoutAppBar(listener)

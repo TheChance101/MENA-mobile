@@ -2,22 +2,28 @@ package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
 
 class CategoryDukansViewModel(
     private val dukanDiscoveryRepository: DukanDiscoveryRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     private val savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryDukansUiState, CategoryDukansEffects>(
     initialState = CategoryDukansUiState(),
     defaultDispatcher = defaultDispatcher
 ), CategoryDukansInteractionListener {
+
+    private val dukansState: MutableStateFlow<PagingData<DukanUiState>> =
+        MutableStateFlow(PagingData.empty())
 
     init {
         loadCategory()
@@ -31,27 +37,27 @@ class CategoryDukansViewModel(
         emitEffect(CategoryDukansEffects.NavigateToDukanDetails(dukan.id))
     }
 
-    override fun onFavoriteClicked(dukan: DukanUiState) {
+    override fun onFavoriteDukanClicked(dukanId: String) {
         tryToExecute(
-            block = { toggleFavoriteStatus(dukan) },
-            onSuccess = { updateFavoriteState(dukan) }
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onSuccess = { isFavorite -> updateFavoriteDukanPagingData(dukanId, isFavorite) }
         )
+    }
+
+    private fun updateFavoriteDukanPagingData(
+        dukanId: String,
+        isFavorite: Boolean
+    ) {
+        val currentData = dukansState.value
+        val updatedData = currentData.map { dukan ->
+            if (dukan.id == dukanId) dukan.copy(isFavorite = isFavorite) else dukan
+        }
+        dukansState.value = updatedData
+        updateState { copy(dukans = dukansState) }
     }
 
     override fun onRetryClicked() {
         loadCategory()
-    }
-
-    private fun toggleFavoriteStatus(dukan: DukanUiState) {
-        if (dukan.isFavorite) {
-            // TODO remove dukan from favorites
-        } else {
-            // TODO add dukan to favorites
-        }
-    }
-
-    private fun updateFavoriteState(dukan: DukanUiState) {
-        // ToDo update favorite state in ui
     }
 
     private fun collectDukans(categoryId: String) {
@@ -68,19 +74,19 @@ class CategoryDukansViewModel(
                 }
             },
             onCollect = ::onDukansLoaded
-
         )
     }
 
     private fun onDukansLoaded(dukans: PagingData<DukanUiState>) {
+        dukansState.value = dukans
         updateState {
             copy(
-                dukans = flowOf(dukans),
+                dukans = dukansState
             )
         }
     }
 
-    private fun loadCategory() {
+    fun loadCategory() {
         val (categoryId, categoryTitle) = getCategoryArguments()
         updateCategoryState(categoryId, categoryTitle)
         collectDukans(categoryId)

@@ -1,9 +1,9 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +27,7 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_favorite_filled
 import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.wide_dukan_image
@@ -45,6 +46,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun WideImageDukanAppBar(
+    isBadgeVisible : Boolean,
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
@@ -59,7 +61,7 @@ fun WideImageDukanAppBar(
         onLeadingClick = onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                isBadgeVisible = true,
+                isBadgeVisible = isBadgeVisible,
                 onClick = { onCartClicked() }
             ) {
                 Icon(
@@ -72,7 +74,10 @@ fun WideImageDukanAppBar(
 }
 
 @Composable
-fun WideImageDukanHeader(state: DukanDetailsUiState.DukanInfo) {
+fun WideImageDukanHeader(
+    state: DukanDetailsUiState.DukanInfo,
+    onFavoriteClicked: (dukanId: String) -> Unit,
+) {
     Box(
         modifier = Modifier.fillWidthOfParent(16.dp)
     ) {
@@ -84,7 +89,8 @@ fun WideImageDukanHeader(state: DukanDetailsUiState.DukanInfo) {
         )
         DukanActionButtons(
             state = state,
-            modifier = Modifier.align(Alignment.TopEnd)
+            modifier = Modifier.align(Alignment.TopEnd),
+            onFavoriteClicked = onFavoriteClicked
         )
     }
 }
@@ -92,17 +98,28 @@ fun WideImageDukanHeader(state: DukanDetailsUiState.DukanInfo) {
 @Composable
 private fun DukanActionButtons(
     state: DukanDetailsUiState.DukanInfo,
+    onFavoriteClicked: (dukanId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Column(modifier = modifier.padding(top = Theme.spacing._8)) {
         DukanIconButton(
             icon = painterResource(Res.drawable.ic_share),
             iconColor = Color(state.color),
         )
-        DukanIconButton(
-            icon = painterResource(Res.drawable.ic_favorite),
-            iconColor = Color(state.color),
-        )
+        Crossfade(
+            targetState = state.isFavorite,
+            label = "favoriteCrossfade"
+        ) { isFavorite ->
+            val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
+            else Res.drawable.ic_favorite
+
+            DukanIconButton(
+                icon = painterResource(favoriteIcon),
+                iconColor = Color(state.color),
+                onIconClick = { onFavoriteClicked(state.dukanId) }
+            )
+        }
     }
 }
 
@@ -164,7 +181,11 @@ private fun DukanIconButton(
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
-            .clickable(onClick = onIconClick,indication = null, interactionSource = MutableInteractionSource())
+            .clickable(
+                onClick = onIconClick,
+                indication = null,
+                interactionSource =null
+            )
             .background(color = Theme.colorScheme.background.surfaceLow)
             .border(
                 width = 3.dp,
@@ -186,6 +207,7 @@ private fun DukanActionButtonsPreview() {
         ) {
             DukanActionButtons(
                 state = fakeDukanInfo,
+                onFavoriteClicked = {},
                 modifier = Modifier.align(Alignment.TopEnd)
             )
         }

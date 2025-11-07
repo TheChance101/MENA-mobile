@@ -295,7 +295,11 @@ class ExportTransactionsViewModel(
         }
 
         updateState { oldState ->
-            oldState.copy(isDownloadLoading = true, isViewAndShareButtonEnabled = false)
+            oldState.copy(
+                isDownloadLoading = true,
+                isViewAndShareButtonEnabled = false,
+                canSelectExportType = true
+            )
         }
     }
 
@@ -486,7 +490,11 @@ class ExportTransactionsViewModel(
 
     private fun resetDownloadState() {
         updateState { oldState ->
-            oldState.copy(isDownloadLoading = false, isViewAndShareButtonEnabled = true)
+            oldState.copy(
+                isDownloadLoading = false,
+                isViewAndShareButtonEnabled = true,
+                canSelectExportType = false
+            )
         }
     }
 

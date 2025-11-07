@@ -14,10 +14,15 @@ data class DukanDetailsUiState(
     val shelfIdSelected: String? = null,
     val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
     val snackBarState: SnackBarUiState? = null,
+    val error: Throwable? =null,
+    val totalPrice: Double = 0.0
 ) {
     data class DukanInfo(
+        val dukanId: String = "",
         val name: String = "",
         val imageUrl: String = "",
+        val isFavorite: Boolean = false,
+
         val style: Style = Style.NO_IMAGE,
         val color: Long = 0L,
         val coordinates: Coordinates = Coordinates(),

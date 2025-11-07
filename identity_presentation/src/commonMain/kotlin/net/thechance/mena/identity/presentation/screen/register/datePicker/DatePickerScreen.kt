@@ -17,18 +17,32 @@ import mena.identity_presentation.generated.resources.date_picker_screen_prompt_
 import mena.identity_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreen
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 
-class DatePickerScreen :
+class DatePickerScreen(
+    private val phoneNumber: PhoneNumber,
+    private val firstName: String,
+    private val lastName: String,
+    private val username: String,
+    private val password: String
+) :
     BaseScreen<DatePickerScreenViewModel, DatePickerScreenUIState, DatePickerScreenUIEffect, DatePickerScreenInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(
+            getScreenModel(
+                parameters = {
+                    parametersOf(phoneNumber, firstName, lastName, username, password)
+                }
+            )
+        )
     }
 
     @Composable
@@ -77,7 +91,18 @@ class DatePickerScreen :
         navigator: Navigator
     ) {
         when (effect) {
-            DatePickerScreenUIEffect.NavigateToSelectGender -> navigator.push(SelectGenderScreen())
+            is DatePickerScreenUIEffect.NavigateToSelectGender -> {
+                navigator.push(
+                    SelectGenderScreen(
+                        phoneNumber = effect.phoneNumber,
+                        firstName = effect.firstName,
+                        lastName = effect.lastName,
+                        username = effect.username,
+                        password = effect.password,
+                        birthDate = effect.birthDate
+                    )
+                )
+            }
         }
     }
 }

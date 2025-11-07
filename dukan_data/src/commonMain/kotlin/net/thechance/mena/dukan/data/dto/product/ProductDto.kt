@@ -30,5 +30,8 @@ data class ProductDto(
     val createdAt: String,
 
     @SerialName("quantityInCart")
-    val quantityInCart : Int
+    val quantityInCart : Int,
+
+    @SerialName("isFavorite")
+    val isFavorite: Boolean = false
 )

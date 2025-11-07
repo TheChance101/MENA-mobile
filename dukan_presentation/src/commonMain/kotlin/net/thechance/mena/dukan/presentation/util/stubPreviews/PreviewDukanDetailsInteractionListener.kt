@@ -14,4 +14,5 @@ object PreviewDukanDetailsInteractionListener : DukanDetailsInteractionListener 
     override fun onViewCartClicked() {}
     override fun onRetryClicked() {}
     override fun onProductClicked(productId: String) {}
+    override fun onFavoriteDukanClicked(dukanId: String) {}
 }

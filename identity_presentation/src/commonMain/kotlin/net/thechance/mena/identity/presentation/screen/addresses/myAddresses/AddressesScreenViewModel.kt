@@ -99,11 +99,7 @@ class AddressesScreenViewModel(
     }
 
     override fun onDismissSnackBar() = updateState {
-        copy(
-            snackBarUiState = SnackBarUiState(
-                isVisible = false,
-            )
-        )
+        copy(snackBarUiState = snackBarUiState.copy(isVisible = false))
     }
 
     private fun getUserAddresses() {

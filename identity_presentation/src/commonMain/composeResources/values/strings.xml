@@ -21,7 +21,7 @@
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can\'t Delete Active Address</string>
+    <string name="is_main_address_error">Can't Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -202,7 +202,7 @@
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
-
+    <string name="error_incorrect_password">Old password is incorrect</string>
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
@@ -214,12 +214,13 @@
     <string name="error_too_many_requests">Too many requests. Please try again later.</string>
     <string name="error_otp_expired">OTP expired</string>
     <string name="error_phone_number_already_exists">Phone number is already registered.</string>
+    <string name="error_username_already_exists">Username is already taken. Please choose another one.</string>
     <string name="error_no_network">No Internet Connection</string>
     <string name="error_no_internet_connection">No Internet Connection</string>
     <string name="error_failed_to_open_settings">Failed to open settings</string>
     <string name="error_permission_not_granted">Permission not granted</string>
     <string name="error_address_not_found">Address not found</string>
-    <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
+    <string name="error_cannot_delete_active_address">Can't Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
 
     <!-- Account Created Successfully -->

@@ -29,12 +29,16 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.core.parameter.parametersOf
 
-class AccountCreatedScreen :
+class AccountCreatedScreen(
+    private val authTokens: AuthenticationTokens? = null
+) :
             BaseScreen<AccountCreatedViewModel,
             AccountCreatedUIState,
             AccountCreatedUIEffect,
@@ -42,7 +46,13 @@ class AccountCreatedScreen :
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(
+            getScreenModel(
+                parameters = {
+                    authTokens?.let { parametersOf(it) } ?: parametersOf()
+                }
+            )
+        )
     }
 
     @Composable
@@ -132,9 +142,7 @@ class AccountCreatedScreen :
         effect: AccountCreatedUIEffect,
         navigator: Navigator
     ) {
-        when (effect) {
-            AccountCreatedUIEffect.NavigateToHome -> {}
-        }
+        // No effects needed - navigation handled automatically by EntryPoint
     }
 }
 

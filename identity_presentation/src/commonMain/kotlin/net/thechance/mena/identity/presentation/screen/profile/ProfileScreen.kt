@@ -163,7 +163,7 @@ class ProfileScreen : BaseScreen<
                     }
                     item {
                         InviteFriendsCard(
-                            onCLick = listener::onInviteFriendsClicked
+                            onClick = listener::onInviteFriendsClicked
                         )
                     }
                     item {

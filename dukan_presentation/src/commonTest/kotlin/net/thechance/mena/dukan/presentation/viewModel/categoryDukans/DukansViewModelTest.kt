@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -30,6 +31,8 @@ import kotlin.uuid.Uuid
 class DukansViewModelTest {
 
     private val dukanDiscoveryRepository = mock<DukanDiscoveryRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var dukansViewModel: CategoryDukansViewModel
     private val testDispatcher = StandardTestDispatcher()
@@ -62,6 +65,7 @@ class DukansViewModelTest {
         dukansViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = savedStateHandle,
+            dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
     }
@@ -138,6 +142,7 @@ class DukansViewModelTest {
         val emptyViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = emptySavedStateHandle,
+            dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
 
@@ -159,6 +164,7 @@ class DukansViewModelTest {
         val nullViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
             savedStateHandle = nullSavedStateHandle,
+            dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
 
@@ -171,6 +177,33 @@ class DukansViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onFavoriteDukanClicked SHOULD toggle isFavorite for correct dukan`() = runTest {
+        // Given
+        val targetDukan = dummyDukanPreviews[0]
+        everySuspend {
+            dukanManagementRepository.updateFavoriteDukanStatus(
+                targetDukan.id.toString()
+            )
+        } returns true
+
+        advanceUntilIdle()
+
+        // When
+        dukansViewModel.onFavoriteDukanClicked(targetDukan.id.toString())
+
+        // Wait for toggle to complete
+        advanceUntilIdle()
+
+        // Then
+        val updatedDukans = dukansViewModel.state.value.dukans.asSnapshot()
+        val updatedTarget = updatedDukans.first { it.id == targetDukan.id.toString() }
+
+        assertEquals(targetDukan.isFavorite, updatedTarget.isFavorite)
+    }
+
 }
 
 // ===== FAKE DATA FUNCTIONS =====
@@ -205,6 +238,7 @@ private val dummyDukanPreviews = listOf(
         name = "Electronics Store",
         imageUrl = "https://example.com/electronics.jpg",
         categories = emptySet(),
+        isFavorite = true,
         coordinates = Dukan.Coordinates(
             latitude = 12.34,
             longitude = 56.78
@@ -222,6 +256,7 @@ private val dummyDukanPreviews = listOf(
         name = "Tech Hub",
         imageUrl = "https://example.com/tech.jpg",
         categories = emptySet(),
+        isFavorite = false,
         coordinates = Dukan.Coordinates(
             latitude = 12.34,
             longitude = 56.78
@@ -239,6 +274,7 @@ private val dummyDukanPreviews = listOf(
         name = "Gadget World",
         imageUrl = "https://example.com/gadget.jpg",
         categories = emptySet(),
+        isFavorite = false,
         coordinates = Dukan.Coordinates(
             latitude = 12.34,
             longitude = 56.78

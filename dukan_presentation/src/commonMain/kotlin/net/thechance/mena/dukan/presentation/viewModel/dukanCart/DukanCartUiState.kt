@@ -11,7 +11,8 @@ data class DukanCartUiState(
     val dukanInfoState: DukanInfoState = DukanInfoState.LOADING,
     val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val totalPrice: Double = 0.0,
-    val snackBarState: SnackBarUiState? = null
+    val snackBarState: SnackBarUiState? = null,
+    val productQuantity: Map<String, Int> = emptyMap()
 ) {
     data class DukanInfoUiState(
         val id: String = "",

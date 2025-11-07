@@ -45,6 +45,7 @@ import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -377,6 +378,70 @@ class ChatViewModelTest {
         advanceUntilIdle()
 
         assertThat(viewModel.state.value.isCameraOpen).isFalse()
+    }
+
+    @Test
+    fun `onGalleryClicked should close attachments bottom sheet when called`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onGalleryClicked()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isAttachmentsOverlayVisible).isFalse()
+    }
+
+    @Test
+    fun `onCloseAttachmentClicked should close attachments bottom sheet when called`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onCloseAttachmentClicked()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isAttachmentsOverlayVisible).isFalse()
+    }
+
+    @Test
+    fun `onMessageLongClicked should open reaction dialog and set messageToReactTo value when called`() = runTest {
+        val message = messages.first().toUi()
+        advanceUntilIdle()
+
+        viewModel.onMessageLongClicked(message)
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isReactionDialogVisible).isTrue()
+        assertThat(viewModel.state.value.messageToReactTo).isEqualTo(message)
+    }
+
+    @Test
+    fun `onReactionDialogDismissed should close reaction dialog and set messageToReactTo to null when called`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onReactionDialogDismissed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isReactionDialogVisible).isFalse()
+        assertThat(viewModel.state.value.messageToReactTo).isEqualTo(null)
+    }
+
+    @Test
+    fun `onMessageClicked should toggle message info when called`() = runTest {
+        advanceUntilIdle()
+        val oldChatListItems = viewModel.state.value.chatListItems
+
+        viewModel.onMessageClicked(message1Id)
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.chatListItems).isEqualTo(oldChatListItems.toggleMessageInfo(message1Id))
+    }
+
+    @Test
+    fun `onAttachmentClicked should open attachments bottom sheet when called`() = runTest {
+        advanceUntilIdle()
+
+        viewModel.onAttachmentClicked()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isAttachmentsOverlayVisible).isTrue()
     }
 
     @Test
@@ -744,6 +809,40 @@ class ChatViewModelTest {
         val vm2 = items.find { it is ChatListItem.VoiceMessage && it.data.id == voiceMessage2.id } as ChatListItem.VoiceMessage?
         assertThat(vm1?.isPlaying ?: true).isFalse()
         assertThat(vm2?.isPlaying ?: true).isFalse()
+    }
+
+    @Test
+    fun `onReactionSelected should add reaction if user has not reacted`() = runTest {
+        val reaction = "👍"
+        val message = messages.first().copy(reactions = emptyList())
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        everySuspend { messageRepository.addMessageReaction(message.id, reaction) } returns Unit
+        viewModel.onMessageLongClicked(message.toUi())
+        advanceUntilIdle()
+
+        viewModel.onReactionSelected(message.id, reaction)
+        advanceUntilIdle()
+
+        verifySuspend { messageRepository.addMessageReaction(message.id, reaction) }
+    }
+
+    @Test
+    fun `onReactionSelected should remove reaction if user already reacted`() = runTest {
+        val reaction = "👍"
+        val message = messages.first().copy(reactions = listOf(MessageReaction(reaction, chatRequesterId, message1Id)))
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        everySuspend { messageRepository.removeMessageReaction(message.id, reaction) } returns Unit
+        viewModel.onMessageLongClicked(message.toUi())
+        advanceUntilIdle()
+
+        viewModel.onReactionSelected(message.id, reaction)
+        advanceUntilIdle()
+
+        verifySuspend { messageRepository.removeMessageReaction(message.id, reaction) }
     }
 
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =

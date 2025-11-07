@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -75,7 +74,7 @@ fun NewPasswordContent(
             isLoading = isLoading,
             contentPadding = PaddingValues(vertical = 13.dp),
             modifier = Modifier.fillMaxWidth()
-                .padding(bottom = Theme.spacing._12).imePadding()
+                .padding(bottom = Theme.spacing._12)
         )
     }
 }
