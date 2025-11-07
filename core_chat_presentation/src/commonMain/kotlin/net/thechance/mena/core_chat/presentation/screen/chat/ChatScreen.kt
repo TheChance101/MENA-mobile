@@ -53,15 +53,13 @@ import kotlin.uuid.ExperimentalUuidApi
 fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
-    val navController = LocalNavController.current
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
     BindEffect(controller)
 
     BackHandler(enabled = true) {
-        onClickBackFromChat()
-        navController.popBackStack()
+        viewModel.onBackClicked()
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()

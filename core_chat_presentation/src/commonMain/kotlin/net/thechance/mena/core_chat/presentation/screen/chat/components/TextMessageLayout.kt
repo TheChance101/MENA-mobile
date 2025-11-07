@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -158,7 +159,10 @@ fun TextMessageLayout(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (!message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
+                    ReactionBubble(
+                        reactions = message.reactions,
+                        modifier= Modifier.offset(y = (-8).dp)
+                    )
                 }
 
                 AnimatedVisibility(visible = showMessageInfo) {
@@ -171,8 +175,10 @@ fun TextMessageLayout(
                 }
 
                 if (message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
-                }
+                    ReactionBubble(
+                        reactions = message.reactions,
+                        modifier= Modifier.offset(y = (-8).dp)
+                    )                }
             }
         }
     }
