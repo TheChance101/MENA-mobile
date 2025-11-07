@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -20,7 +21,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.LocalPlatformContext
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.back
 import mena.identity_presentation.generated.resources.error
@@ -131,6 +131,7 @@ class ImageCropperScreen(
 private fun ScreenAppBar(onNavigateBack: () -> Unit) {
     AppBar(
         title = stringResource(Res.string.image_preview),
+        modifier = Modifier.statusBarsPadding(),
         leadingContent = {
             Image(
                 painter = painterResource(Res.drawable.ic_arrow_left),
