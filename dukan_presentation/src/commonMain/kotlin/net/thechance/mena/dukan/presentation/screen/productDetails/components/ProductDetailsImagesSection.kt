@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
@@ -139,24 +138,14 @@ fun ProductDetailsMainImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
-    AsyncImage(
-        model = imageUrl,
-        contentDescription = stringResource(Res.string.product_image),
-        error = painterResource(Res.drawable.ic_no_image_loaded),
-        modifier = modifier
-            .fillMaxWidth()
-            .height(288.dp)
-            .clip(RoundedCornerShape(Theme.radius.md)),
-        contentScale = ContentScale.Crop
-    )
-
     val painter = rememberAsyncImagePainter(model = imageUrl)
-
+    val isError = painter.state is AsyncImagePainter.State.Error
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(288.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
+            .background(if (isError) Color.Gray else Color.Transparent)
     ) {
         Image(
             painter = painter,
@@ -165,7 +154,7 @@ fun ProductDetailsMainImage(
             modifier = Modifier.fillMaxSize()
         )
 
-        if (painter.state is AsyncImagePainter.State.Error) {
+        if (isError) {
             Image(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,
@@ -225,10 +214,12 @@ private fun ProductDetailsSecondaryImageItem(
     )
 
     val painter = rememberAsyncImagePainter(model = imageUrl)
+    val isError = painter.state is AsyncImagePainter.State.Error
     Box(
         modifier = modifier
             .size(56.dp)
             .clip(shape)
+            .background(if (isError) Color.Gray else Color.Transparent)
             .border(1.dp, animatedBorderColor, shape)
             .clickable(onClick = onClick)
     ) {
@@ -239,12 +230,12 @@ private fun ProductDetailsSecondaryImageItem(
             modifier = Modifier.fillMaxSize()
         )
 
-        if (painter.state is AsyncImagePainter.State.Error) {
+        if (isError) {
             Image(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(24.dp)
                     .align(Alignment.Center),
                 contentScale = ContentScale.Fit
             )
