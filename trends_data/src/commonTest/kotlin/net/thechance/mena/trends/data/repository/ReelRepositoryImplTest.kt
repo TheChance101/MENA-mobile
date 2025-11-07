@@ -234,8 +234,8 @@ internal class ReelRepositoryImplTest {
         val result = repository.getReelUrls(REEL_ID)
 
 
-        assertThat(result.videoUrl).isEqualTo(fakeReelUrls.videoPath.toUrl())
-        assertThat(result.thumbnailUrl).isEqualTo(fakeReelUrls.thumbnailPath.toUrl())
+        assertThat(result.videoUrl).isEqualTo(fakeReelUrls.videoPath?.toUrl())
+        assertThat(result.thumbnailUrl).isEqualTo(fakeReelUrls.thumbnailPath?.toUrl())
     }
 
     private companion object {
