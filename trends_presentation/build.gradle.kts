@@ -117,6 +117,11 @@ android {
         buildConfigField("String", "TRENDS_ACCESS_SECRET", "\"$trendsStorageAccessSecret\"")
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     buildFeatures{
         buildConfig = true
     }
