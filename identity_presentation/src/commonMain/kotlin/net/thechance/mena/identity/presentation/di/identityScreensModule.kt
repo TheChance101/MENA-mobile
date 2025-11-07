@@ -122,7 +122,6 @@ val identityScreensModule = module {
             userRepository = get(),
             imagesRepository = get(),
             galleryPermissionHandler = get(named(GALLERY_IMAGES)),
-            imageDecoder = get(),
         )
     }
 }
