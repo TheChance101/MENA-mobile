@@ -45,7 +45,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareDialog
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
 
@@ -94,8 +94,9 @@ class ProfileScreen : BaseScreen<
                     )
                 }
                 dialog(state.showShareProfileDialog) {
-                    ShareDialog(
+                    ShareQrCode(
                         isVisible = state.showShareProfileDialog,
+                        fullName = state.fullName,
                         onClickShare = listener::onInviteFriendsClicked,
                         onDismissShareDialog = listener::onDismissShareDialog,
                     )

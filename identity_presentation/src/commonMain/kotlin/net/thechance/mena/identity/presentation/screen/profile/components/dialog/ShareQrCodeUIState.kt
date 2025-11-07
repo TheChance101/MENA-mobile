@@ -4,8 +4,10 @@ import org.jetbrains.compose.resources.StringResource
 
 data class ShareQrCodeUIState(
     val showDialog: Boolean = false,
-    val showCopiedMessage: Boolean = false,
+    val isLoading: Boolean = false,
+    val showSnackBar: Boolean = false,
+    val snackBarTitle: StringResource? = null,
+    val snackBarMessage: StringResource? = null,
     val shareLinkUrl: String = "",
-    val fullName: String = "",
     val errorMessage: StringResource? = null
 )
