@@ -55,7 +55,7 @@ class ChatRepositoryImpl(
 
     val _syncState = MutableSharedFlow<SyncState>()
     val scope = CoroutineScope(Dispatchers.IO)
-    override fun observeSyncState(): Flow<SyncState> {
+    override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState
     }
     @OptIn(ExperimentalTime::class)

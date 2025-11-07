@@ -62,11 +62,11 @@ class HomeViewModel(
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
-        observeSyncState()
+        observeChatSummariesSyncState()
     }
-    private fun observeSyncState() {
+    private fun observeChatSummariesSyncState() {
         tryToCollect(
-            collect = { chatRepository.observeSyncState() },
+            collect = { chatRepository.observeChatSummariesSyncState() },
             onCollect = {
                 when (it) {
                     is SyncState.Error -> showErrorLoadingChatsSnackBar()
@@ -87,9 +87,7 @@ class HomeViewModel(
                             )
                         }
                     }
-
                     else -> Unit
-
                 }
             }
         )
