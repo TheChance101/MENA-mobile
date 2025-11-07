@@ -6,4 +6,5 @@ sealed interface UploadReelScreenEffect {
     data object NavigateBack : UploadReelScreenEffect
     data class NavigateToAddDescription(val reelId: String) : UploadReelScreenEffect
     data class ShowErrorSnackbar(val errorState: ErrorState) : UploadReelScreenEffect
+    data object LaunchFilePicker : UploadReelScreenEffect
 }

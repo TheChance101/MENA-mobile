@@ -59,6 +59,18 @@ internal fun UploadReelScreen(
     val navController = LocalNavController.current
     val snackBarController = LocalSnackbarController.current
 
+    val coroutineScope = rememberCoroutineScope()
+    val launcher = rememberFilePickerLauncher(
+        type = FileKitType.Video,
+        onResult = { file ->
+            launchFilePicker(
+                file = file,
+                coroutineScope = coroutineScope,
+                onRetrieveVideo = viewModel::onRetrieveVideo
+            )
+        }
+    )
+
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is UploadReelScreenEffect.NavigateToAddDescription -> {
@@ -75,6 +87,7 @@ internal fun UploadReelScreen(
             }
 
             UploadReelScreenEffect.NavigateBack -> navController.popBackStack()
+            UploadReelScreenEffect.LaunchFilePicker -> launcher.launch()
         }
     }
 
@@ -89,18 +102,6 @@ private fun UploadReelScreenContent(
     state: UploadReelScreenState,
     listener: UploadReelInteractionListener
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val launcher = rememberFilePickerLauncher(
-        type = FileKitType.Video,
-        onResult = { file ->
-            launchFilePicker(
-                file = file,
-                coroutineScope = coroutineScope,
-                onRetrieveVideo = listener::onRetrieveVideo
-            )
-        }
-    )
-
     Scaffold(
         topBar = { UploadReelScreenTopBar(onBackClick = listener::onClickBack) }
     ) {
@@ -117,8 +118,8 @@ private fun UploadReelScreenContent(
                 thumbnail = state.thumbnail,
                 isEnabled = state.isUploadVideoCardEnabled,
                 isLoading = state.isThumbnailLoading,
-                onCardClick = launcher::launch,
-                onEditClick = launcher::launch
+                onCardClick = listener::onClickUploadCard,
+                onEditClick = listener::onClickUploadCard
             )
             TrendsAnimatedVisibility(visible = !state.uploadingState.isIdle) {
                 VideoLoadingCardItem(
