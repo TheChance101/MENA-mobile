@@ -8,12 +8,14 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -30,6 +32,7 @@ class SearchViewModelTest {
 
     @BeforeTest
     fun setUp() {
+        Dispatchers.setMain(testDispatcher)
         searchViewModel = SearchViewModel(
             searchRepository = searchRepository,
             defaultDispatcher = testDispatcher
@@ -82,10 +85,10 @@ class SearchViewModelTest {
             )
         } returns fakeDefactoDukanPaged
 
-        searchViewModel.onSearchChanged(query)
-        advanceUntilIdle()
+        val viewModel = createSearchViewModel()
+        viewModel.onSearchChanged(query)
 
-        searchViewModel.state.test {
+        viewModel.state.test {
             skipItems(1)
             val actualDukanPagingFlow = awaitItem().dukanPagingFlow
             assertNotEquals(actualDukanPagingFlow, emptyFlow())
@@ -166,15 +169,14 @@ class SearchViewModelTest {
             )
         } returns fakePumaShoesProductPaged
 
-        searchViewModel.onSearchChanged(query)
-        searchViewModel.onProductsSelected()
+        val viewModel = createSearchViewModel()
 
-        searchViewModel.state.test {
-            skipItems(1)
-            val actualProductPagingFlow = awaitItem().productPagingFlow
-            assertNotEquals(actualProductPagingFlow, emptyFlow())
-            cancelAndIgnoreRemainingEvents()
-        }
+        viewModel.onSearchChanged(query)
+        viewModel.onProductsSelected()
+        advanceUntilIdle()
+
+        val actualProductPagingFlow = viewModel.state.value.productPagingFlow
+        assertNotEquals(actualProductPagingFlow, emptyFlow())
     }
 
     @Test
@@ -232,5 +234,12 @@ class SearchViewModelTest {
             assertNotEquals(actualDukanPagingFlow, emptyFlow())
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    private fun createSearchViewModel(): SearchViewModel {
+        return SearchViewModel(
+            searchRepository = searchRepository,
+            defaultDispatcher = testDispatcher
+        )
     }
 }
