@@ -168,6 +168,6 @@ class ShareDialogViewModel(
     }
 
     companion object {
-        val SHARE_URL = "https://mena-dev.the-chance.net?userId="
+        const val SHARE_URL = "https://mena-dev.the-chance.net/download.html?userId="
     }
 }
