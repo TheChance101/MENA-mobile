@@ -274,6 +274,16 @@ private fun ChatScreenContentPreview() {
 
             }
 
+            override fun onMessageLongClicked(message: MessageUiState) {
+
+            }
+
+            override fun onReactionDialogDismissed() {
+            }
+
+            override fun onReactionSelected(messageId: Uuid, reaction: String) {
+            }
+
             override fun onMessageVoiceClicked(messageId: Uuid) {
 
             }
