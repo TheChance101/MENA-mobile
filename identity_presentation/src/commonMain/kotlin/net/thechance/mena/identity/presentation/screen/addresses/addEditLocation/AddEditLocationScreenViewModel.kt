@@ -22,6 +22,7 @@ import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToM
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toAddressInput
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState.AddEditAddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
@@ -113,7 +114,7 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickEdit() {
-        val currentState = state.value
+        val currentState = state.value.addressUIState
         val addressModel = createAddressModelFromCurrentState(currentState)
         sendNewEffect(
             createNavigateToMapEffect(
@@ -160,16 +161,16 @@ class AddEditLocationScreenViewModel(
         sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack(snackBarState))
     }
 
-    private fun createAddressModelFromCurrentState(currentState: AddEditLocationScreenUIState): AddressUIState {
+    private fun createAddressModelFromCurrentState(addressUIState: AddEditAddressUIState): AddressUIState {
         return AddressUIState(
-            id = currentState.addressUIState.addressID,
+            id = addressUIState.addressID,
             coordinates = CoordinatesUiState(
-                currentState.addressUIState.coordinates.latitude,
-                currentState.addressUIState.coordinates.longitude
+                latitude = addressUIState.coordinates.latitude,
+                longitude = addressUIState.coordinates.longitude
             ),
-            addressType = currentState.addressUIState.addressType ?: AddressType.Home,
-            addressDetails = currentState.addressUIState.addressDetails,
-            isMainAddress = currentState.addressUIState.isMainAddress
+            addressType = addressUIState.addressType ?: AddressType.Home,
+            addressDetails = addressUIState.addressDetails,
+            isMainAddress = addressUIState.isMainAddress
         )
     }
 
