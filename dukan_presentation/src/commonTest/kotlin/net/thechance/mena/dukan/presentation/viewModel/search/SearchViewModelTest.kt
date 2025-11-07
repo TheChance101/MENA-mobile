@@ -245,27 +245,6 @@ class SearchViewModelTest {
             assertNull(searchViewModel.state.value.snackBarUiState)
         }
 
-    @Test
-    fun `onRetryClicked should reSearch about last query`() = runTest(testDispatcher) {
-        val lastQuery = "Defacto"
-        everySuspend {
-            searchRepository.findDukansByQuery(
-                any(),
-                any(),
-                any()
-            )
-        } returns fakeDefactoDukanPaged
-
-        searchViewModel.onSearchChanged(lastQuery)
-        searchViewModel.onRetryClicked()
-
-        searchViewModel.state.test {
-            skipItems(1)
-            val actualDukanPagingFlow = awaitItem().dukanPagingFlow
-            assertNotEquals(actualDukanPagingFlow, emptyFlow())
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     private fun createSearchViewModel(): SearchViewModel {
         return SearchViewModel(

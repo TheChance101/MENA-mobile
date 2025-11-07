@@ -10,7 +10,6 @@ object PreviewSearchInteractionListener: SearchInteractionListener {
     override fun onSearchChanged(query: String) {}
     override fun onBackClicked() {}
     override fun onClearSearchClicked() {}
-    override fun onRetryClicked() {}
     override fun onDukansSelected() {}
     override fun onProductsSelected() {}
     override fun onDukanClicked(dukanId: Uuid) {}

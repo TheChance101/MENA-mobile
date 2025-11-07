@@ -104,9 +104,6 @@ class SearchViewModel(
         }
     }
 
-    override fun onRetryClicked() {
-        searchWithQuery(state.value.searchQuery)
-    }
 
     private fun getSearchQueryCurrentState(query: String): SearchUiState.SearchContentState {
         return if (query.isNotBlank())

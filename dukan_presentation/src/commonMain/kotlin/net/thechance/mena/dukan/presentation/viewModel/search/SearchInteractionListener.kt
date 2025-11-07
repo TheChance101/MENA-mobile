@@ -8,7 +8,6 @@ interface SearchInteractionListener {
     fun onSearchChanged(query: String)
     fun onBackClicked()
     fun onClearSearchClicked()
-    fun onRetryClicked()
     fun onDukansSelected()
     fun onProductsSelected()
     fun onDukanClicked(dukanId: Uuid)
