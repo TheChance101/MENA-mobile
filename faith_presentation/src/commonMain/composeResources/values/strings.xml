@@ -185,8 +185,11 @@
     <string name="downloaded_sur">Downloaded sur</string>
     <string name="reciter_list">Reciters list</string>
     <string name="delete_surah">Delete surah</string>
+    <string name="delete_reciter">Delete reciter</string>
     <string name="delete">Delete</string>
     <string name="delete_surah_dialog_message">Are you sure you want to delete this surah from downloading?</string>
+    <string name="delete_reciter_dialog_message">Are you sure you want to delete this reciter?</string>
     <string name="surah_deleted_successfully">Surah deleted successfully</string>
+    <string name="reciter_deleted_successfully">Reciter deleted successfully</string>
 
 </resources>

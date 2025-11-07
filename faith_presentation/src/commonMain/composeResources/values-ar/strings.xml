@@ -120,8 +120,11 @@
     <string name="downloaded_sur">السور المحمله</string>
     <string name="reciter_list">قائمة القرآء</string>
     <string name="delete_surah">حذف السوره</string>
+    <string name="delete_reciter">حذف القارئ</string>
     <string name="delete">حذف</string>
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
+    <string name="delete_reciter_dialog_message">هل انت متأكد من انك تريد حذف هذا القارئ؟</string>
     <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
+    <string name="reciter_deleted_successfully">تم حذف القارئ بنجاح</string>
     <string name="listen">استماع</string>
 </resources>

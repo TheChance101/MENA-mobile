@@ -1,12 +1,20 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.first
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.reciter_deleted_successfully
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.args.TilawahArgs
 
-class TilawahViewModel(val quranRepository: QuranRepository) :
+class TilawahViewModel(
+    val quranRepository: QuranRepository,
+    private val tilawahArgs: TilawahArgs
+) :
     BaseViewModel<TilawahUiState, TilawahEffect>(
         TilawahUiState()
     ), TilawahInteractionListener {
@@ -34,6 +42,44 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
         )
     }
 
+    override fun onDeleteReciterClick(reciterId: Int) {
+        updateState {
+            it.copy(
+                selectedReciterForDelete = reciterId,
+                showDeleteConfirmationDialog = true,
+            )
+        }
+    }
+
+    override fun onConfirmDeleteReciterClick() {
+        // TODO("Should integrate with the domain to delete selected reciter")
+        updateState { state ->
+            val newReciters =
+                state.reciters - state.reciters.first { it.id == state.selectedReciterForDelete }
+            state.copy(
+                reciters = newReciters,
+                selectedReciterForDelete = null,
+                showDeleteConfirmationDialog = false,
+            )
+        }
+        showSuccessSnackBar()
+    }
+
+    override fun onDismissDeleteConfirmationDialog() {
+        updateState {
+            it.copy(
+                selectedReciterForDelete = null,
+                showDeleteConfirmationDialog = false
+            )
+        }
+    }
+
+    private fun showSuccessSnackBar() = snackbarHandler.showSnackBar(
+        message = Res.string.reciter_deleted_successfully,
+        status = SnackBarState.Status.Success,
+        scope = viewModelScope,
+    )
+
     private fun getAllReciters() {
         tryToExecute(
             execute = { quranRepository.getReciters() },
@@ -54,8 +100,14 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
     }
 
     private fun getAllRecitersSuccessfully(reciters: List<Reciter>) {
-        val recitersUi = reciters.map {
-            ReciterUi(
+        val filteredReciters = if (tilawahArgs.surahId != null) {
+            filterRecitersForSurah(reciters, tilawahArgs.surahId)
+        } else {
+            reciters
+        }
+
+        val recitersUi = filteredReciters.map {
+            TilawahUiState.ReciterUi(
                 id = it.id,
                 name = it.name,
                 recitingType = it.tilawahType,
@@ -63,5 +115,10 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
             )
         }
         updateState { it.copy(reciters = recitersUi) }
+    }
+
+    private fun filterRecitersForSurah(reciters: List<Reciter>, surahId: Int?): List<Reciter> {
+        // TODO: After the domain is done, integrate this function to load the real data
+          return  emptyList()
     }
 }

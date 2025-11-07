@@ -4,4 +4,7 @@ interface TilawahInteractionListener {
     fun onBackClick()
     fun onSearchClick()
     fun onSelectReciterClick(reciterId: Int)
+    fun onDeleteReciterClick(reciterId: Int)
+    fun onConfirmDeleteReciterClick()
+    fun onDismissDeleteConfirmationDialog()
 }

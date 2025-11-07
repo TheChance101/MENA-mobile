@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete_surah
+import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
@@ -25,6 +27,7 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DownloadedSurahCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -37,8 +40,10 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            DownloadedSurEffect.NavigateToRecitersScreen -> navController.navigate(Route.DownloadedRecitersRoute)
-            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> Unit // TODO("Navigate to downloaded surah reciters when done")
+            DownloadedSurEffect.NavigateToRecitersScreen -> navController.navigate(Route.DownloadedRecitersRoute())
+            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
+                navController.navigate(Route.DownloadedRecitersRoute(surahId = effect.surahId))
+            }
         }
     }
 
@@ -74,6 +79,8 @@ private fun Content(
                 isVisible = uiState.showDeleteConfirmationDialog,
             ) {
                 DeleteConfirmationDialog(
+                    title = stringResource(Res.string.delete_surah),
+                    message = stringResource(Res.string.delete_surah_dialog_message),
                     showDialog = uiState.showDeleteConfirmationDialog,
                     onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,

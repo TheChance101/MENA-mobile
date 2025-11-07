@@ -59,7 +59,7 @@ class DownloadedSurViewModel(
     }
 
     override fun onDownloadedSurahClick(surahId: Int) {
-        // TODO("Integrate with the domain repo when done")
+        sendEffect(DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen(surahId))
     }
 
     override fun onBackClick() {
