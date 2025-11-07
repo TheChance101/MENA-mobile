@@ -4,5 +4,5 @@ import platform.Foundation.NSBundle
 
 
 actual val trendStorageAccessSecret: String =
-    NSBundle.mainBundle.objectForInfoDictionaryKey("STORAGE_TRENDS_ACCESS_SECRET") as? String
-        ?: throw Exception("STORAGE_TRENDS_ACCESS_SECRET not found")
+    NSBundle.mainBundle.objectForInfoDictionaryKey("TRENDS_STORAGE_ACCESS_SECRET") as? String
+        ?: throw Exception("TRENDS_STORAGE_ACCESS_SECRET not found")
