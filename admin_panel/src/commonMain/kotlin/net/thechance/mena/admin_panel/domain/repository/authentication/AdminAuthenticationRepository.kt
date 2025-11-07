@@ -5,6 +5,5 @@ import kotlinx.coroutines.flow.Flow
 interface AdminAuthenticationRepository {
     suspend fun login(userName: String, password: String)
     suspend fun logout()
-    suspend fun isUserLoggedIn(): Boolean
-    fun observeToken(): Flow<String>
+    fun isUserLoggedIn(): Flow<Boolean>
 }

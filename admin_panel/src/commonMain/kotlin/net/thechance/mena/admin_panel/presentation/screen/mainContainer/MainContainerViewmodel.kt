@@ -75,20 +75,19 @@ class MainContainerViewmodel(
 
     private fun checkAuthenticationStatus() {
         tryToExecute(
-            callee = authenticationRepository::observeToken,
+            callee = authenticationRepository::isUserLoggedIn,
             onSuccess = ::onSuccessCheckedAuthentication,
             onError = ::onFailureCheckedAuthentication,
             dispatcher = dispatcher
         )
     }
 
-    private suspend fun onSuccessCheckedAuthentication(token: Flow<String>) {
-        token.collect { it->
-            if (it.isNotBlank()) {
-                updateState { it.copy(authenticationStatus = true) }
+    private suspend fun onSuccessCheckedAuthentication(token: Flow<Boolean>) {
+        token.collect { isUserLoggedIn ->
+            updateState { it.copy(authenticationStatus = isUserLoggedIn) }
+            if (isUserLoggedIn) {
                 sendEffect(MainContainerEffect.NavigateToAdminPanelScreen)
             } else {
-                updateState { it.copy(authenticationStatus = false) }
                 sendEffect(MainContainerEffect.NavigateToLogInScreen)
             }
         }
