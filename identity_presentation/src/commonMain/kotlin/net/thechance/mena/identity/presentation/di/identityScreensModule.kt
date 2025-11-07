@@ -12,7 +12,6 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeInteractionListener
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
@@ -56,6 +55,7 @@ val identityScreensModule = module {
     factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
+    factoryOf(::ShareQrCodeViewModel)
     factoryOf(::DatePickerScreenViewModel)
     factoryOf(::SelectGenderScreenViewModel)
     factoryOf(::ChangePasswordScreenViewModel)
@@ -80,8 +80,8 @@ val identityScreensModule = module {
 
     factory {
         ShareQrCodeViewModel(
-            get(),
-            get(named(GALLERY_IMAGES))
+            imagesRepository = get(),
+            galleryPermissionHandler = get(named(GALLERY_IMAGES))
         )
-    } bind ShareQrCodeInteractionListener::class
+    }
 }
