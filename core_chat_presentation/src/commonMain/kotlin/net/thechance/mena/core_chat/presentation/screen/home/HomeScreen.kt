@@ -65,10 +65,6 @@ fun HomeScreen(
         state = state,
         interactionListener = viewModel
     )
-
-    LaunchedEffect(Unit){
-        viewModel.loadInitialData()
-    }
 }
 
 @OptIn(ExperimentalUuidApi::class)

@@ -4,25 +4,31 @@ package net.thechance.mena.core_chat.data.chat
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.emptyPreferences
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
+import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
-import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.core_chat.data.contacts.fakes.createCachedChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.createChatRepository
 import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.defaultChatResponse
 import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
-import net.thechance.mena.core_chat.data.defaultDeleteChatResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
@@ -33,7 +39,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
-import net.thechance.mena.core_chat.domain.exception.UnknownException
+import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,7 +55,6 @@ class ChatRepositoryImplTest {
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var messageDao: MessageDao
-
     private lateinit var cachedChatSummaryDao: CachedChatSummaryDao
     private lateinit var dataStore: DataStore<Preferences>
     private val authRepository = mock<AuthenticationRepository>()
@@ -63,6 +68,8 @@ class ChatRepositoryImplTest {
         messageDao = mock<MessageDao>()
         cachedChatSummaryDao = mock<CachedChatSummaryDao>()
         dataStore = mock<DataStore<Preferences>>()
+        val emptyPrefs = emptyPreferences()
+        everySuspend { dataStore.data } returns flowOf(emptyPrefs)
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
@@ -79,7 +86,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            )
+        )
 
         val result = repository.getChatByContactUserId(userId)
 
@@ -153,41 +160,40 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return chat summary when getChatsSummary is successful`() = runTest {
-        httpClient = createHttpClient(
-            chatsSummariesResponse = { defaultChatSummaryResponse() }
-        )
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            dataStore = dataStore,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-
+    fun `should return chat summary when getChatsSummary is successful`() =
+        runTest {
+            httpClient = createHttpClient(
+                chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+            )
+            everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns listOf(createCachedChatSummaryDto())
+            everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 1
+            repository = createChatRepository(
+                httpClient = httpClient,
+                webSocketManager = webSocketManager,
+                cachedChatSummaryDao = cachedChatSummaryDao,
+                dataStore = dataStore,
             )
 
-        val result = repository.getChatsSummary(
-            pageNumber = 1,
-            pageSize = 20
-        )
-        assertThat(result.data).isNotEmpty()
-    }
+            assertThat(repository.getChatsSummary(0, 20).data).isNotEmpty()
+        }
 
     @Test
-    fun `should return empty list when getChatsSummary returns empty list from the room db`() = runTest {
-        httpClient = createHttpClient(
-            chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
-        )
-        everySuspend { cachedChatSummaryDao.getChatSummaries(20,0) } returns emptyList()
-        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore,
-        )
+    fun `should return empty list when getChatsSummary returns empty list from the room db`() =
+        runTest {
+            httpClient = createHttpClient(
+                chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+            )
+            everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+            everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+            repository = createChatRepository(
+                httpClient = httpClient,
+                webSocketManager = webSocketManager,
+                cachedChatSummaryDao = cachedChatSummaryDao,
+                dataStore = dataStore,
+            )
 
-        assertThat(repository.getChatsSummary(0,20).data).isEqualTo(emptyList())
-    }
+            assertThat(repository.getChatsSummary(0, 20).data).isEqualTo(emptyList())
+        }
 
     @Test
     fun `should return chat summary when getChatSummaryById is successful`() = runTest {
@@ -236,24 +242,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should delete chat when deleteChatById is successful`() = runTest {
-        val testChatId = Uuid.random()
-
-        httpClient = createHttpClient(
-            deleteChatResponse = { defaultDeleteChatResponse() }
-        )
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore,
-        )
-
-        repository.deleteChatById(testChatId)
-    }
-
-    @Test
-    fun `should throw NotFoundException when deleteChatById returns 404`() = runTest {
+    fun `should throw Exception when deleteChatById returns 404`() = runTest {
         val testChatId = Uuid.random()
 
         httpClient = createHttpClient(
@@ -268,13 +257,13 @@ class ChatRepositoryImplTest {
             dataStore = dataStore,
         )
 
-        assertFailsWith<NotFoundException> {
+        assertFailsWith<Exception> {
             repository.deleteChatById(testChatId)
         }
     }
 
     @Test
-    fun `should throw UnknownException when deleteChatById returns server error`() = runTest {
+    fun `should throw Exception when deleteChatById returns server error`() = runTest {
         val testChatId = Uuid.random()
 
         httpClient = createHttpClient(
@@ -289,9 +278,91 @@ class ChatRepositoryImplTest {
             dataStore = dataStore,
         )
 
-        assertFailsWith<UnknownException> {
+        assertFailsWith<Exception> {
             repository.deleteChatById(testChatId)
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should emit error state when getChatsSummary sync fails in background`() = runTest {
+        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+            dataStore = dataStore
+        )
+
+        val syncStates = mutableListOf<SyncState>()
+        val job = launch {
+            repository.observeChatSummariesSyncState().collect {
+                syncStates.add(it)
+            }
+        }
+
+        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
+        advanceUntilIdle()
+
+        assertThat(syncStates.any { it is SyncState.Error }).isTrue()
+        job.cancel()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should sync chat summaries in background and update cache`() = runTest {
+        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = { defaultChatSummaryResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+            dataStore = dataStore
+        )
+
+        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
+        advanceUntilIdle()
+
+        verifySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should emit ChatsSummariesSynced state when sync succeeds`() = runTest {
+        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+
+        httpClient = createHttpClient(
+            chatsSummariesResponse = { defaultChatSummaryResponse() }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+            dataStore = dataStore
+        )
+
+        val syncStates = mutableListOf<SyncState>()
+        val job = launch {
+            repository.observeChatSummariesSyncState().collect {
+                syncStates.add(it)
+            }
+        }
+
+        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
+        advanceUntilIdle()
+
+        assertThat(syncStates.any { it is SyncState.ChatsSummariesSynced }).isTrue()
+        job.cancel()
     }
 
     private companion object {

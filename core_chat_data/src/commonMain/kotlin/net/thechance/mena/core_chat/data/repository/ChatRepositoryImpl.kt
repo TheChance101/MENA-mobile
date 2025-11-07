@@ -145,8 +145,8 @@ class ChatRepositoryImpl(
         return tryNetworkCall<List<Uuid>>(
             bodyType = typeInfo<List<Uuid>>()
         ) {
-            client.get("/chat/deletedChats") {
-                parameter("deletedAfter", time)
+            client.get(DELETED_CHATS_ENDPOINT) {
+                parameter(DELETED_AFTER_PARAMETER, time)
             }
         } ?: throw NotFoundException("Deleted chats not found")
     }
@@ -198,8 +198,10 @@ class ChatRepositoryImpl(
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
         const val RECEIVER_ID_PARAMETER = "receiverId"
+        const val DELETED_AFTER_PARAMETER = "deletedAfter"
         const val CHAT_ENDPOINT = "/chat"
         const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
+        const val DELETED_CHATS_ENDPOINT = "/chat/deletedChats"
 
         val LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY = stringPreferencesKey("lastTimeChatSummariesSynced")
 
