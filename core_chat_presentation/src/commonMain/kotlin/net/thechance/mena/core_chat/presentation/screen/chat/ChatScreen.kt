@@ -10,9 +10,11 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -36,16 +39,19 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInpu
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
-import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -96,6 +102,11 @@ fun ChatScreenContent(
         contentAlignment = Alignment.Center
     ) {
         Scaffold(
+            modifier = Modifier
+                .background(
+                    color = Theme.colorScheme.background.surface
+                )
+                .statusBarsPadding(),
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,
@@ -123,7 +134,7 @@ fun ChatScreenContent(
                 ) { isRecording ->
                     if (isRecording) {
                         RecordingBar(
-                            onSendClick =interactions::onSendRecordClicked,
+                            onSendClick = interactions::onSendRecordClicked,
                             onCancelClick = interactions::onCancelRecordClicked
                         )
                     } else {
@@ -221,4 +232,124 @@ private fun EffectsHandler(
             }
         }
     }
+}
+
+@Composable
+@Preview
+private fun ChatScreenContentPreview() {
+    ChatScreenContent(
+        state = ChatScreenState(),
+        interactions = object : ChatInteractionListener {
+            override fun onBackClicked() {
+
+            }
+
+            override fun onAttachmentClicked() {
+
+            }
+
+            override fun onInputMessageChanged(value: String) {
+
+            }
+
+            override fun onSendMessageClicked() {
+
+            }
+
+            override fun onMessageImageClicked(
+                messages: List<MessageUiState>,
+                initialImageIndex: Int
+            ) {
+
+            }
+
+            override fun onMessageVoiceClicked(messageId: Uuid) {
+
+            }
+
+            override fun onRecordClicked() {
+
+            }
+
+            override fun onCancelRecordClicked() {
+
+            }
+
+            override fun onSendRecordClicked() {
+
+            }
+
+            override fun onMessageClicked(messageId: Uuid) {
+
+            }
+
+            override fun onFailedMessageClicked(message: MessageUiState) {
+
+            }
+
+            override fun onDeleteFailedMessageClicked() {
+
+            }
+
+            override fun onResendMessageClicked() {
+
+            }
+
+            override fun onResendMessageDialogDismissed() {
+
+            }
+
+            override fun onMessagesScrolled() {
+
+            }
+
+            override fun onDownloadImageClicked(url: String) {
+
+            }
+
+            override fun onCloseImageViewClicked() {
+
+            }
+
+            override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {
+
+            }
+
+            override fun onGalleryClicked() {
+
+            }
+
+            override fun onCameraClicked() {
+
+            }
+
+            override fun onCameraResult(image: ImageBitmap?) {
+
+            }
+
+            override fun onCloseAttachmentClicked() {
+
+            }
+
+            override fun onChatActionsMenuClicked() {
+
+            }
+
+            override fun onChatActionsMenuDialogDismissed() {
+
+            }
+
+            override fun onConfirmDeleteChatDialogDismissed() {
+
+            }
+
+            override fun onDeleteChatClicked() {
+
+            }
+
+            override fun onConfirmDeleteChatClicked() {
+
+            }
+
+        })
 }
