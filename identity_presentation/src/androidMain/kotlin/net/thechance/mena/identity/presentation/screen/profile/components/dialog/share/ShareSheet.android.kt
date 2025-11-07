@@ -24,7 +24,7 @@ actual fun ShareSheet(title: String, url: String, onDismiss: () -> Unit) {
         val contentPreviewUri = getAndCacheImageFile(context = context).toImageUri(context)
 
         val sendIntent = Intent().apply {
-            Intent.setAction = Intent.ACTION_SEND
+            action = Intent.ACTION_SEND
             putExtra(Intent.EXTRA_TEXT, url)
             putExtra(Intent.EXTRA_TITLE, title)
 
