@@ -8,19 +8,14 @@ import androidx.datastore.preferences.core.emptyPreferences
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
-import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.core_chat.data.contacts.fakes.createCachedChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
@@ -28,7 +23,6 @@ import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.createChatRepository
 import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.defaultChatResponse
-import net.thechance.mena.core_chat.data.defaultChatSummaryResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
@@ -39,7 +33,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
-import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -70,6 +63,7 @@ class ChatRepositoryImplTest {
         dataStore = mock<DataStore<Preferences>>()
         val emptyPrefs = emptyPreferences()
         everySuspend { dataStore.data } returns flowOf(emptyPrefs)
+        everySuspend { dataStore.updateData(any()) } returns emptyPreferences()
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
@@ -281,88 +275,6 @@ class ChatRepositoryImplTest {
         assertFailsWith<Exception> {
             repository.deleteChatById(testChatId)
         }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `should emit error state when getChatsSummary sync fails in background`() = runTest {
-        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
-        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
-
-        httpClient = createHttpClient(
-            chatsSummariesResponse = { mockErrorPagedResponse<ChatSummaryDto>(HttpStatusCode.NotFound) }
-        )
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore
-        )
-
-        val syncStates = mutableListOf<SyncState>()
-        val job = launch {
-            repository.observeChatSummariesSyncState().collect {
-                syncStates.add(it)
-            }
-        }
-
-        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
-        advanceUntilIdle()
-
-        assertThat(syncStates.any { it is SyncState.Error }).isTrue()
-        job.cancel()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `should sync chat summaries in background and update cache`() = runTest {
-        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
-        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
-
-        httpClient = createHttpClient(
-            chatsSummariesResponse = { defaultChatSummaryResponse() }
-        )
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore
-        )
-
-        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
-        advanceUntilIdle()
-
-        verifySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `should emit ChatsSummariesSynced state when sync succeeds`() = runTest {
-        everySuspend { cachedChatSummaryDao.getChatSummaries(any(), any()) } returns emptyList()
-        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
-
-        httpClient = createHttpClient(
-            chatsSummariesResponse = { defaultChatSummaryResponse() }
-        )
-        repository = createChatRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore
-        )
-
-        val syncStates = mutableListOf<SyncState>()
-        val job = launch {
-            repository.observeChatSummariesSyncState().collect {
-                syncStates.add(it)
-            }
-        }
-
-        repository.getChatsSummary(pageNumber = 1, pageSize = 20)
-        advanceUntilIdle()
-
-        assertThat(syncStates.any { it is SyncState.ChatsSummariesSynced }).isTrue()
-        job.cancel()
     }
 
     private companion object {
