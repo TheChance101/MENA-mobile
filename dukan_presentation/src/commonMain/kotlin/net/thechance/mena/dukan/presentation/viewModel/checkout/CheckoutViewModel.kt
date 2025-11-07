@@ -86,14 +86,17 @@ class CheckoutViewModel(
     }
 
     private fun getActiveAddressError(throwable: Throwable) {
-
+        when (throwable) {
+            is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
+            else -> showSnackBar(message = Res.string.something_went_wrong)
+        }
     }
 
     private fun updateTotalPrice() {
         tryToExecute(
             block = ::getTotalCartPrice,
+            onSuccess = { onLoadCartSuccess(it.totalPrice) },
             onError = ::onCartInfoError,
-            onSuccess = ::onLoadCartSuccess
         )
     }
 
@@ -102,10 +105,10 @@ class CheckoutViewModel(
         return cartRepository.getCartInfo(args.dukanId)
     }
 
-    private fun onLoadCartSuccess(cart: Cart) {
+    private fun onLoadCartSuccess(totalPrice: Double) {
         updateState {
             copy(
-                totalAmount = cart.totalPrice,
+                totalAmount = totalPrice,
             )
         }
     }
