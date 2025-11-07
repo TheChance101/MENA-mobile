@@ -13,6 +13,8 @@ import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 
+private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
+
 @Composable
 fun BaseAsyncImage(
     url: String,
@@ -26,7 +28,7 @@ fun BaseAsyncImage(
     val context = LocalPlatformContext.current
 
     val networkHeaders = NetworkHeaders.Builder()
-        .set("X-ACCESS-KEY", "something")
+        .set("X-ACCESS-KEY", "ZMWdplQ2Xri26w0a&$2*!$7FJvEC!ChWyJnuLNdjBylUy*aoIJ")
         .build()
 
     val imageRequest = remember(url) {
@@ -45,7 +47,7 @@ fun BaseAsyncImage(
             onError = { error ->
                 val throwable = error.result.throwable
                 if (throwable is HttpException){
-                    if (throwable.response.code == 403){
+                    if (throwable.response.code == HTTP_UNAUTHORIZED_STATUS_EXCEPTION){
                         onRequestRefresh()
                     }
                 }

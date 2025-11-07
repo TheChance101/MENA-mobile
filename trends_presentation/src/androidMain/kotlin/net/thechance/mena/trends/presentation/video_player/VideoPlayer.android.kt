@@ -55,6 +55,8 @@ import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BU
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
 
+private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
+
 @OptIn(UnstableApi::class)
 @Composable
 actual fun VideoPlayer(
@@ -81,7 +83,7 @@ actual fun VideoPlayer(
 
     val source = remember {
         DefaultHttpDataSource.Factory()
-            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to "something"))
+            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to "ZMWdplQ2Xri26w0a&$2*!$7FJvEC!ChWyJnuLNdjBylUy*aoIJ"))
     }
 
 
@@ -123,9 +125,9 @@ actual fun VideoPlayer(
 
                 addListener(object : Player.Listener {
                     override fun onPlayerError(error: PlaybackException) {
-                        val cause = error.cause
-                        if (cause is HttpDataSource.InvalidResponseCodeException) {
-                            if (cause.responseCode == 403) {
+                        val errorCause = error.cause
+                        if (errorCause is HttpDataSource.InvalidResponseCodeException) {
+                            if (errorCause.responseCode == HTTP_UNAUTHORIZED_STATUS_EXCEPTION) {
                                 onRequestRefresh()
                             }
                         } else super.onPlayerError(error)

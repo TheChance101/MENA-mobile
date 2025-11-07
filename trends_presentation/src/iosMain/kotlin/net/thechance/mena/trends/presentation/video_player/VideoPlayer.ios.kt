@@ -64,6 +64,9 @@ import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
 import platform.Foundation.NSURLErrorBadServerResponse
 
+
+private const val PREFERRED_TIME_SCALE = 600
+
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun VideoPlayer(
@@ -96,7 +99,7 @@ actual fun VideoPlayer(
     )
 
 
-    val headers = mapOf("X-ACCESS-KEY" to "something")
+    val headers = mapOf("X-ACCESS-KEY" to "ZMWdplQ2Xri26w0a&$2*!$7FJvEC!ChWyJnuLNdjBylUy*aoIJ")
 
     val asset = remember(url) {
         AVURLAsset.URLAssetWithURL(
@@ -130,7 +133,7 @@ actual fun VideoPlayer(
 
         player.replaceCurrentItemWithPlayerItem(newPlayerItem)
 
-        val time = CMTimeMakeWithSeconds(currentTime, 600)
+        val time = CMTimeMakeWithSeconds(currentTime, PREFERRED_TIME_SCALE)
         player.seekToTime(time)
 
         if (wasPlaying) {
@@ -163,7 +166,7 @@ actual fun VideoPlayer(
 
         if (isReelVisible) {
             if (lastPosition > 0.0) {
-                val time = CMTimeMakeWithSeconds(lastPosition, 600)
+                val time = CMTimeMakeWithSeconds(lastPosition, PREFERRED_TIME_SCALE)
                 player.seekToTime(time)
             }
             player.play()
@@ -276,7 +279,7 @@ actual fun VideoPlayer(
                                 if (duration > 0.0 && barWidth > 0f) {
                                     val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
                                     val seekSeconds = newProgress * duration
-                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
+                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
                                     player.seekToTime(seekTime)
                                 }
                             }
@@ -303,7 +306,7 @@ private fun replayReelWhenFinishedAutomatic(player: AVPlayer) {
         `object` = player.currentItem,
         queue = null
     ) { _ ->
-        player.seekToTime(CMTimeMakeWithSeconds(0.0, 600))
+        player.seekToTime(CMTimeMakeWithSeconds(0.0, PREFERRED_TIME_SCALE))
         player.play()
     }
 }
