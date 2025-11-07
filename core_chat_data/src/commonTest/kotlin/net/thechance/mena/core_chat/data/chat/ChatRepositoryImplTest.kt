@@ -5,6 +5,8 @@ package net.thechance.mena.core_chat.data.chat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.mutablePreferencesOf
+import androidx.datastore.preferences.core.stringPreferencesKey
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
@@ -16,19 +18,18 @@ import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import net.thechance.mena.core_chat.data.contacts.fakes.createCachedChatSummaryDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatDto
 import net.thechance.mena.core_chat.data.contacts.fakes.createChatSummaryDto
 import net.thechance.mena.core_chat.data.createChatRepository
 import net.thechance.mena.core_chat.data.createHttpClient
 import net.thechance.mena.core_chat.data.defaultChatResponse
+import net.thechance.mena.core_chat.data.defaultDeleteChatResponse
 import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
@@ -48,6 +49,7 @@ import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -320,26 +322,13 @@ class ChatRepositoryImplTest {
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
         everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
 
-        var capturedState: SyncState? = null
-        val job = launch {
-            repository.observeChatSummariesSyncState().collect { state ->
-                capturedState = state
-            }
-        }
-
         repository.getChatsSummary(pageNumber, pageSize)
 
-        withContext(Dispatchers.Default.limitedParallelism(1)) {
-            withTimeout(1000) {
-                while (capturedState == null) {
-                    delay(50)
-                }
-            }
+        val emittedState = repository.observeChatSummariesSyncState().first {
+            it is SyncState.ChatsSummariesSynced
         }
 
-        job.cancel()
-
-        assertThat(capturedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
+        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
     }
 
     @Test
@@ -362,24 +351,13 @@ class ChatRepositoryImplTest {
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
 
-        var capturedState: SyncState? = null
-        val job = launch {
-            repository.observeChatSummariesSyncState().collect { state ->
-                capturedState = state
-            }
-        }
-
         repository.getChatsSummary(pageNumber, pageSize)
 
-        withContext(Dispatchers.Default.limitedParallelism(1)) {
-            withTimeout(1000) {
-                while (capturedState == null) delay(100)
-            }
+        val emittedState = repository.observeChatSummariesSyncState().first {
+            it is SyncState.Offline
         }
 
-        job.cancel()
-
-        assertThat(capturedState).isEqualTo(SyncState.Offline)
+        assertThat(emittedState is SyncState.Offline).isTrue()
     }
 
     @Test
@@ -402,24 +380,114 @@ class ChatRepositoryImplTest {
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
 
-        var capturedState: SyncState? = null
-        val job = launch {
-            repository.observeChatSummariesSyncState().collect { state ->
-                capturedState = state
-            }
+        repository.getChatsSummary(pageNumber, pageSize)
+
+        val emittedState = repository.observeChatSummariesSyncState().first {
+            it is SyncState.Error
         }
+
+        assertThat(emittedState is SyncState.Error).isTrue()
+    }
+
+    @Test
+    fun `should emit DeletedChatsSynced when lastSyncTime is not null`() = runTest {
+        val pageNumber = 0
+        val pageSize = 20
+        val deletedIds = listOf(Uuid.random(), Uuid.random())
+
+        val preferences = mutablePreferencesOf(
+            stringPreferencesKey("lastTimeChatSummariesSynced") to Clock.System.now().toString()
+        )
+        everySuspend { dataStore.data } returns flowOf(preferences)
+        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+        everySuspend { cachedChatSummaryDao.deleteMultipleChatSummaries(any()) } returns Unit
+        httpClient = createHttpClient(
+            deleteChatResponse = {
+                respond(
+                    content = jsonSerialization.encodeToString(ListSerializer(Uuid.serializer()), deletedIds),
+                    status = HttpStatusCode.OK,
+                    headers = jsonHeaders
+                )
+            },
+            chatsSummariesResponse = {
+                mockSuccessPagedResponse<ChatSummaryDto>(
+                    PagedDataDto(
+                        data = emptyList(),
+                        totalItems = 0,
+                        totalPages = 1,
+                        pageNumber = pageNumber,
+                        pageSize = pageSize
+                    )
+                )
+            }
+        )
+
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
 
         repository.getChatsSummary(pageNumber, pageSize)
 
-        withContext(Dispatchers.Default.limitedParallelism(1)) {
-            withTimeout(1000) {
-                while (capturedState == null) delay(100)
-            }
+        val emittedState = repository.observeChatSummariesSyncState().first {
+            it is SyncState.DeletedChatsSynced
         }
 
-        job.cancel()
+        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
 
-        assertThat(capturedState is SyncState.Error).isTrue()
+    }
+
+
+    @Test
+    fun `should return deleted chats after specific time successfully`() = runTest {
+        val deletedChats = listOf(Uuid.random(), Uuid.random())
+        val testTime = Clock.System.now()
+
+        httpClient = createHttpClient(
+            deleteChatResponse = {
+                defaultDeleteChatResponse()
+                respond(
+                    content = jsonSerialization.encodeToString(ListSerializer(Uuid.serializer()), deletedChats),
+                    status = HttpStatusCode.OK,
+                    headers = jsonHeaders
+                )
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
+
+        val result = repository.getDeletedChatAfterSpecificTime(testTime)
+
+        assertThat(result).isEqualTo(deletedChats)
+    }
+
+    @Test
+    fun `should throw NotFoundException when deleted chats not found`() = runTest {
+        val testTime = Clock.System.now()
+
+        httpClient = createHttpClient(
+            deleteChatResponse = {
+                respond("", HttpStatusCode.NotFound, jsonHeaders)
+            }
+        )
+        repository = createChatRepository(
+            httpClient = httpClient,
+            webSocketManager = webSocketManager,
+            dataStore = dataStore,
+            cachedChatSummaryDao = cachedChatSummaryDao,
+        )
+
+        assertFailsWith<NotFoundException> {
+            repository.getDeletedChatAfterSpecificTime(testTime)
+        }
     }
 
     private companion object {
