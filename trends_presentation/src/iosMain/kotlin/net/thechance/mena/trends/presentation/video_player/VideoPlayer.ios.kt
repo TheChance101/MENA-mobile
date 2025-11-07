@@ -35,7 +35,7 @@ import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.trends.presentation.di.TrendPresentationEnvironment
+import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -100,7 +100,7 @@ actual fun VideoPlayer(
     )
 
 
-    val headers = mapOf("X-ACCESS-KEY" to TrendPresentationEnvironment.trendStorageAccessSecret)
+    val headers = mapOf("X-ACCESS-KEY" to trendStorageAccessSecret)
 
     val asset = remember(url) {
         AVURLAsset.URLAssetWithURL(
