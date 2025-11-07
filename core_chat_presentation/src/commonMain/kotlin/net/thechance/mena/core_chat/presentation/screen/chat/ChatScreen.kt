@@ -43,6 +43,7 @@ import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -95,6 +96,8 @@ fun ChatScreenContent(
         contentAlignment = Alignment.Center
     ) {
         Scaffold(
+            statusBarColor = Theme.colorScheme.background.surfaceLow,
+            backgroundColor = Theme.colorScheme.background.surface,
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,

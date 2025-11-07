@@ -50,11 +50,12 @@ fun Scaffold(
             .systemBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
-        Column {
+        Column(
+            modifier = Modifier.background(backgroundColor)
+        ) {
             topBar()
             Box(
                 modifier = Modifier
-                    .background(backgroundColor)
                     .fillMaxWidth()
                     .weight(1f)
             ) {
