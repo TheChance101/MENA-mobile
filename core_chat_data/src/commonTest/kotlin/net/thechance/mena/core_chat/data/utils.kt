@@ -29,6 +29,9 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
@@ -194,6 +197,7 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
+    cachedChatDao: CachedChatDao,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -210,6 +214,7 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
+        cachedChatDao = cachedChatDao
     )
 
 }
@@ -219,12 +224,16 @@ fun createMessageRepository(
     webSocketManager: WebSocketManager,
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
+    cachedMessageDao: CachedMessageDao,
+    chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
         pendingMessageDao = pendingMessageDao,
+        chatSyncTimeDao = chatSyncTimeDao,
         client = httpClient,
         messageSenderFactory = messageSenderFactory,
+        cachedMessageDao = cachedMessageDao,
         json = jsonSerialization
     )
 }

@@ -33,6 +33,8 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
@@ -59,6 +61,8 @@ class MessageRepositoryImplTest {
     private lateinit var textMessageSender: TextMessageSender
     private lateinit var imageMessageSender: ImageMessageSender
     private lateinit var pendingMessageDao: PendingMessageDao
+    private lateinit var cachedMessageDao: CachedMessageDao
+    private lateinit var chatSyncTimeDao: ChatSyncTimeDao
     private lateinit var audioMessageSender: AudioMessageSender
 
     @BeforeTest
@@ -66,6 +70,8 @@ class MessageRepositoryImplTest {
         httpClient = createHttpClient()
         webSocketManager = mock<WebSocketManager>()
         pendingMessageDao = mock<PendingMessageDao>()
+        chatSyncTimeDao = mock<ChatSyncTimeDao>()
+        cachedMessageDao = mock<CachedMessageDao>()
 
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
@@ -81,6 +87,8 @@ class MessageRepositoryImplTest {
             webSocketManager = webSocketManager,
             pendingMessageDao = pendingMessageDao,
             messageSenderFactory = messageSenderFactory,
+            cachedMessageDao = cachedMessageDao,
+            chatSyncTimeDao = chatSyncTimeDao,
             httpClient = httpClient
         )
     }
@@ -95,6 +103,8 @@ class MessageRepositoryImplTest {
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
+            cachedMessageDao = cachedMessageDao,
+            chatSyncTimeDao = chatSyncTimeDao,
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -125,6 +135,8 @@ class MessageRepositoryImplTest {
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
+            cachedMessageDao = cachedMessageDao,
+            chatSyncTimeDao = chatSyncTimeDao,
         )
 
         assertFailsWith<NotFoundException> {
@@ -218,7 +230,9 @@ class MessageRepositoryImplTest {
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
-        everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(emptyList())
+        everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
+            emptyList()
+        )
 
         val result = repository.observePendingMessagesByChatId(chatId).first()
 
@@ -260,6 +274,8 @@ class MessageRepositoryImplTest {
                 webSocketManager = webSocketManager,
                 messageSenderFactory = messageSenderFactory,
                 pendingMessageDao = pendingMessageDao,
+                cachedMessageDao = cachedMessageDao,
+                chatSyncTimeDao = chatSyncTimeDao,
             )
 
             val byteArray = ByteArray(10)
@@ -290,6 +306,8 @@ class MessageRepositoryImplTest {
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
+            cachedMessageDao = cachedMessageDao,
+            chatSyncTimeDao = chatSyncTimeDao,
         )
 
         val byteArray = ByteArray(10)
@@ -304,9 +322,9 @@ class MessageRepositoryImplTest {
         }
 
         verifySuspend {
-            messageDao.updateMessageStatus(
+            pendingMessageDao.updateMessageStatus(
                 any(),
-                MessageLocalDto.MessageStatus.FAILED
+                MessageStatus.FAILED
             )
         }
     }
@@ -314,10 +332,9 @@ class MessageRepositoryImplTest {
     @Test
     fun `should send audio message successfully when websocket connected and audio uploaded`() =
         runTest {
-            // Given
             every { webSocketManager.isConnected() } returns true
-            everySuspend { messageDao.insertMessage(any()) } returns Unit
-            everySuspend { messageDao.deleteMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
 
             httpClient = createHttpClient(
                 audioResponse = { defaultAudioResponse() }
@@ -327,7 +344,9 @@ class MessageRepositoryImplTest {
                 httpClient = httpClient,
                 webSocketManager = webSocketManager,
                 messageSenderFactory = messageSenderFactory,
-                messageDao = messageDao,
+                pendingMessageDao = pendingMessageDao,
+                cachedMessageDao = cachedMessageDao,
+                chatSyncTimeDao = chatSyncTimeDao,
             )
 
             val audioBytes = ByteArray(1024) { it.toByte() }
@@ -337,20 +356,17 @@ class MessageRepositoryImplTest {
                 content = MessageContent.Audio(AudioData.AudioByteArray(audioBytes))
             )
 
-            // When
             repository.sendMessage(message)
 
-            // Then
-            verifySuspend { messageDao.insertMessage(any()) }
-            verifySuspend { messageDao.deleteMessage(any()) }
+            verifySuspend { pendingMessageDao.insertMessage(any()) }
+            verifySuspend { pendingMessageDao.deleteMessage(any()) }
         }
 
     @Test
     fun `should mark message as FAILED when audio upload throws exception`() = runTest {
-        // Given
         every { webSocketManager.isConnected() } returns true
-        everySuspend { messageDao.insertMessage(any()) } returns Unit
-        everySuspend { messageDao.updateMessageStatus(any(), any()) } returns Unit
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.updateMessageStatus(any(), any()) } returns Unit
 
         httpClient = createHttpClient(
             audioResponse = { respondError(HttpStatusCode.InternalServerError) }
@@ -360,7 +376,9 @@ class MessageRepositoryImplTest {
             httpClient = httpClient,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
-            messageDao = messageDao,
+            pendingMessageDao = pendingMessageDao,
+            cachedMessageDao = cachedMessageDao,
+            chatSyncTimeDao = chatSyncTimeDao,
         )
 
         val audioBytes = ByteArray(1024) { it.toByte() }
