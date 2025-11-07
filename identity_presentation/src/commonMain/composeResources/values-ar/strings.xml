@@ -159,10 +159,12 @@
     <string name="error_otp_expired">انتهت صلاحية رمز التحقق (OTP).</string>
     <string name="error_phone_number_already_exists">رقم الهاتف مسجل بالفعل.</string>
     <string name="invalid_request_message">بعض المعلومات التي أدخلتها غير صحيحة. يرجى التحقق من البيانات والمحاولة مرة أخرى.</string>
+    <string name="error_username_already_exists">اسم المستخدم مستخدم بالفعل. يرجى اختيار اسم آخر.</string>
 
     <string name="error_location_permission_denied">تم رفض إذن الوصول إلى الموقع</string>
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
     <string name="error_permission_not_granted">لم يتم منح الإذن</string>
+    <string name="error_incorrect_password">كلمة المرور القديمة غير صحيحة</string>
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>

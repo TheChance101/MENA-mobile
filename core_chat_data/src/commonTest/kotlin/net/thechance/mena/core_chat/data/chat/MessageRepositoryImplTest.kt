@@ -170,10 +170,27 @@ class MessageRepositoryImplTest {
         }
     }
 
-
     @Test
     fun `should observe read messages`() = runTest {
         val flow = repository.observeReadMessages()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe delete chat event`() = runTest {
+        val flow = repository.observeDeleteChat()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe add message reaction event`() = runTest {
+        val flow = repository.observeMessageReactions()
+        assertThat(flow).isNotNull()
+    }
+
+    @Test
+    fun `should observe remove message reaction event`() = runTest {
+        val flow = repository.observeRemovedMessageReactions()
         assertThat(flow).isNotNull()
     }
 

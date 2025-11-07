@@ -83,7 +83,7 @@ private fun ProductItem(
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
         modifier = modifier,
-        onClick = { listener.onProductClicked(product.id) },
+        onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
             NoImageDukanProductAction(
                 showProductQuantity = toggleCartToQuantity,

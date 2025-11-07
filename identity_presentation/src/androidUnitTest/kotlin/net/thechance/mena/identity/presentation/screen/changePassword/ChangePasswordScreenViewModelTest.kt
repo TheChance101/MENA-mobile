@@ -32,7 +32,7 @@ class ChangePasswordScreenViewModelTest: BaseCoroutineTest() {
         val state = viewModel.state.value
         viewModel.onClickContinue()
         viewModel.onClickBack()
-        assertTrue { state.currentPage == 0 }
+        assertTrue { state.currentPage == PasswordPage.CURRENT_PASSWORD }
     }
 
     @Test
@@ -48,7 +48,7 @@ class ChangePasswordScreenViewModelTest: BaseCoroutineTest() {
     fun `onClickContinue() should set current page to 1 when current page is 0`() = runTest {
         viewModel.onClickContinue()
         val state = viewModel.state.value
-        assertTrue { state.currentPage == 1 }
+        assertTrue { state.currentPage == PasswordPage.NEW_PASSWORD }
     }
 
     @Test

@@ -61,7 +61,8 @@ private fun LoginScreenContent(
             PrimaryButton(
                 modifier = Modifier
                     .width(70.dp)
-                    .align(Alignment.End),
+                    .align(Alignment.End)
+                    .padding(bottom = 16.dp),
                 text = stringResource(Res.string.login),
                 onClick = interactionListener::onLoginButtonClicked,
                 isLoading = state.isLoginButtonLoading,

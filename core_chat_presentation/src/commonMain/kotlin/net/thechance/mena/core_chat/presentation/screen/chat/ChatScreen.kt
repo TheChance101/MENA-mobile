@@ -34,11 +34,12 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.Attachme
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
-import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatScreenOverlays
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuOverlay
-import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
+import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -138,14 +139,14 @@ fun ChatScreenContent(
                 }
             },
             overlays = {
-                ChatScreenOverlays(
+                resendFailedMessageDialog(
                     showResendMessageDialog = state.isResendMessageDialogVisible,
                     onDismissResendMessageDialog = interactions::onResendMessageDialogDismissed,
                     onDeleteFailedMessageClick = interactions::onDeleteFailedMessageClicked,
                     onResendFailedMessageClick = interactions::onResendMessageClicked,
                 )
 
-                chatActionsMenuOverlay(
+                chatActionsMenuDialog(
                     showChatActionsDialog = state.isChatActionsDialogVisible,
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
@@ -161,6 +162,7 @@ fun ChatScreenContent(
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 paginationError = state.paginationError,
+                onMessageLongClick = interactions::onMessageLongClicked,
             )
         }
 
@@ -178,6 +180,7 @@ fun ChatScreenContent(
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,
                 onCloseClick = interactions::onCloseImageViewClicked,
+                onImageLongClick = interactions::onMessageLongClicked,
                 onDownloadClick = interactions::onDownloadImageClicked,
             )
         }
@@ -199,6 +202,14 @@ fun ChatScreenContent(
         listState = chatListState,
         remainingItemsToLoadNextPage = 15,
         loadNextItems = interactions::onMessagesScrolled
+    )
+
+    messageReactionDialog(
+        isVisible = state.isReactionDialogVisible,
+        message = state.messageToReactTo,
+        currentUserId = state.chatRequesterId,
+        onDismiss = interactions::onReactionDialogDismissed,
+        onReactionClicked = interactions::onReactionSelected
     )
 }
 

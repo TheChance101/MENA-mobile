@@ -110,9 +110,12 @@ class DukanCartViewModel(
         }
     }
 
-
-    private fun updateProducts() {
-        updateState { copy(products = productsMutableStateFlow) }
+    private fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
+        updateState {
+            copy(
+                productQuantity = productQuantity + (productId to newQuantity)
+            )
+        }
     }
 
     private fun loadProductsPaging() {
@@ -135,7 +138,11 @@ class DukanCartViewModel(
 
     private fun onProductsSuccess(products: PagingData<ProductUiState>) {
         productsMutableStateFlow.value = products
-        updateProducts()
+        productsMutableStateFlow.value.map {
+            updateProductQuantityInCart(it.id, it.quantity)
+            it
+        }
+        updateState { copy(products = productsMutableStateFlow) }
     }
 
 
@@ -152,26 +159,16 @@ class DukanCartViewModel(
     }
 
     override fun onIncreaseItemQuantityClicked(productId: String, newQuantity: Int) {
-        updateProductQuantityInState(productId, newQuantity)
+        updateProductQuantityInCart(productId, newQuantity)
         updateProductQuantityInServer(productId, newQuantity)
     }
 
     override fun onDecreaseItemQuantityClicked(productId: String, newQuantity: Int) {
         if (newQuantity == 0) return
-        updateProductQuantityInState(productId, newQuantity)
+        updateProductQuantityInCart(productId, newQuantity)
         updateProductQuantityInServer(productId, newQuantity)
     }
 
-    private fun updateProductQuantityInState(productId: String, newQuantity: Int) {
-        val updateProducts = productsMutableStateFlow.value.map {
-            if (it.id == productId)
-                it.copy(quantity = newQuantity)
-            else it
-        }
-
-        productsMutableStateFlow.value = updateProducts
-        updateProducts()
-    }
 
     private fun updateProductQuantityInServer(productId: String, newQuantity: Int) {
         tryToExecuteWithDebounce(
@@ -198,15 +195,16 @@ class DukanCartViewModel(
     }
 
     private fun removeProductInState(productId: String) {
+        updateProductQuantityInCart(productId, 0)
         val updateProducts = productsMutableStateFlow.value.filter {
             it.id != productId
         }
         productsMutableStateFlow.value = updateProducts
-        updateProducts()
+        updateState { copy(products = productsMutableStateFlow) }
     }
 
     private fun removeProductInServer(productId: String) {
-        tryToExecuteWithDebounce(
+        tryToExecute(
             block = {
                 cartRepository.deleteProductFromCart(
                     dukanId = dukanId,

@@ -4,9 +4,8 @@ import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
 import org.jetbrains.compose.resources.StringResource
-import kotlin.uuid.ExperimentalUuidApi
 
-data class EditUserProfileUIState @OptIn(ExperimentalUuidApi::class) constructor(
+data class EditUserProfileUIState(
     val username: String = "",
     val firstName: String = "",
     val lastName: String = "",
@@ -20,5 +19,11 @@ data class EditUserProfileUIState @OptIn(ExperimentalUuidApi::class) constructor
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
-    val shouldUpdateImage: Boolean = false,
-)
+    val profileImageAction: ProfileImageAction = ProfileImageAction.NONE,
+) {
+    enum class ProfileImageAction {
+        UPDATE,
+        DELETE,
+        NONE
+    }
+}

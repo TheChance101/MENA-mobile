@@ -29,12 +29,12 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordScreen
+import net.thechance.mena.identity.presentation.screen.register.enterName.EnterNameScreen
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
-data class RegisterOtpScreen(
+class RegisterOtpScreen(
     private val phoneNumber: String,
     private val countryCode: String,
     private val callingCode: String
@@ -119,8 +119,8 @@ data class RegisterOtpScreen(
         navigator: Navigator
     ) {
         when (effect) {
-            is RegisterOtpUIEffect.NavigateToCreatePassword -> {
-                navigator.push(CreatePasswordScreen())
+            is RegisterOtpUIEffect.NavigateToEnterName -> {
+                navigator.push(EnterNameScreen(phoneNumber = effect.phoneNumber))
             }
         }
     }

@@ -88,6 +88,7 @@ private fun ExportTransactionFilterSection(
                 cardTitle = stringResource(Res.string.all_transactions),
                 onCardSelected = interactionListener::onAllTransactionsClicked,
                 isSelected = (!state.isCustomFilterCardSelected),
+                isEnabled = (!state.canSelectExportType),
                 modifier = Modifier.padding(bottom = 12.dp)
             )
         }
@@ -96,6 +97,7 @@ private fun ExportTransactionFilterSection(
             ExportTypeCard(
                 cardTitle = stringResource(Res.string.custom_filtering),
                 isSelected = state.isCustomFilterCardSelected,
+                isEnabled = (!state.canSelectExportType),
                 onCardSelected = interactionListener::onCustomFilteringClicked,
             )
         }

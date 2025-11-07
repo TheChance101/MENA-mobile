@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.uploadProfileImage
+package net.thechance.mena.identity.presentation.screen.register.uploadProfileImage
 
 import androidx.compose.ui.graphics.ImageBitmap
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener

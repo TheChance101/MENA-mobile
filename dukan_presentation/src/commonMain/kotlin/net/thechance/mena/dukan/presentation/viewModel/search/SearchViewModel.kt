@@ -1,0 +1,259 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
+package net.thechance.mena.dukan.presentation.viewModel.search
+
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.error_updating_favorites
+import mena.dukan_presentation.generated.resources.no_internet_message
+import mena.dukan_presentation.generated.resources.search_general_error
+import net.thechance.mena.dukan.domain.entity.ProductSearch
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.model.DukanPreview
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.domain.repository.SearchRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+class SearchViewModel(
+    private val searchRepository: SearchRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
+    defaultDispatcher: CoroutineDispatcher,
+) : BaseViewModel<SearchUiState, SearchEffect>(
+    initialState = SearchUiState(),
+    defaultDispatcher = defaultDispatcher
+), SearchInteractionListener {
+
+    override fun onSearchChanged(query: String) {
+        updateState {
+            copy(
+                searchQuery = query,
+                searchContentState = getSearchQueryCurrentState(query = query)
+            )
+        }
+        searchWithQuery(query = query)
+    }
+
+    override fun onBackClicked() {
+        emitEffect(effect = SearchEffect.NavigateBack)
+    }
+
+    override fun onClearSearchClicked() {
+        updateState {
+            copy(
+                searchQuery = "",
+                searchContentState = SearchUiState.SearchContentState.Idle,
+            )
+        }
+    }
+
+    override fun onDukansSelected() {
+        updateState {
+            copy(
+                userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans
+            )
+        }
+        searchWithQuery(query = state.value.searchQuery)
+    }
+
+    override fun onProductsSelected() {
+        updateState {
+            copy(
+                userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products
+            )
+        }
+        searchWithQuery(query = state.value.searchQuery)
+    }
+
+    override fun onDukanClicked(dukanId: Uuid) {
+        emitEffect(effect = SearchEffect.NavigateToDukanDetails(dukanId = dukanId.toString()))
+    }
+
+    override fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite: Boolean) {
+        tryToExecute(
+            block = { onDukanFavoriteToggleBlock(dukanId) },
+            onSuccess = { isFavorite ->
+                onDukanFavoriteToggleSuccess(
+                    isFavorite= isFavorite,
+                    dukanId = dukanId
+                )
+            },
+            onError = { onDukanFavoriteToggleError(it as Exception) }
+        )
+    }
+
+    override fun onProductClicked(productId: Uuid) {
+        emitEffect(effect = SearchEffect.NavigateToProductDetails(productId = productId.toString()))
+    }
+
+    override fun onSnackBarDismissed() {
+        updateState {
+            copy(
+                snackBarUiState = null
+            )
+        }
+    }
+
+
+    private fun getSearchQueryCurrentState(query: String): SearchUiState.SearchContentState {
+        return if (query.isNotBlank())
+            SearchUiState.SearchContentState.Complete
+        else
+            SearchUiState.SearchContentState.Idle
+    }
+
+    private fun searchWithQuery(query: String) {
+        val validQuery = query.trim()
+        if (validQuery.isBlank())
+            return
+
+        when (state.value.userSelectionSearchList) {
+            SearchUiState.UserSelectionSearchList.Dukans -> getDukansByQuery(query = validQuery)
+            SearchUiState.UserSelectionSearchList.Products -> getProductsByQuery(query = validQuery)
+        }
+    }
+
+    private fun getDukansByQuery(query: String) {
+        tryToCollect(
+            block = { getDukansByQueryBlock(query) },
+            onCollect = ::onGetDukansByQueryCollect,
+            onError = { onGetDukansByQueryError(it as Exception) },
+        )
+    }
+
+    private fun getDukansByQueryBlock(validQuery: String): Flow<PagingData<SearchUiState.DukanUiState>> {
+        return createPagingSourceFlow(
+            mapper = DukanPreview::toSearchUiState,
+            onError = { exception -> onGetDukansByQueryError(exception) },
+            block = { pageNumber, _ ->
+                searchRepository.findDukansByQuery(
+                    query = validQuery,
+                    page = pageNumber,
+                    size = 15
+                ).items
+            }
+        )
+    }
+
+    private fun onGetDukansByQueryCollect(dukanPagingData: PagingData<SearchUiState.DukanUiState>) {
+        updateState {
+            copy(
+                dukanPagingFlow = flowOf(value = dukanPagingData),
+            )
+        }
+    }
+
+    private fun onGetDukansByQueryError(exception: Exception) {
+        when (exception) {
+            is NoInternetException -> handleNoInternetException()
+            else -> handleGeneralSearchException()
+        }
+    }
+
+    private fun getProductsByQuery(query: String) {
+        tryToCollect(
+            block = { getProductsByQueryBlock(query) },
+            onCollect = ::onGetProductsByQuerySuccess,
+            onError = { onGetProductsByQueryError(it as Exception) },
+        )
+    }
+
+    private fun getProductsByQueryBlock(validQuery: String): Flow<PagingData<SearchUiState.ProductUiState>> {
+        return createPagingSourceFlow(
+            mapper = ProductSearch::toSearchUiState,
+            onError = { exception -> onGetProductsByQueryError(exception) },
+            block = { pageNumber, _ ->
+                searchRepository.findProductsByQuery(
+                    query = validQuery,
+                    page = pageNumber,
+                    size = 15
+                ).items
+            }
+        )
+    }
+
+    private fun onGetProductsByQuerySuccess(searchedProducts: PagingData<SearchUiState.ProductUiState>) {
+        updateState {
+            copy(
+                productPagingFlow = flowOf(value = searchedProducts),
+            )
+        }
+    }
+
+    private fun onGetProductsByQueryError(exception: Exception) {
+        when (exception) {
+            is NoInternetException -> handleNoInternetException()
+            else -> handleGeneralSearchException()
+        }
+    }
+
+    private suspend fun onDukanFavoriteToggleBlock(dukanId: Uuid): Boolean {
+        return dukanManagementRepository.updateFavoriteDukanStatus(dukanId = dukanId.toString())
+    }
+
+    private fun onDukanFavoriteToggleSuccess(isFavorite: Boolean,dukanId: Uuid) {
+        val dukanPagingFlow = state.value.dukanPagingFlow
+        val favoriteMappedFlowDukans = dukanPagingFlow.map { dukansPagingData ->
+            dukansPagingData.map { dukan ->
+                if (dukan == dukanId) dukan.copy(isFavorite = isFavorite)
+                else dukan
+            }
+        }.cachedIn(viewModelScope)
+
+        updateState {
+            copy(
+                dukanPagingFlow = favoriteMappedFlowDukans
+            )
+        }
+    }
+
+    private fun onDukanFavoriteToggleError(exception: Exception) {
+        when(exception){
+            is NoInternetException -> handleNoInternetException()
+            else -> handleGeneralFavoriteDukanException()
+        }
+    }
+
+    private fun handleGeneralFavoriteDukanException() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.error_updating_favorites,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+    }
+
+    private fun handleNoInternetException() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.no_internet_message,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+    }
+
+    private fun handleGeneralSearchException() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.search_general_error,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
+        }
+    }
+}

@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -21,6 +22,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.heart_icon
 import mena.dukan_presentation.generated.resources.ic_favorite
+import mena.dukan_presentation.generated.resources.ic_favorite_filled
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -33,9 +35,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun EditorPickDukanItem(
     dukanImage: Any,
     dukanName: String,
-    onClick: () -> Unit,
+    isFavorite: Boolean,
+    onClickDukan: () -> Unit,
+    onClickFavorite: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -44,18 +49,18 @@ fun EditorPickDukanItem(
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
-                onClick = { onClick() }
+                onClick = { onClickDukan() }
             )
     ) {
         AsyncImage(
-        model = dukanImage,
-        contentDescription = stringResource(Res.string.dukan_image),
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
-    )
+            model = dukanImage,
+            contentDescription = stringResource(Res.string.dukan_image),
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
         Box(
-            Modifier.fillMaxSize().padding( Theme.spacing._8)
-        ){
+            Modifier.fillMaxSize().padding(Theme.spacing._8)
+        ) {
             Text(
                 text = dukanName,
                 style = Theme.typography.title.small,
@@ -63,16 +68,27 @@ fun EditorPickDukanItem(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
             )
-            Icon(
-                painter = painterResource(Res.drawable.ic_favorite),
-                contentDescription = stringResource(Res.string.heart_icon),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .background(
-                        color = Theme.colorScheme.primary.primary,
-                        shape = RoundedCornerShape(Theme.radius.full)
-                    ).padding(Theme.spacing._8)
-            )
+            Crossfade(
+                targetState = isFavorite,
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) { isFavorite ->
+                val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
+                else Res.drawable.ic_favorite
+
+                Icon(
+                    painter = painterResource(favoriteIcon),
+                    contentDescription = stringResource(Res.string.heart_icon),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(Theme.radius.full))
+                        .clickable(
+                            onClick = onClickFavorite,
+                            indication = null,
+                            interactionSource = null
+                        )
+                        .background(color = Theme.colorScheme.primary.primary)
+                        .padding(Theme.spacing._8)
+                )
+            }
         }
     }
 }
@@ -84,7 +100,9 @@ private fun EditorPickDukanItemPreview() {
         EditorPickDukanItem(
             dukanName = "Calvin Klein store - Baghdad",
             dukanImage = "https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1469",
-            onClick = {}
+            isFavorite = false,
+            onClickDukan = {},
+            onClickFavorite = {}
         )
     }
 }

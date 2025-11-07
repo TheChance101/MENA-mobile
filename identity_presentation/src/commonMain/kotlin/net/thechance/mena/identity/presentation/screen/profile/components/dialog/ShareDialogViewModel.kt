@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.Clipboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -26,6 +25,7 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -34,6 +34,7 @@ class ShareDialogViewModel(
     private val userRepository: UserRepository,
     private val imagesRepository: ImagesRepository,
     private val galleryPermissionHandler: PermissionHandler,
+    private val imageDecoder: ImageDecoder,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     initialState: ShareQrCodeUIState = ShareQrCodeUIState()
 ) : ViewModel(), ShareQrCodeInteractionListener {
@@ -97,7 +98,7 @@ class ShareDialogViewModel(
 
 
     private suspend fun saveImageToGallery(bitmap: ImageBitmap) {
-        val imageByteArray = bitmap.encodeToByteArray()
+        val imageByteArray = imageDecoder.encodeImage(bitmap)
         imagesRepository.saveImageToGallery(imageByteArray)
     }
 

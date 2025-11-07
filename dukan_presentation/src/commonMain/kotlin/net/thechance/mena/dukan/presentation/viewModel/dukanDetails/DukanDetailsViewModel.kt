@@ -12,8 +12,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
@@ -44,6 +47,32 @@ class DukanDetailsViewModel(
 
     init {
         loadDukanDetails()
+        loadCartInfo()
+    }
+
+    private fun loadCartInfo() {
+        tryToExecute(
+            block = { dukanCartRepository.getCartInfo(args.dukanId) },
+            onError = ::onCartInfoError,
+            onSuccess = ::onLoadCartSuccess
+        )
+    }
+
+    private fun onCartInfoError(throwable: Throwable) {
+        when (throwable) {
+            is NoSuchItemException -> updateState { copy(totalPrice = 0.0) }
+            is NoInternetException -> updateState { copy(totalPrice = 0.0) }
+            else -> updateState { copy(totalPrice = 0.0) }
+        }
+    }
+
+    private fun onLoadCartSuccess(cart: Cart) {
+        updateState {
+            copy(
+                totalPrice = cart.totalPrice,
+            )
+        }
+        println("totalprice "+state.value.totalPrice)
     }
 
     private fun loadDukanDetails() {
@@ -115,24 +144,25 @@ class DukanDetailsViewModel(
     private fun loadProductsLimited(shelves: PagingData<ShelfUiState>) {
         tryToExecute(
             block = { updateProductsLimited(shelves) },
-            onSuccess = ::onProductsLimitedLoaded
+            onSuccess = ::onProductsLimitedLoaded,
+            onError = ::onLoadProductsPagingError
         )
     }
 
-    private fun updateProductsLimited(
+    private suspend fun updateProductsLimited(
         shelves: PagingData<ShelfUiState>
     ): PagingData<ShelfUiState> {
-        return shelves.map { shelf ->
-            val products = getProductsLimitedByShelfId(shelf.id)
-            shelf.copy(products = products)
-        }.filter { it.products.isNotEmpty() }
-    }
-
-    private suspend fun getProductsLimitedByShelfId(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
         val page = 0
-        val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
-        return product.map { it.toUiState() }
+        var products: List<Product> = emptyList()
+        return shelves.map { shelf ->
+            tryToExecute(
+                block = { productRepository.getProductsByShelfId(shelf.id, page, maxProducts).items },
+                onSuccess = { products = it },
+                onError = { throwable -> onLoadProductsPagingError(throwable) }
+            )
+            shelf.copy(products = products.map { it.toUiState() })
+        }.filter { it.products.isNotEmpty() }
     }
 
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
@@ -147,8 +177,19 @@ class DukanDetailsViewModel(
     private fun loadProductsPaging() {
         tryToCollect(
             block = ::getProductPagingFlow,
-            onCollect = ::onProductsLoaded
+            onCollect = ::onProductsLoaded,
+            onError = ::onLoadProductsPagingError
         )
+    }
+
+    private fun onLoadProductsPagingError(throwable: Throwable) {
+        updateState {
+            copy(
+                error = throwable,
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
     }
 
     private fun getProductPagingFlow(): Flow<PagingData<ProductUiState>> {
@@ -309,12 +350,26 @@ class DukanDetailsViewModel(
         loadDukanDetails()
     }
 
+    override fun onFavoriteDukanClicked(dukanId: String) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onSuccess = { isFavorite -> setFavoriteState(isFavorite) }
+        )
+    }
+
+    private fun setFavoriteState(isFavorite: Boolean) {
+        updateState {
+            copy(
+                dukanInfo = dukanInfo.copy(isFavorite = isFavorite)
+            )
+        }
+    }
+
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
     fun refreshProducts() {
         loadDukanDetails()
+        loadCartInfo()
     }
-
-
 }

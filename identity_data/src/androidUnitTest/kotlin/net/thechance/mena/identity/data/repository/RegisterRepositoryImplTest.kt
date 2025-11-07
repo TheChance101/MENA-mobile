@@ -2,6 +2,7 @@ package net.thechance.mena.identity.data.repository
 
 import assertk.assertFailure
 import assertk.assertions.isInstanceOf
+import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
@@ -17,14 +18,15 @@ import kotlin.test.Test
 
 class RegisterRepositoryImplTest {
     private val client: HttpClient = mockk(relaxed = true)
+    private val settings: Settings = mockk(relaxed = true)
     private var registerRepository: RegisterRepositoryImpl =
-        RegisterRepositoryImpl(client)
+        RegisterRepositoryImpl(client, settings)
 
     @Test
     fun `requestOTP() should return session id when server returns 200`() = runTest {
         val client = mockHttpClient(OtpResponse("session123"))
 
-        registerRepository = RegisterRepositoryImpl(client)
+        registerRepository = RegisterRepositoryImpl(client, settings)
 
         registerRepository.requestOTP(phoneNumber, countryCode)
     }
@@ -34,7 +36,7 @@ class RegisterRepositoryImplTest {
         runTest {
             val client = mockHttpClientError(HttpStatusCode.Conflict)
 
-            registerRepository = RegisterRepositoryImpl(client)
+            registerRepository = RegisterRepositoryImpl(client, settings)
 
             assertFailure {
                 registerRepository.requestOTP(
@@ -49,10 +51,10 @@ class RegisterRepositoryImplTest {
         val client = mockHttpClient(Unit)
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client)
+        registerRepository = RegisterRepositoryImpl(client, settings)
         registerRepository.verifyOTPCode("123456")
     }
 
@@ -61,10 +63,10 @@ class RegisterRepositoryImplTest {
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
         val client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client)
+        registerRepository = RegisterRepositoryImpl(client, settings)
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
@@ -76,10 +78,10 @@ class RegisterRepositoryImplTest {
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
         val client = mockHttpClientError(HttpStatusCode.BadRequest)
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client)
+        registerRepository = RegisterRepositoryImpl(client, settings)
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
@@ -92,80 +94,13 @@ class RegisterRepositoryImplTest {
             val requestOtpClient = mockHttpClient(OtpResponse("session123"))
             val client = mockHttpClientError(HttpStatusCode.Conflict)
 
-            registerRepository = RegisterRepositoryImpl(requestOtpClient)
+            registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
             registerRepository.requestOTP(phoneNumber, countryCode)
 
-            registerRepository = RegisterRepositoryImpl(client)
+            registerRepository = RegisterRepositoryImpl(client, settings)
 
             assertFailure {
                 registerRepository.verifyOTPCode(otpCode = "123456")
-            }.isInstanceOf<PhoneNumberAlreadyExistsException>()
-        }
-
-    @Test
-    fun `createPassword() should not throw exception when server returns 200`() = runTest {
-        val requestOtpClient = mockHttpClient(OtpResponse("session123"))
-        val client = mockHttpClient(Unit)
-
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
-        registerRepository.requestOTP(phoneNumber, countryCode)
-
-        registerRepository = RegisterRepositoryImpl(client)
-        registerRepository.createPassword("newPassword123", "newPassword123")
-    }
-
-    @Test
-    fun `createPassword() should throw InvalidOTPException when server returns 401`() = runTest {
-        val requestOtpClient = mockHttpClient(OtpResponse("session123"))
-        val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
-        registerRepository.requestOTP(phoneNumber, countryCode)
-
-        registerRepository = RegisterRepositoryImpl(client)
-
-        assertFailure {
-            registerRepository.createPassword(
-                newPassword = "newPassword123",
-                confirmPassword = "newPassword123"
-            )
-        }.isInstanceOf<InvalidOTPException>()
-    }
-
-    @Test
-    fun `createPassword() should throw OtpExpiredException when server returns 400`() = runTest {
-        val requestOtpClient = mockHttpClient(OtpResponse("session123"))
-        val client = mockHttpClientError(HttpStatusCode.BadRequest)
-
-        registerRepository = RegisterRepositoryImpl(requestOtpClient)
-        registerRepository.requestOTP(phoneNumber, countryCode)
-
-        registerRepository = RegisterRepositoryImpl(client)
-
-        assertFailure {
-            registerRepository.createPassword(
-                newPassword = "newPassword123",
-                confirmPassword = "newPassword123"
-            )
-        }.isInstanceOf<OtpExpiredException>()
-    }
-
-    @Test
-    fun `createPassword() should throw PhoneNumberAlreadyExistsException when server returns 409`() =
-        runTest {
-            val requestOtpClient = mockHttpClient(OtpResponse("session123"))
-            val client = mockHttpClientError(HttpStatusCode.Conflict)
-
-            registerRepository = RegisterRepositoryImpl(requestOtpClient)
-            registerRepository.requestOTP(phoneNumber, countryCode)
-
-            registerRepository = RegisterRepositoryImpl(client)
-
-            assertFailure {
-                registerRepository.createPassword(
-                    newPassword = "newPassword123",
-                    confirmPassword = "newPassword123"
-                )
             }.isInstanceOf<PhoneNumberAlreadyExistsException>()
         }
 

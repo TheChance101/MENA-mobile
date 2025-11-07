@@ -8,5 +8,5 @@ fun Dukan.toUiState() = CategoryDukansUiState.DukanUiState(
     id = id.toString(),
     name = name,
     imageUrl = imageUrl,
-    isFavorite = false
+    isFavorite = isFavorite
 )

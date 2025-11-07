@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.uploadProfileImage
+package net.thechance.mena.identity.presentation.screen.register.uploadProfileImage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,14 +26,21 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.PhoneNumber
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
-import net.thechance.mena.identity.presentation.screen.uploadProfileImage.components.UploadImageContainer
+import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
+import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.components.UploadImageContainer
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 
-class UploadProfileImageScreen :
+class UploadProfileImageScreen(
+    private val authTokens: AuthenticationTokens? = null,
+    private val phoneNumber: PhoneNumber? = null
+) :
     BaseScreen<UploadProfileImageViewModel, UploadProfileImageUIState, UploadProfileImageUIEffect, UploadProfileImageInteractionListener>() {
     @Composable
     override fun OnRender(
@@ -76,6 +83,7 @@ class UploadProfileImageScreen :
                     text = stringResource(Res.string.button_upload),
                     onClick = listener::onClickUpload,
                     isEnabled = state.isUploadEnabled,
+                    isLoading = state.isLoading,
                     contentPadding = PaddingValues(vertical = 13.dp),
                     modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12)
                 )
@@ -95,20 +103,29 @@ class UploadProfileImageScreen :
         navigator: Navigator
     ) {
         when (effect) {
-            UploadProfileImageUIEffect.NavigateToNextScreen -> TODO()
-            UploadProfileImageUIEffect.NavigateToNextScreenAfterSkip -> TODO()
+            is UploadProfileImageUIEffect.NavigateToAccountCreated -> {
+                navigator.push(AccountCreatedScreen(authTokens = effect.authTokens))
+            }
+
             is UploadProfileImageUIEffect.NavigateToCropScreen -> {
-                val cropperScreen = ImageCropperScreen(
-                    imageKey = effect.imageKey,
-                    onResult = effect.onResult,
+                navigator.push(
+                    ImageCropperScreen(
+                        imageKey = effect.imageKey,
+                        onResult = effect.onResult,
+                    )
                 )
-                navigator.push(cropperScreen)
             }
         }
     }
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(
+            getScreenModel(
+                parameters = {
+                    parametersOf(authTokens, phoneNumber)
+                }
+            )
+        )
     }
 }

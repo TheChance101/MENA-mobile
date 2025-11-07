@@ -40,6 +40,7 @@ fun WideImageDukanDetailsContent(
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
+                isBadgeVisible = state.totalPrice > 0,
                 onBackClicked = listener::onBackClicked,
                 onCartClicked = listener::onViewCartClicked
             )
@@ -72,7 +73,10 @@ fun WideImageDukanDetailsContent(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                WideImageDukanHeader(state = state.dukanInfo)
+                WideImageDukanHeader(
+                    state = state.dukanInfo,
+                    onFavoriteClicked = listener::onFavoriteDukanClicked,
+                )
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanShelves(

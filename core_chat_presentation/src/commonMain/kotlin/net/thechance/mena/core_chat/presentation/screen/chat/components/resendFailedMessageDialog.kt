@@ -17,7 +17,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-fun ScaffoldScope.ChatScreenOverlays(
+fun ScaffoldScope.resendFailedMessageDialog(
     showResendMessageDialog: Boolean,
     onDeleteFailedMessageClick: () -> Unit = { },
     onResendFailedMessageClick: () -> Unit = { },
@@ -29,6 +29,7 @@ fun ScaffoldScope.ChatScreenOverlays(
         BasicDialog(
             isVisible = showResendMessageDialog,
             onDismiss = onDismissResendMessageDialog,
+            onCancelClick = onDismissResendMessageDialog,
             actionButtons = {
                 ActionMenuItem(
                     icon = painterResource(Res.drawable.ic_refresh),
