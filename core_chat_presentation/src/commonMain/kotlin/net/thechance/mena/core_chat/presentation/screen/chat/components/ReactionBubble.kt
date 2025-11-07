@@ -28,7 +28,6 @@ fun ReactionBubble(
 
         Box(
             modifier = Modifier
-                .offset(y = (-8).dp)
                 .sizeIn(minWidth = 22.dp)
                 .clip(CircleShape)
                 .background(Theme.colorScheme.background.surface)
