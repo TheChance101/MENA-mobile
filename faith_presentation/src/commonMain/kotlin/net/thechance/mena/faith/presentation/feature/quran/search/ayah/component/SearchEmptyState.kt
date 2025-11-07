@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search.component
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -17,7 +17,6 @@ import mena.faith_presentation.generated.resources.icon_shadow
 import mena.faith_presentation.generated.resources.no_results_found_subtitle
 import mena.faith_presentation.generated.resources.no_results_found_title
 import mena.faith_presentation.generated.resources.shadow
-import mena.faith_presentation.generated.resources.start_searching_subtitle
 import mena.faith_presentation.generated.resources.start_searching_title
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -32,6 +31,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 internal fun SearchEmptyState(
     isStartState: Boolean,
     isResultsState: Boolean,
+    subtitle: StringResource,
     modifier: Modifier = Modifier
 ) {
     if (!(isStartState || isResultsState)) return
@@ -52,7 +52,7 @@ internal fun SearchEmptyState(
         )
 
         Text(
-            text = stringResource(getSubtitleResource(isStartState)),
+            text = stringResource(getSubtitleResource(isStartState, startStateSubtitle = subtitle)),
             style = Theme.typography.body.small,
             textAlign = TextAlign.Center,
             color = Theme.colorScheme.shadeSecondary,
@@ -90,8 +90,11 @@ private fun getTitleResource(isStartState: Boolean): StringResource {
     return if (isStartState) Res.string.start_searching_title else Res.string.no_results_found_title
 }
 
-private fun getSubtitleResource(isStartState: Boolean): StringResource {
-    return if (isStartState) Res.string.start_searching_subtitle else Res.string.no_results_found_subtitle
+private fun getSubtitleResource(
+    isStartState: Boolean,
+    startStateSubtitle: StringResource
+): StringResource {
+    return if (isStartState) startStateSubtitle else Res.string.no_results_found_subtitle
 }
 
 @Preview
@@ -101,7 +104,8 @@ private fun SearchEmptyStateStartPreview() {
         SearchEmptyState(
             isStartState = true,
             isResultsState = false,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            subtitle = Res.string.start_searching_title
         )
     }
 }
@@ -113,7 +117,8 @@ private fun SearchEmptyStateNoResultsPreview() {
         SearchEmptyState(
             isStartState = false,
             isResultsState = true,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            subtitle = Res.string.start_searching_title
         )
     }
 }

@@ -7,15 +7,14 @@ import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
-import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -26,6 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,12 +57,42 @@ class SurahViewModelTest {
 
     @Test
     fun `onBackClick should navigate back when it called`() = runTest {
-        // Given & When & Then
         testViewModel.uiEffect.test {
             testViewModel.onBackClick()
             val effect = awaitItem()
             assertEquals(SurahScreenEffect.NavigateBack, effect)
         }
+    }
+
+    @Test
+    fun `onSearchClick should navigate to specific surah id when it called`() =
+        runTest {
+            testViewModel.uiEffect.test {
+                testViewModel.onSearchClick()
+                val effect = awaitItem()
+                assertEquals(
+                    SurahScreenEffect.NavigateToSearchScreen(
+                        surahId = surahArgs.surahId,
+                        surahName = surahArgs.surahName
+                    ), effect
+                )
+            }
+        }
+
+    @Test
+    fun `onRepeatAyahClick should call repeatCurrentAyah and update state`() = runTest {
+        testViewModel.onRepeatAyahClick()
+
+        verify { quranPlayer.repeatCurrentAyah() }
+        assertTrue(testViewModel.uiState.value.isAyahSoundPlaying)
+    }
+
+    @Test
+    fun `onClosePlayerClick should pause playback and hide player`() = runTest {
+        testViewModel.onClosePlayerClick()
+
+        verify { quranPlayer.pauseAyah() }
+        assertFalse(testViewModel.uiState.value.isPlayerVisible)
     }
 
     @Test
@@ -382,6 +412,25 @@ class SurahViewModelTest {
         }
     }
 
+    @Test
+    fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
+        testViewModel.uiEffect.test {
+            testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+            assertEquals(testViewModel.uiState.value.selectedAyahNumber, TRACKED_AYAH_NUMBER)
+            assertEquals(testViewModel.uiState.value.initialAyahToScroll, TRACKED_AYAH_NUMBER)
+        }
+    }
+
+    @Test
+    fun `onInitialAyahScrolled should update initialAyahToScroll and selectedAyahNumber to be null`() =
+        runTest {
+            testViewModel.uiEffect.test {
+                testViewModel.onInitialAyahScrolled()
+                assertNull(testViewModel.uiState.value.selectedAyahNumber)
+                assertNull(testViewModel.uiState.value.initialAyahToScroll)
+            }
+        }
+
 
     private companion object {
         const val TRACKED_AYAH_NUMBER = 5
@@ -401,12 +450,6 @@ class SurahViewModelTest {
         const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH = "Al-Baqarah"
         const val SURAH_BAQARAH_ID = 2
-        val DUMMY_RECITER = Reciter(
-            id = 1,
-            name = "Dummy Reciter",
-            arabicName = "داممي ريسيتير",
-            tilawahType = ""
-        )
         private val dummyAyat = listOf(
             Ayah(
                 number = 1,

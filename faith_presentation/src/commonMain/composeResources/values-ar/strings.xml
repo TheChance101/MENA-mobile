@@ -72,7 +72,9 @@
     <string name="error_longitude">يجب أن يكون خط الطول بين -180 و 180 درجة.</string>
     <string name="search_in_surah_hint">...ابحث في %1$s</string>
     <string name="start_searching_title">ابدأ البحث!</string>
-    <string name="start_searching_subtitle">أدخل كلمة من آية معينة لعرضها.</string>
+    <string name="search_reciter">ابحث عن القارئ</string>
+    <string name="start_searching_subtitle_for_ayah">أدخل كلمة من آية معينة لعرضها.</string>
+    <string name="start_searching_subtitle_for_reciter">أدخل اسم قارئ معين لعرضه.</string>
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>

@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
 import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageScreen
@@ -16,7 +15,9 @@ import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassScreen
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkScreen
-import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
+import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearchScreen
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
@@ -66,6 +67,9 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 }
                 composable<Route.DownloadedRecitersRoute> {
                     DownloadedReciterScreen()
+                }
+                composable<Route.ReciterSearch> {
+                    ReciterSearchScreen()
                 }
                 composable<Route.UserAddresses> {
                     identityApi.NavigateToAddressesScreen()

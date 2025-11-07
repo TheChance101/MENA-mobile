@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,13 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.start_searching_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchEmptyState
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchHeader
-import net.thechance.mena.faith.presentation.feature.quran.search.component.SearchResultCard
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchHeader
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchResultCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -71,16 +73,16 @@ private fun Content(
 ) {
     Scaffold(
         topBar = {
-        SearchHeader(
-            query = state.query,
-            hint = state.queryHint,
-            onQueryChange = listener::onQueryChange,
-            clearQuery = listener::onClearQueryClick,
-            onBackClick = listener::onBackClick,
-            modifier = Modifier.fillMaxWidth()
-                .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
-        )
-    }) {
+            SearchHeader(
+                query = state.query,
+                hint = state.queryHint,
+                onQueryChange = listener::onQueryChange,
+                clearQuery = listener::onClearQueryClick,
+                onBackClick = listener::onBackClick,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
+            )
+        }) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,7 +90,8 @@ private fun Content(
             SearchEmptyState(
                 isStartState = state.query.isBlank(),
                 isResultsState = state.searchResults.isEmpty(),
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                subtitle = Res.string.start_searching_title
             )
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),
@@ -99,6 +102,7 @@ private fun Content(
         }
     }
 }
+
 @Composable
 private fun ResultList(
     isNotBlankQuery: Boolean,
@@ -133,7 +137,6 @@ private fun ResultList(
         }
     }
 }
-
 
 
 @Composable
