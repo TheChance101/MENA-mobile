@@ -16,9 +16,10 @@ import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewMo
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
-import net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel
-import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgs
-import net.thechance.mena.faith.presentation.feature.quran.search.args.SearchArgsImpl
+import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearchViewModel
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchViewModel
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
+import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
@@ -47,6 +48,7 @@ internal val faithViewModelModule = module {
     viewModelOf(::NearbyMosquesViewModel)
     viewModelOf(::TilawahViewModel)
     viewModelOf(::DownloadedSurViewModel)
+    viewModelOf(::ReciterSearchViewModel)
     viewModelOf(::CreateMosqueViewModel)
     viewModelOf(::MosqueImageCropViewModel)
     viewModelOf(::UploadImageViewModel)

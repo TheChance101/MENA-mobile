@@ -4,6 +4,7 @@ import de.jensklingenberg.ktorfit.Response
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.statement.HttpResponse
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.data.database.AyahDao
+import net.thechance.mena.faith.data.database.ReciterDto
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
@@ -19,6 +21,7 @@ import net.thechance.mena.faith.data.remote.model.tilawah.RecitersRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.model.Reciter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -44,6 +47,15 @@ class QuranRepositoryImplTest {
         val result = repository.getSur()
 
         assertEquals(SUR_LIST, result)
+    }
+
+    @Test
+    fun `searchForReciter Should return list of reciters when called`() = runTest {
+        everySuspend { mockDao.searchReciters(query = "query") } returns RECITER_DTOS
+
+        val result = repository.searchForReciter(query = "query")
+
+        assertEquals(RECITER_LIST, result)
     }
 
     @Test
@@ -223,16 +235,67 @@ class QuranRepositoryImplTest {
     }
 
 
+    @Test
+    fun `getReciters Should return cached reciters when cache is not empty`() = runTest {
+        everySuspend { mockDao.getAllReciters() } returns RECITER_DTOS
+
+        val result = repository.getReciters()
+
+        assertEquals(RECITER_LIST, result)
+        verifySuspend { mockDao.getAllReciters() }
+    }
+
+    @Test
+    fun `getReciters Should fetch from network when cache is empty`() = runTest {
+        everySuspend { mockDao.getAllReciters() } returns emptyList()
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(apiReciters)
+        everySuspend { mockDao.insertReciters(any()) } returns Unit
+
+        val result = repository.getReciters()
+
+        assertEquals(RECITER_LIST, result)
+        verifySuspend { mockDao.getAllReciters() }
+        verifySuspend { tilawahApiService.getReciters() }
+        verifySuspend { mockDao.insertReciters(any()) }
+    }
+
+    @Test
+    fun `getReciters Should sync network data to cache when cache is empty`() = runTest {
+        everySuspend { mockDao.getAllReciters() } returns emptyList()
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(apiReciters)
+        everySuspend { mockDao.insertReciters(any()) } returns Unit
+
+        repository.getReciters()
+
+        verifySuspend { mockDao.insertReciters(any()) }
+    }
+
+    @Test
+    fun `getReciters Should return empty list when both cache and network are empty`() = runTest {
+        everySuspend { mockDao.getAllReciters() } returns emptyList()
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(emptyList())
+
+        val result = repository.getReciters()
+
+        assertTrue(result.isEmpty())
+    }
+
     private companion object {
 
         const val AL_FATIHAH_NAME = "Al-Fatihah"
         const val AL_BAQARAH_NAME = "Al-Baqarah"
-        const val FIST_RECITER_NAME = "Mishary"
-        const val SECOND_RECITER_NAME = "Baist"
-        const val FIST_RECITER_ARABIC_NAME = "مشاري"
+        const val FIST_RECITER_NAME = "Abdelbasit"
+        const val SECOND_RECITER_NAME = "Mishary"
+        const val FIST_RECITER_ARABIC_NAME = "عبدالباسط"
         const val SECOND_RECITER_ARABIC_NAME = "مشاري"
-        const val FIRST_TILWAH_TYPE = "Murattal"
-        const val SECOND_TILWAH_TYPE = "Mujawwad"
+        const val FIRST_TILWAH_TYPE = "mujawad"
+        const val SECOND_TILWAH_TYPE = "mujawad"
 
         val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
             number = 3,
@@ -251,10 +314,27 @@ class QuranRepositoryImplTest {
             surahId = 2,
             surahName = AL_BAQARAH_NAME
         )
+
         val SURAH_DTOS: List<SurahDto> = listOf(
             SurahDto(number = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
             SurahDto(number = 2, name = AL_BAQARAH_NAME, ayahCount = 286)
         )
+
+        val RECITER_DTOS: List<ReciterDto> = listOf(
+            ReciterDto(
+                id = 1,
+                name = FIST_RECITER_NAME,
+                nameAr = FIST_RECITER_ARABIC_NAME,
+                tilawahType = FIRST_TILWAH_TYPE
+            ),
+            ReciterDto(
+                id = 2,
+                name = SECOND_RECITER_NAME,
+                nameAr = SECOND_RECITER_ARABIC_NAME,
+                tilawahType = SECOND_TILWAH_TYPE
+            ),
+        )
+
         val SUR_LIST = listOf(
             Surah(
                 id = 1,
@@ -267,6 +347,36 @@ class QuranRepositoryImplTest {
                 order = Surah.SurahOrder.AlBaqarah,
                 name = AL_BAQARAH_NAME,
                 ayahCount = 286,
+            )
+        )
+
+        val RECITER_LIST = listOf(
+            Reciter(
+                id = 1,
+                name = FIST_RECITER_NAME,
+                arabicName = FIST_RECITER_ARABIC_NAME,
+                tilawahType = FIRST_TILWAH_TYPE
+            ),
+            Reciter(
+                id = 2,
+                name = SECOND_RECITER_NAME,
+                arabicName = SECOND_RECITER_ARABIC_NAME,
+                tilawahType = SECOND_TILWAH_TYPE
+            )
+        )
+
+        val apiReciters = listOf(
+            RecitersRequest(
+                id = 1,
+                name = FIST_RECITER_NAME,
+                arabicName = FIST_RECITER_ARABIC_NAME,
+                tilawahType = FIRST_TILWAH_TYPE
+            ),
+            RecitersRequest(
+                id = 2,
+                name = SECOND_RECITER_NAME,
+                arabicName = SECOND_RECITER_ARABIC_NAME,
+                tilawahType = SECOND_TILWAH_TYPE
             )
         )
     }

@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search.args
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah.args
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute

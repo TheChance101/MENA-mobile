@@ -45,12 +45,14 @@ fun TextField(
     focusRequester: FocusRequester = FocusRequester(),
     onFocusChanged: (Boolean) -> Unit = {},
     onTrailingIconClick: (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    maxCharacters: Int = Int.MAX_VALUE,
 ) {
     BasicTextField(
         value = value,
-        onValueChanged = onValueChanged,
         hint = hint,
+        onValueChanged = onValueChanged,
+        modifier = modifier,
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         title = title,
@@ -63,11 +65,11 @@ fun TextField(
         shape = shape,
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
-        visualTransformation = visualTransformation,
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
-        modifier = modifier,
-        onTrailingIconClick = onTrailingIconClick
+        onTrailingIconClick = onTrailingIconClick,
+        visualTransformation = visualTransformation,
+        maxCharacters = maxCharacters
     )
 }
 
