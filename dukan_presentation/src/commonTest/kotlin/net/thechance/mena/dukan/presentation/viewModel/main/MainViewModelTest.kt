@@ -340,4 +340,14 @@ class MainViewModelTest {
             style = Dukan.Style.WIDE_IMAGE
         )
     )
+    @Test
+    fun `onSearchButtonClicked SHOULD emit NavigateToSearchScreen`() = runTest {
+        mainViewModel.onSearchButtonClicked()
+
+        val actualEffect = mainViewModel.effect.first()
+        val expectedEffect = MainScreenEffect.NavigateToSearchScreen
+
+        assertEquals(expectedEffect, actualEffect)
+    }
+
 }

@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.profile.components.dialo
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -23,12 +22,14 @@ import mena.identity_presentation.generated.resources.cant_save_qr_code
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class ShareQrCodeViewModel(
     private val imagesRepository: ImagesRepository,
     private val galleryPermissionHandler: PermissionHandler,
+    private val imageDecoder: ImageDecoder,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     initialState: ShareQrCodeUIState = ShareQrCodeUIState()
 ) : ViewModel(), ShareQrCodeInteractionListener {
@@ -56,7 +57,7 @@ class ShareQrCodeViewModel(
     }
 
     private suspend fun saveImageToGallery(bitmap: ImageBitmap) {
-        val imageByteArray = bitmap.encodeToByteArray()
+        val imageByteArray = imageDecoder.encodeImage(bitmap)
         imagesRepository.saveImageToGallery(imageByteArray)
     }
 

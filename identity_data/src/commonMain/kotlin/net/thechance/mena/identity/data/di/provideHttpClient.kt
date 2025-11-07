@@ -23,8 +23,11 @@ import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.C
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.RESET_PASSWORD
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.VERIFY_OTP
 
-internal fun provideHttpClient(
-    engine: HttpClientEngine, settings: Settings, baseUrl: String, refreshToken: suspend () -> Unit
+internal fun provideCoilClient(
+    engine: HttpClientEngine,
+    settings: Settings,
+    baseUrl: String,
+    refreshToken: suspend () -> Unit
 ): HttpClient {
     return HttpClient(engine) {
         defaultRequest { url(baseUrl) }
@@ -50,7 +53,7 @@ internal fun provideHttpClient(
                 }
                 sendWithoutRequest { request ->
                     val path = request.url.encodedPath.removePrefix("/")
-                    path !in whiteListEndPoints || path in whitelistPicture
+                    path !in whiteListEndPoints
                 }
             }
         }
@@ -61,11 +64,16 @@ internal fun provideHttpClient(
     }
 }
 
+internal fun provideCoilClient(engine: HttpClientEngine): HttpClient {
+    return HttpClient(engine) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = NETWORK_TIMEOUT_MS
+            requestTimeoutMillis = NETWORK_TIMEOUT_MS
+        }
+    }
+}
+
 const val NETWORK_TIMEOUT_MS = 15_000L
 private val whiteListEndPoints = listOf(
     LOGIN_ENDPOINT, REFRESH_ENDPOINT, REQUEST_OTP, VERIFY_OTP, RESET_PASSWORD
-)
-
-private val whitelistPicture = listOf(
-    "i.pinimg.com", "cdn.marketplaceevents.com", "wallpapers.com"
 )

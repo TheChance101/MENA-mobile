@@ -31,7 +31,8 @@ fun CategoryDukansList(
         ) { index ->
             val dukan = dukans[index] ?: return@items
             DukanCard(
-                dukan = dukan,
+                title = dukan.name,
+                imageUrl = dukan.imageUrl,
                 isFavorite = dukan.isFavorite,
                 onClick = { listener.onDukanClicked(dukan) },
                 onFavoriteClick = { listener.onFavoriteDukanClicked(dukan.id) },

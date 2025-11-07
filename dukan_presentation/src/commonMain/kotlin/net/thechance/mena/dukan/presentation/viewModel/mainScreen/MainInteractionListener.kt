@@ -11,4 +11,5 @@ interface MainInteractionListener {
 
     fun onEditorPickDukanClicked(dukanId: String)
     fun onFavoriteDukanClicked(dukanId: String)
+    fun onSearchButtonClicked()
 }

@@ -17,10 +17,12 @@ import net.thechance.mena.identity.data.repository.UserRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.repository.location.MobileGeocoderWrapper
+import net.thechance.mena.identity.data.repository.RegistrationDraftRepositoryImpl
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegisterRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
@@ -32,6 +34,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 private const val IDENTITY_CLIENT = "IdentityClient"
+private const val COIL_CLIENT = "CoilClient"
 private const val BASE_URL = "baseUrl"
 
 expect val IdentityPlatformModule: Module
@@ -54,7 +57,11 @@ val identityDataModule = module {
     }
 
     single<RegisterRepository> {
-        RegisterRepositoryImpl(client = get(named(IDENTITY_CLIENT)))
+        RegisterRepositoryImpl(client = get(named(IDENTITY_CLIENT)), settings = get())
+    }
+
+    single<RegistrationDraftRepository> {
+        RegistrationDraftRepositoryImpl(settings = get())
     }
 
     singleOf(::MobileGeocoderWrapper) bind GeocoderWrapper::class
@@ -63,12 +70,16 @@ val identityDataModule = module {
     singleOf(::ImagesRepositoryImpl) bind ImagesRepository::class
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {
-        provideHttpClient(
+        provideCoilClient(
             engine = get(),
             baseUrl = get<String>(named(BASE_URL)),
             settings = get(),
             refreshToken = { get<AuthorizationService>().refreshToken() }
         )
+    }
+
+    single(named(COIL_CLIENT)) {
+        provideCoilClient(engine = get())
     }
 
     single { provideDatabaseBuilder() }

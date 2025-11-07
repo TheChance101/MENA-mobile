@@ -39,7 +39,6 @@ internal fun LoginScaffold(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 16.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) { content() }

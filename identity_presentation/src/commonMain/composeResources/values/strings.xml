@@ -214,6 +214,7 @@
     <string name="error_too_many_requests">Too many requests. Please try again later.</string>
     <string name="error_otp_expired">OTP expired</string>
     <string name="error_phone_number_already_exists">Phone number is already registered.</string>
+    <string name="error_username_already_exists">Username is already taken. Please choose another one.</string>
     <string name="error_no_network">No Internet Connection</string>
     <string name="error_no_internet_connection">No Internet Connection</string>
     <string name="error_failed_to_open_settings">Failed to open settings</string>

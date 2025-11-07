@@ -166,4 +166,12 @@
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
     <string name="error_updating_favorites">Could not update favorites</string>
+    <string name="search_in_dukans">Search in dukans...</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="start_search">Start searching!</string>
+    <string name="start_search_body">Enter word from a specific dukan or product to view it.</string>
+    <string name="dukans">Dukans</string>
+    <string name="no_result_found">No results found!</string>
+    <string name="no_result_found_body">Please try again with another keyword.</string>
+    <string name="search_general_error">Something went wrong while searching. Please try again in a moment.</string>
 </resources>

@@ -23,15 +23,23 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreen
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.core.parameter.parametersOf
 
-class CreatePasswordScreen : BaseScreen<
+class CreatePasswordScreen(
+    private val phoneNumber: PhoneNumber,
+    private val firstName: String,
+    private val lastName: String,
+    private val username: String
+) : BaseScreen<
         CreatePasswordViewModel,
         CreatePasswordUIState,
         CreatePasswordUIEffect,
@@ -39,7 +47,13 @@ class CreatePasswordScreen : BaseScreen<
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(
+            getScreenModel(
+                parameters = {
+                    parametersOf(phoneNumber, firstName, lastName, username)
+                }
+            )
+        )
     }
 
     @Composable
@@ -106,7 +120,19 @@ class CreatePasswordScreen : BaseScreen<
         effect: CreatePasswordUIEffect,
         navigator: Navigator
     ) {
-
+        when (effect) {
+            is CreatePasswordUIEffect.NavigateToDatePicker -> {
+                navigator.push(
+                    DatePickerScreen(
+                        phoneNumber = effect.phoneNumber,
+                        firstName = effect.firstName,
+                        lastName = effect.lastName,
+                        username = effect.username,
+                        password = effect.password
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -114,7 +140,15 @@ class CreatePasswordScreen : BaseScreen<
 @Composable
 fun PreviewCreatePasswordScreen() {
     MenaTheme {
-        CreatePasswordScreen().OnRender(
+        CreatePasswordScreen(
+            phoneNumber = net.thechance.mena.identity.domain.entity.PhoneNumber(
+                "+964",
+                "7901234567"
+            ),
+            firstName = "Mohammed",
+            lastName = "Ahmed",
+            username = "mohammed123"
+        ).OnRender(
             state = CreatePasswordUIState(
                 newPassword = "Password123",
                 confirmPassword = "Password123",

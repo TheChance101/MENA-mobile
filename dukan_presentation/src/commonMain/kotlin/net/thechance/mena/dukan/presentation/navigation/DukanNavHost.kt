@@ -20,6 +20,7 @@ import net.thechance.mena.dukan.presentation.screen.manageDukan.ManageDukanScree
 import net.thechance.mena.dukan.presentation.screen.manageShelf.ManageShelfScreen
 import net.thechance.mena.dukan.presentation.screen.pendingDukan.PendingDukanScreen
 import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsScreen
+import net.thechance.mena.dukan.presentation.screen.search.SearchScreen
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsScreen
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
@@ -94,6 +95,9 @@ fun DukanNavHost(
             }
             composable<DukanRoute.CheckoutScreenRoute> {
                 CheckoutScreen()
+            }
+            composable<DukanRoute.SearchScreenRoute>{
+                SearchScreen()
             }
             composable<DukanRoute.AddressesRoute> {
                 identityApi.NavigateToAddressesScreen()

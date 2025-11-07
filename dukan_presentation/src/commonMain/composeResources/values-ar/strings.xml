@@ -166,4 +166,12 @@
     <string name="added_to_favorites">تمت الإضافة إلى المفضلة</string>
     <string name="removed_from_favorites">تمت الإزالة من المفضلة</string>
     <string name="error_updating_favorites">تعذر تحديث المفضلة</string>
+    <string name="search_in_dukans">ابحث في الدكاكين...</string>
+    <string name="search_icon">أيقونة البحث</string>
+    <string name="start_search">ابدأ البحث!</string>
+    <string name="start_search_body">أدخل كلمة من دكان أو منتج محدد لعرضه.</string>
+    <string name="dukans">الدكاكين</string>
+    <string name="no_result_found">لم يتم العثور على نتائج!</string>
+    <string name="no_result_found_body">حاول مرة أخرى بكلمة بحث أخرى.</string>
+    <string name="search_general_error">حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى لاحقًا.</string>
 </resources>

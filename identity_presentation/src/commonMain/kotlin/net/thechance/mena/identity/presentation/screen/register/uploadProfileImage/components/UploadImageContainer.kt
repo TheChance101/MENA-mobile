@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.uploadProfileImage.components
+package net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

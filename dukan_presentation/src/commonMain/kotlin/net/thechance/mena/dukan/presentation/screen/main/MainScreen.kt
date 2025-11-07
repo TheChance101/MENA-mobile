@@ -41,6 +41,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.*
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
@@ -91,7 +92,7 @@ fun MainScreen(
 
             is MainScreenEffect.NavigateToDukansScreenByCategory -> {
                 navController.navigate(
-                    DukanRoute.DukansScreenRoute(
+                    DukansScreenRoute(
                         categoryId = effect.categoryId,
                         categoryTitle = effect.categoryName
                     )
@@ -99,7 +100,11 @@ fun MainScreen(
             }
 
             is MainScreenEffect.NavigateToSelectedDukan -> {
-                navController.navigate(DukanRoute.DukanDetails(effect.dukanId))
+                navController.navigate(DukanDetails(effect.dukanId))
+            }
+
+            MainScreenEffect.NavigateToSearchScreen -> {
+                navController.navigate(route = SearchScreenRoute)
             }
         }
     }
@@ -152,8 +157,9 @@ private fun MainContent(
                 if (!isConnected  || isEmptyContent) return@AnimatedContent
                 TopAppBar(
                     modifier = Modifier.statusBarsPadding(),
+                    dukanButtonStatus = state.dukanState.status,
                     onDukanIconClicked = listener::onDukanButtonClicked,
-                    dukanButtonStatus = state.dukanState.status
+                    onSearchIconClicked = listener::onSearchButtonClicked
                 )
             }
         },
