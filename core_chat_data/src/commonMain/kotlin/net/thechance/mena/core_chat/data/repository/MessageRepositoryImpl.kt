@@ -44,6 +44,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
+import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -71,15 +72,26 @@ class MessageRepositoryImpl(
     private val scope = CoroutineScope(Dispatchers.IO)
 
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
+
         val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
             chatId = chatId.toString(),
             offset = (page * pageSize),
             limit = pageSize
         )
-
         val messages = cachedMessages.map { it.toDomain() }
-        if (page == 0 || cachedMessages.isEmpty()) {
-            syncRemoteMessages(chatId, page, pageSize, messages)
+
+        if (messages.isEmpty()) {
+            return getFromRemote(chatId, page, pageSize)
+        }
+
+        val now = Clock.System.now().toString()
+        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull()
+        if (lastSyncTime != null) {
+            syncAfterLastUpdate(chatId, lastSyncTime)
+        } else {
+            dataStore.edit { preferences ->
+                preferences[LAST_SYNC_TIME_KEY] = now
+            }
         }
 
         val isLastPage = messages.size < pageSize && cachedMessages.isNotEmpty()
@@ -94,62 +106,25 @@ class MessageRepositoryImpl(
 
     }
 
-    private suspend fun syncRemoteMessages(
+    private suspend fun getFromRemote(
         chatId: Uuid,
-        startingPage: Int,
-        pageSize: Int,
-        localMessages: List<Message>
-    ) {
-        val localIds = localMessages.map { it.id }.toSet()
-        var currentPage = startingPage
-        var shouldContinueFetching = true
-
-        val now = Clock.System.now().toString()
-        val lastSyncTime = dataStore.data.map { it[LAST_SYNC_TIME_KEY] }.firstOrNull()
-
-        if (startingPage == 0 && lastSyncTime == null) {
-            dataStore.edit { preferences ->
-                preferences[LAST_SYNC_TIME_KEY] = now
+        page: Int,
+        pageSize: Int
+    ): PagedData<Message> {
+        val response = tryNetworkCall<PagedDataDto<MessageDto>>(
+            bodyType = typeInfo<PagedDataDto<MessageDto>>()
+        ) {
+            client.get(getChatMessagesEndpoint(chatId)) {
+                parameter(PAGE_NUMBER_PARAMETER, page)
+                parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        }
+        } ?: throw NotFoundException("Messages not found!")
 
-        do {
-            try {
-                val networkResponse = tryNetworkCall<PagedDataDto<MessageDto>>(
-                    bodyType = typeInfo<PagedDataDto<MessageDto>>()
-                ) {
-                    client.get(getChatMessagesEndpoint(chatId)) {
-                        parameter(PAGE_NUMBER_PARAMETER, currentPage)
-                        parameter(PAGE_SIZE_PARAMETER, pageSize)
-                    }
-                } ?: return
+        val page = response.toPagedListOfMessages()
 
-                val remoteMessages = networkResponse.toPagedListOfMessages().data
+        cachedMessageDao.insertAllMessages(page.data.toCachedMessageLocalDto())
 
-                if (remoteMessages.isEmpty()) shouldContinueFetching = false
-
-                val (existing, notExisting) = remoteMessages.partition { it.id in localIds }
-
-                if (notExisting.isNotEmpty()) {
-                    cachedMessageDao.insertAllMessages(notExisting.toCachedMessageLocalDto())
-
-                    messagesFlow.emitAll(notExisting.asFlow())
-                }
-
-                if (existing.isNotEmpty()) shouldContinueFetching = false
-
-                currentPage++
-
-            } catch (e: Throwable) {
-                if (currentPage == 0) return
-                throw e
-            }
-
-        } while (shouldContinueFetching && localIds.isNotEmpty())
-
-        if (localIds.isNotEmpty()) {
-            syncAfterLastUpdate(chatId, now)
-        }
+        return page
     }
 
     suspend fun syncAfterLastUpdate(chatId: Uuid, newSyncTime: String) {
