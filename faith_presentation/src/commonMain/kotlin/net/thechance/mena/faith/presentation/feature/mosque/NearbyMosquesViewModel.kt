@@ -7,14 +7,13 @@ import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.*
-import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.no_mosques_found_by_keyword
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
@@ -91,7 +90,6 @@ internal class NearbyMosquesViewModel(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
-            onError = { handleSearchError() },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -117,7 +115,6 @@ internal class NearbyMosquesViewModel(
                     isLoading = false
                 )
             }
-            handleSearchError()
         } else {
             updateState {
                 it.copy(
@@ -130,14 +127,6 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-    private fun handleSearchError() {
-        updateState { it.copy(isLoading = false) }
-        snackbarHandler.showSnackBar(
-            message = Res.string.no_mosques_found_by_keyword,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope,
-        )
-    }
     override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
         updateState {
             it.copy(
