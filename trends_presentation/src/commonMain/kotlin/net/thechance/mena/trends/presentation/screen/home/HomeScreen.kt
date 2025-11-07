@@ -173,7 +173,7 @@ private fun ReelsListSection(
     listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
-    onGetRefreshedThumbnail: (String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(

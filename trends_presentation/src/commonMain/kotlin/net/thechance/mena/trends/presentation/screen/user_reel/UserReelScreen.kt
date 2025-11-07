@@ -254,7 +254,7 @@ private fun ReelContent(
     onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     onPublisherInfoClick: () -> Unit,
     incrementViewsCount: () -> Unit,
-    onGetRefreshUrl: (String) -> Unit,
+    onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
