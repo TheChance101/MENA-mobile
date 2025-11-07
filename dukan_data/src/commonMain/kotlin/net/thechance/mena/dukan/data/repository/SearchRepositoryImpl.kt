@@ -4,14 +4,14 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import net.thechance.mena.dukan.data.dto.PageResponseDto
-import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanSearchDto
 import net.thechance.mena.dukan.data.dto.product.ProductSearchDto
 import net.thechance.mena.dukan.data.mapper.toDomain
-import net.thechance.mena.dukan.data.mapper.toPreviewEntity
+import net.thechance.mena.dukan.data.mapper.toEntity
 import net.thechance.mena.dukan.data.util.constants.EndPoints
 import net.thechance.mena.dukan.data.util.network.safeApiCall
-import net.thechance.mena.dukan.domain.model.DukanPreview
 import net.thechance.mena.dukan.domain.entity.ProductSearch
+import net.thechance.mena.dukan.domain.model.DukanPreview
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 
@@ -23,13 +23,13 @@ class SearchRepositoryImpl(
         page: Int,
         size: Int
     ): PagedResult<DukanPreview> {
-       return safeApiCall<PageResponseDto<DukanResponseDto>>{
+       return safeApiCall<PageResponseDto<DukanSearchDto>>{
            client.get(DUKAN_SEARCH_ENDPOINT) {
                parameter("query", query)
                parameter("page", page)
                parameter("size", size)
            }
-        }.toDomain(mapper = DukanResponseDto::toPreviewEntity)
+        }.toDomain(mapper = DukanSearchDto::toEntity)
     }
 
     override suspend fun findProductsByQuery(

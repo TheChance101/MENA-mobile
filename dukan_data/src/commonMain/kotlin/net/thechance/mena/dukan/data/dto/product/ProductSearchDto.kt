@@ -15,12 +15,15 @@ data class ProductSearchDto(
     @SerialName("name")
     val name: String,
 
-    @SerialName("description")
+    @SerialName("dukanName")
     val dukanName: String,
 
     @SerialName("price")
     val price: Double,
 
     @SerialName("mainImageUrl")
-    val mainImageUrl: String
+    val mainImageUrl: String,
+
+    @SerialName("isFavorite")
+    val isFavorite: Boolean
 )
