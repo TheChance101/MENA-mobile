@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import net.thechance.mena.faith.presentation.map.MapConfigurator
 import net.thechance.mena.faith.presentation.map.MapConstants
 import net.thechance.mena.faith.presentation.map.MapMarkerManager
@@ -23,10 +24,10 @@ actual fun MapView(
     centerLatitude: Double,
     centerLongitude: Double,
     zoomLevel: Double,
-    markers: List<MapMarker>,
-    onMarkerClick: (MapMarker) -> Unit,
-    onMapClick: (latitude: Double, longitude: Double) -> Unit,
-    onCameraMove: (latitude: Double, longitude: Double) -> Unit
+    markers: List<MosqueUiState>,
+    onMarkerClick: (MosqueUiState) -> Unit,
+    onMapClick: (Double, Double) -> Unit,
+    onCameraMove: (Double, Double) -> Unit
 ) {
     val context = LocalContext.current
     var currentZoom by remember { mutableDoubleStateOf(zoomLevel) }
@@ -96,7 +97,7 @@ private fun ConfigureOsmDroid(context: Context) {
 @Composable
 private fun ObserveZoomChanges(
     currentZoom: Double,
-    markers: List<MapMarker>,
+    markers: List<MosqueUiState>,
     mapViewRef: MutableState<MapView?>,
     markerManager: MapMarkerManager
 ) {

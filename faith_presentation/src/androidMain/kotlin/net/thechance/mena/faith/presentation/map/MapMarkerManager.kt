@@ -3,86 +3,62 @@ package net.thechance.mena.faith.presentation.map
 import android.content.Context
 import androidx.core.content.ContextCompat
 import net.thechance.mena.faith.presentation.R
-import net.thechance.mena.faith.presentation.utils.MapMarker
+import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 
 class MapMarkerManager(
     private val context: Context,
-    private val onMarkerClick: (MapMarker) -> Unit
+    private val onMarkerClick: (MosqueUiState) -> Unit
 ) {
-    private val clusterer = MarkerClusterer()
+    private val clusterer = MosqueClusterer()
 
     fun updateMarkers(
         mapView: MapView,
-        markers: List<MapMarker>,
+        mosques: List<MosqueUiState>,
         zoomLevel: Double
     ) {
         clearAllMarkers(mapView)
 
-        if (shouldShowIndividualMarkers(zoomLevel)) {
-            addIndividualMarkers(mapView, markers)
-        } else {
-            addClusteredMarkers(mapView, markers, zoomLevel)
+        val clusterDistance = MapUtils.getClusterDistance(zoomLevel)
+        val clusters = clusterer.clusterMosques(mosques, clusterDistance)
+
+        clusters.forEach { cluster ->
+            val marker = createClusterMarker(mapView, cluster)
+            mapView.overlays.add(marker)
         }
 
         mapView.invalidate()
-    }
-
-    private fun shouldShowIndividualMarkers(zoomLevel: Double): Boolean {
-        return zoomLevel >= MapConstants.FULL_DETAIL_ZOOM
     }
 
     private fun clearAllMarkers(mapView: MapView) {
         mapView.overlays.removeAll { it is Marker }
     }
 
-    private fun addIndividualMarkers(mapView: MapView, markers: List<MapMarker>) {
-        markers.forEach { markerData ->
-            val marker = createIndividualMarker(mapView, markerData)
-            mapView.overlays.add(marker)
-        }
-    }
-
-    private fun addClusteredMarkers(
-        mapView: MapView,
-        markers: List<MapMarker>,
-        zoomLevel: Double
-    ) {
-        val clusterDistance = MapUtils.getClusterDistance(zoomLevel)
-        val clusters = clusterer.clusterMarkers(markers, clusterDistance)
-
-        clusters.forEach { cluster ->
-            val marker = if (cluster.isSingleMarker) {
-                createIndividualMarker(mapView, cluster.markers.first())
-            } else {
-                createClusterMarker(mapView, cluster)
-            }
-            mapView.overlays.add(marker)
-        }
-    }
-
-    private fun createIndividualMarker(mapView: MapView, markerData: MapMarker): Marker {
-        return Marker(mapView).apply {
-            position = GeoPoint(markerData.latitude, markerData.longitude)
-            title = markerData.title
-            snippet = markerData.snippet
-            icon = ContextCompat.getDrawable(context, R.drawable.marker)
-            setOnMarkerClickListener { _, _ ->
-                onMarkerClick(markerData)
-                true
-            }
-        }
-    }
-
-    private fun createClusterMarker(mapView: MapView, cluster: MarkerCluster): Marker {
+    private fun createClusterMarker(mapView: MapView, cluster: MosqueCluster): Marker {
         return Marker(mapView).apply {
             position = GeoPoint(cluster.centerLatitude, cluster.centerLongitude)
-            title = cluster.count.toString()
-            icon = ClusterIconFactory.createClusterIcon(context, cluster.count)
-            setOnMarkerClickListener { _, _ -> true }
+
+            if (cluster.isSingleMosque) {
+                val mosque = cluster.mosques.first()
+                title = mosque.name
+                snippet = "${mosque.distance} ${context.getString(R.string.kilometer_unit)}"
+                icon = ContextCompat.getDrawable(context, R.drawable.marker)
+                setOnMarkerClickListener { _, _ ->
+                    onMarkerClick(mosque)
+                    true
+                }
+            } else {
+                title = "${cluster.count}"
+                icon = ClusterIconFactory.createClusterIcon(context, cluster.count)
+                setOnMarkerClickListener { _, _ ->
+                    val geoPoint = GeoPoint(cluster.centerLatitude, cluster.centerLongitude)
+                    mapView.controller.animateTo(geoPoint)
+                    mapView.controller.zoomIn()
+                    true
+                }
+            }
         }
     }
-
 }

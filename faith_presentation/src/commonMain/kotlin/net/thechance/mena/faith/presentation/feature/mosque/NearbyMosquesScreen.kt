@@ -59,7 +59,6 @@ import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesF
 import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResultsBottomSheet
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.utils.MapMarker
 import net.thechance.mena.faith.presentation.utils.MapNavigator
 import net.thechance.mena.faith.presentation.utils.MapView
 import org.jetbrains.compose.resources.painterResource
@@ -97,48 +96,24 @@ private fun Content(
 ) {
     val searchResultsPaging = uiState.mosquesSearchResults?.collectAsLazyPagingItems()
 
-    val markers = buildList<MapMarker> {
+    val markers: List<MosqueUiState> = buildList {
         uiState.selectedMosque?.let { selected ->
-            add(
-                MapMarker(
-                    id = selected.id,
-                    latitude = selected.coordinate.latitude,
-                    longitude = selected.coordinate.longitude,
-                    title = selected.name,
-                )
-            )
+            add(selected)
         }
 
         if (uiState.selectedMosque == null) {
-            uiState.mosques.forEach { mosque ->
-                add(
-                    MapMarker(
-                        id = mosque.id,
-                        latitude = mosque.coordinate.latitude,
-                        longitude = mosque.coordinate.longitude,
-                        title = mosque.name,
-                    )
-                )
-            }
+            addAll(uiState.mosques)
 
             if (searchResultsPaging != null && searchResultsPaging.itemCount > 0) {
                 (0 until searchResultsPaging.itemCount).forEach { index ->
                     searchResultsPaging[index]?.let { mosque ->
-                        if (none { it.id == mosque.id }) {
-                            add(
-                                MapMarker(
-                                    id = mosque.id,
-                                    latitude = mosque.coordinate.latitude,
-                                    longitude = mosque.coordinate.longitude,
-                                    title = mosque.name,
-                                )
-                            )
-                        }
+                        if (none { it.id == mosque.id }) add(mosque)
                     }
                 }
             }
         }
     }
+
 
 
     val allMosques = buildList {
