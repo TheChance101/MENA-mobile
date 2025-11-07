@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.RegisterRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
@@ -20,6 +21,7 @@ class RegisterPhoneEntryViewModelTest: BaseCoroutineTest() {
     private val testDispatcher = StandardTestDispatcher()
     private val registerRepository = mockk<RegisterRepository>()
     private val loginUseCase = mockk<LoginUseCase>()
+    private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
 
 
     @Before
@@ -27,6 +29,7 @@ class RegisterPhoneEntryViewModelTest: BaseCoroutineTest() {
         registerPhoneEntryViewModel = RegisterPhoneEntryViewModel(
             loginUseCase = loginUseCase,
             registerRepository = registerRepository,
+            registrationDraftRepository = registrationDraftRepository,
             dispatcher = testDispatcher
         )
     }

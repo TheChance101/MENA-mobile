@@ -31,6 +31,7 @@ internal sealed interface Route {
 
     @Serializable
     data object NearbyMosquesRoute : Route
+
     @Serializable
     data object TilawahRoute : Route
 
@@ -45,4 +46,7 @@ internal sealed interface Route {
         val surahId: Int? = null,
         val surahName: String? = null
     ) : Route
+
+    @Serializable
+    data object UploadImageRoute : Route
 }

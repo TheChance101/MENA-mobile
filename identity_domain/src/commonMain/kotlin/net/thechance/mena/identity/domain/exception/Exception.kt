@@ -29,6 +29,7 @@ class UnAuthorizedException : AuthenticationException("user has no access to app
 class InvalidOTPException : AuthenticationException("Invalid OTP")
 class OtpExpiredException : AuthenticationException("OTP code expired")
 class PhoneNumberAlreadyExistsException : AuthenticationException("Phone number already exists")
+class UsernameAlreadyExistsException : AuthenticationException("Username already exists")
 class TooManyRequestsException : AuthenticationException("Too many requests")
 class NoNetworkException : AuthenticationException("No Internet Connection")
 class UnableToFindLocationException() : LocationException("Unable to find location")
@@ -36,6 +37,4 @@ class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class FailedToRequestPermissionException() : LocationException("Failed to request permission")
 class AddressNotFoundException() : LocationException("Address not found")
 class NoActiveAddressException() : LocationException("No active address")
-
-// TODO: change Authentication Exception
 class InvalidRequestException() : AuthenticationException("Invalid request")

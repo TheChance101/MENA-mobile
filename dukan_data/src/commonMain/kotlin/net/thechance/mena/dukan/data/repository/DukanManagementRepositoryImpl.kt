@@ -47,7 +47,7 @@ class DukanManagementRepositoryImpl(
         }.available.not()
     }
 
-    override suspend fun getMyDukanStatus(): MyDukanStatus? {
+    override suspend fun getMyDukanStatus(): MyDukanStatus {
         return safeApiCall<MyDukanStatusDto> {
             client.get(
                 urlString = "$DUKAN_BASE_PATH/statues"
@@ -94,6 +94,12 @@ class DukanManagementRepositoryImpl(
                     buildSinglePartFormData(fileName, fileBytes, "file")
                 )
             }
+        }
+    }
+
+    override suspend fun updateFavoriteDukanStatus(dukanId: String): Boolean {
+        return safeApiCall<Boolean> {
+            client.post("$DUKAN_BASE_PATH/$dukanId/toggle_favorite")
         }
     }
 }

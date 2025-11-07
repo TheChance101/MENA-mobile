@@ -13,6 +13,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.dataSource.local.setting.ACCESS_TOKEN
+import net.thechance.mena.identity.data.dataSource.local.setting.IMAGE_UPLOAD_COMPLETED
+import net.thechance.mena.identity.data.dataSource.local.setting.LAST_REGISTRATION_PHONE_NUMBER
 import net.thechance.mena.identity.data.dataSource.local.setting.REFRESH_TOKEN
 import net.thechance.mena.identity.data.dto.auth.response.AuthenticationResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
@@ -21,8 +23,10 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 
 class AuthenticationRepositoryImplTest {
@@ -175,8 +179,207 @@ class AuthenticationRepositoryImplTest {
         val result = authenticationRepository.observeTokenChange()
 
         assertEquals(fakeLoginResponse.accessToken, result.value)
+    }
 
+    @Test
+    fun `saveAuthTokensWithoutEmit should save tokens without emitting to StateFlow`() = runTest {
+        val authTokens = net.thechance.mena.identity.domain.model.AuthenticationTokens(
+            accessToken = "test_access_token",
+            refreshToken = "test_refresh_token"
+        )
 
+        authenticationRepository.saveAuthTokensWithoutEmit(authTokens)
+
+        verify { settings.putString(ACCESS_TOKEN, "test_access_token") }
+    }
+
+    @Test
+    fun `saveAuthTokensWithoutEmit should save refresh token`() = runTest {
+        val authTokens = net.thechance.mena.identity.domain.model.AuthenticationTokens(
+            accessToken = "test_access_token",
+            refreshToken = "test_refresh_token"
+        )
+
+        authenticationRepository.saveAuthTokensWithoutEmit(authTokens)
+
+        verify { settings.putString(REFRESH_TOKEN, "test_refresh_token") }
+    }
+
+    @Test
+    fun `saveAuthTokensAndEmit should save tokens and emit to StateFlow`() = runTest {
+        val authTokens = net.thechance.mena.identity.domain.model.AuthenticationTokens(
+            accessToken = "test_access_token",
+            refreshToken = "test_refresh_token"
+        )
+
+        authenticationRepository.saveAuthTokensAndEmit(authTokens)
+
+        verify { settings.putString(ACCESS_TOKEN, "test_access_token") }
+    }
+
+    @Test
+    fun `saveAuthTokensAndEmit should emit token to StateFlow`() = runTest {
+        val authTokens = net.thechance.mena.identity.domain.model.AuthenticationTokens(
+            accessToken = "test_access_token",
+            refreshToken = "test_refresh_token"
+        )
+
+        authenticationRepository.saveAuthTokensAndEmit(authTokens)
+
+        val result = authenticationRepository.observeTokenChange()
+        assertEquals("test_access_token", result.value)
+    }
+
+    @Test
+    fun `clearAuthTokens should clear access token`() = runTest {
+        authenticationRepository.clearAuthTokens()
+
+        verify { settings.putString(ACCESS_TOKEN, "") }
+    }
+
+    @Test
+    fun `clearAuthTokens should clear refresh token`() = runTest {
+        authenticationRepository.clearAuthTokens()
+
+        verify { settings.putString(REFRESH_TOKEN, "") }
+    }
+
+    @Test
+    fun `getAuthTokens should return AuthenticationTokens when both tokens exist`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "test_access_token"
+        every { settings.getString(REFRESH_TOKEN, "") } returns "test_refresh_token"
+
+        val result = authenticationRepository.getAuthTokens()
+
+        assertEquals("test_access_token", result?.accessToken)
+    }
+
+    @Test
+    fun `getAuthTokens should return AuthenticationTokens with correct refresh token`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "test_access_token"
+        every { settings.getString(REFRESH_TOKEN, "") } returns "test_refresh_token"
+
+        val result = authenticationRepository.getAuthTokens()
+
+        assertEquals("test_refresh_token", result?.refreshToken)
+    }
+
+    @Test
+    fun `getAuthTokens should return null when access token is blank`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns ""
+        every { settings.getString(REFRESH_TOKEN, "") } returns "test_refresh_token"
+
+        val result = authenticationRepository.getAuthTokens()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `getAuthTokens should return null when refresh token is blank`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "test_access_token"
+        every { settings.getString(REFRESH_TOKEN, "") } returns ""
+
+        val result = authenticationRepository.getAuthTokens()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `getAuthTokens should return null when both tokens are blank`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns ""
+        every { settings.getString(REFRESH_TOKEN, "") } returns ""
+
+        val result = authenticationRepository.getAuthTokens()
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `observeTokenChange should initialize with access token when lastPhoneNumber is blank`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "initial_token"
+        every { settings.getString(LAST_REGISTRATION_PHONE_NUMBER, "") } returns ""
+        every { settings.getBoolean(IMAGE_UPLOAD_COMPLETED, false) } returns false
+
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+        val result = authenticationRepository.observeTokenChange()
+
+        assertEquals("initial_token", result.value)
+    }
+
+    @Test
+    fun `observeTokenChange should initialize with access token when imageUploadCompleted is true`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "initial_token"
+        every { settings.getString(LAST_REGISTRATION_PHONE_NUMBER, "") } returns "+9647901234567"
+        every { settings.getBoolean(IMAGE_UPLOAD_COMPLETED, false) } returns true
+
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+        val result = authenticationRepository.observeTokenChange()
+
+        assertEquals("initial_token", result.value)
+    }
+
+    @Test
+    fun `observeTokenChange should initialize with empty string when lastPhoneNumber exists and imageUploadCompleted is false`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns "initial_token"
+        every { settings.getString(LAST_REGISTRATION_PHONE_NUMBER, "") } returns "+9647901234567"
+        every { settings.getBoolean(IMAGE_UPLOAD_COMPLETED, false) } returns false
+
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+        val result = authenticationRepository.observeTokenChange()
+
+        assertEquals("", result.value)
+    }
+
+    @Test
+    fun `observeTokenChange should initialize with empty string when no access token exists`() = runTest {
+        every { settings.getString(ACCESS_TOKEN, "") } returns ""
+        every { settings.getString(LAST_REGISTRATION_PHONE_NUMBER, "") } returns ""
+        every { settings.getBoolean(IMAGE_UPLOAD_COMPLETED, false) } returns false
+
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+
+        val result = authenticationRepository.observeTokenChange()
+
+        assertEquals("", result.value)
+    }
+
+    @Test
+    fun `saveAuthTokensWithoutEmit should not emit token to StateFlow`() = runTest {
+        val authTokens = AuthenticationTokens(
+            accessToken = "test_access_token",
+            refreshToken = "test_refresh_token"
+        )
+
+        authenticationRepository.saveAuthTokensWithoutEmit(authTokens)
+
+        val result = authenticationRepository.observeTokenChange()
+        assertEquals("", result.value)
+    }
+
+    @Test
+    fun `refreshAccessToken should not emit token when in temporary token mode`() = runTest {
+        val client = mockHttpClient(fakeLoginResponse)
+        every { settings.getString(REFRESH_TOKEN, "") } returns "old_refresh_token"
+        every { settings.getString(ACCESS_TOKEN, "") } returns "old_access_token"
+        every { settings.getString(LAST_REGISTRATION_PHONE_NUMBER, "") } returns "+9647901234567"
+        every { settings.getBoolean(IMAGE_UPLOAD_COMPLETED, false) } returns false
+
+        authenticationRepository = AuthenticationRepositoryImpl(client, settings)
+        val initialValue = authenticationRepository.observeTokenChange().value
+        authenticationRepository.saveAuthTokensWithoutEmit(
+            AuthenticationTokens(
+                accessToken = "temp_access_token",
+                refreshToken = "temp_refresh_token"
+            )
+        )
+
+        authenticationRepository.refreshAccessToken()
+
+        val result = authenticationRepository.observeTokenChange()
+        assertEquals(initialValue, result.value)
     }
 
 }

@@ -1,11 +1,14 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
+import junit.framework.TestCase.assertTrue
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.data.mapper.toCategoryList
 import net.thechance.mena.dukan.data.mapper.toColorsList
 import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
+import net.thechance.mena.dukan.data.mapper.toDukan
 import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
@@ -26,6 +29,7 @@ class DukanMappersTest {
         val dukan = Dukan(
             id = dukanId,
             name = "My Dukan",
+            isFavorite = false,
             categories = setOf(Category(categoryId, "Category 1", "")),
             address = "Baghdad",
             coordinates = Dukan.Coordinates(33.3, 44.4),
@@ -98,5 +102,28 @@ class DukanMappersTest {
 
         assertEquals(Dukan.Status.PENDING, status.status)
         assertEquals("My Dukan", status.dukanName)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `DukanDetailsDto toDukan maps isFavourite true correctly`() {
+        val colorId = Uuid.random()
+        val dukanId = Uuid.random()
+
+        val dto = DukanDetailsDto(
+            id = dukanId,
+            name = "Favorite Dukan",
+            imageUrl = "fav.png",
+            isFavorite = true,
+            address = "Cairo",
+            latitude = 30.0,
+            longitude = 31.0,
+            color = DukanColorDto(colorId, "#FFFFFF"),
+            style = "WIDE_IMAGE",
+            ownerId = dukanId,
+        )
+
+        val dukan = dto.toDukan()
+        assertTrue(dukan.isFavorite)
     }
 }

@@ -2,11 +2,13 @@ package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
@@ -37,6 +39,9 @@ class MainViewModel(
 ), MainInteractionListener {
 
     private var fetchJob: Job? = null
+
+    private var editorPickState: MutableStateFlow<PagingData<MainScreenUiState.EditorPickDukanUiState>> =
+        MutableStateFlow(PagingData.empty())
 
     init {
         fetchData()
@@ -154,7 +159,7 @@ class MainViewModel(
         }
     }
 
-    private fun loadEditorPicksDukans() {
+    fun loadEditorPicksDukans() {
         tryToCollect(
             block = ::createLoadEditorPagingSource,
             onCollect = ::onLoadedEditorPicksDukan,
@@ -172,9 +177,10 @@ class MainViewModel(
     }
 
     private fun onLoadedEditorPicksDukan(dukans: PagingData<MainScreenUiState.EditorPickDukanUiState>) {
+        editorPickState.value = dukans
         updateState {
             copy(
-                editorPickDukans = flowOf(dukans),
+                editorPickDukans = editorPickState,
                 snackBarState = null,
             )
         }
@@ -289,6 +295,33 @@ class MainViewModel(
         emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
     }
 
+    override fun onFavoriteDukanClicked(dukanId: String) {
+        tryToExecute(
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onSuccess = { isFavorite ->
+                setFavoriteState(
+                    dukanId = dukanId,
+                    isFavorite = isFavorite
+                )
+            }
+        )
+    }
+
+    private fun setFavoriteState(
+        dukanId: String,
+        isFavorite: Boolean
+    ) {
+        val currentData = editorPickState.value
+        val updatedData = currentData.map { dukan ->
+            if (dukan.id == dukanId) dukan.copy(isFavorite = isFavorite) else dukan
+        }
+        editorPickState.value = updatedData
+        updateState { copy(editorPickDukans = editorPickState) }
+    }
+
+    override fun onSearchButtonClicked() {
+        emitEffect(MainScreenEffect.NavigateToSearchScreen)
+    }
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(

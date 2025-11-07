@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,8 +56,8 @@ fun LazyGridScope.wideImageProductsGrid(
         key = { index -> productsShelf[index]?.id ?: index }
     ) { index ->
         productsShelf[index]?.let { product ->
-            var toggleCartToQuantity by rememberSaveable{ mutableStateOf(product.inCartQuantity>1) }
-            var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
+            var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
+            var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
             ProductCard(
                 imageUrl = product.imageUrl,
@@ -72,6 +71,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         dukanColor = cartColor,
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
                         onAddToCartClick = {
+                            productQuantity += 1
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
                                 productId = product.id,
@@ -87,7 +87,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         },
                         onMinusClick = {
                             if (productQuantity == 1) toggleCartToQuantity = false
-                            else productQuantity -= 1
+                            productQuantity -= 1
                             listener.onMinusClicked(
                                 productId = product.id,
                                 productQuantity = productQuantity
@@ -106,7 +106,7 @@ private fun ProductCard(
     title: String,
     price: String,
     modifier: Modifier = Modifier,
-    onClick:() -> Unit,
+    onClick: () -> Unit,
     productAction: @Composable () -> Unit,
 ) {
     Column(
@@ -114,7 +114,7 @@ private fun ProductCard(
             .size(width = 160.dp, height = 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
-            .clickable(onClick = onClick,indication = null, interactionSource = null)
+            .clickable(onClick = onClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
     ) {
 

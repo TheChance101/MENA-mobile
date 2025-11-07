@@ -65,6 +65,7 @@ fun MockRequestHandleScope.defaultProductDetailsResponse() = respond(
     headers = jsonHeaders
 )
 
+
 fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = createdProductResponseId) =
     respond(
         content = jsonSerialization.encodeToString(ProductDto.serializer(), productDto1),
@@ -76,12 +77,14 @@ fun createProductHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    toggleFavoriteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
+    val dukanId = "10"
     return HttpClient(MockEngine { request ->
         when {
             request.url.encodedPath == "/dukan/product/create" -> createResponse?.invoke(this)
@@ -104,6 +107,7 @@ fun createProductHttpClient(
             )
                 ?: defaultProductDetailsResponse()
 
+
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
                     request.method.value == "GET" -> productByIdResponse?.invoke(this)
                 ?: defaultProductByIdResponse()
@@ -114,6 +118,10 @@ fun createProductHttpClient(
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
                     request.method.value == "DELETE" -> deleteResponse?.invoke(this)
+                ?: respond("", HttpStatusCode.OK, jsonHeaders)
+
+            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+/favorite")) &&
+                    request.method.value == "POST" -> toggleFavoriteResponse?.invoke(this)
                 ?: respond("", HttpStatusCode.OK, jsonHeaders)
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
@@ -135,6 +143,7 @@ fun createProductRepository(
     updateResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    toggleFavoriteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): DukanProductRepositoryImpl {
     return DukanProductRepositoryImpl(
         client = createProductHttpClient(
@@ -145,7 +154,8 @@ fun createProductRepository(
             productByIdResponse = productByIdResponse,
             updateResponse = updateResponse,
             deleteResponse = deleteResponse,
-            deleteImagesResponse = deleteImagesResponse
+            deleteImagesResponse = deleteImagesResponse,
+            toggleFavoriteResponse = toggleFavoriteResponse
         )
     )
 }

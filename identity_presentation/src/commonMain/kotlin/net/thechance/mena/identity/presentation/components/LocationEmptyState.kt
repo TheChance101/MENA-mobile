@@ -63,7 +63,7 @@ fun LocationEmptyState(
         PrimaryButton(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(buttonTextResource),
-            contentPadding = PaddingValues(vertical = Theme.spacing._16, horizontal = Theme.spacing._24),
+            contentPadding = PaddingValues(horizontal = Theme.spacing._24),
             onClick = onButtonClicked,
             isEnabled = !isLoading,
             isLoading = isLoading

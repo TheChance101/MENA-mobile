@@ -16,6 +16,8 @@
     <string>We need access to your camera.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>We need access to your photo library.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need access to your microphone to record audio messages.</string>
     <key>UIFileSharingEnabled</key>
     <true/>
     <key>LSSupportsOpeningDocumentsInPlace</key>

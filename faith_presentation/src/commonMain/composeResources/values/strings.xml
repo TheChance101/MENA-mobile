@@ -111,6 +111,7 @@
 
     <!-- Error Messages -->
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_coordinates">Invalid coordinates</string>
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
@@ -176,6 +177,11 @@
     <string name="next_prayer_time_icon">next prayer time icon</string>
     <string name="next_prayer_in">Next prayer %1$s in:</string>
     <string name="search_hint">Search...</string>
+    <string name="no_mosques_found">No mosques found, try with another keyword.</string>
+
+    <string name="reset">Reset</string>
+    <string name="upload_another_image">Upload another image</string>
+    <string name="save">Save</string>
     <string name="no_mosques_found_by_keyword">No mosques found, try with another keyword.</string>
     <string name="no_nearby_mosques_found">No mosques found nearby this location, try another location.</string>
     <string name="downloaded">Downloaded</string>
