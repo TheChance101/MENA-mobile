@@ -65,9 +65,6 @@ class ChatRepositoryImpl(
             offset = pageNumber * pageSize
         ).map { it.toDomain() }
 
-        println("====> ****** showing cached data now ******")
-        println("====> ****** cachedData: ${cachedData} ******")
-
         // totalItems and isLastPage should reflect the actual data in remote database
         val totalItems = cachedChatSummaryDao.getChatSummariesCount()
         val isLastPage = cachedData.size < pageSize && cachedData.isNotEmpty()
@@ -75,7 +72,6 @@ class ChatRepositoryImpl(
 
         scope.launch {
             val lastTimeSynced: Instant? = getLastTimeSynced()
-            println("====> ****** lastTimeSynced: ${lastTimeSynced} ******")
             syncChatSummaries(lastTimeSynced, pageNumber, pageSize)
         }
         return result
@@ -127,8 +123,6 @@ class ChatRepositoryImpl(
                 ?: throw NotFoundException("Response body is null")
 
             val remoteChatSummariesData = remoteChatSummaries.data
-            println("====> ****** remoteChatSummaries: ${remoteChatSummariesData.size} ******")
-
             if (remoteChatSummariesData.isNotEmpty()) {
                 cachedChatSummaryDao.insertMultipleChatSummaries(remoteChatSummariesData.map {
                     it.toCached()
