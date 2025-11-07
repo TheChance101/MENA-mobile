@@ -111,6 +111,7 @@
 
     <!-- Error Messages -->
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_coordinates">Invalid coordinates</string>
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unauthorized">You’re not authorized to perform this action.</string>
     <string name="error_network">Network error. Please try again later.</string>
@@ -120,7 +121,9 @@
     <!-- Search Section -->
     <string name="search_in_surah_hint">Search in %1$s...</string>
     <string name="start_searching_title">Start searching!</string>
-    <string name="start_searching_subtitle">Enter a word from a specific Ayah to view it.</string>
+    <string name="start_searching_subtitle_for_ayah">Enter a word from a specific Ayah to view it.</string>
+    <string name="start_searching_subtitle_for_reciter">Enter a word from a specific reciter to choose it.</string>
+    <string name="search_reciter">Search reciters</string>
     <string name="no_results_found_title">No results found!</string>
     <string name="no_results_found_subtitle">Please try again with another keyword.</string>
     <string name="back">back</string>
@@ -176,6 +179,11 @@
     <string name="next_prayer_time_icon">next prayer time icon</string>
     <string name="next_prayer_in">Next prayer %1$s in:</string>
     <string name="search_hint">Search...</string>
+    <string name="no_mosques_found">No mosques found, try with another keyword.</string>
+
+    <string name="reset">Reset</string>
+    <string name="upload_another_image">Upload another image</string>
+    <string name="save">Save</string>
     <string name="no_mosques_found_by_keyword">No mosques found, try with another keyword.</string>
     <string name="no_nearby_mosques_found">No mosques found nearby this location, try another location.</string>
     <string name="downloaded">Downloaded</string>
@@ -187,5 +195,8 @@
     <string name="delete">Delete</string>
     <string name="delete_surah_dialog_message">Are you sure you want to delete this surah from downloading?</string>
     <string name="surah_deleted_successfully">Surah deleted successfully</string>
+
+    <string name="kilometer_unit">km</string>
+
 
 </resources>

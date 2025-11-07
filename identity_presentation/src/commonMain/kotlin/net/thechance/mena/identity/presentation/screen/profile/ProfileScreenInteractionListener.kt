@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
-import androidx.compose.ui.platform.Clipboard
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
 interface ProfileScreenInteractionListener : BaseInteractionListener {
@@ -20,11 +20,10 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
     fun onDismissThemeDialog()
     fun onDismissBottomSheet()
     fun onDismissShareDialog()
-    fun onCopyToClipboard(clipboard: Clipboard)
 
-    fun onDismissCopyLinkSnackBar()
 
     fun onContactUsClicked()
+    fun onConfirmLanguageSelection(appLanguage: AppLanguage)
 
     fun onDismissSnackBar()
 }

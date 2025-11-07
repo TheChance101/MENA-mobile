@@ -29,6 +29,7 @@ fun ChatList(
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
+    onMessageLongClick: (MessageUiState) -> Unit,
     paginationError: Boolean,
     onMessageVoiceClick: (Uuid) -> Unit,
 ) {
@@ -67,6 +68,7 @@ fun ChatList(
                 onMessageImageClick = onMessageImageClick,
                 onMessageVoiceClick = onMessageVoiceClick,
                 onFailedMessageClick = onFailedMessageClick,
+                onMessageLongClick = onMessageLongClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }

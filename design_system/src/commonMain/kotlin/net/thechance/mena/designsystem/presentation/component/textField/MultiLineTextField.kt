@@ -34,15 +34,14 @@ fun MultiLineTextField(
 ) {
     BasicTextField(
         value = value,
-        onValueChanged = onValueChanged,
         hint = hint,
-        leadingIcon = null,
-        trailingIcon = null,
+        onValueChanged = onValueChanged,
+        modifier = modifier,
         title = title,
-        enabled = enabled,
+        singleLine = false,
         minLines = minLines,
         maxLines = maxLines,
-        singleLine = false,
+        enabled = enabled,
         readOnly = readOnly,
         isError = isError,
         errorMessage = errorMessage,
@@ -51,7 +50,6 @@ fun MultiLineTextField(
         keyboardActions = keyboardActions,
         focusRequester = focusRequester,
         onFocusChanged = onFocusChanged,
-        modifier = modifier
     )
 }
 

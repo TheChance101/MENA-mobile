@@ -27,7 +27,7 @@ class PickLocationScreenViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val locationForegroundHandler: PermissionHandler,
-    private val addressModel: AddressUIState?,
+    private val addressModel: AddressUIState? = null,
 ) : BaseScreenModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(PickLocationScreenUIState()),
     PickLocationScreenInteractionListener {
 

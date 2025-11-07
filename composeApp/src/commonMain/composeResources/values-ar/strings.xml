@@ -1,0 +1,7 @@
+<resources>
+    <string name="home">الرئيسية</string>
+    <string name="dukan">دكان</string>
+    <string name="faith">الإيمان</string>
+    <string name="trends">تريند</string>
+    <string name="profile">الحساب</string>
+</resources>

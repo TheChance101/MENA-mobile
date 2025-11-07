@@ -37,6 +37,7 @@ class DukanManagementRepositoryTest {
             Dukan(
                 id = Uuid.random(),
                 name = "Test Dukan",
+                isFavorite = false,
                 color = Color(Uuid.random(), "#FF0000"),
                 style = Dukan.Style.WIDE_IMAGE,
                 imageUrl = "",
@@ -176,5 +177,4 @@ class DukanManagementRepositoryTest {
         // Assert
         assertEquals(30.0444, details.coordinates.latitude)
     }
-
 }
