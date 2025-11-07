@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.profile.components.dialog
 
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.Clipboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.vinceglb.filekit.dialogs.compose.util.encodeToByteArray
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import kotlin.time.Clock
@@ -38,6 +40,27 @@ class ShareQrCodeViewModel(
     private val _effect = MutableSharedFlow<ShareQrCodeUIEffect>()
     val effect = _effect.asSharedFlow().throttleFirst(500).mapNotNull { it }
 
+    init {
+        setUrlLinks()
+    }
+
+    private fun setUrlLinks() {
+        updateState {
+            copy(
+                shareLinkUrl = generateLink()
+            )
+        }
+    }
+
+    private fun generateLink(): String {
+        return "https://mena-dev.the-chance.net?userId=7f30b317-3c11-4afc-a4ed-ea84f29b0f65"
+    }
+
+
+    private fun onCopyToClipboardSuccess() {
+        updateState { copy(showCopiedMessage = true) }
+    }
+
     override fun onClickDownload(bitmap: ImageBitmap) {
         val permissionState = galleryPermissionHandler.checkPermission()
 
@@ -50,10 +73,28 @@ class ShareQrCodeViewModel(
                     dispatcher = dispatcher
                 )
             }
+
             PermissionState.DENIED_PERMANENTLY -> galleryPermissionHandler.openSettingPage()
             else -> galleryPermissionHandler.requestPermission()
         }
     }
+
+    override fun onClickCopyToClipboard(clipboard: Clipboard) {
+        tryToExecute(
+            function = { clipboard.setClipEntry(clipEntryOf(state.value.shareLinkUrl)) },
+            onSuccess = { onCopyToClipboardSuccess() },
+            onError = { onDismissShareDialog() }
+        )
+    }
+
+    override fun onDismissShareDialog() {
+        updateState { copy() }
+    }
+
+    override fun onDismissCopyLinkSnackBar() {
+        updateState { copy(showCopiedMessage = false) }
+    }
+
 
     private suspend fun saveImageToGallery(bitmap: ImageBitmap) {
         val imageByteArray = bitmap.encodeToByteArray()
@@ -61,9 +102,11 @@ class ShareQrCodeViewModel(
     }
 
     private fun onSuccess(response: Unit) {
-        viewModelScope.launch(dispatcher) {
-            sendNewEffect(ShareQrCodeUIEffect.OnClickDownload)
-        }
+        tryToExecute(
+            function = {
+                sendNewEffect(ShareQrCodeUIEffect.OnClickDownload)
+            }
+        )
     }
 
     private fun onError(throwable: Throwable) {
@@ -72,6 +115,10 @@ class ShareQrCodeViewModel(
 
     suspend fun sendNewEffect(newEffect: ShareQrCodeUIEffect) {
         _effect.emit(newEffect)
+    }
+
+    private fun updateState(updater: ShareQrCodeUIState.() -> ShareQrCodeUIState) {
+        _state.update(updater)
     }
 
     @OptIn(ExperimentalTime::class)

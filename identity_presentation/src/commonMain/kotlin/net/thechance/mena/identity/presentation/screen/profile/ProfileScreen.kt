@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
@@ -50,10 +49,10 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-        ProfileScreenViewModel,
-        ProfileScreenUIState,
-        ProfileScreenUIEffect,
-        ProfileScreenInteractionListener>() {
+    ProfileScreenViewModel,
+    ProfileScreenUIState,
+    ProfileScreenUIEffect,
+    ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -95,16 +94,9 @@ class ProfileScreen : BaseScreen<
                 }
                 dialog(state.showShareProfileDialog) {
                     ShareQrCode(
-                        showDialog = it,
-                        isCopied = state.showCopiedMessage,
-                        fullName = state.fullName,
-                        urlString = state.shareLinkUrl,
-                        qrCodePainter = rememberQrCodePainter(data = state.shareLinkUrl),
+                        isVisible = state.showShareProfileDialog,
+                        onClickShare = listener::onInviteFriendsClicked,
                         onDismissShareDialog = listener::onDismissShareDialog,
-                        onDismissSnackBar = listener::onDismissCopyLinkSnackBar,
-                        onCopyToClipboard = listener::onCopyToClipboard,
-                        onShareProfile = {},
-                        onDownload = {}
                     )
                 }
             },

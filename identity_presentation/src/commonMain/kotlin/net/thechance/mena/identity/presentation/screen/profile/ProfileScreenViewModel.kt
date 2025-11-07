@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
-import androidx.compose.ui.platform.Clipboard
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -10,7 +9,6 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -19,24 +17,25 @@ class ProfileScreenViewModel(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
-        (ProfileScreenUIState(
+        (
+        ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
-                selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }?: AppLanguage.ENGLISH,
+                selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }
+                                      ?: AppLanguage.ENGLISH,
             ),
-        )),
+        )
+    ),
     ProfileScreenInteractionListener {
 
     init {
         getUserInfo()
         setAppVersion()
-        setUrlLinks()
+        setInviteUrlLinks()
     }
 
-    private fun setUrlLinks() {
-        // todo: links will not remain hardcoded
+    private fun setInviteUrlLinks() {
         updateState {
             copy(
-                shareLinkUrl = "https:mena.dev?uresname=hassan",
                 inviteLinkUrl = "https://MENA_app.com"
             )
         }
@@ -68,10 +67,6 @@ class ProfileScreenViewModel(
 
     private fun onUserInfoError(throwable: Throwable) {
         updateState { copy(isLoading = false, errorMessage = null) }
-    }
-
-    private fun onCopyToClipboardSuccess() {
-        updateState { copy(showCopiedMessage = true, showShareProfileDialog = false) }
     }
 
     override fun onEditProfileInfoClicked() =
@@ -111,13 +106,6 @@ class ProfileScreenViewModel(
     override fun onContactUsClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
-    override fun onCopyToClipboard(clipboard: Clipboard) {
-        tryToExecute(
-            function = { clipboard.setClipEntry(clipEntryOf(state.value.shareLinkUrl)) },
-            onSuccess = { onCopyToClipboardSuccess() },
-            onError = { onDismissShareDialog() }
-        )
-    }
 
     override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
@@ -156,9 +144,6 @@ class ProfileScreenViewModel(
         updateState { copy(showShareProfileDialog = false) }
     }
 
-    override fun onDismissCopyLinkSnackBar() {
-        updateState { copy(showCopiedMessage = false) }
-    }
 
     override fun onDismissThemeDialog() =
         updateState { copy(showThemeDialog = false) }
