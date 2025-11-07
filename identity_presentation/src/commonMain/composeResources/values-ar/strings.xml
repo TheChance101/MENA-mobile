@@ -98,6 +98,9 @@
     <string name="download_icon_content_description">أيقونة التنزيل</string>
     <string name="download_app_title">تنزيل تطبيق مينا</string>
     <string name="copy_to_clipboard_success">تم النسخ</string>
+    <string name="copy_to_clipboard_success_message">تم نسخ الرابط بنجاح</string>
+    <string name="download_success">تم التنزيل بنجاح</string>
+    <string name="download_success_message">تم تنزيل الصورة بنجاح</string>
     <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">تفعيل الموقع</string>
