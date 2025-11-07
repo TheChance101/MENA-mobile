@@ -17,12 +17,14 @@ import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.icon_location
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
+import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-internal fun PrayerTimeTopBar(onClick: () -> Unit) {
+internal fun PrayerTimeTopBar(uiState: PrayerTimeUiState, onClick: () -> Unit) {
     Row(
         modifier = Modifier.background(
             shape = RoundedCornerShape(Theme.radius.full),
@@ -41,7 +43,7 @@ internal fun PrayerTimeTopBar(onClick: () -> Unit) {
         )
 
         Text(
-            text = "Cairo, Egypt",
+            text = uiState.address.takeCityAndCountry(),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -52,5 +54,6 @@ internal fun PrayerTimeTopBar(onClick: () -> Unit) {
 @Preview
 @Composable
 private fun Preview() {
-    PrayerTimeTopBar(onClick = {})
+    @OptIn(kotlin.time.ExperimentalTime::class)
+    PrayerTimeTopBar(uiState = PrayerTimeUiState(address = "Baghdad, Iraq"), onClick = {})
 }

@@ -50,6 +50,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -280,7 +281,7 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
         )
 
         Text(
-            text = uiState.address,
+            text = uiState.address.takeCityAndCountry(),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
