@@ -62,6 +62,7 @@ fun CreateDukanUiState.toEntity() = Dukan(
     id = Uuid.random(),
     name = name,
     imageUrl = "",
+    isFavorite = false,
     categories = selectedCategories.map { it.toEntity() }.toSet(),
     coordinates = currentLocation.toEntity(),
     address = address,

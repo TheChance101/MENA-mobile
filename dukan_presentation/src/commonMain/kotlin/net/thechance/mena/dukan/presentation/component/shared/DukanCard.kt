@@ -35,7 +35,7 @@ fun DukanCard(
     imageUrl: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isFavorite: Boolean = false,
+    isFavorite: Boolean,
     onFavoriteClick: () -> Unit = {},
     isLoading: Boolean = false
 ) {
@@ -126,6 +126,7 @@ private fun DukanCardLoadingPreview() {
             title = "Dukan",
             imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
             onClick = {},
+            isFavorite = false,
             isLoading = true
         )
     }
@@ -151,6 +152,7 @@ private fun DukanCardEmptyImagePreview() {
         DukanCard(
             title = "Dukan Without Image",
             imageUrl = "",
+            isFavorite = false,
             onClick = {}
         )
     }

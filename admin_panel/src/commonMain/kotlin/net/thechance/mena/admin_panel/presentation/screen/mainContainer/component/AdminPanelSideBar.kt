@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun AdminPanelSideBar(
-    selectedTab: MainContainerScreenState.CurrentTab,
+    selectedTab: MainContainerScreenState.SelectedSidebarTab,
     interactionListener: MainContainerInteractionListener,
     modifier: Modifier = Modifier
 ) {

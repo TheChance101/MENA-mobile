@@ -5,10 +5,12 @@ import net.thechance.mena.identity.domain.exception.InvalidCountryCodeException
 import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
 import net.thechance.mena.identity.domain.exception.InvalidOTPException
 import net.thechance.mena.identity.domain.exception.InvalidPasswordException
+import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.exception.PhoneNumberAlreadyExistsException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 
 fun handleAuthenticationException(
@@ -24,6 +26,8 @@ fun handleAuthenticationException(
         is OtpExpiredException -> AuthenticationErrorState.OTPExpired
         is PhoneNumberAlreadyExistsException -> AuthenticationErrorState.PhoneNumberAlreadyExists
         is NoNetworkException -> AuthenticationErrorState.NoNetwork
+        is InvalidRequestException -> AuthenticationErrorState.InvalidRequest
+        is UnAuthorizedException -> AuthenticationErrorState.IncorrectPassword
         else -> AuthenticationErrorState.SomethingWentWrong(exception.message)
     }
 }

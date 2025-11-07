@@ -11,7 +11,7 @@ sealed class DukanDetailsEffects {
     data class NavigateToViewDukanOnMap(val latitude: Double, val longitude: Double) :
         DukanDetailsEffects()
 
-    data class NavigateToCartScreen(val dukanId: String) : DukanDetailsEffects()
     data class NavigateToProductDetails(val productId: String,val dukanId: String) : DukanDetailsEffects()
 
+    data class NavigateToCart(val dukanId: String) : DukanDetailsEffects()
 }

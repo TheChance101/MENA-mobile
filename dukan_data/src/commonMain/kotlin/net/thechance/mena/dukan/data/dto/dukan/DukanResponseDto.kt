@@ -13,5 +13,7 @@ data class DukanResponseDto(
     @SerialName("name")
     val name: String,
     @SerialName("imageUrl")
-    val imageUrl: String
+    val imageUrl: String,
+    @SerialName("isFavorite")
+    val isFavorite: Boolean,
 )

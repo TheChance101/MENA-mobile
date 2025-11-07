@@ -3,8 +3,8 @@ package net.thechance.mena.admin_panel.presentation.screen.mainContainer
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.deposit
-import net.thechance.mena.admin_panel.resources.dukans_management
 import net.thechance.mena.admin_panel.resources.dukan_requests
+import net.thechance.mena.admin_panel.resources.dukans_management
 import net.thechance.mena.admin_panel.resources.file_selected
 import net.thechance.mena.admin_panel.resources.file_unselected
 import net.thechance.mena.admin_panel.resources.shop_selected
@@ -20,10 +20,10 @@ import org.jetbrains.compose.resources.StringResource
 data class MainContainerScreenState(
     val authenticationStatus: Boolean = false,
     val isLogOutDialogShown: Boolean = false,
-    val currentTab: CurrentTab = CurrentTab.USERS_MANAGEMENT,
+    val selectedSidebarTab: SelectedSidebarTab = SelectedSidebarTab.USERS_MANAGEMENT,
     val snackBar: SnackBarState = SnackBarState()
 ) {
-    enum class CurrentTab(
+    enum class SelectedSidebarTab(
         val title: StringResource,
         val selectedIconRes: DrawableResource,
         val unSelectedIconRes: DrawableResource

@@ -85,6 +85,14 @@ class ManageDukanViewModel(
         emitEffect(ManageDukanUiEffect.NavigateToProductDetails)
     }
 
+    override fun onEditProductClicked(productId: String) {
+        emitEffect(
+            ManageDukanUiEffect.NavigateToEditProduct(
+                productId = productId
+            )
+        )
+    }
+
     override fun isShelfSelected(shelf: ManageDukanUiState.ShelfUiState): Boolean {
         return state.value.selectedShelf == shelf
     }

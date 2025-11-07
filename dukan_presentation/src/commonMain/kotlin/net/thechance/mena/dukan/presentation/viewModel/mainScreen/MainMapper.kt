@@ -34,6 +34,7 @@ fun Dukan.toEditorPickUiState(): MainScreenUiState.EditorPickDukanUiState {
     return MainScreenUiState.EditorPickDukanUiState(
         id = id.toString(),
         name = name,
-        imageUrl = imageUrl
+        imageUrl = imageUrl,
+        isFavorite = isFavorite
     )
 }

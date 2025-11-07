@@ -14,6 +14,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
@@ -37,6 +38,7 @@ class SurahViewModel(
 ), SurahInteractionListener {
 
     init {
+        observeDefaultReciter()
         loadSurahData(surahArgs.surahId)
     }
 
@@ -49,6 +51,23 @@ class SurahViewModel(
             dispatcher = dispatcher
         )
     }
+
+    private fun observeDefaultReciter() {
+        tryToCollect(
+            onEmitNewValue = ::updateDefaultReciter,
+            block = { quranRepository.getDefaultReciter() },
+        )
+    }
+
+    private fun updateDefaultReciter(reciterId: Int) {
+        tryToExecute(
+            execute = { quranRepository.getReciterById(reciterId) },
+            onSuccess = ::updateReciterState
+        )
+    }
+
+    private fun updateReciterState(reciter: Reciter) =
+        updateState { it.copy(currentReciter = reciter.toUiState()) }
 
     override fun highlightAyah(ayahNumber: Int) {
         updateState {
@@ -75,6 +94,7 @@ class SurahViewModel(
     }
 
     override fun onInitialAyahScrolled() {
+        if (uiState.value.isAyahSoundPlaying) return
         viewModelScope.launch {
             delay(2000L)
             updateState { it.copy(selectedAyahNumber = null, initialAyahToScroll = null) }
@@ -173,9 +193,8 @@ class SurahViewModel(
         loadAndPlayAyahSound(
             surahNumber = surahArgs.surahId,
             ayahNumber = ayahNumber,
-            reciterId = 1 //TODO: Get selected reciter id from settings
+            reciterId = uiState.value.currentReciter.id,
         )
-        updateState { it.copy(selectedAyahNumber = ayahNumber) }
     }
 
     private fun moveToAyah(offset: Int) {
@@ -206,7 +225,15 @@ class SurahViewModel(
                 )
             },
             onSuccess = ::onLoadAyahSoundSuccess,
-            dispatcher = Dispatchers.Main
+            onFinally = {
+                updateState {
+                    it.copy(
+                        selectedAyahNumber = ayahNumber,
+                        initialAyahToScroll = ayahNumber
+                    )
+                }
+            },
+            dispatcher = Dispatchers.Main,
         )
     }
 
@@ -221,6 +248,7 @@ class SurahViewModel(
             )
         }
         quranPlayer.playAyah(ayahSoundUrl)
+        updatePlayPause()
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
@@ -282,5 +310,11 @@ class SurahViewModel(
         val isFatiha = surahId == Surah.SurahOrder.AlFatihah.order
         val shouldShowBasmala = !(isTawbah || isFatiha)
         updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
+    }
+
+    private fun updatePlayPause(){
+        quranPlayer.onAyahCompleted {
+            updateState { it.copy(isAyahSoundPlaying = false) }
+        }
     }
 }

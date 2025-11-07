@@ -25,6 +25,7 @@ class DukanDetailsMapperTest {
             status = Dukan.Status.APPROVED,
             address = "Test Address",
             categories = emptySet(),
+            isFavorite = false
         )
 
         val uiState = dukan.toUiState()
@@ -51,7 +52,7 @@ class DukanDetailsMapperTest {
     }
 
     @Test
-    fun `toUiState should map Product correctly when quantityInCart is zero`() {
+    fun `toUiState should map Product correctly`() {
         val product = Product(
             id = Uuid.random(),
             name = "Phone",
@@ -59,7 +60,9 @@ class DukanDetailsMapperTest {
             price = 15000.0,
             imageUrls = listOf("img.png"),
             quantityInCart = 0,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
         )
 
         val uiState = product.toUiState()
@@ -68,7 +71,7 @@ class DukanDetailsMapperTest {
          assertEquals("Android device", uiState.description)
          assertEquals(15000.0, uiState.price, 0.0)
          assertEquals("img.png", uiState.imageUrl)
-         assertEquals(1, uiState.inCartQuantity)
+         assertEquals(0, uiState.inCartQuantity)
     }
 
     @Test
@@ -80,7 +83,9 @@ class DukanDetailsMapperTest {
             price = 20000.0,
             imageUrls = listOf("laptop.png"),
             quantityInCart = 3,
-            createdAt = "2023-01-01"
+            createdAt = "2023-01-01",
+            shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
+            isFavorite = false
         )
 
         val uiState = product.toUiState()

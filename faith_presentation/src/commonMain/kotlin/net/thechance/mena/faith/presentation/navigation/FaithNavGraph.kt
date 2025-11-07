@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.downloadedSur.DownloadedSurScreen
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurScreen
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
@@ -19,9 +19,11 @@ import net.thechance.mena.faith.presentation.feature.quran.search.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
+import net.thechance.mena.identity.api.IdentityFeatureApi
+import org.koin.compose.getKoin
 
 @Composable
-fun FaithNavigation() {
+fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
     val navController = rememberNavController()
     CompositionLocalProvider(
         LocalNavController provides navController
@@ -63,6 +65,9 @@ fun FaithNavigation() {
                 }
                 composable<Route.DownloadedRecitersRoute> {
                     DownloadedReciterScreen()
+                }
+                composable<Route.UserAddresses> {
+                    identityApi.NavigateToAddressesScreen()
                 }
             }
         }
