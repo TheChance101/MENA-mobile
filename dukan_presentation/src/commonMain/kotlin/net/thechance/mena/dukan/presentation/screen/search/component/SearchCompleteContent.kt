@@ -56,26 +56,12 @@ fun SearchCompleteContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .padding(top = Theme.spacing._12, start = Theme.spacing._16)
-                .fillMaxWidth()
-                .height(32.dp),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        ) {
-            Chip(
-                text = stringResource(resource = Res.string.dukans),
-                modifier = Modifier.height(32.dp),
-                isSelected = state.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Dukans,
-                onClick = listener::onSelectDukans,
-            )
-            Chip(
-                text = stringResource(resource = Res.string.products),
-                modifier = Modifier.height(32.dp),
-                isSelected = state.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Products,
-                onClick = listener::onSelectProducts,
-            )
-        }
+        SearchChips(
+            isDukanSelected = state.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Dukans,
+            isProductSelected = state.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Products,
+            onDukansSelected = listener::onDukansSelected,
+            onProductsSelected = listener::onProductsSelected,
+        )
         AnimatedContent(
             modifier = Modifier.padding(top = Theme.spacing._12),
             targetState = state.userSelectionSearchList,
@@ -89,7 +75,7 @@ fun SearchCompleteContent(
                 SearchUiState.UserSelectionSearchList.Dukans -> DukansList(
                     dukanPagingItems = dukanPagingItems,
                     onDukanClicked = listener::onDukanClicked,
-                    onDukanFavoriteClicked = listener::onDukanFavoriteClicked
+                    onDukanFavoriteClicked = listener::onDukanFavoriteToggled
                 )
 
                 SearchUiState.UserSelectionSearchList.Products -> ProductsList(
@@ -98,6 +84,36 @@ fun SearchCompleteContent(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SearchChips(
+    isDukanSelected: Boolean,
+    isProductSelected: Boolean,
+    onDukansSelected: () -> Unit,
+    onProductsSelected: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .padding(top = Theme.spacing._12, start = Theme.spacing._16)
+            .fillMaxWidth()
+            .height(32.dp),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+    ) {
+        Chip(
+            text = stringResource(resource = Res.string.dukans),
+            modifier = Modifier.height(32.dp),
+            isSelected = isDukanSelected,
+            onClick = onDukansSelected,
+        )
+        Chip(
+            text = stringResource(resource = Res.string.products),
+            modifier = Modifier.height(32.dp),
+            isSelected = isProductSelected,
+            onClick = onProductsSelected,
+        )
     }
 }
 

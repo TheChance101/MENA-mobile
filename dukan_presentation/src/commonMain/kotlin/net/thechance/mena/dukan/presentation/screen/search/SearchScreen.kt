@@ -3,36 +3,27 @@ package net.thechance.mena.dukan.presentation.screen.search
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.back_to_main_screen_icon
-import mena.dukan_presentation.generated.resources.ic_arrow_left
-import mena.dukan_presentation.generated.resources.ic_delete_search
-import mena.dukan_presentation.generated.resources.ic_search
 import mena.dukan_presentation.generated.resources.img_not_found_search
 import mena.dukan_presentation.generated.resources.img_start_search
 import mena.dukan_presentation.generated.resources.no_result_found
 import mena.dukan_presentation.generated.resources.no_result_found_body
-import mena.dukan_presentation.generated.resources.search_in_dukans
 import mena.dukan_presentation.generated.resources.start_search
 import mena.dukan_presentation.generated.resources.start_search_body
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchCompleteContent
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchEmptyContent
+import net.thechance.mena.dukan.presentation.screen.search.component.SearchHeader
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener
@@ -58,7 +49,7 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
             }
 
             is SearchEffect.NavigateToProductDetails -> {
-                // TODO(  navigate to product details when user story finished )
+                navController.navigate(route = DukanRoute.ProductDetails(productId = effect.productId,""))
             }
         }
     }
@@ -77,31 +68,11 @@ private fun SearchContent(
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
-            AppBar(
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(resource = Res.string.back_to_main_screen_icon),
-                        tint = Theme.colorScheme.primary.primary
-                    )
-                },
-                onLeadingClick = listener::onBackClicked,
-                trailingContent = {
-                    TextField(
-                        modifier = Modifier.fillMaxWidth(),
-                        value = state.searchQuery,
-                        onValueChanged = listener::onSearchChanged,
-                        hint = stringResource(resource = Res.string.search_in_dukans),
-                        leadingIcon = painterResource(resource = Res.drawable.ic_search),
-                        onTrailingIconClick = listener::onClearSearchClicked,
-                        showTrailingDivider = false,
-                        trailingIcon = if (state.searchQuery.isNotEmpty())
-                            painterResource(resource = Res.drawable.ic_delete_search)
-                        else
-                            null,
-                    )
-                },
-                title = "",
+            SearchHeader(
+                query = state.searchQuery,
+                onQueryChange = listener::onSearchChanged,
+                onBackClick = listener::onBackClicked,
+                onClearClick = listener::onClearSearchClicked,
             )
         },
         snakeBar = {
