@@ -8,6 +8,7 @@ import mena.identity_presentation.generated.resources.changed_password_successfu
 import mena.identity_presentation.generated.resources.error_password_mismatch
 import mena.identity_presentation.generated.resources.error_password_validation
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -29,14 +30,23 @@ class ChangePasswordScreenViewModel(
 ), ChangePasswordScreenInteractionListener {
 
     override fun onClickBack() {
-        if (state.value.currentPage == 1)
-            updateState { copy(currentPage = 0) }
+        if (state.value.currentPage.index == PasswordPage.NEW_PASSWORD.index)
+            updateState {
+                copy(
+                    currentPage = PasswordPage.CURRENT_PASSWORD
+                )
+            }
         else
             sendNewEffect(ChangePasswordScreenUIEffect.NavigateBack())
     }
 
     override fun onClickContinue() {
-        updateState { copy(currentPage = 1) }
+        updateState {
+            copy(
+                currentPage = PasswordPage.NEW_PASSWORD
+
+            )
+        }
     }
 
     override fun onClickSave() {
@@ -146,7 +156,13 @@ class ChangePasswordScreenViewModel(
     }
 
     private fun onChangePasswordError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable), isLoading = false) }
+        updateState {
+            copy(
+                errorMessage = mapErrorMessage(throwable),
+                isLoading = false,
+                currentPage = getPageAfterError(throwable)
+            )
+        }
     }
 
     private fun updateSaveEnabledState() {
@@ -184,6 +200,14 @@ class ChangePasswordScreenViewModel(
             )
         }
     }
+
+    private fun getPageAfterError(throwable: Throwable): PasswordPage {
+        return if (throwable is UnAuthorizedException)
+            PasswordPage.CURRENT_PASSWORD
+        else
+            PasswordPage.NEW_PASSWORD
+    }
+
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {

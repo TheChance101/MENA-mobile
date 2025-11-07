@@ -47,7 +47,9 @@ fun ShelfDetailsScreen(
         when (effect) {
             ShelfDetailsEffects.NavigateBack -> navController.popBackStack()
             is ShelfDetailsEffects.NavigateToCart -> {
-                // navigate to cart screen
+                navController.navigate(
+                    DukanRoute.DukanCart(dukanId = effect.dukanId)
+                )
             }
 
             is ShelfDetailsEffects.NavigateToProductDetails -> navController.navigate(
@@ -117,8 +119,7 @@ private fun ShelfDetailsAppBar(
         onLeadingClick = listener::onBackClicked,
         trailingContent = {
             AppBarOptionContainer(
-                // when the cart contains products
-                isBadgeVisible = false,
+                isBadgeVisible = state.totalPrice > 0,
                 onClick = listener::onViewCartClicked
             ) {
                 Icon(

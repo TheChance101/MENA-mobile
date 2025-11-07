@@ -10,4 +10,6 @@ object PreviewMainScreenInteractionListener : MainInteractionListener {
     override fun onSelectedCategoryClicked(categoryId: String, categoryName: String) {}
     override fun onNearestDukanClicked(dukanId: String) {}
     override fun onEditorPickDukanClicked(dukanId: String) {}
+    override fun onFavoriteDukanClicked(dukanId: String) {}
+    override fun onSearchButtonClicked() {}
 }

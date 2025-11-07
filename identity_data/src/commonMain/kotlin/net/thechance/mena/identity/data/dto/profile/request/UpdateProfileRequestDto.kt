@@ -16,7 +16,5 @@ data class UpdateProfileRequestDto(
     @SerialName("birthDate")
     val birthDate: String,
     @SerialName("gender")
-    val gender: Int,
-    @SerialName("updateImage")
-    val updateImage: Boolean,
+    val gender: Int
 )

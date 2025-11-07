@@ -13,7 +13,8 @@ data class Dukan(
     val address: String,
     val status: Status,
     val color: Color,
-    val style: Style
+    val style: Style,
+    val isFavorite: Boolean
 ) {
     data class Coordinates(
         val latitude: Double,

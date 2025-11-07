@@ -1,3 +1,4 @@
+
 package net.thechance.mena.identity.presentation.screen.profile
 
 import app.cash.turbine.test
@@ -5,6 +6,7 @@ import assertk.assertThat
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -14,7 +16,9 @@ import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.UnknownException
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -31,14 +35,17 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     private val testDispatcher = StandardTestDispatcher()
 
     private val userRepository: UserRepository = mockk()
+    private val settingsRepository: SettingsRepository = mockk()
     private lateinit var viewModel: ProfileScreenViewModel
 
     @BeforeTest
     override fun setUp() {
         super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
+        coEvery { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
         viewModel = ProfileScreenViewModel(
             userRepository,
+            settingsRepository,
             "",
             testDispatcher
         )
@@ -47,8 +54,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `getUserInfo() updates state on success`() = runTest {
-
-        viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(fakeUser.firstName + " " + fakeUser.lastName, viewModel.state.value.fullName)
@@ -62,7 +68,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         coEvery { userRepository.getUser() } throws UnknownException()
 
-        viewModel = ProfileScreenViewModel(userRepository, "", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(null, viewModel.state.value.errorMessage)
@@ -144,7 +150,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         viewModel.onLanguageClicked()
         viewModel.state.test {
             val updatedState = awaitItem()
-            assertTrue(updatedState.showLanguageDialog)
+            assertTrue(updatedState.languageDialogUiState.isVisible)
         }
     }
 
@@ -178,12 +184,28 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
+    fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
+        val newAppLanguage = AppLanguage.ARABIC
+        coEvery { settingsRepository.applyLanguage(newAppLanguage) } returns Unit
+
+        viewModel.onConfirmLanguageSelection(newAppLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { settingsRepository.applyLanguage(newAppLanguage) }
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.languageDialogUiState.isVisible)
+            assertEquals(newAppLanguage, state.languageDialogUiState.selectedAppLanguage)
+        }
+    }
+
+    @Test
     fun `should update state to hide language dialog when onDismissLanguageDialog`() = runTest {
         viewModel.onDismissLanguageDialog()
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.showLanguageDialog)
+        assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
 
     }
 
@@ -224,4 +246,3 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         gender = Gender.MALE,
     )
 }
-

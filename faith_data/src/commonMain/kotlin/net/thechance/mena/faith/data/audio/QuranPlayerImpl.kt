@@ -6,4 +6,5 @@ expect class QuranPlayerImpl : QuranPlayer {
     override fun playAyah(ayahUrl: String)
     override fun pauseAyah()
     override fun repeatCurrentAyah()
+    override fun onAyahCompleted(listener: () -> Unit)
 }

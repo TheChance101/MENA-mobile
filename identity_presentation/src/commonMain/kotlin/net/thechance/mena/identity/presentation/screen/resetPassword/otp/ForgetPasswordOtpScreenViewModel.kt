@@ -36,6 +36,7 @@ class ForgetPasswordOtpScreenViewModel(
     }
 
     override fun onClickVerify() {
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = { verifyOTPCode() },
             onSuccess = { onOTPVerificationSuccess() },
@@ -51,12 +52,17 @@ class ForgetPasswordOtpScreenViewModel(
     }
 
     private fun onOTPVerificationSuccess() {
+        updateState { copy(isLoading = false, otpValue = "") }
         sendNewEffect(ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword)
-        updateState { copy(otpValue = "") }
     }
 
     private fun onOTPVerificationError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        updateState { 
+            copy(
+                isLoading = false,
+                errorMessage = mapErrorMessage(throwable)
+            ) 
+        }
     }
 
     override fun onChangeOtp(otp: String) {

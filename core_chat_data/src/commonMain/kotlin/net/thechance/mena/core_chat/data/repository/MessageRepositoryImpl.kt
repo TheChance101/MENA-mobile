@@ -324,6 +324,7 @@ class MessageRepositoryImpl(
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
         const val DELETE_CHAT = "/private/deleteChat"
 
+
         fun getChatMessagesEndpoint(chatId: Uuid): String {
             return "/chat/${chatId}/messages"
         }

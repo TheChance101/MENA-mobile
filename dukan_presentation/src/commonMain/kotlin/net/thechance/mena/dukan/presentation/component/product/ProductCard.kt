@@ -35,10 +35,11 @@ fun ProductCard(
     productImageUrl: String,
     productDescription: String,
     productPrice: Double,
-    productAction: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     productCardBackground: Color? = null,
-    onClick: () -> Unit = {},
+    productImageBackground: Color = Theme.colorScheme.background.surfaceLow,
+    productAction: @Composable () -> Unit={},
+    onProductClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -49,13 +50,13 @@ fun ProductCard(
             )
             .height(104.dp)
             .clip(RoundedCornerShape(size = Theme.radius.md))
-            .clickable(onClick = onClick,indication = null, interactionSource = null)
+            .clickable(onClick = onProductClick)
             .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
+                color = productImageBackground,
+                shape = RoundedCornerShape( Theme.radius.md)
             )
         ) {
             AsyncImage(
@@ -112,7 +113,6 @@ private fun ProductCardPreview() {
             productCardBackground = Theme.colorScheme.background.surfaceLow,
             productAction = { EditProductIcon(onClick = {}) },
             modifier = Modifier.padding(Theme.spacing._12),
-            onClick = {}
         )
     }
 }

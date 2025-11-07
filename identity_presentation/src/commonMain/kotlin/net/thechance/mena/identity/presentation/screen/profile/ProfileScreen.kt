@@ -6,6 +6,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import coil3.compose.rememberAsyncImagePainter
-import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
@@ -41,12 +40,13 @@ import net.thechance.mena.identity.presentation.screen.notImplemented.NotImpleme
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
+import net.thechance.mena.identity.presentation.screen.profile.components.LanguageDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
-import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareSheet
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
@@ -75,13 +75,13 @@ class ProfileScreen : BaseScreen<
 
         Scaffold(
             overlays = {
-                dialog(state.showLanguageDialog) {
-                    Dialog(
+                dialog(state.languageDialogUiState.isVisible) {
+                    LanguageDialog(
                         isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissLanguageDialog,
-                        actionButtons = {}
+                        onDismissRequest = listener::onDismissLanguageDialog,
+                        appLanguages = state.languageDialogUiState.options,
+                        onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
+                        currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
                     )
                 }
                 dialog(state.showThemeDialog) {
@@ -95,16 +95,10 @@ class ProfileScreen : BaseScreen<
                 }
                 dialog(state.showShareProfileDialog) {
                     ShareQrCode(
-                        showDialog = it,
-                        isCopied = state.showCopiedMessage,
+                        isVisible = state.showShareProfileDialog,
                         fullName = state.fullName,
-                        urlString = state.shareLinkUrl,
-                        qrCodePainter = rememberQrCodePainter(data = state.shareLinkUrl),
+                        onClickShare = listener::onInviteFriendsClicked,
                         onDismissShareDialog = listener::onDismissShareDialog,
-                        onDismissSnackBar = listener::onDismissCopyLinkSnackBar,
-                        onCopyToClipboard = listener::onCopyToClipboard,
-                        onShareProfile = {},
-                        onDownload = {}
                     )
                 }
             },
@@ -133,38 +127,37 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     item {
-                        Box {
-                            ProfileImage(
-                                profileImageUrl = state.profileImageUrl,
-                                profileImageBitmap = null
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .padding(end = 15.dp, bottom = 3.dp)
-                                    .align(Alignment.BottomEnd)
-                                    .size(10.dp)
-                                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
-                                    .background(Theme.colorScheme.success, CircleShape)
-                            )
-                        }
                         AnimatedVisibility(
                             visible = state.isSuccess,
                             enter = expandVertically(),
                             exit = shrinkVertically(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            ProfileInfoContainer(
-                                fullName = state.fullName,
-                                userName = state.userName,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Box {
+                                    ProfileImage(
+                                        profileImageUrl = state.profileImageUrl,
+                                        profileImageBitmap = null
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(end = 15.dp, bottom = 3.dp)
+                                            .align(Alignment.BottomEnd)
+                                            .size(10.dp)
+                                            .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                            .background(Theme.colorScheme.success, CircleShape)
+                                    )
+                                }
+                                ProfileInfoContainer(
+                                    fullName = state.fullName,
+                                    userName = state.userName,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                                InviteFriendsCard(
+                                    onClick = listener::onInviteFriendsClicked
+                                )
+                            }
                         }
-                    }
-                    item {
-                        InviteFriendsCard(
-                            onCLick = listener::onInviteFriendsClicked
-                        )
                     }
                     item {
                         AccountSettingsSection(
@@ -177,7 +170,8 @@ class ProfileScreen : BaseScreen<
                     item {
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
-                            onThemeClicked = listener::onThemeClicked
+                            onThemeClicked = listener::onThemeClicked,
+                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso
                         )
                     }
                     item {

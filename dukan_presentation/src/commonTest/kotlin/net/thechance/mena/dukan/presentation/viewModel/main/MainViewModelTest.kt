@@ -1,10 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.main
 
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,12 +20,15 @@ import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenEffect
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
@@ -33,6 +38,7 @@ class MainViewModelTest {
     private lateinit var dukanDiscoveryRepository: DukanDiscoveryRepository
     private val testDispatcher = StandardTestDispatcher()
 
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -42,6 +48,12 @@ class MainViewModelTest {
         everySuspend { dukanManagementRepository.getCategories() } returns emptyList()
         mainViewModel =
             MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
+        everySuspend {
+            dukanManagementRepository.updateFavoriteDukanStatus(
+                fakeDukans[0].id.toString()
+            )
+        } returns true
+
     }
 
     @Test
@@ -277,5 +289,65 @@ class MainViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `onFavoriteDukanClicked should toggle isFavorite`() = runTest {
+        val fakeDukan1 = fakeDukans[0]
+
+        everySuspend {
+            dukanDiscoveryRepository.getEditorPicksDukans(
+                any(),
+                any()
+            )
+        } returns PagedResult(
+            items = listOf(fakeDukan1),
+            currentPage = 1,
+            totalItems = 1,
+            pageSize = 10,
+            totalPages = 1
+        )
+
+        mainViewModel =
+            MainViewModel(dukanManagementRepository, dukanDiscoveryRepository, testDispatcher)
+        advanceUntilIdle()
+
+        mainViewModel.onFavoriteDukanClicked(fakeDukan1.id.toString())
+        advanceUntilIdle()
+
+        val updatedDukan1 = mainViewModel.state.value.editorPickDukans.asSnapshot()
+        assertEquals(true, updatedDukan1[0].isFavorite)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    val fakeDukans = listOf(
+        Dukan(
+            id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
+            name = "Tech Hub",
+            imageUrl = "https://example.com/tech.jpg",
+            categories = emptySet(),
+            isFavorite = false,
+            coordinates = Dukan.Coordinates(
+                latitude = 12.34,
+                longitude = 56.78
+            ),
+            address = "123 Tech Street",
+            status = Dukan.Status.PENDING,
+            color = net.thechance.mena.dukan.domain.entity.Color(
+                id = Uuid.random(),
+                hexCode = "#FF5733"
+            ),
+            style = Dukan.Style.WIDE_IMAGE
+        )
+    )
+    @Test
+    fun `onSearchButtonClicked SHOULD emit NavigateToSearchScreen`() = runTest {
+        mainViewModel.onSearchButtonClicked()
+
+        val actualEffect = mainViewModel.effect.first()
+        val expectedEffect = MainScreenEffect.NavigateToSearchScreen
+
+        assertEquals(expectedEffect, actualEffect)
+    }
 
 }

@@ -30,14 +30,12 @@ import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
-import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.fail
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -50,7 +48,7 @@ UserRepositoryImplTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private var userRepositoryImpl = UserRepositoryImpl(
-        client, userDao, testDispatcher
+        client, userDao, testDispatcher,
     )
 
     @Before
@@ -96,7 +94,7 @@ UserRepositoryImplTest {
         runTest {
 
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            userRepositoryImpl = UserRepositoryImpl(client, userDao  )
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -110,7 +108,7 @@ UserRepositoryImplTest {
     fun `getUser() should not call saveUserInfo when remote throws exception`() =
         runTest {
             val client = mockHttpClientError(HttpStatusCode.Unauthorized)
-            userRepositoryImpl = UserRepositoryImpl(client, userDao)
+            userRepositoryImpl = UserRepositoryImpl(client, userDao )
 
             every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
 
@@ -124,7 +122,7 @@ UserRepositoryImplTest {
     fun `getUser() should return empty flow when local database is empty`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao )
 
         coEvery { userDao.upsert(fakeProfileResponse.toDomain().toEntity()) } returns Unit
         every { userDao.getUser() } returns emptyFlow()
@@ -138,7 +136,7 @@ UserRepositoryImplTest {
     fun `getUser() should return object from User`() = runTest {
 
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao )
 
         coEvery { userDao.upsert(any()) } returns Unit
         every { userDao.getUser() } returns flowOf(fakeProfileResponse.toDomain().toEntity())
@@ -155,8 +153,8 @@ UserRepositoryImplTest {
     @Test
     fun `updateUser() should call upsert user when try to update user`() = runTest {
         val client = mockHttpClient(fakeProfileResponse)
-        userRepositoryImpl = UserRepositoryImpl(client, userDao)
-        userRepositoryImpl.updateUser(fakeUser, false)
+        userRepositoryImpl = UserRepositoryImpl(client, userDao )
+        userRepositoryImpl.updateUser(fakeUser)
         coVerify { userDao.upsert(any()) }
     }
 

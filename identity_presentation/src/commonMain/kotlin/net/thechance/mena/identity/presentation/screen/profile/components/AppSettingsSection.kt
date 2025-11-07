@@ -17,12 +17,14 @@ import mena.identity_presentation.generated.resources.profile_theme_light
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.util.mapLanguage
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun AppSettingsSection(
+    currentLanguage: String,
     onLanguageClicked: () -> Unit,
     onThemeClicked: () -> Unit,
 ) {
@@ -40,7 +42,7 @@ fun AppSettingsSection(
             title = stringResource(Res.string.profile_language),
             leadingIcon = painterResource(Res.drawable.ic_language),
             onClick = onLanguageClicked,
-            trailingText = stringResource(Res.string.profile_language_english)
+            trailingText =stringResource(mapLanguage(currentLanguage))
         )
         SettingItem(
             title = stringResource(Res.string.profile_theme),
@@ -57,7 +59,7 @@ fun PreviewAppSettingsSection() {
     MenaTheme {
 
         AppSettingsSection(
-            {}, {}
+            "", {},{}
         )
     }
 }

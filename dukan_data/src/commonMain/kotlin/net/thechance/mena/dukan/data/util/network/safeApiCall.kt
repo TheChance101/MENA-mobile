@@ -84,6 +84,10 @@ internal fun mapErrorResponseToException(errorResponse: ErrorResponse): Exceptio
         DukanErrorCodes.SHELF_NOT_FOUND -> NoSuchItemException("Shelf not found: ${errorResponse.message}")
         DukanErrorCodes.SHELF_NAME_ALREADY_TAKEN -> DuplicateNameException("Shelf name already taken: ${errorResponse.message}")
         DukanErrorCodes.SHELF_NAME_NOT_CHANGED -> DuplicateNameException("Shelf name not changed: ${errorResponse.message}")
+        DukanErrorCodes.CART_NOT_FOUND -> NoSuchItemException("Cart not found: ${errorResponse.message}")
+        DukanErrorCodes.PRODUCT_NOT_IN_CART -> NoSuchItemException("Product not in cart: ${errorResponse.message}")
+        DukanErrorCodes.PRODUCT_ALREADY_IN_CART -> NoSuchItemException("Product already in cart: ${errorResponse.message}")
+
         else -> DukanException(errorResponse.message)
     }
 }

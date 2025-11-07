@@ -31,6 +31,7 @@ fun ExportTypeCard(
     cardTitle: String,
     onCardSelected: () -> Unit,
     modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
     isSelected: Boolean = false,
 ) {
     val targetColor by animateColorAsState(
@@ -44,7 +45,7 @@ fun ExportTypeCard(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.md))
-            .clickable(onClick = onCardSelected)
+            .clickable(enabled = isEnabled, onClick = onCardSelected)
             .fillMaxWidth()
             .background(
                 color = backgroundColor,
@@ -62,6 +63,7 @@ fun ExportTypeCard(
         RadioButton(
             isSelected = isSelected,
             onClick = onCardSelected,
+            isEnabled = isEnabled
         )
         Text(
             text = cardTitle,
