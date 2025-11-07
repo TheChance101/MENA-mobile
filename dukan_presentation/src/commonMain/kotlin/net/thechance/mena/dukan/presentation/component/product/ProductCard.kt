@@ -47,13 +47,11 @@ fun ProductCard(
             .background(
                 color = productCardBackground ?: Color.Transparent,
                 shape = RoundedCornerShape(size = Theme.radius.md)
-            ).height(104.dp)
-            .padding(Theme.spacing._4)
-            .clickable(
-                onClick = onProductClick,
-                indication = null,
-                interactionSource = null
-            ),
+            )
+            .height(104.dp)
+            .clip(RoundedCornerShape(size = Theme.radius.md))
+            .clickable(onClick = onProductClick)
+            .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
