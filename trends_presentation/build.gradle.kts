@@ -1,4 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -105,6 +112,13 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        val trendsStorageAccessSecret = localProperties.getProperty("TRENDS_STORAGE_ACCESS_SECRET", "")
+        buildConfigField("String", "TRENDS_ACCESS_SECRET", "\"$trendsStorageAccessSecret\"")
+    }
+
+    buildFeatures{
+        buildConfig = true
     }
 }
 

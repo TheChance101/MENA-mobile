@@ -47,6 +47,7 @@ import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.di.TrendPresentationEnvironment
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -83,7 +84,7 @@ actual fun VideoPlayer(
 
     val source = remember {
         DefaultHttpDataSource.Factory()
-            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to "ZMWdplQ2Xri26w0a&$2*!$7FJvEC!ChWyJnuLNdjBylUy*aoIJ"))
+            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to TrendPresentationEnvironment.trendStorageAccessSecret))
     }
 
 

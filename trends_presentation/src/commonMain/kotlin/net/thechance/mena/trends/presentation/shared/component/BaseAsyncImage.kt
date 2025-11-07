@@ -12,6 +12,7 @@ import coil3.network.HttpException
 import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
+import net.thechance.mena.trends.presentation.di.TrendPresentationEnvironment
 
 private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
 
@@ -28,7 +29,7 @@ fun BaseAsyncImage(
     val context = LocalPlatformContext.current
 
     val networkHeaders = NetworkHeaders.Builder()
-        .set("X-ACCESS-KEY", "ZMWdplQ2Xri26w0a&$2*!$7FJvEC!ChWyJnuLNdjBylUy*aoIJ")
+        .set("X-ACCESS-KEY", TrendPresentationEnvironment.trendStorageAccessSecret)
         .build()
 
     val imageRequest = remember(url) {
