@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.editProfile.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +29,7 @@ import mena.identity_presentation.generated.resources.options
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.Gender
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -83,7 +86,11 @@ private fun RowScope.ToggleOption(
             .aspectRatio(1f)
             .clip(SquircleShape(Theme.radius.xl))
             .background(animateBackground)
-            .clickable(onClick = { onChange() })
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rippleIndication(),
+                onClick = { onChange() }
+            )
             .padding(10.dp)
             .size(20.dp),
         contentAlignment = Alignment.Center

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,7 +90,7 @@ private fun ProductCardLoaded(
                             product = product
                         )
                     },
-                    onClick = { listener.onProductClicked(product.id) },
+                    onProductClick = { listener.onProductClicked(product.id) },
                 )
             }
         }
@@ -126,8 +125,8 @@ private fun ProductIconAction(
     listener: ShelfDetailsInteractionListener,
     product: ShelfDetailsUiState.ProductUiState
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
-    var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
+    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     when (style) {
         Style.SMALL_IMAGE -> {
@@ -137,6 +136,7 @@ private fun ProductIconAction(
                 dukanColor = Color(state.dukancolor),
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = {
+                    productQuantity += 1
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,
@@ -152,7 +152,7 @@ private fun ProductIconAction(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity
@@ -167,6 +167,7 @@ private fun ProductIconAction(
                 inCartQuantity = productQuantity,
                 dukanColor = Color(state.dukancolor),
                 onAddToCartClick = {
+                    productQuantity += 1
                     toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,
@@ -182,7 +183,7 @@ private fun ProductIconAction(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity

@@ -1,35 +1,30 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
 import androidx.compose.ui.graphics.ImageBitmap
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.image_crop_failed
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.domain.repository.CachedImageRepository
+import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 
 class ImageCropperViewModel(
     private val imageKey: String,
-    private val cachedImageRepository: CachedImageRepository,
+    private val imagesRepository: ImagesRepository,
     private val imageDecoder: ImageDecoder
 ) : BaseScreenModel<ImageCropperScreenState, ImageCropperScreenEffect>(
     initialState = ImageCropperScreenState()
 ), ImageCropperInteractionListener {
 
     init {
-        val imageByteArray = cachedImageRepository.getCachedImage(imageKey)
-        updateState { copy(imageBitmap = imageByteArray?.let{ imageDecoder.decodeImage(it)}) }
+        val imageByteArray = imagesRepository.getCachedImage(imageKey)
+        updateState { copy(imageBitmap = imageByteArray?.let { imageDecoder.decodeImage(it) }) }
     }
+
     override fun onCropImage(imageBitmap: ImageBitmap) {
         tryToExecute(
-            function = {
-                val imageByteArray = imageDecoder.encodeImage(imageBitmap)
-                cachedImageRepository.cacheImage(imageKey, imageByteArray)
-            },
-            onSuccess = {
-                sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
-            },
-            onError = {
-                it.printStackTrace()
-                sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
-            }
+            function = { encodeAndCacheImage(imageBitmap) },
+            onSuccess = ::onCropImageSuccess,
+            onError = ::handleCropImageException
         )
     }
 
@@ -39,5 +34,19 @@ class ImageCropperViewModel(
 
     override fun onNavigateBack() {
         sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfile)
+    }
+
+    private suspend fun encodeAndCacheImage(imageBitmap: ImageBitmap) {
+        val imageByteArray = imageDecoder.encodeImage(imageBitmap)
+        imagesRepository.cacheImage(imageKey, imageByteArray)
+    }
+
+    private fun onCropImageSuccess(response: Unit) {
+        sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfileWithImage(imageKey))
+    }
+
+    private fun handleCropImageException(throwable: Throwable) {
+        throwable.printStackTrace()
+        updateState { copy(errorMessage = Res.string.image_crop_failed) }
     }
 }

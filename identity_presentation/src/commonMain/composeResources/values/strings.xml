@@ -21,7 +21,7 @@
     <string name="validation_code">Validation code</string>
     <string name="error">Error</string>
     <string name="unexpected_error">Something went wrong</string>
-    <string name="is_main_address_error">Can\'t Delete Active Address</string>
+    <string name="is_main_address_error">Can't Delete Active Address</string>
     <string name="success">Success</string>
     <string name="add_location_successfully">Add Location Successfully</string>
     <string name="edit_location_successfully">Edit Location Successfully</string>
@@ -116,7 +116,11 @@
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
     <string name="download_app_title">MENA app-download app</string>
-    <string name="copy_to_clipboard_success">Copied</string>
+    <string name="copy_to_clipboard_success">Copied Successfully</string>
+    <string name="copy_to_clipboard_success_message">Your link is copied successfully</string>
+    <string name="download_success">Downloaded Successfully</string>
+    <string name="download_success_message">Your image is downloaded successfully</string>
+    <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -149,6 +153,7 @@
 
     <string name="upload_another_image">Upload another image</string>
     <string name="image_preview">Image preview</string>
+    <string name="image_crop_failed">Image crop failed</string>
 
     <string name="edit_profile_information">Edit profile information</string>
     <string name="options">Options</string>
@@ -200,7 +205,7 @@
     <string name="error_unauthorized">You don’t have permission to access the app.</string>
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
-
+    <string name="error_incorrect_password">Old password is incorrect</string>
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
@@ -212,12 +217,13 @@
     <string name="error_too_many_requests">Too many requests. Please try again later.</string>
     <string name="error_otp_expired">OTP expired</string>
     <string name="error_phone_number_already_exists">Phone number is already registered.</string>
+    <string name="error_username_already_exists">Username is already taken. Please choose another one.</string>
     <string name="error_no_network">No Internet Connection</string>
     <string name="error_no_internet_connection">No Internet Connection</string>
     <string name="error_failed_to_open_settings">Failed to open settings</string>
     <string name="error_permission_not_granted">Permission not granted</string>
     <string name="error_address_not_found">Address not found</string>
-    <string name="error_cannot_delete_active_address">Can\'t Delete Active Address</string>
+    <string name="error_cannot_delete_active_address">Can't Delete Active Address</string>
     <string name="error_location_is_turned_off">"Location is turned off"</string>
 
     <!-- Account Created Successfully -->
@@ -247,5 +253,6 @@
     <string name="first_name_label">First name</string>
     <string name="last_name_label">Last name</string>
     <string name="username_label">Username</string>
+    <string name="share_message">I’d love for you to join me on the *MENA* app! Install the app, or just reach out to me in the chat here:</string>
 
 </resources>

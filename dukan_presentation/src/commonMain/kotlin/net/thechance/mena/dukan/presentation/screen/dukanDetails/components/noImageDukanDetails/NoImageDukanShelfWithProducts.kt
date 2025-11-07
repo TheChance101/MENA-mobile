@@ -68,11 +68,11 @@ private fun ProductItem(
     dukanColor: Color,
     modifier: Modifier = Modifier
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity>1) }
+    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
     var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
     LaunchedEffect(product) {
-        toggleCartToQuantity = product.inCartQuantity > 1
+        toggleCartToQuantity = product.inCartQuantity > 0
         productQuantity = product.inCartQuantity
     }
 
@@ -83,7 +83,7 @@ private fun ProductItem(
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
         modifier = modifier,
-        onClick = { listener.onProductClicked(product.id) },
+        onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
             NoImageDukanProductAction(
                 showProductQuantity = toggleCartToQuantity,
@@ -91,6 +91,7 @@ private fun ProductItem(
                 dukanColor = dukanColor,
                 onAddToCartClick = {
                     toggleCartToQuantity = true
+                    productQuantity += 1
                     listener.onAddToCartClicked(
                         productId = product.id,
                         productQuantity = productQuantity
@@ -105,7 +106,7 @@ private fun ProductItem(
                 },
                 onMinusClick = {
                     if (productQuantity == 1) toggleCartToQuantity = false
-                    else productQuantity -= 1
+                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
                         productQuantity = productQuantity

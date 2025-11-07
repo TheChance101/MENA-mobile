@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.data.utils
 
 import de.jensklingenberg.ktorfit.Response
 import io.ktor.http.HttpStatusCode
+import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -21,6 +22,8 @@ private suspend fun <T> executeRequest(block: suspend () -> Response<T>): Respon
     return try {
         block()
     } catch (e: IOException) {
+        throw NoInternetException(e.message.orEmpty())
+    } catch (e: UnresolvedAddressException){
         throw NoInternetException(e.message.orEmpty())
     } catch (e: Exception) {
         throw UnknownNetworkException(e.message.orEmpty())

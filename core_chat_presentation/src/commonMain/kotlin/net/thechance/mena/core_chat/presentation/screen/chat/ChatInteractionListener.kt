@@ -15,6 +15,10 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onInputMessageChanged(value: String)
     fun onSendMessageClicked()
     fun onMessageImageClicked(messages: List<MessageUiState>, initialImageIndex: Int)
+    fun onMessageLongClicked(message: MessageUiState)
+    fun onReactionDialogDismissed()
+    fun onReactionSelected(messageId: Uuid, reaction: String)
+
     fun onMessageVoiceClicked(messageId: Uuid)
 
     fun onRecordClicked()

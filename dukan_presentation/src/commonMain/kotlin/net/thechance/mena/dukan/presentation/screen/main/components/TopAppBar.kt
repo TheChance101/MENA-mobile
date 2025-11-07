@@ -2,7 +2,6 @@ package net.thechance.mena.dukan.presentation.screen.main.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,7 +19,10 @@ import mena.dukan_presentation.generated.resources.dukan_button
 import mena.dukan_presentation.generated.resources.dukan_icon
 import mena.dukan_presentation.generated.resources.ic_add_dukan
 import mena.dukan_presentation.generated.resources.ic_dukan
+import mena.dukan_presentation.generated.resources.ic_search
+import mena.dukan_presentation.generated.resources.search_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -33,9 +35,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TopAppBar(
-    modifier: Modifier = Modifier,
-    onDukanIconClicked: () -> Unit,
     dukanButtonStatus: MainScreenUiState.DukanStatusUi,
+    onDukanIconClicked: () -> Unit,
+    onSearchIconClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AppBar(
         title = stringResource(resource = Res.string.dukan),
@@ -46,18 +49,35 @@ fun TopAppBar(
             vertical = Theme.spacing._8
         ),
         trailingContent = {
-            DukanIconButton(
-                dukanButtonStatus = dukanButtonStatus,
-                onDukanIconClicked = onDukanIconClicked,
-            )
+            AppBarOptionContainer(
+                onClick = onSearchIconClicked,
+            ) {
+                SearchIconButton()
+            }
+            AppBarOptionContainer (
+                onClick = onDukanIconClicked,
+            ){
+                DukanIconButton(
+                    dukanButtonStatus = dukanButtonStatus,
+                )
+            }
         }
+    )
+}
+
+@Composable
+private fun SearchIconButton() {
+    Icon(
+        painter = painterResource(resource = Res.drawable.ic_search),
+        contentDescription = stringResource(resource = Res.string.search_icon),
+        modifier = Modifier.size(size = 20.dp),
+        tint = Theme.colorScheme.shadePrimary
     )
 }
 
 @Composable
 private fun DukanIconButton(
     dukanButtonStatus: MainScreenUiState.DukanStatusUi,
-    onDukanIconClicked: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -66,8 +86,7 @@ private fun DukanIconButton(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
-            .clip(shape = RoundedCornerShape(Theme.radius.md))
-            .clickable(onClick = onDukanIconClicked),
+            .clip(shape = RoundedCornerShape(Theme.radius.md)),
         contentAlignment = Alignment.Center
     ) {
         DukanIcon(dukanStatus = dukanButtonStatus)
@@ -130,7 +149,9 @@ private fun TopAppBarPreview() {
         ) {
             TopAppBar(
                 dukanButtonStatus = MainScreenUiState.DukanStatusUi.None,
-                onDukanIconClicked = {})
+                onDukanIconClicked = {},
+                onSearchIconClicked = {}
+            )
         }
     }
 }

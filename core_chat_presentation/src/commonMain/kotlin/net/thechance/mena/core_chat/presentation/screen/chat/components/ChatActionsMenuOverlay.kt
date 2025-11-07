@@ -1,19 +1,15 @@
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
@@ -30,7 +26,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-fun ScaffoldScope.chatActionsMenuOverlay(
+fun ScaffoldScope.chatActionsMenuDialog(
     showChatActionsDialog: Boolean,
     showConfirmDeleteChatDialog: Boolean,
     actionsMenuInteractionListener: ActionsMenuInteractionListener
@@ -105,4 +101,3 @@ private fun ConfirmDeleteChatContent(onConfirmDeleteChatClicked: () -> Unit) {
         )
     }
 }
-

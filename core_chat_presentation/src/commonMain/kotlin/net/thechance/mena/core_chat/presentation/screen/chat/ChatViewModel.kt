@@ -26,18 +26,19 @@ import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_cant_get_messages
 import mena.core_chat_presentation.generated.resources.error_cant_subscribe_to_new_messages
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
+import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
 import mena.core_chat_presentation.generated.resources.error_get_user_info
+import mena.core_chat_presentation.generated.resources.error_invalid_recording
+import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
-import mena.core_chat_presentation.generated.resources.error_recording_failed
-import mena.core_chat_presentation.generated.resources.error_invalid_recording
-import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
@@ -50,9 +51,9 @@ import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
@@ -176,6 +177,7 @@ class ChatViewModel(
         updateState { state ->
             state.copy(
                 chatId = chat.id,
+                chatName = chat.name,
                 chatAvatarUrl = chat.imageUrl.orEmpty(),
                 chatRequesterId = chat.requesterId,
             )
@@ -186,15 +188,19 @@ class ChatViewModel(
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
         observeDeleteChat()
+        observeMessageReactions()
     }
 
     private fun onGetChatError() {
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.error_cant_get_messages,
-            isError = true
-        )
-        emitEffect(ChatScreenEffect.NavigateBack)
+        viewModelScope.launch {
+            delay(100)
+            showSnackBar(
+                titleStringResource = Res.string.error,
+                messageStringResource = Res.string.error_cant_get_messages,
+                isError = true
+            )
+            emitEffect(ChatScreenEffect.NavigateBack)
+        }
     }
 
     override fun onBackClicked() {
@@ -477,6 +483,117 @@ class ChatViewModel(
         )
     }
 
+    override fun onMessageLongClicked(message: MessageUiState) {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = true,
+                messageToReactTo = message
+            )
+        }
+    }
+
+    override fun onReactionDialogDismissed() {
+        updateState {
+            it.copy(
+                isReactionDialogVisible = false,
+                messageToReactTo = null
+            )
+        }
+    }
+
+
+    override fun onReactionSelected(messageId: Uuid, reaction: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        val message = _messages.value.firstOrNull { it.id == messageId } ?: return
+        val hasSameReaction = message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+
+        if (hasSameReaction) {
+            tryToExecute(
+                execute = { messageRepository.removeMessageReaction(messageId, reaction) },
+                onSuccess = { removeReactionFromMessages(messageId, reaction) }
+            )
+        } else {
+            tryToExecute(
+                execute = { messageRepository.addMessageReaction(messageId, reaction) },
+                onSuccess = { updateReactionInMessages(messageId, reaction) }
+            )
+        }
+    }
+    private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val updatedReactions = message.reactions.filterNot {
+                        it.userId == currentUserId && it.emoji == emoji
+                    }
+                    message.copy(reactions = updatedReactions)
+                } else message
+            }
+        }
+    }
+
+
+    private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
+        val currentUserId = state.value.chatRequesterId ?: return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == messageId) {
+                    val newReaction = MessageReaction(emoji, currentUserId, messageId)
+                    val updatedReactions = message.reactions
+                        .filter { it.userId != currentUserId }
+                        .toMutableList()
+                        .apply { add(newReaction) }
+
+                    message.copy(reactions = updatedReactions)
+                } else {
+                    message
+                }
+            }
+        }
+    }
+    private fun observeMessageReactions() {
+        tryToCollect(
+            collect = { messageRepository.observeMessageReactions() },
+            onCollect = ::onCollectAddReaction
+        )
+
+        tryToCollect(
+            collect = { messageRepository.observeRemovedMessageReactions() },
+            onCollect = ::onCollectRemoveReaction
+        )
+    }
+
+
+    private suspend fun onCollectAddReaction(reaction: MessageReaction?) {
+        if (reaction == null) return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == reaction.messageId) {
+                    val filtered = message.reactions.filter { it.userId != reaction.userId }
+                        .toMutableList()
+                    filtered.add(reaction)
+                    message.copy(reactions = filtered)
+                } else message
+            }
+        }
+    }
+
+    private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
+        if (reaction == null) return
+        safeUpdateMessages { messages ->
+            messages.map { message ->
+                if (message.id == reaction.messageId) {
+                    val filtered = message.reactions.filterNot {
+                        it.userId == reaction.userId && it.emoji == reaction.emoji
+                    }
+                    message.copy(reactions = filtered)
+                } else message
+            }
+        }
+    }
+
+
     override fun onMessageVoiceClicked(messageId: Uuid) {
         val voiceMessageItem = state.value.chatListItems.find {
             it is ChatListItem.VoiceMessage && it.data.id == messageId
@@ -612,9 +729,7 @@ class ChatViewModel(
     private fun startRecording() {
         tryToExecute(
             execute = { audioRecordRepository.startRecording() },
-            onSuccess = {
-                updateState { it.copy(isRecordingVoice = true) }
-            },
+            onSuccess = { updateState { it.copy(isRecordingVoice = true) } },
             onError = { onRecordingStartFailed() }
         )
     }

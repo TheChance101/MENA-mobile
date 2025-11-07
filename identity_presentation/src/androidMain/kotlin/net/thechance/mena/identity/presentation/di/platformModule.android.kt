@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.LocationManager
 import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.presentation.util.AppLocalizer
+import net.thechance.mena.identity.presentation.util.GalleryPermission
 import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
@@ -14,10 +15,6 @@ import org.koin.dsl.module
 internal actual fun platformModule(): Module = module {
     single { get<Context>().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
-    single<PermissionController>(named(LOCATION_FOREGROUND)) {
-        LocationForegroundPermission(context = get())
-    }
-
     single<LocalizationService> { LocalizationService(settingsRepository = get()) }
     single<AppLocalizer> (
         createdAtStart = true
@@ -27,4 +24,12 @@ internal actual fun platformModule(): Module = module {
     ) }
 
     single { PermissionManager() }
+
+    single<PermissionController>(named(LOCATION_FOREGROUND)) {
+        LocationForegroundPermission(context = get(), permissionManager = get())
+    }
+
+    single<PermissionController>(named(GALLERY_IMAGES)) {
+        GalleryPermission(context = get(), permissionManager = get())
+    }
 }

@@ -1,5 +1,3 @@
-import org.gradle.internal.jvm.Jvm
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -25,6 +23,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
@@ -62,7 +61,7 @@ kover.reports {
     }
 
     filters.excludes {
-        packages("*.di", "*.dto", "*.utils", "*.database")
+        packages("*.di", "*.dto", "*.utils", "*.database", "*.setting", "*.storage", "*.memory")
     }
 }
 

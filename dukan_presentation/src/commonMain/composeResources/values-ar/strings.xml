@@ -103,7 +103,6 @@
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
     <string name="error_description_length">يجب أن يكون الوصف بين 100 و3000 حرفًا.</string>
-    <string name="all">الكل</string>
     <string name="best_selling">الأكثر مبيعًا</string>
     <string name="shopping_basket_icon">أيقونة سلة التسوق</string>
     <string name="favorite_icon">أيقونة المفضلة</string>
@@ -142,6 +141,11 @@
     <string name="edit_shelf_successfully">تم تعديل الرف بنجاح.</string>
     <string name="error_same_name_of_shelf">لا يمكنك استخدام نفس اسم الرف الحالي.</string>
     <string name="add_to_cart">الأضافه الي السله</string>
+    <string name="all">الجميع</string>
+    <string name="cart">عربة</string>
+    <string name="go_to_checkout">اذهب إلى الدفع</string>
+    <string name="sub_total_price">السعر الإجمالي الفرعي</string>
+    <string name="from_dukan">من دكان</string>
     <string name="product_thumbnail">صورة مصغرة للمنتج</string>
     <string name="dukan_management_general_error">إدارة الدكّان غير متاحة حاليًا، يرجى المحاولة لاحقًا.</string>
     <string name="dukan_managment_loading">يرجى الانتظار حتى يكتمل التحميل...</string>
@@ -159,4 +163,15 @@
     <string name="delete_product_description">هل أنت متأكد أنك تريد حذف هذا المنتج؟</string>
     <string name="silver_tier_icon">أيقونة الفئة الفضية</string>
     <string name="desc_edit_address_icon">ايقونة تعديل العنوان</string>
+    <string name="added_to_favorites">تمت الإضافة إلى المفضلة</string>
+    <string name="removed_from_favorites">تمت الإزالة من المفضلة</string>
+    <string name="error_updating_favorites">تعذر تحديث المفضلة</string>
+    <string name="search_in_dukans">ابحث في الدكاكين...</string>
+    <string name="search_icon">أيقونة البحث</string>
+    <string name="start_search">ابدأ البحث!</string>
+    <string name="start_search_body">أدخل كلمة من دكان أو منتج محدد لعرضه.</string>
+    <string name="dukans">الدكاكين</string>
+    <string name="no_result_found">لم يتم العثور على نتائج!</string>
+    <string name="no_result_found_body">حاول مرة أخرى بكلمة بحث أخرى.</string>
+    <string name="search_general_error">حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى لاحقًا.</string>
 </resources>

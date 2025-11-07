@@ -26,15 +26,19 @@ class LoginViewModel(
 ) : BaseViewModel<LoginScreenState, LoginEffect>(LoginScreenState()),
     LoginInteractionListener {
     override fun onUsernameChanged(username: String) {
-        updateState {
-            it.copy(
-                username = username.filter { char -> char.isLetterOrDigit() || char == '_' }
-            )
-        }
+        username
+            .filter { char -> char.isLetterOrDigit() || char == '_' }
+            .takeIf { it.length < 50 }
+            ?.let { newUsername ->
+                updateState { it.copy(username = newUsername) }
+            }
     }
 
     override fun onPasswordChanged(password: String) {
-        updateState { it.copy(password = password) }
+        password.takeIf { it.length < 50 }
+            ?.let { newPassword ->
+                updateState { it.copy(password = newPassword) }
+            }
     }
 
     override fun onPasswordVisibilityToggled() {
@@ -52,7 +56,7 @@ class LoginViewModel(
         )
     }
 
-    private suspend fun onLoginClicked(){
+    private suspend fun onLoginClicked() {
         loginUseCase.login(userName = currentState.username, password = currentState.password)
     }
 
@@ -61,6 +65,7 @@ class LoginViewModel(
     }
 
     private suspend fun onLoginError(errorState: ErrorState) {
+        updateState { it.copy(isLoginButtonLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
