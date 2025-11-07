@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,6 +28,7 @@ import kotlin.uuid.Uuid
 
 class SearchViewModelTest {
     private val searchRepository: SearchRepository = mock(MockMode.autofill)
+    private val dukanManagementRepository: DukanManagementRepository = mock(MockMode.autofill)
     private lateinit var searchViewModel: SearchViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -35,6 +37,7 @@ class SearchViewModelTest {
         Dispatchers.setMain(testDispatcher)
         searchViewModel = SearchViewModel(
             searchRepository = searchRepository,
+            dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
     }
@@ -180,6 +183,34 @@ class SearchViewModelTest {
     }
 
     @Test
+    fun `onDukanFavoriteToggled should update dukanPagingFlow and not show snackbar on success`() = runTest(testDispatcher) {
+        val dukanId = Uuid.random()
+        val query = "Defacto"
+
+        everySuspend {
+            searchRepository.findDukansByQuery(
+                any(),
+                any(),
+                any()
+            )
+        } returns fakeDefactoDukanPaged
+
+        everySuspend {
+            dukanManagementRepository.updateFavoriteDukanStatus(any())
+        } returns true
+
+        val viewModel = createSearchViewModel()
+        viewModel.onSearchChanged(query)
+        advanceUntilIdle()
+
+        viewModel.onDukanFavoriteToggled(dukanId = dukanId, isFavorite = true)
+        advanceUntilIdle()
+
+        assertNotEquals(emptyFlow(), viewModel.state.value.dukanPagingFlow)
+        assertNull(viewModel.state.value.snackBarUiState)
+    }
+
+    @Test
     fun `onBackClicked should emit NavigateBack effect`() = runTest(testDispatcher) {
         searchViewModel.onBackClicked()
         val expectedEffect = SearchEffect.NavigateBack
@@ -239,6 +270,7 @@ class SearchViewModelTest {
     private fun createSearchViewModel(): SearchViewModel {
         return SearchViewModel(
             searchRepository = searchRepository,
+            dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
     }

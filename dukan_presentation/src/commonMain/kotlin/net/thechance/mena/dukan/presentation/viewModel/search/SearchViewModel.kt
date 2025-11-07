@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.search_general_error
 import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.DukanPreview
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -25,6 +27,7 @@ import kotlin.uuid.Uuid
 
 class SearchViewModel(
     private val searchRepository: SearchRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     defaultDispatcher: CoroutineDispatcher,
 ) : BaseViewModel<SearchUiState, SearchEffect>(
     initialState = SearchUiState(),
@@ -77,22 +80,16 @@ class SearchViewModel(
     }
 
     override fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite: Boolean) {
-
-        // Todo ( add to dukan favorites in repository of favorites user Story )
-
-        val dukansState = state.value.dukanPagingFlow
-        val favoriteMappedFlowDukans = dukansState.map { dukansPagingData ->
-            dukansPagingData.map { dukan ->
-                if (dukan == dukanId) dukan.copy(isFavorite = !isFavorite)
-                else dukan
-            }
-        }.cachedIn(viewModelScope)
-
-        updateState {
-            copy(
-                dukanPagingFlow = favoriteMappedFlowDukans
-            )
-        }
+        tryToExecute(
+            block = { onDukanFavoriteToggleBlock(dukanId) },
+            onSuccess = { isFavorite ->
+                onDukanFavoriteToggleSuccess(
+                    isFavorite= isFavorite,
+                    dukanId = dukanId
+                )
+            },
+            onError = { onDukanFavoriteToggleError(it as Exception) }
+        )
     }
 
     override fun onProductClicked(productId: Uuid) {
@@ -162,7 +159,7 @@ class SearchViewModel(
     private fun onGetDukansByQueryError(exception: Exception) {
         when (exception) {
             is NoInternetException -> handleNoInternetException()
-            else ->  handleGeneralSearchException()
+            else -> handleGeneralSearchException()
         }
     }
 
@@ -199,14 +196,51 @@ class SearchViewModel(
     private fun onGetProductsByQueryError(exception: Exception) {
         when (exception) {
             is NoInternetException -> handleNoInternetException()
-            else ->  handleGeneralSearchException()
+            else -> handleGeneralSearchException()
+        }
+    }
+
+    private suspend fun onDukanFavoriteToggleBlock(dukanId: Uuid): Boolean {
+        return dukanManagementRepository.updateFavoriteDukanStatus(dukanId = dukanId.toString())
+    }
+
+    private fun onDukanFavoriteToggleSuccess(isFavorite: Boolean,dukanId: Uuid) {
+        val dukanPagingFlow = state.value.dukanPagingFlow
+        val favoriteMappedFlowDukans = dukanPagingFlow.map { dukansPagingData ->
+            dukansPagingData.map { dukan ->
+                if (dukan == dukanId) dukan.copy(isFavorite = isFavorite)
+                else dukan
+            }
+        }.cachedIn(viewModelScope)
+
+        updateState {
+            copy(
+                dukanPagingFlow = favoriteMappedFlowDukans
+            )
+        }
+    }
+
+    private fun onDukanFavoriteToggleError(exception: Exception) {
+        when(exception){
+            is NoInternetException -> handleNoInternetException()
+            else -> handleGeneralFavoriteDukanException()
+        }
+    }
+
+    private fun handleGeneralFavoriteDukanException() {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = Res.string.error_updating_favorites,
+                    snackBarType = SnackBarType.ERROR
+                )
+            )
         }
     }
 
     private fun handleNoInternetException() {
         updateState {
             copy(
-                searchContentState = SearchUiState.SearchContentState.Empty,
                 snackBarUiState = SnackBarUiState(
                     message = Res.string.no_internet_message,
                     snackBarType = SnackBarType.ERROR
@@ -218,7 +252,6 @@ class SearchViewModel(
     private fun handleGeneralSearchException() {
         updateState {
             copy(
-                searchContentState = SearchUiState.SearchContentState.Empty,
                 snackBarUiState = SnackBarUiState(
                     message = Res.string.search_general_error,
                     snackBarType = SnackBarType.ERROR
