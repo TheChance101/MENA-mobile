@@ -6,6 +6,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,10 +50,10 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-    ProfileScreenViewModel,
-    ProfileScreenUIState,
-    ProfileScreenUIEffect,
-    ProfileScreenInteractionListener>() {
+        ProfileScreenViewModel,
+        ProfileScreenUIState,
+        ProfileScreenUIEffect,
+        ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -125,38 +126,37 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     item {
-                        Box {
-                            ProfileImage(
-                                profileImageUrl = state.profileImageUrl,
-                                profileImageBitmap = null
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .padding(end = 15.dp, bottom = 3.dp)
-                                    .align(Alignment.BottomEnd)
-                                    .size(10.dp)
-                                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
-                                    .background(Theme.colorScheme.success, CircleShape)
-                            )
-                        }
                         AnimatedVisibility(
                             visible = state.isSuccess,
                             enter = expandVertically(),
                             exit = shrinkVertically(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            ProfileInfoContainer(
-                                fullName = state.fullName,
-                                userName = state.userName,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Box {
+                                    ProfileImage(
+                                        profileImageUrl = state.profileImageUrl,
+                                        profileImageBitmap = null
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(end = 15.dp, bottom = 3.dp)
+                                            .align(Alignment.BottomEnd)
+                                            .size(10.dp)
+                                            .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                            .background(Theme.colorScheme.success, CircleShape)
+                                    )
+                                }
+                                ProfileInfoContainer(
+                                    fullName = state.fullName,
+                                    userName = state.userName,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                                InviteFriendsCard(
+                                    onCLick = listener::onInviteFriendsClicked
+                                )
+                            }
                         }
-                    }
-                    item {
-                        InviteFriendsCard(
-                            onCLick = listener::onInviteFriendsClicked
-                        )
                     }
                     item {
                         AccountSettingsSection(

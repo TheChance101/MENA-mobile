@@ -9,6 +9,8 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel.Companion.SHARE_URL
+import kotlin.uuid.ExperimentalUuidApi
 
 class ProfileScreenViewModel(
     private val userRepository: UserRepository,
@@ -21,7 +23,7 @@ class ProfileScreenViewModel(
         ProfileScreenUIState(
             languageDialogUiState = LanguageDialogUiState(
                 selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }
-                                      ?: AppLanguage.ENGLISH,
+                    ?: AppLanguage.ENGLISH,
             ),
         )
     ),
@@ -30,15 +32,6 @@ class ProfileScreenViewModel(
     init {
         getUserInfo()
         setAppVersion()
-        setInviteUrlLinks()
-    }
-
-    private fun setInviteUrlLinks() {
-        updateState {
-            copy(
-                inviteLinkUrl = "https://MENA_app.com"
-            )
-        }
     }
 
     private fun setAppVersion() {
@@ -54,13 +47,15 @@ class ProfileScreenViewModel(
         )
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun onUserInfoSuccess(user: User) {
         updateState {
             copy(
                 userName = user.username,
                 fullName = "${user.firstName} ${user.lastName}",
                 profileImageUrl = user.profileImageUrl.orEmpty(),
-                isSuccess = true
+                isSuccess = true,
+                inviteLinkUrl = "$SHARE_URL${user.id}"
             )
         }
     }
