@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,14 +26,16 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DeliveryAddressCard(
+    state: CheckoutUiState,
     onChangeAddressClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -55,8 +56,9 @@ fun DeliveryAddressCard(
         ) {
             DeliveryAddressIcon()
             DeliveryAddressDetails(
-                title = "Home",
-                address = "Karrada, Baghdad 123 St."
+                modifier = Modifier.weight(1f),
+                title = state.deliveryAddress.label,
+                address = state.deliveryAddress.street
             )
             EditAddressIcon()
         }
@@ -80,11 +82,14 @@ private fun DeliveryAddressIcon() {
 }
 
 @Composable
-private fun RowScope.DeliveryAddressDetails(title: String, address: String) {
+private fun DeliveryAddressDetails(
+    title: String,
+    address: String,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
-            .padding(start = Theme.spacing._8)
-            .weight(1f),
+        modifier = modifier
+            .padding(start = Theme.spacing._8),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -113,6 +118,6 @@ private fun EditAddressIcon() {
 @Composable
 private fun DeliveryAddressCardPreview() {
     MenaTheme {
-        DeliveryAddressCard({})
+        DeliveryAddressCard(CheckoutUiState(), {})
     }
 }

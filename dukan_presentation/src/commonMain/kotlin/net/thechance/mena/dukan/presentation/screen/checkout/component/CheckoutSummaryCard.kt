@@ -39,13 +39,13 @@ import mena.dukan_presentation.generated.resources.summary_details
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.viewModel.checkout.CartItem
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CheckoutSummaryCard(
-    products: LazyPagingItems<CartItem>,
+    products: LazyPagingItems<CheckoutUiState.CartItem>,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -79,7 +79,7 @@ fun CheckoutSummaryCard(
 }
 
 @Composable
-private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
+private fun SummaryItemsList(products: LazyPagingItems<CheckoutUiState.CartItem>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -152,7 +152,7 @@ private fun SummaryBottomSection() {
 
 @Composable
 private fun CheckoutProductItem(
-    cartItem: CartItem,
+    cartItem: CheckoutUiState.CartItem,
     modifier: Modifier = Modifier
 ) {
     Row(
