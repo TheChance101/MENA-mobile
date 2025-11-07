@@ -125,22 +125,33 @@ class MessageRepositoryImpl(
             val now = Clock.System.now()
             val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString()) ?: return
 
-            val response = tryNetworkCall<List<MessageDto>>(
-                bodyType = typeInfo<List<MessageDto>>()
-            ) {
-                client.get(getMessagesUpdatesEndPoint(chatId)) {
-                    parameter(UPDATED_AFTER_PARAMETER, Instant.parse(lastSyncTime))
+            var page = 0
+            var isLastPage = false
+
+            while (!isLastPage) {
+
+                val response = tryNetworkCall<PagedDataDto<MessageDto>>(
+                    bodyType = typeInfo<PagedDataDto<MessageDto>>()
+                ) {
+                    client.get(getMessagesUpdatesEndPoint(chatId)) {
+                        parameter(LAST_UPDATE_TIME_PARAMETER, Instant.parse(lastSyncTime))
+                        parameter(PAGE_NUMBER_PARAMETER, page)
+                        parameter(PAGE_SIZE_PARAMETER, DEFAULT_PAGE_SIZE)
+                    }
                 }
-            }
 
-            if (response != null) {
-                chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
+                if (response != null && !response.data.isNullOrEmpty()) {
+                    chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
 
-                cachedMessageDao.insertAllMessages(
-                    response.toListOfMessages().toCachedMessageLocalDto()
-                )
+                    cachedMessageDao.insertAllMessages(
+                        response.data.toListOfMessages().toCachedMessageLocalDto()
+                    )
 
-                messagesFlow.emitAll(response.mapNotNull(MessageDto::toDomain).asFlow())
+                    messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
+                }
+
+                isLastPage = response?.toPagedListOfMessages()?.isLastPage == true
+                page++
             }
         } catch (e: Throwable) {
             println("Sync Messages After Last Update Error : ${e.printStackTrace()}")
@@ -314,7 +325,7 @@ class MessageRepositoryImpl(
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
-        const val UPDATED_AFTER_PARAMETER = "updatedAfter"
+        const val LAST_UPDATE_TIME_PARAMETER = "lastUpdateTime"
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
@@ -325,11 +336,12 @@ class MessageRepositoryImpl(
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
         const val DELETE_CHAT = "/private/deleteChat"
 
+        const val DEFAULT_PAGE_SIZE = 100
 
         fun getChatMessagesEndpoint(chatId: Uuid): String {
             return "/chat/${chatId}/messages"
         }
 
-        fun getMessagesUpdatesEndPoint(chatId: Uuid): String = "/chat/${chatId}/messages/updates"
+        fun getMessagesUpdatesEndPoint(chatId: Uuid): String = "/chat/${chatId}/messages/latest"
     }
 }

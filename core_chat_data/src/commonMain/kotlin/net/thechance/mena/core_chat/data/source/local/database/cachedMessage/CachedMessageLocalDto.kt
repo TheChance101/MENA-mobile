@@ -19,6 +19,8 @@ data class CachedMessageLocalDto(
     val text: String? = null,
     @ColumnInfo(name = "image")
     val imageUrl: String? = null,
+    @ColumnInfo(name = "audio")
+    val audioUrl: String? = null,
     @ColumnInfo(name = "reactions")
     val reactions: List<MessageReactionLocalDto>,
     @ColumnInfo(name = "timestamp")

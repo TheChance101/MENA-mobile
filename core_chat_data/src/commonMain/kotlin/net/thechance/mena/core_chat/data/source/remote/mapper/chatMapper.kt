@@ -90,8 +90,11 @@ fun CachedChatLocalDto.toDomain(): Chat? {
 fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
-    val data = if (content is MessageContent.Image) content.data else null
-    val image = if (data is ImageData.ImageByteArray) data.byteArray else null
+    val imageData = if (content is MessageContent.Image) content.data else null
+    val image = if (imageData is ImageData.ImageByteArray) imageData.byteArray else null
+    val audioData = if (content is MessageContent.Audio) content.data else null
+    val audio = if (audioData is AudioData.AudioByteArray) audioData.byteArray else null
+
 
 
     return PendingMessageLocalDto(
@@ -99,6 +102,7 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
         senderId = this.senderId.toString(),
         text = text,
         image = image,
+        audio = audio,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status
@@ -110,15 +114,19 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
 fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
-    val data = if (content is MessageContent.Image) content.data else null
-    val image = if (data is ImageData.ImageUrl) data.url else null
+    val imageData = if (content is MessageContent.Image) content.data else null
+    val imageUrl = if (imageData is ImageData.ImageUrl) imageData.url else null
+    val audioData = if (content is MessageContent.Audio) content.data else null
+    val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
+
 
 
     return CachedMessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
         text = text,
-        imageUrl = image,
+        imageUrl = imageUrl,
+        audioUrl = audioUrl,
         reactions = reactions.toLocalDto(),
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
@@ -157,6 +165,8 @@ fun CachedMessageLocalDto.toDomain(): Message {
         MessageContent.Text(text)
     } else if (imageUrl != null) {
         MessageContent.Image(ImageData.ImageUrl(imageUrl))
+    } else if (audioUrl != null) {
+        MessageContent.Audio(AudioData.AudioUrl(audioUrl))
     } else {
         error("Invalid message content")
     }
@@ -178,6 +188,8 @@ fun PendingMessageLocalDto.toDomain(): Message {
         MessageContent.Text(text)
     } else if (image != null) {
         MessageContent.Image(ImageData.ImageByteArray(image))
+    } else if (audio != null) {
+        MessageContent.Audio(AudioData.AudioByteArray(audio))
     } else {
         error("Invalid message content")
     }
