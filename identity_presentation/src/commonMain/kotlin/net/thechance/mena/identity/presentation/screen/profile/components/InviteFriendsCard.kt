@@ -61,8 +61,7 @@ fun InviteFriendsCard(onClick: () -> Unit) {
                 .clip(SquircleShape(Theme.radius.md))
                 .background(Theme.colorScheme.background.surfaceLow.copy(alpha = .12f))
                 .padding(Theme.spacing._12)
-                .size(Theme.spacing._24)
-            ,
+                .size(Theme.spacing._24),
             painter = painterResource(Res.drawable.ic_invite_friends),
             contentDescription = stringResource(Res.string.profile_invite_friends_icon_content_description),
         )

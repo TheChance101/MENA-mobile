@@ -69,7 +69,8 @@ fun BasicTextField(
     focusRequester: FocusRequester = FocusRequester(),
     onFocusChanged: (Boolean) -> Unit = {},
     onTrailingIconClick: (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    maxCharacters: Int = Int.MAX_VALUE,
 ) {
     Column(modifier) {
         title?.let {
@@ -92,7 +93,10 @@ fun BasicTextField(
 
             BasicTextField(
                 value = value,
-                onValueChange = onValueChanged,
+                onValueChange = {
+                    if (it.length <= maxCharacters)
+                        onValueChanged(it)
+                },
                 enabled = enabled,
                 readOnly = readOnly,
                 minLines = minLines,
@@ -251,11 +255,11 @@ private fun PreviewTextField() {
             value = value,
             hint = "hint",
             onValueChanged = onValueChanged,
+            modifier = Modifier.fillMaxWidth(),
             leadingIcon = painterResource(Res.drawable.ic_user),
             trailingIcon = painterResource(Res.drawable.silver_tc),
             isError = true,
             onTrailingIconClick = {},
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.profile_title
+import mena.identity_presentation.generated.resources.share_message
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
@@ -45,8 +46,8 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
-import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
-import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareSheet
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
@@ -68,7 +69,7 @@ class ProfileScreen : BaseScreen<
         AnimatedVisibility(state.showShareBottomSheet) {
             ShareSheet(
                 title = stringResource(Res.string.download_app_title),
-                url = state.inviteLinkUrl,
+                message = stringResource(Res.string.share_message) + state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }
@@ -95,16 +96,10 @@ class ProfileScreen : BaseScreen<
                 }
                 dialog(state.showShareProfileDialog) {
                     ShareQrCode(
-                        showDialog = it,
-                        isCopied = state.showCopiedMessage,
+                        isVisible = state.showShareProfileDialog,
                         fullName = state.fullName,
-                        urlString = state.shareLinkUrl,
-                        qrCodePainter = rememberQrCodePainter(data = state.shareLinkUrl),
+                        onClickShare = listener::onInviteFriendsClicked,
                         onDismissShareDialog = listener::onDismissShareDialog,
-                        onDismissSnackBar = listener::onDismissCopyLinkSnackBar,
-                        onCopyToClipboard = listener::onCopyToClipboard,
-                        onShareProfile = {},
-                        onDownload = {}
                     )
                 }
             },
@@ -133,38 +128,37 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                     item {
-                        Box {
-                            ProfileImage(
-                                profileImageUrl = state.profileImageUrl,
-                                profileImageBitmap = null
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .padding(end = 15.dp, bottom = 3.dp)
-                                    .align(Alignment.BottomEnd)
-                                    .size(10.dp)
-                                    .border(1.dp, Theme.colorScheme.stroke, CircleShape)
-                                    .background(Theme.colorScheme.success, CircleShape)
-                            )
-                        }
                         AnimatedVisibility(
                             visible = state.isSuccess,
                             enter = expandVertically(),
                             exit = shrinkVertically(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            ProfileInfoContainer(
-                                fullName = state.fullName,
-                                userName = state.userName,
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Box {
+                                    ProfileImage(
+                                        profileImageUrl = state.profileImageUrl,
+                                        profileImageBitmap = null
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(end = 15.dp, bottom = 3.dp)
+                                            .align(Alignment.BottomEnd)
+                                            .size(10.dp)
+                                            .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                            .background(Theme.colorScheme.success, CircleShape)
+                                    )
+                                }
+                                ProfileInfoContainer(
+                                    fullName = state.fullName,
+                                    userName = state.userName,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                                InviteFriendsCard(
+                                    onClick = listener::onInviteFriendsClicked
+                                )
+                            }
                         }
-                    }
-                    item {
-                        InviteFriendsCard(
-                            onClick = listener::onInviteFriendsClicked
-                        )
                     }
                     item {
                         AccountSettingsSection(

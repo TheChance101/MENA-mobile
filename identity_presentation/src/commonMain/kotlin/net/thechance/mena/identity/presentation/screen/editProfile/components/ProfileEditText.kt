@@ -31,6 +31,7 @@ fun ProfileEditText(
             onValueChanged = onValueChange,
             leadingIcon = painterResource(Res.drawable.user_rounded),
             visualTransformation = visualTransformation,
+            maxCharacters = 32
         )
     }
 }

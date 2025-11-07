@@ -21,6 +21,7 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
+import net.thechance.mena.dukan.presentation.util.formatPrice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -42,7 +43,7 @@ fun DukanCartBottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
                 modifier = Modifier.weight(1f)
             )
             PriceWithIcon(
-                price = totalPrice.toString().replace('.', ','),
+                price = totalPrice.toString().formatPrice()
             )
         }
         PrimaryButton(

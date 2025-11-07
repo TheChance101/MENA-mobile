@@ -51,7 +51,9 @@ internal fun LabeledInputPassword(
             else PasswordVisualTransformation(),
             onTrailingIconClick = onTogglePasswordVisibility::invoke,
             isError = errorMessage != null,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            maxCharacters = 32
+
         )
     }
 }

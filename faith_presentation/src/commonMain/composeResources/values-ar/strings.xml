@@ -72,7 +72,9 @@
     <string name="error_longitude">يجب أن يكون خط الطول بين -180 و 180 درجة.</string>
     <string name="search_in_surah_hint">...ابحث في %1$s</string>
     <string name="start_searching_title">ابدأ البحث!</string>
-    <string name="start_searching_subtitle">أدخل كلمة من آية معينة لعرضها.</string>
+    <string name="search_reciter">ابحث عن القارئ</string>
+    <string name="start_searching_subtitle_for_ayah">أدخل كلمة من آية معينة لعرضها.</string>
+    <string name="start_searching_subtitle_for_reciter">أدخل اسم قارئ معين لعرضه.</string>
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>
@@ -116,6 +118,12 @@
     <string name="reciters">القراء</string>
     <string name="search_results">نتائج البحث</string>
     <string name="no_nearby_mosques_found">لم يتم العثور على أي مساجد بالجوار، ابحث بمكان آخر</string>
+
+    <string name="reset">إعادة تعيين</string>
+    <string name="upload_another_image">تحميل صورة أخرى</string>
+    <string name="save">حفظ</string>
+
+
     <!--  Downloaded sur  -->
     <string name="downloaded_sur">السور المحمله</string>
     <string name="reciter_list">قائمة القرآء</string>
@@ -124,4 +132,7 @@
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
     <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
     <string name="listen">استماع</string>
+
+    <string name="kilometer_unit">كم</string>
+
 </resources>

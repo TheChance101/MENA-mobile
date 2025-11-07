@@ -2,20 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>app</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>net.the-chance.mena-dev</string>
+		</dict>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-    <key>BASE_URL</key>
-    <string>$(BASE_URL)</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(CFBundleShortVersionString)</string>
-    <key>NSContactsUsageDescription</key>
-    <string>We need access to your contacts.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Enable location access to use the GPS button and get your current location.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photo library.</string>
+	<key>BASE_URL</key>
+	<string>$(BASE_URL)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(CFBundleShortVersionString)</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We need access to your contacts.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Enable location access to use the GPS button and get your current location.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need access to your camera.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>We need access to your microphone to record audio messages.</string>
     <key>UIFileSharingEnabled</key>

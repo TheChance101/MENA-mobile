@@ -1,5 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -133,7 +135,7 @@ private fun HomeScreenContent(
                         onClickLike = listener::onClickLike,
                         onClickReel = listener::onClickReel,
                         onExpandDescription = listener::onClickExpandDescription,
-                        listState = listState,
+                        listState = listState
                     )
                 }
             )
@@ -174,11 +176,9 @@ private fun ReelsListSection(
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16),
+        modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8,horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(

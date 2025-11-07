@@ -116,7 +116,10 @@
     <string name="link_icon_content_description">Link Icon</string>
     <string name="download_icon_content_description">Download Icon</string>
     <string name="download_app_title">MENA app-download app</string>
-    <string name="copy_to_clipboard_success">Copied</string>
+    <string name="copy_to_clipboard_success">Copied Successfully</string>
+    <string name="copy_to_clipboard_success_message">Your link is copied successfully</string>
+    <string name="download_success">Downloaded Successfully</string>
+    <string name="download_success_message">Your image is downloaded successfully</string>
     <string name="cant_save_qr_code">Can't save QR code"</string>
 
     <string name="enable_location_title">Enable location</string>
@@ -250,5 +253,6 @@
     <string name="first_name_label">First name</string>
     <string name="last_name_label">Last name</string>
     <string name="username_label">Username</string>
+    <string name="share_message">I’d love for you to join me on the *MENA* app! Install the app, or just reach out to me in the chat here:</string>
 
 </resources>
