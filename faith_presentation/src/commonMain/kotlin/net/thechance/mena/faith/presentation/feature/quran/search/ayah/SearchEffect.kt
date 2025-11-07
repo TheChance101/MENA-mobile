@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
 sealed interface SearchEffect {
     data class NavigateBack(val ayahNumber: Int? = null) : SearchEffect

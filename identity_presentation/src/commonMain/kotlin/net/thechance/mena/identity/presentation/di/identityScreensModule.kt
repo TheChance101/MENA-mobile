@@ -107,7 +107,8 @@ val identityScreensModule = module {
     factory {
         PickLocationScreenViewModel(
             addressesRepository = get(),
-            locationForegroundHandler = get(named(LOCATION_FOREGROUND))
+            locationForegroundHandler = get(named(LOCATION_FOREGROUND)),
+            addressModel = getOrNull()
         )
     }
 

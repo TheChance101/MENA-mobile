@@ -53,9 +53,7 @@ fun PickLocationMap(
     LaunchedEffect(camera) {
         snapshotFlow { camera.position }.collect { position -> onCameraMoved(position) }
     }
-//    CompositionLocalProvider(
-//        LocalLayoutDirection provides LayoutDirection.Ltr
-//    ) {
+
     BoxWithConstraints(
         modifier = modifier
     ) {
@@ -89,7 +87,6 @@ fun PickLocationMap(
             anchorLocation = anchorLocation,
             sreenWidth = maxWidth,
         )
-        //}
         content()
     }
 }

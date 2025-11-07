@@ -6,14 +6,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -21,37 +21,36 @@ import kotlin.time.Instant
 @OptIn(ExperimentalTime::class)
 class PrayerTimeViewModel(
     private val prayerTimeRepository: PrayerTimeRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val locationService: LocationService,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PrayerTimeUiState, PrayerTimeEffect>(PrayerTimeUiState()),
     PrayerTimeInteractionListener {
 
-    private val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
-    private val currentTimeZone = TimeZone.currentSystemDefault()
-
     init {
-        loadTodayPrayerTimes()
+        getUserLocation()
     }
 
-    override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
+    private fun getUserLocation() {
+        tryToExecute(
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(PrayerTimeEffect.NavigateToAddressesScreen) },
+            dispatcher = dispatcher
+        )
+    }
 
-    override fun onPrevDateClick() = sendEffect(PrayerTimeEffect.NavigatePrevDate)
+    private fun onGetUserLocationSuccess(address: Address) {
+        updateState { state -> state.copy(address = address.addressLine) }
 
-    override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
-
-    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
-
-    override fun onChangeLocation() = sendEffect(PrayerTimeEffect.NavigateToChangeLocation)
-
-    private fun loadTodayPrayerTimes() {
         tryToExecute(
             execute = {
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    location = defaultLocation,
-                    timeZone = currentTimeZone
+                    address = address
                 )
             },
             onSuccess = ::onPrayerTimesSuccess,
+            dispatcher = dispatcher
         )
     }
 
@@ -130,6 +129,16 @@ class PrayerTimeViewModel(
             }
         }
     }
+
+    override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
+
+    override fun onPrevDateClick() = sendEffect(PrayerTimeEffect.NavigatePrevDate)
+
+    override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
+
+    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
+
+    override fun onLocationClick() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
 
     private companion object {
         const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L

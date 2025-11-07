@@ -2,9 +2,19 @@ package net.thechance.mena.faith.data.repository
 
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
+import net.thechance.mena.faith.data.database.ReciterDto
 import net.thechance.mena.faith.data.database.SurahDto
 
 internal class MockAyahDao : AyahDao {
+
+    private val reciters: MutableList<ReciterDto> = mutableListOf(
+        ReciterDto(
+            id = 1,
+            name = "Abd elbasit",
+            nameAr = "عبدالباسط",
+            tilawahType = "Mujawad"
+        )
+    )
 
     private val ayahBySurah: MutableMap<Int, MutableList<AyahDto>> = mutableMapOf(
         1 to mutableListOf(
@@ -79,6 +89,28 @@ internal class MockAyahDao : AyahDao {
         ayahBySurah[surahId]?.filter {
             it.plainContent.contains(query)
         } ?: emptyList()
+
+    override suspend fun insertReciters(reciters: List<ReciterDto>) {
+        this.reciters.clear()
+        this.reciters.addAll(reciters)
+    }
+
+    override suspend fun getAllReciters(): List<ReciterDto> {
+        return reciters.toList()
+    }
+
+    override suspend fun searchReciters(query: String): List<ReciterDto> {
+        return reciters.filter {
+            it.name.contains(query, ignoreCase = true) ||
+                    it.nameAr.contains(query) ||
+                    it.tilawahType.contains(query, ignoreCase = true)
+        }
+    }
+
+    override suspend fun getReciterById(reciterId: Int): ReciterDto {
+        return reciters.find { it.id == reciterId }
+            ?: error("Reciter not found with id=$reciterId")
+    }
 
     override suspend fun getAyah(ayahId: Int, surahId: Int): AyahDto {
         val direct = ayahBySurah[surahId]?.firstOrNull { it.number == ayahId }

@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search.args
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah.args
 
 interface SearchArgs {
     val surahId: Int?

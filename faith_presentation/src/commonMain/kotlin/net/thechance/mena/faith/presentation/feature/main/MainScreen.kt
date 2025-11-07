@@ -39,6 +39,8 @@ import net.thechance.mena.faith.presentation.feature.main.components.SunriseTime
 import net.thechance.mena.faith.presentation.feature.main.components.TilawahSection
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
+import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -57,7 +59,6 @@ fun MainScreen(
             if (event == Lifecycle.Event.ON_RESUME) viewModel.refreshTilawah()
         }
         lifecycleOwner.lifecycle.addObserver(observer)
-
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
@@ -65,7 +66,7 @@ fun MainScreen(
         when (effect) {
             is MainScreenEffect.NavigateToSurah -> {
                 navController.navigate(
-                    Route.SurahDetailsRoute(
+                    SurahDetailsRoute(
                         surahId = effect.surahId,
                         surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
@@ -78,6 +79,7 @@ fun MainScreen(
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
             MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
             MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
+            MainScreenEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }
 
@@ -93,7 +95,12 @@ private fun Content(
     listener: MainInteractionListener
 ) {
     Scaffold(
-        topBar = { MainTopBar(locationName = "Cairo, Egypt") }
+        topBar = {
+            MainTopBar(
+                locationName = uiState.address.takeCityAndCountry(),
+                onLocationChange = listener::onLocationClick
+            )
+        }
     ) {
         val faithFeatureCards = faithFeatureCards(listener = listener)
 
@@ -221,7 +228,8 @@ private fun Preview() {
                     surahId = 1,
                     surahName = "Al-Fatihah",
                     ayahNumber = 3,
-                )
+                ),
+                address = "street 23 abo ahmed, Baghdad, Iraq"
             ),
             listener = object : MainInteractionListener {
                 override fun onQuranClick() {}
@@ -229,6 +237,7 @@ private fun Preview() {
                 override fun onMosquesClick() {}
                 override fun onPrayerTimeClick() {}
                 override fun onTilawahClick() {}
+                override fun onLocationClick() {}
                 override fun onContinueTilawahClick(
                     surahId: Int,
                     surahName: String,

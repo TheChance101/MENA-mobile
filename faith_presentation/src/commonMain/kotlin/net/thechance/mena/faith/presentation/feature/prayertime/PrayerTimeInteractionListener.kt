@@ -5,5 +5,5 @@ interface PrayerTimeInteractionListener {
     fun onPrevDateClick()
     fun onNextDateClick()
     fun onDateDropdownClick()
-    fun onChangeLocation()
+    fun onLocationClick()
 }

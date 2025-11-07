@@ -13,6 +13,7 @@ import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSData
 import platform.Foundation.NSInputStream
 import platform.Foundation.NSURL
+import platform.Foundation.inputStreamWithFileAtPath
 import platform.UIKit.UIImage
 import platform.UIKit.UIImageJPEGRepresentation
 import platform.UniformTypeIdentifiers.UTType
@@ -23,9 +24,13 @@ actual fun getPlatformFileReader(): VideoFileHandler = VideoFileHandlerImpl()
 @OptIn(ExperimentalForeignApi::class)
 class VideoFileHandlerImpl : VideoFileHandler {
 
+    @OptIn(ExperimentalForeignApi::class)
     override fun readFile(filePath: String): RawSource {
-        val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
-        return NSInputStream(fileUrl).asSource()
+        val inputStream = NSInputStream.inputStreamWithFileAtPath(filePath)
+            ?: throw IllegalStateException("Cannot create input stream for file: $filePath")
+
+        inputStream.open()
+        return inputStream.asSource()
     }
 
     override suspend fun getDuration(filePath: String): Long? {
@@ -49,7 +54,7 @@ class VideoFileHandlerImpl : VideoFileHandler {
 
     override suspend fun extractVideoFrame(filePath: String, timeMs: Long): ByteArray? {
         return runCatching {
-            val fileUrl = NSURL.URLWithString(filePath) ?: NSURL.fileURLWithPath(filePath)
+            val fileUrl = NSURL.fileURLWithPath(filePath)
             val asset = AVURLAsset.URLAssetWithURL(fileUrl, options = null)
             val imageGenerator = createAVAssetImageGenerator(asset)
 

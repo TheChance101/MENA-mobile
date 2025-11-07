@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,10 +25,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emptyFlow
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.arrow_left
@@ -149,7 +154,7 @@ private fun Content(
             bottomSheet(isVisible = uiState.isSearchResultsBottomSheetVisible) { isVisible ->
                 SearchResultsBottomSheet(
                     isVisible = isVisible,
-                    mosques = uiState.mosquesSearchResults,
+                    mosques = uiState.mosquesSearchResults ?: emptyFlow(),
                     onMosqueClick = listener::onSearchResultClick,
                     onDismiss = listener::onDismissSearchBottomSheet
                 )
@@ -183,13 +188,21 @@ private fun Content(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val keyboardController = LocalSoftwareKeyboardController.current
                 TextField(
                     value = uiState.query,
                     hint = stringResource(Res.string.search_hint),
                     leadingIcon = painterResource(Res.drawable.ic_outline_search),
                     leadingIconTint = Theme.colorScheme.shadeSecondary,
                     onValueChanged = listener::onQueryChange,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                            listener.onSearchSubmit()
+                        }
+                    )
                 )
                 if (uiState.isSearchButtonVisible) {
                     SearchMosquesButton(onClick = {
@@ -265,6 +278,7 @@ private fun NearbyMosquesScreenPreview() {
             override fun onSearchResultClick(mosque: MosqueUiState) {}
             override fun mapPositionChanged(coordinate: Coordinate) {}
             override fun onQueryChange(query: String) {}
+            override fun onSearchSubmit() {}
             override fun changeSearchButtonVisibility(isVisible: Boolean) {}
             override fun onDismissSearchBottomSheet() {}
             override fun selectMosque(mosque: MosqueUiState) {}

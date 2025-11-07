@@ -253,5 +253,6 @@
     <string name="first_name_label">First name</string>
     <string name="last_name_label">Last name</string>
     <string name="username_label">Username</string>
+    <string name="share_message">I’d love for you to join me on the *MENA* app! Install the app, or just reach out to me in the chat here:</string>
 
 </resources>

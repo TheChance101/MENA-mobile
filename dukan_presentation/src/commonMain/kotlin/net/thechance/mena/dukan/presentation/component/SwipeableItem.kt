@@ -35,7 +35,7 @@ fun SwipeableItem(
     Box(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier
-                .align(if (isRtl) Alignment.CenterStart else Alignment.CenterEnd)
+                .align(Alignment.CenterEnd)
                 .onSizeChanged {
                     actionButtonWidth = it.width.toFloat()
                 },

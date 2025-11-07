@@ -25,6 +25,7 @@ import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.profile_title
+import mena.identity_presentation.generated.resources.share_message
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
@@ -68,7 +69,7 @@ class ProfileScreen : BaseScreen<
         AnimatedVisibility(state.showShareBottomSheet) {
             ShareSheet(
                 title = stringResource(Res.string.download_app_title),
-                url = state.inviteLinkUrl,
+                message = stringResource(Res.string.share_message) + state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }

@@ -63,8 +63,9 @@ fun ReciterItem(
 @Composable
 private fun CardContent(
     reciterDetails: TilawahUiState.ReciterUi,
-    isSelected: Boolean,
-    onSelect: () -> Unit,
+    onSelect: () -> Unit = {},
+    isSelectedShown: Boolean,
+    isSelected: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -96,10 +97,11 @@ private fun CardContent(
                 reciterDetails = reciterDetails
             )
         }
-        RadioButton(
-            isSelected = isSelected,
-            onClick = onSelect
-        )
+        if (isSelectedShown)
+            RadioButton(
+                isSelected = isSelected,
+                onClick = onSelect
+            )
     }
 }
 
@@ -146,7 +148,8 @@ private fun Preview() {
                 isDownloaded = true
             ),
             isSelected = true,
-            onSelect = {}
+            onSelect = {},
+            isSelectedShown = true
         )
     }
 }

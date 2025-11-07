@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.main.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -26,6 +27,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun MainTopBar(
     locationName: String,
+    onLocationChange: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     AppBar(
@@ -38,7 +40,8 @@ fun MainTopBar(
                         color = Theme.colorScheme.background.surfaceLow,
                         shape = RoundedCornerShape(Theme.radius.full)
                     )
-                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4),
+                    .padding(horizontal = Theme.spacing._8, vertical = Theme.spacing._4)
+                    .clickable(onClick = onLocationChange),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
             ) {
@@ -63,7 +66,8 @@ fun MainTopBar(
 private fun Preview() {
     QuranTheme {
         MainTopBar(
-            locationName = "Palestine, Gaza"
+            locationName = "Palestine, Gaza",
+            onLocationChange = {}
         )
     }
 }

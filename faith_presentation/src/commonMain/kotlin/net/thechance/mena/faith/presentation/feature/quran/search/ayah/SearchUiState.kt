@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.feature.quran.search
+package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah

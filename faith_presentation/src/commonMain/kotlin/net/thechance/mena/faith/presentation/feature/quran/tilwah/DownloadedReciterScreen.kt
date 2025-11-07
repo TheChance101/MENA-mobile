@@ -38,7 +38,7 @@ fun DownloadedReciterScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             TilawahEffect.NavigateBack -> navController.navigateUp()
-            TilawahEffect.NavigateToSearch -> navController.navigate(Route.SearchRoute)
+            TilawahEffect.NavigateToSearch -> navController.navigate(Route.ReciterSearch)
         }
     }
     Content(
@@ -90,6 +90,7 @@ private fun Content(
                 ReciterItem(
                     reciterDetails = reciter,
                     isSelected = uiState.selectedReciterId == reciter.id,
+                    isSelectedShown = true,
                     onSelect = {
                         listener.onSelectReciterClick(reciter.id)
                     },
