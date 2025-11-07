@@ -51,6 +51,9 @@ kotlin {
             implementation(projects.dukanDomain)
             implementation(projects.designSystem)
             implementation(projects.dukanApi)
+            implementation(projects.identityApi)
+            implementation(projects.walletApi)
+
             implementation(compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)

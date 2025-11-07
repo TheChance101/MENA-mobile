@@ -10,6 +10,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutAppBar
 import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutSummaryCard
@@ -37,7 +38,7 @@ fun CheckoutScreen(
             }
 
             CheckoutEffect.NavigateToChangeLocation -> {
-                // TODO
+                navController.navigate(DukanRoute.AddressesRoute)
             }
         }
     }
@@ -50,7 +51,10 @@ fun CheckoutScreen(
 }
 
 @Composable
-private fun CheckoutContent(state: CheckoutUiState, listener: CheckoutViewModel) {
+private fun CheckoutContent(
+    state: CheckoutUiState,
+    listener: CheckoutViewModel
+) {
     val products = state.items.collectAsLazyPagingItems()
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
@@ -65,7 +69,11 @@ private fun CheckoutContent(state: CheckoutUiState, listener: CheckoutViewModel)
             modifier = Modifier
                 .padding(horizontal = Theme.spacing._16)
         ) {
-            DeliveryAddressCard(modifier = Modifier.padding(top = Theme.spacing._8))
+            DeliveryAddressCard(
+                modifier = Modifier
+                    .padding(top = Theme.spacing._8),
+                onChangeAddressClicked = listener::onChangeLocationClicked
+            )
             CheckoutSummaryCard(
                 products = products,
                 modifier = Modifier.padding(top = Theme.spacing._16)
