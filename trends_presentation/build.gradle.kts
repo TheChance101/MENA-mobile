@@ -33,7 +33,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.coil.network.ktor3)
-            implementation(libs.ktor.client.android)
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.ui)
             implementation(libs.androidx.media3.exoplayer.dash)
