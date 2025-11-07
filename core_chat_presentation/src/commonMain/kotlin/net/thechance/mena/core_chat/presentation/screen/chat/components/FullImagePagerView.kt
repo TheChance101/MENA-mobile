@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,8 @@ fun FullImagePagerView(
     Box(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
             .combinedClickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
                 onClick = {},
                 onLongClick = { onImageLongClick(message) }
             )
@@ -120,7 +123,7 @@ fun HorizontalImagePager(
 ) {
     HorizontalPager(
         state = state,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
     ) { page ->
 
         var showLoadingIndicator by remember { mutableStateOf(true) }
