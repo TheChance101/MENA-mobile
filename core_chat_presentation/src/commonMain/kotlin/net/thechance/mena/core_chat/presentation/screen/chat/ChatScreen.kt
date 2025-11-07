@@ -105,7 +105,7 @@ fun ChatScreenContent(
         Scaffold(
             modifier = Modifier
                 .background(
-                    color = Theme.colorScheme.background.surface
+                    color = Theme.colorScheme.background.surfaceLow
                 )
                 .statusBarsPadding(),
             topBar = {
