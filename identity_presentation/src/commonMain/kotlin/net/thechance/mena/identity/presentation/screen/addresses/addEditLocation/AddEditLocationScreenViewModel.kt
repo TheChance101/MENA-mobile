@@ -114,8 +114,8 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickEdit() {
-        val currentState = state.value.addressUIState
-        val addressModel = createAddressModelFromCurrentState(currentState)
+        val addressUIState = state.value.addressUIState
+        val addressModel = createAddressModelFromCurrentState(addressUIState)
         sendNewEffect(
             createNavigateToMapEffect(
                 addressModel = addressModel,
