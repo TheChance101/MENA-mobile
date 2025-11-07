@@ -1,18 +1,18 @@
 package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
@@ -41,7 +41,7 @@ val identityScreensModule = module {
     includes(platformModule())
     factory(named(LOCATION_FOREGROUND)) { PermissionHandler(get(named(LOCATION_FOREGROUND))) }
     factory(named(GALLERY_IMAGES)) { PermissionHandler(get(named(GALLERY_IMAGES))) }
-    factory { ProfileScreenViewModel(get(), get(),get(named(APP_VERSION)),get()) }
+    factory { ProfileScreenViewModel(get(), get(), get(named(APP_VERSION)), get()) }
     factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
     factoryOf(::NotImplementedScreenViewModel)
@@ -55,7 +55,7 @@ val identityScreensModule = module {
     factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
-    factoryOf(::ShareQrCodeViewModel)
+    factoryOf(::ShareDialogViewModel)
     factoryOf(::DatePickerScreenViewModel)
     factoryOf(::SelectGenderScreenViewModel)
     factoryOf(::ChangePasswordScreenViewModel)
@@ -79,7 +79,8 @@ val identityScreensModule = module {
     }
 
     factory {
-        ShareQrCodeViewModel(
+        ShareDialogViewModel(
+            userRepository = get(),
             imagesRepository = get(),
             galleryPermissionHandler = get(named(GALLERY_IMAGES))
         )

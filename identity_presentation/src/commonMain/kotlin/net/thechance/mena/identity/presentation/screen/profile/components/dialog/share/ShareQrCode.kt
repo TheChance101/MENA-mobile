@@ -50,9 +50,9 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeInteractionListener
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIState
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -61,8 +61,8 @@ import sv.lib.squircleshape.SquircleShape
 import kotlin.math.roundToInt
 
 @Composable
-fun ScaffoldScope.ShareQrCode(
-    viewModel: ShareQrCodeViewModel = koinViewModel(),
+fun ScaffoldScope.ShareDialog(
+    viewModel: ShareDialogViewModel = koinViewModel(),
     isVisible: Boolean,
     onClickShare: () -> Unit,
     onDismissShareDialog: () -> Unit,
@@ -71,7 +71,7 @@ fun ScaffoldScope.ShareQrCode(
 
     val shareState by viewModel.state.collectAsStateWithLifecycle()
 
-    ShareQrCodeContent(
+    ShareDialogContent(
         state = shareState,
         listener = viewModel,
         isVisible = isVisible,
@@ -83,7 +83,7 @@ fun ScaffoldScope.ShareQrCode(
 }
 
 @Composable
-private fun ScaffoldScope.ShareQrCodeContent(
+private fun ScaffoldScope.ShareDialogContent(
     state: ShareQrCodeUIState,
     listener: ShareQrCodeInteractionListener,
     isVisible: Boolean,
@@ -245,7 +245,7 @@ private fun ShareProfileQrCodePreview() {
         Scaffold(
             overlays = {
                 dialog(true) {
-                    ShareQrCode(
+                    ShareDialog(
                         isVisible = true,
                         onClickShare = {},
                         onDismissShareDialog = {},

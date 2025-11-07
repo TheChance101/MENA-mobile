@@ -22,13 +22,16 @@ import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
-class ShareQrCodeViewModel(
+class ShareDialogViewModel(
+    private val userRepository: UserRepository,
     private val imagesRepository: ImagesRepository,
     private val galleryPermissionHandler: PermissionHandler,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -44,18 +47,15 @@ class ShareQrCodeViewModel(
         setUrlLinks()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     private fun setUrlLinks() {
-        updateState {
-            copy(
-                shareLinkUrl = generateLink()
-            )
+        viewModelScope.launch {
+            userRepository.getUser().collect { user ->
+                val shareLinkUrl = "$SHARE_URL${user?.id}"
+                updateState { copy(shareLinkUrl = shareLinkUrl) }
+            }
         }
     }
-
-    private fun generateLink(): String {
-        return "https://mena-dev.the-chance.net?userId=7f30b317-3c11-4afc-a4ed-ea84f29b0f65"
-    }
-
 
     private fun onCopyToClipboardSuccess() {
         updateState { copy(showCopiedMessage = true) }
@@ -151,5 +151,9 @@ class ShareQrCodeViewModel(
             val result = function()
             onSuccess(result)
         }
+    }
+
+    companion object {
+        val SHARE_URL = "https://mena-dev.the-chance.net?userId="
     }
 }
