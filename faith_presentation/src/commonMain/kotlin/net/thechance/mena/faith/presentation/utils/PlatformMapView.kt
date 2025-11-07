@@ -11,17 +11,12 @@ data class MapMarker @OptIn(ExperimentalUuidApi::class) constructor(
     val longitude: Double,
     val title: String? = null,
     val snippet: String? = null,
-    val iconType: MarkerIconType = MarkerIconType.MOSQUE
 )
 
-enum class MarkerIconType {
-    MOSQUE,
-    LOCATION,
-    CUSTOM
-}
+
 
 @Composable
-expect fun OsmMapView(
+expect fun MapView(
     modifier: Modifier = Modifier,
     centerLatitude: Double,
     centerLongitude: Double,

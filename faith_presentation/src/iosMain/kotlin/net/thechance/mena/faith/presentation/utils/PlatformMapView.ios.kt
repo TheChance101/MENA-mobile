@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-actual fun OsmMapView(
+actual fun MapView(
     modifier: Modifier,
     centerLatitude: Double,
     centerLongitude: Double,

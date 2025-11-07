@@ -61,8 +61,7 @@ import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.MapMarker
 import net.thechance.mena.faith.presentation.utils.MapNavigator
-import net.thechance.mena.faith.presentation.utils.MarkerIconType
-import net.thechance.mena.faith.presentation.utils.OsmMapView
+import net.thechance.mena.faith.presentation.utils.MapView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -106,7 +105,6 @@ private fun Content(
                     latitude = selected.coordinate.latitude,
                     longitude = selected.coordinate.longitude,
                     title = selected.name,
-                    iconType = MarkerIconType.MOSQUE
                 )
             )
         }
@@ -119,7 +117,6 @@ private fun Content(
                         latitude = mosque.coordinate.latitude,
                         longitude = mosque.coordinate.longitude,
                         title = mosque.name,
-                        iconType = MarkerIconType.MOSQUE
                     )
                 )
             }
@@ -134,7 +131,6 @@ private fun Content(
                                     latitude = mosque.coordinate.latitude,
                                     longitude = mosque.coordinate.longitude,
                                     title = mosque.name,
-                                    iconType = MarkerIconType.MOSQUE
                                 )
                             )
                         }
@@ -210,7 +206,7 @@ private fun Content(
             val coroutineScope = rememberCoroutineScope()
             var lastCenter by remember { mutableStateOf<Coordinate?>(null) }
 
-            OsmMapView(
+            MapView(
                 modifier = Modifier.fillMaxSize(),
                 centerLatitude = mapCenter?.latitude ?: 0.0,
                 centerLongitude = mapCenter?.longitude ?: 0.0,

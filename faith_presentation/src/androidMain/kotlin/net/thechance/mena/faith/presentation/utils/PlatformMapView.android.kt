@@ -18,7 +18,7 @@ import org.osmdroid.views.MapView
 import kotlin.math.abs
 
 @Composable
-actual fun OsmMapView(
+actual fun MapView(
     modifier: Modifier,
     centerLatitude: Double,
     centerLongitude: Double,
@@ -34,8 +34,6 @@ actual fun OsmMapView(
     val markerManager = remember(context, onMarkerClick) {
         MapMarkerManager(context, onMarkerClick)
     }
-    var movedInitially by remember { mutableStateOf(false) }
-
     ConfigureOsmDroid(context)
 
     ObserveZoomChanges(
@@ -128,7 +126,8 @@ private fun createMapView(
             centerLatitude = centerLatitude,
             centerLongitude = centerLongitude
         )
-
+        this.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
+        this.setMultiTouchControls(true)
         setupZoomListener(onZoomChange, onCameraMove)
     }
 }

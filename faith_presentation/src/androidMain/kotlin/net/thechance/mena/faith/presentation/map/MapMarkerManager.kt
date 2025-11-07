@@ -1,11 +1,9 @@
 package net.thechance.mena.faith.presentation.map
 
 import android.content.Context
-import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
 import net.thechance.mena.faith.presentation.R
 import net.thechance.mena.faith.presentation.utils.MapMarker
-import net.thechance.mena.faith.presentation.utils.MarkerIconType
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -70,7 +68,7 @@ class MapMarkerManager(
             position = GeoPoint(markerData.latitude, markerData.longitude)
             title = markerData.title
             snippet = markerData.snippet
-            icon = getMarkerIcon(markerData.iconType)
+            icon = ContextCompat.getDrawable(context, R.drawable.marker)
             setOnMarkerClickListener { _, _ ->
                 onMarkerClick(markerData)
                 true
@@ -87,10 +85,4 @@ class MapMarkerManager(
         }
     }
 
-    private fun getMarkerIcon(iconType: MarkerIconType): Drawable? {
-        return when (iconType) {
-            MarkerIconType.MOSQUE -> ContextCompat.getDrawable(context, R.drawable.marker)
-            else -> null
-        }
-    }
 }
