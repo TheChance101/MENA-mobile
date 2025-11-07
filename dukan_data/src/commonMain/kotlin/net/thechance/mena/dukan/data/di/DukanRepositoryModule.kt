@@ -40,7 +40,7 @@ internal val dukanRepositoryModule = module {
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
     single<CartRepository>{ CartRepositoryImpl(client = get (named("dukanClient"))) }
-    single<SearchRepository> { SearchRepositoryImpl() }
+    single<SearchRepository> { SearchRepositoryImpl(get(named("dukanClient"))) }
     singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }
     singleOf(::LocationRepositoryImpl) { bind<LocationRepository>() }
 }
