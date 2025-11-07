@@ -29,7 +29,6 @@ internal class NearbyMosquesViewModel(
     snackbarHandler = snackbarHandler,
 ), NearbyMosquesInteractionListener {
 
-    private val queryFlow = MutableStateFlow("")
 
     init {
         getUserLocation()
@@ -44,10 +43,9 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun onGetUserLocationSuccess(address: Address) {
-        val coordinate = Coordinate(address.latitude, address.longitude)
         updateState {
             it.copy(
-                centerOfMap = coordinate,
+                centerOfMap = Coordinate(address.latitude, address.longitude),
                 mosquesSearchResults = createMosquesPagingSource(""),
                 isLoading = false
             )
@@ -55,12 +53,11 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
-        val userLocation = uiState.value.centerOfMap
         return if (query.isBlank()) {
             flow {
                 val mosques = mosqueRepository.getNearbyMosques(
-                    latitude = userLocation?.latitude ?: 0.0,
-                    longitude = userLocation?.longitude ?: 0.0,
+                    latitude = uiState.value.centerOfMap?.latitude ?: 0.0,
+                    longitude = uiState.value.centerOfMap?.longitude ?: 0.0,
                     radius = 1.0
                 )
                 emit(
@@ -84,18 +81,16 @@ internal class NearbyMosquesViewModel(
 
 
     override fun onQueryChange(query: String) {
-        queryFlow.update { query }
         updateState { it.copy(query = query) }
     }
 
     override fun onSearchSubmit() {
-        val query = queryFlow.value.trim()
-        if (query.isBlank()) return
+        if (uiState.value.query.isBlank()) return
 
         tryToExecute(
-            execute = { mosqueRepository.getMosquesByName(query) },
+            execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques -> handleSearchSuccess(mosques, query) },
+            onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
             onError = { handleSearchError() },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
@@ -146,7 +141,7 @@ internal class NearbyMosquesViewModel(
     override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
         updateState {
             it.copy(
-                mosquesSearchResults = createMosquesPagingSource(queryFlow.value),
+                mosquesSearchResults = createMosquesPagingSource(uiState.value.query),
                 isLoading = false,
             )
         }
