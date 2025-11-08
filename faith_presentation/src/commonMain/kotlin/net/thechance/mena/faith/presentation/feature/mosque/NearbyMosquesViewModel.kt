@@ -166,7 +166,6 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-
     override fun onSearchResultClick(mosque: MosqueUiState) {
         updateState {
             it.copy(

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +71,6 @@ internal fun NearbyMosquesScreen(
 
     LaunchedEffect(Unit) {
         val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-
         savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
             ?.collect { successMessage ->
                 successMessage?.let {

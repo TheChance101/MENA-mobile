@@ -10,6 +10,7 @@ internal interface NearbyMosquesInteractionListener {
     fun onSearchResultClick(mosque: MosqueUiState)
     fun changeCenterOfMap(coordinate: Coordinate)
     fun onQueryChange(query: String)
+    fun changeMapMovement(canMove: Boolean)
     fun onSearchSubmit()
     fun changeSearchButtonVisibility(isVisible: Boolean)
     fun onDismissSearchBottomSheet()
