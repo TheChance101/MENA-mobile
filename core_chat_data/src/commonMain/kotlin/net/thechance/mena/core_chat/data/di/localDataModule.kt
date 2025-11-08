@@ -8,7 +8,6 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao

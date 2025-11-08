@@ -53,7 +53,7 @@ class ChatRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ) : ChatRepository {
 
-    val _syncState = MutableSharedFlow<SyncState>()
+    private val _syncState = MutableSharedFlow<SyncState>()
     val scope = CoroutineScope(Dispatchers.IO)
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState

@@ -35,9 +35,9 @@ import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.mockSuccessPagedResponse
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
@@ -61,7 +61,7 @@ class ChatRepositoryImplTest {
     private lateinit var httpClient: HttpClient
     private lateinit var repository: ChatRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
-    private lateinit var messageDao: MessageDao
+    private lateinit var pendingMessagesDao: PendingMessageDao
     private lateinit var cachedChatSummaryDao: CachedChatSummaryDao
     private lateinit var dataStore: DataStore<Preferences>
     private lateinit var cachedChatDao: CachedChatDao
@@ -72,7 +72,7 @@ class ChatRepositoryImplTest {
     fun setUp() {
         everySuspend { authRepository.getAccessToken() } returns "token"
         webSocketManager = mock<WebSocketManager>()
-        messageDao = mock<MessageDao>()
+        pendingMessagesDao = mock<PendingMessageDao>()
         cachedChatSummaryDao = mock<CachedChatSummaryDao>()
         dataStore = mock<DataStore<Preferences>>()
         val emptyPrefs = emptyPreferences()
@@ -89,8 +89,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            cachedChatDao = cachedChatDao
-                    dataStore = dataStore,
+            cachedChatDao = cachedChatDao,
+            dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
     }
@@ -119,8 +119,8 @@ class ChatRepositoryImplTest {
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
-            cachedChatDao = cachedChatDaoو
-                    dataStore = dataStore,
+            cachedChatDao = cachedChatDao,
+            dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
 
@@ -338,6 +338,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            cachedChatDao = cachedChatDao
         )
 
         everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
@@ -371,6 +372,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            cachedChatDao = cachedChatDao
         )
 
         repository.getChatsSummary(pageNumber, pageSize)
@@ -400,6 +402,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            cachedChatDao = cachedChatDao
         )
 
         repository.getChatsSummary(pageNumber, pageSize)
@@ -454,6 +457,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            cachedChatDao = cachedChatDao
         )
 
         repository.getChatsSummary(pageNumber, pageSize)
@@ -512,6 +516,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            cachedChatDao = cachedChatDao
         )
 
         assertFailsWith<NotFoundException> {
