@@ -4,6 +4,8 @@ package net.thechance.mena.core_chat.presentation.screen.home
 
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.containsExactly
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -528,6 +530,71 @@ class HomeViewModelTest {
         }
     }
 
+    @Test
+    fun `observeChatSummariesSyncState should remove deleted chats when DeletedChatsSynced is emitted`() = runTest {
+        val chat1 = createChatSummary(name = "Chat 1")
+        val chat2 = createChatSummary(name = "Chat 2")
+        val chat3 = createChatSummary(name = "Chat 3")
+        val syncFlow = MutableSharedFlow<SyncState>()
+        everySuspend { chatRepository.observeChatSummariesSyncState() } returns syncFlow
+        everySuspend { balanceRepository.getBalance() } returns 0.0
+        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.chats).isEmpty()
+
+            syncFlow.emit(SyncState.ChatsSummariesSynced(listOf(chat1, chat2, chat3)))
+            advanceUntilIdle()
+
+            state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(3)
+
+            syncFlow.emit(SyncState.DeletedChatsSynced(listOf(chat2.id)))
+            advanceUntilIdle()
+
+            state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(2)
+            assertThat(state.chats.map { it.id }).containsExactly(chat1.id, chat3.id)
+            assertThat(state.chats.map { it.id }).doesNotContain(chat2.id)
+        }
+    }
+
+    @Test
+    fun `observeChatSummariesSyncState should remove multiple deleted chats when DeletedChatsSynced is emitted`() = runTest {
+        val chat1 = createChatSummary(name = "Chat 1")
+        val chat2 = createChatSummary(name = "Chat 2")
+        val chat3 = createChatSummary(name = "Chat 3")
+        val chat4 = createChatSummary(name = "Chat 4")
+        val syncFlow = MutableSharedFlow<SyncState>()
+        everySuspend { chatRepository.observeChatSummariesSyncState() } returns syncFlow
+        everySuspend { balanceRepository.getBalance() } returns 0.0
+        everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.chats).isEmpty()
+
+            syncFlow.emit(SyncState.ChatsSummariesSynced(listOf(chat1, chat2, chat3, chat4)))
+            advanceUntilIdle()
+
+            state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(4)
+
+            syncFlow.emit(SyncState.DeletedChatsSynced(listOf(chat2.id, chat4.id)))
+            advanceUntilIdle()
+
+            state = awaitItem()
+            assertThat(state.chats.size).isEqualTo(2)
+            assertThat(state.chats.map { it.id }).containsExactly(chat1.id, chat3.id)
+        }
+    }
     private fun createViewModel(): HomeViewModel {
         return HomeViewModel(
             contactsRepository = contactsRepository,
