@@ -8,4 +8,5 @@ object PreviewCheckoutInteractionListener : CheckoutInteractionListener {
     override fun onConfirmOrderClicked() {}
 
     override fun onChangeLocationClicked() {}
+    override fun onDismissCheckoutDialog() {}
 }

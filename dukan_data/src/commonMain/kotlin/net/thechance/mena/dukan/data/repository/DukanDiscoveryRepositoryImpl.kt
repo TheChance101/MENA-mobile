@@ -16,7 +16,7 @@ import net.thechance.mena.identity.domain.service.LocationService
 
 class DukanDiscoveryRepositoryImpl(
     private val client: HttpClient,
-    val locationService: LocationService
+    private val locationService: LocationService
 ) : DukanDiscoveryRepository {
     override suspend fun getEditorPicksDukans(
         page: Int,
