@@ -293,7 +293,10 @@ class AudioRecordRepositoryImplTest {
                 audioDownloadResponse = { defaultAudioDownloadResponse(audioBytes) }
             )
 
-            every { fileManager.isFileExists(any()) } returns false
+            every { fileManager.isFileExists(any()) } sequentially {
+                returns(false)
+                returns(false)
+            }
             everySuspend { fileManager.writeFile(any(), any()) } returns true
 
             repository = AudioRecordRepositoryImpl(

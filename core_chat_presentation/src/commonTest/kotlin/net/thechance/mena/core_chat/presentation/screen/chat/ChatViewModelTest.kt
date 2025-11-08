@@ -8,6 +8,7 @@ import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotEmpty
 import assertk.assertions.isTrue
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
@@ -43,6 +44,7 @@ import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
@@ -96,6 +98,8 @@ class ChatViewModelTest {
         every { messageRepository.observeMessagesForChatOrAll(chatId) } returns flowOf()
         every { messageRepository.observeReadMessages() } returns flowOf()
         every { messageRepository.observeDeleteChat() } returns flowOf()
+        every { messageRepository.observeMessageReactions() } returns flowOf()
+        every { messageRepository.observeRemovedMessageReactions() } returns flowOf()
         everySuspend { messageRepository.markMessagesOfChatAsRead(any()) } returns Unit
 
         viewModel = createViewModel()
@@ -845,9 +849,322 @@ class ChatViewModelTest {
         verifySuspend { messageRepository.removeMessageReaction(message.id, reaction) }
     }
 
+    @Test
+    fun `onCollectAddReaction should add reaction to message when reaction is received`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val message = messages.first().copy(reactions = emptyList())
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessage = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage = when (updatedMessage) {
+            is ChatListItem.TextMessage -> updatedMessage.data
+            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage.data
+            else -> null
+        }
+
+        assertThat(actualMessage?.reactions?.size).isEqualTo(1)
+        assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reaction)
+        assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(otherUserId)
+    }
+
+    @Test
+    fun `onCollectAddReaction should replace existing reaction from same user`() = runTest {
+        val oldReaction = "👍"
+        val newReaction = "❤️"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val existingReaction = MessageReaction(oldReaction, otherUserId, message1Id)
+        val newMessageReaction = MessageReaction(newReaction, otherUserId, message1Id)
+        val message = messages.first().copy(reactions = listOf(existingReaction))
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        every { messageRepository.observeMessageReactions() } returns flowOf(newMessageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessage = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage = when (updatedMessage) {
+            is ChatListItem.TextMessage -> updatedMessage.data
+            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage.data
+            else -> null
+        }
+
+        assertThat(actualMessage?.reactions?.size).isEqualTo(1)
+        assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(newReaction)
+        assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(otherUserId)
+    }
+
+    @Test
+    fun `onCollectAddReaction should update selected image messages with reaction`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val imageMessage = Message(
+            id = message1Id,
+            senderId = chatRequesterId,
+            chatId = chatId,
+            sendAt = LocalDateTime.now(),
+            status = MessageStatus.SENT,
+            content = MessageContent.Image(ImageData.ImageUrl(imageUrl)),
+            isMine = true
+        )
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(imageMessage), 0, true)
+        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessages = chatListItems.currentUiMessages()
+
+        assertThat(updatedMessages).isNotEmpty()
+
+        viewModel.onMessageImageClicked(updatedMessages, 0)
+        advanceUntilIdle()
+
+        val selectedImageMessages = viewModel.state.value.selectedImageMessages
+        assertThat(selectedImageMessages).isNotEmpty()
+        assertThat(selectedImageMessages.first().reactions.size).isEqualTo(1)
+        assertThat(selectedImageMessages.first().reactions.first().emoji).isEqualTo(reaction)
+        assertThat(selectedImageMessages.first().reactions.first().userId).isEqualTo(otherUserId)
+    }
+
+    @Test
+    fun `onCollectRemoveReaction should remove reaction from message when reaction is removed`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val message = messages.first().copy(reactions = listOf(messageReaction))
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        every { messageRepository.observeRemovedMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessage = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage = when (updatedMessage) {
+            is ChatListItem.TextMessage -> updatedMessage.data
+            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage.data
+            else -> null
+        }
+
+        assertThat(actualMessage?.reactions?.size).isEqualTo(0)
+    }
+
+    @Test
+    fun `onCollectRemoveReaction should only remove matching reaction by user and emoji`() = runTest {
+        val reactionToRemove = "👍"
+        val reactionToKeep = "❤️"
+        val userId1 = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val userId2 = Uuid.parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
+        val reaction1 = MessageReaction(reactionToRemove, userId1, message1Id)
+        val reaction2 = MessageReaction(reactionToKeep, userId2, message1Id)
+        val message = messages.first().copy(reactions = listOf(reaction1, reaction2))
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message), 0, true)
+        every { messageRepository.observeRemovedMessageReactions() } returns flowOf(reaction1)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessage = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage = when (updatedMessage) {
+            is ChatListItem.TextMessage -> updatedMessage.data
+            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage.data
+            else -> null
+        }
+
+        assertThat(actualMessage?.reactions?.size).isEqualTo(1)
+        assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reactionToKeep)
+        assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(userId2)
+    }
+
+    @Test
+    fun `onCollectAddReaction should not update non-matching messages`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val message1 = messages.first().copy(reactions = emptyList())
+        val message2 = messages[1].copy(reactions = emptyList())
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message1, message2), 0, true)
+        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+
+        val updatedMessage1 = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val updatedMessage2 = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message2Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message2Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage1 = when (updatedMessage1) {
+            is ChatListItem.TextMessage -> updatedMessage1.data
+            is ChatListItem.ImageMessages -> updatedMessage1.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage1.data
+            else -> null
+        }
+
+        val actualMessage2 = when (updatedMessage2) {
+            is ChatListItem.TextMessage -> updatedMessage2.data
+            is ChatListItem.ImageMessages -> updatedMessage2.data.firstOrNull { it.id == message2Id }
+            is ChatListItem.VoiceMessage -> updatedMessage2.data
+            else -> null
+        }
+
+        assertThat(actualMessage1?.reactions?.size).isEqualTo(1)
+        assertThat(actualMessage2?.reactions?.size).isEqualTo(0)
+    }
+
+    @Test
+    fun `onCollectRemoveReaction should not update non-matching messages`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val message1 = messages.first().copy(reactions = listOf(messageReaction))
+        val message2Reaction = MessageReaction(reaction, otherUserId, message2Id)
+        val message2 = messages[1].copy(reactions = listOf(message2Reaction))
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(message1, message2), 0, true)
+        every { messageRepository.observeRemovedMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+
+        val updatedMessage1 = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message1Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val updatedMessage2 = chatListItems.find { item ->
+            when (item) {
+                is ChatListItem.TextMessage -> item.data.id == message2Id
+                is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
+                is ChatListItem.VoiceMessage -> item.data.id == message2Id
+                is ChatListItem.DateSeparator -> false
+            }
+        }
+
+        val actualMessage1 = when (updatedMessage1) {
+            is ChatListItem.TextMessage -> updatedMessage1.data
+            is ChatListItem.ImageMessages -> updatedMessage1.data.firstOrNull { it.id == message1Id }
+            is ChatListItem.VoiceMessage -> updatedMessage1.data
+            else -> null
+        }
+
+        val actualMessage2 = when (updatedMessage2) {
+            is ChatListItem.TextMessage -> updatedMessage2.data
+            is ChatListItem.ImageMessages -> updatedMessage2.data.firstOrNull { it.id == message2Id }
+            is ChatListItem.VoiceMessage -> updatedMessage2.data
+            else -> null
+        }
+
+        assertThat(actualMessage1?.reactions?.size).isEqualTo(0)
+        assertThat(actualMessage2?.reactions?.size).isEqualTo(1)
+    }
+
     private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
         filterIsInstance<ChatListItem.ImageMessages>()
             .flatMap { it.data }
+            .plus(
+                filterIsInstance<ChatListItem.TextMessage>()
+                    .map { it.data }
+            )
+            .plus(
+                filterIsInstance<ChatListItem.VoiceMessage>()
+                    .map { it.data }
+            )
             .sortedByDescending { it.sendTime }
 
     private fun createViewModel(): ChatViewModel {

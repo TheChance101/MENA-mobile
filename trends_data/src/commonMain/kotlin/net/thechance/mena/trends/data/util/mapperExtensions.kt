@@ -21,7 +21,3 @@ fun String?.parseDateStringOrNull(
             .toLocalDateTime(TimeZone.currentSystemDefault())
     }.getOrNull()
 }
-
-internal fun String.toUrl(): String{
-    return "https://mena-trends.fra1.cdn.digitaloceanspaces.com/$this"
-}

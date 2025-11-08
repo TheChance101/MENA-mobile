@@ -26,7 +26,7 @@ data class MessageReaction(
 sealed interface MessageContent {
     data class Text(val text: String) : MessageContent
     data class Image(val data: ImageData) : MessageContent
-    data class Audio(val data: AudioData) : MessageContent
+    data class Audio(val data: AudioData, val audioDurationMs: Long? = null) : MessageContent
 }
 
 sealed interface ImageData {

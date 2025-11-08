@@ -32,7 +32,7 @@ fun MessageDto.toDomain(): Message? {
     val content = when {
         !text.isNullOrBlank() -> MessageContent.Text(text)
         !imageUrl.isNullOrEmpty() -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
-        !audioUrl.isNullOrBlank() -> MessageContent.Audio(AudioData.AudioUrl(audioUrl))
+        !audioUrl.isNullOrBlank() -> MessageContent.Audio(data = AudioData.AudioUrl(audioUrl), audioDurationMs = audioDurationMs)
         else -> return null
     }
 
