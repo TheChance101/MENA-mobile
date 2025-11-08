@@ -15,8 +15,8 @@ internal class ReelMapperTest {
         val entity = reelDto.toEntity()
 
         assertThat(entity.id).isEqualTo(reelDto.id)
-        assertThat(entity.thumbnailUrl).isEqualTo(reelDto.reelImageUrl?.toUrl())
-        assertThat(entity.videoUrl).isEqualTo(reelDto.videoUrl?.toUrl())
+        assertThat(entity.thumbnailUrl).isEqualTo(reelDto.reelImageUrl)
+        assertThat(entity.videoUrl).isEqualTo(reelDto.videoUrl)
         assertThat(entity.description).isEqualTo(reelDto.description)
         assertThat(entity.likesCount).isEqualTo(reelDto.likesCount)
         assertThat(entity.viewsCount).isEqualTo(reelDto.viewsCount)
