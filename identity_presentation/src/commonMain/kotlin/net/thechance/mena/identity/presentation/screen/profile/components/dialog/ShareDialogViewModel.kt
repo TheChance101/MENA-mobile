@@ -1,8 +1,23 @@
 package net.thechance.mena.identity.presentation.screen.profile.components.dialog
 
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.alexzhirkevich.qrose.ImageFormat
+import io.github.alexzhirkevich.qrose.toByteArray
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -47,41 +62,42 @@ class ShareDialogViewModel(
         setUrlLinks()
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    private fun setUrlLinks() {
-        viewModelScope.launch {
-            userRepository.getUser().collect { user ->
-                val shareLinkUrl = "$SHARE_URL${user?.id}"
-                updateState { copy(shareLinkUrl = shareLinkUrl) }
-            }
-        }
-    }
+    override fun onClickDownload(
+        painter: Painter,
+        screenSize: IntSize,
+        density: Density,
+        layoutDirection: LayoutDirection
+    ) {
+        val downloadImageBitmap = createBitmap(
+            painter = painter,
+            screenSize = screenSize,
+            density = density,
+            layoutDirection = layoutDirection
+        )
+        val imageByteArray = downloadImageBitmap.toByteArray(
+            format = ImageFormat.PNG
+        )
 
-    override fun onClickDownload(byteArray: ByteArray) {
         val permissionState = galleryPermissionHandler.checkPermission()
-
         when (permissionState) {
             PermissionState.GRANTED -> {
-                updateState {
-                    copy(isLoading = true)
-                }
+                updateState { copy(isLoading = true) }
                 tryToExecute(
-                    function = { imagesRepository.saveImageToGallery(byteArray) },
+                    function = {
+                        imagesRepository.saveImageToGallery(imageByteArray)
+                    },
                     onSuccess = { onDownloadSuccess() },
                     onError = ::onError,
                     dispatcher = dispatcher
                 )
             }
-
             PermissionState.DENIED_PERMANENTLY -> galleryPermissionHandler.openSettingPage()
             else -> galleryPermissionHandler.requestPermission()
         }
     }
 
     override fun onClickCopyToClipboard(clipboard: Clipboard) {
-        updateState {
-            copy(isLoading = true)
-        }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { clipboard.setClipEntry(clipEntryOf(state.value.shareLinkUrl)) },
             onSuccess = { onCopyToClipboardSuccess() },
@@ -102,6 +118,20 @@ class ShareDialogViewModel(
             updateState { copy(showSnackBar = false, snackBarTitle = null, snackBarMessage = null) }
         }
 
+    }
+
+    suspend fun sendNewEffect(newEffect: ShareQrCodeUIEffect) {
+        _effect.emit(newEffect)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun setUrlLinks() {
+        viewModelScope.launch {
+            userRepository.getUser().collect { user ->
+                val shareLinkUrl = "$SHARE_URL${user?.id}"
+                updateState { copy(shareLinkUrl = shareLinkUrl) }
+            }
+        }
     }
 
     private fun onDownloadSuccess() {
@@ -127,12 +157,68 @@ class ShareDialogViewModel(
         }
     }
 
-    suspend fun sendNewEffect(newEffect: ShareQrCodeUIEffect) {
-        _effect.emit(newEffect)
-    }
-
     private fun updateState(updater: ShareQrCodeUIState.() -> ShareQrCodeUIState) {
         _state.update(updater)
+    }
+
+    private fun createBitmap(
+        painter: Painter,
+        density: Density,
+        layoutDirection: LayoutDirection,
+        screenSize: IntSize
+    ): ImageBitmap {
+        val imageBitmap = ImageBitmap(
+            width = screenSize.width,
+            height = screenSize.height
+        )
+        drawOnBitmap(
+            imageBitmap = imageBitmap,
+            painter = painter,
+            density = density,
+            layoutDirection = layoutDirection,
+            drawingSize = screenSize.toSize()
+        )
+
+        return imageBitmap
+    }
+
+    private fun drawOnBitmap(
+        imageBitmap: ImageBitmap,
+        painter: Painter,
+        density: Density,
+        layoutDirection: LayoutDirection,
+        drawingSize: Size
+    ) {
+        val canvas = Canvas(imageBitmap)
+        val targetSize = with(density) { 240.dp.toPx() }
+        val imageSize = Size(
+            width = targetSize,
+            height = targetSize
+        )
+        val imageTranslationOffset = Offset(
+            x = drawingSize.width / 2 - imageSize.width / 2,
+            y = drawingSize.height / 2 - imageSize.height / 2
+        )
+
+        CanvasDrawScope().draw(
+            density = density,
+            layoutDirection = layoutDirection,
+            canvas = canvas,
+            size = drawingSize
+        ) {
+            drawRect(
+                color = Color(0xFFF2F4F7),
+                size = drawingSize
+            )
+
+            with(painter) {
+                translate(top = imageTranslationOffset.y, left = imageTranslationOffset.x) {
+                    draw(
+                        size = Size(width = targetSize, height = targetSize)
+                    )
+                }
+            }
+        }
     }
 
     @OptIn(ExperimentalTime::class)

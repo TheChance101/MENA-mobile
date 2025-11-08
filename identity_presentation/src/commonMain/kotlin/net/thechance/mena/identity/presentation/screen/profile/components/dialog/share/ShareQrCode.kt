@@ -24,10 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
-import io.github.alexzhirkevich.qrose.toByteArray
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.copy_to_clipboard_success
 import mena.identity_presentation.generated.resources.copy_to_clipboard_success_message
@@ -73,7 +75,6 @@ fun ScaffoldScope.ShareQrCode(
     onDismissShareDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val shareState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -122,6 +123,9 @@ private fun ScaffoldScope.ShareQrCodeContent(
     modifier: Modifier = Modifier
 ) {
     val clipboard = LocalClipboard.current
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    val screenSize = LocalWindowInfo.current.containerSize
 
     state.snackBarTitle?.let { title ->
         CopyToClipboardSnackBar(
@@ -195,10 +199,10 @@ private fun ScaffoldScope.ShareQrCodeContent(
                     isLoading = state.isLoading,
                     onClick = {
                         listener.onClickDownload(
-                            qrCodePainter.toByteArray(
-                                width = qrCodePainter.intrinsicSize.width.toInt(),
-                                height = qrCodePainter.intrinsicSize.height.toInt()
-                            )
+                            painter = qrCodePainter,
+                            screenSize = screenSize,
+                            density = density,
+                            layoutDirection = layoutDirection
                         )
                     }
                 )
