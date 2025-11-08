@@ -6,7 +6,6 @@ import assertk.assertions.isNull
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.data.dto.CategoryDto
 import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.data.util.toUrl
 import kotlin.test.Test
 
 internal class ReelMapperTest {
