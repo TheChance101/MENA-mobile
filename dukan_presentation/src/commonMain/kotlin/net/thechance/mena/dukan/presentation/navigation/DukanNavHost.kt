@@ -100,7 +100,9 @@ fun DukanNavHost(
                 SearchScreen()
             }
             composable<DukanRoute.AddressesRoute> {
-                identityApi.NavigateToAddressesScreen()
+                identityApi.NavigateToAddressesScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

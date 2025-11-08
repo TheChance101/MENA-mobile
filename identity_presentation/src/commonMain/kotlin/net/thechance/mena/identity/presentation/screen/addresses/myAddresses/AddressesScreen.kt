@@ -32,7 +32,9 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class AddressesScreen : BaseScreen<
+class AddressesScreen(
+    private val onNavigateBack: (() -> Unit)? = null
+) : BaseScreen<
         AddressesScreenViewModel,
         AddressesScreenUIState,
         AddressesScreenUIEffect,
@@ -111,7 +113,9 @@ class AddressesScreen : BaseScreen<
         navigator: Navigator
     ) {
         when (effect) {
-            AddressesScreenUIEffect.NavigateBack -> navigator.pop()
+            AddressesScreenUIEffect.NavigateBack -> {
+                onNavigateBack?.invoke() ?: navigator.pop()
+            }
             is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
                 navigator.push(
                     AddEditLocationScreen(

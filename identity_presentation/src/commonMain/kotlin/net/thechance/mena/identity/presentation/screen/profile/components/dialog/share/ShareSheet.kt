@@ -3,4 +3,4 @@ package net.thechance.mena.identity.presentation.screen.profile.components.dialo
 import androidx.compose.runtime.Composable
 
 @Composable
-expect fun ShareSheet(title: String, message: String, onDismiss: () -> Unit)
+expect fun ShareSheet(title: String, message: String, shareLink: String, onDismiss: () -> Unit)

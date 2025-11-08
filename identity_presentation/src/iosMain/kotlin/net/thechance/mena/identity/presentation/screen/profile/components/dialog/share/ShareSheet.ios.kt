@@ -10,9 +10,9 @@ import platform.UIKit.UIApplication
 
 @OptIn(BetaInteropApi::class)
 @Composable
-actual fun ShareSheet(title: String, message: String, onDismiss: () -> Unit) {
-    val nsTitle = NSString.create(string = title)
-    val nsUrl = NSURL(string = message)
+actual fun ShareSheet(title: String, message: String, shareLink: String, onDismiss: () -> Unit) {
+    val nsTitle = NSString.create(string = "$title\n\n$message")
+    val nsUrl = NSURL(string = shareLink)
 
     val shareSheet = UIActivityViewController(
         activityItems = listOf(nsTitle, nsUrl),

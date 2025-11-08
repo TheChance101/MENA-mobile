@@ -72,13 +72,17 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                     ReciterSearchScreen()
                 }
                 composable<Route.UserAddresses> {
-                    identityApi.NavigateToAddressesScreen()
+                    identityApi.NavigateToAddressesScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
                 composable<Route.UploadImageRoute> {
                     UploadImageScreen()
                 }
                 composable<Route.UserAddresses> {
-                    identityApi.NavigateToAddressesScreen()
+                    identityApi.NavigateToAddressesScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
         }
