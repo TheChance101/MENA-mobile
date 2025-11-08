@@ -98,7 +98,7 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
             data = listOf(
                 createMessageDto()
             ),
-            pageNumber = 0,
+            pageNumber = 1,
             pageSize = 20,
             totalItems = 1,
             totalPages = 1
@@ -107,6 +107,7 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+
 
 fun MockRequestHandleScope.defaultChatResponse() = respond(
     content = jsonSerialization.encodeToString(
@@ -249,7 +250,8 @@ fun createHttpClient(
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatsSummariesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    syncLatestMessagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
@@ -266,10 +268,10 @@ fun createHttpClient(
             path.startsWith(DELETE_CHAT_ENDPOINT) ->
                 deleteChatResponse?.invoke(this) ?: defaultDeleteChatResponse()
 
-            request.url.encodedPath == CHATS_SUMMARIES_ENDPOINT ->
+            path == CHATS_SUMMARIES_ENDPOINT ->
                 chatsSummariesResponse?.invoke(this) ?: defaultChatSummaryResponse()
 
-            request.url.encodedPath == CHAT_ENDPOINT ->
+            path == CHAT_ENDPOINT ->
                 chatResponse?.invoke(this) ?: defaultChatResponse()
 
             path.contains(IMAGES_ENDPOINT) ->
@@ -283,6 +285,9 @@ fun createHttpClient(
 
             path.contains(USER_ENDPOINT) ->
                 userResponse?.invoke(this) ?: defaultUserInfoResponse()
+
+            path.contains("/messages/latest") ->
+                syncLatestMessagesResponse?.invoke(this) ?: defaultChatHistoryResponse()
 
             path.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()
