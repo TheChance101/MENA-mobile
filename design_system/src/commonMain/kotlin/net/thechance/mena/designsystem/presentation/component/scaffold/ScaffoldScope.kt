@@ -16,6 +16,13 @@ interface ScaffoldScope {
     ) {
         error("The method is not implemented")
     }
+
+    fun drawer(
+        isVisible: Boolean,
+        content: @Composable ScaffoldScope.(Boolean) -> Unit
+    ) {
+        error("The method is not implemented")
+    }
 }
 
 internal class ScaffoldScopeImpl : ScaffoldScope {
@@ -36,6 +43,13 @@ internal class ScaffoldScopeImpl : ScaffoldScope {
     override fun dialog(
         isVisible: Boolean,
         content: @Composable ScaffoldScope.(Boolean) -> Unit
+    ) {
+        items.add(OverlayItem(isVisible, content))
+    }
+
+    override fun drawer(
+        isVisible: Boolean,
+        content: @Composable (ScaffoldScope.(Boolean) -> Unit)
     ) {
         items.add(OverlayItem(isVisible, content))
     }
