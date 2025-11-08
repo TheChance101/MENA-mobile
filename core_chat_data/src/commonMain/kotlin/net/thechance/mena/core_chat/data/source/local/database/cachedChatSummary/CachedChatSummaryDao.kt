@@ -1,11 +1,9 @@
 package net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Dao
 interface CachedChatSummaryDao {
@@ -23,11 +21,11 @@ interface CachedChatSummaryDao {
 
     @OptIn(ExperimentalUuidApi::class)
     @Query("DELETE FROM cached_chat_summary WHERE id IN (:chatsId)")
-    fun deleteMultipleChatSummaries(chatsId: List<String>)
+    suspend fun deleteMultipleChatSummaries(chatsId: List<String>)
 
     @Query("DELETE FROM cached_chat_summary WHERE id = :chatId")
     suspend fun deleteChatSummaryById(chatId: String)
 
     @Query("SELECT * FROM cached_chat_summary WHERE id = :chatId")
-    fun getChatSummaryById(chatId: String): CachedChatSummaryDto?
+    suspend fun getChatSummaryById(chatId: String): CachedChatSummaryDto?
 }
