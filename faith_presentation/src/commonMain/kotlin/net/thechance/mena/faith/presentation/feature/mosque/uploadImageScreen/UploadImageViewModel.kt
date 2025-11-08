@@ -38,4 +38,8 @@ internal class UploadImageViewModel(
         updateState { it.copy(croppedImage = image) }
         sendEffect(UploadImageEffect.NavigateBack)
     }
+
+    override fun onBackClick() {
+        sendEffect(UploadImageEffect.NavigateBack)
+    }
 }

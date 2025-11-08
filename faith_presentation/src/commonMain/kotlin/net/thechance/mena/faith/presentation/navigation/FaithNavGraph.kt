@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
+import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueScreen
 import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageScreen
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
@@ -79,10 +80,8 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 composable<Route.UploadImageRoute> {
                     UploadImageScreen()
                 }
-                composable<Route.UserAddresses> {
-                    identityApi.NavigateToAddressesScreen(
-                        onNavigateBack = { navController.popBackStack() }
-                    )
+                composable<Route.CreateMosqueRoute> {
+                    CreateMosqueScreen()
                 }
             }
         }

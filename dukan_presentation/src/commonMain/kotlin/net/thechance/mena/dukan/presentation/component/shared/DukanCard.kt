@@ -90,7 +90,7 @@ private fun BoxScope.DukanCardContent(
             .fillMaxSize()
             .skeletonLoading(isLoading = isLoading)
     )
-    if (isError) {
+    if (isError || isLoading) {
         Image(
             painter = painterResource(Res.drawable.ic_no_image_loaded),
             contentDescription = null,

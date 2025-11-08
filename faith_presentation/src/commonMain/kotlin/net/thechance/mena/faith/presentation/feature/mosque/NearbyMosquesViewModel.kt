@@ -16,6 +16,7 @@ import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.domain.usecase.CalculateDistanceUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.utils.extentions.roundTo2Decimals
 import net.thechance.mena.identity.domain.entity.Address
@@ -99,7 +100,7 @@ internal class NearbyMosquesViewModel(
     }
 
     override fun onAddMosqueClick() {
-//        TODO("Not yet implemented")
+        sendEffect(NearbyMosquesEffect.NavigateToAddMosque)
     }
 
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
@@ -210,6 +211,14 @@ internal class NearbyMosquesViewModel(
 
     override fun changeMapMovement(canMove: Boolean) {
         updateState { it.copy(canMove = canMove) }
+    }
+
+    override fun showSuccessMessage(message: String) {
+        snackbarHandler.showSnackBar(
+            message = { message },
+            status = SnackBarState.Status.Success,
+            scope = viewModelScope
+        )
     }
 
     override fun onViewOnMapClick(coordinate: Coordinate) {

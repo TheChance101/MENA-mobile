@@ -18,6 +18,7 @@ internal fun UploadImageScreen(
     MosqueImageCropView(
         aspectRatio = 16f / 9f,
         selectedImage = state.imageSrc,
+        onBackClick = viewModel::onBackClick,
         onImageCrop = { image ->
             viewModel.onImageCrop(image)
         }

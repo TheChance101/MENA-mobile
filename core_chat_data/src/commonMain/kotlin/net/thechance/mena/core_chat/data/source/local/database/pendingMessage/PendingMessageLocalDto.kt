@@ -16,6 +16,8 @@ data class PendingMessageLocalDto(
     val image: ByteArray? = null,
     @ColumnInfo(name = "video")
     val audio: ByteArray? = null,
+    @ColumnInfo(name = "audio_duration_ms")
+    val audioDurationMs: Long? = null,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long,
     @ColumnInfo(name = "chat_id")

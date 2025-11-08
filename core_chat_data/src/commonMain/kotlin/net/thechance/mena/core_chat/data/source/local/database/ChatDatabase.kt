@@ -15,14 +15,17 @@ import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.Chat
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
 
 @Database(
-    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class],
+    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class, CachedChatSummaryDto::class],
     version = 1
 )
 @ConstructedBy(ChatDatabaseConstructor::class)
 @TypeConverters(MessageConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
+    abstract fun getChatSummaryDao(): CachedChatSummaryDao
     abstract fun getPendingMessageDao(): PendingMessageDao
     abstract fun getCachedMessageDao(): CachedMessageDao
     abstract fun getChatDao(): CachedChatDao

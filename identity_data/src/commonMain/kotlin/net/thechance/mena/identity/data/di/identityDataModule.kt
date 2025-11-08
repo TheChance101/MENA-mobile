@@ -11,13 +11,13 @@ import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl
 import net.thechance.mena.identity.data.repository.ImagesRepositoryImpl
 import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl
+import net.thechance.mena.identity.data.repository.RegistrationDraftRepositoryImpl
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl
 import net.thechance.mena.identity.data.repository.SettingsRepositoryImpl
 import net.thechance.mena.identity.data.repository.UserRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.AddressesRepositoryImpl
 import net.thechance.mena.identity.data.repository.location.GeocoderWrapper
 import net.thechance.mena.identity.data.repository.location.MobileGeocoderWrapper
-import net.thechance.mena.identity.data.repository.RegistrationDraftRepositoryImpl
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
@@ -70,11 +70,10 @@ val identityDataModule = module {
     singleOf(::ImagesRepositoryImpl) bind ImagesRepository::class
     singleOf(::AuthorizationService)
     single(named(IDENTITY_CLIENT)) {
-        provideCoilClient(
+        provideHttpClient(
             engine = get(),
             baseUrl = get<String>(named(BASE_URL)),
-            settings = get(),
-            refreshToken = { get<AuthorizationService>().refreshToken() }
+            authorizationService = { get<AuthorizationService>() },
         )
     }
 

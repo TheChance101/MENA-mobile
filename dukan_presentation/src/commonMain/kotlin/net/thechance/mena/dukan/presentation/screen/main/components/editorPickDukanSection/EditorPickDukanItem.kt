@@ -13,14 +13,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.heart_icon
@@ -45,6 +50,9 @@ fun EditorPickDukanItem(
     modifier: Modifier = Modifier
 ) {
 
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -56,15 +64,18 @@ fun EditorPickDukanItem(
                 onClick = { onClickDukan() }
             )
     ) {
-        val painter = rememberAsyncImagePainter(model = dukanImage)
 
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = dukanImage,
             contentDescription = stringResource(Res.string.dukan_image),
             contentScale = ContentScale.Crop,
+            onState = { state ->
+                isError = state is AsyncImagePainter.State.Error
+                isLoading = state is AsyncImagePainter.State.Loading
+            },
             modifier = Modifier.fillMaxSize()
         )
-        if (painter.state is AsyncImagePainter.State.Error) {
+        if (isError || isLoading) {
             Image(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,
@@ -74,6 +85,18 @@ fun EditorPickDukanItem(
                 contentScale = ContentScale.Fit
             )
         }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.7f)
+                        )
+                    )
+                )
+        )
         Box(
             Modifier.fillMaxSize().padding(Theme.spacing._8)
         ) {

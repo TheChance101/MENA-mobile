@@ -51,5 +51,8 @@ internal sealed interface Route {
     ) : Route
 
     @Serializable
+    data object CreateMosqueRoute : Route
+
+    @Serializable
     data object UploadImageRoute : Route
 }

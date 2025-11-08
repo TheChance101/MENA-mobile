@@ -93,6 +93,7 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
     val imageData = if (content is MessageContent.Image) content.data else null
     val image = if (imageData is ImageData.ImageByteArray) imageData.byteArray else null
     val audioData = if (content is MessageContent.Audio) content.data else null
+    val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audio = if (audioData is AudioData.AudioByteArray) audioData.byteArray else null
 
 
@@ -103,6 +104,7 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
         text = text,
         image = image,
         audio = audio,
+        audioDurationMs = audioDuration,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status
@@ -117,6 +119,7 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val imageData = if (content is MessageContent.Image) content.data else null
     val imageUrl = if (imageData is ImageData.ImageUrl) imageData.url else null
     val audioData = if (content is MessageContent.Audio) content.data else null
+    val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
 
 
@@ -127,6 +130,7 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         text = text,
         imageUrl = imageUrl,
         audioUrl = audioUrl,
+        audioDurationMs = audioDuration,
         reactions = reactions.toLocalDto(),
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
@@ -166,7 +170,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
     } else if (imageUrl != null) {
         MessageContent.Image(ImageData.ImageUrl(imageUrl))
     } else if (audioUrl != null) {
-        MessageContent.Audio(AudioData.AudioUrl(audioUrl))
+        MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
     } else {
         error("Invalid message content")
     }
@@ -189,7 +193,7 @@ fun PendingMessageLocalDto.toDomain(): Message {
     } else if (image != null) {
         MessageContent.Image(ImageData.ImageByteArray(image))
     } else if (audio != null) {
-        MessageContent.Audio(AudioData.AudioByteArray(audio))
+        MessageContent.Audio(AudioData.AudioByteArray(audio), audioDurationMs)
     } else {
         error("Invalid message content")
     }

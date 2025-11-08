@@ -67,10 +67,23 @@ internal fun NearbyMosquesScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
+    LaunchedEffect(Unit) {
+        val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+        savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
+            ?.collect { successMessage ->
+                successMessage?.let {
+                    viewModel.showSuccessMessage(successMessage)
+                    savedStateHandle.remove<String?>("add_mosque_message")
+                }
+            }
+    }
+
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             NearbyMosquesEffect.NavigateBack -> navController.navigateUp()
-            NearbyMosquesEffect.NavigateToAddMosque -> {}
+            NearbyMosquesEffect.NavigateToAddMosque -> navController.navigate(Route.CreateMosqueRoute)
             NearbyMosquesEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
             is NearbyMosquesEffect.NavigateToMap -> mapNavigator.openMapAtCoordinate(coordinate = effect.coordinate)
         }
@@ -98,9 +111,11 @@ private fun Content(
                 },
                 trailingContent = {
                     Icon(
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable(onClick = listener::onAddMosqueClick),
                         painter = painterResource(Res.drawable.ic_add),
-                        contentDescription = stringResource(Res.string.add)
+                        contentDescription = stringResource(Res.string.add),
                     )
                 },
                 onLeadingClick = listener::onBackClick
@@ -254,6 +269,7 @@ private fun NearbyMosquesScreenPreview() {
             override fun selectMosque(mosque: MosqueUiState) {}
             override fun unselectMosque() {}
             override fun changeMapMovement(canMove: Boolean) {}
+            override fun showSuccessMessage(message: String) {}
         }
     )
 }

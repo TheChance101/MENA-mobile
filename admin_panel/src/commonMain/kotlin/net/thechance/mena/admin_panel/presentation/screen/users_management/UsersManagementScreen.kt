@@ -68,7 +68,7 @@ private fun UsersManagementScreenContent(
             )
 
             when {
-                state.isLoading && state.users.isEmpty()-> UsersLoadingIndicator()
+                state.isLoading -> UsersLoadingIndicator()
 
                 state.users.isEmpty() ->{
                     if (state.query.isNotEmpty()) {

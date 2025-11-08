@@ -8,6 +8,7 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
@@ -22,6 +23,7 @@ internal val localDataModule = module {
     single(named(ChatDatabaseBuilder)) { getDatabaseBuilder() }
 
     single<ChatDatabase> { getChatDatabase(get(named(ChatDatabaseBuilder))) }
+    single<CachedChatSummaryDao> { get<ChatDatabase>().getChatSummaryDao() }
     single<PendingMessageDao> { get<ChatDatabase>().getPendingMessageDao() }
     single<CachedMessageDao> { get<ChatDatabase>().getCachedMessageDao() }
     single<CachedChatDao> { get<ChatDatabase>().getChatDao() }

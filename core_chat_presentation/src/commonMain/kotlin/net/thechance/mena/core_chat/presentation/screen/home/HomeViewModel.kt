@@ -5,12 +5,15 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.error
+import mena.core_chat_presentation.generated.resources.no_internet
+import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -18,6 +21,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -59,6 +63,36 @@ class HomeViewModel(
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
+        observeChatSummariesSyncState()
+    }
+    private fun observeChatSummariesSyncState() {
+        tryToCollect(
+            collect = { chatRepository.observeChatSummariesSyncState() },
+            onCollect = {
+                delay(100)
+                when (it) {
+                    is SyncState.Error -> showErrorLoadingChatsSnackBar()
+                    is SyncState.Offline -> showNoInternetSnackBar()
+                    is SyncState.ChatsSummariesSynced -> {
+                        updateState { state ->
+                            state.copy(
+                                chats = it.chatSummaries.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }
+                                    .map { chatSummary -> chatSummary.toUi() }
+                            )
+                        }
+                    }
+                    is SyncState.DeletedChatsSynced -> {
+                        val deletedChatIdsSet = it.chatIds.toSet()
+                        updateState { state ->
+                            state.copy(
+                                chats = state.chats.filter { chat -> chat.id !in deletedChatIdsSet }
+                            )
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+        )
     }
 
     private fun listenToMarkAsReadEvent() {
@@ -146,7 +180,7 @@ class HomeViewModel(
 
     private fun getBalanceAmount() {
         tryToExecute(
-            onStart = { updateState { it.copy(isBalanceLoading = true) }},
+            onStart = { updateState { it.copy(isBalanceLoading = true) } },
             execute = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceAmountSuccess,
             onError = { onGetBalanceAmountError() }
@@ -185,6 +219,21 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummaryError() {
+        showSnackBar(
+            titleStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.could_not_load_chats,
+            isError = true
+        )
+    }
+
+    private fun showNoInternetSnackBar() {
+        showSnackBar(
+            titleStringResource = Res.string.no_internet,
+            messageStringResource = Res.string.no_internet_message,
+            isError = true
+        )
+    }
+    private fun showErrorLoadingChatsSnackBar(){
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,
