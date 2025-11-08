@@ -1,3 +1,4 @@
+
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
 
 package net.thechance.mena.core_chat.data.chat
@@ -37,6 +38,7 @@ import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.Cac
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.entity.AudioData
@@ -93,8 +95,19 @@ class MessageRepositoryImplTest {
         )
     }
 
+
     @Test
     fun `should return messages when loadMessages is successful`() = runTest {
+        everySuspend {
+            cachedMessageDao.getMessagesByChatIdWithOffset(
+                any(),
+                any(),
+                any()
+            )
+        } returns listOf(createMessage().toCachedMessageLocalDto())
+        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
+        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
+        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
         httpClient = createHttpClient(
             chatHistoryResponse = { defaultChatHistoryResponse() }
         )
@@ -112,6 +125,7 @@ class MessageRepositoryImplTest {
         assertThat(result.data).isNotEmpty()
     }
 
+
     @Test
     fun `should delete message from local database when deleteMessage is called`() = runTest {
         val message = createMessage(
@@ -125,8 +139,17 @@ class MessageRepositoryImplTest {
         verifySuspend { pendingMessageDao.deleteMessage(message.id.toString()) }
     }
 
+
     @Test
     fun `should throw NotFoundException when loadMessages returns error`() = runTest {
+        everySuspend {
+            cachedMessageDao.getMessagesByChatIdWithOffset(
+                any(),
+                any(),
+                any()
+            )
+        } returns emptyList()
+        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
         httpClient = createHttpClient(
             chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
         )
