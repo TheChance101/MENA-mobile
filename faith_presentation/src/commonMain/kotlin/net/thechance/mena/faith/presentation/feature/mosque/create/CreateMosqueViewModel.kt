@@ -8,7 +8,7 @@ import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
 
 internal class CreateMosqueViewModel(
-    val sharedImageViewModel: SharedImageViewModel
+    private val sharedImageViewModel: SharedImageViewModel
 ) :
     BaseViewModel<CreateMosqueUiState, CreateMosqueEffect>(
         CreateMosqueUiState()

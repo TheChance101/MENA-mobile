@@ -9,7 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.entity.Mosque
@@ -54,31 +53,15 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
-        return if (query.isBlank()) {
-            flow {
-                val mosques = mosqueRepository.getNearbyMosques(
-                    latitude = uiState.value.centerOfMap?.latitude ?: 0.0,
-                    longitude = uiState.value.centerOfMap?.longitude ?: 0.0,
-                    radius = 1.0
-                )
-                emit(
-                    PagingData.from(
-                        mosques.map { it.toUiState(0.0) }
-                    )
-                )
-            }.cachedIn(viewModelScope)
-        } else {
-            createPagingSourceFlow { pageNumber, pageSize ->
-                mosqueRepository.getMosquesByName(
-                    query = query,
-                    page = pageNumber,
-                    size = pageSize
-                )
-            }.map { pagingData ->
-                pagingData.map { mosque -> mosque.toUiState(0.0) }
-            }.cachedIn(viewModelScope)
-        }
+        return createPagingSourceFlow { pageNumber, pageSize ->
+            mosqueRepository.getMosquesByName(query, pageNumber, pageSize)
+        }.map { pagingData ->
+            pagingData.map { mosque ->
+                mosque.toUiState(0.0)
+            }
+        }.cachedIn(viewModelScope)
     }
+
 
 
     override fun onQueryChange(query: String) {
@@ -87,7 +70,6 @@ internal class NearbyMosquesViewModel(
 
     override fun onSearchSubmit() {
         if (uiState.value.query.isBlank()) return
-
         tryToExecute(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
@@ -141,19 +123,42 @@ internal class NearbyMosquesViewModel(
 
 
     override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
+        tryToExecute(
+            execute = {
+                mosqueRepository.getNearbyMosques(
+                    latitude = coordinate.latitude,
+                    longitude = coordinate.longitude,
+                    radius = 1.0
+                )
+            },
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onSuccess = ::handleNearbyMosquesSuccess,
+            onError = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun handleNearbyMosquesSuccess(mosques: List<Mosque>) {
+        val mosquesWithDistance = mosques.map { mosque ->
+            mosque.toUiState(0.0)
+        }
+
         updateState {
             it.copy(
-                mosquesSearchResults = createMosquesPagingSource(uiState.value.query),
+                mosques = mosquesWithDistance,
                 isLoading = false,
+                selectedMosque = null
             )
         }
     }
+
 
     override fun onSearchResultClick(mosque: MosqueUiState) {
         updateState {
             it.copy(
                 isSearchResultsBottomSheetVisible = false,
                 centerOfMap = mosque.coordinate,
+                selectedMosque = mosque,
             )
         }
     }

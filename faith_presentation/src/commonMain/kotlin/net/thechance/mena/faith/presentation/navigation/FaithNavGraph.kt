@@ -77,6 +77,9 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 composable<Route.UploadImageRoute> {
                     UploadImageScreen()
                 }
+                composable<Route.UserAddresses> {
+                    identityApi.NavigateToAddressesScreen()
+                }
             }
         }
     }

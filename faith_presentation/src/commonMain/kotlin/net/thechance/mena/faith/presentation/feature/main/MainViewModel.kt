@@ -3,7 +3,6 @@ package net.thechance.mena.faith.presentation.feature.main
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
@@ -11,35 +10,46 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getSunriseTime
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class MainViewModel(
     private val quranRepository: QuranRepository,
     private val prayerTimeRepository: PrayerTimeRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<MainUiState, MainScreenEffect>(
     initialState = MainUiState(),
 ), MainInteractionListener {
 
     init {
-        initializeScreenData()
-    }
-
-    private fun initializeScreenData() {
-        loadPrayerTimes()
+        getUserLocation()
         loadLastAyahForTilawah()
     }
 
-    @OptIn(ExperimentalTime::class)
-    private fun loadPrayerTimes() {
+    private fun getUserLocation() {
+        tryToExecute(
+            execute = { locationService.getActiveAddress()!! },
+            onSuccess = ::onGetUserLocationSuccess,
+            onError = { sendEffect(MainScreenEffect.NavigateToAddressesScreen) },
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetUserLocationSuccess(address: Address) {
+        updateState { state -> state.copy(address = address.addressLine) }
+        loadPrayerTimes(address)
+    }
+
+    private fun loadPrayerTimes(address: Address) {
         tryToExecute(
             execute = {
-                //TODO: get default location
-                val defaultLocation = Location(latitude = 30.186173, longitude = 31.158446)
                 prayerTimeRepository.getPrayerTimes(
                     date = Clock.System.now(),
-                    location = defaultLocation
+                    address = address
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
@@ -49,7 +59,6 @@ class MainViewModel(
         )
     }
 
-    @OptIn(ExperimentalTime::class)
     private fun onGetPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
         updateState { currentState ->
             currentState.copy(
@@ -85,12 +94,11 @@ class MainViewModel(
     }
 
     override fun onQuranClick() = sendEffect(MainScreenEffect.NavigateToQuran)
-
     override fun onQiblahClick() = sendEffect(MainScreenEffect.NavigateToQiblah)
-
     override fun onMosquesClick() = sendEffect(MainScreenEffect.NavigateToMosques)
     override fun onPrayerTimeClick() = sendEffect(MainScreenEffect.NavigateToPrayerTime)
     override fun onTilawahClick() = sendEffect(MainScreenEffect.NavigateToTilawah)
+    override fun onLocationClick() = sendEffect(MainScreenEffect.NavigateToAddressesScreen)
 
     fun refreshTilawah() {
         loadLastAyahForTilawah()

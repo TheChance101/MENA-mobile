@@ -1,11 +1,17 @@
 package net.thechance.mena.faith.domain.usecase
 
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.exception.FaithException
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-import kotlin.test.*
-
+@OptIn(ExperimentalUuidApi::class)
 class CalculateDistanceUseCaseTest {
 
     private val useCase = CalculateDistanceUseCase()
@@ -13,8 +19,17 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should return zero when coordinates are identical`() {
         val result = useCase(
-            location1 = Location(latitude = 21.4225, longitude = 39.8262),
-            location2 = Location(latitude = 21.4225, longitude = 39.8262),
+            address1 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home,
+                latitude = 21.4225, longitude = 39.8262,
+            ),
+            address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 21.4225, longitude = 39.8262
+            ),
         )
         assertEquals(0.0, result)
     }
@@ -23,8 +38,16 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when first coordinate latitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                location1 = Location(latitude = 91.0, longitude = 0.0),
-                location2 = Location(latitude = 0.0, longitude = 0.0),
+                address1 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 91.0, longitude = 0.0
+                ),
+                address2 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+                ),
             )
         }
     }
@@ -33,8 +56,16 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when first coordinate longitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                location1 = Location(latitude = 0.0, longitude = 200.0),
-                location2 = Location(latitude = 0.0, longitude = 0.0)
+                address1 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 200.0
+                ),
+                address2 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+                )
             )
         }
     }
@@ -43,8 +74,16 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when second coordinate latitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                location1 = Location(latitude = 0.0, longitude = 0.0),
-                location2 = Location(latitude = -100.0, longitude = 0.0)
+                address1 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+                ),
+                address2 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = -100.0, longitude = 0.0
+                )
             )
         }
     }
@@ -53,8 +92,16 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when second coordinate longitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                location1 = Location(latitude = 0.0, longitude = 0.0),
-                location2 = Location(latitude = 0.0, longitude = 200.0)
+                address1 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+                ),
+                address2 = Address(
+                    id = Uuid.random(),
+                    addressLine = "Baghdad, Iraq",
+                    addressType = AddressType.Home, latitude = 0.0, longitude = 200.0
+                )
             )
         }
     }
@@ -66,11 +113,19 @@ class CalculateDistanceUseCaseTest {
         val meccaLon = 39.8579
         val medinaLat = 24.5247
         val medinaLon = 39.5692
-        val meccaLocation = Location(latitude = meccaLat, longitude =  meccaLon)
-        val medinaLocation = Location(latitude = medinaLat, longitude = medinaLon)
+        val meccaAddress = Address(
+            id = Uuid.random(),
+            addressLine = "Baghdad, Iraq",
+            addressType = AddressType.Home, latitude = meccaLat, longitude = meccaLon
+        )
+        val medinaAddress = Address(
+            id = Uuid.random(),
+            addressLine = "Baghdad, Iraq",
+            addressType = AddressType.Home, latitude = medinaLat, longitude = medinaLon
+        )
 
         // When
-        val distance = useCase(location1 = meccaLocation, location2 = medinaLocation)
+        val distance = useCase(address1 = meccaAddress, address2 = medinaAddress)
 
         // Then: Real-world distance ≈ 340 km (allow ±10 km tolerance)
         assertTrue(distance in 330.0..350.0, "Expected ≈340 km but got $distance")
@@ -83,11 +138,19 @@ class CalculateDistanceUseCaseTest {
         val newYorkLon = -74.0060
         val londonLat = 51.5074
         val londonLon = -0.1278
-        val newYorkLocation = Location(latitude = newYorkLat, longitude =  newYorkLon)
-        val londonLocation = Location(latitude = londonLat, longitude = londonLon)
+        val newYorkAddress = Address(
+            id = Uuid.random(),
+            addressLine = "Baghdad, Iraq",
+            addressType = AddressType.Home, latitude = newYorkLat, longitude = newYorkLon
+        )
+        val londonAddress = Address(
+            id = Uuid.random(),
+            addressLine = "Baghdad, Iraq",
+            addressType = AddressType.Home, latitude = londonLat, longitude = londonLon
+        )
 
         // When
-        val distance = useCase(location1 = newYorkLocation, location2 = londonLocation)
+        val distance = useCase(address1 = newYorkAddress, address2 = londonAddress)
 
         // Then
         assertTrue(distance in 5470.0..5670.0, "Expected ≈5570 km but got $distance")
@@ -95,25 +158,65 @@ class CalculateDistanceUseCaseTest {
 
     @Test
     fun `invoke should handle valid boundary coordinates -90 latitude`() {
-        val result = useCase(Location(-90.0, 0.0), location2 = Location(0.0, 0.0))
+        val result = useCase(
+            Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = -90.0, longitude = 0.0
+            ), address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            )
+        )
         assertTrue(result >= 0.0)
     }
 
     @Test
     fun `invoke should handle valid boundary coordinates +90 latitude`() {
-        val result = useCase(location1 = Location(90.0, 0.0), location2 = Location( 0.0, 0.0))
+        val result = useCase(
+            address1 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 90.0, longitude = 0.0
+            ), address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            )
+        )
         assertTrue(result >= 0.0)
     }
 
     @Test
     fun `invoke should handle valid boundary coordinates -180 longitude`() {
-        val result = useCase(Location(latitude = 0.0, longitude =  -180.0), location2 = Location(latitude = 0.0, longitude =  0.0))
+        val result = useCase(
+            Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = -180.0
+            ), address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            )
+        )
         assertTrue(result >= 0.0)
     }
 
     @Test
     fun `invoke should handle valid boundary coordinates +180 longitude`() {
-        val result = useCase(Location(latitude = 0.0, longitude = 180.0), location2 = Location( latitude = 0.0, longitude =  0.0))
+        val result = useCase(
+            Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 180.0
+            ), address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            )
+        )
         assertTrue(result >= 0.0)
     }
 
@@ -168,7 +271,18 @@ class CalculateDistanceUseCaseTest {
 
     @Test
     fun `invoke should coerce negative values to zero`() {
-        val result = useCase(Location(0.0, 0.0), location2 = Location( 0.0, 0.0))
+        val result = useCase(
+            Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            ), address2 = Address(
+                id = Uuid.random(),
+                addressLine = "Baghdad, Iraq",
+                addressType = AddressType.Home, latitude = 0.0, longitude = 0.0
+            )
+        )
         assertEquals(0.0, result)
     }
+
 }

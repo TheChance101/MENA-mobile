@@ -20,6 +20,7 @@ import net.thechance.mena.faith.presentation.feature.prayertime.component.NextPr
 import net.thechance.mena.faith.presentation.feature.prayertime.component.PrayerItem
 import net.thechance.mena.faith.presentation.feature.prayertime.component.PrayerTimeTopBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatInstantToTimeString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -39,7 +40,9 @@ fun PrayerTimeScreen(
             PrayerTimeEffect.NavigateCalenderDialog -> {}
             PrayerTimeEffect.NavigateNextDate -> {}
             PrayerTimeEffect.NavigatePrevDate -> {}
-            PrayerTimeEffect.NavigateToChangeLocation -> {}
+            PrayerTimeEffect.NavigateToAddressesScreen -> {
+                navController.navigate(Route.UserAddresses)
+            }
         }
     }
     Content(
@@ -65,7 +68,7 @@ private fun Content(uiState: PrayerTimeUiState, listener: PrayerTimeInteractionL
                     )
                 },
                 onLeadingClick = listener::onBackClick,
-                trailingContent = { PrayerTimeTopBar(listener::onChangeLocation) }
+                trailingContent = { PrayerTimeTopBar(uiState, listener::onLocationClick) }
             )
         },
     ) {
