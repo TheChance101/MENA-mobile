@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalTime::class)
 package net.thechance.mena.dukan.presentation.screen.cropImage.components
 
 import androidx.compose.foundation.Image
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +46,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
 @Composable
@@ -56,7 +61,10 @@ fun UploadImageContainer(
     val radius = Theme.radius.xl
     val scope = rememberCoroutineScope()
 
-    val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+    val debounceTimeMillis = 1000L
+    val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
+    val isFilePickerLaunching = remember { mutableStateOf(false) }
+    val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
         file?.let { image ->
             scope.launch {
                 image.toImageSrc()?.let { src ->
@@ -65,6 +73,20 @@ fun UploadImageContainer(
             }
         }
     }
+
+    val safeLaunch: () -> Unit = remember {
+        {
+            if (isFilePickerLaunching.value.not()) {
+                val now = Clock.System.now().toEpochMilliseconds()
+                if (now - lastLaunchTimeMillis.value > debounceTimeMillis ) {
+                    lastLaunchTimeMillis.value = now
+                    isFilePickerLaunching.value = true
+                    filePickerLauncher.launch()
+                }
+            }
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -84,7 +106,7 @@ fun UploadImageContainer(
                         cornerRadius = CornerRadius(radius.toPx())
                     )
                 }
-                .clickable { filePicker.launch() },
+                .clickable { safeLaunch() },
             contentAlignment = Alignment.Center
         ) {
 
@@ -122,7 +144,7 @@ fun UploadImageContainer(
                         color = Theme.colorScheme.background.surface,
                         shape = RoundedCornerShape(radius)
                     )
-                    .clickable { filePicker.launch() },
+                    .clickable { safeLaunch() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

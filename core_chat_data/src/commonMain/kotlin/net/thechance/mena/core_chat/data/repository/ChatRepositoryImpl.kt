@@ -14,12 +14,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.minus
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toCached
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toDomain
@@ -27,6 +25,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
@@ -49,6 +48,7 @@ import kotlin.uuid.Uuid
 class ChatRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
+    private val cachedChatDao: CachedChatDao,
     private val cachedChatSummaryDao: CachedChatSummaryDao,
     private val dataStore: DataStore<Preferences>
 ) : ChatRepository {
@@ -58,6 +58,7 @@ class ChatRepositoryImpl(
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState
     }
+
     @OptIn(ExperimentalTime::class)
     override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
         val cachedData = cachedChatSummaryDao.getChatSummaries(
@@ -79,7 +80,7 @@ class ChatRepositoryImpl(
 
     @OptIn(ExperimentalTime::class)
     private suspend fun syncChatSummaries(lastSyncTime: Instant?, pageNumber: Int, pageSize: Int) {
-        if (lastSyncTime != null){
+        if (lastSyncTime != null) {
             syncDeletedChats(lastSyncTime)
         }
         syncChatsData(pageNumber = pageNumber, pageSize = pageSize)
@@ -98,7 +99,7 @@ class ChatRepositoryImpl(
         val lastTimeSynced: String? = dataStore.data.map {
             it[LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY]
         }.firstOrNull()
-        return if(lastTimeSynced.isNullOrEmpty()) null else Instant.parse(lastTimeSynced)
+        return if (lastTimeSynced.isNullOrEmpty()) null else Instant.parse(lastTimeSynced)
     }
 
     @OptIn(ExperimentalTime::class)
@@ -179,14 +180,20 @@ class ChatRepositoryImpl(
             defaultException = OperationFailedException("failed to delete message from data")
         ) {
             client.delete("$CHAT_ENDPOINT/$chatId")
+        }.also {
+            cachedChatDao.deleteChatById(chatId.toString())
         }
         cachedChatSummaryDao.deleteChatSummaryById(chatId.toString())
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
-        return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
-            client.get("$CHAT_ENDPOINT/$chatId")
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        return cachedChatDao.getChatById(chatId.toString())?.toDomain()
+            ?: tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
+                client.get("$CHAT_ENDPOINT/$chatId")
+            }?.also { chat ->
+                cachedChatDao.insertChat(chat.toLocalDto())
+            }?.toDomain()
+            ?: throw NotFoundException("Chat not found")
     }
 
 
@@ -203,7 +210,8 @@ class ChatRepositoryImpl(
         const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
         const val DELETED_CHATS_ENDPOINT = "/chat/deletedChats"
 
-        val LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY = stringPreferencesKey("lastTimeChatSummariesSynced")
+        val LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY =
+            stringPreferencesKey("lastTimeChatSummariesSynced")
 
         fun getChatSummaryEndpoint(chatId: Uuid): String {
             return "/chat/${chatId}/summary"

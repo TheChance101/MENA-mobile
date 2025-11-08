@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.register.createPassword
 
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+
 sealed interface CreatePasswordUIEffect {
-    // TODO: Add navigation to next screen after password creation
+    data class NavigateToDatePicker(val registerUIState: RegisterUIState) : CreatePasswordUIEffect
 }

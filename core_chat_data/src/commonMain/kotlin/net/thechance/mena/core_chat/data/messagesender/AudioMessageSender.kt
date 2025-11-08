@@ -33,7 +33,8 @@ class AudioMessageSender(
         val audioFile = ("audio_${LocalDateTime.now()}" to bytes)
         val multipartAudio = audioFile.buildAudioMultiPartFormData(
             fieldName = AUDIO_FILE_PARAM,
-            chatId = message.chatId.toString()
+            chatId = message.chatId.toString(),
+            audioDurationMs = content.audioDurationMs
         )
 
         tryNetworkCall<MessageDto>(

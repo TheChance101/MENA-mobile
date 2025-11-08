@@ -12,4 +12,5 @@ internal interface UserReelInteractionListener {
     fun onClickPublisherInfo()
     fun increaseReelView(reelId: String)
     fun onClickLike(reelId: String, isLiked: Boolean)
+    fun onGetRefreshVideoUrl(reelId: String)
 }

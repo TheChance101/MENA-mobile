@@ -4,6 +4,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor_my_locations
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.components.util.MapStyle
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.SetAnchorInCenter
@@ -58,7 +60,12 @@ fun AddressCard(
                 shape = RoundedCornerShape(Theme.radius.lg)
             )
             .clip(shape = RoundedCornerShape(Theme.radius.lg))
-            .clickable(enabled = isMainAddress != true) { onClickAddress() }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rippleIndication(),
+                onClick = onClickAddress,
+                enabled = isMainAddress != true
+            )
             .padding(Theme.spacing._8)
             .padding(end = 4.dp)
     ) {

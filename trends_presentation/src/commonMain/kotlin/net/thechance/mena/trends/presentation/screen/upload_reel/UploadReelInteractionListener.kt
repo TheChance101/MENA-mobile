@@ -5,6 +5,7 @@ import net.thechance.mena.trends.presentation.shared.model.FileUiState
 interface UploadReelInteractionListener {
     fun onClickBack()
     fun onRetrieveVideo(file: FileUiState)
+    fun onClickUploadCard()
     fun onClickCancelUpload()
     fun onClickDeleteVideo()
     fun onClickRetryUpload()

@@ -56,4 +56,10 @@ sealed interface DukanRoute {
 
     @Serializable
     data class DukanCart(val dukanId: String) : DukanRoute
+
+    @Serializable
+    object SearchScreenRoute : DukanRoute
+
+    @Serializable
+    data object AddressesRoute : DukanRoute
 }

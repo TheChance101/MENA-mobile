@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,9 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.cash.paging.compose.LazyPagingItems
+import app.cash.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
+import androidx.paging.PagingData
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_arrow_right
 import mena.faith_presentation.generated.resources.ic_mosque
+import mena.faith_presentation.generated.resources.kilometer_unit
 import mena.faith_presentation.generated.resources.mosque_details
 import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.search_results
@@ -43,19 +47,21 @@ import kotlin.uuid.Uuid
 @Composable
 internal fun ScaffoldScope.SearchResultsBottomSheet(
     isVisible: Boolean,
-    mosques: List<MosqueUiState>,
+    mosques: Flow<PagingData<MosqueUiState>>,
     onMosqueClick: (MosqueUiState) -> Unit = {},
     onDismiss: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val lazyMosques = mosques.collectAsLazyPagingItems()
+
     BottomSheet(
         isVisible = isVisible,
-        skipPartiallyExpanded = true,
+        skipPartiallyExpanded = false,
         onDismissRequest = onDismiss,
         modifier = modifier.navigationBarsPadding(),
         sheetContent = {
             SearchResultsContent(
-                mosques = mosques,
+                mosques = lazyMosques,
                 onMosqueClick = onMosqueClick
             )
         }
@@ -64,7 +70,7 @@ internal fun ScaffoldScope.SearchResultsBottomSheet(
 
 @Composable
 private fun SearchResultsContent(
-    mosques: List<MosqueUiState>,
+    mosques: LazyPagingItems<MosqueUiState>,
     onMosqueClick: (MosqueUiState) -> Unit = {}
 ) {
     Column(
@@ -72,7 +78,6 @@ private fun SearchResultsContent(
             .padding(horizontal = Theme.spacing._16)
             .padding(top = Theme.spacing._16)
     ) {
-
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._12),
             text = stringResource(Res.string.search_results),
@@ -84,17 +89,18 @@ private fun SearchResultsContent(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
             contentPadding = PaddingValues(bottom = Theme.spacing._12),
         ) {
-            items(mosques) { mosque ->
-                SearchResultItem(
-                    mosque = mosque,
-                    onMosqueClick = onMosqueClick
-                )
+            items(count = mosques.itemCount) { index ->
+                val mosque = mosques[index]
+                mosque?.let {
+                    SearchResultItem(
+                        mosque = it,
+                        onMosqueClick = onMosqueClick
+                    )
+                }
             }
         }
-
     }
 }
-
 
 @Composable
 private fun SearchResultItem(
@@ -107,7 +113,6 @@ private fun SearchResultItem(
             .clickable(onClick = { onMosqueClick(mosque) }),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-
         Icon(
             painter = painterResource(Res.drawable.ic_mosque),
             contentDescription = stringResource(Res.string.mosque_image_description),
@@ -122,10 +127,7 @@ private fun SearchResultItem(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
             modifier = Modifier
                 .weight(1f)
-                .padding(
-                    start = Theme.spacing._8,
-                    end = Theme.spacing._4
-                )
+                .padding(start = Theme.spacing._8, end = Theme.spacing._4)
         ) {
             Text(
                 text = mosque.name,
@@ -136,7 +138,7 @@ private fun SearchResultItem(
             )
 
             Text(
-                text = mosque.distance.toString(),
+                text = "${mosque.distance} ${stringResource(Res.string.kilometer_unit)}",
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadeTertiary
             )
@@ -155,19 +157,18 @@ private fun SearchResultItem(
 @Composable
 private fun SearchResultsBottomSheetPreview() {
     MenaTheme {
-        SearchResultsContent(
-            mosques = List(7) {
-                MosqueUiState(
-                    id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
-                    name = "Al Eman Mosque",
-                    imageUrl = "",
-                    distance = 12.4,
-                    coordinate = Coordinate(
-                        latitude = 0.0,
-                        longitude = 0.0
+        Column(modifier = Modifier.padding(16.dp)) {
+            repeat(3) {
+                SearchResultItem(
+                    mosque = MosqueUiState(
+                        id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
+                        name = "Al Eman Mosque",
+                        imageUrl = "",
+                        distance = 12.4,
+                        coordinate = Coordinate(0.0, 0.0)
                     )
                 )
             }
-        )
+        }
     }
 }

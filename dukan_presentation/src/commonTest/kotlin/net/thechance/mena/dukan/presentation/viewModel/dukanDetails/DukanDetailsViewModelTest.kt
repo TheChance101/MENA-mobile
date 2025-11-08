@@ -94,8 +94,15 @@ class DukanDetailsViewModelTest {
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD load dukan details successfully`() = runTest {
-        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails().copy(
-            style = Dukan.Style.SMALL_IMAGE
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
+        everySuspend {
+            shelfRepository.getShelvesByDukanId(any(), any(), any())
+        } returns PagedResult(
+            items = dummyShelves(),
+            currentPage = 1,
+            totalItems = 3L,
+            totalPages = 1,
+            pageSize = 10
         )
         everySuspend {
             productRepository.getProductsByShelfId(any(), any(), any())
@@ -104,19 +111,14 @@ class DukanDetailsViewModelTest {
             currentPage = 1,
             totalItems = 1L,
             pageSize = 10,
-            totalPages = 1,
+            totalPages = 1
         )
 
         val viewModel = createViewModel()
         advanceUntilIdle()
-
-        viewModel.state.test {
-            val state = awaitItem()
-            assertTrue(state.shelves.asSnapshot().isNotEmpty())
-            cancelAndIgnoreRemainingEvents()
-        }
+        val shelvesSnapshot = viewModel.state.value.shelves.asSnapshot()
+        assertTrue(shelvesSnapshot.isNotEmpty(), "Expected shelves not to be empty")
     }
-
 
     @Test
     fun `init SHOULD set isDukanInfoLoading to false after successful load`() = runTest {

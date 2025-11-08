@@ -19,15 +19,25 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 
-class SelectGenderScreen() :
-    BaseScreen<SelectGenderScreenViewModel, SelectGenderScreenUIState, SelectGenderScreenUIEffect, SelectGenderScreenInteractionListener>() {
+class SelectGenderScreen(
+    private val registerUIState: RegisterUIState
+) : BaseScreen<
+        SelectGenderScreenViewModel,
+        SelectGenderScreenUIState,
+        SelectGenderScreenUIEffect,
+        SelectGenderScreenInteractionListener>() {
+
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
     }
 
     @Composable
@@ -48,10 +58,7 @@ class SelectGenderScreen() :
                         subtitle = stringResource(Res.string.select_gender_screen_prompt),
                     )
 
-                    GenderToggle(
-                        gender = state.gender,
-                        onChangeGender = listener::onChangeGender
-                    )
+                    GenderToggle(gender = state.gender, onChangeGender = listener::onChangeGender)
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -66,6 +73,10 @@ class SelectGenderScreen() :
                 }
             }
         }
+        ErrorSnackBar(
+            errorMessage = state.errorMessage?.let { stringResource(it) },
+            onDismiss = listener::onClearErrorMessage
+        )
     }
 
     override fun onEffect(
@@ -73,7 +84,14 @@ class SelectGenderScreen() :
         navigator: Navigator
     ) {
         when (effect) {
-            SelectGenderScreenUIEffect.NavigateToAccountCreatedScreen -> {} // TODO: navigate to account created screen
+            is SelectGenderScreenUIEffect.NavigateToUploadProfileImage -> {
+                navigator.push(
+                    UploadProfileImageScreen(
+                        authTokens = effect.authTokens,
+                        phoneNumber = effect.phoneNumber
+                    )
+                )
+            }
         }
     }
 }

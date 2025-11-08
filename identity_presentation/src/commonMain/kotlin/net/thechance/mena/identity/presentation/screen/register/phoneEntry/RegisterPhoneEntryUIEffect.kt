@@ -1,11 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.register.phoneEntry
 
-sealed interface RegisterPhoneEntryUIEffect {
-    data class NavigateToOTP(
-        val phoneNumber: String,
-        val callingCode: String,
-        val countryCode: String
-    ) : RegisterPhoneEntryUIEffect
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 
+sealed interface RegisterPhoneEntryUIEffect {
+    data class NavigateToOTP(val registerUIState: RegisterUIState) : RegisterPhoneEntryUIEffect
     data object NavigateToLogin : RegisterPhoneEntryUIEffect
 }

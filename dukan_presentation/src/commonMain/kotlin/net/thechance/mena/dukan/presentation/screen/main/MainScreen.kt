@@ -4,13 +4,17 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -19,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -41,8 +46,11 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanDetails
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukansScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.SearchScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
@@ -91,7 +99,7 @@ fun MainScreen(
 
             is MainScreenEffect.NavigateToDukansScreenByCategory -> {
                 navController.navigate(
-                    DukanRoute.DukansScreenRoute(
+                    DukansScreenRoute(
                         categoryId = effect.categoryId,
                         categoryTitle = effect.categoryName
                     )
@@ -99,7 +107,11 @@ fun MainScreen(
             }
 
             is MainScreenEffect.NavigateToSelectedDukan -> {
-                navController.navigate(DukanRoute.DukanDetails(effect.dukanId))
+                navController.navigate(DukanDetails(effect.dukanId))
+            }
+
+            MainScreenEffect.NavigateToSearchScreen -> {
+                navController.navigate(route = SearchScreenRoute)
             }
         }
     }
@@ -149,11 +161,12 @@ private fun MainContent(
                 targetState = state.isConnected,
                 transitionSpec = { fadeTransitionSpec() }
             ) { isConnected ->
-                if (!isConnected  || isEmptyContent) return@AnimatedContent
+                if (!isConnected || isEmptyContent) return@AnimatedContent
                 TopAppBar(
                     modifier = Modifier.statusBarsPadding(),
+                    dukanButtonStatus = state.dukanState.status,
                     onDukanIconClicked = listener::onDukanButtonClicked,
-                    dukanButtonStatus = state.dukanState.status
+                    onSearchIconClicked = listener::onSearchButtonClicked
                 )
             }
         },
@@ -199,45 +212,57 @@ fun MainScreenSections(
     dukans: LazyPagingItems<MainScreenUiState.EditorPickDukanUiState>,
     listener: MainInteractionListener
 ) {
-    LazyColumn(
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(328.dp),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16)
     ) {
         if (state.categories.isNotEmpty()) {
-            item {
-                Text(
-                    text = stringResource(Res.string.what_do_you_need),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier.padding(bottom = Theme.spacing._8)
-                )
+            item(
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(Res.string.what_do_you_need),
+                        style = Theme.typography.title.small,
+                        color = Theme.colorScheme.shadePrimary,
+                        modifier = Modifier.padding(bottom = Theme.spacing._8)
+                    )
 
-                CategorySection(
-                    categories = state.categories,
-                    onCategoryClick = listener::onSelectedCategoryClicked,
-                    onViewMoreClick = listener::onViewMoreClicked,
-                )
+                    CategorySection(
+                        categories = state.categories,
+                        onCategoryClick = listener::onSelectedCategoryClicked,
+                        onViewMoreClick = listener::onViewMoreClicked,
+                    )
+                }
             }
         }
 
         if (bestNearestDukan.itemCount > 0) {
-            item {
-                Text(
-                    text = stringResource(Res.string.best_dukans_around_you),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier.padding(top = Theme.spacing._16)
-                )
+            item(
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                Column {
+                    Text(
+                        text = stringResource(Res.string.best_dukans_around_you),
+                        style = Theme.typography.title.small,
+                        color = Theme.colorScheme.shadePrimary,
+                        modifier = Modifier.padding(top = Theme.spacing._16)
+                    )
 
-                BestNearestDukanSection(
-                    modifier = Modifier.padding(top = Theme.spacing._8),
-                    dukans = bestNearestDukan,
-                    onDukanClick = listener::onNearestDukanClicked,
-                )
+                    BestNearestDukanSection(
+                        modifier = Modifier.padding(top = Theme.spacing._8),
+                        dukans = bestNearestDukan,
+                        onDukanClick = listener::onNearestDukanClicked,
+                    )
+                }
             }
         }
 
         if (dukans.itemCount > 0) {
-            item {
+            item(
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
                 Text(
                     stringResource(Res.string.editor_pick_dukans),
                     style = Theme.typography.title.small,
@@ -251,8 +276,8 @@ fun MainScreenSections(
             editorPickDukanItems(
                 dukans = dukans,
                 onDukanClick = listener::onEditorPickDukanClicked,
-                    onClickFavorite = listener::onFavoriteDukanClicked
-                )
+                onClickFavorite = listener::onFavoriteDukanClicked
+            )
 
         }
     }

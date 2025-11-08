@@ -11,4 +11,5 @@ object PreviewMainScreenInteractionListener : MainInteractionListener {
     override fun onNearestDukanClicked(dukanId: String) {}
     override fun onEditorPickDukanClicked(dukanId: String) {}
     override fun onFavoriteDukanClicked(dukanId: String) {}
+    override fun onSearchButtonClicked() {}
 }

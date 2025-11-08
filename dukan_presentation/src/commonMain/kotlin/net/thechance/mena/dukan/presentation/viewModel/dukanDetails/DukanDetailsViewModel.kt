@@ -47,6 +47,7 @@ class DukanDetailsViewModel(
     init {
         loadDukanDetails()
         loadCartInfo()
+        loadShelvesPaging()
     }
 
     private fun loadCartInfo() {
@@ -66,12 +67,7 @@ class DukanDetailsViewModel(
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState {
-            copy(
-                totalPrice = cart.totalPrice,
-            )
-        }
-        println("totalprice "+state.value.totalPrice)
+        updateState { copy(totalPrice = cart.totalPrice) }
     }
 
     private fun loadDukanDetails() {
@@ -96,9 +92,9 @@ class DukanDetailsViewModel(
             copy(
                 dukanInfo = dukanDetails.toUiState(),
                 isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
             )
         }
-        loadShelvesPaging()
     }
 
     private fun onLoadDukanDetailsError(throwable: Throwable) {
@@ -143,31 +139,26 @@ class DukanDetailsViewModel(
     private fun loadProductsLimited(shelves: PagingData<ShelfUiState>) {
         tryToExecute(
             block = { updateProductsLimited(shelves) },
-            onSuccess = ::onProductsLimitedLoaded
+            onSuccess = ::onProductsLimitedLoaded,
+            onError = ::onLoadProductsPagingError
         )
     }
 
     private fun updateProductsLimited(
         shelves: PagingData<ShelfUiState>
     ): PagingData<ShelfUiState> {
-        return shelves.map { shelf ->
-            val products = getProductsLimitedByShelfId(shelf.id)
-            shelf.copy(products = products)
-        }.filter { it.products.isNotEmpty() }
-    }
-
-    private suspend fun getProductsLimitedByShelfId(shelfId: String): List<ProductUiState> {
         val maxProducts = 6
         val page = 0
-        val product = productRepository.getProductsByShelfId(shelfId, page, maxProducts).items
-        return product.map { it.toUiState() }
+        return shelves.map { shelf ->
+            val products = productRepository.getProductsByShelfId(shelf.id, page, maxProducts).items
+            shelf.copy(products = products.map { it.toUiState() })
+        }.filter { it.products.isNotEmpty() }
     }
 
     private fun onProductsLimitedLoaded(updatedShelves: PagingData<ShelfUiState>) {
         updateState {
             copy(
-                shelves = flowOf(updatedShelves),
-                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.LOADED
+                shelves = flowOf(updatedShelves)
             )
         }
     }
@@ -175,8 +166,19 @@ class DukanDetailsViewModel(
     private fun loadProductsPaging() {
         tryToCollect(
             block = ::getProductPagingFlow,
-            onCollect = ::onProductsLoaded
+            onCollect = ::onProductsLoaded,
+            onError = ::onLoadProductsPagingError
         )
+    }
+
+    private fun onLoadProductsPagingError(throwable: Throwable) {
+        updateState {
+            copy(
+                error = throwable,
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
     }
 
     private fun getProductPagingFlow(): Flow<PagingData<ProductUiState>> {
@@ -358,5 +360,6 @@ class DukanDetailsViewModel(
     fun refreshProducts() {
         loadDukanDetails()
         loadCartInfo()
+        loadShelvesPaging()
     }
 }

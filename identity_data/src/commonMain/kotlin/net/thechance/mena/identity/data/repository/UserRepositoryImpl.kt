@@ -2,31 +2,32 @@ package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.database.model.UserEntity
 import net.thechance.mena.identity.data.dto.profile.request.ChangePasswordRequestDto
-import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.dto.profile.request.UpdateProfileRequestDto
 import net.thechance.mena.identity.data.dto.profile.response.ChangePasswordResponseDto
+import net.thechance.mena.identity.data.dto.profile.response.ProfileResponseDto
 import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toEntity
 import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.formatAsString
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postFileWithData
+import net.thechance.mena.identity.data.utils.postFileWithDataAndTokens
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
-import kotlin.uuid.ExperimentalUuidApi
 
 
 class UserRepositoryImpl(
@@ -35,31 +36,28 @@ class UserRepositoryImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : UserRepository {
     override suspend fun getUser(): Flow<User?> {
-        CoroutineScope(dispatcher).launch {
-            try {
-                val user: ProfileResponseDto = client.getJson(path = PROFILE)
-                userDao.upsert(user.toEntity())
-            } catch (_: Exception) {
-
+        return withContext(dispatcher) {
+            launch {
+                try {
+                    val user: ProfileResponseDto = client.getJson(path = PROFILE)
+                    userDao.upsert(user.toEntity())
+                } catch (_: Exception) {
+                }
             }
+
+            userDao.getUser()
+                .map { userEntity ->
+                    userEntity?.toDomain()
+                }
+                .flowOn(dispatcher)
         }
-
-        return userDao.getUser()
-            .map { userEntity ->
-                userEntity?.toDomain()
-            }
-            .flowOn(Dispatchers.IO)
     }
 
-    @OptIn(ExperimentalUuidApi::class)
-    override suspend fun updateUser(
-        user: User,
-        shouldUpdateImage: Boolean,
-    ) {
+    override suspend fun updateUser(user: User) {
         return safeWrapper {
             val user: ProfileResponseDto = client.postJson(
                 path = PROFILE,
-                requestDto = user.toRequest(shouldUpdateImage),
+                requestDto = user.toRequest(),
             )
             userDao.upsert(user.toEntity())
         }
@@ -71,6 +69,20 @@ class UserRepositoryImpl(
                 path = PROFILE_IMAGE,
                 fileKey = "file",
                 imageByteArray = imageByteArray
+            )
+        }
+    }
+
+    override suspend fun uploadUserProfileImageWithTokens(
+        imageByteArray: ByteArray?,
+        authTokens: AuthenticationTokens
+    ) {
+        return safeWrapper {
+            client.postFileWithDataAndTokens(
+                path = PROFILE_IMAGE,
+                fileKey = "file",
+                imageByteArray = imageByteArray,
+                accessToken = authTokens.accessToken
             )
         }
     }
@@ -99,7 +111,7 @@ class UserRepositoryImpl(
 
     }
 
-    fun User.toRequest(shouldUpdateImage: Boolean): UpdateProfileRequestDto {
+    fun User.toRequest(): UpdateProfileRequestDto {
         return UpdateProfileRequestDto(
             firstName = this.firstName,
             lastName = this.lastName,
@@ -109,8 +121,7 @@ class UserRepositoryImpl(
             gender = when (this.gender) {
                 Gender.MALE -> UserEntity.MALE
                 else -> UserEntity.FEMALE
-            },
-            updateImage = shouldUpdateImage
+            }
         )
     }
 

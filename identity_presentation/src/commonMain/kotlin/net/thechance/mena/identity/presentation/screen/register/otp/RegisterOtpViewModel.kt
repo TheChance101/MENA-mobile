@@ -13,13 +13,12 @@ import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 
 class RegisterOtpViewModel(
     private val registerRepository: RegisterRepository,
-    private val phoneNumber: String,
-    private val callingCode: String,
-    private val countryCode: String,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<RegisterOtpUIState, RegisterOtpUIEffect>(RegisterOtpUIState()),
     RegisterOtpInteractionListener {
@@ -29,6 +28,7 @@ class RegisterOtpViewModel(
     }
 
     override fun onClickVerify() {
+        updateState { copy(isLoading = true, errorMessage = null) }
         tryToExecute(
             function = ::verifyOTPCode,
             onSuccess = { onOTPVerificationSuccess() },
@@ -38,25 +38,27 @@ class RegisterOtpViewModel(
     }
 
     private suspend fun verifyOTPCode() {
-        // TODO: Uncomment when ready to integrate with backend
-        // registerRepository.verifyOTPCode(
-        //     otpCode = state.value.otpValue,
-        // )
-
-        // Bypass for UI testing - just validate OTP length
-        delay(1000) // Simulate network delay
-        if (state.value.otpValue.length != OTP_LENGTH) {
-            throw Exception("Invalid OTP")
-        }
+        registerRepository.verifyOTPCode(state.value.otpValue)
     }
 
     private fun onOTPVerificationSuccess() {
-        sendNewEffect(RegisterOtpUIEffect.NavigateToCreatePassword)
-        updateState { copy(otpValue = "") }
+        updateState { copy(isLoading = false, otpValue = "") }
+        sendNewEffect(createNavigateToEnterNameEffect())
+    }
+
+    private fun createNavigateToEnterNameEffect(): RegisterOtpUIEffect.NavigateToEnterName {
+        return RegisterOtpUIEffect.NavigateToEnterName(
+            phoneNumber = registerUIState.phoneNumber
+        )
     }
 
     private fun onOTPVerificationError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        updateState { 
+            copy(
+                isLoading = false,
+                errorMessage = mapErrorMessage(throwable)
+            ) 
+        }
     }
 
     override fun onChangeOtp(otp: String) {
@@ -80,17 +82,10 @@ class RegisterOtpViewModel(
     }
 
     private suspend fun requestNewOTP() {
-        // TODO: Uncomment when ready to integrate with backend
-        // registerRepository.requestOTP(
-        //     phoneNumber = PhoneNumber(
-        //         countryCode = callingCode,
-        //         localNumber = phoneNumber
-        //     ),
-        //     countryCodeName = countryCode
-        // )
-
-        // Bypass for UI testing
-        delay(500) // Simulate network delay
+        registerRepository.requestOTP(
+            phoneNumber = registerUIState.phoneNumber,
+            countryCodeName = registerUIState.countryCode
+        )
     }
 
     private fun onResendOTPSuccess() {

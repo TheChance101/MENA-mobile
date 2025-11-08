@@ -214,7 +214,8 @@ private fun UserReelScreenContent(
                     onDescriptionClick = listener::onClickDescription,
                     onPublisherInfoClick = listener::onClickPublisherInfo,
                     incrementViewsCount = { listener.increaseReelView(reel.id) },
-                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) }
+                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
+                    onGetRefreshUrl = listener::onGetRefreshVideoUrl
                 )
             }
         }
@@ -253,13 +254,16 @@ private fun ReelContent(
     onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     onPublisherInfoClick: () -> Unit,
     incrementViewsCount: () -> Unit,
+    onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
 ) {
     VideoPlayer(
         modifier = Modifier.background(Theme.colorScheme.primary.primary),
         url = reel.videoUrl,
         isReelVisible = shouldRender,
-        onVideoPlaying = incrementViewsCount
+        onVideoPlaying = incrementViewsCount,
+        cacheKey = reel.id,
+        onRequestRefresh = { onGetRefreshUrl(reel.id) }
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()

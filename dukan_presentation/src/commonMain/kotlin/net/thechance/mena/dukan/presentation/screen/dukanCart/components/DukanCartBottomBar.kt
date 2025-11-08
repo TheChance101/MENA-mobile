@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanCart.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
+import net.thechance.mena.dukan.presentation.util.formatPrice
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -30,7 +30,6 @@ fun DukanCartBottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = Theme.radius.xl, topEnd = Theme.radius.xl))
             .background(Theme.colorScheme.background.surfaceLow)
-            .clickable(onClick = { onCheckoutClick() }, indication = null, interactionSource = null)
             .padding(Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
@@ -42,7 +41,7 @@ fun DukanCartBottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
                 modifier = Modifier.weight(1f)
             )
             PriceWithIcon(
-                price = totalPrice.toString().replace('.', ','),
+                price = totalPrice.toString().formatPrice()
             )
         }
         PrimaryButton(

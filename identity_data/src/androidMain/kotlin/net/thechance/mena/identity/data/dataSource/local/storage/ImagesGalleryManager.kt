@@ -7,8 +7,8 @@ import androidx.core.content.contentValuesOf
 actual class ImagesGalleryManager(private val context: Context) {
     actual suspend fun saveImage(imageBytes: ByteArray) {
         val contentValues = contentValuesOf(
-            MediaStore.Images.Media.MIME_TYPE to "image/*",
-            MediaStore.Images.Media.RELATIVE_PATH to "Mena/"
+            MediaStore.Images.Media.MIME_TYPE to "image/png",
+            MediaStore.Images.Media.RELATIVE_PATH to "DCIM/Mena"
         )
         val resolver = context.contentResolver
         val uri = resolver.insert(

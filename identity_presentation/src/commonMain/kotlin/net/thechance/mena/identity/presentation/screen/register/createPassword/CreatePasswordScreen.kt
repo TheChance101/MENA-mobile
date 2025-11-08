@@ -23,15 +23,21 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.core.parameter.parametersOf
 
-class CreatePasswordScreen : BaseScreen<
+class CreatePasswordScreen(
+    private val registerUIState: RegisterUIState
+) : BaseScreen<
         CreatePasswordViewModel,
         CreatePasswordUIState,
         CreatePasswordUIEffect,
@@ -39,7 +45,7 @@ class CreatePasswordScreen : BaseScreen<
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
     }
 
     @Composable
@@ -106,7 +112,11 @@ class CreatePasswordScreen : BaseScreen<
         effect: CreatePasswordUIEffect,
         navigator: Navigator
     ) {
-
+        when (effect) {
+            is CreatePasswordUIEffect.NavigateToDatePicker -> {
+                navigator.push(DatePickerScreen(registerUIState = effect.registerUIState))
+            }
+        }
     }
 }
 
@@ -114,7 +124,15 @@ class CreatePasswordScreen : BaseScreen<
 @Composable
 fun PreviewCreatePasswordScreen() {
     MenaTheme {
-        CreatePasswordScreen().OnRender(
+        CreatePasswordScreen(
+            registerUIState = RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    countryCode = "+971",
+                    localNumber = "555555555"
+                ),
+                countryCode = "AE"
+            )
+        ).OnRender(
             state = CreatePasswordUIState(
                 newPassword = "Password123",
                 confirmPassword = "Password123",

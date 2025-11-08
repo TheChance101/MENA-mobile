@@ -24,12 +24,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_add
-import mena.core_chat_presentation.generated.resources.message_holder
 import mena.core_chat_presentation.generated.resources.ic_mic
 import mena.core_chat_presentation.generated.resources.ic_send
+import mena.core_chat_presentation.generated.resources.message_holder
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.textField.MultiLineTextField
@@ -50,7 +56,17 @@ fun ChatInputBar(
     onAttachButtonClick: () -> Unit = {}
 ) {
     Row(
-        modifier = modifier.fillMaxWidth().padding(Theme.spacing._16),
+        modifier = modifier.fillMaxWidth()
+            .dropShadow(
+                shape = RectangleShape, shadow = Shadow(
+                    radius = Theme.spacing._8,
+                    spread = 0.dp,
+                    color = Color.Black.copy(alpha = .06f),
+                    offset = DpOffset(0.dp, 2.dp),
+                    blendMode = BlendMode.SrcOver
+                )
+            ).background(Theme.colorScheme.background.surface)
+            .padding(Theme.spacing._16),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
     ) {
         Row(
@@ -69,7 +85,7 @@ fun ChatInputBar(
                 hint = stringResource(Res.string.message_holder),
                 modifier = Modifier.weight(1f),
                 minLines = 1,
-                maxLines = 5
+                maxLines = 4
             )
             AnimatedVisibility(
                 visible = userInput.isBlank(),

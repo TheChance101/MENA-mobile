@@ -1,5 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -134,6 +136,7 @@ private fun HomeScreenContent(
                         onClickReel = listener::onClickReel,
                         onExpandDescription = listener::onClickExpandDescription,
                         listState = listState,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail,
                     )
                 }
             )
@@ -171,14 +174,13 @@ private fun ReelsListSection(
     listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16),
+        modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8,horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(
@@ -190,7 +192,8 @@ private fun ReelsListSection(
                     reel = reel,
                     onClickLike = { onClickLike(reel.id, reel.isLiked) },
                     onClickReel = { onClickReel(reel.id) },
-                    onExpandDescription = { onExpandDescription(reel.id) }
+                    onExpandDescription = { onExpandDescription(reel.id) },
+                    onRequestRefresh = { onGetRefreshedThumbnail(reel.id) },
                 )
             }
         }
@@ -245,6 +248,7 @@ private fun HomeScreenPreview() {
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
+                    override fun onGetRefreshedThumbnail(reelId: String) {}
                 }
             )
         }

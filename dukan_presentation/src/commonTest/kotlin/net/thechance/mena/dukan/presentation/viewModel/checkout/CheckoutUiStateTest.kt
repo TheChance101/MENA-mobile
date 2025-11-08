@@ -10,7 +10,7 @@ class CheckoutUiStateTest {
     @Test
     fun `default state SHOULD have empty values`() = runTest {
         val state = CheckoutUiState()
-        assertEquals(Address(), state.deliveryAddress)
+        assertEquals(CheckoutUiState.Address(), state.deliveryAddress)
         assertEquals(emptyFlow(), state.items)
         assertEquals(0, state.discountPercentage)
         assertEquals(0.0, state.platformFees)
@@ -19,7 +19,7 @@ class CheckoutUiStateTest {
 
     @Test
     fun `Address SHOULD store its properties correctly`() = runTest {
-        val address = Address(
+        val address = CheckoutUiState.Address(
             label = "Home",
             street = "123 Street Name"
         )
@@ -29,7 +29,7 @@ class CheckoutUiStateTest {
 
     @Test
     fun `CartItem SHOULD store its properties correctly`() = runTest {
-        val item = CartItem(
+        val item = CheckoutUiState.CartItem(
             id = "c1",
             name = "Apple",
             quantity = 3,

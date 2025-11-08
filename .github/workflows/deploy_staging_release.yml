@@ -21,6 +21,7 @@ jobs:
           android-key-alias-password: ${{ secrets.ANDROID_KEY_ALIAS_PASSWORD }}
           build-type: Staging
           base-url: ${{ secrets.BASE_URL_STAGING }}
+          trends-storage-access-secret-base64: ${{ secrets.STORAGE_TRENDS_ACCESS_SECRET_BASE64 }}
 
       - name: Deploy to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1

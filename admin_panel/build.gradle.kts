@@ -60,6 +60,9 @@ kotlin {
             //settings
             implementation(libs.multiplatform.settings)
 
+            //flow settings
+            implementation(libs.multiplatform.settings.coroutines)
+
         }
 
         commonTest.dependencies {

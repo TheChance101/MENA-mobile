@@ -1,10 +1,12 @@
 package net.thechance.mena.trends.data.mapper
 
 import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.orZero
 import net.thechance.mena.trends.data.util.parseDateStringOrNull
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelUrls
 
 
 internal fun ReelDto.toEntity(): Reel {
@@ -20,5 +22,12 @@ internal fun ReelDto.toEntity(): Reel {
         profileImageUrl = profilePictureUrl.orEmpty(),
         isCurrentUserOwner = isCurrentUserOwner,
         isLiked = isLiked.orFalse()
+    )
+}
+
+internal fun ReelPathUrlsDto.toReelUrls(): ReelUrls{
+    return ReelUrls(
+        videoUrl = videoPath.orEmpty(),
+        thumbnailUrl = thumbnailPath.orEmpty()
     )
 }

@@ -13,6 +13,8 @@ inputs:
     required: true
   base-url:
     required: true
+  trends-storage-access-secret-base64:
+    required: true
 
 runs:
   using: "composite"
@@ -39,6 +41,8 @@ runs:
       run: |
         UPPER_BUILD_TYPE=$(echo "${{ inputs.build-type }}" | tr '[:lower:]' '[:upper:]')
         echo "BASE_URL_${UPPER_BUILD_TYPE}=${{ inputs.base-url }}" >> local.properties
+        TRENDS_STORAGE_ACCESS_SECRET=$(echo "${{ inputs.trends-storage-access-secret-base64 }}" | base64 --decode)
+        echo "TRENDS_STORAGE_ACCESS_SECRET=${TRENDS_STORAGE_ACCESS_SECRET}" >> local.properties
 
     - name: Make gradlew executable
       shell: bash

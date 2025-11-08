@@ -39,13 +39,14 @@ import mena.dukan_presentation.generated.resources.summary_details
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.viewModel.checkout.CartItem
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun CheckoutSummaryCard(
-    products: LazyPagingItems<CartItem>,
+    products: LazyPagingItems<CheckoutUiState.CartItem>,
+    totalPrice: Double,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -73,13 +74,13 @@ fun CheckoutSummaryCard(
                 SummaryItemsList(products = products)
                 SummaryTopCircles()
             }
-            SummaryBottomSection()
+            SummaryBottomSection(totalPrice)
         }
     }
 }
 
 @Composable
-private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
+private fun SummaryItemsList(products: LazyPagingItems<CheckoutUiState.CartItem>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,11 +101,6 @@ private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
                 }
             }
         }
-        CheckoutFeeItem(
-            modifier = Modifier.padding(top = 13.dp, bottom = Theme.spacing._24),
-            productName = "Platform fees",
-            price = 1.99
-        )
         DashedSeparator(
             modifier = Modifier
                 .padding(bottom = 11.dp)
@@ -130,7 +126,7 @@ private fun BoxScope.SummaryTopCircles() {
 }
 
 @Composable
-private fun SummaryBottomSection() {
+private fun SummaryBottomSection(totalPrice: Double) {
     Box(modifier = Modifier.wrapContentHeight()) {
         Column(
             modifier = Modifier
@@ -138,7 +134,7 @@ private fun SummaryBottomSection() {
                 .padding(top = 13.dp, bottom = 33.dp)
                 .padding(horizontal = Theme.spacing._12)
         ) {
-            CheckoutFeeItem(productName = "Total amount", price = 31.99)
+            CheckoutFeeItem(productName = "Total amount", price = totalPrice)
         }
 
         CircleRow(
@@ -152,7 +148,7 @@ private fun SummaryBottomSection() {
 
 @Composable
 private fun CheckoutProductItem(
-    cartItem: CartItem,
+    cartItem: CheckoutUiState.CartItem,
     modifier: Modifier = Modifier
 ) {
     Row(

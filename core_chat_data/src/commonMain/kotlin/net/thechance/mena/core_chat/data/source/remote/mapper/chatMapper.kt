@@ -2,7 +2,10 @@
 
 package net.thechance.mena.core_chat.data.source.remote.mapper
 
-import net.thechance.mena.core_chat.data.source.local.database.MessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.MessageReactionLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
@@ -32,7 +35,7 @@ fun MessageDto.toDomain(): Message? {
     val content = when {
         !text.isNullOrBlank() -> MessageContent.Text(text)
         !imageUrl.isNullOrEmpty() -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
-        !audioUrl.isNullOrBlank() -> MessageContent.Audio(AudioData.AudioUrl(audioUrl))
+        !audioUrl.isNullOrBlank() -> MessageContent.Audio(data = AudioData.AudioUrl(audioUrl), audioDurationMs = audioDurationMs)
         else -> return null
     }
 
@@ -65,31 +68,128 @@ fun ChatDto.toDomain(): Chat? {
     )
 }
 
+fun ChatDto.toLocalDto(): CachedChatLocalDto {
+    return CachedChatLocalDto(
+        id = id,
+        imageUrl = imageUrl,
+        name = name,
+        requesterId = requesterId
+    )
+}
+
+fun CachedChatLocalDto.toDomain(): Chat? {
+    return Chat(
+        id = getUuidOrNull(id) ?: return null,
+        imageUrl = imageUrl,
+        name = name,
+        requesterId = getUuidOrNull(requesterId) ?: return null
+    )
+}
+
 @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
-fun Message.toLocalDto(): MessageLocalDto {
+fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
     val content = this.content
     val text = if (content is MessageContent.Text) content.text else null
-    val data = if (content is MessageContent.Image) content.data else null
-    val images = if (data is ImageData.ImageByteArray) data.byteArray else null
+    val imageData = if (content is MessageContent.Image) content.data else null
+    val image = if (imageData is ImageData.ImageByteArray) imageData.byteArray else null
+    val audioData = if (content is MessageContent.Audio) content.data else null
+    val audio = if (audioData is AudioData.AudioByteArray) audioData.byteArray else null
 
 
-    return MessageLocalDto(
+
+    return PendingMessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
         text = text,
-        image = images,
+        image = image,
+        audio = audio,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
-        status = status.toLocalDto()
+        status = status
     )
 }
 
 
-fun MessageLocalDto.toDomain(): Message {
+@OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
+fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
+    val content = this.content
+    val text = if (content is MessageContent.Text) content.text else null
+    val imageData = if (content is MessageContent.Image) content.data else null
+    val imageUrl = if (imageData is ImageData.ImageUrl) imageData.url else null
+    val audioData = if (content is MessageContent.Audio) content.data else null
+    val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
+
+
+
+    return CachedMessageLocalDto(
+        id = this.id.toString(),
+        senderId = this.senderId.toString(),
+        text = text,
+        imageUrl = imageUrl,
+        audioUrl = audioUrl,
+        reactions = reactions.toLocalDto(),
+        timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
+        chatId = this.chatId.toString(),
+        isMine = this.isMine,
+        status = status
+    )
+}
+
+fun MessageReaction.toLocalDto(): MessageReactionLocalDto {
+    return MessageReactionLocalDto(
+        emoji = emoji,
+        userId = userId,
+        messageId = messageId
+    )
+}
+
+fun List<MessageReaction>.toLocalDto(): List<MessageReactionLocalDto> =
+    map(MessageReaction::toLocalDto)
+
+fun MessageReactionLocalDto.toDomain(): MessageReaction {
+    return MessageReaction(
+        emoji = emoji,
+        userId = userId,
+        messageId = messageId
+    )
+}
+
+fun List<MessageReactionLocalDto>.toDomainMessageReaction(): List<MessageReaction> =
+    map(MessageReactionLocalDto::toDomain)
+
+fun List<Message>.toCachedMessageLocalDto(): List<CachedMessageLocalDto> =
+    map { it.toCachedMessageLocalDto() }
+
+fun CachedMessageLocalDto.toDomain(): Message {
+    val content = if (text != null) {
+        MessageContent.Text(text)
+    } else if (imageUrl != null) {
+        MessageContent.Image(ImageData.ImageUrl(imageUrl))
+    } else if (audioUrl != null) {
+        MessageContent.Audio(AudioData.AudioUrl(audioUrl))
+    } else {
+        error("Invalid message content")
+    }
+
+    return Message(
+        id = Uuid.parse(this.id),
+        senderId = Uuid.parse(this.senderId),
+        chatId = Uuid.parse(this.chatId),
+        content = content,
+        reactions = reactions.toDomainMessageReaction(),
+        sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
+        status = status,
+        isMine = isMine
+    )
+}
+
+fun PendingMessageLocalDto.toDomain(): Message {
     val content = if (text != null) {
         MessageContent.Text(text)
     } else if (image != null) {
         MessageContent.Image(ImageData.ImageByteArray(image))
+    } else if (audio != null) {
+        MessageContent.Audio(AudioData.AudioByteArray(audio))
     } else {
         error("Invalid message content")
     }
@@ -100,30 +200,12 @@ fun MessageLocalDto.toDomain(): Message {
         chatId = Uuid.parse(this.chatId),
         content = content,
         sendAt = Instant.fromEpochMilliseconds(this.timestamp).toLocalDateTime(),
-        status = status.toDomain(),
+        status = status,
         isMine = true
     )
 }
 
-fun List<MessageLocalDto>.toDomain(): List<Message> = map { it.toDomain() }
-
-fun MessageLocalDto.MessageStatus.toDomain(): MessageStatus {
-    return when (this) {
-        MessageLocalDto.MessageStatus.LOADING -> MessageStatus.LOADING
-        MessageLocalDto.MessageStatus.SENT -> MessageStatus.SENT
-        MessageLocalDto.MessageStatus.FAILED -> MessageStatus.FAILED
-        MessageLocalDto.MessageStatus.READ -> MessageStatus.READ
-    }
-}
-
-fun MessageStatus.toLocalDto(): MessageLocalDto.MessageStatus {
-    return when (this) {
-        MessageStatus.LOADING -> MessageLocalDto.MessageStatus.LOADING
-        MessageStatus.SENT -> MessageLocalDto.MessageStatus.SENT
-        MessageStatus.FAILED -> MessageLocalDto.MessageStatus.FAILED
-        MessageStatus.READ -> MessageLocalDto.MessageStatus.READ
-    }
-}
+fun List<PendingMessageLocalDto>.toDomain(): List<Message> = map(PendingMessageLocalDto::toDomain)
 
 fun MarkAsReadDto.toDomain(): MarkMessageAsReadEvent {
     return MarkMessageAsReadEvent(

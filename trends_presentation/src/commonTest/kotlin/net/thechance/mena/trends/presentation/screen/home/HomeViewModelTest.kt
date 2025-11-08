@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -172,6 +173,26 @@ class HomeViewModelTest {
 
             assertThat(updated.isDescriptionExpanded).isEqualTo(!initial.isDescriptionExpanded)
 
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onGetRefreshVideoUrl should update the specific reel video url to new value by id`() = runTest {
+        everySuspend { repository.getReelUrls("1") } returns ReelUrls(
+            videoUrl = "video3.mp4",
+            thumbnailUrl = "thumb1.jpg"
+        )
+
+        advanceUntilIdle()
+        viewModel.onGetRefreshedThumbnail("1")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            val reelsSnapshot = state.reels.asSnapshot().first()
+
+            assertThat(reelsSnapshot.thumbnailUrl).isEqualTo("thumb1.jpg")
             cancelAndIgnoreRemainingEvents()
         }
     }

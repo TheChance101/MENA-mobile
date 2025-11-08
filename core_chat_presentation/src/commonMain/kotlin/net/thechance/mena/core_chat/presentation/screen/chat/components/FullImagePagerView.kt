@@ -208,8 +208,8 @@ private fun PagerOverlay(
             )
         }
         Row(
-            modifier = Modifier,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8, Alignment.CenterHorizontally)
         ) {
             if (message.reactions.isNotEmpty()) {
                 ReactionBubble(reactions = message.reactions)

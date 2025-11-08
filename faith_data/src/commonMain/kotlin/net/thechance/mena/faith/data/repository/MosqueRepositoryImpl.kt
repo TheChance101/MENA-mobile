@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.data.repository
 
 import net.thechance.mena.faith.data.mapper.mosque.toMosque
+import net.thechance.mena.faith.data.remote.model.PageResponse
 import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
 import net.thechance.mena.faith.data.remote.service.MosqueApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
@@ -24,7 +25,10 @@ class MosqueRepositoryImpl(
     }.map { it.toMosque() }
 
 
-    override suspend fun getMosquesByName(query: String): List<Mosque> {
-        return emptyList()
+    override suspend fun getMosquesByName(query: String, page: Int, size: Int): List<Mosque> {
+        val response = executeApiSafely<PageResponse<MosqueDto>> {
+            mosqueApiService.searchMosquesByName(query, page, size)
+        }
+        return response.items?.map { it.toMosque() } ?: emptyList()
     }
 }

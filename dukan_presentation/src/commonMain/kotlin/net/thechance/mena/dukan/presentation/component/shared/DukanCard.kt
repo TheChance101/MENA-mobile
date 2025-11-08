@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.shared
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,16 +25,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.skeletonLoading
-import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DukanCard(
-    dukan: CategoryDukansUiState.DukanUiState,
+    title: String,
+    imageUrl: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isFavorite: Boolean,
@@ -54,7 +59,8 @@ fun DukanCard(
     ) {
         if (!isLoading) {
             DukanCardContent(
-                dukan = dukan,
+                title = title,
+                imageUrl = imageUrl,
                 isFavorite = isFavorite,
                 onFavoriteClick = onFavoriteClick
             )
@@ -64,38 +70,48 @@ fun DukanCard(
 
 @Composable
 private fun BoxScope.DukanCardContent(
-    dukan: CategoryDukansUiState.DukanUiState,
+    title: String,
+    imageUrl: String,
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit
 ) {
-    var isImageLoaded by remember { mutableStateOf(false) }
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     AsyncImage(
-        model = dukan.imageUrl,
-        contentDescription = dukan.name,
+        model = imageUrl,
+        contentDescription = title,
         contentScale = ContentScale.Crop,
         onState = { state ->
-            isImageLoaded = state is AsyncImagePainter.State.Success
+            isError = state is AsyncImagePainter.State.Error
+            isLoading = state is AsyncImagePainter.State.Loading
         },
         modifier = Modifier
             .fillMaxSize()
-            .skeletonLoading(isLoading = !isImageLoaded)
+            .skeletonLoading(isLoading = isLoading)
     )
-
-    if (isImageLoaded) {
-        Box(
+    if (isError) {
+        Image(
+            painter = painterResource(Res.drawable.ic_no_image_loaded),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f)
-                        )
-                    )
-                )
+                .size(64.dp)
+                .align(Alignment.Center),
+            contentScale = ContentScale.Fit
         )
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.Black.copy(alpha = 0.7f)
+                    )
+                )
+            )
+    )
 
     FavoriteIcon(
         isFavorite = isFavorite,
@@ -106,7 +122,7 @@ private fun BoxScope.DukanCardContent(
     )
 
     Text(
-        text = dukan.name,
+        text = title,
         color = Theme.colorScheme.primary.onPrimary,
         style = Theme.typography.title.small,
         maxLines = 1,
@@ -121,7 +137,8 @@ private fun BoxScope.DukanCardContent(
 private fun DukanCardLoadingPreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(),
+            title = "Dukan",
+            imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
             onClick = {},
             isFavorite = false,
             isLoading = true
@@ -134,11 +151,8 @@ private fun DukanCardLoadingPreview() {
 private fun DukanCardFavoritePreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(
-                id = "dukan1",
-                name = "Dukan",
-                imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400"
-            ),
+            title = "Dukan",
+            imageUrl = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
             onClick = {},
             isFavorite = true
         )
@@ -150,11 +164,8 @@ private fun DukanCardFavoritePreview() {
 private fun DukanCardEmptyImagePreview() {
     MenaTheme {
         DukanCard(
-            dukan = CategoryDukansUiState.DukanUiState(
-                id = "dukan2",
-                name = "Dukan Without Image",
-                imageUrl = ""
-            ),
+            title = "Dukan Without Image",
+            imageUrl = "",
             isFavorite = false,
             onClick = {}
         )

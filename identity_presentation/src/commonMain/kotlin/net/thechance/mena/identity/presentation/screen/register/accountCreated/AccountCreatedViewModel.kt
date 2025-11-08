@@ -3,15 +3,33 @@ package net.thechance.mena.identity.presentation.screen.register.accountCreated
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 
 class AccountCreatedViewModel(
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val authenticationRepository: AuthenticationRepository,
+    private val registrationDraftRepository: RegistrationDraftRepository,
+    private val authTokens: AuthenticationTokens? = null,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<AccountCreatedUIState, AccountCreatedUIEffect>
     (AccountCreatedUIState),
     AccountCreatedInteractionListener {
 
     override fun onClickGoToHome() {
-        sendNewEffect(AccountCreatedUIEffect.NavigateToHome)
+        authTokens?.let { tokens ->
+            completeRegistration(tokens)
+        }
+    }
+
+    private fun completeRegistration(tokens: AuthenticationTokens) {
+        tryToExecute(
+            function = {
+                authenticationRepository.saveAuthTokensAndEmit(tokens)
+                registrationDraftRepository.clearLastPhoneNumber()
+            },
+            dispatcher = dispatcher
+        )
     }
 }
