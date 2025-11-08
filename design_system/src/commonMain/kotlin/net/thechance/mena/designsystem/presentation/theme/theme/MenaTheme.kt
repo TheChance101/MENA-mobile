@@ -29,7 +29,7 @@ fun MenaTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = LightColorScheme
-    val typography = createThemeTypography()
+    val typography = createThemeTypography(language)
     val layoutDirection = remember(language) {
         if (language == AppLanguage.Arabic.iso) LayoutDirection.Rtl else LayoutDirection.Ltr
     }

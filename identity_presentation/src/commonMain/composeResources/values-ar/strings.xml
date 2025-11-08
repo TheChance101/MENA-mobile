@@ -68,8 +68,8 @@
     <string name="error">خطأ</string>
     <!-- Profile Screen Strings -->
     <string name="profile_title">الملف الشخصي</string>
-    <string name="profile_account_settings_header">إعدادات الحساب</string>
-    <string name="profile_edit_profile_info">تعديل معلومات الملف الشخصي</string>
+    <string name="profile_account_settings_header">ضبط الحساب</string>
+    <string name="profile_edit_profile_info">تعديل المعلومات الشخصية</string>
     <string name="profile_change_password">تغيير كلمة المرور</string>
     <string name="profile_addresses">العناوين</string>
     <string name="profile_privacy_settings">إعدادات الخصوصية</string>
@@ -83,8 +83,8 @@
     <string name="profile_other_header">أخرى</string>
     <string name="profile_privacy_and_policy">الخصوصية والسياسات</string>
     <string name="profile_contact_us">اتصل بنا</string>
-    <string name="profile_invite_friends_title">اجعل MENA مليئًا بالأصدقاء</string>
-    <string name="profile_invite_friends_subtitle">ادعُ أصدقائك</string>
+    <string name="profile_invite_friends_title">اجعل مينا مليئة بالأصدقاء</string>
+    <string name="profile_invite_friends_subtitle">قم بدعوة أصدقائك</string>
     <string name="profile_edit_profile_icon_content_description">أيقونة تعديل معلومات الملف الشخصي</string>
     <string name="profile_profile_picture_content_description">صورة الملف الشخصي</string>
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
