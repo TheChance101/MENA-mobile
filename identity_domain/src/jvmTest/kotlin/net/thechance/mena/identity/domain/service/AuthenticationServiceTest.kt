@@ -31,7 +31,7 @@ class AuthenticationServiceTest {
     fun `getRefreshToken() should return refresh token`() = runTest{
         coEvery { authenticationRepository.refreshAccessToken() } returns refreshToken
 
-        val result = authorizationService.refreshToken()
+        val result = authorizationService.getNewAccessToken()
 
         assertEquals(refreshToken ,result)
 

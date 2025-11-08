@@ -1,44 +1,55 @@
 package net.thechance.mena.identity.presentation.screen.register
 
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
-import net.thechance.mena.identity.domain.repository.RegisterRepository
+import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.domain.entity.PhoneNumber
+import net.thechance.mena.identity.domain.model.RegistrationDraft
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
+import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
-import org.junit.Before
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.junit.Test
+import kotlin.test.BeforeTest
+import kotlin.test.assertEquals
 
-class CreatePasswordViewModelTest {
+class CreatePasswordViewModelTest : BaseCoroutineTest() {
     private val passwordValidator = mockk<PasswordValidator>()
-    private val registerRepository = mockk<RegisterRepository>()
+    private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
     private val testDispatcher = StandardTestDispatcher()
+    private val phoneNumber = PhoneNumber("+964", "7901234567")
     private lateinit var createPasswordViewModel: CreatePasswordViewModel
 
-    @Before
-    fun setup(){
+    @BeforeTest
+    fun setup() {
         createPasswordViewModel = CreatePasswordViewModel(
             passwordValidator = passwordValidator,
-            registerRepository = registerRepository,
+            registrationDraftRepository = registrationDraftRepository,
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
     }
 
+
     @Test
-    fun `onChangeNewPassword should update state with new password`(){
+    fun `onChangeNewPassword should update state with new password`() {
         val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword)  } returns true
+        every { passwordValidator.isValid(newPassword) } returns true
         createPasswordViewModel.onChangeNewPassword(newPassword)
 
         assert(createPasswordViewModel.state.value.newPassword == newPassword)
     }
 
     @Test
-    fun `onChangeConfirmPassword should update state with new password`(){
+    fun `onChangeConfirmPassword should update state with new password`() {
         val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword)  } returns true
+        every { passwordValidator.isValid(newPassword) } returns true
         createPasswordViewModel.onChangeNewPassword(newPassword)
         createPasswordViewModel.onChangeConfirmPassword(newPassword)
 
@@ -46,23 +57,81 @@ class CreatePasswordViewModelTest {
     }
 
     @Test
-    fun `onToggleNewPasswordVisibility should toggle new password visibility`(){
+    fun `onToggleNewPasswordVisibility should toggle new password visibility`() {
         createPasswordViewModel.onToggleNewPasswordVisibility()
 
         assert(createPasswordViewModel.state.value.isNewPasswordVisible)
     }
 
     @Test
-    fun `onToggleConfirmPasswordVisibility should toggle confirm password visibility`(){
+    fun `onToggleConfirmPasswordVisibility should toggle confirm password visibility`() {
         createPasswordViewModel.onToggleConfirmPasswordVisibility()
 
         assert(createPasswordViewModel.state.value.isConfirmPasswordVisible)
     }
 
     @Test
-    fun `onClearErrorMessage should clear error message`(){
+    fun `onClearErrorMessage should clear error message`() {
         createPasswordViewModel.onClearErrorMessage()
 
         assert(createPasswordViewModel.state.value.errorMessage == null)
+    }
+
+    @Test
+    fun `loadSavedData should load saved password from draft`() = runTest {
+        val savedPassword = "SavedPassword123"
+        val savedDraft = RegistrationDraft(password = savedPassword)
+        coEvery { registrationDraftRepository.getDraft(phoneNumber) } returns savedDraft
+        every { passwordValidator.isValid(savedPassword) } returns true
+
+        val viewModel = CreatePasswordViewModel(
+            passwordValidator = passwordValidator,
+            registrationDraftRepository = registrationDraftRepository,
+            registerUIState = RegisterUIState(phoneNumber),
+            dispatcher = testDispatcher
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(savedPassword, viewModel.state.value.newPassword)
+    }
+
+    @Test
+    fun `onChangeNewPassword should save password when valid`() = runTest {
+        val password = "ValidPassword123"
+        every { passwordValidator.isValid(password) } returns true
+        coEvery { registrationDraftRepository.getDraft(phoneNumber) } returns RegistrationDraft()
+        coEvery { registrationDraftRepository.saveDraft(phoneNumber, any()) } returns Unit
+
+        createPasswordViewModel.onChangeNewPassword(password)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify {
+            registrationDraftRepository.saveDraft(
+                phoneNumber,
+                RegistrationDraft(password = password)
+            )
+        }
+    }
+
+    @Test
+    fun `onChangeNewPassword should not save password when invalid`() = runTest {
+        val password = "short"
+        every { passwordValidator.isValid(password) } returns false
+
+        createPasswordViewModel.onChangeNewPassword(password)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { registrationDraftRepository.saveDraft(any(), any()) }
+    }
+
+    @Test
+    fun `onChangeNewPassword should not save password when blank`() = runTest {
+        val password = ""
+        every { passwordValidator.isValid(password) } returns false
+
+        createPasswordViewModel.onChangeNewPassword(password)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { registrationDraftRepository.saveDraft(any(), any()) }
     }
 }

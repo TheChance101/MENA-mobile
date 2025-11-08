@@ -29,20 +29,30 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.core.parameter.parametersOf
 
-class AccountCreatedScreen :
-            BaseScreen<AccountCreatedViewModel,
-            AccountCreatedUIState,
-            AccountCreatedUIEffect,
-            AccountCreatedInteractionListener>() {
+class AccountCreatedScreen(
+    private val authTokens: AuthenticationTokens?
+) : BaseScreen<
+        AccountCreatedViewModel,
+        AccountCreatedUIState,
+        AccountCreatedUIEffect,
+        AccountCreatedInteractionListener>() {
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel())
+        InitScreen(
+            getScreenModel(
+                parameters = {
+                    authTokens?.let { parametersOf(it) } ?: parametersOf()
+                }
+            )
+        )
     }
 
     @Composable
@@ -61,9 +71,7 @@ class AccountCreatedScreen :
                     painter = painterResource(Res.drawable.login_background),
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
+                    modifier = Modifier.fillMaxSize().align(Alignment.Center)
                 )
 
                 Column(
@@ -73,9 +81,7 @@ class AccountCreatedScreen :
                         .padding(top = Theme.spacing._24)
                 ) {
                     Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth(),
+                        modifier = Modifier.weight(1f).fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                     ) {
@@ -97,44 +103,40 @@ class AccountCreatedScreen :
         }
     }
 
-    @Composable
-    private fun SuccessMessageBlock(
-        modifier: Modifier = Modifier
-    ) {
-        Column(
-            modifier = modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_account_shield),
-                contentDescription = stringResource(Res.string.success_account_created_title),
-                modifier = Modifier
-                    .size(128.dp)
-                    .padding(bottom = Theme.spacing._12)
-            )
-            Text(
-                text = stringResource(Res.string.success_account_created_title),
-                style = Theme.typography.title.medium,
-                color = Theme.colorScheme.shadePrimary,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = Theme.spacing._2)
-            )
-            Text(
-                text = stringResource(Res.string.success_account_created_description),
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadeSecondary,
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-
     override fun onEffect(
         effect: AccountCreatedUIEffect,
         navigator: Navigator
     ) {
-        when (effect) {
-            AccountCreatedUIEffect.NavigateToHome -> {}
-        }
+        // No effects needed - navigation handled automatically by EntryPoint
+    }
+}
+
+@Composable
+private fun SuccessMessageBlock(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_account_shield),
+            contentDescription = stringResource(Res.string.success_account_created_title),
+            modifier = Modifier.size(128.dp).padding(bottom = Theme.spacing._12)
+        )
+        Text(
+            text = stringResource(Res.string.success_account_created_title),
+            style = Theme.typography.title.medium,
+            color = Theme.colorScheme.shadePrimary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(bottom = Theme.spacing._2)
+        )
+        Text(
+            text = stringResource(Res.string.success_account_created_description),
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadeSecondary,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -142,7 +144,9 @@ class AccountCreatedScreen :
 @Composable
 private fun Preview() {
     MenaTheme {
-        AccountCreatedScreen().OnRender(
+        AccountCreatedScreen(
+            authTokens = null
+        ).OnRender(
             state = AccountCreatedUIState,
             listener = object : AccountCreatedInteractionListener {
                 override fun onClickGoToHome() {}

@@ -19,6 +19,7 @@ import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toUpdateProductRequest
 import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
+import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
@@ -80,6 +81,19 @@ class DukanProductRepositoryImpl(
         }
     }
 
+    override suspend fun uploadProductImage(
+        fileName: String,
+        fileBytes: ByteArray,
+        productId: String
+    ): String {
+        return safeApiCall {
+            client.post("${PRODUCT_BASE_PATH}/$productId/image") {
+                accept(ContentType.Application.Json)
+                setBody(buildSinglePartFormData(fileName, fileBytes, key = "file"))
+            }
+        }
+    }
+
     override suspend fun getProductDetails(productId: String): Product {
         return safeApiCall<ProductDto> {
             client.get("${PRODUCT_BASE_PATH}/$productId")
@@ -107,6 +121,14 @@ class DukanProductRepositoryImpl(
     override suspend fun deleteProduct(productId: String) {
         safeApiCall<Unit> {
             client.delete("${PRODUCT_BASE_PATH}/$productId")
+        }
+    }
+
+    override suspend fun toggleProductToFavorites(productId: String) {
+        safeApiCall<Unit> {
+            client.post("${PRODUCT_BASE_PATH}/$productId/favorite") {
+                contentType(ContentType.Application.Json)
+            }
         }
     }
 }

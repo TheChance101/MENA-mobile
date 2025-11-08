@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,10 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -28,8 +29,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
+import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.wide_image_shoppingcart
@@ -57,8 +60,8 @@ fun LazyGridScope.wideImageProductsGrid(
         key = { index -> productsShelf[index]?.id ?: index }
     ) { index ->
         productsShelf[index]?.let { product ->
-            var toggleCartToQuantity by rememberSaveable{ mutableStateOf(product.inCartQuantity>1) }
-            var productQuantity by rememberSaveable{ mutableIntStateOf(product.inCartQuantity) }
+            var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
+            var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
 
             ProductCard(
                 imageUrl = product.imageUrl,
@@ -72,6 +75,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         dukanColor = cartColor,
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
                         onAddToCartClick = {
+                            productQuantity += 1
                             toggleCartToQuantity = true
                             listener.onAddToCartClicked(
                                 productId = product.id,
@@ -87,7 +91,7 @@ fun LazyGridScope.wideImageProductsGrid(
                         },
                         onMinusClick = {
                             if (productQuantity == 1) toggleCartToQuantity = false
-                            else productQuantity -= 1
+                            productQuantity -= 1
                             listener.onMinusClicked(
                                 productId = product.id,
                                 productQuantity = productQuantity
@@ -106,15 +110,18 @@ private fun ProductCard(
     title: String,
     price: String,
     modifier: Modifier = Modifier,
-    onClick:() -> Unit,
+    onClick: () -> Unit,
     productAction: @Composable () -> Unit,
 ) {
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .size(width = 160.dp, height = 240.dp)
             .clip(RoundedCornerShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
-            .clickable(onClick = onClick,indication = null, interactionSource = null)
+            .clickable(onClick = onClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
     ) {
 
@@ -125,11 +132,25 @@ private fun ProductCard(
                 model = imageUrl,
                 contentDescription = stringResource(Res.string.wide_product_image),
                 contentScale = ContentScale.Crop,
+                onState = { state ->
+                    isError = state is AsyncImagePainter.State.Error
+                    isLoading = state is AsyncImagePainter.State.Loading
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(176.dp)
                     .clip(RoundedCornerShape(Theme.radius.sm))
             )
+            if (isError || isLoading) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_no_image_loaded),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Fit
+                )
+            }
             Box(
                 modifier = Modifier.align(Alignment.BottomCenter).offset(y = 12.dp)
             ) {

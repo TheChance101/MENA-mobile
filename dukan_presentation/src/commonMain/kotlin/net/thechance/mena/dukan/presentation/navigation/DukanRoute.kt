@@ -39,6 +39,9 @@ sealed interface DukanRoute {
     object DukanCategoriesScreenRoute : DukanRoute
 
     @Serializable
+    data class CheckoutScreenRoute(val dukanId: String) : DukanRoute
+
+    @Serializable
     data class DukansScreenRoute(val categoryId: String, val categoryTitle: String) : DukanRoute
 
     @Serializable
@@ -50,4 +53,13 @@ sealed interface DukanRoute {
 
     @Serializable
     data class ProductDetails(val productId: String, val dukanId: String) : DukanRoute
+
+    @Serializable
+    data class DukanCart(val dukanId: String) : DukanRoute
+
+    @Serializable
+    object SearchScreenRoute : DukanRoute
+
+    @Serializable
+    data object AddressesRoute : DukanRoute
 }

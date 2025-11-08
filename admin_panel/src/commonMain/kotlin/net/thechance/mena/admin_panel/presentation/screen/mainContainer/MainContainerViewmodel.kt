@@ -3,6 +3,7 @@ package net.thechance.mena.admin_panel.presentation.screen.mainContainer
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.authentication.AdminAuthenticationRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -65,6 +66,7 @@ class MainContainerViewmodel(
     }
 
     private suspend fun onFailureLoggedOut(errorState: ErrorState) {
+        updateState { it.copy(isLogOutDialogShown = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
@@ -74,24 +76,21 @@ class MainContainerViewmodel(
 
     private fun checkAuthenticationStatus() {
         tryToExecute(
-            callee = { authenticationRepository.isUserLoggedIn() },
+            callee = authenticationRepository::isUserLoggedIn,
             onSuccess = ::onSuccessCheckedAuthentication,
             onError = ::onFailureCheckedAuthentication,
             dispatcher = dispatcher
         )
     }
 
-    private fun onSuccessCheckedAuthentication(isUserLoggedIn: Boolean) {
-        if (isUserLoggedIn) {
-            updateState {
-                it.copy(authenticationStatus = true)
+    private suspend fun onSuccessCheckedAuthentication(token: Flow<Boolean>) {
+        token.collect { isUserLoggedIn ->
+            updateState { it.copy(authenticationStatus = isUserLoggedIn) }
+            if (isUserLoggedIn) {
+                sendEffect(MainContainerEffect.NavigateToAdminPanelScreen)
+            } else {
+                sendEffect(MainContainerEffect.NavigateToLogInScreen)
             }
-            sendEffect(MainContainerEffect.NavigateToAdminPanelScreen)
-        } else {
-            updateState {
-                it.copy(authenticationStatus = false)
-            }
-            sendEffect(MainContainerEffect.NavigateToLogInScreen)
         }
     }
 

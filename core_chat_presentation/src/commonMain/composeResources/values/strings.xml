@@ -15,6 +15,8 @@
     <string name="something_went_wrong">Something went wrong</string>
     <string name="could_not_load_contacts">Could not load contacts, please try again</string>
     <string name="error">Error</string>
+    <string name="no_internet">Connection error</string>
+    <string name="no_internet_message">No Internet Connection</string>
     <string name="error_get_user_info">"Failed while getting user data"</string>
     <string name="actions">Actions</string>
     <string name="re_send">Re-Send</string>
@@ -46,6 +48,7 @@
     <string name="you">You</string>
     <string name="could_not_get_sync_contacts_status">Could not get sync contacts status, please try again</string>
     <string name="could_not_load_chats">Could not get chats</string>
+    <string name="react_to_message">React to message</string>
     <string name="delete_chat_confirmation_message">Are you sure you want to delete this chat, you will lose all messages and can’t restore them?</string>
     <string name="could_not_delete_chat">Could not delete chat</string>
     <string name="chat_deleted_successfully">Chat deleted successfully</string>

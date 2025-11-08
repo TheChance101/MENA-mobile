@@ -28,19 +28,20 @@ fun GregorianDatePicker(
     val dateToUse = getEffectiveDate(selectedDate)
     val monthNames = getDefaultMonthNames()
     val yearList = createYearList(minYear, maxYear)
-
     val (currentMonthState, currentYearState) = rememberMonthYearState(dateToUse)
     val currentMonth = currentMonthState.value
     val currentYear = currentYearState.value
 
     val daysList = createDaysList(currentMonth, currentYear)
-    val selectedIndices = calculateSelectionIndices(
-        date = dateToUse,
-        month = currentMonth,
-        year = currentYear,
-        daysCount = daysList.size,
-        minYear = minYear
-    )
+    val selectedIndices = remember(dateToUse, currentMonth, currentYear, daysList.size) {
+        calculateSelectionIndices(
+            date = dateToUse,
+            month = currentMonth,
+            year = currentYear,
+            daysCount = daysList.size,
+            minYear = minYear
+        )
+    }
 
     WheelDatePicker(
         selectedDayIndex = selectedIndices.dayIndex,
@@ -67,11 +68,8 @@ fun GregorianDatePicker(
 }
 
 @OptIn(ExperimentalTime::class)
-@Composable
 private fun getEffectiveDate(selectedDate: LocalDate?): LocalDate {
-    val today = remember {
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    }
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     return selectedDate ?: today
 }
 
@@ -86,12 +84,20 @@ private fun createYearList(minYear: Int, maxYear: Int): List<String> {
 private fun rememberMonthYearState(
     initialDate: LocalDate
 ): Pair<MutableState<Int>, MutableState<Int>> {
-    val currentMonthState = remember { mutableStateOf(initialDate.month.number) }
-    val currentYearState = remember { mutableStateOf(initialDate.year) }
+    val dateKey = "${initialDate.year}-${initialDate.month.number}-${initialDate.day}"
 
-    LaunchedEffect(initialDate.month.number, initialDate.year) {
-        currentMonthState.value = initialDate.month.number
-        currentYearState.value = initialDate.year
+    val currentMonthState = remember(dateKey) {
+        mutableStateOf(initialDate.month.number)
+    }
+    val currentYearState = remember(dateKey) {
+        mutableStateOf(initialDate.year)
+    }
+
+    LaunchedEffect(initialDate.year, initialDate.month.number, initialDate.day) {
+        if (currentMonthState.value != initialDate.month.number || currentYearState.value != initialDate.year) {
+            currentMonthState.value = initialDate.month.number
+            currentYearState.value = initialDate.year
+        }
     }
 
     return currentMonthState to currentYearState

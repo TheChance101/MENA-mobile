@@ -1,7 +1,7 @@
 package net.thechance.mena.faith.domain.usecase
 
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.exception.FaithException
+import net.thechance.mena.identity.domain.entity.Address
 import kotlin.math.PI
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -10,10 +10,10 @@ import kotlin.math.sin
 
 class QiblahBearingCalculatorUseCase {
     private var currentContinuousAzimuth: Float = 0f
-    fun calculateQiblahAngle(userLocation: Location): Double {
-        validateCoordinates(location = userLocation)
-        val userLatitudeRadians = userLocation.latitude.toRadians()
-        val userLongitudeRadians = userLocation.longitude.toRadians()
+    fun calculateQiblahAngle(address: Address): Double {
+        validateCoordinates(address = address)
+        val userLatitudeRadians = address.latitude.toRadians()
+        val userLongitudeRadians = address.longitude.toRadians()
         val kaabaLatitudeRadians = KAABA_LATITUDE.toRadians()
         val kaabaLongitudeRadians = KAABA_LONGITUDE.toRadians()
 
@@ -48,11 +48,11 @@ class QiblahBearingCalculatorUseCase {
         }
     }
 
-    private fun validateCoordinates(location: Location) {
-        require(location.latitude in -90.0..90.0) {
+    private fun validateCoordinates(address: Address) {
+        require(address.latitude in -90.0..90.0) {
             throw FaithException.InvalidLatitudeException
         }
-        require(location.longitude in -180.0..180.0) {
+        require(address.longitude in -180.0..180.0) {
             throw FaithException.InvalidLongitudeException
         }
     }

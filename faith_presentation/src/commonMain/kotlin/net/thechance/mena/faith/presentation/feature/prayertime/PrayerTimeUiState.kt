@@ -12,5 +12,5 @@ data class PrayerTimeUiState(
     val nextPrayerName: PrayerName = PrayerName.DHUHR,
     val currentDate: String = "",
     val nextPrayerTime: Instant = Instant.fromEpochMilliseconds(0),
-    val city: String = ""
+    val address: String = ""
 )

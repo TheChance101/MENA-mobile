@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
@@ -24,6 +25,7 @@ import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -110,6 +112,30 @@ class ManageTrendsViewModelTest {
             assertThat(state.error).isNull()
             verifySuspend { viewModel.getReels() }
             verifySuspend { viewModel.getCurrentUserInfo() }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `onGetRefreshVideoUrl should update the specific reel video url to new value by id`() = runTest {
+        everySuspend { repository.getAllCurrentUserReels(0) } returns reels
+
+        everySuspend { repository.getReelUrls(REEL_ID) } returns ReelUrls(
+            videoUrl = "video3.mp4",
+            thumbnailUrl = "thumb3.jpg"
+        )
+
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            skipItems(1)
+
+            viewModel.onGetRefreshedThumbnail(REEL_ID)
+
+            val state = awaitItem()
+            val reelsSnapshot = state.reels.asSnapshot().first()
+
+            assertThat(reelsSnapshot.thumbnailUrl).isEqualTo("thumb3.jpg")
             cancelAndIgnoreRemainingEvents()
         }
     }

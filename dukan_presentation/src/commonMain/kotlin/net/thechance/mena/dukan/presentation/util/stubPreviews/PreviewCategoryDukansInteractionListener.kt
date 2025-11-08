@@ -6,6 +6,6 @@ import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDu
 object PreviewCategoryDukansInteractionListener : CategoryDukansInteractionListener {
     override fun onBackClicked() {}
     override fun onDukanClicked(dukan: DukanUiState) {}
-    override fun onFavoriteClicked(dukan: DukanUiState) {}
+    override fun onFavoriteDukanClicked(dukanId: String) {}
     override fun onRetryClicked() {}
 }

@@ -23,9 +23,11 @@ import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIEN
 import net.thechance.mena.trends.data.di.TrendDataModule.Companion.UPLOAD_CLIENT_NAME
 import net.thechance.mena.trends.data.dto.ReelDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
+import net.thechance.mena.trends.data.mapper.toReelUrls
 import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
@@ -33,6 +35,7 @@ import net.thechance.mena.trends.data.util.NetworkEndpoint.REELS_FEED_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkEndpoint.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.REFRESH_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkKeys.VIDEO
@@ -40,6 +43,7 @@ import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Named
@@ -159,6 +163,12 @@ internal class ReelsRepositoryImpl(
         safeApiCall<Unit> {
             networkClient.post(urlString = "$TRENDS_PATH/$reelId/$VIEW_REEL_ENDPOINT")
         }
+    }
+
+    override suspend fun getReelUrls(reelId: String): ReelUrls {
+        return safeApiCall<ReelPathUrlsDto> {
+            networkClient.get(urlString = "$TRENDS_PATH/$reelId/$REFRESH_REEL_ENDPOINT")
+        }.toReelUrls()
     }
 
     private fun createRequestBody(

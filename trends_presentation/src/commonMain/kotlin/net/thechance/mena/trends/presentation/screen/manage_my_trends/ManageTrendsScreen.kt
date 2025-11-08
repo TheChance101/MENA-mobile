@@ -58,9 +58,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
-import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
@@ -80,7 +80,7 @@ internal fun ManageTrendsScreen(
         when (effect) {
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
-                navController.navigate(Route.ReelDetails(effect.reelId, UserReelSource.MANAGE_MY_TRENDS))
+                navController.navigate(Route.ReelDetails(effect.reelId, isFromManageTrends = true))
             }
         }
     }
@@ -223,7 +223,8 @@ private fun ManageTrendsScreenBody(
                 reels[index]?.let { reel ->
                     TrendItem(
                         item = reel,
-                        onTrendClick = listener::onClickReel
+                        onTrendClick = listener::onClickReel,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
             }
@@ -260,6 +261,7 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
 private fun TrendItem(
     item: ReelUiState,
     onTrendClick: (id: String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f
@@ -274,11 +276,13 @@ private fun TrendItem(
 
     ) {
         TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
-            AsyncImage(
-                model = item.thumbnailUrl,
+            BaseAsyncImage(
+                url = item.thumbnailUrl,
                 contentDescription = stringResource(resource = Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                onRequestRefresh = { onGetRefreshedThumbnail(item.id) },
+                imageCacheKey = item.id,
             )
         }
 

@@ -11,8 +11,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.launch
@@ -64,7 +66,7 @@ fun PickLocationMap(
             maxWidth = maxWidth,
             maxHeight = maxHeight,
         )
-
+        println("MaplibreMap is RTL ${LocalLayoutDirection.current == LayoutDirection.Rtl}")
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
@@ -81,8 +83,10 @@ fun PickLocationMap(
             },
             options = mapOptions(isLocked)
         )
-
-        Anchor(anchorLocation = anchorLocation)
+        Anchor(
+            anchorLocation = anchorLocation,
+            sreenWidth = maxWidth,
+        )
         content()
     }
 }
@@ -122,8 +126,10 @@ fun SetAnchorInCenter(
 @Composable
 fun Anchor(
     anchorLocation: DpOffset?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    sreenWidth: Dp
 ) {
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     Crossfade(
         targetState = anchorLocation
     ) {
@@ -134,7 +140,7 @@ fun Anchor(
                 modifier = modifier
                     .size(46.dp, 58.05.dp)
                     .offset(
-                        x = offset.x - 23.dp,
+                        x = if (isRtl) sreenWidth - offset.x - 23.dp else offset.x - 23.dp,
                         y = offset.y - 50.05.dp
                     )
             )

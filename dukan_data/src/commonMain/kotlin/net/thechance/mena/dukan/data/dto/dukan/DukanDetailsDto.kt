@@ -25,7 +25,7 @@ data class DukanDetailsDto(
     @SerialName("latitude")
     val latitude: Double,
     @SerialName("longitude")
-    val longitude: Double
-
+    val longitude: Double,
+    @SerialName("isFavorite")
+    val isFavorite: Boolean,
 )
-

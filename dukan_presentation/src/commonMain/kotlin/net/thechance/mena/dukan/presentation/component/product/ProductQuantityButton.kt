@@ -46,15 +46,19 @@ fun ProductQuantityButton(
         Icon(
             painter = painterResource(Res.drawable.remove_01),
             contentDescription = stringResource(Res.string.remove_product),
-            tint =Theme.colorScheme.primary.primary,
+            tint = Theme.colorScheme.primary.primary,
             modifier = Modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(color = Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onMinusClick,indication = null, interactionSource = MutableInteractionSource())
+                .clickable(
+                    onClick = onMinusClick,
+                    indication = null,
+                    interactionSource = MutableInteractionSource()
+                )
                 .padding(iconPadding)
         )
         Text(
-            text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
+            text = if (inCartQuantity < 10 && inCartQuantity != 0) "0$inCartQuantity" else "$inCartQuantity",
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary,
             modifier = Modifier.padding(horizontal = Theme.spacing._4)
@@ -66,7 +70,11 @@ fun ProductQuantityButton(
             modifier = Modifier
                 .clip(RoundedCornerShape(size = Theme.radius.full))
                 .background(color = Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onPlusClick,indication = null, interactionSource = MutableInteractionSource())
+                .clickable(
+                    onClick = onPlusClick,
+                    indication = null,
+                    interactionSource = MutableInteractionSource()
+                )
                 .padding(iconPadding)
         )
 

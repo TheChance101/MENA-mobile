@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
@@ -20,17 +24,17 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukans
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-fun LazyListScope.editorPickDukanItems(
+fun LazyGridScope.editorPickDukanItems(
     dukans: LazyPagingItems<MainScreenUiState.EditorPickDukanUiState>,
     onDukanClick: (String) -> Unit,
+    onClickFavorite: (dukanId: String) -> Unit
 ) {
 
     when (dukans.loadState.refresh) {
         LoadState.Loading -> item {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Theme.spacing._16),
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 repeat(8) { LoadingDukanPlaceholder() }
@@ -47,7 +51,9 @@ fun LazyListScope.editorPickDukanItems(
                 EditorPickDukanItem(
                     dukanName = dukan.name,
                     dukanImage = dukan.imageUrl,
-                    onClick = { onDukanClick(dukan.id) },
+                    onClickDukan = { onDukanClick(dukan.id) },
+                    isFavorite = dukan.isFavorite,
+                    onClickFavorite = { onClickFavorite(dukan.id) },
                     modifier = Modifier.padding(
                         vertical = Theme.spacing._8
                     )
@@ -66,9 +72,12 @@ private fun EditorPickDukanItemsListPreview() {
     MenaTheme {
         val fakePagingItems = flowOf(PagingData.from(fakeDukans()))
             .collectAsLazyPagingItems()
-        LazyColumn {
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(328.dp),
+        ) {
             editorPickDukanItems(
                 dukans = fakePagingItems,
+                onClickFavorite = { },
                 onDukanClick = {}
             )
         }

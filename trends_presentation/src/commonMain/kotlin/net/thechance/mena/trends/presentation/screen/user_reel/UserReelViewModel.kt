@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
-import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -46,14 +45,25 @@ internal class UserReelViewModel(
     private fun createPager(): Flow<PagingData<UserReelUiState>> {
         return createPager(
             scope = viewModelScope,
-            loadPage = { page -> getReelsBasedOnSource(userReelArgs.userReelSource, page)}
+            loadPage = { page ->
+                getReelsBasedOnSource(
+                    isFromHome = userReelArgs.isFromHome,
+                    isFromManageTrends = userReelArgs.isFromManageTrends,
+                    page = page
+                )
+            }
         ).map { pagingData -> pagingData.map { it.toUserReelUiState() } }
     }
 
-    private suspend fun getReelsBasedOnSource(userReelSource: UserReelSource, page: Int): List<Reel>{
-        return when(userReelSource){
-            UserReelSource.MANAGE_MY_TRENDS -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
-            UserReelSource.HOME -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+    private suspend fun getReelsBasedOnSource(
+        isFromHome: Boolean,
+        isFromManageTrends: Boolean,
+        page: Int
+    ): List<Reel> {
+        return when {
+            isFromHome -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+            isFromManageTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
+            else -> reelsRepository.getFeedReels(page, userReelArgs.realId)
         }
     }
 
@@ -107,6 +117,23 @@ internal class UserReelViewModel(
         } else {
             addReelLike(reelId)
         }
+    }
+
+    override fun onGetRefreshVideoUrl(reelId: String) {
+        tryToExecute(
+            block = { reelsRepository.getReelUrls(reelId).videoUrl },
+            onSuccess = { refreshedUrl ->
+                onGetRefreshVideoUrl(refreshedUrl, reelId)
+            },
+        )
+    }
+
+    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String){
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(videoUrl = refreshedUrl)
+            }
     }
 
     private fun onLikeClickFailed(reelId: String) {

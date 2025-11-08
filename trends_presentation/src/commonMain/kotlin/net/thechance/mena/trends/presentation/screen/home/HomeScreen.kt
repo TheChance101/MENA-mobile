@@ -1,5 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.home
 
+import androidx.compose.animation.AnimatedVisibility
+import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +43,6 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
-import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelSource
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
@@ -64,7 +65,7 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId, UserReelSource.HOME))
+                navController.navigate(Route.ReelDetails(effect.trendId, isFromHome = true))
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
@@ -135,6 +136,7 @@ private fun HomeScreenContent(
                         onClickReel = listener::onClickReel,
                         onExpandDescription = listener::onClickExpandDescription,
                         listState = listState,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail,
                     )
                 }
             )
@@ -172,14 +174,13 @@ private fun ReelsListSection(
     listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16),
+        modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8,horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(
@@ -191,7 +192,8 @@ private fun ReelsListSection(
                     reel = reel,
                     onClickLike = { onClickLike(reel.id, reel.isLiked) },
                     onClickReel = { onClickReel(reel.id) },
-                    onExpandDescription = { onExpandDescription(reel.id) }
+                    onExpandDescription = { onExpandDescription(reel.id) },
+                    onRequestRefresh = { onGetRefreshedThumbnail(reel.id) },
                 )
             }
         }
@@ -246,6 +248,7 @@ private fun HomeScreenPreview() {
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
+                    override fun onGetRefreshedThumbnail(reelId: String) {}
                 }
             )
         }

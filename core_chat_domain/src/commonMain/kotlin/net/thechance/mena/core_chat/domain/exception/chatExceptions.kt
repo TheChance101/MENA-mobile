@@ -39,3 +39,5 @@ class InvalidAudioFile(message: String) : AudioException(message)
 class SaveAudioFailed(message: String) : AudioException(message)
 
 class PlaybackFailed(message: String) : AudioException(message)
+
+class NoInternetException(): ChatException("No internet connection")

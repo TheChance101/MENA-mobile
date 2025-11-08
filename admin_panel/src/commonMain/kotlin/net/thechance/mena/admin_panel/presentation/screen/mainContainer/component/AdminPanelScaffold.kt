@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -55,23 +56,22 @@ fun AdminPanelScaffold(
             }
         },
         content = {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                AnimatedVisibility(
-                    visible = !isLoginScreen,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    AdminPanelScaffoldMainContent(
-                        state = state,
-                        interactionListener = interactionListener,
-                        snackBarState = snackBarState
-                    )
-                }
-                AdminPanelNavHost(
-                    modifier = Modifier.weight(1f),
+            Box(modifier = Modifier.fillMaxSize()) {
+                AdminPanelScaffoldMainContent(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = state,
+                    interactionListener = interactionListener,
                     navController = navController,
-                    isUserLoggedIn = state.authenticationStatus
+                    isLoginScreen = isLoginScreen
                 )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 32.dp, top = 32.dp)
+                        .fillMaxWidth(0.3f)
+                ) {
+                    SnackBarContainer(snackBarState)
+                }
             }
         }
     )
@@ -81,22 +81,32 @@ fun AdminPanelScaffold(
 private fun AdminPanelScaffoldMainContent(
     state: MainContainerScreenState,
     interactionListener: MainContainerInteractionListener,
-    snackBarState: SnackBarState,
+    navController: NavHostController,
+    isLoginScreen: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = Modifier.wrapContentSize()
-    ) {
-        Box(modifier = Modifier.wrapContentWidth()) {
-            AdminPanelSideBar(
-                modifier = Modifier.padding(bottom = 34.dp),
-                selectedTab = state.selectedSidebarTab,
-                interactionListener = interactionListener
-            )
+    Row(modifier = modifier) {
+        AnimatedVisibility(
+            visible = !isLoginScreen,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            Box(
+                modifier = Modifier.wrapContentSize()
+            ) {
+                Box(modifier = Modifier.wrapContentWidth()) {
+                    AdminPanelSideBar(
+                        modifier = Modifier.padding(bottom = 34.dp),
+                        selectedTab = state.selectedSidebarTab,
+                        interactionListener = interactionListener
+                    )
+                }
+            }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(end = 32.dp, top = 32.dp)
-        ) { SnackBarContainer(snackBarState) }
+        AdminPanelNavHost(
+            modifier = Modifier.weight(1f),
+            navController = navController,
+            isUserLoggedIn = state.authenticationStatus
+        )
     }
 }

@@ -8,9 +8,9 @@ import net.thechance.mena.faith.data.mapper.prayertime.toDomain
 import net.thechance.mena.faith.data.remote.model.prayertime.PrayerTimesDto
 import net.thechance.mena.faith.data.remote.service.PrayerTimeApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
+import net.thechance.mena.identity.domain.entity.Address
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -21,22 +21,21 @@ class PrayerTimeRepositoryImpl(
 
     override suspend fun getPrayerTimes(
         date: Instant,
-        location: Location,
+        address: Address,
         timeZone: TimeZone,
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
             date = date.toDateString(timeZone = timeZone),
-            latitude = location.latitude,
-            longitude = location.longitude
+            latitude = address.latitude,
+            longitude = address.longitude
         )
     }.toDomain()
 
     override suspend fun getPrayerTimeWithHijriDate(
         date: String,
-        location: Location,
+        location: Address,
         timeZone: TimeZone,
         isHijri: Boolean
-
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
             date = date,

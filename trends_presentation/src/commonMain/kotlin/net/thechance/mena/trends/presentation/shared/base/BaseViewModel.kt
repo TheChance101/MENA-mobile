@@ -119,7 +119,7 @@ internal abstract class BaseViewModel<State, Effect>(
     }
 
     companion object {
-        private const val THROTTLE_WINDOW_DURATION = 300L
+        private const val THROTTLE_WINDOW_DURATION = 800L
         private const val LOG_TAG = "BaseViewModel"
     }
 }

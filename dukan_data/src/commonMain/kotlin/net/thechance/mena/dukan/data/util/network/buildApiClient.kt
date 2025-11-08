@@ -55,15 +55,13 @@ fun buildApiClient(
                 loadTokens {
                     BearerTokens(
                         accessToken = authorizationService.getAccessToken(),
-                        refreshToken = authorizationService.refreshToken()
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
-
                 refreshTokens {
-                    val newAccessToken = authorizationService.refreshToken()
                     BearerTokens(
-                        accessToken = newAccessToken,
-                        refreshToken = authorizationService.refreshToken()
+                        accessToken = authorizationService.getNewAccessToken(),
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
             }

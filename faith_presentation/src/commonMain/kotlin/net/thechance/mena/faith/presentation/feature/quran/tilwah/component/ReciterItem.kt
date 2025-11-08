@@ -33,8 +33,9 @@ fun ReciterItem(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
-    isSelected: Boolean,
-    onSelect: () -> Unit,
+    onSelect: () -> Unit = {},
+    isSelectedShown: Boolean,
+    isSelected: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -68,10 +69,11 @@ fun ReciterItem(
                 isDownloaded = isDownloaded
             )
         }
-        RadioButton(
-            isSelected = isSelected,
-            onClick = onSelect
-        )
+        if (isSelectedShown)
+            RadioButton(
+                isSelected = isSelected,
+                onClick = onSelect
+            )
     }
 }
 
@@ -116,7 +118,8 @@ private fun Preview() {
             recitingType = "Teacher - Tajweed",
             isDownloaded = true,
             isSelected = true,
-            onSelect = {}
+            onSelect = {},
+            isSelectedShown = true
         )
     }
 }

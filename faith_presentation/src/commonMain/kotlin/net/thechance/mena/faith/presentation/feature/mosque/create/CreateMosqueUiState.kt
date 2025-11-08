@@ -1,15 +1,16 @@
 package net.thechance.mena.faith.presentation.feature.mosque.create
 
 import androidx.compose.ui.graphics.ImageBitmap
-import com.attafitamim.krop.core.images.ImageSrc
+import androidx.compose.ui.unit.DpOffset
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 
 internal data class CreateMosqueUiState(
-    val selectedImage: ImageSrc? = null,
     val croppedImage: ImageBitmap? = null,
     val address: String = "",
     val name: String = "",
     val location: Coordinate? = null,
-    val isImageBeingCropped: Boolean = false,
-    val isButtonEnabled: Boolean = false
+    val mosqueLocation: Coordinate? = null,
+    val offset: DpOffset? = null,
+    val isButtonEnabled: Boolean = false,
+    val successMessage: String? = null
 )

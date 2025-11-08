@@ -9,7 +9,7 @@ data class HomeScreenState(
     val isBalanceLoading: Boolean = false,
     val isSynced: Boolean = false,
     val isError: Boolean = false,
-    val balanceAmount: Int = 0,
+    val balanceAmount: String = "0",
     val chats: List<ChatUiState> = emptyList()
 ) {
     data class ChatUiState @OptIn(ExperimentalUuidApi::class) constructor(

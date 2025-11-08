@@ -9,7 +9,6 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
-import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -25,7 +24,8 @@ fun Message.toUi(): MessageUiState {
         sendTime = sendAt,
         status = status,
         isMine = isMine,
-        content = content
+        content = content,
+        reactions = reactions
     )
 }
 
@@ -37,7 +37,8 @@ fun MessageUiState.toEntity(): Message {
         content = content,
         sendAt = sendTime,
         status = status,
-        isMine = isMine
+        isMine = isMine,
+        reactions = reactions
     )
 }
 
@@ -103,7 +104,7 @@ fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (Message
                     isPlaying = false,
                     isLoading = false,
                     progress = 0f,
-                    duration = 0L,
+                    duration = msg.content.audioDurationMs ?: 0L,
                     waveformData = generateWaveformData()
                 ))
             }
@@ -144,6 +145,8 @@ fun generateWaveformData(): List<Float> {
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
     if (item is ChatListItem.TextMessage && item.data.id == messageId)
+        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
+    else if (item is ChatListItem.VoiceMessage && item.data.id == messageId)
         item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
     else item
 }

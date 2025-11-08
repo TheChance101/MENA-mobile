@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.shared
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -40,13 +41,16 @@ fun FavoriteIcon(
             ) { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = painterResource(
-                if (isFavorite) Res.drawable.ic_favorite_filled else Res.drawable.ic_favorite
-            ),
-            contentDescription = stringResource(Res.string.favorites),
-            modifier = Modifier.size(20.dp)
-        )
+        Crossfade(targetState = isFavorite) { isFavorite ->
+            val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
+            else Res.drawable.ic_favorite
+
+            Icon(
+                painter = painterResource(favoriteIcon),
+                contentDescription = stringResource(Res.string.favorites),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
 

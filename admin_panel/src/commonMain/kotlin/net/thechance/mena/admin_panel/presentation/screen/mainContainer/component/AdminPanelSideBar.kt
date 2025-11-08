@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,9 +55,12 @@ fun AdminPanelSideBar(
         )
         Box(
             modifier = Modifier
+                .padding(bottom = 32.dp)
+                .padding(horizontal = 8.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
                 .clickable { interactionListener.onLogOutClicked() }
-                .padding(top = 8.dp, bottom = 32.dp),
+                .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(

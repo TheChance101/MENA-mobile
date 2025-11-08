@@ -19,10 +19,7 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
     override fun onDismissSnackBar() {
     }
 
-    override fun onShareClicked() {
-    }
-
-    override fun onAddToFavoritesClicked() {
+    override fun onToggleProductToFavoriteClicked() {
     }
 
     override fun onViewCartClicked() {

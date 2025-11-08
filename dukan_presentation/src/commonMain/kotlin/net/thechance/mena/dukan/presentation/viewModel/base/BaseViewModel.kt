@@ -141,7 +141,9 @@ abstract class BaseViewModel<S, E>(
             pagingSourceFactory = {
                 BasePagationSource(onError = onError, onFetchPage = block)
             }
-        ).flow.map { pagingData ->
+        ).flow
+            .catch{onError(it as Exception)}
+            .map { pagingData ->
             pagingData.map(mapper)
         }.cachedIn(viewModelScope)
     }

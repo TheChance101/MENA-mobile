@@ -1,12 +1,15 @@
 package net.thechance.mena.faith.domain.usecase
 
-import net.thechance.mena.faith.domain.entity.Location
 import net.thechance.mena.faith.domain.exception.FaithException
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.entity.AddressType
 import kotlin.math.round
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class QiblahBearingCalculatorUseCaseTest {
 
@@ -234,7 +237,14 @@ class QiblahBearingCalculatorUseCaseTest {
         const val EXPECTED_NEGATIVE_40 = -40f
         const val EXPECTED_NEGATIVE_20 = -20f
 
+        @OptIn(ExperimentalUuidApi::class)
         fun demoLocation(latitude: Double = ZERO_LOCATION, longitude: Double = ZERO_LOCATION) =
-            Location(latitude = latitude, longitude = longitude)
+            Address(
+                id = Uuid.random(),
+                latitude = latitude,
+                longitude = longitude,
+                addressLine = "",
+                addressType = AddressType.Home
+            )
     }
 }

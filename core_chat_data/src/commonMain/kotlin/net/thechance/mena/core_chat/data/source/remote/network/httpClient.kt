@@ -47,13 +47,13 @@ fun createHttpClient(
                 loadTokens {
                     BearerTokens(
                         accessToken = authorizationService.getAccessToken(),
-                        refreshToken = ""
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
                 refreshTokens {
                     BearerTokens(
-                        accessToken = authorizationService.refreshToken(),
-                        refreshToken = ""
+                        accessToken = authorizationService.getNewAccessToken(),
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
             }

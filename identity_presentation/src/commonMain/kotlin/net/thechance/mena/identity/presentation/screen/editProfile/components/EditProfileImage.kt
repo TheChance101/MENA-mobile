@@ -26,7 +26,6 @@ import coil3.ImageLoader
 import coil3.compose.LocalPlatformContext
 import coil3.compose.SubcomposeAsyncImage
 import coil3.network.ktor3.KtorNetworkFetcherFactory
-import coil3.svg.SvgDecoder
 import io.ktor.client.HttpClient
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.not_user_image
@@ -93,14 +92,15 @@ fun EditProfileImage(
 }
 
 @Composable
-fun AsyncProfileImage(imageUrl: String) {
-    val networkClient = koinInject<HttpClient>(named("IdentityClient"))
+fun AsyncProfileImage(
+    imageUrl: String,
+    networkClient: HttpClient = koinInject<HttpClient>(named("CoilClient"))
+) {
     SubcomposeAsyncImage(
         model = imageUrl,
         imageLoader = ImageLoader.Builder(LocalPlatformContext.current)
             .components {
                 add(KtorNetworkFetcherFactory(networkClient))
-                add(SvgDecoder.Factory())
             }.build(),
         contentScale = ContentScale.Crop,
         contentDescription = stringResource(Res.string.profile_profile_picture_content_description),

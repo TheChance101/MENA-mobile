@@ -1,10 +1,11 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.core_chat.domain.entity
 
 import kotlinx.datetime.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-@ExperimentalUuidApi
 data class Message(
     val id: Uuid,
     val senderId: Uuid,
@@ -13,12 +14,19 @@ data class Message(
     val status: MessageStatus,
     val content: MessageContent,
     val isMine: Boolean,
+    val reactions: List<MessageReaction> = emptyList(),
+)
+
+data class MessageReaction(
+    val emoji: String,
+    val userId: Uuid,
+    val messageId: Uuid
 )
 
 sealed interface MessageContent {
     data class Text(val text: String) : MessageContent
     data class Image(val data: ImageData) : MessageContent
-    data class Audio(val data: AudioData) : MessageContent
+    data class Audio(val data: AudioData, val audioDurationMs: Long? = null) : MessageContent
 }
 
 sealed interface ImageData {

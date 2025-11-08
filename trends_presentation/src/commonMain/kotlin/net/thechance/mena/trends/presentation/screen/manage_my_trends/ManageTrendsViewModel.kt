@@ -94,4 +94,26 @@ internal class ManageTrendsViewModel(
         updateState { copy(selectTab = tab) }
     }
 
+    override fun onGetRefreshedThumbnail(reelId: String) {
+        tryToExecute(
+            block = { repository.getReelUrls(reelId).thumbnailUrl },
+            onSuccess = { refreshedUrl ->
+                onGetRefreshedThumbnailSuccess(refreshedUrl, reelId)
+            },
+        )
+    }
+
+
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String){
+        updateState {
+            copy(
+                reels = state.value.reels.map { pagingData ->
+                    pagingData.map { reel ->
+                        reel.takeIf { it.id != reelId }
+                            ?: reel.copy(thumbnailUrl = refreshedUrl)
+                    }
+                }
+            )
+        }
+    }
 }
