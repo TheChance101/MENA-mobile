@@ -156,7 +156,6 @@ tasks.register("generateEnvironmentXcconfig") {
     val developmentUrl = localProperties.getProperty("BASE_URL_DEVELOPMENT", "")
     val stagingUrl = localProperties.getProperty("BASE_URL_STAGING", "")
     val productionUrl = localProperties.getProperty("BASE_URL_PRODUCTION", "")
-    val trendStorageAccessSecret = localProperties.getProperty("TRENDS_STORAGE_ACCESS_SECRET", "")
     val buildType = providers.environmentVariable("CONFIGURATION").orNull ?: ""
 
     val baseUrl = when {
@@ -176,7 +175,6 @@ tasks.register("generateEnvironmentXcconfig") {
             """
           SLASH = /
           BASE_URL = ${baseUrl.replace("//", "$(SLASH)$(SLASH)")}
-          TRENDS_STORAGE_ACCESS_SECRET = $trendStorageAccessSecret
           CFBundleShortVersionString = $appVersionName
         """.trimIndent()
         )
