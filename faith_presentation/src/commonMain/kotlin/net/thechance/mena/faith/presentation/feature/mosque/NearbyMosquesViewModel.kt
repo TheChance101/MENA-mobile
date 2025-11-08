@@ -29,7 +29,6 @@ internal class NearbyMosquesViewModel(
     snackbarHandler = snackbarHandler,
 ), NearbyMosquesInteractionListener {
 
-
     init {
         getUserLocation()
     }
@@ -46,10 +45,11 @@ internal class NearbyMosquesViewModel(
         updateState {
             it.copy(
                 centerOfMap = Coordinate(address.latitude, address.longitude),
-                mosquesSearchResults = createMosquesPagingSource(""),
+                canMove = true,
                 isLoading = false
             )
         }
+        onSearchByCoordinates(Coordinate(address.latitude, address.longitude))
     }
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
@@ -62,8 +62,6 @@ internal class NearbyMosquesViewModel(
         }.cachedIn(viewModelScope)
     }
 
-
-
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
     }
@@ -71,9 +69,18 @@ internal class NearbyMosquesViewModel(
     override fun onSearchSubmit() {
         if (uiState.value.query.isBlank()) return
         tryToExecute(
-            execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
+            execute = {
+                println(" messi execute : ${uiState.value.query}")
+                mosqueRepository.getMosquesByName(uiState.value.query)
+            },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
+            onSuccess = { mosques ->
+                println(" messi suu : ${mosques.size}")
+                handleSearchSuccess(mosques, uiState.value.query)
+            },
+            onError = {
+                println(" messi err : ${it.exception}")
+            },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -90,8 +97,9 @@ internal class NearbyMosquesViewModel(
     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {
 //        TODO("Not yet implemented")
     }
+
     private fun handleSearchSuccess(mosques: List<Mosque>, query: String) {
-        if (mosques.isEmpty()&& !uiState.value.isSearchResultsBottomSheetVisible) {
+        if (mosques.isEmpty() && !uiState.value.isSearchResultsBottomSheetVisible) {
             viewModelScope.launch {
                 updateState {
                     it.copy(
@@ -121,14 +129,12 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-
-    override fun onSearchByCoordinatesClick(coordinate: Coordinate) {
+    override fun onSearchByCoordinates(coordinate: Coordinate) {
         tryToExecute(
             execute = {
                 mosqueRepository.getNearbyMosques(
                     latitude = coordinate.latitude,
                     longitude = coordinate.longitude,
-                    radius = 1.0
                 )
             },
             onStart = { updateState { it.copy(isLoading = true) } },
@@ -156,14 +162,16 @@ internal class NearbyMosquesViewModel(
     override fun onSearchResultClick(mosque: MosqueUiState) {
         updateState {
             it.copy(
+                mosques = listOf(mosque),
                 isSearchResultsBottomSheetVisible = false,
                 centerOfMap = mosque.coordinate,
+                canMove = true,
                 selectedMosque = mosque,
             )
         }
     }
 
-    override fun mapPositionChanged(coordinate: Coordinate) {
+    override fun changeCenterOfMap(coordinate: Coordinate) {
         updateState { it.copy(centerOfMap = coordinate) }
     }
 
@@ -191,6 +199,10 @@ internal class NearbyMosquesViewModel(
                 isMosqueBottomSheetVisible = false
             )
         }
+    }
+
+    override fun changeMapMovement(canMove: Boolean) {
+        updateState { it.copy(canMove = canMove) }
     }
 
     override fun onViewOnMapClick(coordinate: Coordinate) {

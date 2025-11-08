@@ -11,9 +11,10 @@ actual fun MapView(
     centerLongitude: Double,
     zoomLevel: Double,
     markers: List<MosqueUiState>,
+    canMove: Boolean,
     onMarkerClick: (MosqueUiState) -> Unit,
-    onMapClick: (Double, Double) -> Unit,
-    onCameraMove: (Double, Double) -> Unit
+    onCameraMove: (Double, Double) -> Unit,
+    onMapIdl: (Double, Double) -> Unit
 ) {
 
 }
