@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,13 +32,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.product_image
 import mena.dukan_presentation.generated.resources.product_thumbnail
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.util.ShimmerBox
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -134,15 +138,33 @@ fun ProductDetailsMainImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
-    AsyncImage(
-        model = imageUrl,
-        contentDescription = stringResource(Res.string.product_image),
+    val painter = rememberAsyncImagePainter(model = imageUrl)
+    val isError = painter.state is AsyncImagePainter.State.Error
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .height(288.dp)
-            .clip(RoundedCornerShape(Theme.radius.md)),
-        contentScale = ContentScale.Crop
-    )
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .background(if (isError) Color.Gray else Color.Transparent)
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = stringResource(Res.string.product_image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        if (isError) {
+            Image(
+                painter = painterResource(Res.drawable.ic_no_image_loaded),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(64.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
 }
 
 @Composable
@@ -191,16 +213,34 @@ private fun ProductDetailsSecondaryImageItem(
         label = "BorderColorAnimation"
     )
 
-    AsyncImage(
-        model = imageUrl,
-        contentDescription = stringResource(Res.string.product_thumbnail),
-        contentScale = ContentScale.Crop,
+    val painter = rememberAsyncImagePainter(model = imageUrl)
+    val isError = painter.state is AsyncImagePainter.State.Error
+    Box(
         modifier = modifier
             .size(56.dp)
             .clip(shape)
+            .background(if (isError) Color.Gray else Color.Transparent)
             .border(1.dp, animatedBorderColor, shape)
             .clickable(onClick = onClick)
-    )
+    ) {
+        Image(
+            painter = painter,
+            contentDescription = stringResource(Res.string.product_thumbnail),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+
+        if (isError) {
+            Image(
+                painter = painterResource(Res.drawable.ic_no_image_loaded),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Fit
+            )
+        }
+    }
 }
 
 @Preview

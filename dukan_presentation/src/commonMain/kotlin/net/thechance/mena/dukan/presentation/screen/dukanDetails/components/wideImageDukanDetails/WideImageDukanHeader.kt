@@ -103,10 +103,6 @@ private fun DukanActionButtons(
 ) {
 
     Column(modifier = modifier.padding(top = Theme.spacing._8)) {
-        DukanIconButton(
-            icon = painterResource(Res.drawable.ic_share),
-            iconColor = Color(state.color),
-        )
         Crossfade(
             targetState = state.isFavorite,
             label = "favoriteCrossfade"

@@ -48,6 +48,6 @@ class SearchRepositoryImpl(
 
     companion object {
         const val DUKAN_SEARCH_ENDPOINT = "${EndPoints.DUKAN_BASE_PATH}/search"
-        const val PRODUCT_SEARCH_ENDPOINT = "${EndPoints.PRODUCT_BASE_PATH}/search"
+        const val PRODUCT_SEARCH_ENDPOINT = "${EndPoints.DUKAN_BASE_PATH}/products/search"
     }
 }

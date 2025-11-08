@@ -156,7 +156,7 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
             testDispatcher.scheduler.advanceUntilIdle()
 
             val effect = awaitItem() as EnterNameUIEffect.NavigateToPassword
-            assert(effect.firstName == "Mohammed")
+            assert(effect.registerUIState.firstName == "Mohammed")
         }
     }
 
@@ -172,7 +172,7 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
             testDispatcher.scheduler.advanceUntilIdle()
 
             val effect = awaitItem() as EnterNameUIEffect.NavigateToPassword
-            assert(effect.lastName == "Ahmed")
+            assert(effect.registerUIState.lastName == "Ahmed")
         }
     }
 
@@ -188,7 +188,7 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
             testDispatcher.scheduler.advanceUntilIdle()
 
             val effect = awaitItem() as EnterNameUIEffect.NavigateToPassword
-            assert(effect.username == "mohammed123")
+            assert(effect.registerUIState.username == "mohammed123")
         }
     }
 

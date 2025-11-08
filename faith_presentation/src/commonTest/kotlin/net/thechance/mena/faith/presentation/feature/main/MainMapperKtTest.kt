@@ -55,7 +55,7 @@ class MainMapperKtTest {
     }
 
     @Test
-    fun `toUi should correctly map, filter and order prayers`() {
+    fun `toUi should correctly map and filter and order prayers`() {
         val now = Instant.fromEpochSeconds(10_000)
         val prayers = listOf(
             PrayerTime(PrayerName.ISHA, now + 13.hours, DEFAULT_HIJRI_DATE),

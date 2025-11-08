@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.shared
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,10 +25,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.animation.skeletonLoading
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -70,34 +75,43 @@ private fun BoxScope.DukanCardContent(
     isFavorite: Boolean,
     onFavoriteClick: () -> Unit
 ) {
-    var isImageLoaded by remember { mutableStateOf(false) }
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     AsyncImage(
         model = imageUrl,
         contentDescription = title,
         contentScale = ContentScale.Crop,
         onState = { state ->
-            isImageLoaded = state is AsyncImagePainter.State.Success
+            isError = state is AsyncImagePainter.State.Error
+            isLoading = state is AsyncImagePainter.State.Loading
         },
         modifier = Modifier
             .fillMaxSize()
-            .skeletonLoading(isLoading = !isImageLoaded)
+            .skeletonLoading(isLoading = isLoading)
     )
-
-    if (isImageLoaded) {
-        Box(
+    if (isError) {
+        Image(
+            painter = painterResource(Res.drawable.ic_no_image_loaded),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f)
-                        )
-                    )
-                )
+                .size(64.dp)
+                .align(Alignment.Center),
+            contentScale = ContentScale.Fit
         )
     }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color.Black.copy(alpha = 0.7f)
+                    )
+                )
+            )
+    )
 
     FavoriteIcon(
         isFavorite = isFavorite,

@@ -12,7 +12,7 @@ class AccountCreatedViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
     private val authTokens: AuthenticationTokens? = null,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<AccountCreatedUIState, AccountCreatedUIEffect>
     (AccountCreatedUIState),
     AccountCreatedInteractionListener {
@@ -29,8 +29,6 @@ class AccountCreatedViewModel(
                 authenticationRepository.saveAuthTokensAndEmit(tokens)
                 registrationDraftRepository.clearLastPhoneNumber()
             },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }

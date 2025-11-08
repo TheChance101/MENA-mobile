@@ -57,7 +57,7 @@ val identityDataModule = module {
     }
 
     single<RegisterRepository> {
-        RegisterRepositoryImpl(client = get(named(IDENTITY_CLIENT)), settings = get())
+        RegisterRepositoryImpl(client = get(named(IDENTITY_CLIENT)))
     }
 
     single<RegistrationDraftRepository> {

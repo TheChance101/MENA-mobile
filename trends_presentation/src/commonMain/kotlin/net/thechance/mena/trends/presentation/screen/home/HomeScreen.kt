@@ -135,7 +135,8 @@ private fun HomeScreenContent(
                         onClickLike = listener::onClickLike,
                         onClickReel = listener::onClickReel,
                         onExpandDescription = listener::onClickExpandDescription,
-                        listState = listState
+                        listState = listState,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail,
                     )
                 }
             )
@@ -173,6 +174,7 @@ private fun ReelsListSection(
     listState: LazyListState,
     onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
     onClickReel: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     onExpandDescription: (reelId: String) -> Unit
 ) {
     LazyColumn(
@@ -190,7 +192,8 @@ private fun ReelsListSection(
                     reel = reel,
                     onClickLike = { onClickLike(reel.id, reel.isLiked) },
                     onClickReel = { onClickReel(reel.id) },
-                    onExpandDescription = { onExpandDescription(reel.id) }
+                    onExpandDescription = { onExpandDescription(reel.id) },
+                    onRequestRefresh = { onGetRefreshedThumbnail(reel.id) },
                 )
             }
         }
@@ -245,6 +248,7 @@ private fun HomeScreenPreview() {
                     override fun onClickReel(reelId: String) {}
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
+                    override fun onGetRefreshedThumbnail(reelId: String) {}
                 }
             )
         }

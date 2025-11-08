@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
@@ -80,6 +81,7 @@ fun TextMessageLayout(
     val avatarSpacing = Theme.spacing._8
     val myMessageMarginStart = Theme.spacing._24
     val otherMessageMarginEnd = Theme.spacing._8
+    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
 
     val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
     val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
@@ -151,13 +153,16 @@ fun TextMessageLayout(
             }
 
             Row(
-                modifier = Modifier
+                modifier = Modifier.align(messageInfoAlignment)
                     .padding(start = infoRowPaddingStart, end = infoRowPaddingEnd),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (!message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
+                    ReactionBubble(
+                        reactions = message.reactions,
+                        modifier= Modifier.offset(y = (-8).dp)
+                    )
                 }
 
                 AnimatedVisibility(visible = showMessageInfo) {
@@ -170,8 +175,10 @@ fun TextMessageLayout(
                 }
 
                 if (message.isMine && message.reactions.isNotEmpty()) {
-                    ReactionBubble(reactions = message.reactions)
-                }
+                    ReactionBubble(
+                        reactions = message.reactions,
+                        modifier= Modifier.offset(y = (-8).dp)
+                    )                }
             }
         }
     }

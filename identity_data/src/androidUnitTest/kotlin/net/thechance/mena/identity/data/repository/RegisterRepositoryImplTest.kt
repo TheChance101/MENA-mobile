@@ -2,7 +2,6 @@ package net.thechance.mena.identity.data.repository
 
 import assertk.assertFailure
 import assertk.assertions.isInstanceOf
-import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
@@ -18,15 +17,14 @@ import kotlin.test.Test
 
 class RegisterRepositoryImplTest {
     private val client: HttpClient = mockk(relaxed = true)
-    private val settings: Settings = mockk(relaxed = true)
     private var registerRepository: RegisterRepositoryImpl =
-        RegisterRepositoryImpl(client, settings)
+        RegisterRepositoryImpl(client)
 
     @Test
     fun `requestOTP() should return session id when server returns 200`() = runTest {
         val client = mockHttpClient(OtpResponse("session123"))
 
-        registerRepository = RegisterRepositoryImpl(client, settings)
+        registerRepository = RegisterRepositoryImpl(client)
 
         registerRepository.requestOTP(phoneNumber, countryCode)
     }
@@ -36,7 +34,7 @@ class RegisterRepositoryImplTest {
         runTest {
             val client = mockHttpClientError(HttpStatusCode.Conflict)
 
-            registerRepository = RegisterRepositoryImpl(client, settings)
+            registerRepository = RegisterRepositoryImpl(client)
 
             assertFailure {
                 registerRepository.requestOTP(
@@ -51,10 +49,10 @@ class RegisterRepositoryImplTest {
         val client = mockHttpClient(Unit)
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client, settings)
+        registerRepository = RegisterRepositoryImpl(client)
         registerRepository.verifyOTPCode("123456")
     }
 
@@ -63,10 +61,10 @@ class RegisterRepositoryImplTest {
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
         val client = mockHttpClientError(HttpStatusCode.Unauthorized)
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client, settings)
+        registerRepository = RegisterRepositoryImpl(client)
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
@@ -78,10 +76,10 @@ class RegisterRepositoryImplTest {
         val requestOtpClient = mockHttpClient(OtpResponse("session123"))
         val client = mockHttpClientError(HttpStatusCode.BadRequest)
 
-        registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
+        registerRepository = RegisterRepositoryImpl(requestOtpClient)
         registerRepository.requestOTP(phoneNumber, countryCode)
 
-        registerRepository = RegisterRepositoryImpl(client, settings)
+        registerRepository = RegisterRepositoryImpl(client)
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
@@ -94,10 +92,10 @@ class RegisterRepositoryImplTest {
             val requestOtpClient = mockHttpClient(OtpResponse("session123"))
             val client = mockHttpClientError(HttpStatusCode.Conflict)
 
-            registerRepository = RegisterRepositoryImpl(requestOtpClient, settings)
+            registerRepository = RegisterRepositoryImpl(requestOtpClient)
             registerRepository.requestOTP(phoneNumber, countryCode)
 
-            registerRepository = RegisterRepositoryImpl(client, settings)
+            registerRepository = RegisterRepositoryImpl(client)
 
             assertFailure {
                 registerRepository.verifyOTPCode(otpCode = "123456")

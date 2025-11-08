@@ -245,4 +245,5 @@
     <string name="last_name_label">اسم العائلة</string>
     <string name="username_label">اسم المستخدم</string>
     <string name="close_dialog_icon">أيقونة إغلاق نافذة تغيير الغة</string>
+    <string name="share_message">يسعدني انضمامك إلى تطبيق MENA! يمكنك تثبيت التطبيق، أو التواصل معي مباشرة عبر الدردشة هنا:</string>
 </resources>

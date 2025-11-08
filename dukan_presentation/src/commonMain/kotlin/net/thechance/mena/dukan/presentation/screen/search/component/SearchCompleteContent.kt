@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -156,8 +158,10 @@ private fun DukansList(
                     )
                     return@AnimatedContent
                 }
-                LazyColumn(
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(328.dp),
                     modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
                     contentPadding = PaddingValues(horizontal = Theme.spacing._16)
                 ) {

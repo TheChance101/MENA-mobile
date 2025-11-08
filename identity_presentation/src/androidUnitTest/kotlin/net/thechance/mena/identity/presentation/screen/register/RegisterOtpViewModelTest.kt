@@ -5,6 +5,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpViewModel
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.junit.Before
 import org.junit.Test
 
@@ -12,18 +13,14 @@ class RegisterOtpViewModelTest : BaseCoroutineTest() {
     private lateinit var registerOtpViewModel: RegisterOtpViewModel
     private val testDispatcher = StandardTestDispatcher()
     private val registerRepository = mockk<RegisterRepository>()
-    private val phoneNumber = "123456789"
-    private val callingCode = "+1"
-    private val countryCode = "US"
+
 
 
     @Before
     fun setup() {
         registerOtpViewModel = RegisterOtpViewModel(
-            registerRepository = mockk(),
-            phoneNumber = phoneNumber,
-            callingCode = callingCode,
-            countryCode = countryCode,
+            registerRepository = registerRepository,
+            registerUIState = RegisterUIState(),
             dispatcher = testDispatcher
         )
     }

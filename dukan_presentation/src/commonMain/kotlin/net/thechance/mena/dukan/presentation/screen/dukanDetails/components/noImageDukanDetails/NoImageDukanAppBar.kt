@@ -63,11 +63,6 @@ fun NoImageDukanAppBar(
             modifier = Modifier.padding(start = Theme.spacing._4),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
-            AppBarIcon(
-                painter = painterResource(Res.drawable.ic_share),
-                contentDescription = stringResource(Res.string.share_icon),
-                onClick = {}
-            )
             Crossfade(
                 targetState = state.isFavorite,
                 label = "favoriteCrossfade"

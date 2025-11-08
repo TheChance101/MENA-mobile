@@ -12,6 +12,8 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.repository.CartRepository
+import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -23,6 +25,8 @@ import kotlin.test.assertTrue
 class CheckoutViewModelTest {
 
     private val cartRepository = mock<CartRepository>(mode = MockMode.autofill)
+    private val addressesRepository = mock<AddressesRepository>(mode = MockMode.autofill)
+    private val locationService = LocationService(addressesRepository)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var checkoutViewModel: CheckoutViewModel
@@ -77,6 +81,7 @@ class CheckoutViewModelTest {
 
     private fun createViewModel() = CheckoutViewModel(
         cartRepository = cartRepository,
+        locationService = locationService,
         savedStateHandle = savedStateHandle,
         dispatcher = testDispatcher
     )

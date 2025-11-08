@@ -59,4 +59,7 @@ sealed interface DukanRoute {
 
     @Serializable
     object SearchScreenRoute : DukanRoute
+
+    @Serializable
+    data object AddressesRoute : DukanRoute
 }

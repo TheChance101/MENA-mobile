@@ -34,15 +34,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -51,13 +56,17 @@ import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BU
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
 
+private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
+
 @OptIn(UnstableApi::class)
 @Composable
 actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    cacheKey: String?,
     onVideoPlaying: () -> Unit,
+    onRequestRefresh: () -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -72,6 +81,19 @@ actual fun VideoPlayer(
             BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
         )
         .build()
+
+    val source = remember {
+        DefaultHttpDataSource.Factory()
+            .setDefaultRequestProperties(mapOf("X-ACCESS-KEY" to trendStorageAccessSecret))
+    }
+
+
+    val mediaItem = remember(url) {
+        MediaItem.Builder()
+            .setUri(url)
+            .setCustomCacheKey(cacheKey)
+            .build()
+    }
 
     var isLoading by remember { mutableStateOf(true) }
     var isPause by remember { mutableStateOf(false) }
@@ -95,11 +117,23 @@ actual fun VideoPlayer(
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(source)
+            )
             .build().apply {
                 setSeekParameters(SeekParameters.EXACT)
                 repeatMode = Player.REPEAT_MODE_ONE
 
                 addListener(object : Player.Listener {
+                    override fun onPlayerError(error: PlaybackException) {
+                        val errorCause = error.cause
+                        if (errorCause is HttpDataSource.InvalidResponseCodeException) {
+                            if (errorCause.responseCode == HTTP_UNAUTHORIZED_STATUS_EXCEPTION) {
+                                onRequestRefresh()
+                            }
+                        } else super.onPlayerError(error)
+                    }
+
                     override fun onPlaybackStateChanged(state: Int) {
                         isLoading = when (state) {
                             Player.STATE_IDLE -> true
@@ -121,9 +155,20 @@ actual fun VideoPlayer(
             }
     }
 
+    LaunchedEffect(url) {
+        val savedPosition = exoPlayer.currentPosition
+        exoPlayer.setMediaItem(mediaItem, false)
+        exoPlayer.prepare()
+        exoPlayer.seekTo(savedPosition)
+        if (isReelVisible) {
+            exoPlayer.playWhenReady = true
+            exoPlayer.play()
+        }
+    }
+
     LaunchedEffect(isReelVisible) {
         if (isReelVisible) {
-            exoPlayer.setMediaItem(MediaItem.fromUri(url))
+            exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true
@@ -165,7 +210,6 @@ actual fun VideoPlayer(
             update = { playerView ->
                 if (isPause) exoPlayer.pause()
                 else exoPlayer.play()
-
             },
             modifier = Modifier
                 .fillMaxSize()

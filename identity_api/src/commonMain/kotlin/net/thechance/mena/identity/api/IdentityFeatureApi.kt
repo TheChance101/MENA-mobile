@@ -10,5 +10,5 @@ interface IdentityFeatureApi {
     fun LoginFlow()
 
     @Composable
-    fun NavigateToAddressesScreen()
+    fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?)
 }

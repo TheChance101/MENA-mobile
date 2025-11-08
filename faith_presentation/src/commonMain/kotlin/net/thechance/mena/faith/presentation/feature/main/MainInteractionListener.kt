@@ -5,6 +5,7 @@ interface MainInteractionListener {
     fun onQuranClick()
     fun onQiblahClick()
     fun onMosquesClick()
+    fun onLocationClick()
     fun onPrayerTimeClick()
     fun onTilawahClick()
 }

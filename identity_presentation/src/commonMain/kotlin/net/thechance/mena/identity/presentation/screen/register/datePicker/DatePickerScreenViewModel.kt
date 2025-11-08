@@ -9,22 +9,18 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 class DatePickerScreenViewModel(
     private val ageValidator: AgeValidator,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val phoneNumber: PhoneNumber,
-    private val firstName: String,
-    private val lastName: String,
-    private val username: String,
-    private val password: String,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) :
     BaseScreenModel<DatePickerScreenUIState, DatePickerScreenUIEffect>(
@@ -57,9 +53,8 @@ class DatePickerScreenViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
             onSuccess = ::handleSavedDraft,
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -94,12 +89,7 @@ class DatePickerScreenViewModel(
 
     private fun createNavigationEffect(selectedDate: LocalDate) =
         DatePickerScreenUIEffect.NavigateToSelectGender(
-            phoneNumber = phoneNumber,
-            firstName = firstName,
-            lastName = lastName,
-            username = username,
-            password = password,
-            birthDate = selectedDate
+            registerUIState = registerUIState.copy(birthDate = selectedDate),
         )
 
     @OptIn(ExperimentalTime::class)
@@ -130,7 +120,7 @@ class DatePickerScreenViewModel(
     }
 
     private fun updateNextButtonState() {
-        state.value.selectedDate?.let { date ->
+        state.value.selectedDate.let { date ->
             updateState { copy(isNextEnabled = ageValidator.isValid(date)) }
         }
     }
@@ -144,11 +134,9 @@ class DatePickerScreenViewModel(
     private fun saveBirthDate(birthDate: LocalDate) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(phoneNumber, draft.copy(birthDate = birthDate))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber) ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(registerUIState.phoneNumber, draft.copy(birthDate = birthDate))
             },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }

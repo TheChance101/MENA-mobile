@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +49,8 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
+import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -63,6 +66,7 @@ fun CompassScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is CompassEffect.NavigateBack -> navController.navigateUp()
+            CompassEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }
 
@@ -92,7 +96,7 @@ private fun Content(
                 },
                 onLeadingClick = listener::onBackClick,
                 trailingContent = {
-                    QiblahTopBar(uiState)
+                    QiblahTopBar(uiState, onChangeLocation = listener::onLocationClick)
                 }
             )
         },
@@ -258,12 +262,13 @@ private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
 }
 
 @Composable
-private fun QiblahTopBar(uiState: CompassUiState) {
+private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) {
     Row(
         modifier = Modifier.background(
             shape = RoundedCornerShape(Theme.radius.full),
             color = Theme.colorScheme.background.surfaceLow
-        ).height(Theme.spacing._24),
+        ).height(Theme.spacing._24)
+            .clickable(onClick = onChangeLocation),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -276,7 +281,7 @@ private fun QiblahTopBar(uiState: CompassUiState) {
         )
 
         Text(
-            text = uiState.currentLocationUi.cityName,
+            text = uiState.address.takeCityAndCountry(),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8)
@@ -314,14 +319,11 @@ private fun CompassScreenPreview() {
                 continuousAzimuth = 45f,
                 qiblahAngleValue = 120f,
                 angleToQiblah = 75f,
-                currentLocationUi = LocationUi(
-                    cityName = "Cairo",
-                    latitude = 30.0444,
-                    longitude = 31.2357
-                ),
+                address = "Cairo, Egypt",
             ),
             listener = object : CompassInteractionListener {
                 override fun onBackClick() {}
+                override fun onLocationClick() {}
             }
         )
     }

@@ -3,12 +3,9 @@ package net.thechance.mena.identity.presentation.screen.register.selectGender
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
-import net.thechance.mena.identity.domain.model.RegisterRequest
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegisterRepository
@@ -18,32 +15,25 @@ import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterRequest
 import org.jetbrains.compose.resources.StringResource
 
 class SelectGenderScreenViewModel(
     private val registerRepository: RegisterRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
     private val authenticationRepository: AuthenticationRepository,
-    private val phoneNumber: PhoneNumber,
-    private val firstName: String,
-    private val lastName: String,
-    private val username: String,
-    private val password: String,
-    private val birthDate: LocalDate,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) :
     BaseScreenModel<SelectGenderScreenUIState, SelectGenderScreenUIEffect>(
         SelectGenderScreenUIState()
     ), SelectGenderScreenInteractionListener {
 
-    init {
-        loadSavedData()
-    }
+    init { loadSavedData() }
 
     override fun onClickRegister() {
-        state.value.gender?.let { gender ->
-            startRegistration(gender)
-        }
+        state.value.gender?.let { gender -> startRegistration(gender) }
     }
 
     override fun onChangeGender(gender: Gender) {
@@ -57,9 +47,8 @@ class SelectGenderScreenViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
             onSuccess = ::handleSavedDraft,
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -81,17 +70,8 @@ class SelectGenderScreenViewModel(
     }
 
     private suspend fun register(gender: Gender): AuthenticationTokens =
-        registerRepository.register(createRegisterRequest(gender))
+        registerRepository.register(registerUIState.toRegisterRequest(gender))
 
-    private fun createRegisterRequest(gender: Gender) = RegisterRequest(
-        phoneNumber = phoneNumber,
-        username = username,
-        firstName = firstName,
-        lastName = lastName,
-        birthDate = birthDate,
-        gender = gender,
-        password = password
-    )
 
     private fun onRegisterSuccess(authTokens: AuthenticationTokens) {
         updateState { copy(isRegisterLoading = false) }
@@ -102,24 +82,20 @@ class SelectGenderScreenViewModel(
 
     private fun navigateToUploadScreen(authTokens: AuthenticationTokens) {
         sendNewEffect(
-            SelectGenderScreenUIEffect.NavigateToUploadProfileImage(authTokens, phoneNumber)
+            SelectGenderScreenUIEffect.NavigateToUploadProfileImage(authTokens, registerUIState.phoneNumber)
         )
     }
 
     private fun saveTokensTemporarily(authTokens: AuthenticationTokens) {
         tryToExecute(
             function = { authenticationRepository.saveAuthTokensWithoutEmit(authTokens) },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }
 
     private fun clearDraft() {
         tryToExecute(
-            function = { registrationDraftRepository.clearDraft(phoneNumber) },
-            onSuccess = {},
-            onError = {},
+            function = { registrationDraftRepository.clearDraft(registerUIState.phoneNumber) },
             dispatcher = dispatcher
         )
     }
@@ -136,11 +112,9 @@ class SelectGenderScreenViewModel(
     private fun saveGender(gender: Gender) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(phoneNumber, draft.copy(gender = gender))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber) ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(registerUIState.phoneNumber, draft.copy(gender = gender))
             },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }

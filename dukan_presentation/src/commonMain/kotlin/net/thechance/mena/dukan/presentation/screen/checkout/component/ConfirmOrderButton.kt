@@ -19,7 +19,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ConfirmOrderButton(modifier: Modifier = Modifier) {
+fun ConfirmOrderButton(
+    onConfirmOrderClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -37,9 +40,7 @@ fun ConfirmOrderButton(modifier: Modifier = Modifier) {
                 .align(Alignment.Center)
                 .fillMaxWidth(),
             text = stringResource(Res.string.confirm_order),
-            onClick = {
-                // TODO add confirm action
-            },
+            onClick = onConfirmOrderClicked,
             contentPadding = PaddingValues(vertical = Theme.spacing._12)
         )
     }
@@ -49,6 +50,6 @@ fun ConfirmOrderButton(modifier: Modifier = Modifier) {
 @Composable
 private fun ConfirmOrderButtonPreview() {
     MenaTheme {
-        ConfirmOrderButton()
+        ConfirmOrderButton({})
     }
 }

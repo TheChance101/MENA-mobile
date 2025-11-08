@@ -10,47 +10,46 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
+import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
-import org.junit.Before
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.junit.Test
+import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class CreatePasswordViewModelTest {
+class CreatePasswordViewModelTest : BaseCoroutineTest() {
     private val passwordValidator = mockk<PasswordValidator>()
     private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
     private val testDispatcher = StandardTestDispatcher()
     private val phoneNumber = PhoneNumber("+964", "7901234567")
     private lateinit var createPasswordViewModel: CreatePasswordViewModel
 
-    @Before
-    fun setup(){
+    @BeforeTest
+    fun setup() {
         createPasswordViewModel = CreatePasswordViewModel(
             passwordValidator = passwordValidator,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
     }
 
+
     @Test
-    fun `onChangeNewPassword should update state with new password`(){
+    fun `onChangeNewPassword should update state with new password`() {
         val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword)  } returns true
+        every { passwordValidator.isValid(newPassword) } returns true
         createPasswordViewModel.onChangeNewPassword(newPassword)
 
         assert(createPasswordViewModel.state.value.newPassword == newPassword)
     }
 
     @Test
-    fun `onChangeConfirmPassword should update state with new password`(){
+    fun `onChangeConfirmPassword should update state with new password`() {
         val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword)  } returns true
+        every { passwordValidator.isValid(newPassword) } returns true
         createPasswordViewModel.onChangeNewPassword(newPassword)
         createPasswordViewModel.onChangeConfirmPassword(newPassword)
 
@@ -58,21 +57,21 @@ class CreatePasswordViewModelTest {
     }
 
     @Test
-    fun `onToggleNewPasswordVisibility should toggle new password visibility`(){
+    fun `onToggleNewPasswordVisibility should toggle new password visibility`() {
         createPasswordViewModel.onToggleNewPasswordVisibility()
 
         assert(createPasswordViewModel.state.value.isNewPasswordVisible)
     }
 
     @Test
-    fun `onToggleConfirmPasswordVisibility should toggle confirm password visibility`(){
+    fun `onToggleConfirmPasswordVisibility should toggle confirm password visibility`() {
         createPasswordViewModel.onToggleConfirmPasswordVisibility()
 
         assert(createPasswordViewModel.state.value.isConfirmPasswordVisible)
     }
 
     @Test
-    fun `onClearErrorMessage should clear error message`(){
+    fun `onClearErrorMessage should clear error message`() {
         createPasswordViewModel.onClearErrorMessage()
 
         assert(createPasswordViewModel.state.value.errorMessage == null)
@@ -88,10 +87,7 @@ class CreatePasswordViewModelTest {
         val viewModel = CreatePasswordViewModel(
             passwordValidator = passwordValidator,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
@@ -109,7 +105,12 @@ class CreatePasswordViewModelTest {
         createPasswordViewModel.onChangeNewPassword(password)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { registrationDraftRepository.saveDraft(phoneNumber, RegistrationDraft(password = password)) }
+        coVerify {
+            registrationDraftRepository.saveDraft(
+                phoneNumber,
+                RegistrationDraft(password = password)
+            )
+        }
     }
 
     @Test

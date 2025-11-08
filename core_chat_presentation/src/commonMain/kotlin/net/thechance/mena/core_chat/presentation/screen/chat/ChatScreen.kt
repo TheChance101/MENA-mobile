@@ -43,6 +43,7 @@ import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.rememberCameraManager
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -53,15 +54,13 @@ import kotlin.uuid.ExperimentalUuidApi
 fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
-    val navController = LocalNavController.current
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
     BindEffect(controller)
 
     BackHandler(enabled = true) {
-        onClickBackFromChat()
-        navController.popBackStack()
+        viewModel.onBackClicked()
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -97,6 +96,8 @@ fun ChatScreenContent(
         contentAlignment = Alignment.Center
     ) {
         Scaffold(
+            statusBarColor = Theme.colorScheme.background.surfaceLow,
+            backgroundColor = Theme.colorScheme.background.surface,
             topBar = {
                 ChatHeader(
                     chatName = state.chatName,

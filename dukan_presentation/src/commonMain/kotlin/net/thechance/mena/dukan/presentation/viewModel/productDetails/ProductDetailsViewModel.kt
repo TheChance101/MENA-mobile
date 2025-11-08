@@ -184,37 +184,13 @@ class ProductDetailsViewModel(
         emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId))
     }
 
-    override fun onShareClicked() {
-        //TODO
-    }
-
     override fun onToggleProductToFavoriteClicked() {
         val currentProduct = state.value.product
         val isCurrentlyFavorite = state.value.isFavorite
 
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
-            onSuccess = { onFavoriteToggleSuccess(!isCurrentlyFavorite) },
-            onError = ::onFavoriteToggleError
-        )
-    }
-
-    private fun onFavoriteToggleSuccess(newFavoriteState: Boolean) {
-        updateState { copy(isFavorite = newFavoriteState) }
-        showSnackBar(
-            message = if (newFavoriteState) {
-                Res.string.added_to_favorites
-            } else {
-                Res.string.removed_from_favorites
-            },
-            type = SnackBarType.SUCCESS
-        )
-    }
-
-    private fun onFavoriteToggleError(throwable: Throwable) {
-        showSnackBar(
-            message = Res.string.error_updating_favorites,
-            type = SnackBarType.ERROR
+            onSuccess = {updateState { copy(isFavorite = isCurrentlyFavorite) }},
         )
     }
 

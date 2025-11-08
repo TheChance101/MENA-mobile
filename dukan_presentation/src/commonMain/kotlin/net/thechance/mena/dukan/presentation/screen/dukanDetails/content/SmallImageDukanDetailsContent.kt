@@ -104,12 +104,6 @@ fun SmallImageDukanDetailsContent(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
-                SmallImageDukanIconButton(
-                    icon = painterResource(Res.drawable.ic_share),
-                    iconColor = Color(state.dukanInfo.color),
-                    modifier = Modifier.weight(1f)
-                )
                 SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.dukan_location),
                     iconColor = Color(state.dukanInfo.color),

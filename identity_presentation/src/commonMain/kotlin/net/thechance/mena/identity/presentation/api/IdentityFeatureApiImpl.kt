@@ -89,7 +89,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
     }
 
     @Composable
-    override fun NavigateToAddressesScreen() {
-        Navigator(AddressesScreen())
+    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
+        Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
     }
 }

@@ -174,4 +174,7 @@
     <string name="no_result_found">No results found!</string>
     <string name="no_result_found_body">Please try again with another keyword.</string>
     <string name="search_general_error">Something went wrong while searching. Please try again in a moment.</string>
+
+    <string name="checkout_dialog_title">Checkout Feature</string>
+    <string name="checkout_dialog_description">This feature is not implemented yet.</string>
 </resources>

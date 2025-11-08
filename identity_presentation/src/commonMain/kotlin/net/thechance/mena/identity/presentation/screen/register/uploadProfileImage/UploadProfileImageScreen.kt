@@ -40,8 +40,12 @@ import org.koin.core.parameter.parametersOf
 class UploadProfileImageScreen(
     private val authTokens: AuthenticationTokens? = null,
     private val phoneNumber: PhoneNumber? = null
-) :
-    BaseScreen<UploadProfileImageViewModel, UploadProfileImageUIState, UploadProfileImageUIEffect, UploadProfileImageInteractionListener>() {
+) : BaseScreen<
+        UploadProfileImageViewModel,
+        UploadProfileImageUIState,
+        UploadProfileImageUIEffect,
+        UploadProfileImageInteractionListener>() {
+
     @Composable
     override fun OnRender(
         state: UploadProfileImageUIState,

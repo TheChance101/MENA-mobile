@@ -1,10 +1,9 @@
 package net.thechance.mena.identity.data.repository
 
-import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.auth.CheckUserExistenceRequestDto
+import net.thechance.mena.identity.data.dto.auth.request.CheckUserExistenceRequestDto
 import net.thechance.mena.identity.data.dto.auth.response.AuthenticationResponse
 import net.thechance.mena.identity.data.dto.resetPassword.request.OtpRequestDto
 import net.thechance.mena.identity.data.dto.resetPassword.request.VerifyOtpRequestDto
@@ -23,7 +22,7 @@ import net.thechance.mena.identity.domain.model.RegisterRequest
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 
 class RegisterRepositoryImpl(
-    private val client: HttpClient, private val settings: Settings
+    private val client: HttpClient
 ) : RegisterRepository {
     private var sessionId = ""
 
@@ -51,8 +50,7 @@ class RegisterRepositoryImpl(
             runCatching {
                 fetchUsernameExistence(username)
             }.fold(onSuccess = { exists ->
-                exists.takeUnless { it }?.let { false }
-                    ?: throw UsernameAlreadyExistsException()
+                exists.takeUnless { it }?.let { false } ?: throw UsernameAlreadyExistsException()
             }, onFailure = { throwable ->
                 handleUsernameCheckExceptionOrRethrow(throwable)
             })

@@ -11,41 +11,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.datetime.LocalDate
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.register
 import mena.identity_presentation.generated.resources.select_gender_screen_prompt
 import mena.identity_presentation.generated.resources.select_gender_screen_prompt_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class SelectGenderScreen(
-    private val firstName: String,
-    private val lastName: String,
-    private val username: String,
-    private val password: String,
-    private val birthDate: LocalDate,
-    private val phoneNumber: PhoneNumber
-) :
-    BaseScreen<SelectGenderScreenViewModel, SelectGenderScreenUIState, SelectGenderScreenUIEffect, SelectGenderScreenInteractionListener>() {
+    private val registerUIState: RegisterUIState
+) : BaseScreen<
+        SelectGenderScreenViewModel,
+        SelectGenderScreenUIState,
+        SelectGenderScreenUIEffect,
+        SelectGenderScreenInteractionListener>() {
+
     @Composable
     override fun Content() {
-        InitScreen(
-            getScreenModel(
-                parameters = {
-                    parametersOf(phoneNumber, firstName, lastName, username, password, birthDate)
-                }
-            )
-        )
+        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
     }
 
     @Composable
@@ -66,10 +58,7 @@ class SelectGenderScreen(
                         subtitle = stringResource(Res.string.select_gender_screen_prompt),
                     )
 
-                    GenderToggle(
-                        gender = state.gender,
-                        onChangeGender = listener::onChangeGender
-                    )
+                    GenderToggle(gender = state.gender, onChangeGender = listener::onChangeGender)
 
                     Spacer(modifier = Modifier.weight(1f))
 
@@ -96,10 +85,12 @@ class SelectGenderScreen(
     ) {
         when (effect) {
             is SelectGenderScreenUIEffect.NavigateToUploadProfileImage -> {
-                navigator.push(UploadProfileImageScreen(
-                    authTokens = effect.authTokens,
-                    phoneNumber = effect.phoneNumber
-                ))
+                navigator.push(
+                    UploadProfileImageScreen(
+                        authTokens = effect.authTokens,
+                        phoneNumber = effect.phoneNumber
+                    )
+                )
             }
         }
     }

@@ -80,6 +80,7 @@ class ChatViewModel(
     private val messagesMutex = Mutex()
 
     private var hasResentPendingMessages = false
+
     private val chatHistoryPaginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
@@ -496,6 +497,8 @@ class ChatViewModel(
     }
 
     override fun onMessageLongClicked(message: MessageUiState) {
+        if (message.content is MessageContent.Image && message.content.data !is ImageData.ImageUrl) return
+
         updateState {
             it.copy(
                 isReactionDialogVisible = true,
@@ -523,47 +526,11 @@ class ChatViewModel(
         if (hasSameReaction) {
             tryToExecute(
                 execute = { messageRepository.removeMessageReaction(messageId, reaction) },
-                onSuccess = { removeReactionFromMessages(messageId, reaction) }
             )
         } else {
             tryToExecute(
                 execute = { messageRepository.addMessageReaction(messageId, reaction) },
-                onSuccess = { updateReactionInMessages(messageId, reaction) }
             )
-        }
-    }
-
-    private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
-        val currentUserId = state.value.chatRequesterId ?: return
-        safeUpdateMessages { messages ->
-            messages.map { message ->
-                if (message.id == messageId) {
-                    val updatedReactions = message.reactions.filterNot {
-                        it.userId == currentUserId && it.emoji == emoji
-                    }
-                    message.copy(reactions = updatedReactions)
-                } else message
-            }
-        }
-    }
-
-
-    private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
-        val currentUserId = state.value.chatRequesterId ?: return
-        safeUpdateMessages { messages ->
-            messages.map { message ->
-                if (message.id == messageId) {
-                    val newReaction = MessageReaction(emoji, currentUserId, messageId)
-                    val updatedReactions = message.reactions
-                        .filter { it.userId != currentUserId }
-                        .toMutableList()
-                        .apply { add(newReaction) }
-
-                    message.copy(reactions = updatedReactions)
-                } else {
-                    message
-                }
-            }
         }
     }
 
@@ -592,6 +559,20 @@ class ChatViewModel(
                 } else message
             }
         }
+
+        if (state.value.selectedImageMessages.isNotEmpty() && state.value.selectedImageMessages.any { it.id == reaction.messageId }) {
+            updateState {
+                it.copy(selectedImageMessages = it.selectedImageMessages.map { msg ->
+                    if (msg.id == reaction.messageId) {
+                        val updatedReactions = msg.reactions
+                            .filter { it.userId != reaction.userId }
+                            .toMutableList()
+                            .apply { add(reaction) }
+                        msg.copy(reactions = updatedReactions)
+                    } else msg
+                })
+            }
+        }
     }
 
     private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
@@ -604,6 +585,16 @@ class ChatViewModel(
                     }
                     message.copy(reactions = filtered)
                 } else message
+            }
+        }
+
+        if (state.value.selectedImageMessages.isNotEmpty() && state.value.selectedImageMessages.any { it.id == reaction.messageId }) {
+            updateState {
+                it.copy(selectedImageMessages = it.selectedImageMessages.map {
+                    if (it.id == reaction.messageId) it.copy(
+                        reactions = it.reactions.filterNot { it == reaction }) else it
+                }
+                )
             }
         }
     }
@@ -799,14 +790,19 @@ class ChatViewModel(
             return
         }
 
-        val message = createAudioMessage(audioByteArray)
+        val audioDuration = audioPlayer.getDuration(filePath)
+
+        val message = createAudioMessage(audioByteArray, audioDuration)
         sendMessage(message)
     }
 
-    private fun createAudioMessage(audioByteArray: ByteArray): MessageUiState {
+    private fun createAudioMessage(audioByteArray: ByteArray, audioDurationMs: Long?): MessageUiState {
         val chatId = state.value.chatId!!
         val senderId = state.value.chatRequesterId!!
-        val content = MessageContent.Audio(AudioData.AudioByteArray(byteArray = audioByteArray))
+        val content = MessageContent.Audio(
+            data = AudioData.AudioByteArray(byteArray = audioByteArray),
+            audioDurationMs = audioDurationMs
+        )
 
         return MessageUiState(
             chatId = chatId,
