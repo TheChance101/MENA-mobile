@@ -20,8 +20,12 @@ fun ChatEntryPoint(
     viewModel: ChatEntryViewModel = koinViewModel<ChatEntryViewModel>(),
     onNavigateBack: () -> Unit
 ) {
-    viewModel.getChatByUserId(userId)
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(userId){
+        viewModel.getChatByUserId(userId)
+    }
+
     AnimatedContent(
         targetState = state.isContentVisible,
         modifier = Modifier.fillMaxSize()
