@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_get_balance
@@ -68,6 +69,7 @@ class HomeViewModel(
         tryToCollect(
             collect = { chatRepository.observeChatSummariesSyncState() },
             onCollect = {
+                delay(100)
                 when (it) {
                     is SyncState.Error -> showErrorLoadingChatsSnackBar()
                     is SyncState.Offline -> showNoInternetSnackBar()
