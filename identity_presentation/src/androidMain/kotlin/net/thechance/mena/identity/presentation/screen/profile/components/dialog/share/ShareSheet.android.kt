@@ -17,7 +17,7 @@ import net.thechance.mena.identity.presentation.R
 import java.io.File
 
 @Composable
-actual fun ShareSheet(title: String, message: String, onDismiss: () -> Unit) {
+actual fun ShareSheet(title: String, message: String, shareLink: String, onDismiss: () -> Unit) {
     val context = LocalContext.current
 
     LaunchedEffect(message, title) {
@@ -25,7 +25,7 @@ actual fun ShareSheet(title: String, message: String, onDismiss: () -> Unit) {
 
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, message)
+            putExtra(Intent.EXTRA_TEXT, "$message\n\n$shareLink")
             putExtra(Intent.EXTRA_TITLE, title)
 
             clipData = ClipData.newRawUri(title, contentPreviewUri)
