@@ -29,7 +29,10 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
-import net.thechance.mena.core_chat.data.source.local.database.MessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
@@ -95,7 +98,7 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
             data = listOf(
                 createMessageDto()
             ),
-            pageNumber = 0,
+            pageNumber = 1,
             pageSize = 20,
             totalItems = 1,
             totalPages = 1
@@ -104,6 +107,7 @@ fun MockRequestHandleScope.defaultChatHistoryResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+
 
 fun MockRequestHandleScope.defaultChatResponse() = respond(
     content = jsonSerialization.encodeToString(
@@ -194,6 +198,7 @@ fun createRepository(
 fun createChatRepository(
     httpClient: HttpClient? = null,
     webSocketManager: WebSocketManager,
+    cachedChatDao: CachedChatDao,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -210,6 +215,7 @@ fun createChatRepository(
     return ChatRepositoryImpl(
         client = httpClient ?: defaultClient,
         webSocketManager = webSocketManager,
+        cachedChatDao = cachedChatDao
     )
 
 }
@@ -218,13 +224,17 @@ fun createMessageRepository(
     httpClient: HttpClient,
     webSocketManager: WebSocketManager,
     messageSenderFactory: MessageSenderFactory,
-    messageDao: MessageDao,
+    pendingMessageDao: PendingMessageDao,
+    cachedMessageDao: CachedMessageDao,
+    chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
-        messageDao = messageDao,
+        pendingMessageDao = pendingMessageDao,
+        chatSyncTimeDao = chatSyncTimeDao,
         client = httpClient,
         messageSenderFactory = messageSenderFactory,
+        cachedMessageDao = cachedMessageDao,
         json = jsonSerialization
     )
 }
@@ -240,7 +250,8 @@ fun createHttpClient(
     chatByIdResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatsSummariesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     userResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    deleteChatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    syncLatestMessagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val engine = MockEngine { request ->
         val path = request.url.encodedPath
@@ -257,10 +268,10 @@ fun createHttpClient(
             path.startsWith(DELETE_CHAT_ENDPOINT) ->
                 deleteChatResponse?.invoke(this) ?: defaultDeleteChatResponse()
 
-            request.url.encodedPath == CHATS_SUMMARIES_ENDPOINT ->
+            path == CHATS_SUMMARIES_ENDPOINT ->
                 chatsSummariesResponse?.invoke(this) ?: defaultChatSummaryResponse()
 
-            request.url.encodedPath == CHAT_ENDPOINT ->
+            path == CHAT_ENDPOINT ->
                 chatResponse?.invoke(this) ?: defaultChatResponse()
 
             path.contains(IMAGES_ENDPOINT) ->
@@ -274,6 +285,9 @@ fun createHttpClient(
 
             path.contains(USER_ENDPOINT) ->
                 userResponse?.invoke(this) ?: defaultUserInfoResponse()
+
+            path.contains("/messages/latest") ->
+                syncLatestMessagesResponse?.invoke(this) ?: defaultChatHistoryResponse()
 
             path.startsWith("$CHAT_ENDPOINT/") ->
                 chatByIdResponse?.invoke(this) ?: defaultChatResponse()

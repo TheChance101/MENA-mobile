@@ -16,7 +16,9 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
@@ -32,7 +34,8 @@ class WebSocketManagerImpl(
     private var shouldReconnect = false
     private var connectionJob: Job? = null
     private val exceptionHandler = CoroutineExceptionHandler { _, _ -> isActiveSession = false }
-
+    private val _connectionStatus = MutableStateFlow(false)
+    override val connectionStatus = _connectionStatus.asStateFlow()
     private val _incomingMessages = MutableSharedFlow<String>(extraBufferCapacity = 64)
     override val incomingMessages: SharedFlow<String> = _incomingMessages
 
@@ -52,6 +55,7 @@ class WebSocketManagerImpl(
                     break
                 } catch (_: Exception) {
                     isActiveSession = false
+                    _connectionStatus.emit(false)
                     session = null
                     if (shouldReconnect) delay(RECONNECT_DELAY)
                 }
@@ -67,6 +71,7 @@ class WebSocketManagerImpl(
         ) {
             session = this
             isActiveSession = true
+            _connectionStatus.emit(true)
             sendConnectFrame()
             listenForIncomingFrames(incoming, onConnected)
         }
@@ -95,6 +100,7 @@ class WebSocketManagerImpl(
         isActiveSession = false
         session = null
 
+        _connectionStatus.emit(false)
         connectionJob?.cancelAndJoin()
         connectionJob = null
     }

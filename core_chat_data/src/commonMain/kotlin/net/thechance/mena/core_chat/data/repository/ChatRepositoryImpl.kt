@@ -5,10 +5,12 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
@@ -25,6 +27,7 @@ import kotlin.uuid.Uuid
 class ChatRepositoryImpl(
     private val client: HttpClient,
     private val webSocketManager: WebSocketManager,
+    private val cachedChatDao: CachedChatDao
 ) : ChatRepository {
 
     override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
@@ -63,13 +66,19 @@ class ChatRepositoryImpl(
             defaultException = OperationFailedException("failed to delete message from data")
         ) {
             client.delete("$DELETE_CHAT_ENDPOINT/$chatId")
+        }.also {
+            cachedChatDao.deleteChatById(chatId.toString())
         }
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
-        return tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
+        return cachedChatDao.getChatById(chatId.toString())?.toDomain()
+            ?: tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
             client.get("$CHAT_ENDPOINT/$chatId")
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        }?.also { chat ->
+            cachedChatDao.insertChat(chat.toLocalDto())
+        }?.toDomain()
+            ?: throw NotFoundException("Chat not found")
     }
 
 

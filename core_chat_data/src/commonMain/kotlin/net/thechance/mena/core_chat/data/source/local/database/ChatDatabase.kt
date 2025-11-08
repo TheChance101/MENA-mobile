@@ -7,12 +7,26 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 
-@Database(entities = [MessageLocalDto::class], version = 1)
+@Database(
+    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class],
+    version = 1
+)
 @ConstructedBy(ChatDatabaseConstructor::class)
 @TypeConverters(MessageConverter::class)
 abstract class ChatDatabase : RoomDatabase() {
-    abstract fun getMessageDao(): MessageDao
+    abstract fun getPendingMessageDao(): PendingMessageDao
+    abstract fun getCachedMessageDao(): CachedMessageDao
+    abstract fun getChatDao(): CachedChatDao
+    abstract fun getChatSyncTimeDao(): ChatSyncTimeDao
 }
 
 @Suppress("KotlinNoActualForExpect")

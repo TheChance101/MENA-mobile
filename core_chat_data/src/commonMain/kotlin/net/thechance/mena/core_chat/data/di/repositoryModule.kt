@@ -1,12 +1,12 @@
 package net.thechance.mena.core_chat.data.di
 
-import net.thechance.mena.core_chat.data.utils.audio.AudioRecorderImpl
 import net.thechance.mena.core_chat.data.repository.AudioRecordRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.UserRepositoryImpl
 import net.thechance.mena.core_chat.data.utils.audio.AudioRecorder
+import net.thechance.mena.core_chat.data.utils.audio.AudioRecorderImpl
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
@@ -30,6 +30,7 @@ internal val repositoryModule = module {
         ChatRepositoryImpl(
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
+            cachedChatDao = get()
         )
     }
 
@@ -37,9 +38,11 @@ internal val repositoryModule = module {
         MessageRepositoryImpl(
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
-            messageDao = get(),
+            pendingMessageDao = get(),
             messageSenderFactory = get(),
-            json = get(named(CHAT_JSON))
+            json = get(named(CHAT_JSON)),
+            cachedMessageDao = get(),
+            chatSyncTimeDao = get()
         )
     }
 
