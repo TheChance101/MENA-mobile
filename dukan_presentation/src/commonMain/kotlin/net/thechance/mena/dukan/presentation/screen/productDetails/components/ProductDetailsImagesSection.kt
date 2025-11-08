@@ -25,6 +25,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,8 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.product_image
@@ -138,8 +141,9 @@ fun ProductDetailsMainImage(
     imageUrl: String,
     modifier: Modifier = Modifier
 ) {
-    val painter = rememberAsyncImagePainter(model = imageUrl)
-    val isError = painter.state is AsyncImagePainter.State.Error
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -147,14 +151,18 @@ fun ProductDetailsMainImage(
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(if (isError) Color.Gray else Color.Transparent)
     ) {
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = imageUrl,
             contentDescription = stringResource(Res.string.product_image),
             contentScale = ContentScale.Crop,
+            onState = { state ->
+                isError = state is AsyncImagePainter.State.Error
+                isLoading = state is AsyncImagePainter.State.Loading
+            },
             modifier = Modifier.fillMaxSize()
         )
 
-        if (isError) {
+        if (isError || isLoading) {
             Image(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,
@@ -201,6 +209,8 @@ private fun ProductDetailsSecondaryImageItem(
     modifier: Modifier = Modifier
 ) {
     val shape = RoundedCornerShape(Theme.radius.sm)
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val targetBorderColor = if (isSelected) {
         Theme.colorScheme.primary.primary
@@ -213,8 +223,6 @@ private fun ProductDetailsSecondaryImageItem(
         label = "BorderColorAnimation"
     )
 
-    val painter = rememberAsyncImagePainter(model = imageUrl)
-    val isError = painter.state is AsyncImagePainter.State.Error
     Box(
         modifier = modifier
             .size(56.dp)
@@ -223,14 +231,18 @@ private fun ProductDetailsSecondaryImageItem(
             .border(1.dp, animatedBorderColor, shape)
             .clickable(onClick = onClick)
     ) {
-        Image(
-            painter = painter,
+        AsyncImage(
+            model = imageUrl,
             contentDescription = stringResource(Res.string.product_thumbnail),
             contentScale = ContentScale.Crop,
+            onState = { state ->
+                isError = state is AsyncImagePainter.State.Error
+                isLoading = state is AsyncImagePainter.State.Loading
+            },
             modifier = Modifier.fillMaxSize()
         )
 
-        if (isError) {
+        if (isError || isLoading) {
             Image(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,

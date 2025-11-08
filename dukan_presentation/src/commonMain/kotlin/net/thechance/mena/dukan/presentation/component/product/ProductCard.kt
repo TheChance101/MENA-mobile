@@ -46,10 +46,11 @@ fun ProductCard(
     modifier: Modifier = Modifier,
     productCardBackground: Color? = null,
     productImageBackground: Color = Theme.colorScheme.background.surfaceLow,
-    productAction: @Composable () -> Unit={},
+    productAction: @Composable () -> Unit = {},
     onProductClick: () -> Unit = {}
 ) {
     var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Row(
         modifier = modifier
@@ -66,21 +67,22 @@ fun ProductCard(
         Box(
             modifier = Modifier.background(
                 color = productImageBackground,
-                shape = RoundedCornerShape( Theme.radius.md)
+                shape = RoundedCornerShape(Theme.radius.md)
             )
         ) {
             AsyncImage(
                 model = productImageUrl,
                 contentDescription = stringResource(Res.string.product_image),
-                onState = {state->
+                onState = { state ->
                     isError = state is AsyncImagePainter.State.Error
+                    isLoading = state is AsyncImagePainter.State.Loading
                 },
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(Theme.radius.sm)),
                 contentScale = ContentScale.Crop
             )
-            if (isError) {
+            if (isError || isLoading) {
                 Image(
                     painter = painterResource(Res.drawable.ic_no_image_loaded),
                     contentDescription = null,
