@@ -61,8 +61,10 @@ fun UploadImageContainer(
     val radius = Theme.radius.xl
     val scope = rememberCoroutineScope()
 
-    val lastLaunchMs = remember { mutableStateOf(0L) }
-    val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+    val debounceTimeMillis = 1000L
+    val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
+    val isFilePickerLaunching = remember { mutableStateOf(false) }
+    val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
         file?.let { image ->
             scope.launch {
                 image.toImageSrc()?.let { src ->
@@ -72,12 +74,15 @@ fun UploadImageContainer(
         }
     }
 
-    val safeLaunch : () -> Unit = remember {
+    val safeLaunch: () -> Unit = remember {
         {
-            val now = Clock.System.now().toEpochMilliseconds()
-            if (now - lastLaunchMs.value > 1000L) {
-                lastLaunchMs.value = now
-                filePicker.launch()
+            if (isFilePickerLaunching.value.not()) {
+                val now = Clock.System.now().toEpochMilliseconds()
+                if (now - lastLaunchTimeMillis.value > debounceTimeMillis ) {
+                    lastLaunchTimeMillis.value = now
+                    isFilePickerLaunching.value = true
+                    filePickerLauncher.launch()
+                }
             }
         }
     }
@@ -139,7 +144,7 @@ fun UploadImageContainer(
                         color = Theme.colorScheme.background.surface,
                         shape = RoundedCornerShape(radius)
                     )
-                    .clickable { filePicker.launch() },
+                    .clickable { safeLaunch() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

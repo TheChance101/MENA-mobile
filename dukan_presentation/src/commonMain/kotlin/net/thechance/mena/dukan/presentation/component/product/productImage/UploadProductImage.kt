@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.dukan.presentation.component.product.productImage
 
 import androidx.compose.foundation.Image
@@ -42,11 +43,13 @@ fun UploadProductImage(
 
     val borderColor = Theme.colorScheme.primary.primary
     val cornerRadiusValue = Theme.radius.md
-
     val scope = rememberCoroutineScope()
 
-    val lastLaunchMs = remember { mutableStateOf(0L) }
-    val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+    val debounceTimeMillis = 1000L
+    val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
+    val isFilePickerLaunching = remember { mutableStateOf(false) }
+    val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        isFilePickerLaunching.value = false
         file?.let { imageFile ->
             scope.launch {
                 onUploadImageClick(PlatformImageFile(imageFile))
@@ -56,10 +59,13 @@ fun UploadProductImage(
 
     val safeLaunch: () -> Unit = remember {
         {
-            val now = Clock.System.now().toEpochMilliseconds()
-            if (now - lastLaunchMs.value > 1000L) {
-                lastLaunchMs.value = now
-                filePicker.launch()
+            if (isFilePickerLaunching.value.not()) {
+                val now = Clock.System.now().toEpochMilliseconds()
+                if (now - lastLaunchTimeMillis.value > debounceTimeMillis ) {
+                    lastLaunchTimeMillis.value = now
+                    isFilePickerLaunching.value = true
+                    filePickerLauncher.launch()
+                }
             }
         }
     }
