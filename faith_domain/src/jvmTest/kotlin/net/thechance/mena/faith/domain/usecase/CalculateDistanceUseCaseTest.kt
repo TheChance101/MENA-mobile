@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.domain.usecase
 
+import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.exception.FaithException
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,8 +15,8 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should return zero when coordinates are identical`() {
         val result = useCase(
-            firstLocation = 21.4225 to 39.8262,
-            secondLocation = 21.4225 to 39.8262
+            firstLocation = Mosque.Coordinates(21.4225, 39.8262),
+            secondLocation = Mosque.Coordinates(21.4225, 39.8262)
         )
         assertEquals(0.0, result)
     }
@@ -24,8 +25,8 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when first coordinate latitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                firstLocation = 91.0 to 0.0,
-                secondLocation = 0.0 to 0.0
+                firstLocation = Mosque.Coordinates(91.0, 0.0),
+                secondLocation = Mosque.Coordinates(0.0, 0.0)
             )
         }
     }
@@ -34,8 +35,8 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when first coordinate longitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                firstLocation = 0.0 to 200.0,
-                secondLocation = 0.0 to 0.0
+                firstLocation = Mosque.Coordinates(0.0, 200.0),
+                secondLocation = Mosque.Coordinates(0.0, 0.0)
             )
         }
     }
@@ -44,8 +45,8 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when second coordinate latitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                firstLocation = 0.0 to 0.0,
-                secondLocation = -100.0 to 0.0
+                firstLocation = Mosque.Coordinates(0.0, 0.0),
+                secondLocation = Mosque.Coordinates(-100.0, 0.0)
             )
         }
     }
@@ -54,39 +55,37 @@ class CalculateDistanceUseCaseTest {
     fun `invoke should throw InvalidCoordinates when second coordinate longitude is invalid`() {
         assertFailsWith<FaithException.InvalidCoordinates> {
             useCase(
-                firstLocation = 0.0 to 0.0,
-                secondLocation = 0.0 to 200.0
+                firstLocation = Mosque.Coordinates(0.0, 0.0),
+                secondLocation = Mosque.Coordinates(0.0, 200.0)
             )
         }
     }
 
     @Test
     fun `invoke should return correct distance between Mecca and Medina`() {
-        val mecca = 21.3891 to 39.8579
-        val medina = 24.5247 to 39.5692
+        val mecca = Mosque.Coordinates(21.3891, 39.8579)
+        val medina = Mosque.Coordinates(24.5247, 39.5692)
 
         val distance = useCase(mecca, medina)
 
-        // Real-world distance ≈ 340 km (allow ±10 km tolerance)
         assertTrue(distance in 330.0..350.0, "Expected ≈340 km but got $distance")
     }
 
     @Test
     fun `invoke should return correct distance between New York and London`() {
-        val newYork = 40.7128 to -74.0060
-        val london = 51.5074 to -0.1278
+        val newYork = Mosque.Coordinates(40.7128, -74.0060)
+        val london = Mosque.Coordinates(51.5074, -0.1278)
 
         val distance = useCase(newYork, london)
 
-        // Real-world distance ≈ 5570 km
         assertTrue(distance in 5470.0..5670.0, "Expected ≈5570 km but got $distance")
     }
 
     @Test
     fun `invoke should handle valid boundary coordinates -90 latitude`() {
         val result = useCase(
-            firstLocation = -90.0 to 0.0,
-            secondLocation = 0.0 to 0.0
+            firstLocation = Mosque.Coordinates(-90.0, 0.0),
+            secondLocation = Mosque.Coordinates(0.0, 0.0)
         )
         assertTrue(result >= 0.0)
     }
@@ -94,8 +93,8 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should handle valid boundary coordinates +90 latitude`() {
         val result = useCase(
-            firstLocation = 90.0 to 0.0,
-            secondLocation = 0.0 to 0.0
+            firstLocation = Mosque.Coordinates(90.0, 0.0),
+            secondLocation = Mosque.Coordinates(0.0, 0.0)
         )
         assertTrue(result >= 0.0)
     }
@@ -103,8 +102,8 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should handle valid boundary coordinates -180 longitude`() {
         val result = useCase(
-            firstLocation = 0.0 to -180.0,
-            secondLocation = 0.0 to 0.0
+            firstLocation = Mosque.Coordinates(0.0, -180.0),
+            secondLocation = Mosque.Coordinates(0.0, 0.0)
         )
         assertTrue(result >= 0.0)
     }
@@ -112,15 +111,16 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should handle valid boundary coordinates +180 longitude`() {
         val result = useCase(
-            firstLocation = 0.0 to 180.0,
-            secondLocation = 0.0 to 0.0
+            firstLocation = Mosque.Coordinates(0.0, 180.0),
+            secondLocation = Mosque.Coordinates(0.0, 0.0)
         )
         assertTrue(result >= 0.0)
     }
 
     @Test
     fun `toRadians should correctly convert degrees to radians`() {
-        val method = CalculateDistanceUseCase::class.java.getDeclaredMethod("toRadians", Double::class.java)
+        val method =
+            CalculateDistanceUseCase::class.java.getDeclaredMethod("toRadians", Double::class.java)
         method.isAccessible = true
 
         val radians = method.invoke(useCase, 180.0) as Double
@@ -169,8 +169,8 @@ class CalculateDistanceUseCaseTest {
     @Test
     fun `invoke should coerce negative values to zero`() {
         val result = useCase(
-            firstLocation = 0.0 to 0.0,
-            secondLocation = 0.0 to 0.0
+            firstLocation = Mosque.Coordinates(0.0, 0.0),
+            secondLocation = Mosque.Coordinates(0.0, 0.0)
         )
         assertEquals(0.0, result)
     }

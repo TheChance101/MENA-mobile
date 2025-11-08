@@ -158,7 +158,7 @@ private fun Content(
                 onCameraMove = { _, _ ->
                     listener.changeSearchButtonVisibility(false)
                 },
-                onMapIdl = { lat, lon ->
+                onMapIdle = { lat, lon ->
                     listener.changeSearchButtonVisibility(true)
                     listener.changeMapMovement(false)
                     listener.changeCenterOfMap(Coordinate(lat, lon))

@@ -42,7 +42,7 @@ actual fun MapView(
     canMove: Boolean,
     onMarkerClick: (MosqueUiState) -> Unit,
     onCameraMove: (Double, Double) -> Unit,
-    onMapIdl: (Double, Double) -> Unit
+    onMapIdle: (Double, Double) -> Unit
 ) {
     val context = LocalContext.current
     var currentZoom by remember { mutableDoubleStateOf(zoomLevel) }
@@ -70,8 +70,8 @@ actual fun MapView(
                         currentZoom = newZoom
                     }
                 },
-                onCameraIdl = { lat, lon ->
-                    onMapIdl(lat, lon)
+                onCameraIdle = { lat, lon ->
+                    onMapIdle(lat, lon)
                 },
             ).also { mapView ->
                 mapViewRef.value = mapView
@@ -137,7 +137,7 @@ private fun createMapView(
     centerLatitude: Double,
     centerLongitude: Double,
     onCameraMove: (Double, Double) -> Unit,
-    onCameraIdl: (Double, Double) -> Unit,
+    onCameraIdle: (Double, Double) -> Unit,
     onZoomChange: (Double) -> Unit,
 ): MapView {
     return MapView(context).apply {
@@ -149,12 +149,12 @@ private fun createMapView(
         )
         this.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
         this.setMultiTouchControls(true)
-        setupZoomListener(onCameraIdl, onCameraMove, onZoomChange)
+        setupZoomListener(onCameraIdle, onCameraMove, onZoomChange)
     }
 }
 
 private fun MapView.setupZoomListener(
-    onCameraIdl: (Double, Double) -> Unit,
+    onCameraIdle: (Double, Double) -> Unit,
     onCameraMove: (Double, Double) -> Unit,
     onZoomChange: (Double) -> Unit,
 ) {
@@ -168,7 +168,7 @@ private fun MapView.setupZoomListener(
                 delay(2000)
                 center = event?.source?.mapCenter
                 center?.let {
-                    onCameraIdl(it.latitude, it.longitude)
+                    onCameraIdle(it.latitude, it.longitude)
                 }
             }
             event?.source?.mapCenter?.let {

@@ -62,10 +62,7 @@ internal class NearbyMosquesViewModel(
         }.map { pagingData ->
             pagingData.map { mosque ->
                 mosque.toUiState(
-                    getDistance(
-                        mosque.coordinates.latitude,
-                        mosque.coordinates.longitude
-                    )
+                    getDistanceFromUser(mosque.coordinates)
                 )
             }
         }.cachedIn(viewModelScope)
@@ -78,10 +75,7 @@ internal class NearbyMosquesViewModel(
     override fun onSearchSubmit() {
         if (uiState.value.query.isBlank()) return
         tryToExecute(
-            execute = {
-                println(" messi execute : ${uiState.value.query}")
-                mosqueRepository.getMosquesByName(uiState.value.query)
-            },
+            execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques ->
                 println(" messi suu : ${mosques.size}")
@@ -155,7 +149,7 @@ internal class NearbyMosquesViewModel(
 
     private fun handleNearbyMosquesSuccess(mosques: List<Mosque>) {
         val mosquesWithDistance = mosques.map { mosque ->
-            mosque.toUiState(getDistance(mosque.coordinates.latitude, mosque.coordinates.longitude))
+            mosque.toUiState(getDistanceFromUser(mosque.coordinates))
         }
         updateState {
             it.copy(
@@ -224,11 +218,11 @@ internal class NearbyMosquesViewModel(
         sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
     }
 
-    private fun getDistance(latitude: Double, longitude: Double) =
+    private fun getDistanceFromUser(coordinates: Mosque.Coordinates) =
         uiState.value.userLocation?.let { location ->
             calculateDistanceUseCase(
-                firstLocation = Pair(location.latitude, location.longitude),
-                secondLocation = Pair(latitude, longitude)
+                firstLocation = Mosque.Coordinates(location.latitude, location.longitude),
+                secondLocation = Mosque.Coordinates(coordinates.latitude, coordinates.longitude)
             )
         }?.roundTo2Decimals() ?: 0.0
 }

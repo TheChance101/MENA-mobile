@@ -14,7 +14,7 @@ actual fun MapView(
     canMove: Boolean,
     onMarkerClick: (MosqueUiState) -> Unit,
     onCameraMove: (Double, Double) -> Unit,
-    onMapIdl: (Double, Double) -> Unit
+    onMapIdle: (Double, Double) -> Unit
 ) {
 
 }
