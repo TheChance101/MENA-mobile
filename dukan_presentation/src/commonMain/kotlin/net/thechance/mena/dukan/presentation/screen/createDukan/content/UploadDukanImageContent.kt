@@ -2,9 +2,9 @@ package net.thechance.mena.dukan.presentation.screen.createDukan.content
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.dukan_presentation.generated.resources.Res
@@ -54,35 +54,43 @@ private fun UploadDukanImageSection(
     state: CreateDukanUiState,
     interactionListener: CreateDukanInteractionListener
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = Theme.spacing._16)
     ) {
-        Text(
-            text = stringResource(Res.string.dukan_image),
-            style = Theme.typography.title.medium,
-            color = Theme.colorScheme.shadePrimary,
-        )
-        Text(
-            text = stringResource(Res.string.image_size_description),
-            style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadeSecondary,
-        )
-        Text(
-            text = stringResource(Res.string.image_size),
-            style = Theme.typography.title.small,
-            color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(
-                top = Theme.spacing._16,
-                bottom = Theme.spacing._4
+        item {
+            Text(
+                text = stringResource(Res.string.dukan_image),
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
             )
-        )
-        UploadImageContainer(
-            onClick = interactionListener::onClickUploadImage,
-            image = state.croppedImage,
-        )
+        }
+        item {
+            Text(
+                text = stringResource(Res.string.image_size_description),
+                style = Theme.typography.body.small,
+                color = Theme.colorScheme.shadeSecondary,
+            )
+        }
+        item {
+            Text(
+                text = stringResource(Res.string.image_size),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(
+                    top = Theme.spacing._16,
+                    bottom = Theme.spacing._4
+                )
+            )
+        }
+        item {
+            UploadImageContainer(
+                onClick = interactionListener::onClickUploadImage,
+                image = state.croppedImage,
+            )
+        }
     }
 }
 
