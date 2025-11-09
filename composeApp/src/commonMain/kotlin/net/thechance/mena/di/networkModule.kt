@@ -7,5 +7,5 @@ import org.koin.dsl.module
 const val BASE_URL = "baseUrl"
 
 val networkModule = module {
-    single(named(BASE_URL)) { "https://mena-dev.the-chance.net" }
+    single(named(BASE_URL)) { AppEnvironment.baseUrl }
 }
