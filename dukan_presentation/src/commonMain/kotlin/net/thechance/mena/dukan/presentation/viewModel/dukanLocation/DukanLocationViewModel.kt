@@ -1,14 +1,13 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanLocation
 
-import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
+import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.maplibre.compose.camera.CameraPosition
 
 class DukanLocationViewModel(
@@ -18,17 +17,26 @@ class DukanLocationViewModel(
     initialState = DukanLocationUiState(),
     defaultDispatcher = defaultDispatcher
 ), DukanLocationInteractionListener {
-    private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
+    private val args = savedStateHandle.toRoute<DukanRoute.DukanLocation>()
+
+    init {
+        updateState {
+            copy(
+                cameraPosition = CameraPosition(
+                    target = Position(
+                        args.latitude,
+                        args.longitude
+                    ),
+                    zoom = 20.0
+                )
+            )
+        }
+    }
 
     override fun onBackClicked() {
         emitEffect(DukanLocationEffect.NavigateBack)
     }
 
-    override fun onMapClicked(
-        coordinates: CreateDukanUiState.CoordinatesUiState,
-        pointerLocation: DpOffset
-    ) {
-    }
 
     override fun onCameraMoved(camera: CameraPosition) {
         updateState { copy(cameraPosition = camera) }

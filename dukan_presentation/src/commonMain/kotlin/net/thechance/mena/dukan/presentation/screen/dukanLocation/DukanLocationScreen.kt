@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanLocation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -14,9 +15,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
-import net.thechance.mena.dukan.presentation.screen.createDukan.component.Map
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
+import net.thechance.mena.dukan.presentation.util.map.MapStyle
 import net.thechance.mena.dukan.presentation.viewModel.dukanLocation.DukanLocationEffect
 import net.thechance.mena.dukan.presentation.viewModel.dukanLocation.DukanLocationInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanLocation.DukanLocationUiState
@@ -24,6 +25,13 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanLocation.DukanLocati
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.maplibre.compose.camera.rememberCameraState
+import org.maplibre.compose.map.GestureOptions
+import org.maplibre.compose.map.MapOptions
+import org.maplibre.compose.map.MaplibreMap
+import org.maplibre.compose.map.OrnamentOptions
+import org.maplibre.compose.map.RenderOptions
+import org.maplibre.compose.style.BaseStyle
 
 @Composable
 fun DukanLocationScreen(
@@ -48,24 +56,29 @@ private fun DukanLocationContent(
     listener: DukanLocationInteractionListener
 ) {
     OnSystemBackPressed(listener::onBackClicked)
-
+    LaunchedEffect(Unit) {
+        listener.onCameraMoved(state.cameraPosition)
+    }
     Scaffold(
         topBar = { DukanLocationTopBar(onBackClick = listener::onBackClicked) }
     ) {
-        Map(
+        val cameraState = rememberCameraState(state.cameraPosition)
+        MaplibreMap(
             modifier = Modifier.fillMaxSize(),
-            isLocked = true,
-            anchorLocation = state.pointerLocation,
-            cameraPosition = state.cameraPosition,
-            onMapClick = listener::onMapClicked,
-            onCameraMoved = {},
-            onEditClick = {}
+            cameraState = cameraState,
+            baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
+            options = MapOptions(
+                gestureOptions = GestureOptions.Standard,
+                ornamentOptions = OrnamentOptions.AllDisabled,
+                renderOptions = RenderOptions.Standard
+            )
         )
     }
 }
 
+
 @Composable
-fun DukanLocationTopBar(onBackClick: () -> Unit) {
+private fun DukanLocationTopBar(onBackClick: () -> Unit) {
     AppBar(
         title = stringResource(resource = Res.string.dukan_location),
         titleColor = Theme.colorScheme.shadePrimary,
