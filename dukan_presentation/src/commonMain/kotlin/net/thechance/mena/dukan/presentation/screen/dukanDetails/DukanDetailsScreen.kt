@@ -40,9 +40,12 @@ fun DukanDetailsScreen(
                 ShelfDetails(effect.id, effect.name, effect.dukanId)
             )
 
-            is DukanDetailsEffects.NavigateToViewDukanOnMap -> {
-
-            }
+            is DukanDetailsEffects.NavigateToViewDukanOnMap -> navController.navigate(
+                DukanRoute.DukanLocation(
+                    latitude = effect.latitude,
+                    longitude = effect.longitude
+                )
+            )
 
             is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
                 DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
