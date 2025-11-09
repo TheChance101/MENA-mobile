@@ -84,13 +84,12 @@ class AddressesScreen(
                         onDeleteAddressClicked = listener::onDeleteAddressClicked,
                         onClickAddress = listener::onClickAddress,
                         animateToCurrentLocation = state.animateToCurrentLocation,
-                        isRefreshing = state.isRefreshing,
                         isAddingNewAddress = state.isAddingNewAddress
                     )
                 }
 
                 AnimatedVisibility(
-                    visible = state.addresses.isEmpty() && !state.isLoading && !state.isRefreshing,
+                    visible = state.addresses.isEmpty() && !state.isLoading,
                     enter = fadeIn(animationSpec = tween(durationMillis = 500)),
                     exit = fadeOut(animationSpec = tween(durationMillis = 500))
                 ) {
@@ -139,7 +138,6 @@ private fun AddressesSection(
     onDeleteAddressClicked: (Uuid) -> Unit,
     onClickAddress: (Uuid) -> Unit,
     animateToCurrentLocation: Boolean,
-    isRefreshing: Boolean = false,
     isAddingNewAddress: Boolean = false
 ) {
     LazyColumn(
@@ -150,7 +148,7 @@ private fun AddressesSection(
     ) {
         items(
             items = addresses,
-            key = { it.id ?: Uuid.random() }
+            key = { it.id.toString() }
         ) {
             AddressCard(
                 addressType = it.addressType,
@@ -163,7 +161,7 @@ private fun AddressesSection(
                 longitude = it.coordinates.longitude,
                 latitude = it.coordinates.latitude,
                 isDeleting = it.isDeleting,
-                isActivating = it.isActivating || (isRefreshing && it.isMainAddress && !isAddingNewAddress)
+                isActivating = it.isActivating || it.isRefreshing
             )
         }
         

@@ -51,7 +51,7 @@ class AddressesScreenViewModel(
         sendNewEffect(
             AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
                 addressUIState = addressUIState,
-                onSuccess = { snackBar -> onAddEditSuccess(snackBar, isAdding) }
+                onSuccess = { snackBar -> onAddEditSuccess(snackBar, isAdding, addressUIState?.id) }
             )
         )
     }
@@ -104,8 +104,16 @@ class AddressesScreenViewModel(
     }
 
     private fun handleUserAddressesError(throwable: Throwable) {
+        val editedId = state.value.editedAddressId
         updateState {
-            copy(isRefreshing = false, isAddingNewAddress = false, pendingSnackBar = null)
+            copy(
+                addresses = if (editedId != null) {
+                    addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
+                } else addresses,
+                isAddingNewAddress = false,
+                pendingSnackBar = null,
+                editedAddressId = null
+            )
         }
         onAddressOperationError(throwable)
     }
@@ -118,32 +126,43 @@ class AddressesScreenViewModel(
             val existingAddress = state.value.addresses.find { it.id == address.id }
             address.toUiState(id = address.id, isMainAddress = isActive).copy(
                 isDeleting = existingAddress?.isDeleting ?: false,
-                isActivating = if (isActive) false else (existingAddress?.isActivating ?: false)
+                isActivating = if (isActive) false else (existingAddress?.isActivating ?: false),
+                isRefreshing = false
             )
         }
     }
 
-    private fun onUserAddressesSuccess(addresses: List<AddressUIState>) = updateState {
-        val pending = pendingSnackBar
-        copy(
-            addresses = addresses,
-            animateToCurrentLocation = true,
-            isLoading = false,
-            isRefreshing = false,
-            isAddingNewAddress = false,
-            pendingSnackBar = null,
-            snackBarUiState = pending ?: snackBarUiState
-        )
+    private fun onUserAddressesSuccess(addresses: List<AddressUIState>) {
+        val pending = state.value.pendingSnackBar
+        updateState {
+            copy(
+                addresses = addresses,
+                animateToCurrentLocation = true,
+                isLoading = false,
+                isAddingNewAddress = false,
+                pendingSnackBar = null,
+                editedAddressId = null
+            )
+        }
+        // Show snackbar after addresses are updated for synchronized visual feedback
+        if (pending != null) {
+            updateState {
+                copy(snackBarUiState = pending.copy(isVisible = true))
+            }
+        }
     }
 
-    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?, isAdding: Boolean) {
+    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?, isAdding: Boolean, addressId: Uuid?) {
         if (snackBarUiState == null) return
         updateState {
             copy(
-                isRefreshing = true,
                 isAddingNewAddress = isAdding,
-                pendingSnackBar = snackBarUiState
+                pendingSnackBar = snackBarUiState,
+                editedAddressId = addressId
             )
+        }
+        if (!isAdding && addressId != null) {
+            markAddressAsRefreshing(addressId)
         }
         getUserAddresses()
     }
@@ -181,15 +200,19 @@ class AddressesScreenViewModel(
     private fun onAddressOperationError(throwable: Throwable) {
         when (throwable) {
             is NoActiveAddressException -> updateState {
-                copy(isLoading = false, isRefreshing = false, isAddingNewAddress = false)
+                copy(isLoading = false, isAddingNewAddress = false)
             }
 
             else -> {
+                val editedId = state.value.editedAddressId
                 updateState {
                     copy(
-                        isRefreshing = false,
+                        addresses = if (editedId != null) {
+                            addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
+                        } else addresses,
                         isAddingNewAddress = false,
-                        pendingSnackBar = null
+                        pendingSnackBar = null,
+                        editedAddressId = null
                     )
                 }
                 showErrorSnackBar(mapErrorMessage(throwable))
@@ -198,22 +221,30 @@ class AddressesScreenViewModel(
     }
 
     private fun onAddressNotFoundError() {
+        val editedId = state.value.editedAddressId
         updateState {
             copy(
-                isRefreshing = false,
+                addresses = if (editedId != null) {
+                    addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
+                } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null
+                pendingSnackBar = null,
+                editedAddressId = null
             )
         }
         showErrorSnackBar(Res.string.error_address_not_found)
     }
 
     private fun onMainAddressDeletionError() {
+        val editedId = state.value.editedAddressId
         updateState {
             copy(
-                isRefreshing = false,
+                addresses = if (editedId != null) {
+                    addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
+                } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null
+                pendingSnackBar = null,
+                editedAddressId = null
             )
         }
         showErrorSnackBar(Res.string.is_main_address_error)
@@ -272,13 +303,13 @@ class AddressesScreenViewModel(
     private fun revertAddressActivation(addressId: Uuid) =
         updateAddressState(addressId) { it.copy(isActivating = false) }
 
+    private fun markAddressAsRefreshing(addressId: Uuid) =
+        updateAddressState(addressId) { it.copy(isRefreshing = true) }
+
     private fun updateAddressState(addressId: Uuid, update: (AddressUIState) -> AddressUIState) {
         updateState {
             copy(
-                addresses = addresses.map { if (it.id == addressId) update(it) else it },
-                isRefreshing = false,
-                isAddingNewAddress = false,
-                pendingSnackBar = null
+                addresses = addresses.map { if (it.id == addressId) update(it) else it }
             )
         }
     }
