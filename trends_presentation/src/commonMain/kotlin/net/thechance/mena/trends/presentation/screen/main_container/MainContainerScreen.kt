@@ -1,19 +1,21 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import mena.trends_presentation.generated.resources.Res
+import mena.trends_presentation.generated.resources.error_generic
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
+import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
+import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
+import net.thechance.mena.trends.presentation.snackbar.SnackBarData
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -44,16 +46,28 @@ internal fun MainContainerScreen(
 
 @Composable
 private fun MainContainerScreenContent(state: MainContainerState) {
-    TrendsAnimatedVisibility(
-        visible = state.isCategoriesAlreadySelectedByUser == null
+    Scaffold(
+        snakeBar = { ErrorSnackBar(state.error) }
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Theme.colorScheme.background.surface.copy(alpha = 0.7f)),
-            contentAlignment = Alignment.Center
+        TrendsAnimatedVisibility(
+            visible = state.isCategoriesAlreadySelectedByUser == null
         ) {
-            DotsProgressIndicator()
+            LoadingProgressBar()
         }
+    }
+}
+
+@Composable
+private fun ErrorSnackBar(
+    error: ErrorState?
+) {
+    val snackBarController = LocalSnackbarController.current
+    TrendsAnimatedVisibility(error != null) {
+        snackBarController.showSnackBar(
+            SnackBarData(
+                message = stringResource(Res.string.error_generic),
+                snackBarType = SnackBarStatus.Error,
+            )
+        )
     }
 }
