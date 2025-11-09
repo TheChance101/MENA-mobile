@@ -38,7 +38,7 @@ class SettingsRepositoryImpl(
 
 
     override suspend fun applyAppTheme(appTheme: AppTheme) {
-        settings.appLanguage = appTheme.name.also { observableLanguage.emit(appTheme.name) }
+        settings.appTheme = appTheme.name.also { observableTheme.emit(appTheme.name) }
     }
 
     override fun observeAppTheme(): StateFlow<AppTheme> {
