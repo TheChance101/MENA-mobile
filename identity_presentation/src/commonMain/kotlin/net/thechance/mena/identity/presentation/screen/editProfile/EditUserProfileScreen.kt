@@ -52,6 +52,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileImage
+import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileShimmer
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
 import net.thechance.mena.identity.presentation.screen.editProfile.components.MoreActionsButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
@@ -146,89 +147,103 @@ class EditUserProfileScreen : BaseScreen<
                 }
             }
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .systemBarsPadding()
-                    .verticalScroll(scrollState)
-                    .background(Theme.colorScheme.background.surface)
-                    .padding(horizontal = Theme.spacing._16)
-                    .padding(bottom = Theme.spacing._16),
-            ) {
-                AppBar(
-                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
-                    title = stringResource(Res.string.edit_profile_information),
-                    leadingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = stringResource(Res.string.back),
-                        )
-                    },
-                    onLeadingClick = listener::onClickCancelButton,
-                    trailingContent = {
-                        MoreActionsButton(onClick = listener::onClickShowLogoutOptions)
-                    }
+            if (state.isInitialLoading) {
+                EditProfileShimmer(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
                 )
+            } else {
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                        .verticalScroll(scrollState)
+                        .background(Theme.colorScheme.background.surface)
+                        .padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._16),
+                ) {
+                    AppBar(
+                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
+                        title = stringResource(Res.string.edit_profile_information),
+                        leadingContent = {
+                            Icon(
+                                painter = painterResource(Res.drawable.ic_arrow_left),
+                                contentDescription = stringResource(Res.string.back),
+                            )
+                        },
+                        onLeadingClick = listener::onClickCancelButton,
+                        trailingContent = {
+                            MoreActionsButton(onClick = listener::onClickShowLogoutOptions)
+                        }
+                    )
 
-                EditProfileImage(
-                    profileImageUrl = state.profileImageUrl,
-                    profileImageBitmap = state.profileImageBitmap,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
-                    onEditClicked = listener::onClickEditImage,
-                )
+                    EditProfileImage(
+                        profileImageUrl = state.profileImageUrl,
+                        profileImageBitmap = state.profileImageBitmap,
+                        modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                        onEditClicked = listener::onClickEditImage,
+                        isLoading = state.isLoading
+                    )
 
-                ProfileEditText(
-                    title = stringResource(Res.string.first_name),
-                    value = state.firstName,
-                    onValueChange = listener::onChangeFirstName,
-                )
+                    ProfileEditText(
+                        title = stringResource(Res.string.first_name),
+                        value = state.firstName,
+                        onValueChange = listener::onChangeFirstName,
+                        isLoading = state.isLoading
+                    )
 
-                ProfileEditText(
-                    title = stringResource(Res.string.last_name),
-                    value = state.lastName,
-                    onValueChange = listener::onChangeLastName,
-                )
+                    ProfileEditText(
+                        title = stringResource(Res.string.last_name),
+                        value = state.lastName,
+                        onValueChange = listener::onChangeLastName,
+                        isLoading = state.isLoading
+                    )
 
-                ProfileEditText(
-                    title = stringResource(Res.string.username),
-                    value = state.username,
-                    onValueChange = { username ->
-                        listener.onChangeUsername(
-                            username = username.filter { it.isLetterOrDigit() || it == '_' }
-                        )
-                    },
-                    visualTransformation = AtPrefixTransformation,
-                )
+                    ProfileEditText(
+                        title = stringResource(Res.string.username),
+                        value = state.username,
+                        onValueChange = { username ->
+                            listener.onChangeUsername(
+                                username = username.filter { it.isLetterOrDigit() || it == '_' }
+                            )
+                        },
+                        visualTransformation = AtPrefixTransformation,
+                        isLoading = state.isLoading
+                    )
 
-                Text(
-                    modifier = Modifier.padding(top = Theme.spacing._16),
-                    text = stringResource(Res.string.date_of_birth),
-                    style = Theme.typography.title.small
-                )
+                    Text(
+                        modifier = Modifier.padding(top = Theme.spacing._16),
+                        text = stringResource(Res.string.date_of_birth),
+                        style = Theme.typography.title.small
+                    )
 
-                GregorianDatePicker(
-                    modifier = Modifier.padding(top = Theme.spacing._16),
-                    selectedDate = state.birthDate,
-                    onDateChange = listener::onChangeDate,
-                )
+                    GregorianDatePicker(
+                        modifier = Modifier.padding(top = Theme.spacing._16),
+                        selectedDate = state.birthDate,
+                        onDateChange = listener::onChangeDate,
+                    )
 
-                GenderToggle(
-                    gender = state.gender,
-                    onChangeGender = listener::onChangeGender
-                )
+                    GenderToggle(
+                        gender = state.gender,
+                        onChangeGender = listener::onChangeGender,
+                        isLoading = state.isLoading
+                    )
 
-                PrimaryButton(
-                    isLoading = state.isLoading,
-                    modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._24),
-                    text = stringResource(Res.string.save_changes),
-                    onClick = listener::onClickSaveButton,
-                )
+                    PrimaryButton(
+                        isLoading = state.isLoading,
+                        modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._24),
+                        text = stringResource(Res.string.save_changes),
+                        onClick = listener::onClickSaveButton,
+                    )
 
-                OutlinedButton(
-                    modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._8),
-                    text = stringResource(Res.string.cancel),
-                    onClick = listener::onClickCancelButton
-                )
+                    OutlinedButton(
+                        modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._8),
+                        text = stringResource(Res.string.cancel),
+                        onClick = listener::onClickCancelButton,
+                        isEnabled = !state.isLoading
+                    )
+                }
             }
         }
     }

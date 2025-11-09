@@ -17,6 +17,7 @@ data class EditUserProfileUIState(
     val showLogoutDialog: Boolean = false,
     val showCamera: Boolean = false,
     val isLoading: Boolean = false,
+    val isInitialLoading: Boolean = true,
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
     val profileImageAction: ProfileImageAction = ProfileImageAction.NONE,

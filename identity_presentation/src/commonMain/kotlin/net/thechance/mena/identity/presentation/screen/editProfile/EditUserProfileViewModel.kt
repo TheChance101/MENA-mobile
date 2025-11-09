@@ -65,6 +65,7 @@ class EditUserProfileViewModel(
                 profileImageUrl = user.profileImageUrl,
                 birthDate = user.birthDate,
                 gender = user.gender,
+                isInitialLoading = false
             )
         }
     }
@@ -153,7 +154,12 @@ class EditUserProfileViewModel(
     }
 
     private fun onGetUserInfoError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        updateState { 
+            copy(
+                errorMessage = mapErrorMessage(throwable),
+                isInitialLoading = false
+            ) 
+        }
     }
 
     private fun validateFormInputs(): Boolean {
@@ -225,7 +231,12 @@ class EditUserProfileViewModel(
     }
 
     private fun handleSaveError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
+        updateState { 
+            copy(
+                isLoading = false, 
+                errorMessage = mapErrorMessage(throwable)
+            ) 
+        }
     }
 
     private fun cacheRequiredCropImage(imageBitmap: ImageBitmap) {

@@ -13,25 +13,37 @@ import mena.identity_presentation.generated.resources.user_rounded
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
 fun ProfileEditText(
     title: String,
-    value: String, onValueChange: (String) -> Unit,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    value: String, 
+    onValueChange: (String) -> Unit,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    isLoading: Boolean = false
 ) {
     Column(modifier = Modifier.padding(top = Theme.spacing._16)) {
         Text(text = title, style = Theme.typography.title.small)
         TextField(
-            modifier = Modifier.padding(top = Theme.spacing._4),
+            modifier = Modifier
+                .padding(top = Theme.spacing._4)
+                .then(
+                    if (isLoading) {
+                        Modifier.shimmerLoading(isLoading = true)
+                    } else {
+                        Modifier
+                    }
+                ),
             value = value,
             hint = "",
             onValueChanged = onValueChange,
             leadingIcon = painterResource(Res.drawable.user_rounded),
             visualTransformation = visualTransformation,
-            maxCharacters = 32
+            maxCharacters = 32,
+            enabled = !isLoading
         )
     }
 }

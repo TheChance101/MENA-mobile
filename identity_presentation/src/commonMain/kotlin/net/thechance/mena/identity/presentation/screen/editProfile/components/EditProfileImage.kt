@@ -34,6 +34,7 @@ import mena.identity_presentation.generated.resources.profile_profile_picture_co
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.ProfileImage
+import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -46,6 +47,7 @@ fun EditProfileImage(
     profileImageBitmap: ImageBitmap?,
     modifier: Modifier = Modifier,
     onEditClicked: () -> Unit,
+    isLoading: Boolean = false,
 ) {
     val shadowColor = Color(0x0F111D2E)
 
@@ -53,19 +55,33 @@ fun EditProfileImage(
         modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(modifier = Modifier) {
-            ProfileImage(
-                profileImageUrl = profileImageUrl,
-                profileImageBitmap = profileImageBitmap,
+            Box(
                 modifier = Modifier
                     .padding(bottom = Theme.spacing._16)
-            )
+                    .then(
+                        if (isLoading) {
+                            Modifier.shimmerLoading(isLoading = true)
+                        } else {
+                            Modifier
+                        }
+                    )
+            ) {
+                ProfileImage(
+                    profileImageUrl = profileImageUrl,
+                    profileImageBitmap = profileImageBitmap,
+                    modifier = Modifier
+                )
+            }
             Box(
                 modifier = Modifier
                     .size(32.dp)
                     .align(Alignment.BottomCenter)
                     .clip(CircleShape)
                     .background(Theme.colorScheme.primary.primary)
-                    .clickable(onClick = onEditClicked)
+                    .clickable(
+                        onClick = onEditClicked,
+                        enabled = !isLoading
+                    )
                     .border(
                         width = 1.dp,
                         color = Theme.colorScheme.background.surface,

@@ -31,29 +31,45 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun GenderToggle(gender: Gender?, onChangeGender: (Gender) -> Unit) {
+fun GenderToggle(
+    gender: Gender?, 
+    onChangeGender: (Gender) -> Unit,
+    isLoading: Boolean = false
+) {
     Column(modifier = Modifier.padding(top = Theme.spacing._16)) {
         Text(text = stringResource(Res.string.gender), style = Theme.typography.title.small)
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = Theme.spacing._16)
+                .then(
+                    if (isLoading) {
+                        Modifier.shimmerLoading(isLoading = true)
+                    } else {
+                        Modifier
+                    }
+                ),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16)
         ) {
             ToggleOption(
                 printer = painterResource(Res.drawable.male),
                 isSelected = gender == Gender.MALE,
-                onChange = { onChangeGender(Gender.MALE) }
+                onChange = { onChangeGender(Gender.MALE) },
+                isEnabled = !isLoading
             )
 
             ToggleOption(
                 printer = painterResource(Res.drawable.female),
                 isSelected = gender == Gender.FEMALE,
-                onChange = { onChangeGender(Gender.FEMALE) }
+                onChange = { onChangeGender(Gender.FEMALE) },
+                isEnabled = !isLoading
             )
         }
     }
@@ -64,7 +80,8 @@ fun GenderToggle(gender: Gender?, onChangeGender: (Gender) -> Unit) {
 private fun RowScope.ToggleOption(
     printer: Painter,
     isSelected: Boolean,
-    onChange: () -> Unit
+    onChange: () -> Unit,
+    isEnabled: Boolean = true
 ) {
     val animateBackground by animateColorAsState(
         if (isSelected)
@@ -89,7 +106,8 @@ private fun RowScope.ToggleOption(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rippleIndication(),
-                onClick = { onChange() }
+                onClick = { onChange() },
+                enabled = isEnabled
             )
             .padding(10.dp)
             .size(20.dp),
