@@ -1,4 +1,3 @@
-
 package net.thechance.mena.identity.presentation.screen.profile
 
 import app.cash.turbine.test
@@ -54,10 +53,13 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `getUserInfo() updates state on success`() = runTest {
-        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(fakeUser.firstName + " " + fakeUser.lastName, viewModel.state.value.fullName)
+        assertEquals(
+            fakeUser.firstName.trim() + " " + fakeUser.lastName.trim(),
+            viewModel.state.value.fullName
+        )
         assertEquals(fakeUser.username, viewModel.state.value.userName)
         assertEquals(fakeUser.profileImageUrl, viewModel.state.value.profileImageUrl)
         assertTrue { viewModel.state.value.isSuccess }
@@ -68,7 +70,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         coEvery { userRepository.getUser() } throws UnknownException()
 
-        viewModel = ProfileScreenViewModel(userRepository, settingsRepository,"", testDispatcher)
+        viewModel = ProfileScreenViewModel(userRepository, settingsRepository, "", testDispatcher)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(null, viewModel.state.value.errorMessage)

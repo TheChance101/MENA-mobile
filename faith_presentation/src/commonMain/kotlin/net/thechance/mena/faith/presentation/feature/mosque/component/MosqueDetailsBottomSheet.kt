@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_arrow_right
+import mena.faith_presentation.generated.resources.kilometer_unit
 import mena.faith_presentation.generated.resources.mosque_details
 import mena.faith_presentation.generated.resources.view_on_map
 import net.thechance.mena.designsystem.presentation.component.bottomSheet.BottomSheet
@@ -89,7 +90,7 @@ private fun MosqueDetailsContent(
         )
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._4),
-            text = mosque.distance.toString(),
+            text = "${mosque.distance} ${stringResource(Res.string.kilometer_unit)}",
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )

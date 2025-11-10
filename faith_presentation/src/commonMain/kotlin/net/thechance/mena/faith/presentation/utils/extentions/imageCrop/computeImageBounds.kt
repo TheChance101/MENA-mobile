@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.utils.imageCrop
+package net.thechance.mena.faith.presentation.utils.extentions.imageCrop
 
 import androidx.compose.ui.geometry.Rect
 import com.attafitamim.krop.core.crop.ImgTransform
