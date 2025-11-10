@@ -224,7 +224,8 @@
     <string name="error_permission_not_granted">Permission not granted</string>
     <string name="error_address_not_found">Address not found</string>
     <string name="error_cannot_delete_active_address">Can't Delete Active Address</string>
-    <string name="error_location_is_turned_off">"Location is turned off"</string>
+    <string name="error_location_is_turned_off">Location is turned off</string>
+    <string name="error_confirm_password_not_match">Confirm password doesn't match the new password</string>
 
     <!-- Account Created Successfully -->
     <string name="success_account_created_title">You have successfully created your account!</string>
