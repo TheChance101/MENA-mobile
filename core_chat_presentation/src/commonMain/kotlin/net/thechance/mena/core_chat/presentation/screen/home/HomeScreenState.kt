@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
+import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -21,8 +22,9 @@ data class HomeScreenState(
     ) {
         data class MessageUiState(
             val text: String,
-            val time: UiText,
+            val uiTime: UiText,
             val isMine: Boolean,
+            val time: LocalDateTime
         )
 
         sealed class Status {

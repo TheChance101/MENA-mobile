@@ -43,7 +43,6 @@ import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
-import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -111,7 +110,7 @@ class MessageRepositoryImpl(
                 parameter(PAGE_NUMBER_PARAMETER, page)
                 parameter(PAGE_SIZE_PARAMETER, pageSize)
             }
-        } ?: throw NotFoundException("Messages not found!")
+        }
 
         val page = response.toPagedListOfMessages()
 
@@ -147,7 +146,7 @@ class MessageRepositoryImpl(
                     }
                 }
 
-                if (response != null && !response.data.isNullOrEmpty()) {
+                if (response.data.isNotEmpty()) {
                     chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
 
                     updateLocalMessages(response.data.toListOfMessages())
@@ -155,7 +154,7 @@ class MessageRepositoryImpl(
                     messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
                 }
 
-                isLastPage = response?.toPagedListOfMessages()?.isLastPage == true
+                isLastPage = response.toPagedListOfMessages().isLastPage
                 page++
             }
         } catch (e: Throwable) {
