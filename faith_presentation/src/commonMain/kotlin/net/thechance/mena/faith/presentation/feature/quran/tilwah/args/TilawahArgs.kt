@@ -4,5 +4,3 @@ interface TilawahArgs {
     val surahId: Int?
         get() = null
 }
-
-
