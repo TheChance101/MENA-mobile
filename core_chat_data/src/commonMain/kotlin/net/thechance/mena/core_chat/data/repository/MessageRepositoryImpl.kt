@@ -115,9 +115,16 @@ class MessageRepositoryImpl(
 
         val page = response.toPagedListOfMessages()
 
-        cachedMessageDao.insertAllMessages(page.data.toCachedMessageLocalDto())
+        updateLocalMessages(page.data)
 
         return page
+    }
+
+    private suspend fun updateLocalMessages(messages: List<Message>){
+        cachedMessageDao.insertAllMessages(messages.toCachedMessageLocalDto())
+
+        val messagesIds = messages.map{ it.id.toString() }
+        pendingMessageDao.deleteMessagesByIds(messagesIds)
     }
 
     suspend fun syncAfterLastUpdate(chatId: Uuid) {
@@ -143,9 +150,7 @@ class MessageRepositoryImpl(
                 if (response != null && !response.data.isNullOrEmpty()) {
                     chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
 
-                    cachedMessageDao.insertAllMessages(
-                        response.data.toListOfMessages().toCachedMessageLocalDto()
-                    )
+                    updateLocalMessages(response.data.toListOfMessages())
 
                     messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
                 }
@@ -159,11 +164,11 @@ class MessageRepositoryImpl(
     }
 
     override suspend fun deleteMessage(message: Message) {
-        pendingMessageDao.deleteMessage(message.id.toString())
+        pendingMessageDao.deleteMessageById(message.id.toString())
     }
 
     override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {
-        val messages = pendingMessageDao.getMessagesByChat(chatId.toString())
+        val messages = pendingMessageDao.getMessagesByChatId(chatId.toString())
         return messages.map { it.toDomain() }
     }
 
@@ -179,7 +184,7 @@ class MessageRepositoryImpl(
         try {
             val messageSender = messageSenderFactory.create(message.content)
             messageSender.send(message)
-            pendingMessageDao.deleteMessage(pendingMessage.id)
+            pendingMessageDao.deleteMessageById(pendingMessage.id)
         } catch (e: Exception) {
             pendingMessageDao.updateMessageStatus(pendingMessage.id, MessageStatus.FAILED)
             throw SendMessageFailedException("Failed to send message: ${e.message}")
@@ -255,7 +260,7 @@ class MessageRepositoryImpl(
             PRIVATE_MESSAGES -> {
                 val message = json.decodeFromString<MessageDto>(body).toDomain()
                 message?.let {
-                    cachedMessageDao.insertMessage(it.toCachedMessageLocalDto())
+                    updateLocalMessages(listOf(message))
                     messagesFlow.emit(it)
                 }
             }
