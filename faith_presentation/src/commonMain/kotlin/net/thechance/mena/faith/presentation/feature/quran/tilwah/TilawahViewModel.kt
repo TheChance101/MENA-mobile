@@ -103,11 +103,9 @@ class TilawahViewModel(
     }
 
     private fun getAllRecitersSuccessfully(reciters: List<Reciter>) {
-        val filteredReciters = if (tilawahArgs.surahId != null) {
-            filterRecitersForSurah(reciters, tilawahArgs.surahId)
-        } else {
-            reciters
-        }
+        val filteredReciters =
+         if (tilawahArgs.surahId != null) filterRecitersForSurah(reciters, tilawahArgs.surahId)
+         else reciters
 
         val recitersUi = filteredReciters.map {
             TilawahUiState.ReciterUi(
