@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.mockkery)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -24,6 +25,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.androidx.core.ktx)
+            implementation(libs.androidx.room.sqlite.wrapper)
         }
 
         commonMain.dependencies {
@@ -34,6 +36,8 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation(libs.kermit)
             implementation(projects.identityDomain)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         iosMain.dependencies {
@@ -56,12 +60,17 @@ ksp {
 
 dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    addKsp(libs.androidx.room.compiler)
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
 
 android {
@@ -90,6 +99,28 @@ kover.reports {
 
         excludes {
             classes("**org.koin.ksp.generated**")
+        }
+    }
+}
+
+fun DependencyHandlerScope.addKsp(dependencyNotation: Any) {
+    val targets = listOf(
+        "Android",
+        "AndroidTest",
+        "IosX64",
+        "IosX64Test",
+        "IosArm64",
+        "IosSimulatorArm64",
+        "IosArm64Test",
+        "IosSimulatorArm64Test"
+    )
+
+    targets.forEach { target ->
+        runCatching {
+            add(
+                configurationName = "ksp$target",
+                dependencyNotation = dependencyNotation
+            )
         }
     }
 }
