@@ -4,9 +4,9 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.trends.data.client.NetworkClient
 import net.thechance.mena.trends.data.local.database.TrendsDatabase
 import net.thechance.mena.trends.data.local.database.TrendsDatabaseBuilder
+import net.thechance.mena.trends.data.remote.client.NetworkClient
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getPlatformFileReader
 import org.koin.core.annotation.ComponentScan
