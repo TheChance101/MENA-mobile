@@ -307,6 +307,10 @@ class MainViewModel(
         )
     }
 
+    override fun onShopNowClicked(dukanId: String) {
+        emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
+    }
+
     private fun setFavoriteState(
         dukanId: String,
         isFavorite: Boolean

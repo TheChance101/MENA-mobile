@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -56,6 +57,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
+import net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection.DukansDiscountSection
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
@@ -217,6 +219,32 @@ fun MainScreenSections(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16)
     ) {
+        item(
+            span = { GridItemSpan(maxLineSpan) }
+        ){
+            DukansDiscountSection(
+                dukanDiscountImages = listOf(
+            "https://m.media-amazon.com/images/I/71nFq0Y6GyL._AC_UF894%2C1000_QL80_.jpg",
+            "https://i.pinimg.com/736x/65/bb/79/65bb79194b1b1a431d8ed05a6ce1e3f8.jpg",
+            "https://previews.123rf.com/images/innadodor/innadodor2007/innadodor200700437/152325972-red-sale-banner-on-store-window-promotions-and-discounts-in-shop.jpg",
+            "https://www.signs.com/blog/wp-content/uploads/2012/08/sale-signs.jpg",
+            "https://marketplace.canva.com/EAE6GJRFBO8/2/0/1600w/canva-red-and-white-modern-online-sale-and-discount-banner-EQntJWpYr4w.jpg",
+            "https://i.etsystatic.com/15213592/r/il/dcefb4/4976059588/il_fullxfull.4976059588_2n20.jpg",
+            "https://cdn.pixabay.com/photo/2017/01/29/17/25/sale-2018813_1280.jpg",
+            "https://img.freepik.com/free-photo/discount-sale-composition-with-red-tags_23-2147989827.jpg",
+            "https://static.vecteezy.com/system/resources/previews/002/082/695/non_2x/sale-banner-with-discount-offer-on-red-background-free-vector.jpg",
+            "https://img.freepik.com/premium-photo/sale-discount-concept-red-banner-with-shopping-bags_93675-144491.jpg"
+                ),
+                onClick ={dukanId->
+                    listener.onShopNowClicked(dukanId)
+                },
+                dukanDiscount = 10,
+                dukanId = "1",
+                dukanColor = Color.Blue,
+                modifier = Modifier.padding(bottom = Theme.spacing._24)
+            )
+        }
+
         if (state.categories.isNotEmpty()) {
             item(
                 span = { GridItemSpan(maxLineSpan) }
