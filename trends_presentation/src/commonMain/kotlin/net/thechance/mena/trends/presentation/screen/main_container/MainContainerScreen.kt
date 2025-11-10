@@ -57,9 +57,7 @@ private fun MainContainerScreenContent(
         }
 
         TrendsAnimatedVisibility(state.error is ErrorState.NoInternet) {
-            NoConnection(
-                onRetry = listener::onClickRetry
-            )
+            NoConnection{ listener.onClickRetry() }
         }
     }
 }
