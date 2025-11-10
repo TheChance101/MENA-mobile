@@ -118,18 +118,23 @@ class ProductDetailsViewModel(
 
         tryToExecute(
             onStart = { updateState { copy(isAddToCartLoading = true) } },
-            block = { if (productQuantity == 0) removeFromCartBlock() else addToCartBlock(domainRequest) },
-            onSuccess = { if (productQuantity == 0) removeProductFromCartSuccessfully(it) else addProductToCartSuccessfully(it) },
+            block = { onAddToCartBlock(domainRequest) },
+            onSuccess = ::onSuccessUpdateProductQuantity,
             onError = ::onErrorUpdateProductQuantity
         )
     }
 
-    private suspend fun addToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
+    private suspend fun onAddToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
+        if (state.value.product.inCartQuantity == 0) removeProductFromCart()
+        else addProductToCart(domainRequest)
+    }
+
+    private suspend fun addProductToCart(domainRequest: UpdateProductCartQuantityParams) {
         if (state.value.isFirstQuantityOne) dukanCartRepository.addProductQuantity(domainRequest)
         else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
-    private suspend fun removeFromCartBlock() {
+    private suspend fun removeProductFromCart() {
         dukanCartRepository.deleteProductFromCart(
             dukanId = args.dukanId,
             productId = args.productId
@@ -160,13 +165,19 @@ class ProductDetailsViewModel(
         }
     }
 
-    private fun addProductToCartSuccessfully(success: Unit) {
+    private fun onSuccessUpdateProductQuantity(success: Unit) {
+        if (state.value.product.inCartQuantity == 0) removeProductFromCartSuccessfully()
+        else addProductToCartSuccessfully()
+
+    }
+
+    private fun addProductToCartSuccessfully() {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = Res.string.add_product_success
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }
 
-    private fun removeProductFromCartSuccessfully(success: Unit) {
+    private fun removeProductFromCartSuccessfully() {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = Res.string.remove_product_successfully
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
