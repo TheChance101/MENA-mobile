@@ -24,7 +24,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.Anima
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatOfSurah
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
-import net.thechance.mena.faith.presentation.navigation.Route.DownloadedRecitersRoute
+import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.navigation.Route.SearchRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -51,7 +51,7 @@ fun SurahScreen(
             }
 
             SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
-                navController.navigate(DownloadedRecitersRoute())
+                navController.navigate(route = Route.DownloadedRecitersRoute())
             }
         }
     }

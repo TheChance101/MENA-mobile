@@ -86,16 +86,16 @@ private fun Content(
         LazyColumn(
             contentPadding = PaddingValues(bottom = Theme.spacing._16),
         ) {
-            items(uiState.reciters) { reciter ->
+            items(uiState.reciters) { reciterDetails ->
                 ReciterItem(
-                    reciterDetails = reciter,
-                    isSelected = uiState.selectedReciterId == reciter.id,
+                    reciterDetails = reciterDetails,
+                    isSelected = uiState.selectedReciterId == reciterDetails.id,
                     isSelectedShown = true,
                     onSelect = {
-                        listener.onSelectReciterClick(reciter.id)
+                        listener.onSelectReciterClick(reciterDetails.id)
                     },
                     onDeleteReciterClick = {
-                        listener.onDeleteReciterClick(reciter.id)
+                        listener.onDeleteReciterClick(reciterDetails.id)
                     },
                     modifier = Modifier
                         .animateItem(

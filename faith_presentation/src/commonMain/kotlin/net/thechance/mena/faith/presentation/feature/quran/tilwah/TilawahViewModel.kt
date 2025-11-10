@@ -55,17 +55,11 @@ class TilawahViewModel(
     }
 
     override fun onConfirmDeleteReciterClick() {
-        // TODO("Should integrate with the domain to delete selected reciter")
-        updateState { state ->
-            val newReciters =
-                state.reciters - state.reciters.first { it.id == state.selectedReciterForDelete }
-            state.copy(
-                reciters = newReciters,
-                selectedReciterForDelete = null,
-                showDeleteConfirmationDialog = false,
-            )
-        }
-        showSuccessSnackBar()
+        tryToExecute(
+            execute = { deleteSelectedReciter() },
+            onSuccess = { showSuccessSnackBar() },
+            onError = ::handleError
+        )
     }
 
     override fun onDismissDeleteConfirmationDialog() {
@@ -103,9 +97,7 @@ class TilawahViewModel(
     }
 
     private fun getAllRecitersSuccessfully(reciters: List<Reciter>) {
-        val filteredReciters =
-         if (tilawahArgs.surahId != null) filterRecitersForSurah(reciters, tilawahArgs.surahId)
-         else reciters
+        val filteredReciters = filterReciters(reciters)
 
         val recitersUi = filteredReciters.map {
             TilawahUiState.ReciterUi(
@@ -116,6 +108,26 @@ class TilawahViewModel(
             )
         }
         updateState { it.copy(reciters = recitersUi) }
+    }
+
+    private fun deleteSelectedReciter() {
+        updateState { state ->
+            val newReciters =
+                state.reciters - state.reciters.first { it.id == state.selectedReciterForDelete }
+            state.copy(
+                reciters = newReciters,
+                selectedReciterForDelete = null,
+                showDeleteConfirmationDialog = false,
+            )
+        }
+    }
+
+    private fun filterReciters(reciters: List<Reciter>): List<Reciter> {
+        return if (tilawahArgs.surahId != null) {
+            filterRecitersForSurah(reciters, tilawahArgs.surahId)
+        } else {
+            reciters
+        }
     }
 
     private fun filterRecitersForSurah(reciters: List<Reciter>, surahId: Int?): List<Reciter> {

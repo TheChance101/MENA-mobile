@@ -12,3 +12,4 @@ class TilawahArgsImpl(
     override val surahId: Int? = downloadedRecitersRouteArgs.surahId
 }
 
+

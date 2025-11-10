@@ -54,18 +54,14 @@ class DownloadedSurViewModel(
         updateState { it.copy(dummyData) }
     }
 
-    override fun onReciterSettingsClick() {
+    override fun onReciterSettingsClick() =
         sendEffect(DownloadedSurEffect.NavigateToRecitersScreen)
-    }
 
-    override fun onDownloadedSurahClick(surahId: Int) {
-override fun onDownloadedSurahClick(surahId: Int) =
+    override fun onDownloadedSurahClick(surahId: Int) =
         sendEffect(DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen(surahId))
-    }
 
-    override fun onBackClick() {
-        sendEffect(DownloadedSurEffect.NavigateBack)
-    }
+
+    override fun onBackClick() = sendEffect(DownloadedSurEffect.NavigateBack)
 
     override fun onDeleteSurahClick(surahId: Int) {
         updateState {
