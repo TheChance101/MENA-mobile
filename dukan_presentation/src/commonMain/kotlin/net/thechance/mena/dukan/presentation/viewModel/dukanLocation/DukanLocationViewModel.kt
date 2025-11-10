@@ -1,12 +1,10 @@
 package net.thechance.mena.dukan.presentation.viewModel.dukanLocation
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.toRoute
 import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import org.maplibre.compose.camera.CameraPosition
 
@@ -17,10 +15,11 @@ class DukanLocationViewModel(
     initialState = DukanLocationUiState(),
     defaultDispatcher = defaultDispatcher
 ), DukanLocationInteractionListener {
-    private val args = savedStateHandle.toRoute<DukanRoute.DukanLocation>()
+    private val latitude = savedStateHandle.get<Double>(LATITUDE) ?: 0.0
+    private val longitude = savedStateHandle.get<Double>(LONGITUDE) ?: 0.0
 
     init {
-        updateCameraPosition(args.latitude, args.longitude)
+        updateCameraPosition(latitude, longitude)
     }
 
     private fun updateCameraPosition(latitude: Double, longitude: Double) {
@@ -28,8 +27,8 @@ class DukanLocationViewModel(
             copy(
                 cameraPosition = CameraPosition(
                     target = Position(
-                        latitude,
-                        longitude
+                        longitude,
+                        latitude
                     ),
                     zoom = DUKAN_LOCATION_ZOOM
                 )
@@ -42,6 +41,8 @@ class DukanLocationViewModel(
     }
 
     companion object {
-        const val DUKAN_LOCATION_ZOOM = 10.0
+        const val DUKAN_LOCATION_ZOOM = 17.0
+        const val LATITUDE = "latitude"
+        const val LONGITUDE = "longitude"
     }
 }
