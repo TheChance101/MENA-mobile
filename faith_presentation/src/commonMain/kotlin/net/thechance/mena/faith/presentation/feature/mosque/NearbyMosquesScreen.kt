@@ -53,7 +53,7 @@ import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResu
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.MapNavigator
-import net.thechance.mena.faith.presentation.utils.MapView
+import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

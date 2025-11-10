@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.utils
+package net.thechance.mena.faith.presentation.feature.mosque.component
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,7 +28,11 @@ import net.thechance.mena.faith.presentation.map.MapConstants
 import net.thechance.mena.faith.presentation.map.MapMarkerManager
 import org.osmdroid.api.IGeoPoint
 import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapListener
+import org.osmdroid.events.ScrollEvent
+import org.osmdroid.events.ZoomEvent
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import kotlin.math.abs
 
@@ -147,7 +151,7 @@ private fun createMapView(
             centerLatitude = centerLatitude,
             centerLongitude = centerLongitude
         )
-        this.zoomController.setVisibility(org.osmdroid.views.CustomZoomButtonsController.Visibility.NEVER)
+        this.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER)
         this.setMultiTouchControls(true)
         setupZoomListener(onCameraIdle, onCameraMove, onZoomChange)
     }
@@ -158,11 +162,11 @@ private fun MapView.setupZoomListener(
     onCameraMove: (Double, Double) -> Unit,
     onZoomChange: (Double) -> Unit,
 ) {
-    addMapListener(object : org.osmdroid.events.MapListener {
+    addMapListener(object : MapListener {
         var job: Job? = null
         var center: IGeoPoint? = null
 
-        override fun onScroll(event: org.osmdroid.events.ScrollEvent?): Boolean {
+        override fun onScroll(event: ScrollEvent?): Boolean {
             job?.cancel()
             job = CoroutineScope(Dispatchers.IO).launch {
                 delay(2000)
@@ -177,7 +181,7 @@ private fun MapView.setupZoomListener(
             return true
         }
 
-        override fun onZoom(event: org.osmdroid.events.ZoomEvent?): Boolean {
+        override fun onZoom(event: ZoomEvent?): Boolean {
             event?.let {
                 onZoomChange(it.zoomLevel)
                 it.source.mapCenter?.let { center ->
@@ -188,5 +192,3 @@ private fun MapView.setupZoomListener(
         }
     })
 }
-
-
