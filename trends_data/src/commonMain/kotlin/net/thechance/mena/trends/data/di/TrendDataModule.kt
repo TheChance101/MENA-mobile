@@ -1,7 +1,12 @@
 package net.thechance.mena.trends.data.di
 
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import net.thechance.mena.trends.data.client.NetworkClient
+import net.thechance.mena.trends.data.local.database.TrendsDatabase
+import net.thechance.mena.trends.data.local.database.TrendsDatabaseBuilder
 import net.thechance.mena.trends.data.util.VideoFileHandler
 import net.thechance.mena.trends.data.util.getPlatformFileReader
 import org.koin.core.annotation.ComponentScan
@@ -15,6 +20,14 @@ class TrendDataModule {
 
     @Single
     fun provideFileReader(): VideoFileHandler = getPlatformFileReader()
+
+    @Single
+    fun provideDatabase(builder: TrendsDatabaseBuilder): TrendsDatabase {
+        return builder.getBuilder()
+            .setDriver(BundledSQLiteDriver())
+            .setQueryCoroutineContext(Dispatchers.IO)
+            .build()
+    }
 
     @Single
     @Named(DEFAULT_CLIENT_NAME)
