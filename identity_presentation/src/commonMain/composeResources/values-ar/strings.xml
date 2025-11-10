@@ -89,6 +89,11 @@
     <string name="profile_profile_picture_content_description">صورة الملف الشخصي</string>
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
     <string name="profile_invite_friends_icon_content_description">أيقونة دعوة الأصدقاء</string>
+    <string name="profile_image">صورة الملف الشخصي</string>
+    <string name="upload_image">رفع صورة</string>
+    <string name="take_new_image">التقاط صورة جديدة</string>
+    <string name="remove_profile_image">حذف صورة الملف الشخصي</string>
+
 
     <string name="share_profile_title">شارك ملفك الشخصي</string>
     <string name="share_profile_description">استخدم رمز الاستجابة السريعة لمشاركة ملفك الشخصي مع الآخرين</string>

@@ -108,7 +108,10 @@
     <string name="profile_profile_picture_content_description">Profile Picture</string>
     <string name="profile_share_icon_content_description">Share Icon</string>
     <string name="profile_invite_friends_icon_content_description">Invite Friends Icon</string>
-
+    <string name="profile_image">Profile image</string>
+    <string name="upload_image">Upload image</string>
+    <string name="take_new_image">Take new image</string>
+    <string name="remove_profile_image">Remove profile image</string>
     <string name="share_profile_title">Share your profile</string>
     <string name="share_profile_description">Use your QR code to share your profile with other</string>
     <string name="share_profile_qr_code">Profile QR Code</string>
