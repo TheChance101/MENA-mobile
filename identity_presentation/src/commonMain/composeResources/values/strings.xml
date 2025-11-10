@@ -210,6 +210,7 @@
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
     <string name="error_last_name_required">Last name is required</string>
+    <string name="error_age_restriction">You must be 14 years or older to register</string>
     <string name="error_password_mismatch">Passwords do not match</string>
     <string name="error_password_validation">Password must be at least 8 characters long and contain at least one uppercase letter and one digit.</string>
     <string name="error_camera_permission_required">Camera permission is required</string>

@@ -390,6 +390,8 @@ class ChatViewModel(
                 .filter { it.status == MessageStatus.LOADING }
                 .forEach { sendMessage(it.toUi()) }
         }
+
+        emitEffect(ChatScreenEffect.ScrollToBottom)
     }
 
     private suspend fun getChatHistory(page: Int): PagedData<Message> {

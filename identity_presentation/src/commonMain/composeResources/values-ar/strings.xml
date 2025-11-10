@@ -176,6 +176,7 @@
     <string name="error_username_required">اسم المستخدم مطلوب</string>
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
     <string name="error_last_name_required">اسم العائلة مطلوب</string>
+    <string name="error_age_restriction">يجب أن يكون عمرك 14 عامًا أو أكثر للتسجيل</string>
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>

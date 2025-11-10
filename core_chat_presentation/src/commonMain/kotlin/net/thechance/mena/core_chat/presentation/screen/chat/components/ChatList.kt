@@ -33,11 +33,6 @@ fun ChatList(
     paginationError: Boolean,
     onMessageVoiceClick: (Uuid) -> Unit,
 ) {
-    if (items.isNotEmpty()) {
-        LaunchedEffect(items[0]) {
-            chatListState.animateScrollToItem(0)
-        }
-    }
 
     LazyColumn(
         modifier = Modifier
