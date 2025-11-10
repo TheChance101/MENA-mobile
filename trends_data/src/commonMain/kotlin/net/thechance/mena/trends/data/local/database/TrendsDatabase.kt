@@ -9,5 +9,5 @@ import androidx.room.RoomDatabase
     exportSchema = true
 )
 abstract class TrendsDatabase : RoomDatabase() {
-    // TODO: add DAOs
+    abstract fun userEngagementDao(): UserEngagementDao
 }
