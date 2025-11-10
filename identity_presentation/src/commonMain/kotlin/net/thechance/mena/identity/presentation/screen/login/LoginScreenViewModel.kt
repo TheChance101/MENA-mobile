@@ -8,6 +8,7 @@ import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.error.handler.authentication.login.loginErrorHandler
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.mapper.createNavigateToHomeEffect
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
@@ -100,7 +101,7 @@ class LoginScreenViewModel(
 
     private fun mapErrorMessage(throwable: Throwable): StringResource{
         return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(loginErrorHandler(throwable))
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
