@@ -13,6 +13,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -111,6 +112,7 @@ fun ChatScreenContent(
                 AnimatedContent(
                     targetState = state.isRecordingVoice,
                     modifier = Modifier
+                        .imePadding()
                         .fillMaxWidth(),
                     transitionSpec = {
                         if (targetState) {
