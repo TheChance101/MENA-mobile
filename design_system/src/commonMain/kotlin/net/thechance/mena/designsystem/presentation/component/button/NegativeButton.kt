@@ -1,16 +1,32 @@
 package net.thechance.mena.designsystem.presentation.component.button
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.ic_cheese_cake
 import net.thechance.mena.designsystem.presentation.component.button.content.BaseButtonContent
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
@@ -59,5 +75,37 @@ fun NegativeButton(
             iconStartPadding = iconStartPadding,
             contentColor = it
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NegativeButtonPreview() {
+    MenaTheme {
+        PreviewComponent(
+            isScrollable = true,
+            title = "Negative button"
+        ) {
+            NegativeButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                modifier = Modifier
+            )
+            NegativeButton(
+                text = "Button",
+                isLoading = true,
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                modifier = Modifier
+            )
+            NegativeButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                isEnabled = false,
+                modifier = Modifier
+            )
+        }
     }
 }

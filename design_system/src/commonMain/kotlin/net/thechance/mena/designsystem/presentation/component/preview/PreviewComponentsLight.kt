@@ -447,7 +447,7 @@ private fun PreviewComponentsLight() {
 }
 
 @Composable
-private fun PreviewComponent(
+fun PreviewComponent(
     title: String,
     isScrollable: Boolean = false,
     content: @Composable RowScope.() -> Unit

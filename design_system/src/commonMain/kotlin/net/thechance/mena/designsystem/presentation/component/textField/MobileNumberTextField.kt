@@ -118,7 +118,7 @@ fun MobileNumberLeadingContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 fun PreviewMobileNumberTextField() {
     MenaTheme {
