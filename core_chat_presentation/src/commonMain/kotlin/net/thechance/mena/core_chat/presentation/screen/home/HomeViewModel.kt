@@ -58,7 +58,7 @@ class HomeViewModel(
     }
 
     init {
-        getBalanceAmount()
+        observeBalanceAmount()
         onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
@@ -177,12 +177,11 @@ class HomeViewModel(
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
-
-    private fun getBalanceAmount() {
-        tryToExecute(
+    private fun observeBalanceAmount() {
+        tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
-            execute = { balanceRepository.getBalance() },
-            onSuccess = ::onGetBalanceAmountSuccess,
+            collect = { balanceRepository.observeBalance() },
+            onCollect = { balance -> if (balance != null) onGetBalanceAmountSuccess(balance) },
             onError = { onGetBalanceAmountError() }
         )
     }
