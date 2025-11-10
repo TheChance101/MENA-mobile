@@ -25,6 +25,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.helper.createUser
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
@@ -37,31 +38,34 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     private val userRepository = mockk<UserRepository>()
     private val permissionsController = mockk<PermissionsController>()
     private val imagesRepository = mockk<ImagesRepository>()
+    private val ageValidator = mockk<AgeValidator>()
     private val imageDecoder = mockk<ImageDecoder>()
     private val testDispatcher = StandardTestDispatcher()
 
-    lateinit var viewModel: EditUserProfileViewModel
-
-    override fun setUp() {
-        super.setUp()
-        viewModel = EditUserProfileViewModel(
+    val viewModel by lazy {
+        EditUserProfileViewModel(
             userRepository = userRepository,
             permissionsController = permissionsController,
             imagesRepository = imagesRepository,
             imageDecoder = imageDecoder,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            ageValidator = ageValidator
         )
+    }
+
+    override fun setUp() {
+        super.setUp()
+        coEvery { ageValidator.isValid(any()) } returns true
     }
 
     @Test
     fun `user information should be updated, when init called`() = runTest {
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
 
+        viewModel
         testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.test {
-            assertThat(awaitItem().firstName).isEqualTo("User")
-        }
+        assertThat(viewModel.state.value.firstName).isEqualTo("User")
         coVerify(exactly = 1) { userRepository.getUser() }
     }
 
@@ -69,6 +73,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `errorMessage should be updated, when init throws Exception`() = runTest {
         coEvery { userRepository.getUser() } throws Exception()
 
+        viewModel
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.state.test {
