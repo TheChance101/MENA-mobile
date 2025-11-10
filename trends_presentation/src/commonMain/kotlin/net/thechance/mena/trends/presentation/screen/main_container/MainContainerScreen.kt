@@ -53,11 +53,11 @@ private fun MainContainerScreenContent(
         }
 
         TrendsAnimatedVisibility(state.error is ErrorState.RequestFailed) {
-            SomethingWentWrong { listener.onClickRetry() }
+            SomethingWentWrong(onRetry = listener::onClickRetry)
         }
 
         TrendsAnimatedVisibility(state.error is ErrorState.NoInternet) {
-            NoConnection{ listener.onClickRetry() }
+            NoConnection(onRetry = listener::onClickRetry)
         }
     }
 }
