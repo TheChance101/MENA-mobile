@@ -1,12 +1,18 @@
 package net.thechance.mena.dukan.presentation.screen.dukanLocation
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.back_to_dukan_screen_icon
 import mena.dukan_presentation.generated.resources.dukan_location
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -56,23 +62,33 @@ private fun DukanLocationContent(
     listener: DukanLocationInteractionListener
 ) {
     OnSystemBackPressed(listener::onBackClicked)
-    LaunchedEffect(Unit) {
-        listener.onCameraMoved(state.cameraPosition)
-    }
     Scaffold(
         topBar = { DukanLocationTopBar(onBackClick = listener::onBackClicked) }
     ) {
         val cameraState = rememberCameraState(state.cameraPosition)
-        MaplibreMap(
+        Box(
             modifier = Modifier.fillMaxSize(),
-            cameraState = cameraState,
-            baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
-            options = MapOptions(
-                gestureOptions = GestureOptions.Standard,
-                ornamentOptions = OrnamentOptions.AllDisabled,
-                renderOptions = RenderOptions.Standard
+            contentAlignment = Alignment.Center
+        ) {
+            MaplibreMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraState = cameraState,
+                baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
+                options = MapOptions(
+                    gestureOptions = GestureOptions.AllDisabled,
+                    ornamentOptions = OrnamentOptions.AllDisabled,
+                    renderOptions = RenderOptions.Standard
+                )
             )
-        )
+            Image(
+                painter = painterResource(Res.drawable.anchor),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(46.dp, 58.05.dp)
+
+            )
+        }
+
     }
 }
 

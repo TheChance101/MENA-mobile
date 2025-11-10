@@ -20,14 +20,18 @@ class DukanLocationViewModel(
     private val args = savedStateHandle.toRoute<DukanRoute.DukanLocation>()
 
     init {
+        updateCameraPosition(args.latitude, args.longitude)
+    }
+
+    private fun updateCameraPosition(latitude: Double, longitude: Double) {
         updateState {
             copy(
                 cameraPosition = CameraPosition(
                     target = Position(
-                        args.latitude,
-                        args.longitude
+                        latitude,
+                        longitude
                     ),
-                    zoom = 20.0
+                    zoom = DUKAN_LOCATION_ZOOM
                 )
             )
         }
@@ -37,8 +41,7 @@ class DukanLocationViewModel(
         emitEffect(DukanLocationEffect.NavigateBack)
     }
 
-
-    override fun onCameraMoved(camera: CameraPosition) {
-        updateState { copy(cameraPosition = camera) }
+    companion object {
+        const val DUKAN_LOCATION_ZOOM = 10.0
     }
 }
