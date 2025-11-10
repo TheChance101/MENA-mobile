@@ -25,7 +25,7 @@ class TextMessageSender(
             throw SendMessageFailedException("Message content is not text")
         }
 
-        val dto = SendMessageDto(chatId = message.chatId.toString(), text = content.text)
+        val dto = SendMessageDto(messageId = message.id.toString(), chatId = message.chatId.toString(), text = content.text)
         val messageJson = json.encodeToString(SendMessageDto.serializer(), dto)
         webSocketManager.sendTextFrame(SEND_MESSAGE_DESTINATION, messageJson)
     }
