@@ -76,27 +76,23 @@ class MessageRepositoryImpl(
             chatId = chatId.toString(),
             offset = (page * pageSize),
             limit = pageSize
-        )
-        val messages = cachedMessages.map { it.toDomain() }
-
-        if (messages.isEmpty()) {
-            return getFromRemote(chatId, page, pageSize)
-        }
-
-        val now = Clock.System.now().toString()
-        val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
-        if (lastSyncTime != null) {
-            syncAfterLastUpdate(chatId)
-        } else {
-            chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
-        }
+        ).map { it.toDomain() }
 
         val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
-        return PagedData(
-            data = messages,
+        val result = PagedData(
+            data = cachedMessages,
             totalItems = totalCachedItems,
-            isLastPage = false,
+            isLastPage = cachedMessages.size < pageSize
         )
+
+        scope.launch {
+            try {
+                getFromRemote(chatId, page, pageSize)
+            } catch (_: Exception) {
+            }
+        }
+
+        return result
     }
 
     private suspend fun getFromRemote(
