@@ -38,8 +38,8 @@ import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.Bo
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.utils.extentions.paging.isEmpty
-import net.thechance.mena.faith.presentation.utils.extentions.paging.isNotEmpty
+import net.thechance.mena.faith.presentation.utils.extentions.isEmpty
+import net.thechance.mena.faith.presentation.utils.extentions.isNotEmpty
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

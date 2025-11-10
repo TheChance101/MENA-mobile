@@ -29,6 +29,8 @@ import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScree
 import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
 import net.thechance.mena.trends.presentation.screen.video_description.VideoDescriptionScreen
 import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
+import net.thechance.mena.trends.presentation.shared.util.LocalImageLoader
+import net.thechance.mena.trends.presentation.shared.util.provideImageLoader
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarControllerImpl
 import net.thechance.mena.trends.presentation.snackbar.defaultSnackBarAnimationConfig
@@ -40,10 +42,12 @@ fun TrendsNavHost() {
     val coroutineScope = rememberCoroutineScope()
     val snackBarController = remember(coroutineScope) { SnackBarControllerImpl(coroutineScope) }
     val currentSnackbarData by snackBarController.state.collectAsStateWithLifecycle()
+    val coilLoader = provideImageLoader()
 
     CompositionLocalProvider(
         LocalNavController provides navController,
-        LocalSnackbarController provides snackBarController
+        LocalSnackbarController provides snackBarController,
+        LocalImageLoader provides coilLoader
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 

@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_confirm_password_not_match
 import mena.identity_presentation.generated.resources.error_password_mismatch
 import mena.identity_presentation.generated.resources.error_password_validation
 import net.thechance.mena.identity.domain.model.RegistrationDraft
@@ -36,7 +37,10 @@ class CreatePasswordViewModel(
         updateState {
             copy(
                 confirmPassword = password,
-                confirmPasswordErrorMessage = validatePasswordConfirmation(newPassword, password)
+                confirmPasswordErrorMessage =
+                    if (validatePasswordConfirmation(newPassword, password))
+                        Res.string.error_confirm_password_not_match
+                    else null,
             )
         }
         checkCreateButtonEnabled()

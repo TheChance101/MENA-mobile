@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.utils.imageCrop
+package net.thechance.mena.faith.presentation.utils.extentions.imageCrop
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
@@ -35,19 +35,18 @@ fun createCropperStyle(
     override fun DrawScope.drawCropRect(region: Rect) {
         if (region.isEmpty) return
 
-        val drawRegion = region
-        val smallerSide = drawRegion.width.coerceAtMost(drawRegion.height)
+        val smallerSide = region.width.coerceAtMost(region.height)
         val actualStrokeWidth = (smallerSide * 0.015f).coerceAtLeast(strokeWidth)
         val actualCornerSize = smallerSide * cornerSize
-        val midLineLengthH = drawRegion.width * 0.2f
+        val midLineLengthH = region.width * 0.2f
         val cap = StrokeCap.Square
 
         handles.forEach { (xRel, yRel) ->
-            val x = drawRegion.left + xRel * drawRegion.width
-            val y = drawRegion.top + yRel * drawRegion.height
+            val x = region.left + xRel * region.width
+            val y = region.top + yRel * region.height
 
-            when {
-                xRel == 0f && yRel == 0f -> {
+            when (xRel) {
+                0f if yRel == 0f -> {
                     drawLine(
                         handleColor,
                         Offset(x, y),
@@ -64,7 +63,7 @@ fun createCropperStyle(
                     )
                 }
 
-                xRel == 1f && yRel == 0f -> {
+                1f if yRel == 0f -> {
                     drawLine(
                         handleColor,
                         Offset(x - actualCornerSize, y),
@@ -81,7 +80,7 @@ fun createCropperStyle(
                     )
                 }
 
-                xRel == 1f && yRel == 1f -> {
+                1f if yRel == 1f -> {
                     drawLine(
                         handleColor,
                         Offset(x - actualCornerSize, y),
@@ -98,7 +97,7 @@ fun createCropperStyle(
                     )
                 }
 
-                xRel == 0f && yRel == 1f -> {
+                0f if yRel == 1f -> {
                     drawLine(
                         handleColor,
                         Offset(x, y - actualCornerSize),
@@ -118,19 +117,18 @@ fun createCropperStyle(
         }
 
         val midTop = Offset(
-            drawRegion.left + drawRegion.width * 0.5f - midLineLengthH * 0.5f,
-            drawRegion.top
+            region.left + region.width * 0.5f - midLineLengthH * 0.5f,
+            region.top
         )
         val midBottom = Offset(
-            drawRegion.left + drawRegion.width * 0.5f - midLineLengthH * 0.5f,
-            drawRegion.bottom
+            region.left + region.width * 0.5f - midLineLengthH * 0.5f,
+            region.bottom
         )
 
         drawLine(handleColor, midTop, midTop + Offset(midLineLengthH, 0f), actualStrokeWidth)
         drawLine(handleColor, midBottom, midBottom + Offset(midLineLengthH, 0f), actualStrokeWidth)
     }
 }
-
 
 @Stable
 object RectangleCropShape : CropShape {
