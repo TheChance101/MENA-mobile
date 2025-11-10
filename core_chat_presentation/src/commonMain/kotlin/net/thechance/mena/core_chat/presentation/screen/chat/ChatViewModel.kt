@@ -78,6 +78,7 @@ class ChatViewModel(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val messages = _messages.asStateFlow()
     private val messagesMutex = Mutex()
+    private val waveformCache = mutableMapOf<Uuid, List<Float>>()
 
     private var hasResentPendingMessages = false
 
@@ -120,12 +121,11 @@ class ChatViewModel(
             var earliestUnReadMessageTime: LocalDateTime = LocalDateTime.now()
             messages
                 .map { list ->
-                    list.map {
-                        if (it.status == MessageStatus.SENT && it.sendAt < earliestUnReadMessageTime) {
-                            earliestUnReadMessageTime = it.sendAt
-                            println(earliestUnReadMessageTime)
+                    list.map { message ->
+                        if (message.status == MessageStatus.SENT && message.sendAt < earliestUnReadMessageTime) {
+                            earliestUnReadMessageTime = message.sendAt
                         }
-                        it.toUi()
+                        message.toUiWithCachedWaveform()
                     }
                 }
                 .collectLatest { uiList ->
@@ -144,6 +144,17 @@ class ChatViewModel(
                 }
         }
     }
+
+    private fun Message.toUiWithCachedWaveform(): MessageUiState =
+        toUi().let { uiState ->
+            when {
+                uiState.content !is MessageContent.Audio -> uiState
+                else -> uiState.withCachedOrGeneratedWaveform(id)
+            }
+        }
+
+    private fun MessageUiState.withCachedOrGeneratedWaveform(messageId: Uuid): MessageUiState =
+        copy(waveformData = waveformCache.getOrPut(messageId) { waveformData ?: generateWaveformData() })
 
     private fun getUserInfo() {
         tryToExecute(
@@ -804,11 +815,16 @@ class ChatViewModel(
             audioDurationMs = audioDurationMs
         )
 
-        return MessageUiState(
+        val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            content = content
+            content = content,
+            waveformData = generateWaveformData()
         )
+
+        message.waveformData?.let { waveform -> waveformCache[message.id] = waveform }
+
+        return message
     }
 
     override fun onDownloadImageClicked(url: String) {

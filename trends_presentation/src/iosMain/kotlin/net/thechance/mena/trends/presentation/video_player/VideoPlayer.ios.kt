@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.video_player
 
-
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -39,7 +38,6 @@ import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
@@ -58,13 +56,11 @@ import platform.AVFoundation.rate
 import platform.AVFoundation.replaceCurrentItemWithPlayerItem
 import platform.AVFoundation.seekToTime
 import platform.AVFoundation.timeControlStatus
-import platform.AVKit.AVPlayerViewController
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
 import platform.Foundation.NSURLErrorBadServerResponse
-
 
 private const val PREFERRED_TIME_SCALE = 600
 
@@ -114,12 +110,7 @@ actual fun VideoPlayer(
 
     player.actionAtItemEnd = 1
 
-    val playerViewController = remember {
-        AVPlayerViewController().apply {
-            showsPlaybackControls = false
-            videoGravity = AVLayerVideoGravityResizeAspectFill
-        }
-    }
+    val playerView = remember(url) { PlayerLayerView(player) }
 
     LaunchedEffect(url) {
 
@@ -161,8 +152,6 @@ actual fun VideoPlayer(
     }
 
     LaunchedEffect(url, isReelVisible) {
-        playerViewController.player = player
-
         replayReelWhenFinishedAutomatic(player)
 
         if (isReelVisible) {
@@ -191,7 +180,7 @@ actual fun VideoPlayer(
                 }
 
                 AVPlayerItemStatusFailed -> true
-                AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
+                AVPlayerItemStatusUnknown, null -> false
                 else -> false
             }
 
@@ -230,9 +219,10 @@ actual fun VideoPlayer(
         contentAlignment = Alignment.Center
     ) {
         UIKitView(
-            factory = { playerViewController.view },
-            update = {
-                it.setNeedsLayout()
+            factory = { playerView },
+            update = { view ->
+                view.setNeedsLayout()
+                view.layoutIfNeeded()
                 if (isPaused) player.pause() else player.play()
             },
             modifier = Modifier.matchParentSize()
