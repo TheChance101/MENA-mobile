@@ -17,6 +17,8 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 fun Message.toUi(): MessageUiState {
+    val waveformData = if (content is MessageContent.Audio) generateWaveformData() else null
+
     return MessageUiState(
         id = id,
         senderId = senderId,
@@ -25,7 +27,8 @@ fun Message.toUi(): MessageUiState {
         status = status,
         isMine = isMine,
         content = content,
-        reactions = reactions
+        reactions = reactions,
+        waveformData = waveformData
     )
 }
 
@@ -97,17 +100,21 @@ fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (Message
                     tempImages.add(msg)
                 }
             }
+
             is MessageContent.Audio -> {
                 groupAndClear()
-                grouped.add(ChatListItem.VoiceMessage(
-                    data = msg,
-                    isPlaying = false,
-                    isLoading = false,
-                    progress = 0f,
-                    duration = msg.content.audioDurationMs ?: 0L,
-                    waveformData = generateWaveformData()
-                ))
+                grouped.add(
+                    ChatListItem.VoiceMessage(
+                        data = msg,
+                        isPlaying = false,
+                        isLoading = false,
+                        progress = 0f,
+                        duration = msg.content.audioDurationMs ?: 0L,
+                        waveformData = msg.waveformData ?: emptyList()
+                    )
+                )
             }
+
             is MessageContent.Text -> {
                 groupAndClear()
                 grouped.add(ChatListItem.TextMessage(msg))

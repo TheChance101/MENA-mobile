@@ -807,7 +807,8 @@ class ChatViewModel(
         return MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            content = content
+            content = content,
+            waveformData = generateWaveformData()
         )
     }
 

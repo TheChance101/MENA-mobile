@@ -65,5 +65,6 @@ data class MessageUiState(
     val isLastInSeries: Boolean = false,
     val isVisibleMessageInfo: Boolean = false,
     val content: MessageContent,
-    val reactions: List<MessageReaction> = emptyList()
+    val reactions: List<MessageReaction> = emptyList(),
+    val waveformData: List<Float>? = null
 )
