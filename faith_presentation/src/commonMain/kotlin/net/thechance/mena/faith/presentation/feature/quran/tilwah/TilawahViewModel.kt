@@ -123,11 +123,10 @@ class TilawahViewModel(
     }
 
     private fun filterReciters(reciters: List<Reciter>): List<Reciter> {
-        return if (tilawahArgs.surahId != null) {
+        return if (tilawahArgs.surahId != null)
             filterRecitersForSurah(reciters, tilawahArgs.surahId)
-        } else {
+        else
             reciters
-        }
     }
 
     private fun filterRecitersForSurah(reciters: List<Reciter>, surahId: Int?): List<Reciter> {

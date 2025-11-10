@@ -28,28 +28,32 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReciterItem(
-    reciterDetails: TilawahUiState.ReciterUi,
+    reciterId: Int,
+    reciter: String,
+    recitingType: String,
+    isDownloaded: Boolean,
     isSelected: Boolean,
     isSelectedShown: Boolean,
-    onSelect: () -> Unit,
+    onSelect: () -> Unit = {},
     onDeleteReciterClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     SwappableCard(
-        id = reciterDetails.id,
+        id = reciterId,
         onClick = onDeleteReciterClick,
         backgroundIcon = painterResource(Res.drawable.ic_delete),
         contentDescription = stringResource(Res.string.delete),
         cardContent = { contentModifier ->
             CardContent(
-                reciterDetails = reciterDetails,
+                reciter = reciter,
+                recitingType = recitingType,
+                isDownloaded = isDownloaded,
                 isSelected = isSelected,
                 onSelect = onSelect,
                 modifier = contentModifier,
@@ -64,7 +68,9 @@ fun ReciterItem(
 
 @Composable
 private fun CardContent(
-    reciterDetails: TilawahUiState.ReciterUi,
+    reciter: String,
+    recitingType: String,
+    isDownloaded: Boolean,
     onSelect: () -> Unit = {},
     isSelectedShown: Boolean,
     isSelected: Boolean = false,
@@ -88,7 +94,7 @@ private fun CardContent(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = reciterDetails.name,
+                text = reciter,
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadePrimary,
                 overflow = TextOverflow.Ellipsis,
@@ -96,7 +102,8 @@ private fun CardContent(
             )
 
             RecitersDetails(
-                reciterDetails = reciterDetails
+                recitingType = recitingType,
+                isDownloaded = isDownloaded
             )
         }
         if (isSelectedShown)
@@ -109,7 +116,8 @@ private fun CardContent(
 
 @Composable
 private fun RecitersDetails(
-    reciterDetails: TilawahUiState.ReciterUi,
+    recitingType: String,
+    isDownloaded: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -118,11 +126,11 @@ private fun RecitersDetails(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
         Text(
-            text = reciterDetails.recitingType,
+            text = recitingType,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
-        if (reciterDetails.isDownloaded) {
+        if (isDownloaded) {
             Icon(
                 painterResource(Res.drawable.ic_tick_double_check),
                 contentDescription = stringResource(Res.string.success),
@@ -143,15 +151,13 @@ private fun RecitersDetails(
 private fun Preview() {
     QuranTheme {
         ReciterItem(
-            reciterDetails = TilawahUiState.ReciterUi(
-                id = 1,
-                name = "Al Minshawi",
-                recitingType = "Mujawwad",
-                isDownloaded = true
-            ),
+            reciterId = 1,
+            reciter = "Muhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-Minshawi",
+            recitingType = "Teacher - Tajweed",
+            isDownloaded = true,
             isSelected = true,
             onSelect = {},
-            isSelectedShown = true
+            isSelectedShown = true,
         )
     }
 }

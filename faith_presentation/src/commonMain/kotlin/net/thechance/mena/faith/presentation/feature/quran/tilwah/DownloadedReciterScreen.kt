@@ -1,12 +1,10 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.delete_reciter
@@ -88,20 +86,15 @@ private fun Content(
         ) {
             items(uiState.reciters) { reciterDetails ->
                 ReciterItem(
-                    reciterDetails = reciterDetails,
+                    reciterId = reciterDetails.id,
+                    reciter = reciterDetails.name,
+                    recitingType = reciterDetails.recitingType,
+                    isDownloaded = reciterDetails.isDownloaded,
                     isSelected = uiState.selectedReciterId == reciterDetails.id,
-                    isSelectedShown = true,
-                    onSelect = {
-                        listener.onSelectReciterClick(reciterDetails.id)
-                    },
+                    isSelectedShown = false,
                     onDeleteReciterClick = {
                         listener.onDeleteReciterClick(reciterDetails.id)
                     },
-                    modifier = Modifier
-                        .animateItem(
-                            fadeInSpec = tween(500),
-                            fadeOutSpec = tween(500),
-                        ),
                 )
             }
         }

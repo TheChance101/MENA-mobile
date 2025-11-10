@@ -86,8 +86,6 @@ private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
     results: List<TilawahUiState.ReciterUi>,
-    selectedReciterId: Int? = null,
-    isReciterSelected: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val shouldShowResults = isNotBlankQuery && isNotEmptyResult
@@ -98,10 +96,12 @@ private fun ResultList(
     ) {
         items(results) { reciter ->
             ReciterItem(
-                reciterDetails = reciter,
-                isSelected = selectedReciterId == reciter.id,
-                onSelect = {},
-                isSelectedShown = isReciterSelected,
+                reciterId = reciter.id,
+                reciter = reciter.name,
+                recitingType = reciter.recitingType,
+                isDownloaded = reciter.isDownloaded,
+                isSelected = false,
+                isSelectedShown = false,
             )
         }
     }
