@@ -40,20 +40,3 @@ fun AddEditAddressUIState.toAddressInput(): AddressInput = AddressInput(
     addressLine = addressDetails,
     addressType = if(otherAddressType.isNullOrBlank()) addressType ?: AddressType.Home else AddressType.Other(otherAddressType),
 )
-
-@OptIn(ExperimentalUuidApi::class)
-fun Address.mapToUIState(
-    activeAddress: Address?,
-    existingAddresses: List<AddressUIState>
-): AddressUIState {
-    val isActive = activeAddress == this
-    val existingAddress = existingAddresses.find { it.id == this.id }
-
-    return this.toUiState(
-        id = this.id,
-        isMainAddress = isActive
-    ).copy(
-        isDeleting = existingAddress?.isDeleting ?: false,
-        isActivating = if (isActive) false else (existingAddress?.isActivating ?: false)
-    )
-}
