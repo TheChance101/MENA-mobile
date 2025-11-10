@@ -23,7 +23,7 @@ fun provideImageLoader(
 }
 
 val LocalImageLoader = staticCompositionLocalOf<ImageLoader> {
-    throw IllegalStateException("ImageLoader not initialized")
+    error("ImageLoader not initialized")
 }
 
 const val DEFAULT_CLIENT_NAME = "defaultClient"
