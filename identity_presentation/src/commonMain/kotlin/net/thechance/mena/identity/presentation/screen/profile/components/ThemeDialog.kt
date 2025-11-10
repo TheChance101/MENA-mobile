@@ -35,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.presentation.util.mapTheme
@@ -149,6 +150,7 @@ fun ThemeOptionItem(
 @Preview
 @Composable
 private fun ThemeDialogPreview() {
+    MenaTheme {
     Scaffold(
         overlays = {
             dialog(true) {
@@ -162,4 +164,5 @@ private fun ThemeDialogPreview() {
             }
         },
         content = {})
+    }
 }
