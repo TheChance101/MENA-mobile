@@ -28,7 +28,7 @@ fun BaseAsyncImage(
     onRequestRefresh: () -> Unit
 ){
     val context = LocalPlatformContext.current
-    val coil = LocalImageLoader.current
+    val coilImageLoader = LocalImageLoader.current
 
     val networkHeaders = NetworkHeaders.Builder()
         .set("X-ACCESS-KEY", trendStorageAccessSecret)
@@ -55,7 +55,7 @@ fun BaseAsyncImage(
                     }
                 }
             },
-            imageLoader = coil,
+            imageLoader = coilImageLoader,
             alignment = alignment,
             contentDescription = contentDescription,
             contentScale = contentScale,
