@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.data.client
+package net.thechance.mena.trends.data.remote.client
 
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
