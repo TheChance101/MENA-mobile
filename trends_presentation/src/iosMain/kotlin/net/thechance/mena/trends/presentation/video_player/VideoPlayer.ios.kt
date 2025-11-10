@@ -270,8 +270,7 @@ actual fun VideoPlayer(
                                 if (duration > 0.0 && barWidth > 0f) {
                                     val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
                                     val seekSeconds = newProgress * duration
-                                    val seekTime =
-                                        CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
+                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
                                     player.seekToTime(seekTime)
                                 }
                             }
