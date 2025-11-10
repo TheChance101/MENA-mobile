@@ -41,7 +41,7 @@ class DukanLocationViewModel(
     }
 
     companion object {
-        const val DUKAN_LOCATION_ZOOM = 17.0
+        const val DUKAN_LOCATION_ZOOM = 16.0
         const val LATITUDE = "latitude"
         const val LONGITUDE = "longitude"
     }

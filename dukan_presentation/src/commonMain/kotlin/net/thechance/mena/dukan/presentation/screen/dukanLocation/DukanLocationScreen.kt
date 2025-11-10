@@ -31,6 +31,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanLocation.DukanLocati
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
 import org.maplibre.compose.map.GestureOptions
 import org.maplibre.compose.map.MapOptions
@@ -38,6 +39,7 @@ import org.maplibre.compose.map.MaplibreMap
 import org.maplibre.compose.map.OrnamentOptions
 import org.maplibre.compose.map.RenderOptions
 import org.maplibre.compose.style.BaseStyle
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun DukanLocationScreen(
@@ -65,7 +67,16 @@ private fun DukanLocationContent(
     Scaffold(
         topBar = { DukanLocationTopBar(onBackClick = listener::onBackClicked) }
     ) {
-        val cameraState = rememberCameraState(state.cameraPosition)
+        val cameraState = rememberCameraState(CameraPosition())
+        LaunchedEffect(Unit) {
+            cameraState.animateTo(
+                finalPosition = cameraState.position.copy(
+                    target = state.cameraPosition.target,
+                    zoom = state.cameraPosition.zoom
+                ),
+                duration = 2.seconds
+            )
+        }
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
