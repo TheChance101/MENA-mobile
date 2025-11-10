@@ -58,7 +58,6 @@ class ChatRepositoryImpl(
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
-        println("asdasd pageNumber: $pageNumber - pageSize: $pageSize")
         syncChatSummaries(pageNumber, pageSize)
         val cachedData = cachedChatSummaryDao.getChatSummaries(
             pageSize = pageSize,
@@ -67,9 +66,7 @@ class ChatRepositoryImpl(
 
         val totalItems = cachedChatSummaryDao.getChatSummariesCount()
         val isLastPage = cachedData.size < pageSize
-        println("asdasd cacheSize: ${cachedData.size} cachedData: $cachedData")
         val result = PagedData(data = cachedData, totalItems = totalItems, isLastPage = isLastPage)
-        println("asdasd result $result")
 
         return result
     }
