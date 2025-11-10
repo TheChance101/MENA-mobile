@@ -120,6 +120,10 @@ fun MainScreen(
         viewModel.loadEditorPicksDukans()
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.getDukanState()
+    }
+
     MainContent(
         listener = viewModel,
         state = state.value,
