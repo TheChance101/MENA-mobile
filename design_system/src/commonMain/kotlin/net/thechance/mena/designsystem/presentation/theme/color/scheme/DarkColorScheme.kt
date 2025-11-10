@@ -13,8 +13,8 @@ internal val DarkColorScheme = ColorScheme(
         onBrand = White
     ),
     primary = ColorScheme.Primary(
-        primary = Black,
-        onPrimary = White,
+        primary = White,
+        onPrimary = Black,
         onPrimaryBody = White60,
         onPrimaryHint = White38
     ),

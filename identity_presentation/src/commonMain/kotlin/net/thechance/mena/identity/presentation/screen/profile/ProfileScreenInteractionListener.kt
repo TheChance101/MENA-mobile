@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.profile
 
 import net.thechance.mena.identity.domain.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 
 interface ProfileScreenInteractionListener : BaseInteractionListener {
@@ -24,6 +25,6 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
 
     fun onContactUsClicked()
     fun onConfirmLanguageSelection(appLanguage: AppLanguage)
-
+    fun onConfirmThemeSelection(appTheme: AppTheme)
     fun onDismissSnackBar()
 }

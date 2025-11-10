@@ -46,6 +46,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
+import net.thechance.mena.identity.presentation.screen.profile.components.ThemeDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
@@ -86,13 +87,13 @@ class ProfileScreen : BaseScreen<
                         currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
                     )
                 }
-                dialog(state.showThemeDialog) {
-                    Dialog(
+                dialog(state.themeDialogUiState.isVisible) {
+                    ThemeDialog(
                         isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissThemeDialog,
-                        actionButtons = {}
+                        onDismissRequest = listener::onDismissThemeDialog,
+                        appThemes = state.themeDialogUiState.options,
+                        currentAppTheme = state.themeDialogUiState.selectedAppTheme,
+                        onConfirmThemeSelection = listener::onConfirmThemeSelection,
                     )
                 }
                 dialog(state.showShareProfileDialog) {
@@ -109,7 +110,9 @@ class ProfileScreen : BaseScreen<
                     snackBarState = state.snackBarUiState,
                     onDismiss = listener::onDismissSnackBar,
                 )
-            }) {
+            }
+        )
+        {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -200,6 +203,7 @@ class ProfileScreen : BaseScreen<
             }
         }
     }
+
 
     override fun onEffect(
         effect: ProfileScreenUIEffect, navigator: Navigator
