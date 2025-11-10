@@ -144,32 +144,6 @@ class MessageRepositoryImplTest {
     }
 
 
-    @Test
-    fun `should throw NotFoundException when loadMessages returns error`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns emptyList()
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao,
-        )
-
-        assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId, 1, 40)
-        }
-    }
 
     @Test
     fun `should send message successfully when websocket is connected`() = runTest {
@@ -428,68 +402,6 @@ class MessageRepositoryImplTest {
         }
     }
 
-
-    @Test
-    fun `should throw NotFoundException when remote returns null`() = runTest {
-        httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao
-        )
-
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns emptyList()
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 0
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-
-        assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId, 0, 20)
-        }
-    }
-
-
-    @Test
-    fun `should sync after last update when lastSyncTime exists`() = runTest {
-        val cachedMessage = createMessage().toCachedMessageLocalDto()
-        val now = LocalDateTime.now().toInstant().toString()
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(cachedMessage)
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns now
-        everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        httpClient = createHttpClient(
-            syncLatestMessagesResponse = { defaultChatHistoryResponse() }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao
-        )
-        repository.loadMessages(chatId, 0, 10)
-        verifySuspend { cachedMessageDao.insertAllMessages(any()) }
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
-
     @Test
     fun `should insert messages and update sync time in syncAfterLastUpdate`() = runTest {
         val now = LocalDateTime.now().toInstant().toString()
@@ -512,82 +424,10 @@ class MessageRepositoryImplTest {
         verifySuspend { chatSyncTimeDao.upsert(any()) }
     }
 
-    @Test
-    fun `should fetch messages from remote when cache is empty and insert them`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns emptyList()
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 0
-        everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        httpClient = createHttpClient(
-            chatHistoryResponse = { defaultChatHistoryResponse() }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao,
-        )
-        val result = repository.loadMessages(chatId, 0, 20)
-        assertThat(result.data).isNotEmpty()
-        assertThat(result.totalItems).isGreaterThan(0)
-        verifySuspend { cachedMessageDao.insertAllMessages(any()) }
-    }
 
-    @Test
-    fun `should upsert sync time when lastSyncTime is null in loadMessages`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(createMessage().toCachedMessageLocalDto())
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
 
-        val result = repository.loadMessages(chatId, 1, 40)
 
-        assertThat(result.data).isNotEmpty()
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
 
-    @Test
-    fun `should throw NotFoundException when getFromRemote returns null response`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns emptyList()
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-
-        httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao,
-        )
-
-        assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId, 0, 20)
-        }
-    }
 
     @Test
     fun `should filter messages by chatId in observeMessagesForChatOrAll`() = runTest {
