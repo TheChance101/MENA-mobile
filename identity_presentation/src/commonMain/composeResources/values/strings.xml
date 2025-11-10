@@ -260,4 +260,10 @@
     <string name="username_label">Username</string>
     <string name="share_message">I would like you to join me on the *MENA* app! Install the app, or just reach out to me in the chat here:</string>
 
+    <!-- Contact Us Screen -->
+    <string name="contact_us">Contact us</string>
+    <string name="contact_info">Contact Info</string>
+    <string name="contact_email_address">Email address</string>
+    <string name="contact_phone_number">Phone number</string>
+    <string name="contact_facebook_account">Facebook account</string>
 </resources>
