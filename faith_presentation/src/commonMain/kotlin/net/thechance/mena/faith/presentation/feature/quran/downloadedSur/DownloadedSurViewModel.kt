@@ -59,6 +59,7 @@ class DownloadedSurViewModel(
     }
 
     override fun onDownloadedSurahClick(surahId: Int) {
+override fun onDownloadedSurahClick(surahId: Int) =
         sendEffect(DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen(surahId))
     }
 
