@@ -10,7 +10,7 @@ import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
 import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
 
-fun loginErrorHandler(
+fun handleLoginException(
     exception: AuthenticationException,
 ): AuthenticationErrorState {
     return when (exception) {
