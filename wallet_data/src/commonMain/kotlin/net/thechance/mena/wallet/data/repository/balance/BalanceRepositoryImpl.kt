@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.update
 import net.thechance.mena.wallet.data.dto.remote.BalanceDto
 import net.thechance.mena.wallet.data.network_client.NetworkClient
+import net.thechance.mena.wallet.data.utils.orZero
 import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.koin.core.annotation.Single
@@ -18,11 +19,11 @@ class BalanceRepositoryImpl(
     private val balanceFlow = MutableStateFlow(0.0)
 
     override suspend fun getBalance(): Double {
-        val balance = safeApiCall<BalanceDto> {
+        return safeApiCall<BalanceDto> {
             networkClient.get(BALANCE_PATH)
-        }.balance ?: 0.0
-        balanceFlow.update { balance }
-        return balance
+        }.balance.orZero().also { balance ->
+            balanceFlow.update { balance }
+        }
     }
 
     override fun observeBalance(): Flow<Double> {
