@@ -17,7 +17,6 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 fun Message.toUi(): MessageUiState {
-    val waveformData = if (content is MessageContent.Audio) generateWaveformData() else null
 
     return MessageUiState(
         id = id,
@@ -28,7 +27,7 @@ fun Message.toUi(): MessageUiState {
         isMine = isMine,
         content = content,
         reactions = reactions,
-        waveformData = waveformData
+        waveformData = null
     )
 }
 
