@@ -131,7 +131,16 @@ class TilawahViewModel(
     }
 
     private fun filterRecitersForSurah(reciters: List<Reciter>, surahId: Int?): List<Reciter> {
-        // TODO: After the domain is done, integrate this function to load the real data
-        return emptyList()
+        val fakeDownloadedRecitersBySurahId = mapOf(
+            1 to setOf(1, 2, 3),
+            2 to setOf(2, 4),
+            3 to setOf(1, 4, 5),
+            18 to setOf(2, 5, 7),
+            36 to setOf(3, 6, 9),
+        )
+
+        val allowedIds = fakeDownloadedRecitersBySurahId[surahId]
+            ?: reciters.map { it.id }.toSet()
+        return reciters.filter { it.id in allowedIds }
     }
 }

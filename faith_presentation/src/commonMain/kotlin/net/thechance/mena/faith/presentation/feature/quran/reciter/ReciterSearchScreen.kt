@@ -76,7 +76,6 @@ private fun Content(
                 isNotEmptyResult = state.searchResults.isNotEmpty(),
                 results = state.searchResults,
                 modifier = Modifier.fillMaxWidth().weight(1f).padding(top = Theme.spacing._16)
-
             )
         }
     }
@@ -87,6 +86,8 @@ private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
     results: List<TilawahUiState.ReciterUi>,
+    selectedReciterId: Int? = null,
+    isReciterSelected: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val shouldShowResults = isNotBlankQuery && isNotEmptyResult
@@ -95,17 +96,16 @@ private fun ResultList(
     LazyColumn(
         modifier = modifier,
     ) {
-        items(results) { result ->
+        items(results) { reciter ->
             ReciterItem(
-                reciterDetails = result,
-                isSelected = false,
+                reciterDetails = reciter,
+                isSelected = selectedReciterId == reciter.id,
                 onSelect = {},
-                isSelectedShown = true,
+                isSelectedShown = isReciterSelected,
             )
         }
     }
 }
-
 
 @Composable
 @Preview
@@ -117,6 +117,7 @@ private fun SearchScreenPreview() {
                 override fun onBackClick() {}
                 override fun onClearQueryClick() {}
                 override fun onQueryChange(query: String) {}
-            })
+            }
+        )
     }
 }
