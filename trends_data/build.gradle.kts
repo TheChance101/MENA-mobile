@@ -58,20 +58,23 @@ ksp {
     arg("KOIN_CONFIG_CHECK", "true")
 }
 
-dependencies {
-    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
-    addKsp(libs.androidx.room.compiler)
-}
-
-project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}
-
 room {
     schemaDirectory("$projectDir/schemas")
 }
+
+dependencies {
+    add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+}
+
+//project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
+//    if (name != "kspCommonMainKotlinMetadata") {
+//        dependsOn("kspCommonMainKotlinMetadata")
+//    }
+//}
 
 android {
     namespace = "net.thechance.mena.trends.data"
@@ -99,28 +102,6 @@ kover.reports {
 
         excludes {
             classes("**org.koin.ksp.generated**")
-        }
-    }
-}
-
-fun DependencyHandlerScope.addKsp(dependencyNotation: Any) {
-    val targets = listOf(
-        "Android",
-        "AndroidTest",
-        "IosX64",
-        "IosX64Test",
-        "IosArm64",
-        "IosSimulatorArm64",
-        "IosArm64Test",
-        "IosSimulatorArm64Test"
-    )
-
-    targets.forEach { target ->
-        runCatching {
-            add(
-                configurationName = "ksp$target",
-                dependencyNotation = dependencyNotation
-            )
         }
     }
 }
