@@ -55,4 +55,9 @@
     <string name="user_activated">تم تفعيل المستخدم</string>
     <string name="user_blocked">تم حظر المستخدم</string>
     <string name="sort">ترتيب</string>
+
+    <string name="activate_dukan">تفعيل دكان</string>
+    <string name="deactivate_dukan">إلغاء التنشيط</string>
+    <string name="dukan_details">تفاصيل دكان</string>
+    <string name="back_btn">زر العودة</string>
 </resources>
