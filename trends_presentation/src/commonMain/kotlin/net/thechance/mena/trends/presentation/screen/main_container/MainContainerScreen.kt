@@ -3,19 +3,15 @@ package net.thechance.mena.trends.presentation.screen.main_container
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.error_generic
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.SomethingWentWrong
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
-import net.thechance.mena.trends.presentation.shared.model.SnackBarStatus
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
-import net.thechance.mena.trends.presentation.snackbar.SnackBarData
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -41,33 +37,31 @@ internal fun MainContainerScreen(
         }
     }
 
-    MainContainerScreenContent(state = state)
+    MainContainerScreenContent(state = state, listener = viewModel)
 }
 
 @Composable
-private fun MainContainerScreenContent(state: MainContainerState) {
-    Scaffold(
-        snakeBar = { ErrorSnackBar(state.error) }
-    ) {
+private fun MainContainerScreenContent(
+    state: MainContainerState,
+    listener: MainContainerInteractionListener
+) {
+    Scaffold {
         TrendsAnimatedVisibility(
             visible = state.isCategoriesAlreadySelectedByUser == null
         ) {
             LoadingProgressBar()
         }
-    }
-}
 
-@Composable
-private fun ErrorSnackBar(
-    error: ErrorState?
-) {
-    val snackBarController = LocalSnackbarController.current
-    TrendsAnimatedVisibility(error != null) {
-        snackBarController.showSnackBar(
-            SnackBarData(
-                message = stringResource(Res.string.error_generic),
-                snackBarType = SnackBarStatus.Error,
+        TrendsAnimatedVisibility(state.error is ErrorState.RequestFailed) {
+            SomethingWentWrong(
+                onRetry = { listener.onClickRetry() }
             )
-        )
+        }
+
+        TrendsAnimatedVisibility(state.error is ErrorState.NoInternet) {
+            NoConnection(
+                onRetry = { listener.onClickRetry() }
+            )
+        }
     }
 }

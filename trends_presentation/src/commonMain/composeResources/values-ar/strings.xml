@@ -105,7 +105,9 @@
     يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
     <string name="no_connection_icon">أيقونة عدم الاتصال</string>
     <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
+    <string name="something_went_wrong_title">عذرًا! يبدو انه حدث خطأ</string>
     <string name="no_connection_description">تحقق من اتصالك وحاول مرة أخرى</string>
+    <string name="something_went_wrong_description">لم نستطع عرض المحتوي... من فضلك حاول مرة اخري</string>
     <string name="re_try">إعادة المحاولة</string>
 
     <string name="no_favorites_yet">لا يوجد مفضلات بعد</string>
