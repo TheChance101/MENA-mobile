@@ -89,7 +89,9 @@ class SetNewPasswordScreen() : BaseScreen<
                         onChangePassword = listener::onChangeNewPassword,
                         onTogglePasswordVisibility = listener::onToggleNewPasswordVisibility,
                         label = stringResource(Res.string.new_password_title),
-                        errorMessage = state.newPasswordErrorMessage,
+                        errorMessage = state.newPasswordErrorMessage?.let {
+                            stringResource(it)
+                        },
                         modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 
@@ -99,7 +101,9 @@ class SetNewPasswordScreen() : BaseScreen<
                         onChangePassword = listener::onChangeConfirmPassword,
                         onTogglePasswordVisibility = listener::onToggleConfirmPasswordVisibility,
                         label = stringResource(Res.string.confirm_password_label),
-                        errorMessage = state.confirmPasswordErrorMessage,
+                        errorMessage = state.confirmPasswordErrorMessage?.let {
+                            stringResource(it)
+                        },
                         modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 

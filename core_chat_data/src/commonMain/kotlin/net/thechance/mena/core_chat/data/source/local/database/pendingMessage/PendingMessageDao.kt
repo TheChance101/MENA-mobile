@@ -13,11 +13,14 @@ interface PendingMessageDao {
     suspend fun insertMessage(message: PendingMessageLocalDto)
 
     @Query("SELECT * FROM pending_messages WHERE chat_id = :chatId ORDER BY timestamp ASC")
-    fun getMessagesByChat(chatId: String): Flow<List<PendingMessageLocalDto>>
+    fun getMessagesByChatId(chatId: String): Flow<List<PendingMessageLocalDto>>
 
     @Query("UPDATE pending_messages SET status = :status WHERE id = :id")
     suspend fun updateMessageStatus(id: String, status: MessageStatus)
 
     @Query("DELETE FROM pending_messages WHERE id = :id")
-    suspend fun deleteMessage(id: String)
+    suspend fun deleteMessageById(id: String)
+
+    @Query("DELETE FROM pending_messages WHERE id IN (:ids)")
+    suspend fun deleteMessagesByIds(ids: List<String>)
 }
