@@ -1,12 +1,9 @@
 package net.thechance.mena.wallet.data.repository.balance
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import net.thechance.mena.wallet.data.dto.remote.BalanceDto
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.utils.safeApiCall
@@ -29,12 +26,10 @@ class BalanceRepositoryImpl(
     }
 
     override fun observeBalance(): Flow<Double> {
-        if (balanceFlow.value == 0.0) {
-            CoroutineScope(Dispatchers.IO).launch {
-                getBalance()
-            }
+        return balanceFlow.onSubscription {
+            // getBalance is wrapped with runCatching to fetch balance on subscription without propagating exceptions to the flow
+            runCatching { getBalance() }
         }
-        return balanceFlow
     }
 
     private companion object {
