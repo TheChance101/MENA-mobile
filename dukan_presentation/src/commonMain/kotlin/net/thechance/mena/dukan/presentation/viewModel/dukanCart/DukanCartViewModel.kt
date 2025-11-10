@@ -221,11 +221,9 @@ class DukanCartViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        val messageRes = when (throwable) {
-            is NoInternetException -> Res.string.no_internet_connection
-            else -> Res.string.something_went_wrong
+        if(throwable is NoInternetException){
+            showSnackBar(message = Res.string.no_internet_connection)
         }
-        showSnackBar(message = messageRes)
     }
 
     private fun showSnackBar(message: StringResource, type: SnackBarType = SnackBarType.ERROR) {
