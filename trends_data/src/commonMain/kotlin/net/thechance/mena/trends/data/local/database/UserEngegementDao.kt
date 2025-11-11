@@ -25,7 +25,7 @@ interface UserEngagementDao {
         ORDER BY watchEndTimestamp DESC
     """
     )
-    suspend fun getEngagementsBeforeTodayOnce(
+    suspend fun getEngagementsBeforeToday(
         userId: String,
         midnightTimestamp: Long
     ): List<UserEngagement>
