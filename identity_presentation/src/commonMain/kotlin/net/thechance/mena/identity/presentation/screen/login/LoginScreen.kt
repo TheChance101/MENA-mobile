@@ -35,7 +35,7 @@ import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -137,7 +137,7 @@ class LoginScreen : BaseScreen<
     ) {
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterPhoneEntryScreen())
-            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordPhoneEntryScreen())
+            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ResetPasswordPhoneEntryScreen())
             LoginScreenUIEffect.NavigateToHome -> {}
         }
     }

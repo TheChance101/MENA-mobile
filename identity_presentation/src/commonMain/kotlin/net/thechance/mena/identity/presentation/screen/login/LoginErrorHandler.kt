@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.base.error.handler.authentication.login
+package net.thechance.mena.identity.presentation.screen.login
 
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidCountryCodeException
@@ -8,7 +8,7 @@ import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
 import net.thechance.mena.identity.domain.exception.UserIsBlockedException
-import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
+import net.thechance.mena.identity.presentation.base.errorState.AuthenticationErrorState
 
 fun handleLoginException(
     exception: AuthenticationException,
