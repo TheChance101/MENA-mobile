@@ -13,6 +13,7 @@ import mena.dukan_presentation.generated.resources.added_to_favorites
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.removed_from_favorites
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -147,12 +148,11 @@ class ProductDetailsViewModel(
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
-        if (throwable is NoInternetException) {
-            showSnackBar(
-                message = Res.string.no_internet_connection,
-                type = SnackBarType.ERROR
-            )
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun addProductToCartSuccessfully(success: Unit) {
