@@ -237,6 +237,12 @@ class EditProductViewModel(
         }
     }
 
+    override fun onOutOfStockChange(isOutOfStock: Boolean) {
+        updateState {
+            copy(isOutOfStock = isOutOfStock).updateButtonState()
+        }
+    }
+
     override fun onUploadImageClicked(image: ImageFile) {
         tryToExecute(
             block = { onUploadImageBlock(image) },
@@ -485,7 +491,8 @@ class EditProductViewModel(
             description = trimmedDescription,
             price = state.value.price.toDoubleOrNull(),
             shelfId = state.value.selectedShelf?.id,
-            imageUrls = finalImageUrls
+            imageUrls = finalImageUrls,
+            isOutOfStock = state.value.isOutOfStock
         )
     }
 

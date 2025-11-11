@@ -24,7 +24,8 @@ fun UpdateProductParams.toUpdateProductRequest(): UpdateProductRequest {
         description = description?.takeIf { it.isNotBlank() },
         price = price,
         shelfId = shelfId?.takeIf { it.isNotBlank() },
-        imageUrls = imageUrls?.takeIf { it.isNotEmpty() }
+        imageUrls = imageUrls?.takeIf { it.isNotEmpty() },
+        isOutOfStock = isOutOfStock
     )
 }
 
