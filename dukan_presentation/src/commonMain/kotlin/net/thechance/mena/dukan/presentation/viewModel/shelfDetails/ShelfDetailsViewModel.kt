@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -195,15 +196,14 @@ class ShelfDetailsViewModel(
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
-        if (throwable is NoInternetException) {
-            showSnackBar(
-                message = Res.string.no_internet_connection,
-                type = SnackBarType.ERROR
-            )
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes)
     }
 
-    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+    private fun showSnackBar(message: StringResource, type: SnackBarType = SnackBarType.ERROR) {
         updateState {
             copy(
                 snackBarState = SnackBarUiState(

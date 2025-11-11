@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import mena.dukan_presentation.generated.resources.remove_product_successfully
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
@@ -157,12 +158,11 @@ class ProductDetailsViewModel(
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
-        if (throwable is NoInternetException) {
-            showSnackBar(
-                message = Res.string.no_internet_connection,
-                type = SnackBarType.ERROR
-            )
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun onSuccessUpdateProductQuantity(success: Unit) {

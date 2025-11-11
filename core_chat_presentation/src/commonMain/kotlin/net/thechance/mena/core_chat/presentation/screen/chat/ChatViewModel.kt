@@ -154,7 +154,9 @@ class ChatViewModel(
         }
 
     private fun MessageUiState.withCachedOrGeneratedWaveform(messageId: Uuid): MessageUiState =
-        copy(waveformData = waveformCache.getOrPut(messageId) { waveformData ?: generateWaveformData() })
+        copy(waveformData = waveformCache.getOrPut(messageId) {
+            waveformData ?: generateWaveformData()
+        })
 
     private fun getUserInfo() {
         tryToExecute(
@@ -638,10 +640,10 @@ class ChatViewModel(
                     val duration = audioPlayer.getDuration(filePath)
                     audioPlayer.play(filePath)
                     updateVoiceMessageState(messageId, duration = duration, isLoading = false)
-                    startProgressTracking(messageId, duration)
+                    startProgressTracking(messageId)
                 } else {
                     audioPlayer.play(filePath)
-                    startProgressTracking(messageId, voiceMessageItem.duration)
+                    startProgressTracking(messageId)
                 }
             },
             onError = {
@@ -654,8 +656,10 @@ class ChatViewModel(
         )
     }
 
-    private fun startProgressTracking(messageId: Uuid, duration: Long) {
+    private fun startProgressTracking(messageId: Uuid) {
         viewModelScope.launch {
+            val totalDuration = audioPlayer.getDurationOfCurrentAudio()
+            var lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
             while (true) {
                 delay(100)
 
@@ -663,18 +667,20 @@ class ChatViewModel(
                     it is ChatListItem.VoiceMessage && it.data.id == messageId
                 } as? ChatListItem.VoiceMessage
 
-                if (voiceMessageItem == null || !voiceMessageItem.isPlaying) break
+                if (voiceMessageItem == null || voiceMessageItem.isPlaying.not()) break
 
-                val currentPositionSeconds = audioPlayer.getCurrentPosition()
-
-                if (duration in 1..currentPositionSeconds) {
+                if (
+                    audioPlayer.getCurrentPosition() == lastPositionMilliSeconds
+                    && lastPositionMilliSeconds > .9 * totalDuration
+                ) {
                     audioPlayer.stop()
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
                     break
                 }
+                lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
 
-                val progress = if (duration > 0) {
-                    currentPositionSeconds.toFloat() / duration.toFloat()
+                val progress = if (totalDuration > 0) {
+                    lastPositionMilliSeconds.toFloat() / totalDuration.toFloat()
                 } else 0f
 
                 updateVoiceMessageState(messageId, progress = progress)
@@ -801,7 +807,10 @@ class ChatViewModel(
         sendMessage(message)
     }
 
-    private fun createAudioMessage(audioByteArray: ByteArray, audioDurationMs: Long?): MessageUiState {
+    private fun createAudioMessage(
+        audioByteArray: ByteArray,
+        audioDurationMs: Long?
+    ): MessageUiState {
         val chatId = state.value.chatId!!
         val senderId = state.value.chatRequesterId!!
         val content = MessageContent.Audio(

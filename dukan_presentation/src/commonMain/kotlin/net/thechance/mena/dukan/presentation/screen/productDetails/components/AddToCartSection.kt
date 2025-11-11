@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.ProductQuantityButton
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.math.min
 
 @Composable
 fun AddToCartSection(
@@ -58,7 +60,8 @@ fun AddToCartSection(
             iconPadding = PaddingValues(Theme.spacing._8 + Theme.spacing._2)
         )
         Button(
-            modifier = Modifier.height(48.dp)
+            modifier = Modifier
+                .heightIn(min=48.dp)
                 .fillMaxWidth(),
             onClick = onAddToCartClick,
             isEnabled = true,
@@ -70,7 +73,7 @@ fun AddToCartSection(
             ),
             shape = RoundedCornerShape(Theme.radius.md),
             containerColor = Theme.colorScheme.primary.primary,
-            contentPadding = PaddingValues(vertical = Theme.spacing._4)
+//            contentPadding = PaddingValues(vertical = Theme.spacing._4)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -90,16 +93,15 @@ fun AddToCartSection(
                         .background(Theme.colorScheme.primary.onPrimaryBody)
                 )
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._2)
                 ) {
                     Text(
                         text = "$$productPrice",
-                        style = Theme.typography.label.medium,
+                        style = Theme.typography.label.small,
                         color = Theme.colorScheme.primary.onPrimary,
                     )
                     Text(
                         text = "$$productPrice",
-                        style = Theme.typography.label.medium.copy(
+                        style = Theme.typography.label.small.copy(
                             textDecoration = TextDecoration.LineThrough
                         ),
                         color = Theme.colorScheme.primary.onPrimaryBody,
