@@ -1,10 +1,12 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.first
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 
 class TilawahViewModel(val quranRepository: QuranRepository) :
     BaseViewModel<TilawahUiState, TilawahEffect>(
@@ -49,8 +51,12 @@ class TilawahViewModel(val quranRepository: QuranRepository) :
         }
     }
 
-    private fun handleError(errorState: ErrorState) {
-        println("Error: $errorState")
+    private fun handleError(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
     }
 
     private fun getAllRecitersSuccessfully(reciters: List<Reciter>) {

@@ -10,6 +10,8 @@ import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.ErrorState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import net.thechance.mena.identity.domain.entity.Address
@@ -50,6 +52,7 @@ class PrayerTimeViewModel(
                 )
             },
             onSuccess = ::onPrayerTimesSuccess,
+            onError = ::handleError,
             dispatcher = dispatcher
         )
     }
@@ -139,6 +142,14 @@ class PrayerTimeViewModel(
     override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
 
     override fun onLocationClick() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
+
+    private fun handleError(errorState: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = errorState.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
+    }
 
     private companion object {
         const val ONE_DAY_IN_MILLIS = 24 * 60 * 60 * 1000L

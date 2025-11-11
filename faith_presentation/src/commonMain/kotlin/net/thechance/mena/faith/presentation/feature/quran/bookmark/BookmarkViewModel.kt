@@ -18,6 +18,7 @@ import mena.faith_presentation.generated.resources.bookmark_removed_successfully
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
@@ -26,26 +27,18 @@ class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     snackBarHandler: SnackbarHandler,
-) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
-        BookMarkUiState(),
-        snackBarHandler,
-    ),
+) : BaseViewModel<BookMarkUiState, BookmarkEffect>(BookMarkUiState(), snackBarHandler),
     BookmarkInteractionListener {
-    private val cachedBookmarksFlow =
-        createBookmarksPagingSource()
-            .map { pagingData ->
-                pagingData.map(AyahBookmark::toUiState)
-            }.cachedIn(viewModelScope)
+
+    private val cachedBookmarksFlow = createBookmarksPagingSource()
+        .map { pagingData -> pagingData.map(AyahBookmark::toUiState) }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
 
-    private val filteredBookmarksFlow =
-        combine(
-            cachedBookmarksFlow,
-            deletedBookmarkIdsFlow,
-        ) { pagingData, deletedIds ->
-            pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
-        }
+    private val filteredBookmarksFlow = combine(cachedBookmarksFlow, deletedBookmarkIdsFlow)
+    { pagingData, deletedIds ->
+        pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
+    }
 
     init {
         initializeBookmarks()
@@ -61,7 +54,10 @@ class BookmarkViewModel(
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { removeDeletedBookmarkId(bookmarkId) },
+            onError = {
+                removeDeletedBookmarkId(bookmarkId)
+                onDeleteBookmarkError(it)
+            },
         )
     }
 
@@ -91,4 +87,12 @@ class BookmarkViewModel(
         createPagingSourceFlow { pageNumber, pageSize ->
             bookmarkRepository.getAyahBookmarks(pageNumber = pageNumber, pageSize = pageSize)
         }
+
+    private fun onDeleteBookmarkError(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
+    }
 }

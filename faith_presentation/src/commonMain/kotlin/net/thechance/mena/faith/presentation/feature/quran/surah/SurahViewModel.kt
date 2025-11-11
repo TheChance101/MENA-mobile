@@ -48,6 +48,7 @@ class SurahViewModel(
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { ayat -> handleLoadSurahSuccess(ayat) },
             onFinally = { updateState { it.copy(isLoading = false) } },
+            onError = ::showErrorBookMarkSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -167,7 +168,7 @@ class SurahViewModel(
                 )
             },
             onSuccess = { handleAddBookmarkSuccess() },
-            onError = { showErrorBookMarkSnackBar(it) },
+            onError = ::showErrorBookMarkSnackBar,
             dispatcher = dispatcher
         )
         updateState {
@@ -297,13 +298,6 @@ class SurahViewModel(
         )
     }
 
-    private fun showErrorBookMarkSnackBar(state: ErrorState) {
-        snackbarHandler.showSnackBar(
-            message = state.message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope
-        )
-    }
 
     private fun handleBasmalaVisibility(surahId: Int) {
         val isTawbah = surahId == Surah.SurahOrder.AtTawbah.order
@@ -312,9 +306,17 @@ class SurahViewModel(
         updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
     }
 
-    private fun updatePlayPause(){
+    private fun updatePlayPause() {
         quranPlayer.onAyahCompleted {
             updateState { it.copy(isAyahSoundPlaying = false) }
         }
+    }
+
+    private fun showErrorBookMarkSnackBar(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
     }
 }

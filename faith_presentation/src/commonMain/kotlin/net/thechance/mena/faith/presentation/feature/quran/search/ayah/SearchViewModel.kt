@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.search.ayah
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -11,6 +12,8 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.ErrorState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
 import org.jetbrains.compose.resources.getString
 
@@ -64,6 +67,7 @@ class SearchViewModel(
         searchJob = tryToExecute(
             execute = { searchForAyah(query) },
             onSuccess = ::onSearchResultSuccess,
+            onError = ::onPerformSearchError,
             dispatcher = dispatcher,
             delayMillis = SEARCH_DEBOUNCE_DELAY
         )
@@ -121,6 +125,14 @@ class SearchViewModel(
             ayah.toSearchResults(uiState.value.surahName)
         }
         updateState { it.copy(searchResults = searchResults) }
+    }
+
+    private fun onPerformSearchError(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
     }
 
     private companion object {

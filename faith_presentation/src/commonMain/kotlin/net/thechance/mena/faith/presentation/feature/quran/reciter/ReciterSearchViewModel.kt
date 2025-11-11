@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -9,6 +10,8 @@ import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.ErrorState
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.toUi
 import org.jetbrains.compose.resources.getString
 
@@ -46,6 +49,7 @@ class ReciterSearchViewModel(
         searchJob = tryToExecute(
             execute = { searchForReciter(query) },
             onSuccess = ::onSearchResultSuccess,
+            onError = ::onPerformSearchError,
             dispatcher = dispatcher
         )
     }
@@ -74,6 +78,14 @@ class ReciterSearchViewModel(
                 val hint = getString(Res.string.search_reciter)
                 updateState { it.copy(queryHint = hint) }
             }
+        )
+    }
+
+    private fun onPerformSearchError(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
         )
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.ic_arrow_left
@@ -14,6 +15,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.feature.main.getPrayerDisplayNameResource
 import net.thechance.mena.faith.presentation.feature.prayertime.component.DateChange
 import net.thechance.mena.faith.presentation.feature.prayertime.component.NextPrayerCard
@@ -31,6 +34,8 @@ import kotlin.time.ExperimentalTime
 fun PrayerTimeScreen(
     viewModel: PrayerTimeViewModel = koinViewModel(),
 ) {
+
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
 
@@ -47,13 +52,18 @@ fun PrayerTimeScreen(
     }
     Content(
         uiState = uiState,
+        snackBar = snackBarState,
         listener = viewModel
     )
 }
 
 @OptIn(ExperimentalTime::class)
 @Composable
-private fun Content(uiState: PrayerTimeUiState, listener: PrayerTimeInteractionListener) {
+private fun Content(
+    uiState: PrayerTimeUiState,
+    snackBar: SnackBarState,
+    listener: PrayerTimeInteractionListener
+) {
     Scaffold(
         topBar = {
             AppBar(
@@ -71,6 +81,13 @@ private fun Content(uiState: PrayerTimeUiState, listener: PrayerTimeInteractionL
                 trailingContent = { PrayerTimeTopBar(uiState, listener::onLocationClick) }
             )
         },
+        snakeBar = {
+            FaithSnackBar(
+                message = snackBar.message,
+                isVisible = snackBar.isVisible,
+                status = snackBar.status
+            )
+        }
     ) {
         LazyColumn {
             item {
