@@ -181,17 +181,18 @@ class HomeViewModel(
         tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
             collect = { balanceRepository.observeBalance() },
-            onCollect = { balance -> if (balance != null) onGetBalanceAmountSuccess(balance) },
+            onCollect =  ::onObserveBalanceAmountSuccess ,
             onError = { onGetBalanceAmountError() }
         )
     }
 
-    private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
+    private fun onObserveBalanceAmountSuccess(balanceAmount: Double?) {
+        if (balanceAmount == null) return
         updateState { it.copy(balanceAmount = balanceAmount.toInt().toString(), isBalanceLoading = false) }
     }
 
     private fun onGetBalanceAmountError() {
-        updateState { it.copy(isBalanceLoading = false, balanceAmount = "--") }
+        updateState { it.copy(isBalanceLoading = false, balanceAmount = "") }
         showSnackBar(
             titleStringResource = Res.string.error,
             messageStringResource = Res.string.could_not_get_balance,
