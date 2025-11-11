@@ -91,16 +91,19 @@ private fun Content(
                     recitingType = reciterDetails.recitingType,
                     isDownloaded = reciterDetails.isDownloaded,
                     isSelected = uiState.selectedReciterId == reciterDetails.id,
-                    isSelectedShown = false,
+                    isSelectedShown = uiState.isSelectedShown,
+                    onSelect = {
+                        listener.onSelectReciterClick(reciterDetails.id)
+                    },
                     onDeleteReciterClick = {
                         listener.onDeleteReciterClick(reciterDetails.id)
                     },
+                    isSwipeable = uiState.isSwipeable
                 )
             }
         }
     }
 }
-
 
 @Preview
 @Composable

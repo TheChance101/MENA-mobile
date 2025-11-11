@@ -18,7 +18,10 @@ class TilawahViewModel(
     snackBarHandler: SnackbarHandler,
 ) :
     BaseViewModel<TilawahUiState, TilawahEffect>(
-        initialState = TilawahUiState(),
+        initialState = TilawahUiState(
+            isSelectedShown = tilawahArgs.isSelectedShown,
+            isSwipeable = tilawahArgs.isSwipeToDeleteEnabled,
+        ),
         snackbarHandler = snackBarHandler,
     ), TilawahInteractionListener {
 

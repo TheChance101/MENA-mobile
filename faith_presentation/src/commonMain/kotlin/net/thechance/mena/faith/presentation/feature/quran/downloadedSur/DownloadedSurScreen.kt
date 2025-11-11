@@ -40,9 +40,19 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            DownloadedSurEffect.NavigateToRecitersScreen -> navController.navigate(Route.DownloadedRecitersRoute())
+            is DownloadedSurEffect.NavigateToRecitersScreen -> {
+                navController.navigate(
+                    Route.DownloadedRecitersRoute(isSelectedShown = true)
+                )
+            }
+
             is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
-                navController.navigate(Route.DownloadedRecitersRoute(surahId = effect.surahId))
+                navController.navigate(
+                    Route.DownloadedRecitersRoute(
+                        surahId = effect.surahId,
+                        isCardsSwipable = true
+                    )
+                )
             }
         }
     }
@@ -99,7 +109,7 @@ private fun Content(
                 DownloadedSurahCard(
                     suraDetails = downloadedSurah,
                     onDownloadedSurahClick = {
-                        listener.onDownloadedSurahClick(downloadedSurah.id)
+                        listener.onDownloadedSurahClick(surahId = downloadedSurah.id)
                     },
                     onDeleteDownloadedSurahClick = {
                         listener.onDeleteSurahClick(downloadedSurah.id)

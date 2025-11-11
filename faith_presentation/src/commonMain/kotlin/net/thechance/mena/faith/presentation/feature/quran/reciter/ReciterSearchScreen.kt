@@ -102,6 +102,7 @@ private fun ResultList(
                 isDownloaded = reciter.isDownloaded,
                 isSelected = false,
                 isSelectedShown = false,
+                isSwipeable = false
             )
         }
     }
