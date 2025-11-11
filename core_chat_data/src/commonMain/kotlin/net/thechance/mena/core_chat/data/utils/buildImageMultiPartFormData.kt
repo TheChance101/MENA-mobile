@@ -9,7 +9,8 @@ import io.ktor.http.HttpHeaders
 
 fun Pair<String, ByteArray>.buildImageMultiPartFormData(
     fieldName: String,
-    chatId: String
+    messageId: String,
+    chatId: String,
 ): MultiPartFormDataContent {
     val (name, byteArray) = this
     val extension = byteArray.getExtension()
@@ -17,6 +18,7 @@ fun Pair<String, ByteArray>.buildImageMultiPartFormData(
 
     return MultiPartFormDataContent(
         formData {
+            append("messageId", messageId)
             append("chatId", chatId)
             append(
                 fieldName,

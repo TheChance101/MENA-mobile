@@ -2,9 +2,7 @@
 
 package net.thechance.mena.dukan.presentation.viewModel.search
 
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -84,7 +82,7 @@ class SearchViewModel(
             block = { onDukanFavoriteToggleBlock(dukanId) },
             onSuccess = { isFavorite ->
                 onDukanFavoriteToggleSuccess(
-                    isFavorite= isFavorite,
+                    isFavorite = isFavorite,
                     dukanId = dukanId
                 )
             },
@@ -201,24 +199,18 @@ class SearchViewModel(
         return dukanManagementRepository.updateFavoriteDukanStatus(dukanId = dukanId.toString())
     }
 
-    private fun onDukanFavoriteToggleSuccess(isFavorite: Boolean,dukanId: Uuid) {
-        val dukanPagingFlow = state.value.dukanPagingFlow
-        val favoriteMappedFlowDukans = dukanPagingFlow.map { dukansPagingData ->
-            dukansPagingData.map { dukan ->
-                if (dukan == dukanId) dukan.copy(isFavorite = isFavorite)
-                else dukan
+    private fun onDukanFavoriteToggleSuccess(isFavorite: Boolean, dukanId: Uuid) {
+        val favoriteToggledDukanPagingFlow = state.value.dukanPagingFlow.map { pagingData ->
+            pagingData.map { dukanItem ->
+                if (dukanItem.id == dukanId) dukanItem.copy(isFavorite = isFavorite)
+                else dukanItem
             }
-        }.cachedIn(viewModelScope)
-
-        updateState {
-            copy(
-                dukanPagingFlow = favoriteMappedFlowDukans
-            )
         }
+        updateState { copy(dukanPagingFlow = favoriteToggledDukanPagingFlow ) }
     }
 
     private fun onDukanFavoriteToggleError(exception: Exception) {
-        when(exception){
+        when (exception) {
             is NoInternetException -> handleNoInternetException()
             else -> handleGeneralFavoriteDukanException()
         }
