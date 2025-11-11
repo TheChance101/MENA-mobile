@@ -21,11 +21,11 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.PickLocationMap
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
