@@ -39,13 +39,7 @@ fun InviteFriendsCard(onClick: () -> Unit) {
             .padding(top = Theme.spacing._24)
             .fillMaxWidth()
             .clip(SquircleShape(radius = Theme.radius.lg))
-            .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xff051F43),
-                        Theme.colorScheme.brand.brand,
-                    )
-                )
+            .background(Theme.colorScheme.background.surfaceHigh
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -59,27 +53,27 @@ fun InviteFriendsCard(onClick: () -> Unit) {
         Icon(
             modifier = Modifier
                 .clip(SquircleShape(Theme.radius.md))
-                .background(Theme.colorScheme.background.surfaceLow.copy(alpha = .12f))
+                .background(Theme.colorScheme.background.surface)
                 .padding(Theme.spacing._12)
                 .size(Theme.spacing._24),
             painter = painterResource(Res.drawable.ic_invite_friends),
+            tint = Theme.colorScheme.shadePrimary,
             contentDescription = stringResource(Res.string.profile_invite_friends_icon_content_description),
         )
 
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._2)
         ) {
             Text(
                 text = stringResource(Res.string.profile_invite_friends_title),
                 style = Theme.typography.label.medium,
-                color = Theme.colorScheme.primary.onPrimary,
+                color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center,
             )
             Text(
                 text = stringResource(Res.string.profile_invite_friends_subtitle),
                 style = Theme.typography.label.small,
-                color = Theme.colorScheme.primary.onPrimaryBody,
+                color = Theme.colorScheme.shadeSecondary,
                 textAlign = TextAlign.Center,
             )
         }
