@@ -146,6 +146,7 @@ class ChatRepositoryImpl(
         try {
             callee()
         } catch (_: NoInternetException) {
+            println("asdasd 2")
             _syncState.emit(SyncState.Offline)
         } catch (e: Exception) {
             _syncState.emit(SyncState.Error(e))
