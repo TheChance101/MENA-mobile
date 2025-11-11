@@ -191,7 +191,7 @@ private fun DukansList(
 @Composable
 private fun ProductsList(
     productPagingItems: LazyPagingItems<SearchUiState.ProductUiState>,
-    onProductClicked: (productId: Uuid) -> Unit
+    onProductClicked: (productId: Uuid,dukanId:Uuid) -> Unit
 ) {
     AnimatedContent(
         targetState = productPagingItems.loadState.refresh,
@@ -243,7 +243,7 @@ private fun ProductsList(
                                 productPrice = product.price,
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
-                                onProductClick = { onProductClicked(product.id) },
+                                onProductClick = { onProductClicked(product.id,product.dukanId) },
                             )
                         }
                     }
