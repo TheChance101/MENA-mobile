@@ -336,7 +336,7 @@ class MessageRepositoryImpl(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
-        //resetReadCountForChat(chatId)
+        resetReadCountForChat(chatId)
     }
 
     private suspend fun resetReadCountForChat(chatId: Uuid){
