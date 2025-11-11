@@ -15,19 +15,17 @@ import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.MobileNumberValidator
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ForgetPasswordPhoneEntryScreenViewModelTest {
+class ResetPasswordPhoneEntryScreenViewModelTest {
     private val resetPasswordRepository = mockk<ResetPasswordRepository>()
     private lateinit var useCase: LoginUseCase
     private val testDispatcher = StandardTestDispatcher()
-    lateinit var viewModel: ForgetPasswordPhoneEntryScreenViewModel
+    lateinit var viewModel: ResetPasswordPhoneEntryScreenViewModel
 
     @BeforeTest
     fun setUp() {
@@ -36,7 +34,7 @@ class ForgetPasswordPhoneEntryScreenViewModelTest {
             authenticationRepository = mockk<AuthenticationRepository>(),
             mobileNumberValidator = MobileNumberValidator()
         )
-        viewModel = ForgetPasswordPhoneEntryScreenViewModel(
+        viewModel = ResetPasswordPhoneEntryScreenViewModel(
             loginUseCase = useCase,
             resetPasswordRepository = resetPasswordRepository,
             dispatcher = testDispatcher
@@ -53,7 +51,7 @@ class ForgetPasswordPhoneEntryScreenViewModelTest {
         viewModel.effect.test {
             viewModel.onClickBack()
             val effect = awaitItem()
-            assertTrue { effect is ForgetPasswordPhoneEntryScreenUIEffect.NavigateBack }
+            assertTrue { effect is ResetPasswordPhoneEntryScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -75,7 +73,7 @@ class ForgetPasswordPhoneEntryScreenViewModelTest {
                 viewModel.onClickContinue()
 
                 val effect = awaitItem()
-                assertTrue { effect is ForgetPasswordPhoneEntryScreenUIEffect.NavigateToOTP }
+                assertTrue { effect is ResetPasswordPhoneEntryScreenUIEffect.NavigateToOTP }
                 cancelAndConsumeRemainingEvents()
             }
         }

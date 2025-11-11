@@ -12,25 +12,23 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
-import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ForgetPasswordOtpScreenViewModelTest {
+class ResetPasswordOtpScreenViewModelTest {
     private val resetPasswordRepository = mockk<ResetPasswordRepository>()
     private val phoneNumber = "01100661617"
     private val countryCode = "EG"
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var viewModel: ForgetPasswordOtpScreenViewModel
+    private lateinit var viewModel: ResetPasswordOtpScreenViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ForgetPasswordOtpScreenViewModel(
+        viewModel = ResetPasswordOtpScreenViewModel(
             resetPasswordRepository = resetPasswordRepository,
             phoneNumber = phoneNumber,
             countryCode = countryCode,
@@ -49,7 +47,7 @@ class ForgetPasswordOtpScreenViewModelTest {
         viewModel.effect.test {
             viewModel.onClickBack()
             val effect = awaitItem()
-            assertTrue { effect is ForgetPasswordOtpScreenUIEffect.NavigateBack }
+            assertTrue { effect is ResetPasswordOtpScreenUIEffect.NavigateBack }
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -64,7 +62,7 @@ class ForgetPasswordOtpScreenViewModelTest {
             viewModel.effect.test {
                 viewModel.onClickVerify()
                 val effect = awaitItem()
-                assertTrue { effect is ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword }
+                assertTrue { effect is ResetPasswordOtpScreenUIEffect.NavigateToResetPassword }
                 cancelAndConsumeRemainingEvents()
             }
         }
