@@ -90,8 +90,8 @@ class SearchViewModel(
         )
     }
 
-    override fun onProductClicked(productId: Uuid) {
-        emitEffect(effect = SearchEffect.NavigateToProductDetails(productId = productId.toString()))
+    override fun onProductClicked(productId: Uuid, dukanId: Uuid) {
+        emitEffect(effect = SearchEffect.NavigateToProductDetails(productId = productId.toString(),dukanId = dukanId.toString()))
     }
 
     override fun onSnackBarDismissed() {

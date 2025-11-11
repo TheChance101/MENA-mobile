@@ -87,6 +87,7 @@ class ChatViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { chatArgs.chatId } returns chatId.toString()
         every { chatArgs.chatName } returns chatName
+        every { audioPlayer.getDurationOfCurrentAudio() } returns 1000L
 
         everySuspend { chatRepository.getChatById(chatId) } returns chat
         everySuspend {
@@ -764,13 +765,7 @@ class ChatViewModelTest {
         everySuspend { messageRepository.loadMessages(any(), any(), any()) } returns PagedData(
             listOf(voiceMessage), 1, true
         )
-
-        everySuspend { audioRecordRepository.getAudioFilePath(any()) } returns "filePath"
-        every { audioPlayer.getDuration(any()) } returns 1000L
-        every { audioPlayer.getCurrentPosition() } returns 1000L
-        every { audioPlayer.play(any()) } returns Unit
-        every { audioPlayer.pause() } returns Unit
-        every { audioPlayer.stop() } returns Unit
+        setAudioPlayerPlaybackMocks()
 
         val viewModel = createViewModel()
         viewModel.onMessagesScrolled()
@@ -792,12 +787,7 @@ class ChatViewModelTest {
         everySuspend { messageRepository.loadMessages(any(), any(), any()) } returns PagedData(
             listOf(voiceMessage1, voiceMessage2), 1, true
         )
-        everySuspend { audioRecordRepository.getAudioFilePath(any()) } returns "filePath"
-        every { audioPlayer.getDuration(any()) } returns 1000L
-        every { audioPlayer.getCurrentPosition() } returns 1000L
-        every { audioPlayer.play(any()) } returns Unit
-        every { audioPlayer.pause() } returns Unit
-        every { audioPlayer.stop() } returns Unit
+        setAudioPlayerPlaybackMocks()
 
         val viewModel = createViewModel()
         viewModel.onMessagesScrolled()
@@ -1179,6 +1169,16 @@ class ChatViewModelTest {
             chatArgs = chatArgs,
             dispatcher = testDispatcher
         )
+    }
+
+    private fun setAudioPlayerPlaybackMocks(duration: Long = 1000L) {
+        everySuspend { audioRecordRepository.getAudioFilePath(any()) } returns "filePath"
+        every { audioPlayer.getDuration(any()) } returns duration
+        every { audioPlayer.getDurationOfCurrentAudio() } returns duration
+        every { audioPlayer.getCurrentPosition() } returns duration
+        every { audioPlayer.play(any()) } returns Unit
+        every { audioPlayer.pause() } returns Unit
+        every { audioPlayer.stop() } returns Unit
     }
 
     private companion object {

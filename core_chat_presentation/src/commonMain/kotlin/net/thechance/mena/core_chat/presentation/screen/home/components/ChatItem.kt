@@ -25,7 +25,6 @@ import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
-import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -65,7 +64,7 @@ private fun TimeAndStatus(chat: ChatUiState) {
         chat.lastMessage ?: return
 
         Text(
-            text = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(chat.lastMessage.time).asString(),
+            text = chat.lastMessage.uiTime.asString(),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )

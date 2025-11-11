@@ -119,7 +119,8 @@ class HomeViewModel(
     private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
         updateState {
             it.copy(
-                balanceAmount = balanceAmount.toInt().toString(), isBalanceLoading = false
+                balanceAmount = balanceAmount.toInt().toString(),
+                isBalanceLoading = false
             )
         }
     }
@@ -145,7 +146,8 @@ class HomeViewModel(
 
     private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
         return chatRepository.getChatsSummary(
-            pageNumber = pageNumber, pageSize = PAGE_SIZE
+            pageNumber = pageNumber,
+            pageSize = PAGE_SIZE
         )
     }
 
@@ -164,8 +166,7 @@ class HomeViewModel(
             isError = true
         )
     }
-
-    private fun showErrorLoadingChatsSnackBar() {
+    private fun showErrorLoadingChatsSnackBar(){
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,
@@ -211,7 +212,8 @@ class HomeViewModel(
         super.onCleared()
         tryToExecute(
             coroutineScope = CoroutineScope(Dispatchers.IO),
-            execute = { chatRepository.disconnect() })
+            execute = { chatRepository.disconnect() }
+        )
     }
 
     override fun onWalletClicked() {

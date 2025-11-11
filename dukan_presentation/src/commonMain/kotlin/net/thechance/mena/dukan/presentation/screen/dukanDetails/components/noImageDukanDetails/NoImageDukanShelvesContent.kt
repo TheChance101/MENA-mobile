@@ -68,6 +68,7 @@ fun NoImageDukanShelvesContent(
                 coroutineScope = coroutineScope,
                 chipsAlpha = chipsAlpha
             )
+
             is LoadState.Error -> {}
         }
     }
@@ -81,7 +82,7 @@ private fun NoImageDukanShelvesContentLoaded(
     lazyColumnListState: LazyListState,
     coroutineScope: CoroutineScope,
     chipsAlpha: Float
-){
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
@@ -95,6 +96,8 @@ private fun NoImageDukanShelvesContentLoaded(
             )
         }
         stickyHeader(key = "ShelvesChips") {
+            val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
+
             NoImageDukanShelvesChips(
                 shelfs = shelves,
                 onClick = { shelfId, index ->
@@ -120,7 +123,6 @@ private fun NoImageDukanShelvesContentLoaded(
     }
 }
 
-private const val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
 private fun synchronizeScrollsAndAlpha(
     index: Int,
     layoutInfo: LazyListLayoutInfo,
@@ -130,6 +132,8 @@ private fun synchronizeScrollsAndAlpha(
     lazyRowListState: LazyListState,
     chipsAlphaUpdate: (Float) -> Unit
 ) {
+    val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
+
     val shelfIndex = index - SHELVES_OFFSET
     if (shelfIndex >= 0 && shelfIndex < shelfs.itemCount) {
         val shelfId = shelfs[shelfIndex]?.id.orEmpty()

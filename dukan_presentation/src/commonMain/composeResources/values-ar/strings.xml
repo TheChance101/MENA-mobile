@@ -130,6 +130,7 @@
     <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
+    <string name="remove_product_successfully">تم حذف المنتج بنجاح</string>
     <string name="checkout">Checkout</string>
     <string name="confirm_order">تأكيد الطلب</string>
     <string name="deliver_to">التوصيل إلى</string>

@@ -37,6 +37,7 @@ data class SearchUiState(
         val name: String,
         val imageUrl: String,
         val dukanName: String,
+        val dukanId:Uuid,
         val price: Double,
     )
 }

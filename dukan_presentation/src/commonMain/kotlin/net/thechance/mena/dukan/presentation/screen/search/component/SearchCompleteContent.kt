@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -100,19 +99,18 @@ private fun SearchChips(
     Row(
         modifier = modifier
             .padding(top = Theme.spacing._12, start = Theme.spacing._16)
-            .fillMaxWidth()
-            .height(32.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         Chip(
             text = stringResource(resource = Res.string.dukans),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isDukanSelected,
             onClick = onDukansSelected,
         )
         Chip(
             text = stringResource(resource = Res.string.products),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isProductSelected,
             onClick = onProductsSelected,
         )
@@ -191,7 +189,7 @@ private fun DukansList(
 @Composable
 private fun ProductsList(
     productPagingItems: LazyPagingItems<SearchUiState.ProductUiState>,
-    onProductClicked: (productId: Uuid) -> Unit
+    onProductClicked: (productId: Uuid,dukanId:Uuid) -> Unit
 ) {
     AnimatedContent(
         targetState = productPagingItems.loadState.refresh,
@@ -243,7 +241,7 @@ private fun ProductsList(
                                 productPrice = product.price,
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
-                                onProductClick = { onProductClicked(product.id) },
+                                onProductClick = { onProductClicked(product.id,product.dukanId) },
                             )
                         }
                     }

@@ -131,7 +131,8 @@ private fun CreateShelfContent(
                     modifier = Modifier
                         .padding(horizontal = Theme.spacing._16)
                         .padding(bottom = Theme.spacing._12),
-                    hint = ""
+                    hint = "",
+                    maxCharacters = 50
                 )
             }
         }

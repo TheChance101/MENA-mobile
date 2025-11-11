@@ -75,9 +75,8 @@ fun ChatInputBar(
                     shape = RoundedCornerShape(Theme.radius.md),
                     color = Theme.colorScheme.background.surfaceLow
                 )
-                .padding(end = Theme.spacing._12).defaultMinSize(minHeight = 48.dp).weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-            verticalAlignment = Alignment.CenterVertically
+                .defaultMinSize(minHeight = 48.dp).weight(1f),
+            verticalAlignment = Alignment.Bottom
         ) {
             MultiLineTextField(
                 value = userInput,
@@ -96,7 +95,8 @@ fun ChatInputBar(
                 exit = slideOutHorizontally(
                     targetOffsetX = { fullWidth -> fullWidth * 2 },
                     animationSpec = tween(400)
-                )
+                ),
+                modifier = Modifier.padding(vertical = 14.dp, horizontal = Theme.spacing._12)
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_mic),

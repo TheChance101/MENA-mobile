@@ -9,6 +9,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
@@ -70,6 +71,7 @@ class ChangePasswordScreen(
                 HorizontalPager(
                     state = pagerState,
                     userScrollEnabled = false,
+                    verticalAlignment = Alignment.Top,
                     modifier = Modifier.weight(1f)
                 ) { page ->
                     when (page) {

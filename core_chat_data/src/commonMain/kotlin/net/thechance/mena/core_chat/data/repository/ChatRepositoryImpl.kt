@@ -33,7 +33,6 @@ import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
-import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
@@ -140,7 +139,7 @@ class ChatRepositoryImpl(
                     parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                     parameter(PAGE_SIZE_PARAMETER, pageSize)
                 }
-            }?.toPagedListOfChatSummary() ?: throw NotFoundException("Response body is null")
+            }.toPagedListOfChatSummary()
 
             val remoteChatSummariesData = remoteChatSummaries.data
             if (remoteChatSummariesData.isNotEmpty()) {
@@ -159,25 +158,25 @@ class ChatRepositoryImpl(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
             client.get(getChatSummaryEndpoint(chatId))
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        }.toDomain()
     }
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getDeletedChatAfterSpecificTime(time: Instant): List<Uuid> {
-        return tryNetworkCall<List<Uuid>>(
+        return tryNetworkCall(
             bodyType = typeInfo<List<Uuid>>()
         ) {
             client.get(DELETED_CHATS_ENDPOINT) {
                 parameter(DELETED_AFTER_PARAMETER, time)
             }
-        } ?: throw NotFoundException("Deleted chats not found")
+        }
     }
 
     private suspend fun handleSyncingDataSafely(
-        callae: suspend () -> Unit
+        callee: suspend () -> Unit
     ) {
         try {
-            callae()
+            callee()
         } catch (_: NoInternetException) {
             _syncState.emit(SyncState.Offline)
         } catch (e: Exception) {
@@ -192,7 +191,7 @@ class ChatRepositoryImpl(
             client.get(CHAT_ENDPOINT) {
                 parameter(RECEIVER_ID_PARAMETER, userId)
             }
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        }.toDomain()
     }
 
     override suspend fun deleteChatById(chatId: Uuid) {
@@ -208,13 +207,12 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
-        return cachedChatDao.getChatById(chatId.toString())?.toDomain() ?: tryNetworkCall<ChatDto>(
-            bodyType = typeInfo<ChatDto>()
-        ) {
-            client.get("$CHAT_ENDPOINT/$chatId")
-        }?.also { chat ->
-            cachedChatDao.insertChat(chat.toLocalDto())
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        return cachedChatDao.getChatById(chatId.toString())?.toDomain()
+            ?: tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
+                client.get("$CHAT_ENDPOINT/$chatId")
+            }
+                .also { chat -> cachedChatDao.insertChat(chat.toLocalDto()) }
+                .toDomain()
     }
 
 

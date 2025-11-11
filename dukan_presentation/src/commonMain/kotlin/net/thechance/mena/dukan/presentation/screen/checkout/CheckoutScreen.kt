@@ -2,6 +2,8 @@ package net.thechance.mena.dukan.presentation.screen.checkout
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -11,8 +13,10 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.checkout_dialog_description
 import mena.dukan_presentation.generated.resources.checkout_dialog_title
+import mena.dukan_presentation.generated.resources.summary_details
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -89,6 +93,7 @@ private fun CheckoutContent(
     ) {
         Column(
             modifier = Modifier
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = Theme.spacing._16)
         ) {
             DeliveryAddressCard(
@@ -96,6 +101,14 @@ private fun CheckoutContent(
                 state = state,
                 onChangeAddressClicked = listener::onChangeLocationClicked
             )
+
+            Text(
+                text = stringResource(Res.string.summary_details),
+                style = Theme.typography.title.medium,
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(top = Theme.spacing._16)
+            )
+
             CheckoutSummaryCard(
                 products = products,
                 totalPrice = state.totalAmount,
