@@ -168,7 +168,6 @@ fun ChatScreenContent(
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
-                paginationError = state.paginationError,
                 onMessageLongClick = interactions::onMessageLongClicked,
             )
         }

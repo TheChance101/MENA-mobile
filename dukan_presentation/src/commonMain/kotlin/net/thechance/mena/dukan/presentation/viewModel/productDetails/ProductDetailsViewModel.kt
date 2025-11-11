@@ -9,10 +9,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
-import mena.dukan_presentation.generated.resources.added_to_favorites
-import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.removed_from_favorites
+import mena.dukan_presentation.generated.resources.something_went_wrong
+import mena.dukan_presentation.generated.resources.remove_product_successfully
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -120,15 +119,27 @@ class ProductDetailsViewModel(
 
         tryToExecute(
             onStart = { updateState { copy(isAddToCartLoading = true) } },
-            block = { addToCartBlock(domainRequest) },
-            onSuccess = ::addProductToCartSuccessfully,
+            block = { onAddToCartBlock(domainRequest) },
+            onSuccess = ::onSuccessUpdateProductQuantity,
             onError = ::onErrorUpdateProductQuantity
         )
     }
 
-    private suspend fun addToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
+    private suspend fun onAddToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
+        if (state.value.product.inCartQuantity == 0) removeProductFromCart()
+        else addProductToCart(domainRequest)
+    }
+
+    private suspend fun addProductToCart(domainRequest: UpdateProductCartQuantityParams) {
         if (state.value.isFirstQuantityOne) dukanCartRepository.addProductQuantity(domainRequest)
         else dukanCartRepository.updateProductQuantity(domainRequest)
+    }
+
+    private suspend fun removeProductFromCart() {
+        dukanCartRepository.deleteProductFromCart(
+            dukanId = args.dukanId,
+            productId = args.productId
+        )
     }
 
     override fun onPlusClicked(productId: String) {
@@ -147,17 +158,28 @@ class ProductDetailsViewModel(
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
-        if (throwable is NoInternetException) {
-            showSnackBar(
-                message = Res.string.no_internet_connection,
-                type = SnackBarType.ERROR
-            )
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.something_went_wrong
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun addProductToCartSuccessfully(success: Unit) {
+    private fun onSuccessUpdateProductQuantity(success: Unit) {
+        if (state.value.product.inCartQuantity == 0) removeProductFromCartSuccessfully()
+        else addProductToCartSuccessfully()
+
+    }
+
+    private fun addProductToCartSuccessfully() {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = Res.string.add_product_success
+        showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
+    }
+
+    private fun removeProductFromCartSuccessfully() {
+        updateState { copy(isAddToCartLoading = false) }
+        val messageRes = Res.string.remove_product_successfully
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }
 

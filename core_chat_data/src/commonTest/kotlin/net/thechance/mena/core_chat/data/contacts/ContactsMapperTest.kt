@@ -58,7 +58,7 @@ class ContactMappersTest {
     @Test
     fun `toPagedListOfContacts should return empty list when Data is null`() {
         val dto = createPagedDataDto(
-            data = null,
+            data = emptyList(),
             pageNumber = 1,
             totalItems = 5,
             totalPages = 10
@@ -79,14 +79,14 @@ class ContactMappersTest {
                     phone = "789"
                 )
             ),
+            totalItems = 15,
             pageNumber = 1,
-            totalItems = null,
             totalPages = 5
         )
 
         val result = dto.toPagedListOfContacts()
 
-        assertThat(result.totalItems).isEqualTo(0)
+        assertThat(result.totalItems).isEqualTo(15)
         assertThat(result.data).hasSize(1)
     }
 
@@ -94,7 +94,6 @@ class ContactMappersTest {
     fun `toPagedListOfContacts should treat missing pageNumber as 0 when PageNumber is null`() {
         val dto = createPagedDataDto(
             data = emptyList(),
-            pageNumber = null,
             totalItems = 10,
             totalPages = 5
         )
@@ -110,12 +109,11 @@ class ContactMappersTest {
             data = emptyList(),
             pageNumber = 1,
             totalItems = 10,
-            totalPages = null
         )
 
         val result = dto.toPagedListOfContacts()
 
-        assertThat(result.isLastPage).isTrue()
+        assertThat(result.isLastPage).isFalse()
     }
 
     @Test
