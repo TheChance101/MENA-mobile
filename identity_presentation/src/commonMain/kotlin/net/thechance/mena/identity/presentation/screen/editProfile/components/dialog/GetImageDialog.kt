@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.editProfile.dialog
+package net.thechance.mena.identity.presentation.screen.editProfile.components.dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
