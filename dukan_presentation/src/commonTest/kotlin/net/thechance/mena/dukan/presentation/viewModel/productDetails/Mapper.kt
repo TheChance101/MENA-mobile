@@ -1,8 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toDomainParams
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
