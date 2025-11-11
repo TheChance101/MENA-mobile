@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_invite_friends
@@ -39,7 +36,8 @@ fun InviteFriendsCard(onClick: () -> Unit) {
             .padding(top = Theme.spacing._24)
             .fillMaxWidth()
             .clip(SquircleShape(radius = Theme.radius.lg))
-            .background(Theme.colorScheme.background.surfaceHigh
+            .background(
+                Theme.colorScheme.background.surfaceHigh
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
