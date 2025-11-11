@@ -111,6 +111,7 @@
     <string name="favorite_icon">favorite icon</string>
     <string name="share_icon">share icon</string>
     <string name="remove_product">remove_product</string>
+    <string name="remove_product_successfully">Product removed successfully</string>
     <string name="wide_dukan_image">Dukan Image</string>
     <string name="wide_product_image">Product Image</string>
     <string name="wide_discount_icon">Discount Icon</string>
@@ -143,7 +144,6 @@
     <string name="go_to_checkout">Go to checkout</string>
     <string name="sub_total_price">Sub total price</string>
     <string name="from_dukan">From dukan</string>
-
     <string name="dukan_management_general_error">Dukan Management isn’t available right now. Please try again later!</string>
     <string name="dukan_managment_loading">Please wait until loading is complete...</string>
     <string name="dukan_main_content_empty_error_title">Oops! The Dukan Main Screen is currently unavailable. Please check back soon.</string>
@@ -174,7 +174,7 @@
     <string name="no_result_found">No results found!</string>
     <string name="no_result_found_body">Please try again with another keyword.</string>
     <string name="search_general_error">Something went wrong while searching. Please try again in a moment.</string>
-
     <string name="checkout_dialog_title">Checkout Feature</string>
     <string name="checkout_dialog_description">This feature is not implemented yet.</string>
+    <string name="back_to_dukan_screen_icon">Back to dukan screen icon</string>
 </resources>

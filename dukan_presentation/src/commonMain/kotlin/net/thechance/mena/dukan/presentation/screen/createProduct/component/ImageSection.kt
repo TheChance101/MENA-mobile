@@ -65,7 +65,6 @@ fun ImageSection(
         LazyRow(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._32 + Theme.spacing._16 + Theme.spacing._2)
-                .height(108.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
             contentPadding = PaddingValues(

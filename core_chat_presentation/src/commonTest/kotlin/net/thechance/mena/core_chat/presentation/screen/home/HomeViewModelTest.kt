@@ -645,8 +645,9 @@ class HomeViewModelTest {
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
                     text = "Hello",
-                    time = UiText.DynamicString("12:00"),
-                    isMine = true
+                    uiTime = UiText.DynamicString("12:00"),
+                    isMine = true,
+                    time = LocalDateTime(2024, 1, 1, 12, 0)
                 ),
                 status = ChatUiState.Status.Read
             )

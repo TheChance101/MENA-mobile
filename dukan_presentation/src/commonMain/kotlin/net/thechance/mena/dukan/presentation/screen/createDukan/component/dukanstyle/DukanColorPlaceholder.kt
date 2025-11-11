@@ -38,7 +38,7 @@ fun ColorOptionsPlaceholder(
         modifier = modifier.size(48.dp)
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.background.surface)
-            .border(1.dp, backgroundColor, RoundedCornerShape(Theme.radius.full))
+            .border(1.dp, backgroundColor)
             .clickable(
                 onClick = onClick,
                 indication = null,

@@ -16,7 +16,6 @@ import mena.dukan_presentation.generated.resources.dukan_location
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_favorite_filled
-import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -51,7 +50,7 @@ fun SmallImageDukanDetailsContent(
     Scaffold(
         topBar = {
             SmallImageDukanAppBar(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 listener = listener
             )
         },
@@ -107,7 +106,13 @@ fun SmallImageDukanDetailsContent(
                 SmallImageDukanIconButton(
                     icon = painterResource(Res.drawable.dukan_location),
                     iconColor = Color(state.dukanInfo.color),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onIconClick = {
+                        listener.onViewDukanOnMapClicked(
+                            latitude = state.dukanInfo.coordinates.latitude,
+                            longitude = state.dukanInfo.coordinates.longitude
+                        )
+                    }
                 )
             }
             SmallImageDukanShelvesContent(
