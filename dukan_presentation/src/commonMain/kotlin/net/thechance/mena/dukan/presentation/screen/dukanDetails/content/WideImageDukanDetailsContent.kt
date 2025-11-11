@@ -35,12 +35,13 @@ fun WideImageDukanDetailsContent(
     listener: DukanDetailsInteractionListener,
 ) {
     val productShelf = state.productsShelf.collectAsLazyPagingItems()
+    val shelves = state.shelves.collectAsLazyPagingItems()
 
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 onBackClicked = listener::onBackClicked,
                 onCartClicked = listener::onViewCartClicked
             )
@@ -82,6 +83,7 @@ fun WideImageDukanDetailsContent(
                 WideImageDukanShelves(
                     state = state,
                     listener = listener,
+                    shelves = shelves
                 )
             }
             when (productShelf.loadState.refresh) {
@@ -93,6 +95,7 @@ fun WideImageDukanDetailsContent(
                         productsShelf = productShelf
                     )
                 }
+
                 is LoadState.Error -> {}
             }
         }

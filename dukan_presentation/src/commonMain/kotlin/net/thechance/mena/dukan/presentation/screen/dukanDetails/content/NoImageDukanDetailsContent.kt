@@ -26,7 +26,7 @@ fun NoImageDukanDetailsContent(
         topBar = {
             NoImageDukanAppBar(
                 state = state.dukanInfo,
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 listener = listener
             )
         },

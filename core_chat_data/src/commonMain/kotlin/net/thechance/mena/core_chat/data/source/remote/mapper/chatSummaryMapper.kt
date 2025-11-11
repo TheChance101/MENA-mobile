@@ -6,7 +6,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.utils.getUuidOrNull
+import net.thechance.mena.core_chat.data.utils.toUuid
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.model.PagedData
 import kotlin.time.ExperimentalTime
@@ -17,11 +17,10 @@ fun PagedDataDto<ChatSummaryDto>.toPagedListOfChatSummary(): PagedData<ChatSumma
     val pagedData = this
     return PagedData(
         data = pagedData.data
-            .orEmpty()
             .toListOfChatSummary()
             .filter { chatSummary -> chatSummary.lastMessage != null },
-        totalItems = pagedData.totalItems ?: 0,
-        isLastPage = (pagedData.pageNumber ?: 0) >= (pagedData.totalPages ?: 0)
+        totalItems = pagedData.totalItems,
+        isLastPage = pagedData.pageNumber >= pagedData.totalPages
     )
 }
 
@@ -30,7 +29,7 @@ private fun List<ChatSummaryDto>.toListOfChatSummary(): List<ChatSummary> {
 }
 
 @OptIn(ExperimentalTime::class)
-fun ChatSummaryDto.toDomain(): ChatSummary? {
+fun ChatSummaryDto.toDomain(): ChatSummary {
     val lastMessage = lastMessage?.let {
         ChatSummary.Message(
             content = lastMessage.content,
@@ -39,7 +38,7 @@ fun ChatSummaryDto.toDomain(): ChatSummary? {
         )
     }
     return ChatSummary(
-        id = getUuidOrNull(id) ?: return null,
+        id = id.toUuid(),
         name = name,
         imageUrl = imageUrl.orEmpty(),
         lastMessage = lastMessage,

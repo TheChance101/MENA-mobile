@@ -24,9 +24,9 @@ import mena.dukan_presentation.generated.resources.search_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
@@ -130,7 +130,7 @@ private fun DukanIcon(dukanStatus: MainScreenUiState.DukanStatusUi) {
             }
 
             MainScreenUiState.DukanStatusUi.Loading -> {
-                LoadingDots(modifier = Modifier.size(size = 20.dp))
+                DotsProgressIndicator()
             }
         }
     }
