@@ -102,7 +102,6 @@ kover.reports {
             classes(
                 "**.repository.**",
                 "**.mapper.**",
-                "**.database.**",
             )
         }
 
