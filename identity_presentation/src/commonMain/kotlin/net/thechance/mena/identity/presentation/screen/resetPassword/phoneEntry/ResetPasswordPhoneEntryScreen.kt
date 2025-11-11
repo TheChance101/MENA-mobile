@@ -27,15 +27,15 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
-import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ResetPasswordOtpScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-class ForgetPasswordPhoneEntryScreen : BaseScreen<
-        ForgetPasswordPhoneEntryScreenViewModel,
-        ForgetPasswordPhoneEntryScreenUIState,
-        ForgetPasswordPhoneEntryScreenUIEffect,
-        ForgetPasswordPhoneEntryScreenInteractionListener>() {
+class ResetPasswordPhoneEntryScreen : BaseScreen<
+        ResetPasswordPhoneEntryScreenViewModel,
+        ResetPasswordPhoneEntryScreenUIState,
+        ResetPasswordPhoneEntryScreenUIEffect,
+        ResetPasswordPhoneEntryScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -43,8 +43,8 @@ class ForgetPasswordPhoneEntryScreen : BaseScreen<
 
     @Composable
     override fun OnRender(
-        state: ForgetPasswordPhoneEntryScreenUIState,
-        listener: ForgetPasswordPhoneEntryScreenInteractionListener
+        state: ResetPasswordPhoneEntryScreenUIState,
+        listener: ResetPasswordPhoneEntryScreenInteractionListener
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         LaunchedEffect(state.showCountryBottomSheet) {
@@ -107,13 +107,13 @@ class ForgetPasswordPhoneEntryScreen : BaseScreen<
     }
 
     override fun onEffect(
-        effect: ForgetPasswordPhoneEntryScreenUIEffect,
+        effect: ResetPasswordPhoneEntryScreenUIEffect,
         navigator: Navigator
     ) {
         when (effect) {
-            ForgetPasswordPhoneEntryScreenUIEffect.NavigateBack -> navigator.pop()
-            is ForgetPasswordPhoneEntryScreenUIEffect.NavigateToOTP -> navigator.push(
-                item = ForgetPasswordOtpScreen(
+            ResetPasswordPhoneEntryScreenUIEffect.NavigateBack -> navigator.pop()
+            is ResetPasswordPhoneEntryScreenUIEffect.NavigateToOTP -> navigator.push(
+                item = ResetPasswordOtpScreen(
                     phoneNumber = effect.phoneNumber,
                     countryCode = effect.countryCode,
                     callingCode = effect.callingCode

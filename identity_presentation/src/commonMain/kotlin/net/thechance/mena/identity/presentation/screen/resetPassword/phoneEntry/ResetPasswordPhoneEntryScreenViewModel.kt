@@ -8,20 +8,19 @@ import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import org.jetbrains.compose.resources.StringResource
 
-class ForgetPasswordPhoneEntryScreenViewModel(
+class ResetPasswordPhoneEntryScreenViewModel(
     private val loginUseCase: LoginUseCase,
     private val resetPasswordRepository: ResetPasswordRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<ForgetPasswordPhoneEntryScreenUIState, ForgetPasswordPhoneEntryScreenUIEffect>(
-    ForgetPasswordPhoneEntryScreenUIState()
-), ForgetPasswordPhoneEntryScreenInteractionListener {
+) : BaseScreenModel<ResetPasswordPhoneEntryScreenUIState, ResetPasswordPhoneEntryScreenUIEffect>(
+    ResetPasswordPhoneEntryScreenUIState()
+), ResetPasswordPhoneEntryScreenInteractionListener {
 
     override fun onSelectCountryItem(country: MenaCountry) {
         updateState {
@@ -57,7 +56,7 @@ class ForgetPasswordPhoneEntryScreenViewModel(
 
     private fun onOTPRequestSuccess() {
         sendNewEffect(
-            ForgetPasswordPhoneEntryScreenUIEffect.NavigateToOTP(
+            ResetPasswordPhoneEntryScreenUIEffect.NavigateToOTP(
                 phoneNumber = state.value.phoneNumber,
                 callingCode = state.value.currentCountry.callingCode,
                 countryCode = state.value.currentCountry.countryCodeName
@@ -79,7 +78,7 @@ class ForgetPasswordPhoneEntryScreenViewModel(
     }
 
     override fun onClickBack() {
-        sendNewEffect(ForgetPasswordPhoneEntryScreenUIEffect.NavigateBack)
+        sendNewEffect(ResetPasswordPhoneEntryScreenUIEffect.NavigateBack)
     }
 
     override fun onClearErrorMessage() {
@@ -96,7 +95,7 @@ class ForgetPasswordPhoneEntryScreenViewModel(
 
     private fun mapErrorMessage(throwable: Throwable): StringResource{
         return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleResetPasswordPhoneEntryException(throwable))
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
