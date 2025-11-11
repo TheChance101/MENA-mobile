@@ -1,6 +1,6 @@
 package net.thechance.mena.admin_panel.data.mapper.dukan
 
-import net.thechance.mena.admin_panel.data.mapper.orZero
+import net.thechance.mena.admin_panel.data.utils.orZero
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.CategoryDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.DukanDto
 import net.thechance.mena.admin_panel.domain.entity.dukan.Category

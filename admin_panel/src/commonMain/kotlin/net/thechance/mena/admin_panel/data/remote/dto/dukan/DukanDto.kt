@@ -20,14 +20,6 @@ data class DukanDto(
     val longitude: Double? = null,
     @SerialName("color")
     val color: ColorDto? = null,
-    @SerialName("style")
-    val style: Style? = null,
     @SerialName("categories")
     val categories: List<CategoryDto>? = null
 )
-
-enum class Style {
-    WIDE_IMAGE,
-    SMALL_IMAGE,
-    NO_IMAGE,
-}
