@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.cancellation.CancellationException
 
 
@@ -39,6 +41,8 @@ class WebSocketManagerImpl(
     private val _incomingMessages = MutableSharedFlow<String>(extraBufferCapacity = 64)
     override val incomingMessages: SharedFlow<String> = _incomingMessages
 
+    private val activeSubscriptions = mutableSetOf<String>()
+    private val subscriptionLock = Mutex()
     private var subscriptionCounter = 0
 
     override fun connect(
@@ -51,6 +55,7 @@ class WebSocketManagerImpl(
             while (shouldReconnect && isActive) {
                 try {
                     performHandShake(onConnected)
+
                 } catch (_: CancellationException) {
                     break
                 } catch (_: Exception) {
@@ -103,6 +108,7 @@ class WebSocketManagerImpl(
         _connectionStatus.emit(false)
         connectionJob?.cancelAndJoin()
         connectionJob = null
+        activeSubscriptions.clear()
     }
 
     private suspend fun sendFrame(raw: String) {
@@ -116,13 +122,18 @@ class WebSocketManagerImpl(
     }
 
     override suspend fun subscribe(destination: String) {
-        val id = "sub-${subscriptionCounter++}"
-        val frame =
-            "$SUBSCRIBE\n" +
-                    "id:$id\n" +
-                    "$DESTINATION:$destination\n" +
-                    "\n\u0000"
-        sendFrame(frame)
+        subscriptionLock.withLock {
+            if (destination in activeSubscriptions) return
+            val id = "sub-${subscriptionCounter++}"
+            val frame =
+                "$SUBSCRIBE\n" +
+                        "id:$id\n" +
+                        "$DESTINATION:$destination\n" +
+                        "\n\u0000"
+            sendFrame(frame)
+            activeSubscriptions.add(destination)
+        }
+
     }
 
     override suspend fun sendTextFrame(destination: String, payload: String) {

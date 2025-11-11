@@ -18,6 +18,7 @@ internal val viewModelModule = module {
             contactsRepository = get(),
             chatRepository = get(),
             balanceRepository = get(),
+            messageRepository = get()
         )
     }
     viewModel {

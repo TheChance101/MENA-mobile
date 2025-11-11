@@ -204,10 +204,9 @@ class MessageRepositoryImpl(
         return markChatAsDeleted
     }
 
-    private fun initializeWebsocketConnection() {
+    override fun initializeWebsocketConnection() {
         scope.launch {
             webSocketManager.connect(onConnected = ::onConnectedWebSocket)
-
             webSocketManager.incomingMessages.collect { handleIncomingAsEvent(it) }
         }
     }
