@@ -6,7 +6,7 @@ data class Product(
     val id: String,
     val name: String,
     val price: Double,
-    val discountedPrice: Double,
+    val discountedPrice: Double?,
     val description: String,
     val imageUrls: List<String>,
     val createdAt: LocalDateTime
