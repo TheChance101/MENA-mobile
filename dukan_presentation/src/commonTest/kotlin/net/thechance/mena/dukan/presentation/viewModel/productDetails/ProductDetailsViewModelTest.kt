@@ -17,10 +17,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.added_to_favorites
-import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.removed_from_favorites
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -79,10 +76,11 @@ class ProductDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
+
     @Test
     fun `init SHOULD set isLoading to false after successful load`() = runTest {
         advanceUntilIdle()
@@ -351,7 +349,6 @@ class ProductDetailsViewModelTest {
             // Then
             verifySuspend { productRepository.toggleProductToFavorites(testProductId) }
         }
-
 
 
     @OptIn(ExperimentalUuidApi::class)
