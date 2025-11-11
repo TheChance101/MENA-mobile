@@ -328,7 +328,7 @@ class MessageRepositoryImpl(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
             client.get(getChatSummaryEndpoint(chatId))
-        }?.toDomain() ?: throw NotFoundException("Chat not found")
+        }.toDomain()
     }
     override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
