@@ -68,6 +68,10 @@ ksp {
     arg("KOIN_CONFIG_CHECK", "true")
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
@@ -96,9 +100,6 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
-}
-room {
-    schemaDirectory("$projectDir/schemas")
 }
 
 kover.reports {

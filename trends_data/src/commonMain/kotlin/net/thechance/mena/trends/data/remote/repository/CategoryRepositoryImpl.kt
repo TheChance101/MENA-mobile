@@ -7,7 +7,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
+import net.thechance.mena.trends.data.di.DEFAULT_CLIENT_NAME
 import net.thechance.mena.trends.data.remote.dto.CategoryDto
 import net.thechance.mena.trends.data.remote.dto.SubmitCategoriesRequestDto
 import net.thechance.mena.trends.data.remote.dto.UpdateUserCategoriesRequest

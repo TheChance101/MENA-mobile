@@ -19,8 +19,8 @@ import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.io.buffered
-import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
-import net.thechance.mena.trends.data.di.TrendDataModule.Companion.UPLOAD_CLIENT_NAME
+import net.thechance.mena.trends.data.di.DEFAULT_CLIENT_NAME
+import net.thechance.mena.trends.data.di.UPLOAD_CLIENT_NAME
 import net.thechance.mena.trends.data.remote.dto.ReelDto
 import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
