@@ -18,8 +18,8 @@ import net.thechance.mena.admin_panel.data.remote.dto.DukanPagedResponse
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.DukanDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ProductDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ShelfDto
+import net.thechance.mena.admin_panel.data.remote.dto.dukan.Style
 import net.thechance.mena.admin_panel.data.repository.dukan.DukanRepositoryImpl
-import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import kotlin.test.BeforeTest
@@ -53,7 +53,7 @@ class DukanRepositoryImplTest {
             latitude = 30.0,
             longitude = 31.0,
             color = null,
-            style = Dukan.Style.NO_IMAGE,
+            style = Style.NO_IMAGE,
             categories = emptyList()
         )
 

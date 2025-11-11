@@ -7,13 +7,5 @@ data class Dukan(
     val address: String,
     val latitude: Double,
     val longitude: Double,
-    val color: Color?,
-    val style: Style,
     val categories: List<Category>
-) {
-    enum class Style {
-        WIDE_IMAGE,
-        SMALL_IMAGE,
-        NO_IMAGE,
-    }
-}
+)
