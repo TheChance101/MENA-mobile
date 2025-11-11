@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.datetime.LocalDate
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_age_restriction
 import mena.identity_presentation.generated.resources.error_camera_permission_required
 import mena.identity_presentation.generated.resources.error_first_name_required
 import mena.identity_presentation.generated.resources.error_last_name_required
@@ -19,7 +20,9 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.domain.util.getCurrentDate
+import net.thechance.mena.identity.domain.util.orCurrent
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
@@ -31,6 +34,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
+    private val ageValidator: AgeValidator,
     private val userRepository: UserRepository,
     private val permissionsController: PermissionsController,
     private val imagesRepository: ImagesRepository,
@@ -172,6 +176,11 @@ class EditUserProfileViewModel(
 
             currentState.lastName.isEmpty() -> {
                 updateState { copy(errorMessage = Res.string.error_last_name_required) }
+                false
+            }
+
+            !ageValidator.isValid(currentState.birthDate.orCurrent()) -> {
+                updateState { copy(errorMessage = Res.string.error_age_restriction) }
                 false
             }
 

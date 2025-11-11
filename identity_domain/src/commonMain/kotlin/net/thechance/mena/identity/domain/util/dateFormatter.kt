@@ -14,3 +14,5 @@ fun getCurrentDate(): LocalDate {
     val currentDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
     return LocalDate(currentDate.year, currentDate.month, currentDate.day)
 }
+
+fun LocalDate?.orCurrent() = this ?: getCurrentDate()

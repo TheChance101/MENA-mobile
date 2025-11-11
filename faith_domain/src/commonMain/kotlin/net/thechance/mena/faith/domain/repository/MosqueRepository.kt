@@ -7,8 +7,9 @@ interface MosqueRepository {
     suspend fun getNearbyMosques(
         latitude: Double,
         longitude: Double,
-        radius: Double,
+        radius: Double = 2.0,
     ): List<Mosque>
+
     suspend fun getMosquesByName(
         query: String,
         page: Int = 0,

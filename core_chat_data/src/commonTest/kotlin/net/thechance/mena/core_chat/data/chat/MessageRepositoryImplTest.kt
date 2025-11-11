@@ -141,11 +141,11 @@ class MessageRepositoryImplTest {
             senderId = userId,
             chatId = chatId,
         )
-        everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
         repository.deleteMessage(message)
 
-        verifySuspend { pendingMessageDao.deleteMessage(message.id.toString()) }
+        verifySuspend { pendingMessageDao.deleteMessageById(message.id.toString()) }
     }
 
 
@@ -182,7 +182,7 @@ class MessageRepositoryImplTest {
         every { webSocketManager.isConnected() } returns true
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
         everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
-        everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
         val message = createMessage(
             senderId = userId,
@@ -249,7 +249,7 @@ class MessageRepositoryImplTest {
                 message2.toPendingMessageLocalDto()
             )
 
-            everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
+            everySuspend { pendingMessageDao.getMessagesByChatId(chatId.toString()) } returns flowOf(
                 messageEntities
             )
 
@@ -258,19 +258,19 @@ class MessageRepositoryImplTest {
 
             assertThat(result).isNotEmpty()
             assertThat(result.size).isEqualTo(2)
-            verifySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) }
+            verifySuspend { pendingMessageDao.getMessagesByChatId(chatId.toString()) }
         }
 
     @Test
     fun `should return empty list when no local messages exist for chat`() = runTest {
-        everySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) } returns flowOf(
+        everySuspend { pendingMessageDao.getMessagesByChatId(chatId.toString()) } returns flowOf(
             emptyList()
         )
 
         val result = repository.observePendingMessagesByChatId(chatId).first()
 
         assertThat(result.isEmpty()).isTrue()
-        verifySuspend { pendingMessageDao.getMessagesByChat(chatId.toString()) }
+        verifySuspend { pendingMessageDao.getMessagesByChatId(chatId.toString()) }
     }
 
     @Test
@@ -296,7 +296,7 @@ class MessageRepositoryImplTest {
         runTest {
             every { webSocketManager.isConnected() } returns true
             everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
-            everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
             httpClient = createHttpClient(
                 imagesResponse = { defaultUploadImagesResponse() }
@@ -322,7 +322,7 @@ class MessageRepositoryImplTest {
             repository.sendMessage(message)
 
             verifySuspend { pendingMessageDao.insertMessage(any()) }
-            verifySuspend { pendingMessageDao.deleteMessage(any()) }
+            verifySuspend { pendingMessageDao.deleteMessageById(any()) }
         }
 
     @Test
@@ -369,7 +369,7 @@ class MessageRepositoryImplTest {
         runTest {
             every { webSocketManager.isConnected() } returns true
             everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
-            everySuspend { pendingMessageDao.deleteMessage(any()) } returns Unit
+            everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
             httpClient = createHttpClient(
                 audioResponse = { defaultAudioResponse() }
@@ -395,7 +395,7 @@ class MessageRepositoryImplTest {
             repository.sendMessage(message)
 
             verifySuspend { pendingMessageDao.insertMessage(any()) }
-            verifySuspend { pendingMessageDao.deleteMessage(any()) }
+            verifySuspend { pendingMessageDao.deleteMessageById(any()) }
         }
 
     @Test
@@ -536,6 +536,7 @@ class MessageRepositoryImplTest {
         } returns emptyList()
         everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 0
         everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessagesByIds(any()) } returns Unit
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
         everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
         httpClient = createHttpClient(
@@ -551,6 +552,7 @@ class MessageRepositoryImplTest {
             chatSyncTimeDao = chatSyncTimeDao,
         )
         val result = repository.loadMessages(chatId, 0, 20)
+
         assertThat(result.data).isNotEmpty()
         assertThat(result.totalItems).isGreaterThan(0)
         verifySuspend { cachedMessageDao.insertAllMessages(any()) }

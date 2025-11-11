@@ -89,6 +89,11 @@
     <string name="profile_profile_picture_content_description">صورة الملف الشخصي</string>
     <string name="profile_share_icon_content_description">أيقونة المشاركة</string>
     <string name="profile_invite_friends_icon_content_description">أيقونة دعوة الأصدقاء</string>
+    <string name="profile_image">صورة الملف الشخصي</string>
+    <string name="upload_image">رفع صورة</string>
+    <string name="take_new_image">التقاط صورة جديدة</string>
+    <string name="remove_profile_image">حذف صورة الملف الشخصي</string>
+
 
     <string name="share_profile_title">شارك ملفك الشخصي</string>
     <string name="share_profile_description">استخدم رمز الاستجابة السريعة لمشاركة ملفك الشخصي مع الآخرين</string>
@@ -168,6 +173,7 @@
     <string name="error_failed_to_open_settings">فشل فتح الإعدادات</string>
     <string name="error_permission_not_granted">لم يتم منح الإذن</string>
     <string name="error_incorrect_password">كلمة المرور القديمة غير صحيحة</string>
+    <string name="error_confirm_password_not_match">تأكيد كلمة المرور لا يتطابق مع كلمة المرور الجديدة</string>
 
     <string name="error_address_not_found">لم يتم العثور على العنوان</string>
     <string name="is_main_address_error">لا يمكن حذف العنوان الأساسي</string>
@@ -176,6 +182,7 @@
     <string name="error_username_required">اسم المستخدم مطلوب</string>
     <string name="error_first_name_required">الاسم الأول مطلوب</string>
     <string name="error_last_name_required">اسم العائلة مطلوب</string>
+    <string name="error_age_restriction">يجب أن يكون عمرك 14 عامًا أو أكثر للتسجيل</string>
     <string name="error_password_mismatch">كلمات المرور غير متطابقة</string>
     <string name="error_password_validation">يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل وتحتوي على حرف كبير واحد ورقم واحد على الأقل.</string>
     <string name="error_camera_permission_required">إذن الكاميرا مطلوب</string>

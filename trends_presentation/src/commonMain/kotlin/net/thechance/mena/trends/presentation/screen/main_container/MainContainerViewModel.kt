@@ -12,7 +12,7 @@ import org.koin.core.annotation.Provided
 internal class MainContainerViewModel(
     @Provided private val repository: CategoryRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<MainContainerState, MainContainerEffect>(MainContainerState()) {
+) : BaseViewModel<MainContainerState, MainContainerEffect>(MainContainerState()), MainContainerInteractionListener {
 
     init {
         checkIfUserSelectedCategories()
@@ -40,5 +40,10 @@ internal class MainContainerViewModel(
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
         }
+    }
+
+    override fun onClickRetry() {
+        updateState { copy(error = null) }
+        checkIfUserSelectedCategories()
     }
 }

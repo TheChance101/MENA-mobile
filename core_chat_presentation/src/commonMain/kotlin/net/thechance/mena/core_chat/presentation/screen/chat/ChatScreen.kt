@@ -13,11 +13,13 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -26,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
@@ -66,10 +69,14 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val effects = viewModel.effect
 
-    EffectsHandler(effects = effects, onClickBackFromChat = onClickBackFromChat)
+    val chatLazyListState = rememberLazyListState()
+
+
+    EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
 
     ChatScreenContent(
         state = state,
+        chatLazyListState = chatLazyListState,
         interactions = viewModel
     )
 }
@@ -77,10 +84,9 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 @Composable
 fun ChatScreenContent(
     state: ChatScreenState,
+    chatLazyListState: LazyListState,
     interactions: ChatInteractionListener
 ) {
-    val chatListState = rememberLazyListState()
-
     val cameraManager = rememberCameraManager(
         onResult = interactions::onCameraResult
     )
@@ -157,7 +163,7 @@ fun ChatScreenContent(
             ChatList(
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
-                chatListState = chatListState,
+                chatListState = chatLazyListState,
                 onMessageClick = interactions::onMessageClicked,
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
@@ -200,7 +206,7 @@ fun ChatScreenContent(
 
     PaginationTrigger(
         list = state.chatListItems,
-        listState = chatListState,
+        listState = chatLazyListState,
         remainingItemsToLoadNextPage = 15,
         loadNextItems = interactions::onMessagesScrolled
     )
@@ -217,10 +223,13 @@ fun ChatScreenContent(
 @Composable
 private fun EffectsHandler(
     effects: SharedFlow<ChatScreenEffect>,
+    chatLazyListState: LazyListState,
     onClickBackFromChat: () -> Unit
 ) {
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
+    val scope = rememberCoroutineScope()
+
     EffectHandler(effects, key1 = navController.currentBackStackEntry) { effect ->
         when (effect) {
             is ChatScreenEffect.NavigateBack -> {
@@ -230,6 +239,10 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.ShowSnackBar -> {
                 snackBarHostController.showSnackBar(effect.snackBarData)
+            }
+
+            is ChatScreenEffect.ScrollToBottom -> {
+                scope.launch { chatLazyListState.animateScrollToItem(0) }
             }
         }
     }
