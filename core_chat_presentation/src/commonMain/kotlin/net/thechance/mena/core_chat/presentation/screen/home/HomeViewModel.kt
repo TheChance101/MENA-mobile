@@ -79,7 +79,7 @@ class HomeViewModel(
     private fun mergedChats(
         oldChats: List<ChatUiState>, newChats: List<ChatUiState>
     ): List<HomeScreenState.ChatUiState> {
-        if(newChats.isEmpty()) return emptyList()
+        if (newChats.isEmpty()) return emptyList()
         val newChatsMap = newChats.associateBy { it.id }.toMutableMap()
         val map = oldChats
             .filter { it.id in newChatsMap }
@@ -88,16 +88,17 @@ class HomeViewModel(
             .toMutableMap()
         newChats.forEach { map[it.id] = it }
         return map.values.sortedByDescending {
-            it.lastMessage?.time.toString() }
+            it.lastMessage?.time
+        }
     }
 
-    private fun observeChatSummariesSyncState(){
+    private fun observeChatSummariesSyncState() {
         tryToCollect(
             collect = {
                 chatRepository.observeChatSummariesSyncState()
             }, onCollect = {
-                if(it == null) return@tryToCollect
-                when(it){
+                if (it == null) return@tryToCollect
+                when (it) {
                     is SyncState.ChatsSummariesSyncedSuccess -> Unit
                     is SyncState.DeletedChatsSyncedSuccess -> Unit
                     is SyncState.Error -> showErrorLoadingChatsSnackBar()
@@ -171,7 +172,6 @@ class HomeViewModel(
             isError = true
         )
     }
-
 
 
     override fun onNewChatClicked() {
