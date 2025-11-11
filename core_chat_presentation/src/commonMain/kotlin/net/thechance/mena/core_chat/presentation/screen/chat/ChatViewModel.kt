@@ -88,7 +88,6 @@ class ChatViewModel(
             onLoadUpdated = { },
             onRequest = ::getChatHistory,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = { handleChatHistoryError() },
             onSuccess = { result, _ -> handleChatHistorySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
@@ -923,12 +922,7 @@ class ChatViewModel(
         }
     }
 
-    private fun handleChatHistoryError() {
-        updateState { state -> state.copy(paginationError = true) }
-    }
-
     private suspend fun handleChatHistorySuccess(result: PagedData<Message>) {
-        updateState { state -> state.copy(paginationError = false) }
         onGetChatHistorySuccess(result)
     }
 
