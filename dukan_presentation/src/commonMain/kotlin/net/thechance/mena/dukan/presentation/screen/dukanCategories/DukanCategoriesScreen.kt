@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
@@ -115,7 +113,6 @@ private fun DukanCategoriesSnackBar(
         SnackBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.radius.md))
                 .clickable(
                     onClick = onDismissSnackBar,
                     indication = null,

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun DukanCartInfo(
@@ -41,10 +42,9 @@ fun DukanCartInfo(
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
             .padding(bottom = Theme.spacing._4)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
             )
             .clickable(onClick = { onClick() }, indication = null, interactionSource = null)
             .padding(Theme.spacing._8),
@@ -56,7 +56,7 @@ fun DukanCartInfo(
             contentDescription = stringResource(Res.string.dukan_image),
             modifier = Modifier
                 .size(40.dp)
-                .clip(RoundedCornerShape(Theme.radius.full)),
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Column(
@@ -79,7 +79,7 @@ fun DukanCartInfo(
             contentDescription = stringResource(Res.string.arrow_right_icon),
             tint = Theme.colorScheme.primary.primary,
             modifier = Modifier.size(24.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surface)
                 .padding(Theme.spacing._2 + Theme.spacing._4)
         )
@@ -94,10 +94,9 @@ fun DukanCartInfoSkeleton() {
             .height(56.dp)
             .background(Theme.colorScheme.background.surface)
             .padding(bottom = Theme.spacing._4)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
             )
             .padding(Theme.spacing._8),
         verticalAlignment = Alignment.CenterVertically,
@@ -106,20 +105,20 @@ fun DukanCartInfoSkeleton() {
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceHigh)
         )
         Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing._2)) {
             Box(
                 modifier = Modifier
                     .size(width = 64.dp, height = 16.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
                     .background(Theme.colorScheme.background.surfaceHigh)
             )
             Box(
                 modifier = Modifier
                     .size(width = 88.dp, height = 16.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
                     .background(Theme.colorScheme.background.surfaceHigh)
             )
         }
