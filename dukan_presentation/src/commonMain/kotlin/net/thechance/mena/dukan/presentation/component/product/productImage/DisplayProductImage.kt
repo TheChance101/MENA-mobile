@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +25,7 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
@@ -54,51 +54,56 @@ fun DisplayProductImage(
     isCancelButtonEnabled: Boolean = true,
     errorMessage: String? = null,
 ) {
-    Box(
+    Column(
         modifier = modifier
-            .height(104.dp)
-            .width(94.dp)
-            .background(color = Transparent),
-        contentAlignment = Alignment.Center
+            .width(88.dp)
+            .background(color = Transparent)
     ) {
         when (imageType) {
             ImageType.BITMAP -> {
                 if (image is ImageBitmap) {
-                    AnimatedContent(
-                        targetState = productImageState,
-                        label = "display product Image",
-                        transitionSpec = { fadeTransitionSpec() },
-                        modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
-                    ) { currentState ->
-                        when (currentState) {
-                            ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
-                            ProductImageState.SUCCESS -> SuccessContentImage(image = image)
-                            ProductImageState.ERROR -> ErrorContentImage(image = image)
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AnimatedContent(
+                            modifier = Modifier
+                                .size(size = 88.dp),
+                            targetState = productImageState,
+                            label = "display product Image",
+                            transitionSpec = { fadeTransitionSpec() },
+                        ) { currentState ->
+                            when (currentState) {
+                                ProductImageState.LOADING -> LoadingContentImage(imageSize = imageSizeInMegaByte)
+                                ProductImageState.SUCCESS -> SuccessContentImage(image = image)
+                                ProductImageState.ERROR -> ErrorContentImage(image = image)
+                            }
                         }
-                    }
 
-                    CancelImageIconButton(
-                        productImageState = productImageState,
-                        onCancelClick = { onCancelClick(image) },
-                        isCancelButtonEnabled = isCancelButtonEnabled
-                    )
+                        CancelImageIconButton(
+                            modifier = Modifier.align(Alignment.TopEnd),
+                            productImageState = productImageState,
+                            onCancelClick = { onCancelClick(image) },
+                            isCancelButtonEnabled = isCancelButtonEnabled
+                        )
+                    }
 
                     errorMessage?.let { error ->
                         if (productImageState == ProductImageState.ERROR) {
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = Theme.spacing._4)
-                                    .align(Alignment.BottomCenter),
+                                    .align(Alignment.Start),
                                 text = error,
                                 style = Theme.typography.label.extraSmall,
                                 color = Theme.colorScheme.error,
+                                overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
                             )
                         }
                     }
                 }
             }
+
             ImageType.URL -> {
                 if (image is String) {
                     DisplayExistingProductImage(
@@ -113,7 +118,7 @@ fun DisplayProductImage(
 }
 
 @Composable
-private fun BoxScope.CancelImageIconButton(
+private fun CancelImageIconButton(
     productImageState: ProductImageState,
     onCancelClick: () -> Unit,
     isCancelButtonEnabled: Boolean = true,
@@ -138,9 +143,8 @@ private fun BoxScope.CancelImageIconButton(
     if (isIconVisible) {
         Box(
             modifier = modifier
-                .align(Alignment.TopEnd)
                 .size(size = 24.dp)
-                .offset(x = 2.dp, y = (-4).dp)
+                .offset(x = 4.dp, y = (-4).dp)
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
                     shape = RoundedCornerShape(Theme.radius.full)
@@ -207,14 +211,14 @@ private fun SuccessContentImage(image: ImageBitmap) {
 }
 
 @Composable
-private fun BoxScope.DisplayExistingProductImage(
+private fun DisplayExistingProductImage(
     imageUrl: String,
     onCancelClick: (String) -> Unit,
     isCancelButtonEnabled: Boolean
 ) {
     SuccessContentImageUrl(
         imageUrl = imageUrl,
-        modifier = Modifier.size(size = 88.dp).align(Alignment.TopCenter)
+        modifier = Modifier.size(size = 88.dp)
     )
     CancelImageIconButton(
         productImageState = ProductImageState.SUCCESS,
@@ -253,7 +257,7 @@ private fun ErrorContentImage(image: ImageBitmap) {
     val borderColor = Theme.colorScheme.error
     val cornerRadiusValue = Theme.radius.md
 
-    Box(
+    Column(
         modifier = Modifier.size(88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceHigh,
@@ -265,7 +269,6 @@ private fun ErrorContentImage(image: ImageBitmap) {
                     cornerRadiusValue = cornerRadiusValue.toPx()
                 )
             },
-        contentAlignment = Alignment.Center
     ) {
         Image(
             modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(size = Theme.radius.md)),
