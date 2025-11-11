@@ -11,7 +11,8 @@ data class ProductDetailsUiState(
     val selectedImageUrl: String = "",
     val isFirstQuantityOne: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
-    val totalPrice: Double = 0.0
+    val totalPrice: Double = 0.0,
+    val isButtonEnable : Boolean = false
 ) {
     data class ProductInfo(
         val id: String = "",
@@ -19,6 +20,6 @@ data class ProductDetailsUiState(
         val price: Double = 0.0,
         val description: String = "",
         val images: List<String> = emptyList(),
-        val inCartQuantity: Int = 0
+        val inCartQuantity: Int = 0,
     )
 }

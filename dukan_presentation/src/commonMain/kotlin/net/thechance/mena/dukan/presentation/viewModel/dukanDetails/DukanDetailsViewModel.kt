@@ -242,17 +242,9 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = { addToCartBlock(domainRequest, productQuantity) },
+            block = { dukanCartRepository.addProductQuantity(domainRequest)},
             onError = ::onErrorUpdateProductQuantity
         )
-    }
-
-    private suspend fun addToCartBlock(
-        domainRequest: UpdateProductCartQuantityParams,
-        productQuantity: Int
-    ) {
-        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(

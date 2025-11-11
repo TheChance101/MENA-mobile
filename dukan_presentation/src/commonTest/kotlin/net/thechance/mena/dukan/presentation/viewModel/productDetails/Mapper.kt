@@ -36,14 +36,14 @@ class ProductDetailsMapperTest {
     }
 
     @Test
-    fun `toDomainParams should map ProductUiState to domain params correctly`() {
-        val uiProduct = ShelfDetailsUiState.ProductUiState(
+    fun `toDomainParams should map ProductInfo to domain params correctly`() {
+        val uiProduct = ProductDetailsUiState.ProductInfo(
             id = "123",
             name = "Product",
             description = "Desc",
             price = 9.99,
-            imageUrl = "img.png",
-            inCartQuantity = 4
+            images = emptyList(),
+            inCartQuantity = 4,
         )
 
         val params = uiProduct.toDomainParams("dukanId_1")
