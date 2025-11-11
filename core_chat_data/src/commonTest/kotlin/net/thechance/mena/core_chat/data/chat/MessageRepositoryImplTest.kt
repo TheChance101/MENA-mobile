@@ -17,9 +17,13 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
@@ -37,10 +41,14 @@ import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -630,7 +638,10 @@ class MessageRepositoryImplTest {
     @Test
     fun `should send mark as read frame in markMessagesOfChatAsRead`() = runTest {
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-
+        everySuspend { cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
+            chatId = chatId.toString(),
+            readCount = 0
+        ) }returns Unit
         repository.markMessagesOfChatAsRead(chatId)
 
         verifySuspend {
@@ -687,10 +698,44 @@ class MessageRepositoryImplTest {
         }
     }
 
+
+    @Test
+    fun `should handle unknown websocket destination gracefully`() = runTest {
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { webSocketManager.connect(any()) } returns Unit
+        everySuspend { webSocketManager.subscribe(any()) } returns Unit
+
+        val incomingFlow = MutableSharedFlow<String>()
+        every { webSocketManager.incomingMessages } returns incomingFlow
+
+        val job = launch {
+            repository.observeMessagesForChatOrAll(chatId).collect()
+        }
+
+        delay(50) // Let the observer start
+
+        // Emit unknown destination message
+        incomingFlow.emit(
+            createMockIncomingMessage(
+                "/private/unknown",
+                "{}"
+            )
+        )
+
+        delay(100) // Should not throw exception
+
+        job.cancel()
+    }
+
+
+
+
     private fun createMockIncomingMessage(destination: String, body: String): String {
         val headers = "destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX$destination\n\n"
         return "$headers$body"
     }
+
+
 
     private companion object {
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
