@@ -154,7 +154,7 @@ class DukanDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -362,6 +362,26 @@ class DukanDetailsViewModelTest {
                 dukanCartRepository.addProductQuantity(any())
             }
 
+        }
+
+    @Test
+    fun `onAddToCartClicked SHOULD update hasProductInCart to true`() =
+        runTest {
+            val productId = "1"
+            val quantity = 1
+
+            dukanDetailsViewModel.onAddToCartClicked(
+                productId,
+                productQuantity = quantity,
+            )
+
+            advanceUntilIdle()
+
+            dukanDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertEquals(true, state.hasProductInCart)
+                cancelAndIgnoreRemainingEvents()
+            }
         }
 
     @Test
