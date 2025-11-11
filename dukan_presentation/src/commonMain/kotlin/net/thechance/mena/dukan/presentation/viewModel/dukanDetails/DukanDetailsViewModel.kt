@@ -249,6 +249,7 @@ class DukanDetailsViewModel(
         domainRequest: UpdateProductCartQuantityParams,
         productQuantity: Int
     ) {
+        updateState { copy(hasProductInCart = true) }
         if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
         else dukanCartRepository.updateProductQuantity(domainRequest)
     }

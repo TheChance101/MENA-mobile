@@ -365,24 +365,23 @@ class DukanDetailsViewModelTest {
         }
 
     @Test
-    fun `onAddToCartClicked SHOULD update hasProductInCart to true`() =
-        runTest {
-            val productId = "1"
-            val quantity = 1
+    fun `onAddToCartClicked SHOULD update hasProductInCart to true`() = runTest {
+        val productId = "1"
+        val quantity = 1
 
-            dukanDetailsViewModel.onAddToCartClicked(
-                productId,
-                productQuantity = quantity,
-            )
+        dukanDetailsViewModel.onAddToCartClicked(
+            productId,
+            productQuantity = quantity,
+        )
 
-            advanceUntilIdle()
+        advanceUntilIdle()
 
-            dukanDetailsViewModel.state.test {
-                val state = awaitItem()
-                assertEquals(true, state.hasProductInCart)
-                cancelAndIgnoreRemainingEvents()
-            }
+        dukanDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(true, state.hasProductInCart)
+            cancelAndIgnoreRemainingEvents()
         }
+    }
 
     @Test
     fun `onAddToCartClicked SHOULD toggle product cart to update existing product quantity`() =
