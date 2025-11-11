@@ -17,7 +17,7 @@ fun DukanDto.toEntity() = Dukan(
     longitude = longitude.orZero(),
     color = color?.toEntity(),
     style = style ?: Dukan.Style.NO_IMAGE,
-    categories = categories?.map { it.toEntity() } ?: emptyList(),
+    categories = categories?.map(CategoryDto::toEntity).orEmpty(),
 )
 
 fun ColorDto.toEntity() = Color(
