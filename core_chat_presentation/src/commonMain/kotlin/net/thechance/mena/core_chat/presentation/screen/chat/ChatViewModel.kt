@@ -673,10 +673,8 @@ class ChatViewModel(
                     audioPlayer.getCurrentPosition() == lastPositionMilliSeconds
                     && lastPositionMilliSeconds > .9 * totalDuration
                 ) {
-                    println("asdasd hey stop")
                     audioPlayer.stop()
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
-                    println("asdasd directlly before the break")
                     break
                 }
                 lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
