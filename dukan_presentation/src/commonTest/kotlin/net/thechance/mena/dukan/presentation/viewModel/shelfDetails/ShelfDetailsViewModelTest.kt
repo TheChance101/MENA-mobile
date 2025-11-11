@@ -156,7 +156,7 @@ class ShelfDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -320,6 +320,26 @@ class ShelfDetailsViewModelTest {
         //Then
         verifySuspend {
             dukanCartRepository.updateProductQuantity(any())
+        }
+    }
+
+
+    @Test
+    fun `onPlusClicked SHOULD update hasProductInCart to true`() = runTest {
+        val productId = "1"
+        val quantity = 1
+
+        shelfDetailsViewModel.onPlusClicked(
+            productId,
+            productQuantity = quantity,
+        )
+
+        advanceUntilIdle()
+
+        shelfDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(true, state.hasProductInCart)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
