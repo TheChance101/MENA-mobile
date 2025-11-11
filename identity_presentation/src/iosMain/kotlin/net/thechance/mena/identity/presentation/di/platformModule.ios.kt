@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.util.AppLocalizer
+import net.thechance.mena.identity.presentation.util.AppThemeChanger
 import net.thechance.mena.identity.presentation.util.GalleryPermission
 import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
@@ -16,7 +17,13 @@ internal actual fun platformModule(): Module = module {
     single<PermissionController>(named(GALLERY_IMAGES)) {
         GalleryPermission()
     }
-
+    single<AppThemeChanger>(
+        createdAtStart = true
+    ) {
+        AppThemeChanger(
+            settingsRepository = get()
+        )
+    }
     single<AppLocalizer>(
         createdAtStart = true
     ) {
