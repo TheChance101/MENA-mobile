@@ -85,7 +85,6 @@ class HomeViewModel(
             .toMutableMap()
         newChats.forEach { map[it.id] = it }
         return map.values.sortedByDescending {
-            println("===> last message send at ${it.lastMessage?.time}")
             it.lastMessage?.time.toString() }
     }
 

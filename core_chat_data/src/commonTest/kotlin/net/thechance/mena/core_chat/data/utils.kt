@@ -231,7 +231,8 @@ fun createMessageRepository(
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
     cachedMessageDao: CachedMessageDao,
-    chatSyncTimeDao: ChatSyncTimeDao
+    chatSyncTimeDao: ChatSyncTimeDao,
+    cachedChatSummaryDao: CachedChatSummaryDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
         webSocketManager = webSocketManager,
@@ -240,6 +241,7 @@ fun createMessageRepository(
         client = httpClient,
         messageSenderFactory = messageSenderFactory,
         cachedMessageDao = cachedMessageDao,
+        cachedChatSummaryDao = cachedChatSummaryDao,
         json = jsonSerialization
     )
 }

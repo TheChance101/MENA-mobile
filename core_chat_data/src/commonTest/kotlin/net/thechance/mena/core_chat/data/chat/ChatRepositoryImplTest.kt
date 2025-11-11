@@ -41,7 +41,6 @@ import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.Pe
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
@@ -351,7 +350,7 @@ class ChatRepositoryImplTest {
             it is SyncState.ChatsSummariesSyncedSuccess
         }
 
-        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSyncedSuccess(chatSummaries.map { it.toDomain()!! }))
+        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSyncedSuccess)
     }
 
     @Test
@@ -466,7 +465,7 @@ class ChatRepositoryImplTest {
             it is SyncState.DeletedChatsSyncedSuccess
         }
 
-        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSyncedSuccess(deletedIds))
+        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSyncedSuccess)
 
     }
 

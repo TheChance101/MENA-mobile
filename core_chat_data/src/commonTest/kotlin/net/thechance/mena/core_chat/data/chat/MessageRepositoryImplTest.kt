@@ -36,6 +36,7 @@ import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
@@ -71,6 +72,7 @@ class MessageRepositoryImplTest {
     private lateinit var chatSyncTimeDao: ChatSyncTimeDao
     private lateinit var audioMessageSender: AudioMessageSender
 
+    private lateinit var cachedChatSummaryDao: CachedChatSummaryDao
     @BeforeTest
     fun setUp() {
         httpClient = createHttpClient()
@@ -78,6 +80,7 @@ class MessageRepositoryImplTest {
         pendingMessageDao = mock<PendingMessageDao>()
         chatSyncTimeDao = mock<ChatSyncTimeDao>()
         cachedMessageDao = mock<CachedMessageDao>()
+        cachedChatSummaryDao = mock<CachedChatSummaryDao>()
 
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
@@ -95,6 +98,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             httpClient = httpClient
         )
     }
@@ -122,6 +126,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -163,6 +168,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao,
         )
 
@@ -302,6 +308,7 @@ class MessageRepositoryImplTest {
                 messageSenderFactory = messageSenderFactory,
                 pendingMessageDao = pendingMessageDao,
                 cachedMessageDao = cachedMessageDao,
+                cachedChatSummaryDao = cachedChatSummaryDao,
                 chatSyncTimeDao = chatSyncTimeDao,
             )
 
@@ -334,6 +341,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao,
         )
 
@@ -373,6 +381,7 @@ class MessageRepositoryImplTest {
                 messageSenderFactory = messageSenderFactory,
                 pendingMessageDao = pendingMessageDao,
                 cachedMessageDao = cachedMessageDao,
+                cachedChatSummaryDao = cachedChatSummaryDao,
                 chatSyncTimeDao = chatSyncTimeDao,
             )
 
@@ -405,6 +414,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao,
         )
 
@@ -440,6 +450,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao
         )
 
@@ -483,6 +494,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao
         )
         repository.loadMessages(chatId, 0, 10)
@@ -505,6 +517,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao
         )
         repository.syncAfterLastUpdate(chatId)
@@ -534,6 +547,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao,
         )
         val result = repository.loadMessages(chatId, 0, 20)
@@ -581,6 +595,7 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
+            cachedChatSummaryDao = cachedChatSummaryDao,
             chatSyncTimeDao = chatSyncTimeDao,
         )
 
