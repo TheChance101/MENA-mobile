@@ -9,7 +9,7 @@ internal enum class ValidMobileNumbersDummyData(
     EGYPT("+20", "01283393335"),
     IRAN("+98", "9104079193"),
     IRAQ("+964", "7701234567"),
-    JORDAN("+962", "7955513856"),
+    JORDAN("+962", "771234567"),
     KUWAIT("+965", "57341506"),
     LEBANON("+961", "76555211"),
     LIBYA("+218", "40946386"),
