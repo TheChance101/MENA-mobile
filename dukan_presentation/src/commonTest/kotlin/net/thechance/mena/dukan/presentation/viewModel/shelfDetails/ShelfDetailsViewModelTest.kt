@@ -17,8 +17,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -28,7 +26,6 @@ import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,7 +39,8 @@ class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
 
-    private val dukanManagementRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -62,7 +60,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
@@ -73,7 +71,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
@@ -84,7 +82,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
             isFavorite = false
-            )
+        )
     )
 
     @OptIn(ExperimentalUuidApi::class)
@@ -383,7 +381,7 @@ class ShelfDetailsViewModelTest {
             // Then
             shelfDetailsViewModel.state.test {
                 val state = awaitItem()
-                assertTrue (state.snackBarState!=null)
+                assertTrue(state.snackBarState != null)
             }
         }
 
@@ -403,7 +401,7 @@ class ShelfDetailsViewModelTest {
             // Then
             shelfDetailsViewModel.state.test {
                 val state = awaitItem()
-                assertTrue (state.snackBarState!=null)
+                assertTrue(state.snackBarState != null)
             }
         }
 

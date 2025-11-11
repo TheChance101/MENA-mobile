@@ -17,9 +17,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -31,7 +28,6 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -441,7 +437,7 @@ class DukanDetailsViewModelTest {
             // Then
             dukanDetailsViewModel.state.test {
                 val state = awaitItem()
-                assertTrue (state.snackBarState!=null)
+                assertTrue(state.snackBarState != null)
             }
         }
 
@@ -461,7 +457,7 @@ class DukanDetailsViewModelTest {
             // Then
             dukanDetailsViewModel.state.test {
                 val state = awaitItem()
-                assertTrue (state.snackBarState!=null)
+                assertTrue(state.snackBarState != null)
             }
         }
 
