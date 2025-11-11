@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -100,19 +99,18 @@ private fun SearchChips(
     Row(
         modifier = modifier
             .padding(top = Theme.spacing._12, start = Theme.spacing._16)
-            .fillMaxWidth()
-            .height(32.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         Chip(
             text = stringResource(resource = Res.string.dukans),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isDukanSelected,
             onClick = onDukansSelected,
         )
         Chip(
             text = stringResource(resource = Res.string.products),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isProductSelected,
             onClick = onProductsSelected,
         )

@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.go_to_checkout
 import mena.dukan_presentation.generated.resources.sub_total_price
@@ -48,8 +46,7 @@ fun DukanCartBottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
             text = stringResource(resource = Res.string.go_to_checkout),
             onClick = onCheckoutClick,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+                .fillMaxWidth(),
             isEnabled = totalPrice > 0.0
         )
     }

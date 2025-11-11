@@ -58,7 +58,7 @@ fun AddToCartSection(
             iconPadding = PaddingValues(Theme.spacing._8 + Theme.spacing._2)
         )
         Button(
-            modifier = Modifier.height(48.dp)
+            modifier = Modifier
                 .fillMaxWidth(),
             onClick = onAddToCartClick,
             isEnabled = true,
