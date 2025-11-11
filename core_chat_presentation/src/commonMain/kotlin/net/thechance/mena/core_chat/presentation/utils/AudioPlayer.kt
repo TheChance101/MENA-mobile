@@ -6,6 +6,7 @@ interface AudioPlayer {
     fun stop()
     fun release()
     fun getDuration(filePath: String): Long
+    fun getDurationOfCurrentAudio(): Long
     fun getCurrentPosition(): Long
 }
 

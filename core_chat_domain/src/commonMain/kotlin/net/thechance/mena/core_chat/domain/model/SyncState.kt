@@ -5,7 +5,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 sealed class SyncState {
-    object Offline : SyncState()
+    data object Offline : SyncState()
     data class ChatsSummariesSynced(val chatSummaries: List<ChatSummary>) : SyncState()
 
     @OptIn(ExperimentalUuidApi::class)
