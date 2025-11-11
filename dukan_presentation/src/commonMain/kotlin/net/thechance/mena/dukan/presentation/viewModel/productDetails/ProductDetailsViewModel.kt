@@ -187,15 +187,9 @@ class ProductDetailsViewModel(
     override fun onToggleProductToFavoriteClicked() {
         val currentProduct = state.value.product
         val isCurrentlyFavorite = state.value.isFavorite
-
+        updateState { copy(isFavorite = !isCurrentlyFavorite) }
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
-            onSuccess = {updateState { copy(isFavorite = isCurrentlyFavorite) }},
         )
-    }
-
-    fun refreshData(){
-        loadProductDetails()
-        loadCartInfo()
     }
 }
