@@ -482,7 +482,7 @@ class HomeViewModelTest {
             var state = awaitItem()
             assertThat(state.chats).isEmpty()
 
-            syncFlow.emit(SyncState.ChatsSummariesSynced(listOf(chat1, chat2)))
+            syncFlow.emit(SyncState.ChatsSummariesSyncedSuccess(listOf(chat1, chat2)))
             advanceUntilIdle()
 
             state = awaitItem()
@@ -547,13 +547,13 @@ class HomeViewModelTest {
             var state = awaitItem()
             assertThat(state.chats).isEmpty()
 
-            syncFlow.emit(SyncState.ChatsSummariesSynced(listOf(chat1, chat2, chat3)))
+            syncFlow.emit(SyncState.ChatsSummariesSyncedSuccess(listOf(chat1, chat2, chat3)))
             advanceUntilIdle()
 
             state = awaitItem()
             assertThat(state.chats.size).isEqualTo(3)
 
-            syncFlow.emit(SyncState.DeletedChatsSynced(listOf(chat2.id)))
+            syncFlow.emit(SyncState.DeletedChatsSyncedSuccess(listOf(chat2.id)))
             advanceUntilIdle()
 
             state = awaitItem()
@@ -581,13 +581,13 @@ class HomeViewModelTest {
             var state = awaitItem()
             assertThat(state.chats).isEmpty()
 
-            syncFlow.emit(SyncState.ChatsSummariesSynced(listOf(chat1, chat2, chat3, chat4)))
+            syncFlow.emit(SyncState.ChatsSummariesSyncedSuccess(listOf(chat1, chat2, chat3, chat4)))
             advanceUntilIdle()
 
             state = awaitItem()
             assertThat(state.chats.size).isEqualTo(4)
 
-            syncFlow.emit(SyncState.DeletedChatsSynced(listOf(chat2.id, chat4.id)))
+            syncFlow.emit(SyncState.DeletedChatsSyncedSuccess(listOf(chat2.id, chat4.id)))
             advanceUntilIdle()
 
             state = awaitItem()

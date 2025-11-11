@@ -32,7 +32,7 @@ internal val repositoryModule = module {
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
             dataStore = get(),
-            cachedChatDao = get()
+            cachedChatDao = get(),
         )
     }
 
@@ -44,7 +44,8 @@ internal val repositoryModule = module {
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON)),
             cachedMessageDao = get(),
-            chatSyncTimeDao = get()
+            chatSyncTimeDao = get(),
+            cachedChatSummaryDao = get(),
         )
     }
 

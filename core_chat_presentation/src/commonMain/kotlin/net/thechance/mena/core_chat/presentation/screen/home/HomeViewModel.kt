@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_get_balance
@@ -16,21 +15,15 @@ import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
-import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
-import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
-import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -39,7 +32,6 @@ import kotlin.uuid.ExperimentalUuidApi
 class HomeViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
-    private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
@@ -53,142 +45,144 @@ class HomeViewModel(
             getNextKey = { currentPage, _ -> currentPage + 1 },
             onError = { onLoadChatsSummaryError() },
             onSuccess = { result, _ -> onLoadChatsSummarySuccess(result) },
-            endReached = { _, result -> result.isLastPage }
-        )
+            endReached = { _, result -> result.isLastPage })
     }
 
     init {
         getBalanceAmount()
         onChatsListScrolled()
-        listenToIncomingMessages()
-        listenToMarkAsReadEvent()
-        observeDeleteChat()
+        observeChatSummariesList()
         observeChatSummariesSyncState()
     }
-    private fun observeChatSummariesSyncState() {
-        tryToCollect(
-            collect = { chatRepository.observeChatSummariesSyncState() },
-            onCollect = {
-                delay(100)
-                when (it) {
-                    is SyncState.Error -> showErrorLoadingChatsSnackBar()
-                    is SyncState.Offline -> showNoInternetSnackBar()
-                    is SyncState.ChatsSummariesSynced -> {
-                        updateState { state ->
-                            state.copy(
-                                chats = it.chatSummaries.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }
-                                    .map { chatSummary -> chatSummary.toUi() }
-                            )
-                        }
-                    }
-                    is SyncState.DeletedChatsSynced -> {
-                        val deletedChatIdsSet = it.chatIds.toSet()
-                        updateState { state ->
-                            state.copy(
-                                chats = state.chats.filter { chat -> chat.id !in deletedChatIdsSet }
-                            )
-                        }
-                    }
-                    else -> Unit
-                }
-            }
-        )
-    }
+    private fun observeChatSummariesList() {
+        tryToCollect(collect = {
+            chatRepository.observeChatSummaries()
+        }, onCollect = { chatSummaries ->
+            val updatedChatsSummaries =
+                chatSummaries?.sortedByDescending { it.lastMessage?.sendAt }?.map { it.toUi() }
+                    ?.distinctBy { it.id } ?: return@tryToCollect
 
-    private fun listenToMarkAsReadEvent() {
-        tryToCollect(
-            collect = { messageRepository.observeReadMessages() },
-            onCollect = ::onCollectMarkAsReadEvent,
-        )
-    }
-
-    private fun observeDeleteChat() {
-        tryToCollect(
-            collect = { messageRepository.observeDeleteChat() },
-            onCollect = ::onCollectDeleteChatEvent
-        )
-    }
-
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
-        updateState {
-            it.copy(
-                chats = it.chats.filterNot { chat -> chat.id == deleteChatEvent.chatId }
-            )
-        }
-    }
-
-    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-        if (markMessageAsReadEvent == null) return
-        if (markMessageAsReadEvent.readByMe.not()) return
-
-        val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
-        updateState {
-            it.copy(
-                chats = it.chats.map { chatSummary ->
-                    if (chatSummary.id == newChatSummary.id) newChatSummary
-                    else chatSummary
-                }
-            )
-        }
-    }
-
-    private fun listenToIncomingMessages() {
-        tryToCollect(
-            collect = { messageRepository.observeMessagesForChatOrAll() },
-            onCollect = ::onCollectMessage,
-            onError = { },
-        )
-    }
-
-    private suspend fun onCollectMessage(message: Message?) {
-        if (message == null) return
-        val chatSummary = state.value.chats.firstOrNull { chat ->
-            chat.id == message.chatId
-        }
-
-        if (chatSummary == null) {
-            val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
             updateState {
                 it.copy(
-                    chats = listOf(newChatSummary) + it.chats
+                    chats = mergedChats(
+                        oldChats = it.chats, newChats = updatedChatsSummaries
+                    )
                 )
+
             }
-            return
-        }
-
-        val updatedChatSummary = chatSummary.copy(
-            lastMessage = ChatUiState.MessageUiState(
-                text = (message.content as MessageContent.Text).text,
-                time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
-                isMine = message.isMine,
-            ),
-            status =
-                if (message.isMine) ChatUiState.Status.Sent
-                else ChatUiState.Status.UnRead(
-                    if (chatSummary.status is ChatUiState.Status.UnRead) chatSummary.status.count + 1
-                    else 1
-                )
-        )
-
-        val updatedChats =
-            listOf(updatedChatSummary) +
-                    state.value.chats.filterNot { it.id == message.chatId }
-
-        updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
+        })
     }
+
+    private fun mergedChats(
+        oldChats: List<ChatUiState>, newChats: List<ChatUiState>
+    ): List<HomeScreenState.ChatUiState> {
+        if(newChats.isEmpty()) return emptyList()
+        val newChatsMap = newChats.associateBy { it.id }.toMutableMap()
+        val map = oldChats
+            .filter { it.id in newChatsMap }
+            .distinctBy { it.id }
+            .associateBy { it.id }
+            .toMutableMap()
+        newChats.forEach { map[it.id] = it }
+        return map.values.sortedByDescending {
+            println("===> last message send at ${it.lastMessage?.time}")
+            it.lastMessage?.time.toString() }
+    }
+
+    private fun observeChatSummariesSyncState(){
+        tryToCollect(
+            collect = {
+                chatRepository.observeChatSummariesSyncState()
+            }, onCollect = {
+                if(it == null) return@tryToCollect
+                when(it){
+                    is SyncState.ChatsSummariesSyncedSuccess -> Unit
+                    is SyncState.DeletedChatsSyncedSuccess -> Unit
+                    is SyncState.Error -> showErrorLoadingChatsSnackBar()
+                    SyncState.Offline -> showNoInternetSnackBar()
+                }
+            }
+        )
+    }
+
+//    private fun listenToMarkAsReadEvent() {
+//        tryToCollect(
+//            collect = { messageRepository.observeReadMessages() },
+//            onCollect = ::onCollectMarkAsReadEvent,
+//        )
+//    }
+//
+//
+//    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
+//        if (markMessageAsReadEvent == null) return
+//        if (markMessageAsReadEvent.readByMe.not()) return
+//
+//        val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
+//        updateState {
+//            it.copy(
+//                chats = it.chats.map { chatSummary ->
+//                    if (chatSummary.id == newChatSummary.id) newChatSummary
+//                    else chatSummary
+//                })
+//        }
+//    }
+//
+//    private fun listenToIncomingMessages() {
+//        tryToCollect(
+//            collect = { messageRepository.observeMessagesForChatOrAll() },
+//            onCollect = ::onCollectMessage,
+//            onError = { },
+//        )
+//    }
+//
+//    private suspend fun onCollectMessage(message: Message?) {
+//        if (message == null) return
+//        val chatSummary = state.value.chats.firstOrNull { chat ->
+//            chat.id == message.chatId
+//        }
+//
+//        if (chatSummary == null) {
+//            val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
+//            updateState {
+//                it.copy(
+//                    chats = listOf(newChatSummary) + it.chats
+//                )
+//            }
+//            return
+//        }
+//
+//        val updatedChatSummary = chatSummary.copy(
+//            lastMessage = ChatUiState.MessageUiState(
+//                text = (message.content as MessageContent.Text).text,
+//                time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
+//                isMine = message.isMine,
+//            ), status = if (message.isMine) ChatUiState.Status.Sent
+//            else ChatUiState.Status.UnRead(
+//                if (chatSummary.status is ChatUiState.Status.UnRead) chatSummary.status.count + 1
+//                else 1
+//            )
+//        )
+//
+//        val updatedChats =
+//            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
+//
+//        updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
+//    }
 
     private fun getBalanceAmount() {
         tryToExecute(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
             execute = { balanceRepository.getBalance() },
             onSuccess = ::onGetBalanceAmountSuccess,
-            onError = { onGetBalanceAmountError() }
-        )
+            onError = { onGetBalanceAmountError() })
     }
 
     private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
-        updateState { it.copy(balanceAmount = balanceAmount.toInt().toString(), isBalanceLoading = false) }
+        updateState {
+            it.copy(
+                balanceAmount = balanceAmount.toInt().toString(), isBalanceLoading = false
+            )
+        }
     }
 
     private fun onGetBalanceAmountError() {
@@ -212,8 +206,7 @@ class HomeViewModel(
 
     private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
         return chatRepository.getChatsSummary(
-            pageNumber = pageNumber,
-            pageSize = PAGE_SIZE
+            pageNumber = pageNumber, pageSize = PAGE_SIZE
         )
     }
 
@@ -232,7 +225,8 @@ class HomeViewModel(
             isError = true
         )
     }
-    private fun showErrorLoadingChatsSnackBar(){
+
+    private fun showErrorLoadingChatsSnackBar() {
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,
@@ -241,19 +235,18 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
-        val chats = items.data
-            .sortedByDescending { it.lastMessage?.sendAt }
-            .map { chat -> chat.toUi() }
-
-        updateState { it.copy(chats = it.chats + chats) }
+//        val chats = items.data
+//            .sortedByDescending { it.lastMessage?.sendAt }
+//            .map { chat -> chat.toUi() }
+//
+//        updateState { it.copy(chats = (it.chats + chats).distinctBy { chatSummary -> chatSummary.id }) }
     }
 
     override fun onNewChatClicked() {
         tryToExecute(
             execute = { contactsRepository.getHasUserSyncedContactsStatus() },
             onSuccess = ::onGetSyncStatusSuccess,
-            onError = { onGetSyncStatusError() }
-        )
+            onError = { onGetSyncStatusError() })
     }
 
     private fun onGetSyncStatusSuccess(isSynced: Boolean) {
@@ -286,8 +279,7 @@ class HomeViewModel(
         super.onCleared()
         tryToExecute(
             coroutineScope = CoroutineScope(Dispatchers.IO),
-            execute = { chatRepository.disconnect() }
-        )
+            execute = { chatRepository.disconnect() })
     }
 
     override fun onWalletClicked() {

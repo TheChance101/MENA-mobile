@@ -348,10 +348,10 @@ class ChatRepositoryImplTest {
         repository.getChatsSummary(pageNumber, pageSize)
 
         val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.ChatsSummariesSynced
+            it is SyncState.ChatsSummariesSyncedSuccess
         }
 
-        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
+        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSyncedSuccess(chatSummaries.map { it.toDomain()!! }))
     }
 
     @Test
@@ -463,10 +463,10 @@ class ChatRepositoryImplTest {
         repository.getChatsSummary(pageNumber, pageSize)
 
         val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.DeletedChatsSynced
+            it is SyncState.DeletedChatsSyncedSuccess
         }
 
-        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
+        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSyncedSuccess(deletedIds))
 
     }
 

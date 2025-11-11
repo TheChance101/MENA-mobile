@@ -19,10 +19,13 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toCached
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
@@ -38,7 +41,9 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessa
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
+import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
@@ -60,6 +65,7 @@ class MessageRepositoryImpl(
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
+    private val cachedChatSummaryDao: CachedChatSummaryDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -175,7 +181,6 @@ class MessageRepositoryImpl(
     override suspend fun sendMessage(message: Message) {
         val pendingMessage = message.copy(status = MessageStatus.LOADING).toPendingMessageLocalDto()
         pendingMessageDao.insertMessage(pendingMessage)
-
         try {
             val messageSender = messageSenderFactory.create(message.content)
             messageSender.send(message)
@@ -257,6 +262,7 @@ class MessageRepositoryImpl(
                 message?.let {
                     cachedMessageDao.insertMessage(it.toCachedMessageLocalDto())
                     messagesFlow.emit(it)
+                    updateCachedChatsSummaries(it)
                 }
             }
 
@@ -264,11 +270,13 @@ class MessageRepositoryImpl(
                 val dto = json.decodeFromString<MarkAsReadDto>(body)
                 cachedMessageDao.markMessagesAsReadByReader(dto.chatId, dto.readByUserId)
                 markMessagesAsRead.emit(dto.toDomain())
+                //updateReadInCachedChatSummaryBasedOnEvent(dto)
             }
 
             DELETE_CHAT -> {
                 val dto = json.decodeFromString<DeleteChatDto>(body)
                 markChatAsDeleted.emit(dto.toDomain())
+                cachedChatSummaryDao.deleteChatSummaryById(dto.chatId)
             }
 
             else -> {
@@ -278,10 +286,59 @@ class MessageRepositoryImpl(
 
     }
 
+    private suspend fun updateReadInCachedChatSummaryBasedOnEvent(readDto : MarkAsReadDto ){
+        // need further thinking
+        if (readDto.readByMe) {
+            cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
+                chatId = readDto.chatId,
+                readCount = 0
+            )
+        }
+    }
+
+    private suspend fun updateCachedChatsSummaries(message: Message){
+        val chatSummary = cachedChatSummaryDao.getChatSummaryById(message.chatId.toString())
+
+        if (chatSummary != null) {
+            val updatedUnread = chatSummary.unReadMessagesCount + 1
+            val content = when(message.content){
+                is MessageContent.Audio -> "Audio"
+                is MessageContent.Image -> "Photo"
+                is MessageContent.Text -> (message.content as MessageContent.Text).text
+            }
+            cachedChatSummaryDao.insertChatSummary(
+                chatSummary.copy(
+                    lastMessageContent = content,
+                    lastMessageSentAt = message.sendAt.toString(),
+                    lastMessageIsMine = message.isMine,
+                    unReadMessagesCount = updatedUnread
+                )
+            )
+        } else {
+            val newSummary = getChatSummaryById(message.chatId)
+            cachedChatSummaryDao.insertChatSummary(newSummary.toCached())
+        }
+    }
+
+     suspend fun getChatSummaryById(chatId: Uuid): ChatSummary {
+        return tryNetworkCall<ChatSummaryDto>(
+            bodyType = typeInfo<ChatSummaryDto>()
+        ) {
+            client.get(getChatSummaryEndpoint(chatId))
+        }?.toDomain() ?: throw NotFoundException("Chat not found")
+    }
     override suspend fun markMessagesOfChatAsRead(chatId: Uuid) {
         webSocketManager.sendTextFrame(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
+        )
+        //resetReadCountForChat(chatId)
+    }
+
+    private suspend fun resetReadCountForChat(chatId: Uuid){
+        cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
+            chatId = chatId.toString(),
+            readCount = 0
         )
     }
 
@@ -342,6 +399,9 @@ class MessageRepositoryImpl(
             return "/chat/${chatId}/messages"
         }
 
+        fun getChatSummaryEndpoint(chatId: Uuid): String {
+            return "/chat/${chatId}/summary"
+        }
         fun getMessagesUpdatesEndPoint(chatId: Uuid): String = "/chat/${chatId}/messages/latest"
     }
 }

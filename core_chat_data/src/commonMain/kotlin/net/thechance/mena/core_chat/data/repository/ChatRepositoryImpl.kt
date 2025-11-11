@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toCached
@@ -31,6 +33,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.OperationFailedException
@@ -59,38 +62,57 @@ class ChatRepositoryImpl(
         return _syncState
     }
 
-    @OptIn(ExperimentalTime::class)
-    override suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary> {
-        val cachedData = cachedChatSummaryDao.getChatSummaries(
-            pageSize = pageSize,
-            offset = pageNumber * pageSize
-        ).map { it.toDomain() }
 
-        // totalItems and isLastPage should reflect the actual data in remote database
-        val totalItems = cachedChatSummaryDao.getChatSummariesCount()
-        val isLastPage = cachedData.size < pageSize && cachedData.isNotEmpty()
-        val result = PagedData(data = cachedData, totalItems = totalItems, isLastPage = isLastPage)
+
+    override fun observeChatSummaries(): Flow<List<ChatSummary>> {
+        return cachedChatSummaryDao.getChatSummariesFlow().map { chatSummaryList ->
+            chatSummaryList.map { it.toDomain() }
+        }
+    }
+
+
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun getChatsSummary(
+        pageNumber: Int, pageSize: Int
+    ): PagedData<ChatSummary> {
+        val offset = pageNumber * pageSize
+        val localData = cachedChatSummaryDao.getChatSummaries(pageSize, offset).map {
+            it.toDomain()
+        }
+        val totalItemsCount = getTotalItemsCount() ?: localData.size
+        println("====> total item count: ${getTotalItemsCount()}")
+        val isLastPage = (offset + localData.size) >= totalItemsCount
 
         scope.launch {
-            val lastTimeSynced: Instant? = getLastTimeSynced()
-            syncChatSummaries(lastTimeSynced, pageNumber, pageSize)
+            val lastTimeSynced = getLastTimeSynced()
+            if (lastTimeSynced != null) syncDeletedChats(lastTimeSynced)
+            syncChatSummaries(
+                pageNumber = pageNumber, pageSize = pageSize
+            )
         }
-        return result
+        return PagedData(
+            data = localData, totalItems = totalItemsCount.toInt(), isLastPage = isLastPage
+        )
     }
 
-    @OptIn(ExperimentalTime::class)
-    private suspend fun syncChatSummaries(lastSyncTime: Instant?, pageNumber: Int, pageSize: Int) {
-        if (lastSyncTime != null) {
-            syncDeletedChats(lastSyncTime)
-        }
-        syncChatsData(pageNumber = pageNumber, pageSize = pageSize)
-        updateSyncedTime()
-    }
 
     @OptIn(ExperimentalTime::class)
     private suspend fun updateSyncedTime() {
         dataStore.edit { preferences ->
             preferences[LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY] = Clock.System.now().toString()
+        }
+    }
+
+    private suspend fun getTotalItemsCount() : Int?{
+        return dataStore.data.map {
+            it[TOTAL_ITEMS_COUNT_KEY]
+        }.firstOrNull()
+    }
+
+    private suspend fun updateTotalItemCount(totalCount: Int) {
+        dataStore.edit {
+            it[TOTAL_ITEMS_COUNT_KEY] = totalCount
         }
     }
 
@@ -107,11 +129,11 @@ class ChatRepositoryImpl(
         handleSyncingDataSafely {
             val deletedChatsId = getDeletedChatAfterSpecificTime(time)
             cachedChatSummaryDao.deleteMultipleChatSummaries(deletedChatsId.map { it.toString() })
-            _syncState.emit(SyncState.DeletedChatsSynced(deletedChatsId))
+            _syncState.emit(SyncState.DeletedChatsSyncedSuccess)
         }
     }
 
-    private suspend fun syncChatsData(pageNumber: Int, pageSize: Int) {
+    private suspend fun syncChatSummaries(pageNumber: Int, pageSize: Int) {
         handleSyncingDataSafely {
             val remoteChatSummaries = tryNetworkCall<PagedDataDto<ChatSummaryDto>>(
                 bodyType = typeInfo<PagedDataDto<ChatSummaryDto>>()
@@ -120,8 +142,7 @@ class ChatRepositoryImpl(
                     parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                     parameter(PAGE_SIZE_PARAMETER, pageSize)
                 }
-            }?.toPagedListOfChatSummary()
-                ?: throw NotFoundException("Response body is null")
+            }?.toPagedListOfChatSummary() ?: throw NotFoundException("Response body is null")
 
             val remoteChatSummariesData = remoteChatSummaries.data
             if (remoteChatSummariesData.isNotEmpty()) {
@@ -129,7 +150,9 @@ class ChatRepositoryImpl(
                     it.toCached()
                 })
             }
-            _syncState.emit(SyncState.ChatsSummariesSynced(remoteChatSummariesData))
+            updateTotalItemCount(remoteChatSummariesData.size)
+            updateSyncedTime()
+            _syncState.emit(SyncState.ChatsSummariesSyncedSuccess)
         }
     }
 
@@ -187,19 +210,20 @@ class ChatRepositoryImpl(
     }
 
     override suspend fun getChatById(chatId: Uuid): Chat {
-        return cachedChatDao.getChatById(chatId.toString())?.toDomain()
-            ?: tryNetworkCall<ChatDto>(bodyType = typeInfo<ChatDto>()) {
-                client.get("$CHAT_ENDPOINT/$chatId")
-            }?.also { chat ->
-                cachedChatDao.insertChat(chat.toLocalDto())
-            }?.toDomain()
-            ?: throw NotFoundException("Chat not found")
+        return cachedChatDao.getChatById(chatId.toString())?.toDomain() ?: tryNetworkCall<ChatDto>(
+            bodyType = typeInfo<ChatDto>()
+        ) {
+            client.get("$CHAT_ENDPOINT/$chatId")
+        }?.also { chat ->
+            cachedChatDao.insertChat(chat.toLocalDto())
+        }?.toDomain() ?: throw NotFoundException("Chat not found")
     }
 
 
     override suspend fun disconnect() {
         webSocketManager.disconnect()
     }
+
 
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
@@ -212,6 +236,7 @@ class ChatRepositoryImpl(
 
         val LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY =
             stringPreferencesKey("lastTimeChatSummariesSynced")
+        val TOTAL_ITEMS_COUNT_KEY = intPreferencesKey("totalItemsCount")
 
         fun getChatSummaryEndpoint(chatId: Uuid): String {
             return "/chat/${chatId}/summary"

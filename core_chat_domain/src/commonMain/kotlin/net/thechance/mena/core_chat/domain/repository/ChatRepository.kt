@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import kotlin.time.ExperimentalTime
@@ -19,6 +20,8 @@ interface ChatRepository {
     suspend fun getChatsSummary(pageNumber: Int, pageSize: Int): PagedData<ChatSummary>
 
     fun observeChatSummariesSyncState(): Flow<SyncState>
+
+    fun observeChatSummaries(): Flow<List<ChatSummary>>
     suspend fun getChatSummaryById(chatId: Uuid): ChatSummary
 
     @OptIn(ExperimentalTime::class)

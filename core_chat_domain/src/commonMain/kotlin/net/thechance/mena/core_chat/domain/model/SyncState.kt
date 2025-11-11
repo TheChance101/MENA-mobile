@@ -1,15 +1,13 @@
 package net.thechance.mena.core_chat.domain.model
 
-import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 sealed class SyncState {
     object Offline : SyncState()
-    data class ChatsSummariesSynced(val chatSummaries: List<ChatSummary>) : SyncState()
+    object ChatsSummariesSyncedSuccess : SyncState()
 
     @OptIn(ExperimentalUuidApi::class)
-    data class DeletedChatsSynced(val chatIds: List<Uuid>) : SyncState()
+    object DeletedChatsSyncedSuccess : SyncState()
 
     data class Error(val error: Throwable) : SyncState()
 }
