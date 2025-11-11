@@ -9,8 +9,7 @@ import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
@@ -133,7 +132,7 @@ class EnterNameViewModel(
 
     private fun mapErrorMessage(throwable: Throwable): StringResource = when (throwable) {
         is AuthenticationException -> mapAuthenticationErrorToMessage(
-            handleAuthenticationException(throwable)
+            handleRegisterEnterNameException(throwable)
         )
         else -> mapErrorToMessage(ErrorState.GenericError(throwable))
     }
