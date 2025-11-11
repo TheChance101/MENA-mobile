@@ -13,7 +13,7 @@ data class UsersManagementScreenState(
     val query: String = "",
     val pageInfo : UserPageInfo = UserPageInfo(),
     val sort: SortState = SortState(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isBlockDialogShown: Boolean = false,

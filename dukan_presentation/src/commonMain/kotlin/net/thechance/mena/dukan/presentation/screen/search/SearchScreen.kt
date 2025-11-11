@@ -71,7 +71,7 @@ private fun SearchContent(
     listener: SearchInteractionListener
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
+        modifier = Modifier,
         topBar = {
             SearchHeader(
                 query = state.searchQuery,

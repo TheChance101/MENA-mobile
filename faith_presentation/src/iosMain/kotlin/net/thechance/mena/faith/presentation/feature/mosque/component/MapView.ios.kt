@@ -1,4 +1,4 @@
-package net.thechance.mena.faith.presentation.utils
+package net.thechance.mena.faith.presentation.feature.mosque.component
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,9 +11,9 @@ actual fun MapView(
     centerLongitude: Double,
     zoomLevel: Double,
     markers: List<MosqueUiState>,
+    canMove: Boolean,
     onMarkerClick: (MosqueUiState) -> Unit,
-    onMapClick: (Double, Double) -> Unit,
-    onCameraMove: (Double, Double) -> Unit
+    onCameraMove: (Double, Double) -> Unit,
+    onMapIdle: (Double, Double) -> Unit
 ) {
-
 }

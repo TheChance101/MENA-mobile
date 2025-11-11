@@ -4,7 +4,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_confirm_password_not_match
 import mena.identity_presentation.generated.resources.error_password_mismatch
+import mena.identity_presentation.generated.resources.error_password_validation
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
@@ -33,7 +35,10 @@ class SetNewPasswordScreenViewModel(
         updateState {
             copy(
                 confirmPassword = password,
-                confirmPasswordErrorMessage = validatePasswordConfirmation(newPassword, password),
+                confirmPasswordErrorMessage =
+                    if (validatePasswordConfirmation(newPassword, password))
+                        Res.string.error_confirm_password_not_match
+                    else null,
             )
         }
         checkResetButtonEnabled()
@@ -87,7 +92,7 @@ class SetNewPasswordScreenViewModel(
     }
 
     private fun onResetPasswordError(throwable: Throwable) {
-        updateState { copy(isLoading = false,errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
     }
 
     private fun checkResetButtonEnabled() {
@@ -97,16 +102,19 @@ class SetNewPasswordScreenViewModel(
 
             copy(
                 newPasswordErrorMessage = if (!isPasswordSecure)
-                    "Password must be at least 8 characters long and contain at least one uppercase letter and one digit."
+                    Res.string.error_password_validation
                 else null,
                 isResetEnabled = isPasswordsMatch && isPasswordSecure
             )
         }
     }
 
-    private fun mapErrorMessage(throwable: Throwable): StringResource{
-        return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handleAuthenticationException(throwable)
+            )
+
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }

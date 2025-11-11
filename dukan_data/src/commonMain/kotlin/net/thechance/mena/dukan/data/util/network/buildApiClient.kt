@@ -20,7 +20,7 @@ import net.thechance.mena.identity.domain.service.AuthorizationService
 expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
 
 
-fun buildApiClient(
+fun buildDukanApiClient(
     authorizationService: AuthorizationService,
     baseUrl: String
 ): HttpClient {
@@ -67,6 +67,17 @@ fun buildApiClient(
             }
         }
 
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+            connectTimeoutMillis = 15_000
+            socketTimeoutMillis = 15_000
+        }
+    }
+}
+
+
+fun buildDukanCoilClient(): HttpClient {
+    return HttpClient(platformHttpClientEngineFactory) {
         install(HttpTimeout) {
             requestTimeoutMillis = 15_000
             connectTimeoutMillis = 15_000

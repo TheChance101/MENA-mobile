@@ -42,7 +42,8 @@ class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
 
-    private val dukanManagementRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -62,7 +63,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
@@ -73,7 +74,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
@@ -84,7 +85,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
             isFavorite = false
-            )
+        )
     )
 
     @OptIn(ExperimentalUuidApi::class)
@@ -158,7 +159,7 @@ class ShelfDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -308,6 +309,25 @@ class ShelfDetailsViewModelTest {
         }
 
     @Test
+    fun `onAddToCartClicked SHOULD update hasProductInCart to true`() = runTest {
+        val productId = "1"
+        val quantity = 1
+
+        shelfDetailsViewModel.onAddToCartClicked(
+            productId,
+            productQuantity = quantity,
+        )
+
+        advanceUntilIdle()
+
+        shelfDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(true, state.hasProductInCart)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `onAddToCartClicked SHOULD toggle product cart to update existing product quantity`() =
         runTest {
             // Given
@@ -344,6 +364,26 @@ class ShelfDetailsViewModelTest {
         //Then
         verifySuspend {
             dukanCartRepository.updateProductQuantity(any())
+        }
+    }
+
+
+    @Test
+    fun `onPlusClicked SHOULD update hasProductInCart to true`() = runTest {
+        val productId = "1"
+        val quantity = 1
+
+        shelfDetailsViewModel.onPlusClicked(
+            productId,
+            productQuantity = quantity,
+        )
+
+        advanceUntilIdle()
+
+        shelfDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(true, state.hasProductInCart)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -391,21 +431,22 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
-        // Given
-        val productId = "1"
-        val quantity = 5
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
 
-        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+            everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
 
-        // When
-        shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
-        advanceUntilIdle()
+            // When
+            shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
 
-        // Then
-        val state = shelfDetailsViewModel.state.value
-        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
-    }
+            // Then
+            val state = shelfDetailsViewModel.state.value
+            assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
+            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+        }
 
 }

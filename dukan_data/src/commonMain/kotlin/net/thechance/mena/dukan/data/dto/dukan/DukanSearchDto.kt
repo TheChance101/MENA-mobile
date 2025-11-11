@@ -14,5 +14,7 @@ data class DukanSearchDto(
     val name: String,
     @SerialName("imageUrl")
     val imageUrl: String,
+    @SerialName("isFavorite")
+    val isFavorite: Boolean,
 )
 

@@ -17,7 +17,7 @@ suspend fun <T> tryNetworkCall(
     defaultException: ChatException = UnknownException("Unknown error occurred"),
     bodyType: TypeInfo,
     call: suspend () -> HttpResponse,
-): T? {
+): T {
     return runCatchingWithException(defaultException) {
         val response = call()
         response.getSuccessBodyOrThrow(bodyType)
@@ -26,8 +26,8 @@ suspend fun <T> tryNetworkCall(
 
 private suspend fun <T> runCatchingWithException(
     defaultException: ChatException = UnknownException("Unknown error occurred"),
-    block: suspend () -> T?
-): T? {
+    block: suspend () -> T
+): T {
     return try {
         block()
     } catch (_: ContactsPermissionDeniedException) {
@@ -44,7 +44,7 @@ private suspend fun <T> runCatchingWithException(
 }
 
 
-private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T? {
+private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T {
     return when {
         this.status.isSuccess() -> this.body(bodyType)
         this.status == HttpStatusCode.Unauthorized -> throw UnAuthorizedException()

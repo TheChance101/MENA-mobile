@@ -8,7 +8,8 @@ import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
 import net.thechance.mena.dukan.data.repository.LocationRepositoryImpl
 import net.thechance.mena.dukan.data.repository.SearchRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
-import net.thechance.mena.dukan.data.util.network.buildApiClient
+import net.thechance.mena.dukan.data.util.network.buildDukanApiClient
+import net.thechance.mena.dukan.data.util.network.buildDukanCoilClient
 import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -25,11 +26,18 @@ import org.koin.dsl.module
 
 internal val dukanRepositoryModule = module {
     single<HttpClient>(named("dukanClient")) {
-        buildApiClient(
+        buildDukanApiClient(
             authorizationService = get(),
             baseUrl = get<String>(named("baseUrl"))
         )
     }
+
+    single<HttpClient>(named("dukanCoilClient")) {
+        buildDukanCoilClient()
+    }
+
+
+
     single<DukanDiscoveryRepository> {
         DukanDiscoveryRepositoryImpl(
             client = get(named("dukanClient")),

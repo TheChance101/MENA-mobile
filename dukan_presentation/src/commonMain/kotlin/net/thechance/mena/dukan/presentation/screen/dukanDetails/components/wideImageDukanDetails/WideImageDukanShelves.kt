@@ -12,30 +12,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.products
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.chip.ShelfChip
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
-import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun WideImageDukanShelves(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
+    shelves: LazyPagingItems<ShelfUiState>
 ) {
-    val shelves = state.shelves.collectAsLazyPagingItems()
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -82,6 +77,7 @@ private fun LoadingShelves() {
         }
     }
 }
+
 @Composable
 private fun LoadedShelves(
     shelves: LazyPagingItems<ShelfUiState>,
@@ -110,27 +106,5 @@ private fun LoadedShelves(
                 selectedBackgroundColor = chipColor,
             )
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Shelves Section - Loading")
-@Composable
-private fun DukanShelvesSectionLoadingPreview() {
-    MenaTheme {
-        WideImageDukanShelves(
-            state = DukanDetailsUiState(),
-            listener = PreviewDukanDetailsInteractionListener,
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "Shelves Section - Loaded")
-@Composable
-private fun DukanShelvesSectionLoadedPreview() {
-    MenaTheme {
-        WideImageDukanShelves(
-            state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
-        )
     }
 }

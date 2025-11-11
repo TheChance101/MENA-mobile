@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -265,6 +266,7 @@ private fun TrendItem(
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f
+    val thumbnailUrl = remember(item.id) { item.thumbnailUrl }
 
     Box(
         modifier = modifier
@@ -275,10 +277,10 @@ private fun TrendItem(
         contentAlignment = Alignment.Center
 
     ) {
-        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
+        TrendsAnimatedVisibility(visible = thumbnailUrl.isNotBlank()) {
             BaseAsyncImage(
-                url = item.thumbnailUrl,
-                contentDescription = stringResource(resource = Res.string.trend_image_desc),
+                url = thumbnailUrl,
+                contentDescription = stringResource(Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 onRequestRefresh = { onGetRefreshedThumbnail(item.id) },
@@ -286,7 +288,7 @@ private fun TrendItem(
             )
         }
 
-        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
+        TrendsAnimatedVisibility(visible = thumbnailUrl.isBlank()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),
