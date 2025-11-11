@@ -30,7 +30,7 @@ interface DukanApiService {
     ): Response<DukanPagedResponse<ProductDto>>
 
     private companion object {
-        const val DUKAN_ADMIN_BASE = "/dukan/admin"
+        const val DUKAN_ADMIN_BASE = "dukan/admin"
         const val DUKAN_DETAILS_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}"
         const val DUKAN_SHELVES_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{dukanId}"
         const val SHELF_PRODUCTS_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{shelfId}/products"
