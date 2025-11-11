@@ -118,6 +118,7 @@ class AddressesScreen(
             AddressesScreenUIEffect.NavigateBack -> {
                 onNavigateBack?.invoke() ?: navigator.pop()
             }
+
             is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
                 navigator.push(
                     AddEditLocationScreen(
@@ -164,7 +165,7 @@ private fun AddressesSection(
                 isActivating = it.isActivating || it.isRefreshing
             )
         }
-        
+
         if (isAddingNewAddress) {
             item {
                 AddressCardShimmer()

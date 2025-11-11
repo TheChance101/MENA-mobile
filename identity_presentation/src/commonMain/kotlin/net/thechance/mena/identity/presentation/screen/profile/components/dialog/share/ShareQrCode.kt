@@ -232,7 +232,8 @@ private fun ShareProfileButton(
     ) {
         Icon(
             painter = icon,
-            contentDescription = contentDescription
+            contentDescription = contentDescription,
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }
