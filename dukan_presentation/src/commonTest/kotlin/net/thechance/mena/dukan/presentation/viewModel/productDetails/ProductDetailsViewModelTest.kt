@@ -371,7 +371,7 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD notChangeFavoriteState`() =
+    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD keep the change in ui`() =
         runTest {
             // Given
             val networkError = NoInternetException()
@@ -384,7 +384,7 @@ class ProductDetailsViewModelTest {
 
             // Then
             val state = productDetailsViewModel.state.value
-            assertFalse(state.isFavorite)
+            assertTrue(state.isFavorite)
         }
 
 

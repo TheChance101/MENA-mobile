@@ -210,6 +210,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onShelfClicked(id: String) {
+        if (state.value.shelfIdSelected == id) return
         updateState { copy(shelfIdSelected = id) }
 
         if (isWideImageStyle()) {

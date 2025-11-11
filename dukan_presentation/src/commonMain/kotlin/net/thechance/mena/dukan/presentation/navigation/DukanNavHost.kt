@@ -15,6 +15,7 @@ import net.thechance.mena.dukan.presentation.screen.createShelf.CreateShelfScree
 import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartScreen
 import net.thechance.mena.dukan.presentation.screen.dukanCategories.DukanCategoriesScreen
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsScreen
+import net.thechance.mena.dukan.presentation.screen.dukanLocation.DukanLocationScreen
 import net.thechance.mena.dukan.presentation.screen.editProduct.EditProductScreen
 import net.thechance.mena.dukan.presentation.screen.main.MainScreen
 import net.thechance.mena.dukan.presentation.screen.manageDukan.ManageDukanScreen
@@ -101,13 +102,16 @@ fun DukanNavHost(
             composable<DukanRoute.CheckoutScreenRoute> {
                 CheckoutScreen()
             }
-            composable<DukanRoute.SearchScreenRoute>{
+            composable<DukanRoute.SearchScreenRoute> {
                 SearchScreen()
             }
             composable<DukanRoute.AddressesRoute> {
                 identityApi.NavigateToAddressesScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
+            }
+            composable<DukanRoute.DukanLocation> {
+                DukanLocationScreen()
             }
         }
     }

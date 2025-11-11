@@ -250,10 +250,7 @@ class ChatViewModel(
             content = content
         )
 
-        tryToExecute(
-            execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
-        )
+        sendMessage(message)
     }
 
     override fun onInputMessageChanged(value: String) {
@@ -281,12 +278,7 @@ class ChatViewModel(
 
         tryToExecute(
             execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
         )
-    }
-
-    private suspend fun onSendMessageSuccess(message: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter { it.id != message.id && it.sendAt != message.sendTime } }
     }
 
     override fun onMessageClicked(messageId: Uuid) {
