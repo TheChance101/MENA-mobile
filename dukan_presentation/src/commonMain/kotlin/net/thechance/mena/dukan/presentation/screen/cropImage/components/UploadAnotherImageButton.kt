@@ -41,6 +41,7 @@ fun UploadAnotherImageButton(
     val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
     val isFilePickerLaunching = remember { mutableStateOf(false) }
     val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        isFilePickerLaunching.value = false
         file?.let { image ->
             scope.launch {
                 image.toImageSrc()?.let { src ->
