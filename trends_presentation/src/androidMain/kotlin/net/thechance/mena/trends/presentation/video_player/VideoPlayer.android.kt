@@ -114,12 +114,10 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context)
+    val exoPlayer = remember(url) {
+    ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
-            .setMediaSourceFactory(
-                DefaultMediaSourceFactory(source)
-            )
+            .setMediaSourceFactory(DefaultMediaSourceFactory(source))
             .build().apply {
                 setSeekParameters(SeekParameters.EXACT)
                 repeatMode = Player.REPEAT_MODE_ONE
@@ -141,12 +139,10 @@ actual fun VideoPlayer(
                                 isStartPlaying = true
                                 false
                             }
-
                             Player.STATE_BUFFERING -> {
                                 isInitialBuffering = !isStartPlaying
                                 true
                             }
-
                             else -> false
                         }
                     }
@@ -156,23 +152,25 @@ actual fun VideoPlayer(
     }
 
     LaunchedEffect(url) {
-        val savedPosition = exoPlayer.currentPosition
-        exoPlayer.setMediaItem(mediaItem, false)
-        exoPlayer.prepare()
-        exoPlayer.seekTo(savedPosition)
-        if (isReelVisible) {
-            exoPlayer.playWhenReady = true
-            exoPlayer.play()
+        if (exoPlayer.currentMediaItem?.localConfiguration?.uri.toString() != url) {
+            val savedPosition = exoPlayer.currentPosition
+            exoPlayer.setMediaItem(mediaItem, false)
+            exoPlayer.prepare()
+            exoPlayer.seekTo(savedPosition)
+            if (isReelVisible) {
+                exoPlayer.playWhenReady = true
+                exoPlayer.play()
+            }
         }
     }
 
     LaunchedEffect(isReelVisible) {
         if (isReelVisible) {
-            exoPlayer.setMediaItem(mediaItem)
-            exoPlayer.prepare()
-            if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
-            exoPlayer.playWhenReady = true
-            exoPlayer.play()
+            if (!exoPlayer.isPlaying) {
+                if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
+                exoPlayer.playWhenReady = true
+                exoPlayer.play()
+            }
         } else {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
