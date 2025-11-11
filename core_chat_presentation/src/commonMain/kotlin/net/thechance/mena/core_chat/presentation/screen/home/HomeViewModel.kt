@@ -44,7 +44,7 @@ class HomeViewModel(
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ -> currentPage + 1 },
             onError = { onLoadChatsSummaryError() },
-            onSuccess = { result, _ -> onLoadChatsSummarySuccess(result) },
+            onSuccess = { result, _ -> Unit },
             endReached = { _, result -> result.isLastPage })
     }
 
@@ -103,70 +103,6 @@ class HomeViewModel(
             }
         )
     }
-
-//    private fun listenToMarkAsReadEvent() {
-//        tryToCollect(
-//            collect = { messageRepository.observeReadMessages() },
-//            onCollect = ::onCollectMarkAsReadEvent,
-//        )
-//    }
-//
-//
-//    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-//        if (markMessageAsReadEvent == null) return
-//        if (markMessageAsReadEvent.readByMe.not()) return
-//
-//        val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
-//        updateState {
-//            it.copy(
-//                chats = it.chats.map { chatSummary ->
-//                    if (chatSummary.id == newChatSummary.id) newChatSummary
-//                    else chatSummary
-//                })
-//        }
-//    }
-//
-//    private fun listenToIncomingMessages() {
-//        tryToCollect(
-//            collect = { messageRepository.observeMessagesForChatOrAll() },
-//            onCollect = ::onCollectMessage,
-//            onError = { },
-//        )
-//    }
-//
-//    private suspend fun onCollectMessage(message: Message?) {
-//        if (message == null) return
-//        val chatSummary = state.value.chats.firstOrNull { chat ->
-//            chat.id == message.chatId
-//        }
-//
-//        if (chatSummary == null) {
-//            val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
-//            updateState {
-//                it.copy(
-//                    chats = listOf(newChatSummary) + it.chats
-//                )
-//            }
-//            return
-//        }
-//
-//        val updatedChatSummary = chatSummary.copy(
-//            lastMessage = ChatUiState.MessageUiState(
-//                text = (message.content as MessageContent.Text).text,
-//                time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
-//                isMine = message.isMine,
-//            ), status = if (message.isMine) ChatUiState.Status.Sent
-//            else ChatUiState.Status.UnRead(
-//                if (chatSummary.status is ChatUiState.Status.UnRead) chatSummary.status.count + 1
-//                else 1
-//            )
-//        )
-//
-//        val updatedChats =
-//            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
-//
-//        updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
-//    }
 
     private fun getBalanceAmount() {
         tryToExecute(
@@ -233,13 +169,7 @@ class HomeViewModel(
         )
     }
 
-    private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
-//        val chats = items.data
-//            .sortedByDescending { it.lastMessage?.sendAt }
-//            .map { chat -> chat.toUi() }
-//
-//        updateState { it.copy(chats = (it.chats + chats).distinctBy { chatSummary -> chatSummary.id }) }
-    }
+
 
     override fun onNewChatClicked() {
         tryToExecute(
