@@ -28,7 +28,6 @@ import mena.identity_presentation.generated.resources.profile_title
 import mena.identity_presentation.generated.resources.share_message
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -92,8 +91,8 @@ class ProfileScreen : BaseScreen<
                         isVisible = it,
                         onDismissRequest = listener::onDismissThemeDialog,
                         appThemes = state.themeDialogUiState.options,
-                        currentAppTheme = state.themeDialogUiState.selectedAppTheme,
                         onConfirmThemeSelection = listener::onConfirmThemeSelection,
+                        currentAppTheme = state.themeDialogUiState.selectedAppTheme,
                     )
                 }
                 dialog(state.showShareProfileDialog) {
@@ -176,7 +175,8 @@ class ProfileScreen : BaseScreen<
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
                             onThemeClicked = listener::onThemeClicked,
-                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso
+                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso,
+                            currentTheme = state.themeDialogUiState.selectedAppTheme.name
                         )
                     }
                     item {
