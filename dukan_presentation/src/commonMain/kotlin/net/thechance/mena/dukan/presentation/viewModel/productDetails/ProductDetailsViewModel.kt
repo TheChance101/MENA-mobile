@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import mena.dukan_presentation.generated.resources.remove_product_successfully
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -163,12 +163,10 @@ class ProductDetailsViewModel(
     }
 
     private fun addProductToCartSuccessfully() {
-        updateState { copy(isAddToCartLoading = false) }
-    private fun addProductToCartSuccessfully(success: Unit) {
         updateState {
             copy(
                 isAddToCartLoading = false,
-                hasProductInCart = product.inCartQuantity > 0
+                hasProductInCart = true
             )
         }
         val messageRes = Res.string.add_product_success
@@ -176,7 +174,12 @@ class ProductDetailsViewModel(
     }
 
     private fun removeProductFromCartSuccessfully() {
-        updateState { copy(isAddToCartLoading = false) }
+        updateState {
+            copy(
+                isAddToCartLoading = false,
+                hasProductInCart = false
+            )
+        }
         val messageRes = Res.string.remove_product_successfully
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }
