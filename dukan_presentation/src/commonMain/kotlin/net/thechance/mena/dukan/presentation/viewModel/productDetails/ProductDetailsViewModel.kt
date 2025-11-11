@@ -9,10 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
-import mena.dukan_presentation.generated.resources.added_to_favorites
-import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.removed_from_favorites
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
@@ -190,11 +187,11 @@ class ProductDetailsViewModel(
 
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
-            onSuccess = {updateState { copy(isFavorite = isCurrentlyFavorite) }},
+            onSuccess = { updateState { copy(isFavorite = isCurrentlyFavorite) } },
         )
     }
 
-    fun refreshData(){
+    fun refreshData() {
         loadProductDetails()
         loadCartInfo()
     }
