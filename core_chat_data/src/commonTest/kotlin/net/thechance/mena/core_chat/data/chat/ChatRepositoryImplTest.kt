@@ -403,12 +403,11 @@ class ChatRepositoryImplTest {
             cachedChatSummaryDao = cachedChatSummaryDao,
             cachedChatDao = cachedChatDao
         )
+        repository.getChatsSummary(pageNumber, pageSize)
 
         val emittedState = repository.observeChatSummariesSyncState().first {
             it is SyncState.Error
         }
-
-        repository.getChatsSummary(pageNumber, pageSize)
 
 
         assertThat(emittedState is SyncState.Error).isTrue()
