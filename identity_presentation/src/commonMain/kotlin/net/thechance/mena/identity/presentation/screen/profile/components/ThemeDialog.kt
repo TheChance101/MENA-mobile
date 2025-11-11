@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.profile.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -38,7 +39,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.util.AppTheme
-import net.thechance.mena.identity.presentation.util.mapTheme
+import net.thechance.mena.identity.presentation.util.mapThemeDrawableResource
+import net.thechance.mena.identity.presentation.util.mapThemeStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -80,9 +82,12 @@ fun ScaffoldScope.ThemeDialog(
                 }
                 items(appThemes, key = { it.name }) {
                     ThemeOptionItem(
-                        isSelected = it == selectedTheme, selectedAppTheme = it, onClick = {
+                        isSelected = it == selectedTheme,
+                        selectedAppTheme = it,
+                        onClick = {
                             selectedTheme = it
-                        })
+                        },
+                    )
                 }
                 item {
                     PrimaryButton(
@@ -116,8 +121,13 @@ fun ThemeOptionItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val animatedIconTint by animateColorAsState(
+        targetValue = if (isSelected) Theme.colorScheme.primary.primary else Theme.colorScheme.shadeSecondary,
+    )
+    val animatedTextColor by animateColorAsState(
+        targetValue = if (isSelected) Theme.colorScheme.primary.primary else Theme.colorScheme.shadeSecondary,
+    )
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
@@ -135,11 +145,17 @@ fun ThemeOptionItem(
                 interactionSource = remember { MutableInteractionSource() })
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
     ) {
-
+        Icon(
+            painter = painterResource(mapThemeDrawableResource(selectedAppTheme.name)),
+            contentDescription = stringResource(Res.string.profile_theme),
+            modifier = Modifier.size(Theme.spacing._24),
+            tint = animatedIconTint
+        )
         Text(
-            text = stringResource(mapTheme(selectedAppTheme.name)),
-            color = Theme.colorScheme.primary.primary,
+            text = stringResource(mapThemeStringResource(selectedAppTheme.name)),
+            color = animatedTextColor,
             style = Theme.typography.title.small,
+            modifier = Modifier.padding(start = Theme.spacing._8).weight(1f),
         )
         RadioButton(
             isSelected = isSelected, onClick = null
@@ -151,18 +167,18 @@ fun ThemeOptionItem(
 @Composable
 private fun ThemeDialogPreview() {
     MenaTheme {
-    Scaffold(
-        overlays = {
-            dialog(true) {
-                ThemeDialog(
-                    appThemes = listOf(AppTheme.LIGHT, AppTheme.DARK),
-                    isVisible = true,
-                    currentAppTheme = AppTheme.LIGHT,
-                    onDismissRequest = {},
-                    onConfirmThemeSelection = {}
-                )
-            }
-        },
-        content = {})
+        Scaffold(
+            overlays = {
+                dialog(true) {
+                    ThemeDialog(
+                        appThemes = listOf(AppTheme.LIGHT, AppTheme.DARK),
+                        isVisible = true,
+                        currentAppTheme = AppTheme.LIGHT,
+                        onDismissRequest = {},
+                        onConfirmThemeSelection = {}
+                    )
+                }
+            },
+            content = {})
     }
 }

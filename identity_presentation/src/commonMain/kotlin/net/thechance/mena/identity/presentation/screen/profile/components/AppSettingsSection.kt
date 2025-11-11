@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_language
-import mena.identity_presentation.generated.resources.ic_theme
 import mena.identity_presentation.generated.resources.profile_app_settings_header
 import mena.identity_presentation.generated.resources.profile_language
 import mena.identity_presentation.generated.resources.profile_theme
@@ -16,7 +15,8 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.util.mapLanguage
-import net.thechance.mena.identity.presentation.util.mapTheme
+import net.thechance.mena.identity.presentation.util.mapThemeDrawableResource
+import net.thechance.mena.identity.presentation.util.mapThemeStringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -47,9 +47,9 @@ fun AppSettingsSection(
         )
         SettingItem(
             title = stringResource(Res.string.profile_theme),
-            leadingIcon = painterResource(Res.drawable.ic_theme),
+            leadingIcon = painterResource(mapThemeDrawableResource(currentTheme)),
             onClick = onThemeClicked,
-            trailingText = stringResource(mapTheme(currentTheme))
+            trailingText = stringResource(mapThemeStringResource(currentTheme))
         )
     }
 }
