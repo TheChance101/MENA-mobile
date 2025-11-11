@@ -8,6 +8,6 @@ data class Product(
     val price: Double,
     val discountedPrice: Double,
     val description: String,
-    val imageUrls: List<String?>,
+    val imageUrls: List<String>,
     val createdAt: LocalDateTime
 )

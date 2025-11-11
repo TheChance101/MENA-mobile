@@ -16,7 +16,7 @@ data class ProductDto(
     @SerialName("description")
     val description: String? = null,
     @SerialName("imageUrls")
-    val imageUrls: List<String?>? = null,
+    val imageUrls: List<String>? = null,
     @SerialName("createdAt")
     val createdAt: String? = null
 )
