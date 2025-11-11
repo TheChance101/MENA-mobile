@@ -34,15 +34,15 @@ import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassw
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-data class ForgetPasswordOtpScreen(
+data class ResetPasswordOtpScreen(
     private val phoneNumber: String,
     private val countryCode: String,
     private val callingCode: String
 ) : BaseScreen<
-        ForgetPasswordOtpScreenViewModel,
-        ForgetPasswordOtpScreenUIState,
-        ForgetPasswordOtpScreenUIEffect,
-        ForgetPasswordOtpScreenInteractionListener>() {
+        ResetPasswordOtpScreenViewModel,
+        ResetPasswordOtpScreenUIState,
+        ResetPasswordOtpScreenUIEffect,
+        ResetPasswordOtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(
@@ -54,8 +54,8 @@ data class ForgetPasswordOtpScreen(
 
     @Composable
     override fun OnRender(
-        state: ForgetPasswordOtpScreenUIState,
-        listener: ForgetPasswordOtpScreenInteractionListener
+        state: ResetPasswordOtpScreenUIState,
+        listener: ResetPasswordOtpScreenInteractionListener
     ) {
         Scaffold(
             topBar = {
@@ -122,12 +122,12 @@ data class ForgetPasswordOtpScreen(
     }
 
     override fun onEffect(
-        effect: ForgetPasswordOtpScreenUIEffect,
+        effect: ResetPasswordOtpScreenUIEffect,
         navigator: Navigator
     ) {
         when (effect) {
-            ForgetPasswordOtpScreenUIEffect.NavigateBack -> navigator.pop()
-            is ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword -> {
+            ResetPasswordOtpScreenUIEffect.NavigateBack -> navigator.pop()
+            is ResetPasswordOtpScreenUIEffect.NavigateToResetPassword -> {
                 navigator.popUntilRoot()
                 navigator.push(SetNewPasswordScreen())
             }

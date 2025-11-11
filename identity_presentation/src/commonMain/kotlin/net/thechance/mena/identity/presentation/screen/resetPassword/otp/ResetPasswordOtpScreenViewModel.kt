@@ -10,29 +10,28 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import org.jetbrains.compose.resources.StringResource
 
-class ForgetPasswordOtpScreenViewModel(
+class ResetPasswordOtpScreenViewModel(
     private val resetPasswordRepository: ResetPasswordRepository,
     private val phoneNumber: String,
     private val callingCode: String,
     private val countryCode: String,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<ForgetPasswordOtpScreenUIState, ForgetPasswordOtpScreenUIEffect>(
-    ForgetPasswordOtpScreenUIState()
+) : BaseScreenModel<ResetPasswordOtpScreenUIState, ResetPasswordOtpScreenUIEffect>(
+    ResetPasswordOtpScreenUIState()
 ),
-    ForgetPasswordOtpScreenInteractionListener {
+    ResetPasswordOtpScreenInteractionListener {
 
     init {
         startTimer()
     }
 
     override fun onClickBack() {
-        sendNewEffect(ForgetPasswordOtpScreenUIEffect.NavigateBack)
+        sendNewEffect(ResetPasswordOtpScreenUIEffect.NavigateBack)
     }
 
     override fun onClickVerify() {
@@ -53,7 +52,7 @@ class ForgetPasswordOtpScreenViewModel(
 
     private fun onOTPVerificationSuccess() {
         updateState { copy(isLoading = false, otpValue = "") }
-        sendNewEffect(ForgetPasswordOtpScreenUIEffect.NavigateToResetPassword)
+        sendNewEffect(ResetPasswordOtpScreenUIEffect.NavigateToResetPassword)
     }
 
     private fun onOTPVerificationError(throwable: Throwable) {
@@ -116,7 +115,7 @@ class ForgetPasswordOtpScreenViewModel(
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleResetPasswordOtpException(throwable))
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
