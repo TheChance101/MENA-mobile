@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.domain.exception
 
-abstract class IdentityException()
 abstract class AuthenticationException(message: String) : Exception(message)
 abstract class LocationException(message: String) : Exception(message)
 
