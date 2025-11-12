@@ -109,7 +109,7 @@ class DukanDetailsViewModel(
     }
 
     private fun loadShelvesPaging() {
-
+        updateState { copy(shelfProductsLimited = emptyMap()) }
         tryToCollect(
             block = ::getShelvesPagingFlow,
             onCollect = ::onShelvesLoaded
@@ -230,6 +230,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewAllProductsShelfClicked(id: String, name: String) {
+        isConfigurationChanges = false
         emitEffect(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
@@ -252,19 +253,11 @@ class DukanDetailsViewModel(
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
+
         tryToExecute(
-            block = { addToCartBlock(domainRequest, productQuantity) },
+            block = { dukanCartRepository.addProductQuantity(domainRequest) },
             onError = ::onErrorUpdateProductQuantity
         )
-    }
-
-
-    private suspend fun addToCartBlock(
-        domainRequest: UpdateProductCartQuantityParams,
-        productQuantity: Int
-    ) {
-        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(
@@ -346,15 +339,19 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
+        isConfigurationChanges = false
         emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
+        isConfigurationChanges = false
         emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
     override fun onRetryClicked() {
         loadDukanDetails()
+        loadCartInfo()
+        loadShelvesPaging()
     }
 
     override fun onFavoriteDukanClicked(dukanId: String) {
@@ -383,8 +380,14 @@ class DukanDetailsViewModel(
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
+    var isConfigurationChanges = true
+        private set
+
     fun refreshProducts() {
-        loadCartInfo()
-        loadShelvesPaging()
+        if (!isConfigurationChanges) {
+            isConfigurationChanges = true
+            loadCartInfo()
+            loadShelvesPaging()
+        }
     }
 }
