@@ -100,7 +100,8 @@ class RegisterPhoneEntryScreen : BaseScreen<
                         isEnabled = state.isRegisterEnabled,
                         isLoading = state.isLoading,
                         contentPadding = PaddingValues(vertical = 13.dp),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12)
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = Theme.spacing._24, bottom = Theme.spacing._12)
                     )
 
                     AuthPrompt(

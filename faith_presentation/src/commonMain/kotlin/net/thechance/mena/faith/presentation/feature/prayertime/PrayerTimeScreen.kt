@@ -10,6 +10,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.ic_arrow_left
+import mena.faith_presentation.generated.resources.prayer_time
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -67,7 +68,7 @@ private fun Content(
     Scaffold(
         topBar = {
             AppBar(
-                title = "Prayer time",
+                title = stringResource(Res.string.prayer_time),
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16, vertical = Theme.spacing._8
                 ),

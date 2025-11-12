@@ -132,9 +132,11 @@
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
     <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
     <string name="listen">استماع</string>
-
+    <string name="download_icon">ايقونة التنزيل</string>
+    <string name="prayer_time"> وقت الصلاة </string>
     <string name="kilometer_unit">كم</string>
     <string name="add_mosque_message">تمت إضافة المسجد بنجاح.</string>
     <string name="mosque_image">صورة المسجد</string>
+    <string name="read_all_surah">تلاوة السورة</string>
 
 </resources>

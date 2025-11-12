@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.quran.surah
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,8 +39,8 @@ class SurahViewModel(
 ), SurahInteractionListener {
 
     init {
-        observeDefaultReciter()
         loadSurahData(surahArgs.surahId)
+        observeDefaultReciter()
     }
 
     private fun loadSurahData(surahId: Int) {
@@ -94,6 +95,9 @@ class SurahViewModel(
         )
     }
 
+    // TODO("Not yet implemented")
+    override fun playSurah(surahId: Int) {}
+
     override fun onInitialAyahScrolled() {
         if (uiState.value.isAyahSoundPlaying) return
         viewModelScope.launch {
@@ -119,7 +123,8 @@ class SurahViewModel(
 
     override fun onListenClick() = playAyah(uiState.value.selectedAyahNumber ?: 1)
 
-    override fun onReciterClick() = sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen)
+    override fun onReciterClick(surahId: Int) =
+        sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen(surahArgs.surahId))
 
     override fun onNextAyahClick() = moveToAyah(offset = 1)
 
@@ -196,6 +201,7 @@ class SurahViewModel(
             ayahNumber = ayahNumber,
             reciterId = uiState.value.currentReciter.id,
         )
+        updateState { it.copy(selectedAyahNumber = ayahNumber) }
     }
 
     private fun moveToAyah(offset: Int) {
@@ -234,7 +240,7 @@ class SurahViewModel(
                     )
                 }
             },
-            dispatcher = Dispatchers.Main,
+            dispatcher = Main,
         )
     }
 

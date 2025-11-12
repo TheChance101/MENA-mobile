@@ -452,7 +452,7 @@ class ChatViewModel(
     }
 
     override fun onChatActionsMenuClicked() {
-        updateState { it.copy(isChatActionsDialogVisible = true) }
+        updateState { it.copy(isChatActionsDialogVisible = true, isAttachmentsOverlayVisible = false) }
     }
 
     override fun onChatActionsMenuDialogDismissed() {

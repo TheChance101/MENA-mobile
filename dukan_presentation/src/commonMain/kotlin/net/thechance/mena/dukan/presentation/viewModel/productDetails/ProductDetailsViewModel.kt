@@ -10,12 +10,11 @@ import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import mena.dukan_presentation.generated.resources.remove_product_successfully
+import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
-import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -36,6 +35,9 @@ class ProductDetailsViewModel(
 ), ProductDetailsInteractionListener {
     private val args = savedStateHandle.toRoute<DukanRoute.ProductDetails>()
 
+    private var previousProductQuantity: Int = 0
+
+
     init {
         loadProductDetails()
         loadCartInfo()
@@ -50,19 +52,11 @@ class ProductDetailsViewModel(
     }
 
     private fun onCartInfoError(throwable: Throwable) {
-        when (throwable) {
-            is NoSuchItemException -> updateState { copy(totalPrice = 0.0) }
-            is NoInternetException -> updateState { copy(totalPrice = 0.0) }
-            else -> updateState { copy(totalPrice = 0.0) }
-        }
+        updateState { copy(hasProductInCart = false) }
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState {
-            copy(
-                totalPrice = cart.totalPrice,
-            )
-        }
+        updateState { copy(hasProductInCart = cart.totalPrice > 0.0) }
     }
 
     private fun loadProductDetails() {
@@ -76,16 +70,17 @@ class ProductDetailsViewModel(
 
     private fun onLoadProductSuccess(product: Product) {
         val productUiInfo = product.toUiState()
-        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 0) }
         updateState {
             copy(
                 isLoading = false,
                 product = productUiInfo,
                 selectedImageUrl = productUiInfo.images.firstOrNull() ?: "",
                 errorState = null,
-                isFavorite = product.isFavorite
+                isFavorite = product.isFavorite,
+                isFirstQuantityOne = productUiInfo.inCartQuantity == 0
             )
         }
+        previousProductQuantity = product.quantityInCart
     }
 
     private fun onLoadProductError(throwable: Throwable) {
@@ -145,6 +140,7 @@ class ProductDetailsViewModel(
     override fun onPlusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
             updateState { copy(product.copy(inCartQuantity = product.inCartQuantity + 1)) }
+            updateAddToCartButtonIsEnable()
         }
     }
 
@@ -153,7 +149,12 @@ class ProductDetailsViewModel(
             updateState {
                 copy(product.copy(inCartQuantity = if (product.inCartQuantity > 0) product.inCartQuantity - 1 else product.inCartQuantity))
             }
+            updateAddToCartButtonIsEnable()
         }
+    }
+
+    private fun updateAddToCartButtonIsEnable() {
+        updateState { copy(isButtonEnable = product.inCartQuantity != previousProductQuantity) }
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
@@ -166,19 +167,30 @@ class ProductDetailsViewModel(
     }
 
     private fun onSuccessUpdateProductQuantity(success: Unit) {
+        previousProductQuantity = state.value.product.inCartQuantity
         if (state.value.product.inCartQuantity == 0) removeProductFromCartSuccessfully()
         else addProductToCartSuccessfully()
 
     }
 
     private fun addProductToCartSuccessfully() {
-        updateState { copy(isAddToCartLoading = false) }
+        updateState {
+            copy(
+                isAddToCartLoading = false,
+                isButtonEnable = product.inCartQuantity != previousProductQuantity
+            )
+        }
         val messageRes = Res.string.add_product_success
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }
 
     private fun removeProductFromCartSuccessfully() {
-        updateState { copy(isAddToCartLoading = false) }
+        updateState {
+            copy(
+                isAddToCartLoading = false,
+                isButtonEnable = product.inCartQuantity != previousProductQuantity
+            )
+        }
         val messageRes = Res.string.remove_product_successfully
         showSnackBar(message = messageRes, type = SnackBarType.SUCCESS)
     }

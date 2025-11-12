@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +46,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -65,6 +66,7 @@ fun UploadImageContainer(
     val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
     val isFilePickerLaunching = remember { mutableStateOf(false) }
     val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        isFilePickerLaunching.value = false
         file?.let { image ->
             scope.launch {
                 image.toImageSrc()?.let { src ->
@@ -97,7 +99,7 @@ fun UploadImageContainer(
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
                 .align(Alignment.TopCenter)
-                .clip(RoundedCornerShape(radius))
+                .clip(SquircleShape(radius))
                 .drawWithContent {
                     drawContent()
                     drawRoundRect(
@@ -137,12 +139,12 @@ fun UploadImageContainer(
                     .size(40.dp)
                     .align(Alignment.BottomCenter)
                     .offset(y = 20.dp)
-                    .clip(shape = RoundedCornerShape(Theme.radius.full))
+                    .clip(shape = CircleShape)
                     .background(Theme.colorScheme.primary.primary)
                     .border(
                         width = 1.dp,
                         color = Theme.colorScheme.background.surface,
-                        shape = RoundedCornerShape(radius)
+                        shape = SquircleShape(radius)
                     )
                     .clickable { safeLaunch() },
                 contentAlignment = Alignment.Center

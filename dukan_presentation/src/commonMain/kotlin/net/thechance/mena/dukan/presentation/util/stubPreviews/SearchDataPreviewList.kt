@@ -37,6 +37,7 @@ val previewProductsFlow = flowOf(
                 imageUrl = "https://example.com/product1.jpg",
                 name = "sport - shoes",
                 dukanName = "Puma",
+                dukanId = Uuid.random(),
                 price = 99.99,
             ),
             SearchUiState.ProductUiState(
@@ -44,6 +45,7 @@ val previewProductsFlow = flowOf(
                 imageUrl = "https://example.com/product2.jpg",
                 name = "Sports T-Shirt",
                 dukanName = "Defacto",
+                dukanId = Uuid.random(),
                 price = 29.99,
             ),
         )

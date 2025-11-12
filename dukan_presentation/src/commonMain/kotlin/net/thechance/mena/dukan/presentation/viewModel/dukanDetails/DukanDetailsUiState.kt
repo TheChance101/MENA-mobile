@@ -15,7 +15,7 @@ data class DukanDetailsUiState(
     val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
     val snackBarState: SnackBarUiState? = null,
     val error: Throwable? =null,
-    val totalPrice: Double = 0.0
+    val hasProductInCart: Boolean = false,
 ) {
     data class DukanInfo(
         val dukanId: String = "",

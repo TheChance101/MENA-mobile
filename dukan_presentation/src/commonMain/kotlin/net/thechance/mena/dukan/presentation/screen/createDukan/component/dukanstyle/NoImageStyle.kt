@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +19,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun NoImageStyle(
@@ -35,7 +35,7 @@ fun NoImageStyle(
     Box(
         modifier = modifier
             .height(198.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(
                 onClick = onClick,
@@ -45,7 +45,7 @@ fun NoImageStyle(
                 if (isSelected) Modifier.border(
                     1.dp,
                     Theme.colorScheme.primary.primary,
-                    RoundedCornerShape(Theme.radius.md)
+                    SquircleShape(Theme.radius.md)
                 )
                 else Modifier
             ),
@@ -82,4 +82,3 @@ private fun DukanStylePreview() {
         )
     }
 }
-
