@@ -1,24 +1,75 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_managements
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import net.thechance.mena.designsystem.presentation.component.text.Text
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
+import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
+import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.EmptyDukanState
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.dukan_management
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DukanManagementsScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun DukanManagementsScreen(
+    viewmodel: DukanManagementViewmodel = koinViewModel()
+) {
+    val state by viewmodel.state.collectAsStateWithLifecycle()
+
+    DukanManagementsContent(
+        state = state,
+        interactionListener = viewmodel
+    )
+}
+
+@Composable
+fun DukanManagementsContent(
+    state: DukanManagementScreenState,
+    interactionListener: DukanManagementInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    PanelScaffold(
+        topBar = {
+            AppBar(
+                title = stringResource(Res.string.dukan_management),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
+            )
+        },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        onRetry = interactionListener::onRetryClicked
     ) {
-        Text(
-            text = "Dukan Managements Screen",
-            style = Theme.typography.title.large
-        )
+        Column(
+            modifier = modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DukanManagementHeader(
+                dukansNumbers = state.dukanCounts,
+                onQueryChange = interactionListener::onSearchQueryChange,
+                onClearQueryClicked = interactionListener::onClearQueryClicked,
+                query = state.query
+            )
+            when {
+                state.isLoading -> AdminPanelContentLoading()
+                state.dukans.isEmpty() -> EmptyDukanState()
+                else -> {
+
+                }
+            }
+        }
     }
 }
+
