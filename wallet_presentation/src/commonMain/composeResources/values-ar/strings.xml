@@ -76,7 +76,7 @@
     <string name="transactions_history">سجل المعاملات</string>
     <string name="filter">الفلاتر</string>
     <string name="transaction_pay">تسوق عبر الإنترنت</string>
-    <string name="transaction_send">إرسال إلى </string>
+    <string name="transaction_send">إرسال إلى</string>
     <string name="transaction_receive"> استلام من</string>
     <string name="money_icon">أيقونة المال</string>
     <string name="transaction_type_icon">أيقونة نوع المعاملة</string>

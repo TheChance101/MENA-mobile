@@ -61,8 +61,8 @@
     <string name="transactions_history">Transactions History</string>
     <string name="filter">Filters</string>
     <string name="transaction_pay">Online shopping</string>
-    <string name="transaction_send">Send to </string>
-    <string name="transaction_receive">Receive from </string>
+    <string name="transaction_send">Send to</string>
+    <string name="transaction_receive">Receive from</string>
     <string name="money_icon">money icon</string>
     <string name="transaction_type_icon">Transactions Type Icon</string>
     <string name="online_shopping">Online Shopping</string>
