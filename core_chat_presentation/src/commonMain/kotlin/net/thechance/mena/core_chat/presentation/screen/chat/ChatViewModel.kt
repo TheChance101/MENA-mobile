@@ -33,6 +33,7 @@ import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
+import mena.core_chat_presentation.generated.resources.this_chat_was_deleted
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
@@ -326,8 +327,18 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-
-        sendMessage(message)
+        tryToExecute(
+            execute = {
+                safeUpdateMessages { messages ->
+                messages.map {
+                    if (it.id == message.id)
+                        it.copy(status = MessageStatus.LOADING)
+                    else
+                        it
+                }}
+            },
+            onSuccess = { sendMessage(message) }
+        )
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -418,9 +429,23 @@ class ChatViewModel(
 
     private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
         if (deleteChatEvent == null) return
-        onDeleteChatSuccess()
+
+        val currentUserId = state.value.chatRequesterId
+        val messageRes = if (currentUserId == deleteChatEvent.deletedByUserId) {
+            Res.string.chat_deleted_successfully
+        } else {
+            Res.string.this_chat_was_deleted
+        }
+
+        showSnackBar(
+            titleStringResource = Res.string.success,
+            messageStringResource = messageRes,
+            isError = false
+        )
+
         emitEffect(ChatScreenEffect.NavigateBack)
     }
+
 
     private fun observeReadMessages() {
         tryToCollect(
@@ -446,13 +471,19 @@ class ChatViewModel(
             it.copy(
                 isImagePagerVisible = true,
                 selectedImageMessages = messages,
-                currentImageIndexForPreview = initialImageIndex
+                currentImageIndexForPreview = initialImageIndex,
+                isAttachmentsOverlayVisible = false
             )
         }
     }
 
     override fun onChatActionsMenuClicked() {
-        updateState { it.copy(isChatActionsDialogVisible = true, isAttachmentsOverlayVisible = false) }
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = true,
+                isAttachmentsOverlayVisible = false
+            )
+        }
     }
 
     override fun onChatActionsMenuDialogDismissed() {
