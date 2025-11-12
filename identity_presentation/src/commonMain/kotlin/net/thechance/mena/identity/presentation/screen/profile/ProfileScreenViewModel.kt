@@ -24,9 +24,7 @@ class ProfileScreenViewModel(
             languageDialogUiState = LanguageDialogUiState(
                 selectedAppLanguage = settingsRepository.getCurrentAppLanguage(),
             ),
-            themeDialogUiState = ThemeDialogUiState(
-                selectedAppTheme = settingsRepository.observeAppTheme().value,
-            ),
+            currentTheme = settingsRepository.observeAppTheme().value
         )
     ),
     ProfileScreenInteractionListener {
@@ -121,21 +119,30 @@ class ProfileScreenViewModel(
         )
     }
 
-    override fun onConfirmThemeSelection(appTheme: AppTheme) {
-        updateState { copy(themeDialogUiState = themeDialogUiState.copy(selectedAppTheme = appTheme)) }
+    override fun onConfirmThemeSelection() {
+        updateState {
+            copy(
+                currentTheme = state.value.themeDialogUiState.selectedAppTheme
+            )
+        }
         tryToExecute(
-            function = { settingsRepository.applyAppTheme(appTheme) },
+            function = { settingsRepository.applyAppTheme(state.value.currentTheme) },
             onSuccess = {
                 updateState {
                     copy(
                         themeDialogUiState = themeDialogUiState.copy(
                             isVisible = false
-                        )
+                        ),
+                        currentTheme = state.value.currentTheme
                     )
                 }
             },
             onError = ::onUserInfoError,
         )
+    }
+
+    override fun onSelectTheme(appTheme: AppTheme) {
+        updateState { copy(themeDialogUiState = themeDialogUiState.copy(selectedAppTheme = appTheme)) }
     }
 
     override fun onDismissSnackBar() {
@@ -159,7 +166,7 @@ class ProfileScreenViewModel(
     }
 
     override fun onDismissThemeDialog() {
-        updateState { copy(themeDialogUiState = themeDialogUiState.copy(isVisible = false)) }
+        updateState { copy(themeDialogUiState = themeDialogUiState.copy(isVisible = false,selectedAppTheme = state.value.currentTheme)) }
     }
 
     override fun clearErrorMessage() {

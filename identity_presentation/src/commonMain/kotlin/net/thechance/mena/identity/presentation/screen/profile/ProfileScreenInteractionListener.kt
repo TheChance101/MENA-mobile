@@ -25,6 +25,7 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
 
     fun onContactUsClicked()
     fun onConfirmLanguageSelection(appLanguage: AppLanguage)
-    fun onConfirmThemeSelection(appTheme: AppTheme)
+    fun onConfirmThemeSelection()
+    fun onSelectTheme(appTheme: AppTheme)
     fun onDismissSnackBar()
 }

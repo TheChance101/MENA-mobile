@@ -92,7 +92,9 @@ class ProfileScreen : BaseScreen<
                         onDismissRequest = listener::onDismissThemeDialog,
                         appThemes = state.themeDialogUiState.options,
                         onConfirmThemeSelection = listener::onConfirmThemeSelection,
-                        currentAppTheme = state.themeDialogUiState.selectedAppTheme,
+                        currentAppTheme = state.currentTheme,
+                        onThemeChanged = listener::onSelectTheme,
+                        selectedAppTheme = state.themeDialogUiState.selectedAppTheme
                     )
                 }
                 dialog(state.showShareProfileDialog) {
@@ -176,7 +178,7 @@ class ProfileScreen : BaseScreen<
                             onLanguageClicked = listener::onLanguageClicked,
                             onThemeClicked = listener::onThemeClicked,
                             currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso,
-                            currentTheme = state.themeDialogUiState.selectedAppTheme.name
+                            currentTheme = state.currentTheme.name
                         )
                     }
                     item {

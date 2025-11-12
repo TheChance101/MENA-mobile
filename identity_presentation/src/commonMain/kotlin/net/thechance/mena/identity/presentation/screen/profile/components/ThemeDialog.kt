@@ -16,10 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,15 +48,12 @@ fun ScaffoldScope.ThemeDialog(
     appThemes: List<AppTheme>,
     isVisible: Boolean,
     currentAppTheme: AppTheme,
+    selectedAppTheme: AppTheme,
     onDismissRequest: () -> Unit,
-    onConfirmThemeSelection: (AppTheme) -> Unit,
+    onConfirmThemeSelection: () -> Unit,
+    onThemeChanged: (AppTheme) -> Unit,
 
     ) {
-    var selectedTheme by rememberSaveable(isVisible, currentAppTheme) {
-        mutableStateOf(
-            currentAppTheme
-        )
-    }
     BasicDialog(
         isVisible = isVisible,
         onDismiss = onDismissRequest,
@@ -82,18 +76,18 @@ fun ScaffoldScope.ThemeDialog(
                 }
                 items(appThemes, key = { it.name }) {
                     ThemeOptionItem(
-                        isSelected = it == selectedTheme,
+                        isSelected = it == selectedAppTheme,
                         selectedAppTheme = it,
                         onClick = {
-                            selectedTheme = it
+                            onThemeChanged(it)
                         },
                     )
                 }
                 item {
                     PrimaryButton(
                         text = stringResource(Res.string.save),
-                        isEnabled = selectedTheme != currentAppTheme,
-                        onClick = { onConfirmThemeSelection(selectedTheme) },
+                        isEnabled = selectedAppTheme != currentAppTheme,
+                        onClick = { onConfirmThemeSelection() },
                         modifier = Modifier.padding(top = 20.dp).fillMaxWidth().height(48.dp)
                     )
                 }
@@ -174,9 +168,10 @@ private fun ThemeDialogPreview() {
                         appThemes = listOf(AppTheme.LIGHT, AppTheme.DARK),
                         isVisible = true,
                         currentAppTheme = AppTheme.LIGHT,
+                        selectedAppTheme = AppTheme.LIGHT,
                         onDismissRequest = {},
-                        onConfirmThemeSelection = {}
-                    )
+                        onConfirmThemeSelection = { },
+                    ) {}
                 }
             },
             content = {})

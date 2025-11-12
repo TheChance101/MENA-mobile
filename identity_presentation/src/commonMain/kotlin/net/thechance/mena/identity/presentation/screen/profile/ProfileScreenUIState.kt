@@ -18,6 +18,7 @@ data class ProfileScreenUIState(
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
     val snackBarUiState: SnackBarUiState = SnackBarUiState(),
+    val currentTheme: AppTheme = AppTheme.DEFAULT,
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState(),
     val themeDialogUiState: ThemeDialogUiState = ThemeDialogUiState()
 )
