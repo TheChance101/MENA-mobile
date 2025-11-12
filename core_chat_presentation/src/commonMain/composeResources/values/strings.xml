@@ -57,4 +57,6 @@
     <string name="error_recording_failed">Failed to start recording. Please try again.</string>
     <string name="error_invalid_recording">Invalid recording. Please try recording again.</string>
     <string name="error_failed_to_process_audio">Failed to process audio file. Please try again.</string>
+    <string name="send_to">Send to</string>
+    <string name="search_by_name">Search by name</string>
 </resources>
