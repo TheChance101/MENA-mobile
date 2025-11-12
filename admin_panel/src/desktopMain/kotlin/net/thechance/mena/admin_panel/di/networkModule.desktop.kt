@@ -7,7 +7,8 @@ import net.thechance.mena.admin_panel.data.remote.api_service.DepositMoneyApiSer
 import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.createAuthenticationApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.createDukanApiService
-import net.thechance.mena.admin_panel.data.remote.api_service.createDepositApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.createDepositMoneyApiService
+
 import net.thechance.mena.admin_panel.data.remote.api_service.createUserApiService
 import org.koin.core.module.Module
 import org.koin.dsl.module
