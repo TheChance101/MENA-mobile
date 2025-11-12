@@ -3,27 +3,37 @@
 package net.thechance.mena.core_chat.data.chat
 
 import assertk.assertThat
+import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
+import dev.mokkery.annotations.DelicateMokkeryApi
+import dev.mokkery.answering.Answer
 import dev.mokkery.answering.returns
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
+import dev.mokkery.matcher.capture.Capture.Companion.slot
+import dev.mokkery.matcher.capture.capture
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.contacts.fakes.createMessage
@@ -56,8 +66,10 @@ import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.ImageData
+import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import kotlin.test.BeforeTest
@@ -727,6 +739,20 @@ class MessageRepositoryImplTest {
         job.cancel()
     }
 
+    @Test
+    fun `initializeWebsocketConnection should connect and collect incoming messages`() = runTest {
+        // Given
+        val incomingMessagesFlow = MutableStateFlow<String>("")
+        every { webSocketManager.connect(any()) } returns Unit
+        every { webSocketManager.incomingMessages } returns incomingMessagesFlow
+
+        // When
+        repository.initializeWebsocketConnection()
+
+        // Then
+        verify { webSocketManager.connect(any()) }
+        verify { webSocketManager.incomingMessages }
+    }
 
 
 
@@ -745,5 +771,11 @@ class MessageRepositoryImplTest {
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
+        const val MARK_AS_READ = "/private/markAsRead"
+        const val ADD_REACTION = "/private/addReaction"
+        const val REMOVE_REACTION = "/private/deleteReaction"
+
+        const val DELETE_CHAT = "/private/deleteChat"
+
     }
 }
