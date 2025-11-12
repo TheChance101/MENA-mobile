@@ -14,47 +14,71 @@ actual fun convertAudioFileToByteArray(filePath: String): ByteArray {
 class AndroidAudioPlayer : AudioPlayer {
     private var mediaPlayer: MediaPlayer? = null
     private var currentFilePath: String? = null
+    private var isPrepared = false
 
     override fun play(filePath: String) {
-        if (mediaPlayer != null && currentFilePath == filePath && mediaPlayer?.isPlaying == false) {
-            mediaPlayer?.start()
-            return
+        if (mediaPlayer != null && currentFilePath == filePath && isPrepared) {
+            try {
+                val mp = mediaPlayer
+                if (mp != null && !mp.isPlaying) {
+                    mp.start()
+                    return
+                }
+            } catch (e: IllegalStateException) {
+                releaseMediaPlayer()
+            }
         }
 
-        stop()
+        releaseMediaPlayer()
 
         if (!File(filePath).exists()) {
             throw IllegalArgumentException("File does not exist: $filePath")
         }
 
+        isPrepared = false
         mediaPlayer = MediaPlayer().apply {
             setDataSource(filePath)
-            prepareAsync()
-            setOnPreparedListener { start() }
+            setOnPreparedListener {
+                isPrepared = true
+                start()
+            }
             setOnErrorListener { _, what, extra ->
+                isPrepared = false
                 throw IllegalStateException("MediaPlayer error: what=$what, extra=$extra")
             }
-            setOnCompletionListener { stop() }
+            setOnCompletionListener {
+                isPrepared = false
+            }
+            prepareAsync()
         }
         currentFilePath = filePath
     }
-    
+
     override fun pause() {
-        if (mediaPlayer?.isPlaying == true) {
-            mediaPlayer?.pause()
-        }
+        runCatching { mediaPlayer?.takeIf { it.isPlaying }?.pause() }
     }
 
     override fun stop() {
+        releaseMediaPlayer()
+    }
+
+    private fun releaseMediaPlayer() {
         try {
             mediaPlayer?.apply {
-                if (isPlaying) stop()
+                if (isPlaying) {
+                    stop()
+                }
                 reset()
                 release()
+            }
+        } catch (e: IllegalStateException) {
+            runCatching {
+                mediaPlayer?.release()
             }
         } finally {
             mediaPlayer = null
             currentFilePath = null
+            isPrepared = false
         }
     }
 
@@ -83,6 +107,10 @@ class AndroidAudioPlayer : AudioPlayer {
     }
     
     override fun getCurrentPosition(): Long {
-        return mediaPlayer?.currentPosition?.toLong() ?: 0L
+        return try {
+            mediaPlayer?.currentPosition?.toLong() ?: 0L
+        } catch (e: IllegalStateException) {
+            0L
+        }
     }
 }
