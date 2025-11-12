@@ -178,5 +178,5 @@
     <string name="checkout_dialog_title">ميزة الدفع</string>
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
     <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
-
+    <string name="product_is_out_of_stock">المنتج غير متوفر</string>
 </resources>

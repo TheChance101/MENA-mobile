@@ -3,11 +3,11 @@ package net.thechance.mena.trends.data.repository.util
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.data.dto.ReelPathUrlsDto
-import net.thechance.mena.trends.data.dto.RemotePaginationResponse
-import net.thechance.mena.trends.data.dto.UploadReelResponse
-import net.thechance.mena.trends.data.mapper.toEntity
+import net.thechance.mena.trends.data.remote.dto.ReelDto
+import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
+import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
+import net.thechance.mena.trends.data.remote.mapper.toEntity
 
 internal val fakeReelDtoList = RemotePaginationResponse(
     pageNumber = 1,

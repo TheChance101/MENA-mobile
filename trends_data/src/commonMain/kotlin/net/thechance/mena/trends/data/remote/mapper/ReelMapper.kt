@@ -1,0 +1,33 @@
+package net.thechance.mena.trends.data.remote.mapper
+
+import net.thechance.mena.trends.data.remote.dto.ReelDto
+import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
+import net.thechance.mena.trends.data.util.orFalse
+import net.thechance.mena.trends.data.util.orZero
+import net.thechance.mena.trends.data.util.parseDateStringOrNull
+import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelUrls
+
+
+internal fun ReelDto.toEntity(): Reel {
+    return Reel(
+        id = id.orEmpty(),
+        thumbnailUrl = reelImageUrl.orEmpty(),
+        videoUrl = videoUrl.orEmpty(),
+        description = description.orEmpty(),
+        likesCount = likesCount.orZero(),
+        viewsCount = viewsCount.orZero(),
+        createdAt = createdAt.parseDateStringOrNull(),
+        userName = username,
+        profileImageUrl = profilePictureUrl.orEmpty(),
+        isCurrentUserOwner = isCurrentUserOwner,
+        isLiked = isLiked.orFalse()
+    )
+}
+
+internal fun ReelPathUrlsDto.toReelUrls(): ReelUrls{
+    return ReelUrls(
+        videoUrl = videoPath.orEmpty(),
+        thumbnailUrl = thumbnailPath.orEmpty()
+    )
+}
