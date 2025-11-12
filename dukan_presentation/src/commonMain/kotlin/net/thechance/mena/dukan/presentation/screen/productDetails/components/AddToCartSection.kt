@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -59,6 +60,7 @@ fun AddToCartSection(
         )
         Button(
             modifier = Modifier
+                .heightIn(min=48.dp)
                 .fillMaxWidth(),
             onClick = onAddToCartClick,
             isEnabled = state.isButtonEnable,
@@ -72,7 +74,6 @@ fun AddToCartSection(
             containerColor = Theme.colorScheme.primary.primary,
             disabledContainerColor = Theme.colorScheme.disabled,
             disabledContentColor = Theme.colorScheme.textDisabled ,
-            containerColor = Theme.colorScheme.primary.primary,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth()
