@@ -460,7 +460,8 @@ class HomeViewModelTest {
 
     @Test
     fun `error loading chats should emit snackbar effect`() = runTest {
-        everySuspend { balanceRepository.getBalance() } returns 0.0
+        val expectedBalance = 100.0
+        every { balanceRepository.observeBalance() } returns flowOf(expectedBalance)
         everySuspend { chatRepository.getChatsSummary(any(), any()) } throws RuntimeException("Network error")
 
         val viewModel = createViewModel()

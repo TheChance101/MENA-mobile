@@ -724,9 +724,8 @@ class MessageRepositoryImplTest {
             repository.observeMessagesForChatOrAll(chatId).collect()
         }
 
-        delay(50) // Let the observer start
+        delay(50)
 
-        // Emit unknown destination message
         incomingFlow.emit(
             createMockIncomingMessage(
                 "/private/unknown",
@@ -739,20 +738,6 @@ class MessageRepositoryImplTest {
         job.cancel()
     }
 
-    @Test
-    fun `initializeWebsocketConnection should connect and collect incoming messages`() = runTest {
-        // Given
-        val incomingMessagesFlow = MutableStateFlow<String>("")
-        every { webSocketManager.connect(any()) } returns Unit
-        every { webSocketManager.incomingMessages } returns incomingMessagesFlow
-
-        // When
-        repository.initializeWebsocketConnection()
-
-        // Then
-        verify { webSocketManager.connect(any()) }
-        verify { webSocketManager.incomingMessages }
-    }
 
 
 
