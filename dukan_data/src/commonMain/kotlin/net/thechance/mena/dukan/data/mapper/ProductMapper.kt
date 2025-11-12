@@ -39,7 +39,8 @@ fun ProductDto.toDomain(): Product = Product(
     createdAt = createdAt,
     quantityInCart = quantityInCart,
     shelfId = shelfId,
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    isOutOfStock = isOutOfStock
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -52,5 +53,6 @@ fun ProductCartDto.toDomain(): Product = Product(
     quantityInCart = quantityInCart,
     createdAt = "",
     shelfId = null,
-    isFavorite = false
+    isFavorite = false,
+    isOutOfStock = false
 )

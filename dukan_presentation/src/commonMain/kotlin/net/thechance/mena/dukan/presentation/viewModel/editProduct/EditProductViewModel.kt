@@ -104,7 +104,8 @@ class EditProductViewModel(
                 price = product.price.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
-                isTextFieldEnabled = true
+                isTextFieldEnabled = true,
+                isOutOfStock = product.isOutOfStock
             ).updateButtonState()
         }
     }
