@@ -50,8 +50,8 @@ fun SurahScreen(
                 )
             }
 
-            SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
-                navController.navigate(DownloadedRecitersRoute)
+            is SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
+                navController.navigate(DownloadedRecitersRoute(effect.surahId))
             }
         }
     }
@@ -100,6 +100,7 @@ private fun Content(
             AnimatedQuranPlayer(
                 state = state,
                 listener = listener,
+                surahId = state.surahId,
                 modifier = Modifier
                     .padding(
                         bottom = Theme.spacing._24,
@@ -185,7 +186,7 @@ private fun Preview() {
                     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                     override fun onSearchClick() {}
                     override fun onListenClick() {}
-                    override fun onReciterClick() {}
+                    override fun onReciterClick(surahId: Int) {}
                     override fun onNextAyahClick() {}
                     override fun onPlayPauseClick() {}
                     override fun onRepeatAyahClick() {}
@@ -195,6 +196,7 @@ private fun Preview() {
                     override fun onInitialAyahScrolled() {}
                     override fun highlightAyah(ayahNumber: Int) {}
                     override fun updateContinueTilawah(ayahNumber: Int) {}
+                    override fun playSurah(surahId: Int) {}
 
                 },
                 snackBarState = SnackBarState()

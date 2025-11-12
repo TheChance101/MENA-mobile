@@ -3,7 +3,6 @@ package net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,11 +21,13 @@ import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_play_circle
 import mena.faith_presentation.generated.resources.ic_reciter_list
+import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.reciter_list
 import mena.faith_presentation.generated.resources.surah_arabic_name_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.components.PlayButton
 import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurUiState
@@ -53,9 +54,11 @@ fun DownloadedSurahCard(
                         .background(
                             color = Theme.colorScheme.background.surfaceLow,
                             shape = RoundedCornerShape(Theme.radius.md),
-                        ).clip(
-                            shape = RoundedCornerShape(Theme.radius.md),
-                        ).clickable(onClick = onDownloadedSurahClick),
+                        )
+                    .clip(
+                        shape = RoundedCornerShape(Theme.radius.md),
+                    )
+                    .clickable(onClick = onDownloadedSurahClick),
             )
         },
         modifier = modifier,
@@ -76,7 +79,11 @@ private fun CardContent(
                     vertical = Theme.spacing._8,
                 ),
     ) {
-        PlayButton(Modifier.padding(end = Theme.spacing._12))
+        PlayButton(
+            painterIcon = painterResource(Res.drawable.ic_play_circle),
+            contentDescription = stringResource(Res.string.play),
+            modifier = Modifier.padding(end = Theme.spacing._12),
+        )
         SurahDetails(
             surahDetailsUiState,
             modifier = Modifier.weight(1f),
@@ -122,24 +129,6 @@ private fun SurahDetails(
                 modifier = Modifier.padding(end = 17.dp),
             )
         }
-    }
-}
-
-@Composable
-private fun PlayButton(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-                .size(44.dp)
-                .background(
-                    color = Theme.colorScheme.background.surface,
-                    shape = RoundedCornerShape(Theme.spacing._12),
-                ).clip(RoundedCornerShape(Theme.spacing._12)),
-    ) {
-        Icon(
-            painter = painterResource(Res.drawable.ic_play_circle),
-            contentDescription = "",
-        )
     }
 }
 

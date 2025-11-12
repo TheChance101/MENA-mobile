@@ -195,9 +195,11 @@
     <string name="delete">Delete</string>
     <string name="delete_surah_dialog_message">Are you sure you want to delete this surah from downloading?</string>
     <string name="surah_deleted_successfully">Surah deleted successfully</string>
-
+    <string name="download_icon">download icon</string>
+    <string name="prayer_time"> Prayer time</string>
     <string name="kilometer_unit">km</string>
     <string name="add_mosque_message">Added mosque successfully.</string>
+    <string name="read_all_surah">Tilawah All Surah</string>
     <string name="mosque_image">Mosque image</string>
 
 

@@ -130,6 +130,7 @@
     <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
+    <string name="remove_product_successfully">تم حذف المنتج بنجاح</string>
     <string name="checkout">Checkout</string>
     <string name="confirm_order">تأكيد الطلب</string>
     <string name="deliver_to">التوصيل إلى</string>
@@ -174,7 +175,8 @@
     <string name="no_result_found">لم يتم العثور على نتائج!</string>
     <string name="no_result_found_body">حاول مرة أخرى بكلمة بحث أخرى.</string>
     <string name="search_general_error">حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى لاحقًا.</string>
-
     <string name="checkout_dialog_title">ميزة الدفع</string>
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
+    <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
+
 </resources>

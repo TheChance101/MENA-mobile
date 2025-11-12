@@ -21,6 +21,10 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.camera
 import mena.identity_presentation.generated.resources.image
 import mena.identity_presentation.generated.resources.image_remove
+import mena.identity_presentation.generated.resources.profile_image
+import mena.identity_presentation.generated.resources.remove_profile_image
+import mena.identity_presentation.generated.resources.take_new_image
+import mena.identity_presentation.generated.resources.upload_image
 import net.thechance.mena.designsystem.presentation.component.dialog.BasicDialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -30,6 +34,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
 
@@ -54,7 +59,7 @@ fun ScaffoldScope.GetImageDialog(
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Profile image",
+                text = stringResource(Res.string.profile_image),
                 style = Theme.typography.title.small,
                 color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center,
@@ -63,7 +68,7 @@ fun ScaffoldScope.GetImageDialog(
             Option(
                 modifier = Modifier.padding(top = Theme.spacing._24),
                 painter = painterResource(Res.drawable.image),
-                title = "Upload image",
+                title = stringResource(Res.string.upload_image),
                 onClick = {
                     onUploadImage()
                     onDismiss()
@@ -71,7 +76,7 @@ fun ScaffoldScope.GetImageDialog(
             )
             Option(
                 painter = painterResource(Res.drawable.camera),
-                title = "Take new image",
+                title = stringResource(Res.string.take_new_image),
                 onClick = {
                     onTakeImageFromCamera()
                     onDismiss()
@@ -79,7 +84,7 @@ fun ScaffoldScope.GetImageDialog(
             )
             Option(
                 painter = painterResource(Res.drawable.image_remove),
-                title = "Remove profile image",
+                title = stringResource(Res.string.remove_profile_image),
                 onClick = {
                     onRemoveImage()
                     onDismiss()

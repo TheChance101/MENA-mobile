@@ -34,6 +34,7 @@ val fakePumaShoesProductPaged = PagedResult(
             name = "puma-shoes",
             imageUrl = "https://example.com/dukan1.jpg",
             dukanName = "Puma",
+            dukanId = Uuid.random(),
             price = 20.0,
         ),
     )

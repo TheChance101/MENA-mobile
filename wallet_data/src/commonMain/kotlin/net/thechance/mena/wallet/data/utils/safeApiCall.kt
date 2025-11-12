@@ -9,6 +9,7 @@ import io.ktor.http.isSuccess
 import kotlinx.io.IOException
 import kotlinx.serialization.SerializationException
 import net.thechance.mena.wallet.data.dto.ErrorDto
+import net.thechance.mena.wallet.domain.exceptions.BlockedReceiverException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
@@ -47,6 +48,9 @@ suspend inline fun <reified T> handleResponse(response: HttpResponse): T {
 
         HttpStatusCode.TooManyRequests ->
             throw UnknownNetworkException("Too many requests: " + parseErrorMessage(response))
+
+        HttpStatusCode.Forbidden ->
+            throw BlockedReceiverException("Receiver is blocked: " + parseErrorMessage(response))
 
         in getServerErrorRange() ->
             throw UnknownNetworkException("Server error: " + parseErrorMessage(response))

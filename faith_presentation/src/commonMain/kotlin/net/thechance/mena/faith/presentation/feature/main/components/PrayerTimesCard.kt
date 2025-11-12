@@ -2,7 +2,7 @@ package net.thechance.mena.faith.presentation.feature.main.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
@@ -54,16 +55,19 @@ fun PrayerTimesCard(
 
     Box(
         modifier = modifier
-            .aspectRatio(2.65f)
-            .clickable(onClick = onClick),
     ) {
         Box(
             modifier = Modifier
+                .aspectRatio(2.65f)
                 .fillMaxSize()
                 .align(Alignment.BottomCenter)
                 .padding(top = Theme.spacing._16)
                 .clip(RoundedCornerShape(Theme.radius.lg))
                 .background(Theme.colorScheme.background.surfaceLow)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = { onClick() }
+                    )
+                }
         )
         Image(
             painter = painterResource(Res.drawable.ic_mosque_bg),

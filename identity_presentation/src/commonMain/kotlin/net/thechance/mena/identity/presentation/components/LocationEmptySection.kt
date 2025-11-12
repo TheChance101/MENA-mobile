@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +23,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun LocationEmptyState(
+fun LocationEmptySection(
     iconPainter: Painter,
     iconContentDescriptionResource: StringResource,
     titleResource: StringResource,
@@ -31,8 +33,10 @@ fun LocationEmptyState(
     modifier: Modifier = Modifier,
     isLoading: Boolean = false
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -61,7 +65,7 @@ fun LocationEmptyState(
         )
 
         PrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12),
             text = stringResource(buttonTextResource),
             contentPadding = PaddingValues(horizontal = Theme.spacing._24),
             onClick = onButtonClicked,
