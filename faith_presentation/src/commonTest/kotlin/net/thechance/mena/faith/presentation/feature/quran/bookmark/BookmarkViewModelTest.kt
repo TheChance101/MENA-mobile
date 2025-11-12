@@ -83,7 +83,7 @@ class BookmarkViewModelTest {
 
         viewModel.uiState.test {
             val state = awaitItem()
-            assertTrue(state.showDeleteConfirmationDialog)
+            assertTrue(state.isDeleteConfirmationDialogVisible)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -112,7 +112,7 @@ class BookmarkViewModelTest {
                 val bookmarks = state.bookmarks.asSnapshot()
 
                 assertFalse(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
-                assertFalse(state.showDeleteConfirmationDialog)
+                assertFalse(state.isDeleteConfirmationDialogVisible)
                 assertEquals(1, bookmarks.size)
                 cancelAndIgnoreRemainingEvents()
             }
@@ -224,7 +224,7 @@ class BookmarkViewModelTest {
                 val state = awaitItem()
                 val bookmarks = state.bookmarks.asSnapshot()
 
-                assertFalse(state.showDeleteConfirmationDialog)
+                assertFalse(state.isDeleteConfirmationDialogVisible)
                 assertEquals(2, bookmarks.size)
                 assertTrue(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
                 cancelAndIgnoreRemainingEvents()

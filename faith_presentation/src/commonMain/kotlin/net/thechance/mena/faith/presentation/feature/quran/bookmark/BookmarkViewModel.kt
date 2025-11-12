@@ -59,7 +59,7 @@ class BookmarkViewModel(
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
         pendingDeleteBookmarkId = bookmarkId
-        updateState { it.copy(showDeleteConfirmationDialog = true) }
+        updateState { it.copy(isDeleteConfirmationDialogVisible = true) }
     }
 
     override fun onConfirmDeleteBookmarkClick() {
@@ -68,11 +68,7 @@ class BookmarkViewModel(
         tryToExecute(
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
-            onSuccess = {
-                onDeleteBookmarkSuccess()
-                onDismissDeleteConfirmationDialog()
-                pendingDeleteBookmarkId = null
-            },
+            onSuccess = { onDeleteBookmarkSuccess() },
             onError = {
                 removeDeletedBookmarkId(bookmarkId)
                 onDismissDeleteConfirmationDialog()
@@ -83,7 +79,7 @@ class BookmarkViewModel(
     }
 
     override fun onDismissDeleteConfirmationDialog() {
-        updateState { it.copy(showDeleteConfirmationDialog = false) }
+        updateState { it.copy(isDeleteConfirmationDialogVisible = false) }
         pendingDeleteBookmarkId = null
     }
 
@@ -102,7 +98,13 @@ class BookmarkViewModel(
         }
     }
 
-    private fun onDeleteBookmarkSuccess() =
+    private fun onDeleteBookmarkSuccess() {
+        onDeleteBookmarkSuccessSnackbar()
+        onDismissDeleteConfirmationDialog()
+        pendingDeleteBookmarkId = null
+    }
+
+    private fun onDeleteBookmarkSuccessSnackbar() =
         snackbarHandler.showSnackBar(
             message = Res.string.bookmark_removed_successfully,
             status = SnackBarState.Status.Success,

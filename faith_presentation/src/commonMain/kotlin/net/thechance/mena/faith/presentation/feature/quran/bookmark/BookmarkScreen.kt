@@ -86,10 +86,10 @@ private fun Content(
             )
         }, overlays = {
             dialog(
-                isVisible = uiState.showDeleteConfirmationDialog,
+                isVisible = uiState.isDeleteConfirmationDialogVisible,
             ) {
                 DeleteConfirmationDialog(
-                    showDialog = uiState.showDeleteConfirmationDialog,
+                    showDialog = uiState.isDeleteConfirmationDialogVisible,
                     onDeleteClick = listener::onConfirmDeleteBookmarkClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
                     title = stringResource(Res.string.remove_aya),
