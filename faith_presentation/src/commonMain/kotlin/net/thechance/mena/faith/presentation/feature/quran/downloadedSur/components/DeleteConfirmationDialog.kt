@@ -11,8 +11,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.delete
-import mena.faith_presentation.generated.resources.delete_surah
-import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -24,8 +22,8 @@ fun ScaffoldScope.DeleteConfirmationDialog(
     showDialog: Boolean,
     onDeleteClick: () -> Unit,
     onDismiss: () -> Unit,
-    title: String = stringResource(Res.string.delete_surah),
-    message: String = stringResource(Res.string.delete_surah_dialog_message),
+    title: String ,
+    message: String,
 ) {
     Dialog(
         isVisible = showDialog,
