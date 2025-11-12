@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +41,7 @@ import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun DisplayProductImage(
@@ -147,9 +147,9 @@ private fun CancelImageIconButton(
                 .offset(x = 4.dp, y = (-4).dp)
                 .background(
                     color = Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(Theme.radius.full)
+                    shape = SquircleShape(Theme.radius.full)
                 )
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(SquircleShape(Theme.radius.full))
                 .clickable(
                     enabled = isCancelButtonEnabled,
                     onClick = onCancelClick
@@ -171,7 +171,7 @@ private fun LoadingContentImage(imageSize: Double) {
         modifier = Modifier.fillMaxSize()
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -195,14 +195,14 @@ private fun SuccessContentImage(image: ImageBitmap) {
         modifier = Modifier.size(88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceHigh,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             ),
         contentAlignment = Alignment.Center
     ) {
         Image(
             modifier = Modifier
                 .fillMaxSize()
-                .clip(shape = RoundedCornerShape(size = Theme.radius.md)),
+                .clip(shape = SquircleShape(Theme.radius.md)),
             bitmap = image,
             contentDescription = stringResource(resource = Res.string.upload_dukan_image),
             contentScale = ContentScale.Crop
@@ -237,7 +237,7 @@ private fun SuccessContentImageUrl(
             .size(88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceHigh,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -247,7 +247,7 @@ private fun SuccessContentImageUrl(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .clip(shape = RoundedCornerShape(size = Theme.radius.md))
+                .clip(shape = SquircleShape(Theme.radius.md))
         )
     }
 }
@@ -261,7 +261,7 @@ private fun ErrorContentImage(image: ImageBitmap) {
         modifier = Modifier.size(88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceHigh,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             ).drawWithContent {
                 drawContent()
                 drawBorder(
@@ -271,7 +271,7 @@ private fun ErrorContentImage(image: ImageBitmap) {
             },
     ) {
         Image(
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(size = Theme.radius.md)),
+            modifier = Modifier.fillMaxSize().clip(SquircleShape(Theme.radius.md)),
             bitmap = image,
             contentDescription = stringResource(resource = Res.string.upload_dukan_image),
             contentScale = ContentScale.Crop
@@ -353,6 +353,3 @@ private fun ErrorProductImagePreview() {
         }
     }
 }
-
-
-

@@ -28,6 +28,7 @@ internal val dukanRepositoryModule = module {
     single<HttpClient>(named("dukanClient")) {
         buildDukanApiClient(
             authorizationService = get(),
+            localizationService = get(),
             baseUrl = get<String>(named("baseUrl"))
         )
     }

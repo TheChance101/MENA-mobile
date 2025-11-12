@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,7 @@ fun AddressShimmerPlaceholders(
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-        contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = Theme.spacing._8)
+        contentPadding = PaddingValues(bottom = Theme.spacing._16)
     ) {
         items(itemsCount) {
             AddressCardShimmer()

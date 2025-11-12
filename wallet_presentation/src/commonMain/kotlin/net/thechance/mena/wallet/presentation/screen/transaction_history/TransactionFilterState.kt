@@ -15,7 +15,7 @@ data class TransactionFilterState(
     val activeFilterCount: Int = 0,
     val isDateBottomSheetVisible: Boolean = false,
     val datePickerMode: DatePickerMode = DatePickerMode.START_DATE,
-    val isLoading: Boolean = false,
+    val isApplyButtonLoading: Boolean = false,
     val errorState: ErrorState? = null
 ) {
     val hasActiveFilters: Boolean

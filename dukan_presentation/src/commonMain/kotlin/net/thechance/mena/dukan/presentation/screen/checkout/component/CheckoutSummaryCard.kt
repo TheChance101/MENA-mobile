@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +38,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun CheckoutSummaryCard(
@@ -51,7 +51,7 @@ fun CheckoutSummaryCard(
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(
-                RoundedCornerShape(
+                SquircleShape(
                     topStart = Theme.spacing._16,
                     topEnd = Theme.spacing._16,
                     bottomStart = Theme.spacing._8,

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun WideImageStyle(
@@ -42,7 +42,7 @@ fun WideImageStyle(
     Box(
         modifier = modifier
             .height(198.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(
                 onClick = onClick,
@@ -52,7 +52,7 @@ fun WideImageStyle(
                 if (isSelected) Modifier.border(
                     1.dp,
                     Theme.colorScheme.primary.primary,
-                    RoundedCornerShape(Theme.radius.md)
+                    SquircleShape(Theme.radius.md)
                 )
                 else Modifier
             ),
@@ -85,7 +85,7 @@ fun WideImageBox(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(Theme.radius.sm))
+            .clip(SquircleShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surface)
             .padding(vertical = Theme.spacing._12),
         contentAlignment = Alignment.Center
