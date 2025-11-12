@@ -1,0 +1,71 @@
+package net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.components
+
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.paging.LoadState
+import app.cash.paging.compose.LazyPagingItems
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.could_not_load_contacts
+import mena.core_chat_presentation.generated.resources.search_by_name
+import mena.core_chat_presentation.generated.resources.something_went_wrong
+import net.thechance.mena.core_chat.presentation.components.ErrorView
+import net.thechance.mena.core_chat.presentation.components.LoadingView
+import net.thechance.mena.core_chat.presentation.screen.contacts.ContactUiState
+import net.thechance.mena.core_chat.presentation.screen.contacts.components.ContactsList
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareAyahInterActionListener
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareAyahScreenState
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
+
+@OptIn(ExperimentalUuidApi::class)
+@Composable
+fun ShareAyahSearchContactContent(
+    contacts: LazyPagingItems<ContactUiState>,
+    interactions: ShareAyahInterActionListener,
+    state: ShareAyahScreenState
+) {
+    AnimatedContent(
+        targetState = contacts.loadState.refresh,
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) { loadState ->
+        when (loadState) {
+            is LoadState.Loading -> {
+                LoadingView()
+            }
+
+            is LoadState.Error -> {
+                ErrorView(
+                    title = stringResource(Res.string.something_went_wrong),
+                    message = stringResource(Res.string.could_not_load_contacts),
+                    onRetry = interactions::onClickClearQuery
+                )
+            }
+
+            else -> {
+                Column {
+                    SearchBar(
+                        value = state.searchQuery,
+                        hint = stringResource(Res.string.search_by_name),
+                        onValueChange = { query -> interactions.onChangeSearchQuery(query = query) },
+                        onClearQueryClicked = interactions::onClickClearQuery,
+                        modifier = Modifier.padding(
+                            horizontal = Theme.spacing._16,
+                            vertical = Theme.spacing._8
+                        )
+                    )
+                    ContactsList(
+                        contacts = contacts,
+                        onContactClick = interactions::onClickContact
+                    )
+                }
+            }
+        }
+    }
+}
