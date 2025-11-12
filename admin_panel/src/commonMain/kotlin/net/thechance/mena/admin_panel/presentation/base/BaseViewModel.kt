@@ -49,9 +49,11 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
                 onFinish?.invoke()
             }
         }
+        inScope.launch {
+            onStart?.invoke()
+        }
 
         return inScope.launch(dispatcher + exceptionHandler) {
-            onStart?.invoke()
             onSuccess(callee())
             onFinish?.invoke()
         }
