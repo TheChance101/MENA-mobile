@@ -47,7 +47,7 @@ class TransactionHistoryViewModel(
         loadNextTransactions()
     }
 
-    private fun initializePaginator(){
+    private fun initializePaginator() {
         paginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onPaginationLoading,
@@ -85,6 +85,7 @@ class TransactionHistoryViewModel(
             showInvalidDatesSnackBar()
             return
         }
+        updateState { it.copy(filterState = it.filterState.copy(isApplyButtonLoading = true)) }
         resetPaginator()
     }
 
@@ -249,7 +250,9 @@ class TransactionHistoryViewModel(
             )
         }
 
-        if (isLoading) { updateState { it.copy(errorState = null) } }
+        if (isLoading) {
+            updateState { it.copy(errorState = null) }
+        }
     }
 
     private suspend fun getPagedTransactions(page: Int): List<Transaction> =
@@ -273,7 +276,7 @@ class TransactionHistoryViewModel(
                 it.copy(
                     isFilterVisible = false,
                     filterState = it.filterState.copy(
-                        isLoading = false,
+                        isApplyButtonLoading = false,
                         activeFilterCount = getActiveFilterCount()
                     )
                 )
@@ -289,7 +292,7 @@ class TransactionHistoryViewModel(
                     else -> ErrorState.UnknownError
                 },
                 isLoading = false,
-                filterState = it.filterState.copy(isLoading = false)
+                filterState = it.filterState.copy(isApplyButtonLoading = false)
             )
         }
     }

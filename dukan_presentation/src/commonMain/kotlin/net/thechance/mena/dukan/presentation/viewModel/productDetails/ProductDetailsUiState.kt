@@ -11,7 +11,8 @@ data class ProductDetailsUiState(
     val selectedImageUrl: String = "",
     val isFirstQuantityOne: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
-    val hasProductInCart: Boolean = false
+    val hasProductInCart: Boolean = false,
+    val isButtonEnable : Boolean = false
 ) {
     data class ProductInfo(
         val id: String = "",

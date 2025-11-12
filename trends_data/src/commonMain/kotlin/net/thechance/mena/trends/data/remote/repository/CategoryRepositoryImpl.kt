@@ -1,4 +1,4 @@
-package net.thechance.mena.trends.data.repository
+package net.thechance.mena.trends.data.remote.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -7,12 +7,12 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import net.thechance.mena.trends.data.di.TrendDataModule.Companion.DEFAULT_CLIENT_NAME
-import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
-import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
-import net.thechance.mena.trends.data.dto.UpdateUserCategoriesResponse
-import net.thechance.mena.trends.data.mapper.toEntityList
+import net.thechance.mena.trends.data.di.DEFAULT_CLIENT_NAME
+import net.thechance.mena.trends.data.remote.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.dto.SubmitCategoriesRequestDto
+import net.thechance.mena.trends.data.remote.dto.UpdateUserCategoriesRequest
+import net.thechance.mena.trends.data.remote.dto.UpdateUserCategoriesResponse
+import net.thechance.mena.trends.data.remote.mapper.toEntityList
 import net.thechance.mena.trends.data.util.NetworkEndpoint.CATEGORIES_ENDPOINT
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Category
