@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -22,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.close_dialog_icon
-import mena.identity_presentation.generated.resources.ic_close_dialog
 import mena.identity_presentation.generated.resources.profile_theme
 import mena.identity_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -57,6 +54,7 @@ fun ScaffoldScope.ThemeDialog(
     BasicDialog(
         isVisible = isVisible,
         onDismiss = onDismissRequest,
+        onCancelClick = onDismissRequest
     ) {
         Box(
             contentAlignment = Alignment.TopCenter,
@@ -92,17 +90,6 @@ fun ScaffoldScope.ThemeDialog(
                     )
                 }
             }
-            Icon(
-                painter = painterResource(Res.drawable.ic_close_dialog),
-                contentDescription = stringResource(Res.string.close_dialog_icon),
-                modifier = Modifier.size(Theme.spacing._32)
-                    .clip(CircleShape).background(Theme.colorScheme.background.surface, CircleShape)
-                    .clickable(
-                        onClick = { onDismissRequest() },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() })
-                    .padding(Theme.spacing._8).align(Alignment.TopStart)
-            )
         }
     }
 }
