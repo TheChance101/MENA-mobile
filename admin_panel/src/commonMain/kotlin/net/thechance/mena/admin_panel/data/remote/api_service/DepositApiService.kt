@@ -19,6 +19,6 @@ interface DepositApiService {
 
     private companion object {
         const val COUNTRIES_END_POINT = "identity/authentication/countries"
-        const val DEPOSIT_END_POINT = "wallet/admin/balance/deposit"
+        const val DEPOSIT_END_POINT = "wallet/admin/deposit"
     }
 }
