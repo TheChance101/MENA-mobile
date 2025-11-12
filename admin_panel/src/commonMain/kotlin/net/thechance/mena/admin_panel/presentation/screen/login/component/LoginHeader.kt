@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
@@ -36,7 +37,7 @@ internal fun LoginHeader(modifier: Modifier = Modifier) {
             text = stringResource(Res.string.mena),
             textAlign = TextAlign.Center,
             style = Theme.typography.appName,
-            color = Theme.colorScheme.shadePrimary
+            color = Color(0xFF27374D)
         )
         Text(
             modifier = Modifier.padding(top = 16.dp),
