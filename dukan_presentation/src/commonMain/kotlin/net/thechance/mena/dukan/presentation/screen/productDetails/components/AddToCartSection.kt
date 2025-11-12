@@ -8,10 +8,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +27,7 @@ import net.thechance.mena.dukan.presentation.component.product.ProductQuantityBu
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun AddToCartSection(
@@ -59,7 +59,6 @@ fun AddToCartSection(
         )
         Button(
             modifier = Modifier
-                .heightIn(min=48.dp)
                 .fillMaxWidth(),
             onClick = onAddToCartClick,
             isEnabled = state.isButtonEnable,
@@ -69,13 +68,15 @@ fun AddToCartSection(
                 Theme.colorScheme.shadeTertiary,
                 Theme.colorScheme.primary.primary
             ),
+            shape = SquircleShape(Theme.radius.md),
+            containerColor = Theme.colorScheme.primary.primary,
             disabledContainerColor = Theme.colorScheme.disabled,
             disabledContentColor = Theme.colorScheme.textDisabled ,
-            shape = RoundedCornerShape(Theme.radius.md),
             containerColor = Theme.colorScheme.primary.primary,
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -88,11 +89,10 @@ fun AddToCartSection(
                     modifier = Modifier
                         .padding(horizontal = Theme.spacing._8)
                         .size(3.dp)
-                        .clip(RoundedCornerShape(Theme.radius.full))
+                        .clip(CircleShape)
                         .background(Theme.colorScheme.primary.onPrimaryBody)
                 )
-                Column(
-                ) {
+                Column {
                     Text(
                         text = "$${state.product.price}",
                         style = Theme.typography.label.small,

@@ -12,6 +12,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
 @Composable
 fun AnimatedQuranPlayer(
     state: SurahUiState,
+    surahId: Int,
     listener: SurahInteractionListener,
     modifier: Modifier = Modifier
 ) {
@@ -23,7 +24,7 @@ fun AnimatedQuranPlayer(
     ) {
         QuranPlayer(
             surahName = state.surahName,
-            onReciterClick = listener::onReciterClick,
+            onReciterClick = { listener.onReciterClick(surahId) },
             onPreviousClick = listener::onPreviousAyahClick,
             onPlayPauseClick = listener::onPlayPauseClick,
             onNextClick = listener::onNextAyahClick,
@@ -32,6 +33,7 @@ fun AnimatedQuranPlayer(
             isPlaying = state.isAyahSoundPlaying,
             reciterName = state.currentReciter.name,
             onCancelClick = listener::onClosePlayerClick,
+            onTilawahClick = { listener.playSurah(surahId) }
         )
     }
 }

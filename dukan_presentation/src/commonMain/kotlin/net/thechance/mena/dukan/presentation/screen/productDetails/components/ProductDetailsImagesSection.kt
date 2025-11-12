@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +46,7 @@ import net.thechance.mena.dukan.presentation.screen.productDetails.components.ut
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ProductDetailsImagesSection(
@@ -96,7 +96,7 @@ private fun ProductDetailsImageShimmer(modifier: Modifier = Modifier) {
             height = 288.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.radius.md))
+                .clip(SquircleShape(Theme.radius.md))
         )
 
         Spacer(modifier = Modifier.height(Theme.spacing._16))
@@ -107,7 +107,7 @@ private fun ProductDetailsImageShimmer(modifier: Modifier = Modifier) {
                 ShimmerBox(
                     width = 56.dp,
                     height = 56.dp,
-                    modifier = Modifier.clip(RoundedCornerShape(Theme.radius.sm))
+                    modifier = Modifier.clip(SquircleShape(Theme.radius.sm))
                 )
             }
         }
@@ -148,7 +148,7 @@ fun ProductDetailsMainImage(
         modifier = modifier
             .fillMaxWidth()
             .height(288.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(if (isError) Color.Gray else Color.Transparent)
     ) {
         AsyncImage(
@@ -185,7 +185,7 @@ fun ProductDetailsSecondaryImages(
     LazyRow(
         modifier = modifier
             .height(64.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically,
@@ -208,7 +208,7 @@ private fun ProductDetailsSecondaryImageItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(Theme.radius.sm)
+    val shape = SquircleShape(Theme.radius.sm)
     var isError by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
