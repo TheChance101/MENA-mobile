@@ -9,9 +9,8 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.admin_panel.data.mapper.deposit.toRequest
 import net.thechance.mena.admin_panel.data.remote.api_service.DepositApiService
-import net.thechance.mena.admin_panel.domain.model.DepositQueryParams
+import net.thechance.mena.admin_panel.data.remote.dto.deposit.DepositRequestDto
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -28,16 +27,16 @@ class DepositRepositoryImplTest {
 
     @Test
     fun `deposit should call api successfully`() = runTest {
-        val fakeParams = DepositQueryParams(
+        val fakeParams = DepositRequestDto(
             phoneNumber = "01012345678",
             amount = 100.0
         )
 
         everySuspend {
-            depositApiService.deposit(fakeParams.toRequest())
+            depositApiService.deposit(fakeParams)
         } returns successfulEmptyResponse()
 
-        depositRepository.deposit(fakeParams)
+        depositRepository.deposit("01012345678" , 100.0)
     }
 
     private companion object {
@@ -49,6 +48,4 @@ class DepositRepositoryImplTest {
             return Response.success(Unit, mockHttpResponse) as Response<Unit>
         }
     }
-
-
 }
