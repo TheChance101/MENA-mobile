@@ -164,7 +164,11 @@ private fun Preview() {
                 override fun onShareClick(ayahContent: String) {}
                 override fun highlightAyah(ayahNumber: Int) {}
                 override fun updateContinueTilawah(ayahNumber: Int) {}
-                override fun playSurah(surahId: Int) {}
+                override fun playSurah(
+                    surahNumber: Int,
+                    ayahNumber: Int,
+                    reciterId: Int
+                ) {}
                 override fun onInitialAyahScrolled() {}
             }
 

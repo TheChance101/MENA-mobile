@@ -196,8 +196,12 @@ private fun Preview() {
                     override fun onInitialAyahScrolled() {}
                     override fun highlightAyah(ayahNumber: Int) {}
                     override fun updateContinueTilawah(ayahNumber: Int) {}
-                    override fun playSurah(surahId: Int) {}
-
+                    override fun playSurah(
+                        surahNumber: Int,
+                        ayahNumber: Int,
+                        reciterId: Int
+                    ) {
+                    }
                 },
                 snackBarState = SnackBarState()
             )
