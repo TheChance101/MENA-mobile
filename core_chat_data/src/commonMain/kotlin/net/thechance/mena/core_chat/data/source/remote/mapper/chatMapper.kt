@@ -222,6 +222,7 @@ fun MarkAsReadDto.toDomain(): MarkMessageAsReadEvent {
 fun DeleteChatDto.toDomain(): DeleteChatEvent {
     return DeleteChatEvent(
         chatId = Uuid.parse(chatId),
+        deletedByUserId = Uuid.parse(deletedByUserId)
     )
 }
 
