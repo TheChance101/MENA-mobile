@@ -13,9 +13,12 @@ import org.koin.core.annotation.Single
 class DepositRepositoryImpl(
     private val depositApiService: DepositApiService
 ) : DepositRepository {
-    override suspend fun deposit(phoneNumber :String , amount :Double) {
-        executeApiSafely<Unit>{
-            depositApiService.deposit(DepositRequestDto(phoneNumber , amount))
+    override suspend fun deposit(phoneNumber: String, amount: Double) {
+        executeApiSafely<Unit> {
+            depositApiService.deposit(DepositRequestDto(
+                phoneNumber,
+                amount
+            ))
         }
     }
 
