@@ -43,15 +43,22 @@ fun ChatItem(
             .clickable { onChatClicked(chat) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        CircularAvatar(
-            contactImageUri = chat.imageUrl,
-            size = 48.dp,
-            modifier = Modifier.padding(end = Theme.spacing._8)
-        )
-        NameAndLastMessage(chat)
-        TimeAndStatus(chat)
-    }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth().padding(horizontal = Theme.spacing._16),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CircularAvatar(
+                contactImageUri = chat.imageUrl,
+                size = 48.dp,
+                modifier = Modifier.padding(end = Theme.spacing._8)
 
+            )
+            NameAndLastMessage(chat)
+            TimeAndStatus(chat)
+        }
+    }
 }
 
 @Composable
