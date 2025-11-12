@@ -5,4 +5,5 @@ interface DukanDetailsInteractionListener {
     fun onChangeDukanStatusBtnClicked()
     fun onNextShelvesPageRequested()
     fun onShelfSelected(shelfId: String)
+    fun onNextProductsPageRequested()
 }

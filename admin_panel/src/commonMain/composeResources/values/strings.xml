@@ -62,4 +62,6 @@
     <string name="shelves">Shelves</string>
     <string name="dukan_img">dukan image</string>
     <string name="dukan_location">dukan location icon</string>
+    <string name="silver_img">silver image</string>
+    <string name="product_img">product image</string>
 </resources>

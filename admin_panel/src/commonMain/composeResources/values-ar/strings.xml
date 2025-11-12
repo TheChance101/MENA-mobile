@@ -63,4 +63,6 @@
     <string name="shelves">رفوف</string>
     <string name="dukan_img">صورة دكان</string>
     <string name="dukan_location">رمز موقع دكان</string>
+    <string name="silver_img">صورة سيلفر</string>
+    <string name="product_img">صورة منتج</string>
 </resources>

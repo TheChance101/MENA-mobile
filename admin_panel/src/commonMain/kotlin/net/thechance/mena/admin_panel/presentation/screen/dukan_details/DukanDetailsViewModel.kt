@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
+import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.dukan.DukanRepository
@@ -34,6 +35,7 @@ class DukanDetailsViewModel(
     DukanDetailsInteractionListener {
 
     private lateinit var shelvesPaginator: Paginator<Int, List<Shelf>>
+    private lateinit var productsPaginator: Paginator<Int, List<Product>>
 
     init {
         getDukanDetails()
@@ -42,11 +44,11 @@ class DukanDetailsViewModel(
     }
 
     override fun onBackBtnClicked() {
-        TODO("Not yet implemented")
+        sendEffect(DukanDetailEffect.NavigateBack)
     }
 
     override fun onChangeDukanStatusBtnClicked() {
-        TODO("Not yet implemented")
+        //open dialog or change the status
     }
 
     override fun onNextShelvesPageRequested() {
@@ -54,7 +56,15 @@ class DukanDetailsViewModel(
     }
 
     override fun onShelfSelected(shelfId: String) {
-        updateState { it.copy(selectedShelfId = shelfId) }
+        if (currentState.selectedShelfId != shelfId) {
+            updateState { it.copy(selectedShelfId = shelfId) }
+            initializeProductsPaginator()
+            loadNextProducts()
+        }
+    }
+
+    override fun onNextProductsPageRequested() {
+        loadNextProducts()
     }
 
     private fun getDukanDetails() {
@@ -98,7 +108,7 @@ class DukanDetailsViewModel(
         ).items
     }
 
-    private fun onGetPagedShelvesSuccess(shelves: List<Shelf>){
+    private fun onGetPagedShelvesSuccess(shelves: List<Shelf>) {
         updateState {
             it.copy(shelves = it.shelves + shelves)
         }
@@ -107,6 +117,38 @@ class DukanDetailsViewModel(
     private fun loadNextShelves() {
         viewModelScope.launch(dispatcher) {
             shelvesPaginator.loadNextItems()
+        }
+    }
+
+    private fun initializeProductsPaginator() {
+        productsPaginator = Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = {},
+            onRequest = ::getPagedProducts,
+            getNextKey = { currentKey, _ -> currentKey + 1 },
+            onError = {},
+            onSuccess = { result, _ -> onGetPagedProductsSuccess(result) },
+            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+        )
+    }
+
+    private suspend fun getPagedProducts(page: Int): List<Product> {
+        return dukanRepository.getShelfProducts(
+            shelfId = Uuid.parse(currentState.selectedShelfId),
+            page = page,
+            size = PAGE_SIZE
+        ).items
+    }
+
+    private fun onGetPagedProductsSuccess(products: List<Product>) {
+        updateState {
+            it.copy(products = it.products + products)
+        }
+    }
+
+    private fun loadNextProducts() {
+        viewModelScope.launch(dispatcher) {
+            productsPaginator.loadNextItems()
         }
     }
 

@@ -64,7 +64,9 @@ private fun DukanDetailsScreenContent(
                 shelves = state.shelves,
                 selectedShelf = state.selectedShelfId,
                 onShelfClicked = interactionListener::onShelfSelected,
-                onNextPageRequested = interactionListener::onNextShelvesPageRequested,
+                onNextShelvesPageRequested = interactionListener::onNextShelvesPageRequested,
+                products = state.products,
+                onNextProductsPageRequested = interactionListener::onNextProductsPageRequested,
                 modifier = Modifier.weight(1f).fillMaxHeight()
             )
         }
