@@ -62,7 +62,7 @@ fun ScaffoldScope.ThemeDialog(
             LazyColumn(
                 modifier = Modifier.padding(vertical = Theme.spacing._12),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 item {
                     Text(
@@ -86,7 +86,7 @@ fun ScaffoldScope.ThemeDialog(
                         text = stringResource(Res.string.save),
                         isEnabled = selectedAppTheme != currentAppTheme,
                         onClick = { onConfirmThemeSelection() },
-                        modifier = Modifier.padding(top = 20.dp).fillMaxWidth().height(48.dp)
+                        modifier = Modifier.padding(top = 20.dp).fillMaxWidth()
                     )
                 }
             }
