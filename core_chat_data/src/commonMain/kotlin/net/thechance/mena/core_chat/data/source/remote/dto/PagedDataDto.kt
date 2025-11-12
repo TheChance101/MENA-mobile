@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PagedDataDto<T>(
     @SerialName("data")
-    val data: List<T>? = null,
+    val data: List<T>,
     @SerialName("pageNumber")
-    val pageNumber: Int? = null,
+    val pageNumber: Int,
     @SerialName("pageSize")
-    val pageSize: Int? = null,
+    val pageSize: Int,
     @SerialName("totalItems")
-    val totalItems: Int? = null,
+    val totalItems: Int,
     @SerialName("totalPages")
-    val totalPages: Int? = null
+    val totalPages: Int
 )

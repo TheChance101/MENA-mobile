@@ -6,7 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +33,7 @@ fun FavoriteIcon(
             .size(32.dp)
             .background(
                 color = Theme.colorScheme.primary.primary,
-                shape = RoundedCornerShape(Theme.radius.full)
+                shape = CircleShape
             )
             .clickable(
                 interactionSource = null,

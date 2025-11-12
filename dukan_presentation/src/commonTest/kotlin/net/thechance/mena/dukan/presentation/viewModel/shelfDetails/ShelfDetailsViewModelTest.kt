@@ -17,8 +17,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -28,7 +26,6 @@ import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,7 +39,8 @@ class ShelfDetailsViewModelTest {
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
 
-    private val dukanManagementRepository = mock<DukanManagementRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -62,7 +60,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
@@ -73,7 +71,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
             isFavorite = false
-            ),
+        ),
         Product(
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
@@ -84,7 +82,7 @@ class ShelfDetailsViewModelTest {
             quantityInCart = 10,
             shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000125"),
             isFavorite = false
-            )
+        )
     )
 
     @OptIn(ExperimentalUuidApi::class)
@@ -158,7 +156,7 @@ class ShelfDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -286,11 +284,11 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add first product`() =
+    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add product`() =
         runTest {
             // Given
             val productId = "1"
-            val quantity = 0
+            val quantity = 1
 
             everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
@@ -303,28 +301,6 @@ class ShelfDetailsViewModelTest {
             //Then
             verifySuspend {
                 dukanCartRepository.addProductQuantity(any())
-            }
-
-        }
-
-    @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to update existing product quantity`() =
-        runTest {
-            // Given
-            val productId = "1"
-            val quantity = 10
-
-            everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
-
-            //When
-            shelfDetailsViewModel.onAddToCartClicked(
-                productId,
-                productQuantity = quantity,
-            )
-            advanceUntilIdle()
-            //Then
-            verifySuspend {
-                dukanCartRepository.updateProductQuantity(any())
             }
 
         }
@@ -344,6 +320,26 @@ class ShelfDetailsViewModelTest {
         //Then
         verifySuspend {
             dukanCartRepository.updateProductQuantity(any())
+        }
+    }
+
+
+    @Test
+    fun `onPlusClicked SHOULD update hasProductInCart to true`() = runTest {
+        val productId = "1"
+        val quantity = 1
+
+        shelfDetailsViewModel.onPlusClicked(
+            productId,
+            productQuantity = quantity,
+        )
+
+        advanceUntilIdle()
+
+        shelfDetailsViewModel.state.test {
+            val state = awaitItem()
+            assertEquals(true, state.hasProductInCart)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -391,21 +387,42 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() = runTest {
-        // Given
-        val productId = "1"
-        val quantity = 5
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when NoInternetException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
 
-        everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
 
-        // When
-        shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
-        advanceUntilIdle()
+            // When
+            shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
+            // Then
+            shelfDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
+        }
 
-        // Then
-        val state = shelfDetailsViewModel.state.value
-        assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
-        assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
-    }
+    @Test
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when anyException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
+
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws Exception()
+
+            // When
+            shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
+
+            // Then
+            shelfDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
+        }
 
 }

@@ -345,11 +345,11 @@ class ChatRepositoryImplTest {
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
         everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
         val emittedState = repository.observeChatSummariesSyncState().first {
             it is SyncState.ChatsSummariesSynced
         }
+        repository.getChatsSummary(pageNumber, pageSize)
+
 
         assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
     }
@@ -378,7 +378,7 @@ class ChatRepositoryImplTest {
         repository.getChatsSummary(pageNumber, pageSize)
 
         val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.Offline
+            it == SyncState.Offline
         }
 
         assertThat(emittedState is SyncState.Offline).isTrue()
@@ -405,11 +405,12 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
         val emittedState = repository.observeChatSummariesSyncState().first {
             it is SyncState.Error
         }
+
+        repository.getChatsSummary(pageNumber, pageSize)
+
 
         assertThat(emittedState is SyncState.Error).isTrue()
     }
@@ -460,11 +461,11 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
         val emittedState = repository.observeChatSummariesSyncState().first {
             it is SyncState.DeletedChatsSynced
         }
+
+        repository.getChatsSummary(pageNumber, pageSize)
 
         assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
 

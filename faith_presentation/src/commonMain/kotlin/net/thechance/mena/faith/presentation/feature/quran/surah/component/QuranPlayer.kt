@@ -19,6 +19,7 @@ internal fun QuranPlayer(
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
     onRepeatClick: () -> Unit,
+    onTilawahClick: () -> Unit,
     onCancelClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -39,7 +40,8 @@ internal fun QuranPlayer(
             onPreviousClick = onPreviousClick,
             onPlayPauseClick = onPlayPauseClick,
             onNextClick = onNextClick,
-            onRepeatClick = onRepeatClick
+            onRepeatClick = onRepeatClick,
+            onTilawahClick = onTilawahClick
         )
 
     }
@@ -59,7 +61,8 @@ fun ReciterBoxPreview() {
             onPlayPauseClick = {},
             onNextClick = {},
             onRepeatClick = {},
-            onCancelClick = {}
+            onCancelClick = {},
+            onTilawahClick = {}
         )
     }
 }

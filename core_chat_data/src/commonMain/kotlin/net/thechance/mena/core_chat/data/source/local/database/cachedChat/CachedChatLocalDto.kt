@@ -12,5 +12,5 @@ data class CachedChatLocalDto(
     @ColumnInfo(name = "image_url")
     val imageUrl: String? = null,
     @ColumnInfo(name = "requester_id")
-    val requesterId: String? = null,
+    val requesterId: String,
 )
