@@ -36,6 +36,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.BookmarkAppBar
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.BookmarkItems
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DeleteConfirmationDialog
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.extentions.isEmpty
@@ -81,7 +82,19 @@ private fun Content(
                 isVisible = snackBarState.isVisible,
                 status = snackBarState.status,
             )
-        },
+        }, overlays = {
+            dialog(
+                isVisible = uiState.showDeleteConfirmationDialog,
+            ) {
+                DeleteConfirmationDialog(
+                    showDialog = uiState.showDeleteConfirmationDialog,
+                    onDeleteClick = { listener::onConfirmDeleteDownloadedSurahClick },
+                    onDismiss = listener::onDismissDeleteConfirmationDialog,
+                    title = "Remove Aya",
+                    message = "Are you sure you want to remove this aya from bookmarks?"
+                )
+            }
+        }
     ) {
         Column(
             modifier = Modifier
@@ -186,6 +199,8 @@ private fun BookmarkScreenPreview() {
                 override fun onBackClick() {}
                 override fun onDeleteBookmarkClick(bookmarkId: Int) {}
                 override fun onStartTilawahClick() {}
+                override fun onConfirmDeleteDownloadedSurahClick() {}
+                override fun onDismissDeleteConfirmationDialog() {}
             },
             snackBarState = SnackBarState()
         )

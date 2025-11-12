@@ -24,12 +24,14 @@ fun ScaffoldScope.DeleteConfirmationDialog(
     showDialog: Boolean,
     onDeleteClick: () -> Unit,
     onDismiss: () -> Unit,
+    title: String = stringResource(Res.string.delete_surah),
+    message: String = stringResource(Res.string.delete_surah_dialog_message),
 ) {
     Dialog(
         isVisible = showDialog,
         onDismiss = onDismiss,
-        title = stringResource(Res.string.delete_surah),
-        message = stringResource(Res.string.delete_surah_dialog_message),
+        title = title,
+        message = message,
         dismissOnClickOutside = true,
         dismissOnBackPress = true,
         onCancelClick = onDismiss,

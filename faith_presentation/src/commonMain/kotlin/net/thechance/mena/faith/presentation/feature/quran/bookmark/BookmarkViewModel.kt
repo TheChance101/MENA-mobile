@@ -27,9 +27,9 @@ class BookmarkViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     snackBarHandler: SnackbarHandler,
 ) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
-        BookMarkUiState(),
-        snackBarHandler,
-    ),
+    BookMarkUiState(),
+    snackBarHandler,
+),
     BookmarkInteractionListener {
     private val cachedBookmarksFlow =
         createBookmarksPagingSource()
@@ -57,13 +57,25 @@ class BookmarkViewModel(
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
         tryToExecute(
-            dispatcher = dispatcher,
-            execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
+            execute = {
+                onConfirmDeleteDownloadedSurahClick()
+                bookmarkRepository.deleteAyahBookmark(bookmarkId)
+            },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
-            onSuccess = { onDeleteBookmarkSuccess() },
+            onSuccess = {
+                onDeleteBookmarkSuccess()
+                onDismissDeleteConfirmationDialog()
+            },
             onError = { removeDeletedBookmarkId(bookmarkId) },
+            dispatcher = dispatcher
         )
     }
+
+    override fun onDismissDeleteConfirmationDialog() =
+        updateState { it.copy(showDeleteConfirmationDialog = false) }
+
+    override fun onConfirmDeleteDownloadedSurahClick() =
+        updateState { it.copy(showDeleteConfirmationDialog = true) }
 
     private fun insertDeletedBookmarkId(id: Int) =
         deletedBookmarkIdsFlow.update { currentSet -> currentSet + id }
