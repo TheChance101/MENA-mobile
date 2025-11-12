@@ -34,8 +34,8 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val userRepository: UserRepository = mockk()
-    private val settingsRepository: SettingsRepository = mockk()
+    private val userRepository: UserRepository = mockk(relaxed = true)
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private lateinit var viewModel: ProfileScreenViewModel
 
     @BeforeTest
@@ -87,7 +87,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
             val emittedEffect = awaitItem()
             assertTrue { emittedEffect is ProfileScreenUIEffect.NavigateToEditProfileScreen }
             cancelAndConsumeRemainingEvents()
-
         }
     }
 
@@ -159,14 +158,51 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `should update state to show theme dialog when onThemeClicked`() = runTest {
+    fun `onThemeSettingsClicked()should update state to show theme dialog when `() = runTest {
         viewModel.onThemeSettingsClicked()
-
         testDispatcher.scheduler.advanceUntilIdle()
-
         assertTrue(viewModel.state.value.themeDialogUiState.isVisible)
-
     }
+
+    @Test
+    fun `onSelectTheme() should update selected theme in dialog state`() = runTest {
+        val newTheme = AppTheme.DARK
+        viewModel.onSelectTheme(newTheme)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newTheme, viewModel.state.value.themeDialogUiState.selectedAppTheme)
+    }
+
+    @Test
+    fun `onConfirmThemeSelection() should apply theme, hide dialog, and update current theme`() =
+        runTest {
+            val newTheme = AppTheme.DARK
+            viewModel.onSelectTheme(newTheme)
+            testDispatcher.scheduler.advanceUntilIdle()
+            coEvery { settingsRepository.applyAppTheme(newTheme) } returns Unit
+            viewModel.onConfirmThemeSelection()
+            testDispatcher.scheduler.advanceUntilIdle()
+            coVerify { settingsRepository.applyAppTheme(newTheme) }
+            assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
+            assertEquals(newTheme, viewModel.state.value.currentTheme)
+        }
+
+    @Test
+    fun `onDismissThemeDialog() should hide dialog and reset selection to current theme`() =
+        runTest {
+            val currentTheme = viewModel.state.value.currentTheme
+            val newThemeSelection = AppTheme.DARK
+            viewModel.onSelectTheme(newThemeSelection)
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(
+                newThemeSelection,
+                viewModel.state.value.themeDialogUiState.selectedAppTheme
+            )
+            viewModel.onDismissThemeDialog()
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
+            assertEquals(currentTheme, viewModel.state.value.themeDialogUiState.selectedAppTheme)
+        }
+
 
     @Test
     fun `should emit NavigateToPrivacyAndPolicyScreen effect when onPrivacyAndPolicyClicked`() =
