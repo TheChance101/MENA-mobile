@@ -39,6 +39,14 @@ fun ProductDetailsContent(
                 listener = listener
             )
         },
+        bottomBar = {
+            AddToCartSection(
+                onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
+                onPlusClick = {listener.onPlusClicked(state.product.id)},
+                onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
+                state = state
+            )
+        },
         snakeBar = {
             state.snackBarState?.let {snackBarUiState ->
                 SnackBar(
@@ -75,13 +83,6 @@ fun ProductDetailsContent(
                         isLoading = state.isLoading
                     )
                 }
-                AddToCartSection(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
-                    onPlusClick = {listener.onPlusClicked(state.product.id)},
-                    onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
-                    state = state
-                )
             }
         }
     }
