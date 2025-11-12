@@ -13,40 +13,40 @@ interface UserEngagementDao {
     suspend fun insertEngagement(engagement: UserEngagement): Long
 
     /**
-     * Gets all UserEngagements for a specific user where watchEndTimestamp is before today at midnight
+     * Gets all UserEngagements for a specific user before a specific time
      * @param userId The user's ID
-     * @param midnightTimestamp The timestamp for today at 00:00 (midnight) in milliseconds
-     * @return List of UserEngagements before today's midnight
+     * @param timestamp The timestamp
+     * @return List of UserEngagements before given timestamp
      */
     @Query(
         """
         SELECT * FROM $ENGAGEMENTS_TABLE 
         WHERE userId = :userId 
-        AND watchEndTimestamp < :midnightTimestamp
+        AND watchEndTimestamp < :timestamp
         ORDER BY watchEndTimestamp DESC
     """
     )
-    suspend fun getEngagementsBeforeToday(
+    suspend fun getUserEngagementsBeforeGivenTime(
         userId: String,
-        midnightTimestamp: Long
+        timestamp: Long
     ): List<UserEngagement>
 
     /**
-     * Deletes all UserEngagements for a specific user where watchEndTimestamp is before today at midnight
+     * Deletes all UserEngagements for a specific user before a specific time
      * @param userId The user's ID
-     * @param midnightTimestamp The timestamp for today at 00:00 (midnight) in milliseconds
+     * @param timestamp The timestamp
      * @return Number of engagements deleted
      */
     @Query(
         """
         DELETE FROM $ENGAGEMENTS_TABLE 
         WHERE userId = :userId 
-        AND watchEndTimestamp < :midnightTimestamp
+        AND watchEndTimestamp < :timestamp
     """
     )
-    suspend fun deleteEngagementsBeforeToday(
+    suspend fun deleteUserEngagementsBeforeGivenTime(
         userId: String,
-        midnightTimestamp: Long
+        timestamp: Long
     ): Int
 
 }
