@@ -59,4 +59,7 @@
     <string name="deactivate_dukan">Deactivate</string>
     <string name="dukan_details">Dukan Details</string>
     <string name="back_btn">back button</string>
+    <string name="shelves">Shelves</string>
+    <string name="dukan_img">dukan image</string>
+    <string name="dukan_location">dukan location icon</string>
 </resources>

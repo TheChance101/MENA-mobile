@@ -14,6 +14,7 @@ import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetails
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.ShelvesDetails
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -58,11 +59,12 @@ private fun DukanDetailsScreenContent(
                 dukanImg = state.dukan.imageUrl,
                 modifier = Modifier.padding(end = 8.dp).weight(1f).fillMaxHeight()
             )
-            DukanDetails(
-                dukanName = "MINISO - Baghdad mall branch",
-                dukanCategories = listOf("Accessories", "shoes", "perfume"),
-                dukanLocation = "Karada, Baghdad",
-                dukanImg = state.dukan.imageUrl,
+            ShelvesDetails(
+                totalShelves = state.totalShelves,
+                shelves = state.shelves,
+                selectedShelf = state.selectedShelfId,
+                onShelfClicked = interactionListener::onShelfSelected,
+                onNextPageRequested = interactionListener::onNextShelvesPageRequested,
                 modifier = Modifier.weight(1f).fillMaxHeight()
             )
         }

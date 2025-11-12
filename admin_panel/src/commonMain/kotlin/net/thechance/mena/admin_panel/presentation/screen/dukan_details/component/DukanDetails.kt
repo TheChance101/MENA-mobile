@@ -24,9 +24,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.dukan_img
+import net.thechance.mena.admin_panel.resources.dukan_location
 import net.thechance.mena.admin_panel.resources.ic_store_location
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DukanDetails(
@@ -52,7 +55,7 @@ internal fun DukanDetails(
                 .clip(RoundedCornerShape(Theme.radius.md)),
             model = dukanImg,
             contentScale = ContentScale.Crop,
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.dukan_img),
         )
         Text(
             modifier = Modifier.padding(top = 8.dp),
@@ -115,7 +118,7 @@ private fun DukanLocation(
         Icon(
             modifier = Modifier.size(16.dp).padding(end = 4.dp),
             painter = painterResource(Res.drawable.ic_store_location),
-            contentDescription = null,
+            contentDescription = stringResource(Res.string.dukan_location),
             tint = Theme.colorScheme.shadeSecondary
         )
         Text(

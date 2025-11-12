@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details
 
+import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.activate_dukan
@@ -13,7 +14,10 @@ data class DukanDetailsScreenState(
     val isLoading: Boolean = false,
     val dukanStatus: DukanStatus = DukanStatus.DEACTIVE,
     val snackBar: SnackBarState = SnackBarState(),
-    val dukan: DukanUi = DukanUi()
+    val dukan: DukanUi = DukanUi(),
+    val shelves: List<Shelf> = listOf(),
+    val selectedShelfId: String = "",
+    val totalShelves: String = ""
 ) {
     data class DukanUi(
         val name: String = "",

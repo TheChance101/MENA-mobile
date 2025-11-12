@@ -1,14 +1,18 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
+import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.dukan.DukanRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
+import net.thechance.mena.admin_panel.presentation.utils.Paginator
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
@@ -28,8 +32,13 @@ class DukanDetailsViewModel(
 ) :
     BaseViewModel<DukanDetailsScreenState, DukanDetailEffect>(DukanDetailsScreenState()),
     DukanDetailsInteractionListener {
+
+    private lateinit var shelvesPaginator: Paginator<Int, List<Shelf>>
+
     init {
         getDukanDetails()
+        initializeShelvesPaginator()
+        loadNextShelves()
     }
 
     override fun onBackBtnClicked() {
@@ -38,6 +47,14 @@ class DukanDetailsViewModel(
 
     override fun onChangeDukanStatusBtnClicked() {
         TODO("Not yet implemented")
+    }
+
+    override fun onNextShelvesPageRequested() {
+        loadNextShelves()
+    }
+
+    override fun onShelfSelected(shelfId: String) {
+        updateState { it.copy(selectedShelfId = shelfId) }
     }
 
     private fun getDukanDetails() {
@@ -59,6 +76,38 @@ class DukanDetailsViewModel(
             message = stringProvider.getString(error.getErrorSnackBarMsg()),
             isSuccess = false
         )
+    }
+
+    private fun initializeShelvesPaginator() {
+        shelvesPaginator = Paginator(
+            initialKey = INITIAL_PAGE,
+            onLoadUpdated = {},
+            onRequest = ::getPagedShelves,
+            getNextKey = { currentKey, _ -> currentKey + 1 },
+            onError = {},
+            onSuccess = { result, _ -> onGetPagedShelvesSuccess(result) },
+            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+        )
+    }
+
+    private suspend fun getPagedShelves(page: Int): List<Shelf> {
+        return dukanRepository.getDukanShelves(
+            dukanId = Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9"),
+            page = page,
+            size = PAGE_SIZE
+        ).items
+    }
+
+    private fun onGetPagedShelvesSuccess(shelves: List<Shelf>){
+        updateState {
+            it.copy(shelves = it.shelves + shelves)
+        }
+    }
+
+    private fun loadNextShelves() {
+        viewModelScope.launch(dispatcher) {
+            shelvesPaginator.loadNextItems()
+        }
     }
 
     private suspend fun showSnackBar(
@@ -99,6 +148,5 @@ class DukanDetailsViewModel(
     private companion object {
         const val PAGE_SIZE = 20
         const val INITIAL_PAGE = 0
-        const val ANIMATION_DELAY = 500L
     }
 }

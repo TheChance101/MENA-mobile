@@ -1,0 +1,127 @@
+package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
+import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.shelves
+import net.thechance.mena.designsystem.presentation.component.chip.Chip
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+internal fun ShelvesDetails(
+    totalShelves: String,
+    shelves: List<Shelf>,
+    selectedShelf: String,
+    onShelfClicked: (String) -> Unit,
+    onNextPageRequested: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .background(
+                color = Theme.colorScheme.background.surfaceLow,
+                shape = RoundedCornerShape(Theme.radius.xl)
+            )
+    ) {
+        ShelfHeader(
+            modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+            totalShelves = totalShelves
+        )
+
+        shelves(
+            modifier = Modifier.padding(top = 12.dp),
+            shelves = shelves,
+            selectedShelf = selectedShelf,
+            onShelfClicked = onShelfClicked,
+            onNextPageRequested = onNextPageRequested,
+        )
+
+    }
+}
+
+@Composable
+private fun ShelfHeader(
+    totalShelves: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(Res.string.shelves),
+            style = Theme.typography.title.large,
+            color = Theme.colorScheme.shadePrimary
+        )
+        Box(
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .widthIn(min = 32.dp)
+                .heightIn(min = 32.dp)
+                .background(
+                    color = Theme.colorScheme.background.surface,
+                    shape = CircleShape
+                )
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = totalShelves,
+                style = Theme.typography.label.medium,
+                color = Theme.colorScheme.shadePrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun shelves(
+    shelves: List<Shelf>,
+    selectedShelf: String,
+    onShelfClicked: (String) -> Unit,
+    onNextPageRequested: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val listState = rememberLazyListState()
+    
+    PaginationTrigger(
+        list = shelves,
+        listState = listState,
+        buffer = 5,
+        loadNextItems = onNextPageRequested
+    )
+    
+    LazyRow(
+        modifier = modifier,
+        state = listState,
+    ) {
+        items(shelves) { shelf ->
+            Chip(
+                modifier = Modifier.padding(start = 8.dp),
+                text = shelf.title,
+                isSelected = shelf.id == selectedShelf,
+                onClick = { onShelfClicked(shelf.id) }
+            )
+        }
+    }
+}
