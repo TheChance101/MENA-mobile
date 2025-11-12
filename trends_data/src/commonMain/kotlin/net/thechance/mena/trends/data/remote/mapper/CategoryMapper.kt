@@ -1,6 +1,6 @@
-package net.thechance.mena.trends.data.mapper
+package net.thechance.mena.trends.data.remote.mapper
 
-import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.dto.CategoryDto
 import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.domain.entity.Category
 

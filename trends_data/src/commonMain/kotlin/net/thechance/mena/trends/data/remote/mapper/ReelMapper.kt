@@ -1,7 +1,7 @@
-package net.thechance.mena.trends.data.mapper
+package net.thechance.mena.trends.data.remote.mapper
 
-import net.thechance.mena.trends.data.dto.ReelDto
-import net.thechance.mena.trends.data.dto.ReelPathUrlsDto
+import net.thechance.mena.trends.data.remote.dto.ReelDto
+import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.orZero
 import net.thechance.mena.trends.data.util.parseDateStringOrNull

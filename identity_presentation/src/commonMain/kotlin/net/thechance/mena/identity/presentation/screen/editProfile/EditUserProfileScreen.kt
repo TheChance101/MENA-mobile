@@ -71,8 +71,10 @@ class EditUserProfileScreen : BaseScreen<
     override fun Content() {
         val factory = rememberPermissionsControllerFactory()
         val controller = remember(factory) { factory.createPermissionsController() }
-        InitScreen(getScreenModel(parameters = { parametersOf(controller) }))
-        BindEffect(controller)
+        val viewModel: EditUserProfileViewModel =
+            getScreenModel(parameters = { parametersOf(controller) })
+        InitScreen(viewModel)
+        BindEffect(viewModel.permissionsController)
     }
 
     @Composable
