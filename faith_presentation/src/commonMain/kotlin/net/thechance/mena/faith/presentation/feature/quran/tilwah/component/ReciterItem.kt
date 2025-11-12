@@ -15,8 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
@@ -31,8 +31,8 @@ import mena.faith_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.components.PlayButton
+import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -44,10 +44,10 @@ fun ReciterItem(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
-    isSelected: Boolean,
-    isSwipeable: Boolean,
-    isSelectedShown: Boolean,
+    onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
+    isSwipeable: Boolean,
+    isSelectReciter: Boolean,
     onDeleteReciterClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -62,10 +62,10 @@ fun ReciterItem(
                 reciter = reciter,
                 recitingType = recitingType,
                 isDownloaded = isDownloaded,
-                isSelected = isSelected,
-                onSelect = onSelect,
                 modifier = contentModifier,
-                isSelectedShown = isSelectedShown
+                onDownloadClick = onDownloadClick,
+                onSelect = onSelect,
+                isSelectReciter = isSelectReciter,
             )
         },
         modifier = modifier
@@ -91,8 +91,6 @@ private fun CardContent(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._8)
             .border(
                 width = 1.dp,
                 color = borderColor,
@@ -184,7 +182,6 @@ private fun Preview() {
             recitingType = "Teacher - Tajweed",
             isDownloaded = true,
             onSelect = {},
-            isSelectedShown = true,
             isSwipeable = true,
             onDownloadClick = {},
             isSelectReciter = false

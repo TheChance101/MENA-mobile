@@ -41,10 +41,8 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            is DownloadedSurEffect.NavigateToRecitersScreen -> {
-                navController.navigate(
-                    Route.DownloadedRecitersRoute(isSelectedShown = true)
-                )
+            DownloadedSurEffect.NavigateToRecitersScreen -> {
+                navController.navigate(Route.DownloadedRecitersRoute())
             }
 
             is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
@@ -74,7 +72,7 @@ private fun Content(
     Scaffold(
         topBar = {
             DownloadedSurAppBar(
-                onRecitersSettingsClick = { listener.onReciterSettingsClick() },
+                onRecitersSettingsClick = listener::onReciterSettingsClick,
                 onBackClick = listener::onBackClick,
             )
         },

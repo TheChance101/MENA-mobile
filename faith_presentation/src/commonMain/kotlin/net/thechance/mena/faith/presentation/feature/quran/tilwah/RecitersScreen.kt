@@ -92,15 +92,13 @@ private fun Content(
                     reciter = reciterDetails.name,
                     recitingType = reciterDetails.recitingType,
                     isDownloaded = reciterDetails.isDownloaded,
-                    isSelected = uiState.selectedReciterId == reciterDetails.id,
-                    isSelectedShown = uiState.isSelectedShown,
                     onSelect = {
                         listener.onSelectReciterClick(reciterDetails.id)
                     },
                     onDownloadClick = {
-                        listener.onDownloadClick(reciterId = reciter.id)
+                        listener.onDownloadClick(reciterId = reciterDetails.id)
                     },
-                    isSelectReciter = reciter.id == uiState.selectedReciterId,
+                    isSelectReciter = reciterDetails.id == uiState.selectedReciterId,
                     onDeleteReciterClick = {
                         listener.onDeleteReciterClick(reciterDetails.id)
                     },
@@ -118,19 +116,19 @@ private fun Preview() {
         Content(
             uiState = TilawahUiState(
                 reciters = listOf(
-                    ReciterUi(
+                    TilawahUiState.ReciterUi(
                         id = 1,
                         name = "Mishary Rashid Alafasy",
                         recitingType = "Murattal",
                         isDownloaded = true
                     ),
-                    ReciterUi(
+                    TilawahUiState.ReciterUi(
                         id = 2,
                         name = "Abdul Basit Abdul Samad",
                         recitingType = "Mujawwad",
                         isDownloaded = false
                     ),
-                    ReciterUi(
+                    TilawahUiState.ReciterUi(
                         id = 3,
                         name = "Saad Al Ghamdi",
                         recitingType = "Murattal",

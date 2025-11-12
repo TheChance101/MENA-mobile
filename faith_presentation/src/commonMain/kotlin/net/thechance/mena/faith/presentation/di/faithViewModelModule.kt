@@ -27,8 +27,6 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahViewModel
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.args.TilawahSurahArgs
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.args.TilawahSurahArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.args.TilawahArgs
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.args.TilawahArgsImpl
 import org.koin.core.module.dsl.factoryOf
@@ -44,7 +42,6 @@ internal val faithViewModelModule = module {
     factoryOf(::SurahArgsImpl) bind SurahArgs::class
     factoryOf(::SearchArgsImpl) bind SearchArgs::class
     factoryOf(::TilawahArgsImpl) bind TilawahArgs::class
-    factoryOf(::TilawahSurahArgsImpl) bind TilawahSurahArgs::class
     factoryOf(::ReciterArgsImpl) bind ReciterArgs::class
     viewModelOf(::SurahViewModel)
     viewModelOf(::SurViewModel)

@@ -99,14 +99,12 @@ private fun ResultList(
         items(results) { reciter ->
             ReciterItem(
                 reciterId = reciter.id,
-                reciter = result.name,
-                recitingType = result.recitingType,
-                isDownloaded = result.isDownloaded,
+                reciter = reciter.name,
+                recitingType = reciter.recitingType,
+                isDownloaded = reciter.isDownloaded,
                 onSelect = {},
                 onDownloadClick = {},
                 isSelectReciter = false,
-                isSelected = false,
-                isSelectedShown = false,
                 isSwipeable = false
             )
         }

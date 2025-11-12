@@ -8,7 +8,6 @@ data class TilawahUiState(
     val selectedReciterId: Int? = null,
     val selectedReciterForDelete: Int? = null,
     val showDeleteConfirmationDialog: Boolean = false,
-    val isSelectedShown: Boolean = false,
     val isSwipeable: Boolean = false
 ) {
     data class ReciterUi(

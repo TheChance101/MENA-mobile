@@ -56,15 +56,15 @@ class DownloadedSurViewModel(
     }
 
     override fun onReciterSettingsClick() =
+        sendEffect(DownloadedSurEffect.NavigateToRecitersScreen)
+
+    override fun onDownloadedSurahClick(surahId: Int) {
         val surahId = uiState.value.selectedSurahForDelete
             ?: uiState.value.surDetails.firstOrNull()?.id
             ?: 1
 
-        sendEffect(DownloadedSurEffect.NavigateToRecitersScreen(surahId))
-
-    override fun onDownloadedSurahClick(surahId: Int) =
         sendEffect(DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen(surahId))
-
+    }
 
     override fun onBackClick() = sendEffect(DownloadedSurEffect.NavigateBack)
 

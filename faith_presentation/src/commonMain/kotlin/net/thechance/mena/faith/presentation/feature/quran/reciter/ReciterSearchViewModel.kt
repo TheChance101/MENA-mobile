@@ -56,12 +56,18 @@ class ReciterSearchViewModel(
         repository.searchForReciter(query)
 
     private suspend fun onSearchResultSuccess(reciters: List<Reciter>) {
-        val surahId = reciterArgs.surahId ?: return
+        val surahId = reciterArgs.surahId
 
-        val searchResults = reciters.map { reciter ->
-            reciter.toUi(
-                repository.isSurahAudioCached(surahId, reciter.id)
-            )
+        val searchResults = if (surahId != null) {
+            reciters.map { reciter ->
+                reciter.toUi(
+                    isDownloaded = repository.isSurahAudioCached(surahId, reciter.id)
+                )
+            }
+        } else {
+            reciters.map { reciter ->
+                reciter.toUi(isDownloaded = false)
+            }
         }
 
         updateState { it.copy(searchResults = searchResults) }
