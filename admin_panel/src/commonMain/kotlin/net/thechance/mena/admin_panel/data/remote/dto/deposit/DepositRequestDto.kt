@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class DepositRequestDto(
     @SerialName("phoneNumber")
     val phoneNumber: String,
-
     @SerialName("amount")
     val amount: Double
 )
