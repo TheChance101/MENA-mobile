@@ -86,7 +86,6 @@ private fun Content(
 private fun Preview() {
     QuranTheme {
         Content(
-            uiState = TilawahUiState(),
             snackBar = SnackBarState(),
             uiState = TilawahUiState(
                 reciters = listOf(
