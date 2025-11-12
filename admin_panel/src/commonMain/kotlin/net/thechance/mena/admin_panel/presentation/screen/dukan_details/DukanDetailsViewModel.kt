@@ -95,4 +95,10 @@ class DukanDetailsViewModel(
             else -> ErrorState.UnknownError
         }
     }
+
+    private companion object {
+        const val PAGE_SIZE = 20
+        const val INITIAL_PAGE = 0
+        const val ANIMATION_DELAY = 500L
+    }
 }
