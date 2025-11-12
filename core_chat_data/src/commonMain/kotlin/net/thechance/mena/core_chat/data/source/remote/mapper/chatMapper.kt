@@ -6,22 +6,13 @@ import net.thechance.mena.core_chat.data.source.local.database.cachedChat.Cached
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.MessageReactionLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
-import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
-import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.*
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.message.MessageContentDto
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.data.utils.toUuid
-import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.Chat
-import net.thechance.mena.core_chat.domain.entity.ImageData
-import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
-import net.thechance.mena.core_chat.domain.entity.MessageReaction
-import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.entity.*
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -31,12 +22,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-fun MessageDto.toDomain(): Message? {
-    val content = when {
-        !text.isNullOrBlank() -> MessageContent.Text(text)
-        !imageUrl.isNullOrEmpty() -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
-        !audioUrl.isNullOrBlank() -> MessageContent.Audio(data = AudioData.AudioUrl(audioUrl), audioDurationMs = audioDurationMs)
-        else -> return null
+fun MessageDto.toDomain(): Message {
+    val content = when (content) {
+        is MessageContentDto.Text -> MessageContent.Text(content.text)
+        is MessageContentDto.Image -> MessageContent.Image(ImageData.ImageUrl(content.url))
+        is MessageContentDto.Audio -> MessageContent.Audio(
+            data = AudioData.AudioUrl(content.url),
+            audioDurationMs = content.duration
+        )
     }
 
     return Message(
@@ -54,8 +47,8 @@ fun MessageDto.toDomain(): Message? {
 fun MessageReactionDto.toDomain(): MessageReaction {
     return MessageReaction(
         emoji = emoji,
-        userId = (userId).toUuid(),
-        messageId = (messageId).toUuid(),
+        userId = userId.toUuid(),
+        messageId = messageId.toUuid(),
     )
 }
 
@@ -77,9 +70,9 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
     )
 }
 
-fun CachedChatLocalDto.toDomain(): Chat? {
+fun CachedChatLocalDto.toDomain(): Chat {
     return Chat(
-        id = (id).toUuid(),
+        id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
         requesterId = requesterId.toUuid(),
@@ -165,14 +158,11 @@ fun List<Message>.toCachedMessageLocalDto(): List<CachedMessageLocalDto> =
     map { it.toCachedMessageLocalDto() }
 
 fun CachedMessageLocalDto.toDomain(): Message {
-    val content = if (text != null) {
-        MessageContent.Text(text)
-    } else if (imageUrl != null) {
-        MessageContent.Image(ImageData.ImageUrl(imageUrl))
-    } else if (audioUrl != null) {
-        MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
-    } else {
-        error("Invalid message content")
+    val content = when {
+        text != null -> MessageContent.Text(text)
+        imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
+        audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
+        else -> error("Invalid message content")
     }
 
     return Message(
@@ -188,14 +178,11 @@ fun CachedMessageLocalDto.toDomain(): Message {
 }
 
 fun PendingMessageLocalDto.toDomain(): Message {
-    val content = if (text != null) {
-        MessageContent.Text(text)
-    } else if (image != null) {
-        MessageContent.Image(ImageData.ImageByteArray(image))
-    } else if (audio != null) {
-        MessageContent.Audio(AudioData.AudioByteArray(audio), audioDurationMs)
-    } else {
-        error("Invalid message content")
+    val content = when {
+        text != null -> MessageContent.Text(text)
+        image != null -> MessageContent.Image(ImageData.ImageByteArray(image))
+        audio != null -> MessageContent.Audio(AudioData.AudioByteArray(audio), audioDurationMs)
+        else -> error("Invalid message content")
     }
 
     return Message(
