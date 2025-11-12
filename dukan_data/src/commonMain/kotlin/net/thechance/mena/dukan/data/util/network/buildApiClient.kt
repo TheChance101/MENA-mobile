@@ -12,9 +12,11 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.identity.domain.service.LocalizationService
 
 
 expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
@@ -22,12 +24,16 @@ expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEn
 
 fun buildDukanApiClient(
     authorizationService: AuthorizationService,
+    localizationService: LocalizationService,
     baseUrl: String
 ): HttpClient {
     return HttpClient(platformHttpClientEngineFactory) {
 
         defaultRequest {
             url(baseUrl)
+            val language = localizationService.getCurrentLanguage().iso
+            println("Accept-Language Test: $language")
+            header("Accept-Language", language)
         }
 
         install(ContentNegotiation) {

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -36,7 +35,6 @@ fun SelectionRow(
                 isEnabled = onItemEnabled(item),
                 modifier = Modifier,
                 iconSize = 16.dp,
-                shape = RoundedCornerShape(Theme.radius.full),
                 onClick = { onItemClicked(item) }
             )
         }

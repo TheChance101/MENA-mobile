@@ -240,18 +240,9 @@ class DukanDetailsViewModel(
 
         updateState { copy(hasProductInCart = true) }
         tryToExecute(
-            block = { addToCartBlock(domainRequest, productQuantity) },
+            block = { dukanCartRepository.addProductQuantity(domainRequest)},
             onError = ::onErrorUpdateProductQuantity
         )
-    }
-
-    private suspend fun addToCartBlock(
-        domainRequest: UpdateProductCartQuantityParams,
-        productQuantity: Int
-    ) {
-        updateState { copy(hasProductInCart = true) }
-        if (productQuantity == 1) dukanCartRepository.addProductQuantity(domainRequest)
-        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(

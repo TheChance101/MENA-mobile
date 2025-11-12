@@ -60,7 +60,6 @@ fun CheckoutScreen(
         state = state,
         listener = viewModel
     )
-
 }
 
 @Composable

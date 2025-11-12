@@ -1,13 +1,18 @@
 package net.thechance.mena.wallet.presentation.screen.export.component
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,36 +43,23 @@ fun ExportTransactionContentBody(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         ExportTransactionFilterSection(
-            modifier = Modifier.weight(1f),
             state = state,
-            interactionListener = interactionListener
+            interactionListener = interactionListener,
+            modifier = Modifier.padding(top = 16.dp)
         )
 
-        OutlinedButton(
-            text = stringResource(Res.string.view_and_share),
-            onClick = interactionListener::onViewAndShareClicked,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp, bottom = 12.dp),
-            trailingIcon = painterResource(Res.drawable.share),
-            isLoading = state.isViewAndShareLoading,
-            isEnabled = state.isViewAndShareButtonEnabled,
-            contentPadding = PaddingValues(vertical = 13.dp),
-        )
-
-        PrimaryButton(
-            text = stringResource(Res.string.download),
-            onClick = interactionListener::onDownloadClicked,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            trailingIcon = painterResource(Res.drawable.download),
-            isLoading = state.isDownloadLoading,
-            isEnabled = state.isDownloadButtonEnabled,
-            contentPadding = PaddingValues(vertical = 13.dp)
+        ExportTransactionActionButtons(
+            isViewAndShareLoading = state.isViewAndShareLoading,
+            isViewAndShareEnabled = state.isViewAndShareButtonEnabled,
+            isDownloadLoading = state.isDownloadLoading,
+            isDownloadEnabled = state.isDownloadButtonEnabled,
+            interactionListener = interactionListener,
+            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
         )
     }
 }
@@ -79,42 +71,73 @@ private fun ExportTransactionFilterSection(
     state: ExportTransactionsState,
     interactionListener: ExportTransactionsListener
 ) {
-    LazyColumn(
+    Column(
         modifier = modifier
     ) {
+        ExportTypeCard(
+            cardTitle = stringResource(Res.string.all_transactions),
+            onCardSelected = interactionListener::onAllTransactionsClicked,
+            isSelected = (!state.isCustomFilterCardSelected),
+            isEnabled = (!state.canSelectExportType),
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
 
-        item {
-            ExportTypeCard(
-                cardTitle = stringResource(Res.string.all_transactions),
-                onCardSelected = interactionListener::onAllTransactionsClicked,
-                isSelected = (!state.isCustomFilterCardSelected),
-                isEnabled = (!state.canSelectExportType),
-                modifier = Modifier.padding(bottom = 12.dp)
+        ExportTypeCard(
+            cardTitle = stringResource(Res.string.custom_filtering),
+            isSelected = state.isCustomFilterCardSelected,
+            isEnabled = (!state.canSelectExportType),
+            onCardSelected = interactionListener::onCustomFilteringClicked,
+        )
+
+        AnimatedVisibility(
+            visible = state.isCustomFilterCardSelected,
+            enter = fadeIn(animationSpec = tween(durationMillis = 300)),
+            exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            label = stringResource(Res.string.filter_crossfade),
+        ) {
+            FilterSection(
+                state = state.filterState,
+                interactionListener = interactionListener
             )
         }
+    }
+}
 
-        item {
-            ExportTypeCard(
-                cardTitle = stringResource(Res.string.custom_filtering),
-                isSelected = state.isCustomFilterCardSelected,
-                isEnabled = (!state.canSelectExportType),
-                onCardSelected = interactionListener::onCustomFilteringClicked,
-            )
-        }
+@Composable
+private fun ExportTransactionActionButtons(
+    isViewAndShareLoading: Boolean,
+    isViewAndShareEnabled: Boolean,
+    isDownloadLoading: Boolean,
+    isDownloadEnabled: Boolean,
+    interactionListener: ExportTransactionsListener,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+    ) {
+        OutlinedButton(
+            text = stringResource(Res.string.view_and_share),
+            onClick = interactionListener::onViewAndShareClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 6.dp, bottom = 12.dp),
+            trailingIcon = painterResource(Res.drawable.share),
+            isLoading = isViewAndShareLoading,
+            isEnabled = isViewAndShareEnabled,
+            contentPadding = PaddingValues(vertical = 13.dp),
+        )
 
-        item {
-            Crossfade(
-                targetState = state.isCustomFilterCardSelected,
-                label = stringResource(Res.string.filter_crossfade),
-            ) { visible ->
-                if (visible) {
-                    FilterSection(
-                        state = state.filterState,
-                        interactionListener = interactionListener
-                    )
-                }
-            }
-        }
+        PrimaryButton(
+            text = stringResource(Res.string.download),
+            onClick = interactionListener::onDownloadClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            trailingIcon = painterResource(Res.drawable.download),
+            isLoading = isDownloadLoading,
+            isEnabled = isDownloadEnabled,
+            contentPadding = PaddingValues(vertical = 13.dp)
+        )
     }
 }
 
