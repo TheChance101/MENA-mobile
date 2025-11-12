@@ -20,18 +20,25 @@ class ProfileScreenViewModel(
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>(
-        ProfileScreenUIState(
-            languageDialogUiState = LanguageDialogUiState(
-                selectedAppLanguage = settingsRepository.getCurrentAppLanguage(),
-            ),
-            currentTheme = settingsRepository.observeAppTheme().value
-        )
+        ProfileScreenUIState()
     ),
     ProfileScreenInteractionListener {
 
     init {
         getUserInfo()
         setAppVersion()
+        getAppSettings()
+    }
+
+    private fun getAppSettings() {
+        updateState {
+            state.value.copy(
+                languageDialogUiState = LanguageDialogUiState(
+                    selectedAppLanguage = settingsRepository.getCurrentAppLanguage(),
+                ),
+                currentTheme = settingsRepository.observeAppTheme().value
+            )
+        }
     }
 
     private fun setAppVersion() {
@@ -161,7 +168,14 @@ class ProfileScreenViewModel(
     }
 
     override fun onDismissThemeDialog() {
-        updateState { copy(themeDialogUiState = themeDialogUiState.copy(isVisible = false,selectedAppTheme = state.value.currentTheme)) }
+        updateState {
+            copy(
+                themeDialogUiState = themeDialogUiState.copy(
+                    isVisible = false,
+                    selectedAppTheme = state.value.currentTheme
+                )
+            )
+        }
     }
 
     override fun clearErrorMessage() {

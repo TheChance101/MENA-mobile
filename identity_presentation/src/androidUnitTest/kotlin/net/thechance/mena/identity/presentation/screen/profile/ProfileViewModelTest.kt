@@ -18,6 +18,7 @@ import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -42,6 +43,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
         coEvery { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
+        coEvery { settingsRepository.observeAppTheme().value } returns AppTheme.LIGHT
         viewModel = ProfileScreenViewModel(
             userRepository,
             settingsRepository,
@@ -162,7 +164,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(viewModel.state.value.showThemeDialog)
+        assertTrue(viewModel.state.value.themeDialogUiState.isVisible)
 
     }
 
@@ -228,7 +230,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         viewModel.onDismissThemeDialog()
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.showThemeDialog)
+        assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
     }
 
     @Test
