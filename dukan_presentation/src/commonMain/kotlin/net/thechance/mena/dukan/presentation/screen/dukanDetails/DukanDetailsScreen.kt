@@ -28,7 +28,7 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-    LaunchedEffect(state) {
+    LaunchedEffect(!state.isConfigurationChanges) {
         viewModel.refreshProducts()
     }
 
@@ -76,7 +76,7 @@ private fun DukanDetailsContent(
     when (state.dukanInfo.style) {
         DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetailsContent(
             state = state,
-            listener = listener,
+            listener = listener
         )
 
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetailsContent(

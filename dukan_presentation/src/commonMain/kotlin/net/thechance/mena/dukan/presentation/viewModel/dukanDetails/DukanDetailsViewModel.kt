@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
@@ -44,8 +43,6 @@ class DukanDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), DukanDetailsInteractionListener {
     private val args = savedStateHandle.toRoute<DukanRoute.DukanDetails>()
-    private var productsMutableStateFlow =
-        MutableStateFlow<PagingData<ProductUiState>>(PagingData.empty())
     private var shelfProductsLimitedMutableMap = mutableMapOf<String, List<ProductUiState>>()
 
     init {
@@ -196,7 +193,6 @@ class DukanDetailsViewModel(
         if (shelfId.isNullOrEmpty()) {
             return flowOf(PagingData.empty())
         }
-
         return createPagingSourceFlow(mapper = { it.toUiState() }) { pageNumber, pageSize ->
             productRepository.getProductsByShelfId(
                 shelfId = shelfId,
@@ -207,13 +203,21 @@ class DukanDetailsViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ProductUiState>) {
-        productsMutableStateFlow.value = products
-        updateState { copy(productsShelf = productsMutableStateFlow) }
+        tryToExecute(
+            block = { updateQuantityProductPaging(products) },
+            onSuccess = ::updateQuantityProductPagingSuccess
+        )
+    }
 
-        productsMutableStateFlow.value.map { productUiState ->
-            updateState { copy(productQuantity = productQuantity + (productUiState.id to productUiState.inCartQuantity)) }
-            productUiState
+    private fun updateQuantityProductPaging(products: PagingData<ProductUiState>): PagingData<ProductUiState> {
+        return products.map {
+            updateProductQuantityInCart(it.id, it.inCartQuantity)
+            it
         }
+    }
+
+    private fun updateQuantityProductPagingSuccess(products: PagingData<ProductUiState>) {
+        updateState { copy(productsShelf = flowOf(products)) }
     }
 
     override fun onBackClicked() {
@@ -230,7 +234,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewAllProductsShelfClicked(id: String, name: String) {
-        isConfigurationChanges = false
+        updateState { copy(isConfigurationChanges = false) }
         emitEffect(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
@@ -339,12 +343,12 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
-        isConfigurationChanges = false
+        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
-        isConfigurationChanges = false
+        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
@@ -380,14 +384,16 @@ class DukanDetailsViewModel(
     private fun isWideImageStyle() =
         state.value.dukanInfo.style == Style.WIDE_IMAGE
 
-    var isConfigurationChanges = true
-        private set
 
     fun refreshProducts() {
-        if (!isConfigurationChanges) {
-            isConfigurationChanges = true
+        if (!state.value.isConfigurationChanges) {
+            updateState { copy(isConfigurationChanges = true) }
             loadCartInfo()
-            loadShelvesPaging()
+
+            if (isWideImageStyle())
+                loadProductsPaging()
+            else
+                loadShelvesPaging()
         }
     }
 }

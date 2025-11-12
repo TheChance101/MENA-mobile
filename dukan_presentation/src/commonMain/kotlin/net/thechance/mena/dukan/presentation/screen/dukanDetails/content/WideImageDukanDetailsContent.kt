@@ -31,10 +31,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun WideImageDukanDetailsContent(
     state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
+    listener: DukanDetailsInteractionListener
 ) {
-    val productShelf = state.productsShelf.collectAsLazyPagingItems()
     val shelves = state.shelves.collectAsLazyPagingItems()
+    val productShelf = state.productsShelf.collectAsLazyPagingItems()
 
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
@@ -107,7 +107,7 @@ private fun WideImageDukanDetailsPreview() {
     MenaTheme {
         WideImageDukanDetailsContent(
             state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
+            listener = PreviewDukanDetailsInteractionListener
         )
     }
 }

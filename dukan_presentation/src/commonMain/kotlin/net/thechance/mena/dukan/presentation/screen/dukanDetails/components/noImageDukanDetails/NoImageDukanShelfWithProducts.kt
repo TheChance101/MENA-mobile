@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -57,13 +56,12 @@ fun NoImageDukanShelfWithProducts(
             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing)
         ) {
-            items(shelf.products) { product ->
+            items(products) { product ->
                 ProductItem(
                     product = product,
                     listener = listener,
                     dukanColor = Color(state.dukanInfo.color),
-                    quantity = state.productQuantity[product.id] ?: 0,
-                    modifier = Modifier.padding(top = topPadding)
+                    quantity = state.productQuantity[product.id] ?: 0
                 )
             }
         }
