@@ -47,6 +47,15 @@ fun MockRequestHandleScope.defaultPaginatedProductResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultUploadImageResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        String.serializer(),
+        dummyImageUrls.first()
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
 fun MockRequestHandleScope.defaultImagesUploadResponse() = respond(
     content = jsonSerialization.encodeToString(
         ListSerializer(String.serializer()),
@@ -74,6 +83,7 @@ fun MockRequestHandleScope.defaultProductByIdResponse(productId: String = create
     )
 
 fun createProductHttpClient(
+    uploadImageResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -107,6 +117,10 @@ fun createProductHttpClient(
             )
                 ?: defaultProductDetailsResponse()
 
+            request.url.encodedPath.matches(Regex("/dukan/product/[^/]+/image"))
+                    && request.method.value == "POST" -> uploadImageResponse?.invoke(this)
+                ?: defaultUploadImageResponse()
+
 
             request.url.encodedPath.matches(Regex("/dukan/product/[^/]+$")) &&
                     request.method.value == "GET" -> productByIdResponse?.invoke(this)
@@ -135,6 +149,7 @@ fun createProductHttpClient(
 
 
 fun createProductRepository(
+    uploadImageResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     paginatedResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     uploadImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -147,6 +162,7 @@ fun createProductRepository(
 ): DukanProductRepositoryImpl {
     return DukanProductRepositoryImpl(
         client = createProductHttpClient(
+            uploadImageResponse = uploadImageResponse,
             createResponse = createResponse,
             paginatedResponse = paginatedResponse,
             uploadImagesResponse = uploadImagesResponse,

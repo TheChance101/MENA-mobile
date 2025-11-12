@@ -83,6 +83,10 @@ class IOSAudioPlayer : AudioPlayer {
         return player.duration.toLong()
     }
 
+    override fun getDurationOfCurrentAudio(): Long {
+        return currentFilePath?.let(::getDuration) ?: throw IllegalArgumentException("there is not current audio")
+    }
+
     override fun getCurrentPosition(): Long {
         return audioPlayer?.currentTime?.toLong() ?: 0L
     }

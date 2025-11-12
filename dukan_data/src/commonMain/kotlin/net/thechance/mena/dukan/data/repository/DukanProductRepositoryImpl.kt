@@ -19,6 +19,7 @@ import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toUpdateProductRequest
 import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
+import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
@@ -76,6 +77,19 @@ class DukanProductRepositoryImpl(
             client.post("${PRODUCT_BASE_PATH}/images/$productId") {
                 accept(ContentType.Application.Json)
                 setBody(buildMultiPartFormData(parts, fieldName = "files"))
+            }
+        }
+    }
+
+    override suspend fun uploadProductImage(
+        fileName: String,
+        fileBytes: ByteArray,
+        productId: String
+    ): String {
+        return safeApiCall {
+            client.post("${PRODUCT_BASE_PATH}/$productId/image") {
+                accept(ContentType.Application.Json)
+                setBody(buildSinglePartFormData(fileName, fileBytes, key = "file"))
             }
         }
     }

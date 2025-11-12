@@ -78,6 +78,7 @@ class ChatViewModel(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val messages = _messages.asStateFlow()
     private val messagesMutex = Mutex()
+    private val waveformCache = mutableMapOf<Uuid, List<Float>>()
 
     private var hasResentPendingMessages = false
 
@@ -87,7 +88,6 @@ class ChatViewModel(
             onLoadUpdated = { },
             onRequest = ::getChatHistory,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = { handleChatHistoryError() },
             onSuccess = { result, _ -> handleChatHistorySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
@@ -120,12 +120,11 @@ class ChatViewModel(
             var earliestUnReadMessageTime: LocalDateTime = LocalDateTime.now()
             messages
                 .map { list ->
-                    list.map {
-                        if (it.status == MessageStatus.SENT && it.sendAt < earliestUnReadMessageTime) {
-                            earliestUnReadMessageTime = it.sendAt
-                            println(earliestUnReadMessageTime)
+                    list.map { message ->
+                        if (message.status == MessageStatus.SENT && message.sendAt < earliestUnReadMessageTime) {
+                            earliestUnReadMessageTime = message.sendAt
                         }
-                        it.toUi()
+                        message.toUiWithCachedWaveform()
                     }
                 }
                 .collectLatest { uiList ->
@@ -144,6 +143,19 @@ class ChatViewModel(
                 }
         }
     }
+
+    private fun Message.toUiWithCachedWaveform(): MessageUiState =
+        toUi().let { uiState ->
+            when {
+                uiState.content !is MessageContent.Audio -> uiState
+                else -> uiState.withCachedOrGeneratedWaveform(id)
+            }
+        }
+
+    private fun MessageUiState.withCachedOrGeneratedWaveform(messageId: Uuid): MessageUiState =
+        copy(waveformData = waveformCache.getOrPut(messageId) {
+            waveformData ?: generateWaveformData()
+        })
 
     private fun getUserInfo() {
         tryToExecute(
@@ -188,7 +200,18 @@ class ChatViewModel(
         subscribeToPendingMessages(chat.id)
         observeReadMessages()
         observeDeleteChat()
+        observeConnectionStatus(chat.id)
         observeMessageReactions()
+    }
+
+    private fun observeConnectionStatus(chatId: Uuid) {
+        tryToCollect(
+            collect = { messageRepository.observeConnectionStatus(chatId) },
+            onCollect = { },
+            onError = {
+                showSnackBar(Res.string.error, Res.string.error_cant_get_messages, true)
+            }
+        )
     }
 
     private fun onGetChatError() {
@@ -228,10 +251,7 @@ class ChatViewModel(
             content = content
         )
 
-        tryToExecute(
-            execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
-        )
+        sendMessage(message)
     }
 
     override fun onInputMessageChanged(value: String) {
@@ -259,12 +279,7 @@ class ChatViewModel(
 
         tryToExecute(
             execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
         )
-    }
-
-    private suspend fun onSendMessageSuccess(message: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter { it.id != message.id && it.sendAt != message.sendTime } }
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -368,10 +383,16 @@ class ChatViewModel(
                 .filter { it.status == MessageStatus.LOADING }
                 .forEach { sendMessage(it.toUi()) }
         }
+
+        emitEffect(ChatScreenEffect.ScrollToBottom)
     }
 
     private suspend fun getChatHistory(page: Int): PagedData<Message> {
-        val chatId = state.value.chatId ?: return PagedData(emptyList(), 0, false)
+        val chatId = state.value.chatId ?: return PagedData(
+            data = emptyList(),
+            totalItems = 0,
+            isLastPage = false
+        )
         return messageRepository.loadMessages(
             chatId = chatId,
             page = page,
@@ -430,10 +451,8 @@ class ChatViewModel(
         }
     }
 
-
-
     override fun onChatActionsMenuClicked() {
-        updateState { it.copy(isChatActionsDialogVisible = true) }
+        updateState { it.copy(isChatActionsDialogVisible = true, isAttachmentsOverlayVisible = false) }
     }
 
     override fun onChatActionsMenuDialogDismissed() {
@@ -484,6 +503,8 @@ class ChatViewModel(
     }
 
     override fun onMessageLongClicked(message: MessageUiState) {
+        if (message.content is MessageContent.Image && message.content.data !is ImageData.ImageUrl) return
+
         updateState {
             it.copy(
                 isReactionDialogVisible = true,
@@ -505,53 +526,20 @@ class ChatViewModel(
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
         val currentUserId = state.value.chatRequesterId ?: return
         val message = _messages.value.firstOrNull { it.id == messageId } ?: return
-        val hasSameReaction = message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+        val hasSameReaction =
+            message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
 
         if (hasSameReaction) {
             tryToExecute(
                 execute = { messageRepository.removeMessageReaction(messageId, reaction) },
-                onSuccess = { removeReactionFromMessages(messageId, reaction) }
             )
         } else {
             tryToExecute(
                 execute = { messageRepository.addMessageReaction(messageId, reaction) },
-                onSuccess = { updateReactionInMessages(messageId, reaction) }
             )
         }
     }
-    private suspend fun removeReactionFromMessages(messageId: Uuid, emoji: String) {
-        val currentUserId = state.value.chatRequesterId ?: return
-        safeUpdateMessages { messages ->
-            messages.map { message ->
-                if (message.id == messageId) {
-                    val updatedReactions = message.reactions.filterNot {
-                        it.userId == currentUserId && it.emoji == emoji
-                    }
-                    message.copy(reactions = updatedReactions)
-                } else message
-            }
-        }
-    }
 
-
-    private suspend fun updateReactionInMessages(messageId: Uuid, emoji: String) {
-        val currentUserId = state.value.chatRequesterId ?: return
-        safeUpdateMessages { messages ->
-            messages.map { message ->
-                if (message.id == messageId) {
-                    val newReaction = MessageReaction(emoji, currentUserId, messageId)
-                    val updatedReactions = message.reactions
-                        .filter { it.userId != currentUserId }
-                        .toMutableList()
-                        .apply { add(newReaction) }
-
-                    message.copy(reactions = updatedReactions)
-                } else {
-                    message
-                }
-            }
-        }
-    }
     private fun observeMessageReactions() {
         tryToCollect(
             collect = { messageRepository.observeMessageReactions() },
@@ -577,6 +565,20 @@ class ChatViewModel(
                 } else message
             }
         }
+
+        if (state.value.selectedImageMessages.isNotEmpty() && state.value.selectedImageMessages.any { it.id == reaction.messageId }) {
+            updateState {
+                it.copy(selectedImageMessages = it.selectedImageMessages.map { msg ->
+                    if (msg.id == reaction.messageId) {
+                        val updatedReactions = msg.reactions
+                            .filter { it.userId != reaction.userId }
+                            .toMutableList()
+                            .apply { add(reaction) }
+                        msg.copy(reactions = updatedReactions)
+                    } else msg
+                })
+            }
+        }
     }
 
     private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
@@ -589,6 +591,16 @@ class ChatViewModel(
                     }
                     message.copy(reactions = filtered)
                 } else message
+            }
+        }
+
+        if (state.value.selectedImageMessages.isNotEmpty() && state.value.selectedImageMessages.any { it.id == reaction.messageId }) {
+            updateState {
+                it.copy(selectedImageMessages = it.selectedImageMessages.map {
+                    if (it.id == reaction.messageId) it.copy(
+                        reactions = it.reactions.filterNot { it == reaction }) else it
+                }
+                )
             }
         }
     }
@@ -627,10 +639,10 @@ class ChatViewModel(
                     val duration = audioPlayer.getDuration(filePath)
                     audioPlayer.play(filePath)
                     updateVoiceMessageState(messageId, duration = duration, isLoading = false)
-                    startProgressTracking(messageId, duration)
+                    startProgressTracking(messageId)
                 } else {
                     audioPlayer.play(filePath)
-                    startProgressTracking(messageId, voiceMessageItem.duration)
+                    startProgressTracking(messageId)
                 }
             },
             onError = {
@@ -643,8 +655,10 @@ class ChatViewModel(
         )
     }
 
-    private fun startProgressTracking(messageId: Uuid, duration: Long) {
+    private fun startProgressTracking(messageId: Uuid) {
         viewModelScope.launch {
+            val totalDuration = audioPlayer.getDurationOfCurrentAudio()
+            var lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
             while (true) {
                 delay(100)
 
@@ -652,18 +666,20 @@ class ChatViewModel(
                     it is ChatListItem.VoiceMessage && it.data.id == messageId
                 } as? ChatListItem.VoiceMessage
 
-                if (voiceMessageItem == null || !voiceMessageItem.isPlaying) break
+                if (voiceMessageItem == null || voiceMessageItem.isPlaying.not()) break
 
-                val currentPositionSeconds = audioPlayer.getCurrentPosition()
-
-                if (duration in 1..currentPositionSeconds) {
+                if (
+                    audioPlayer.getCurrentPosition() == lastPositionMilliSeconds
+                    && lastPositionMilliSeconds > .9 * totalDuration
+                ) {
                     audioPlayer.stop()
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
                     break
                 }
+                lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
 
-                val progress = if (duration > 0) {
-                    currentPositionSeconds.toFloat() / duration.toFloat()
+                val progress = if (totalDuration > 0) {
+                    lastPositionMilliSeconds.toFloat() / totalDuration.toFloat()
                 } else 0f
 
                 updateVoiceMessageState(messageId, progress = progress)
@@ -784,20 +800,33 @@ class ChatViewModel(
             return
         }
 
-        val message = createAudioMessage(audioByteArray)
+        val audioDuration = audioPlayer.getDuration(filePath)
+
+        val message = createAudioMessage(audioByteArray, audioDuration)
         sendMessage(message)
     }
 
-    private fun createAudioMessage(audioByteArray: ByteArray): MessageUiState {
+    private fun createAudioMessage(
+        audioByteArray: ByteArray,
+        audioDurationMs: Long?
+    ): MessageUiState {
         val chatId = state.value.chatId!!
         val senderId = state.value.chatRequesterId!!
-        val content = MessageContent.Audio(AudioData.AudioByteArray(byteArray = audioByteArray))
+        val content = MessageContent.Audio(
+            data = AudioData.AudioByteArray(byteArray = audioByteArray),
+            audioDurationMs = audioDurationMs
+        )
 
-        return MessageUiState(
+        val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            content = content
+            content = content,
+            waveformData = generateWaveformData()
         )
+
+        message.waveformData?.let { waveform -> waveformCache[message.id] = waveform }
+
+        return message
     }
 
     override fun onDownloadImageClicked(url: String) {
@@ -893,12 +922,7 @@ class ChatViewModel(
         }
     }
 
-    private fun handleChatHistoryError() {
-        updateState { state -> state.copy(paginationError = true) }
-    }
-
     private suspend fun handleChatHistorySuccess(result: PagedData<Message>) {
-        updateState { state -> state.copy(paginationError = false) }
         onGetChatHistorySuccess(result)
     }
 

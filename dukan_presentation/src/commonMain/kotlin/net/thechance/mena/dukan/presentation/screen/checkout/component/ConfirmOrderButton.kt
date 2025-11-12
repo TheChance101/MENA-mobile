@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,16 +16,20 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun ConfirmOrderButton(modifier: Modifier = Modifier) {
+fun ConfirmOrderButton(
+    onConfirmOrderClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(
-                RoundedCornerShape(
-                    topStart = Theme.spacing._24,
-                    topEnd = Theme.spacing._24
+                SquircleShape(
+                    topStart = Theme.radius.xl,
+                    topEnd = Theme.radius.xl
                 )
             )
             .background(Theme.colorScheme.background.surfaceLow)
@@ -37,9 +40,7 @@ fun ConfirmOrderButton(modifier: Modifier = Modifier) {
                 .align(Alignment.Center)
                 .fillMaxWidth(),
             text = stringResource(Res.string.confirm_order),
-            onClick = {
-                // TODO add confirm action
-            },
+            onClick = onConfirmOrderClicked,
             contentPadding = PaddingValues(vertical = Theme.spacing._12)
         )
     }
@@ -49,6 +50,6 @@ fun ConfirmOrderButton(modifier: Modifier = Modifier) {
 @Composable
 private fun ConfirmOrderButtonPreview() {
     MenaTheme {
-        ConfirmOrderButton()
+        ConfirmOrderButton({})
     }
 }

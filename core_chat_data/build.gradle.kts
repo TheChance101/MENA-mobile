@@ -81,6 +81,8 @@ kover.reports {
             "*.di",
             "*.dto" ,
             "*.database",
+            "*.dataStore",
+            "*.mapper",
             "*.utils",
             "*.network",
             "*.audio"

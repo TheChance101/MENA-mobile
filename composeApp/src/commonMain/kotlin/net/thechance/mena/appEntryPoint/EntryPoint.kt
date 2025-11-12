@@ -5,17 +5,20 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.core_chat.api.CoreChatApi
 import net.thechance.mena.identity.api.IdentityFeatureApi
+import net.thechance.mena.identity.domain.service.AuthorizationService
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun EntryPoint(
     identityApi: IdentityFeatureApi = koinInject(),
-    viewModel: MainEntryViewModel = koinViewModel()
+    viewModel: MainEntryViewModel = koinViewModel(),
+    authorizationService: AuthorizationService = koinInject()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val accessToken by authorizationService.observeAccessToken().collectAsStateWithLifecycle()
 
-    if (state.userAccessToken.isNullOrBlank()) {
+    if (accessToken.isBlank()) {
         identityApi.LoginFlow()
         return
     }

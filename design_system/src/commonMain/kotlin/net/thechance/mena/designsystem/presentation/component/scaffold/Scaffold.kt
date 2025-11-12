@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -51,12 +50,12 @@ fun Scaffold(
             .systemBarsPadding(),
         contentAlignment = Alignment.Center
     ) {
-        Column {
+        Column(
+            modifier = Modifier.background(backgroundColor)
+        ) {
             topBar()
             Box(
                 modifier = Modifier
-                    .background(backgroundColor)
-                    .windowInsetsPadding(WindowInsets.safeDrawing)
                     .fillMaxWidth()
                     .weight(1f)
             ) {

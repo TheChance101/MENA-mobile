@@ -60,7 +60,9 @@ private fun Content(
                     .fillMaxWidth()
                     .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
             )
-        }) {
+        })
+    {
+
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -97,9 +99,12 @@ private fun ResultList(
         items(results) { reciter ->
             ReciterItem(
                 reciterId = reciter.id,
-                reciter = reciter.name,
-                recitingType = reciter.recitingType,
-                isDownloaded = reciter.isDownloaded,
+                reciter = result.name,
+                recitingType = result.recitingType,
+                isDownloaded = result.isDownloaded,
+                onSelect = {},
+                onDownloadClick = {},
+                isSelectReciter = false,
                 isSelected = false,
                 isSelectedShown = false,
                 isSwipeable = false

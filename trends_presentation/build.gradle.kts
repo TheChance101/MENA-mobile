@@ -1,4 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -33,7 +40,6 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.coil.network.ktor3)
-
             implementation(libs.androidx.media3.exoplayer)
             implementation(libs.androidx.media3.ui)
             implementation(libs.androidx.media3.exoplayer.dash)
@@ -64,7 +70,10 @@ kotlin {
             implementation(libs.kotlinx.datetime)
         }
 
-        iosMain.dependencies {}
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.bundles.coil)
+        }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -104,6 +113,18 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+
+        val trendsStorageAccessSecret = localProperties.getProperty("TRENDS_STORAGE_ACCESS_SECRET", "")
+        buildConfigField("String", "TRENDS_ACCESS_SECRET", "\"$trendsStorageAccessSecret\"")
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    buildFeatures{
+        buildConfig = true
     }
 }
 

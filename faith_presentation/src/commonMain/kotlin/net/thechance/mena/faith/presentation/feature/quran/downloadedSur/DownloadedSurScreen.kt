@@ -33,6 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -73,7 +74,7 @@ private fun Content(
     Scaffold(
         topBar = {
             DownloadedSurAppBar(
-                onRecitersSettingsClick = listener::onReciterSettingsClick,
+                onRecitersSettingsClick = { listener.onReciterSettingsClick() },
                 onBackClick = listener::onBackClick,
             )
         },
@@ -163,15 +164,10 @@ private fun PreviewDownloadedSurScreen() {
             listener =
                 object : DownloadedSurInteractionListener {
                     override fun onReciterSettingsClick() {}
-
                     override fun onDownloadedSurahClick(surahId: Int) {}
-
                     override fun onBackClick() {}
-
                     override fun onDeleteSurahClick(surahId: Int) {}
-
                     override fun onDismissDeleteConfirmationDialog() {}
-
                     override fun onConfirmDeleteDownloadedSurahClick() {}
                 },
         )

@@ -46,9 +46,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.home.ReelUiState
+import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.asString
-import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -58,6 +58,7 @@ internal fun FeedReelCard(
     reel: ReelUiState,
     onClickLike: () -> Unit,
     onClickReel: () -> Unit,
+    onRequestRefresh: () -> Unit,
     onExpandDescription: (String) -> Unit,
 ) {
     Column(
@@ -70,7 +71,8 @@ internal fun FeedReelCard(
         ReelHeaderSection(
             reel = reel,
             timeAgoText = reel.timeAgo?.asString() ?: stringResource(Res.string.just_now),
-            onClickReel = onClickReel
+            onClickReel = onClickReel,
+            onRequestRefresh = onRequestRefresh
         )
 
         ReelFooterSection(
@@ -85,6 +87,7 @@ internal fun FeedReelCard(
 private fun ReelHeaderSection(
     reel: ReelUiState,
     timeAgoText: String,
+    onRequestRefresh: () -> Unit,
     onClickReel: () -> Unit
 ) {
     Column {
@@ -126,8 +129,8 @@ private fun ReelHeaderSection(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            AsyncImage(
-                model = reel.thumbnailUrl,
+            BaseAsyncImage(
+                url = reel.thumbnailUrl,
                 contentDescription = stringResource(Res.string.video_thumbnail),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -135,7 +138,9 @@ private fun ReelHeaderSection(
                     .height(500.dp)
                     .background(Theme.colorScheme.background.surfaceHigh)
                     .noRippleClickable { onClickReel() },
-                alignment = Alignment.Center
+                alignment = Alignment.Center,
+                onRequestRefresh = onRequestRefresh,
+                imageCacheKey = reel.id
             )
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),

@@ -2,16 +2,15 @@ package net.thechance.mena.dukan.presentation.screen.checkout.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,45 +25,43 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun DeliveryAddressCard(modifier: Modifier = Modifier) {
+fun DeliveryAddressCard(
+    state: CheckoutUiState,
+    onChangeAddressClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
-        DeliveryTitle()
-        DeliveryAddressContent()
-    }
-}
-
-@Composable
-private fun DeliveryTitle() {
-    Text(
-        modifier = Modifier.padding(bottom = Theme.spacing._8),
-        text = stringResource(Res.string.deliver_to),
-        style = Theme.typography.label.large,
-        color = Theme.colorScheme.shadePrimary
-    )
-}
-
-@Composable
-private fun DeliveryAddressContent() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(Theme.spacing._12))
-            .background(Theme.colorScheme.background.surfaceLow)
-            .padding(Theme.spacing._8),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        DeliveryAddressIcon()
-        DeliveryAddressDetails(
-            title = "Home",
-            address = "Karrada, Baghdad 123 St."
+        Text(
+            modifier = Modifier.padding(bottom = Theme.spacing._8),
+            text = stringResource(Res.string.deliver_to),
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
         )
-        EditAddressIcon()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .clip(SquircleShape(Theme.radius.md))
+                .background(Theme.colorScheme.background.surfaceLow)
+                .clickable(onClick = onChangeAddressClicked)
+                .padding(Theme.spacing._8),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            DeliveryAddressIcon()
+            DeliveryAddressDetails(
+                modifier = Modifier.weight(1f),
+                title = state.deliveryAddress.label,
+                address = state.deliveryAddress.street
+            )
+            EditAddressIcon()
+        }
     }
 }
 
@@ -73,7 +70,7 @@ private fun DeliveryAddressIcon() {
     Box(
         modifier = Modifier
             .size(40.dp)
-            .clip(RoundedCornerShape(Theme.spacing._12))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surface)
     ) {
         Icon(
@@ -85,11 +82,14 @@ private fun DeliveryAddressIcon() {
 }
 
 @Composable
-private fun RowScope.DeliveryAddressDetails(title: String, address: String) {
+private fun DeliveryAddressDetails(
+    title: String,
+    address: String,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = Modifier
-            .padding(start = Theme.spacing._8)
-            .weight(1f),
+        modifier = modifier
+            .padding(start = Theme.spacing._8),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -118,6 +118,6 @@ private fun EditAddressIcon() {
 @Composable
 private fun DeliveryAddressCardPreview() {
     MenaTheme {
-        DeliveryAddressCard()
+        DeliveryAddressCard(CheckoutUiState(), {})
     }
 }

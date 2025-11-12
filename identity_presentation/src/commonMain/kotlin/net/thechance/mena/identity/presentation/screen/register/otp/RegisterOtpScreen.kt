@@ -23,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
@@ -30,14 +31,13 @@ import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.register.enterName.EnterNameScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
 class RegisterOtpScreen(
-    private val phoneNumber: String,
-    private val countryCode: String,
-    private val callingCode: String
+    private val registerUIState: RegisterUIState
 ) : BaseScreen<
         RegisterOtpViewModel,
         RegisterOtpUIState,
@@ -45,11 +45,7 @@ class RegisterOtpScreen(
         RegisterOtpInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(
-            getScreenModel(parameters = {
-                parametersOf(phoneNumber, callingCode, countryCode)
-            })
-        )
+        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
     }
 
     @Composable
@@ -63,7 +59,7 @@ class RegisterOtpScreen(
                     title = stringResource(Res.string.validation_code),
                     subtitle = stringResource(
                         Res.string.register_otp_prompt,
-                        phoneNumber.takeLast(2)
+                        registerUIState.phoneNumber.localNumber.takeLast(2)
                     )
                 )
 
@@ -140,9 +136,13 @@ private fun getTimerSeconds(timer: String): String {
 fun PreviewRegisterOtpScreen() {
     MenaTheme {
         RegisterOtpScreen(
-            phoneNumber = "7901234567",
-            countryCode = "IQ",
-            callingCode = "+964"
+            RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    countryCode = "+964",
+                    localNumber = "790123456"
+                ),
+                countryCode = "+964"
+            )
         ).OnRender(
             state = RegisterOtpUIState(
                 otpValue = "123456",

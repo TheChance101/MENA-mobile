@@ -41,11 +41,11 @@ import org.koin.core.parameter.parametersOf
 
 class EnterNameScreen(
     private val phoneNumber: PhoneNumber
-) :
-    BaseScreen<EnterNameViewModel,
-            EnterNameUIState,
-            EnterNameUIEffect,
-            EnterNameInteractionListener>() {
+) : BaseScreen<
+        EnterNameViewModel,
+        EnterNameUIState,
+        EnterNameUIEffect,
+        EnterNameInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -129,71 +129,64 @@ class EnterNameScreen(
     ) {
         when (effect) {
             is EnterNameUIEffect.NavigateToPassword -> {
-                navigator.push(
-                    CreatePasswordScreen(
-                        phoneNumber = effect.phoneNumber,
-                        firstName = effect.firstName,
-                        lastName = effect.lastName,
-                        username = effect.username
-                    )
-                )
+                navigator.push(CreatePasswordScreen(registerUIState = effect.registerUIState))
             }
         }
     }
+}
 
-    @Preview
-    @Composable
-    private fun Preview_Empty() {
-        MenaTheme {
-            EnterNameScreen(
-                phoneNumber = net.thechance.mena.identity.domain.entity.PhoneNumber(
-                    "+964",
-                    "7901234567"
-                )
-            ).OnRender(
-                state = EnterNameUIState(
-                    firstName = "",
-                    lastName = "",
-                    username = "",
-                    isNextEnabled = false,
-                    isLoading = false,
-                ),
-                listener = object : EnterNameInteractionListener {
-                    override fun onChangeFirstName(name: String) {}
-                    override fun onLastNameChange(name: String) {}
-                    override fun onUsernameChange(username: String) {}
-                    override fun onClickNext() {}
-                    override fun onClearErrorMessage() {}
-                }
+@Preview
+@Composable
+private fun Preview_Empty() {
+    MenaTheme {
+        EnterNameScreen(
+            phoneNumber = PhoneNumber(
+                "+964",
+                "7901234567"
             )
-        }
+        ).OnRender(
+            state = EnterNameUIState(
+                firstName = "",
+                lastName = "",
+                username = "",
+                isNextEnabled = false,
+                isLoading = false,
+            ),
+            listener = object : EnterNameInteractionListener {
+                override fun onChangeFirstName(name: String) {}
+                override fun onLastNameChange(name: String) {}
+                override fun onUsernameChange(username: String) {}
+                override fun onClickNext() {}
+                override fun onClearErrorMessage() {}
+            }
+        )
     }
+}
 
-    @Preview
-    @Composable
-    private fun Preview_Filled() {
-        MenaTheme {
-            EnterNameScreen(
-                phoneNumber = net.thechance.mena.identity.domain.entity.PhoneNumber(
-                    "+964",
-                    "7901234567"
-                )
-            ).OnRender(
-                state = EnterNameUIState(
-                    firstName = "Mohammed",
-                    lastName = "Ahmed",
-                    username = "mohammed_2025",
-                    isNextEnabled = true,
-                    isLoading = false
-                ),
-                listener = object : EnterNameInteractionListener {
-                    override fun onChangeFirstName(name: String) {}
-                    override fun onLastNameChange(name: String) {}
-                    override fun onUsernameChange(username: String) {}
-                    override fun onClickNext() {}
-                    override fun onClearErrorMessage() {}
-                }
+@Preview
+@Composable
+private fun Preview_Filled() {
+    MenaTheme {
+        EnterNameScreen(
+            phoneNumber = PhoneNumber(
+                "+964",
+                "7901234567"
             )
-        }
+        ).OnRender(
+            state = EnterNameUIState(
+                firstName = "Mohammed",
+                lastName = "Ahmed",
+                username = "mohammed_2025",
+                isNextEnabled = true,
+                isLoading = false
+            ),
+            listener = object : EnterNameInteractionListener {
+                override fun onChangeFirstName(name: String) {}
+                override fun onLastNameChange(name: String) {}
+                override fun onUsernameChange(username: String) {}
+                override fun onClickNext() {}
+                override fun onClearErrorMessage() {}
+            }
+        )
     }
 }

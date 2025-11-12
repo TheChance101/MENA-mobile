@@ -6,13 +6,18 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
-import net.thechance.mena.core_chat.domain.exception.*
+import net.thechance.mena.core_chat.domain.exception.ChatException
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
+import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
+import net.thechance.mena.core_chat.domain.exception.UnknownException
+import okio.IOException
 
 suspend fun <T> tryNetworkCall(
     defaultException: ChatException = UnknownException("Unknown error occurred"),
     bodyType: TypeInfo,
     call: suspend () -> HttpResponse,
-): T? {
+): T {
     return runCatchingWithException(defaultException) {
         val response = call()
         response.getSuccessBodyOrThrow(bodyType)
@@ -21,21 +26,25 @@ suspend fun <T> tryNetworkCall(
 
 private suspend fun <T> runCatchingWithException(
     defaultException: ChatException = UnknownException("Unknown error occurred"),
-    block: suspend () -> T?
-): T? {
+    block: suspend () -> T
+): T {
     return try {
         block()
-    } catch (e: ContactsPermissionDeniedException) {
+    } catch (_: ContactsPermissionDeniedException) {
         throw ContactsPermissionDeniedException("Contacts Permission Denied!")
-    } catch (e: ChatException) {
+    }
+    catch (_: IOException) {
+        throw NoInternetException()
+    }
+    catch (e: ChatException) {
         throw e
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         throw defaultException
     }
 }
 
 
-private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T? {
+private suspend fun <T> HttpResponse.getSuccessBodyOrThrow(bodyType: TypeInfo): T {
     return when {
         this.status.isSuccess() -> this.body(bodyType)
         this.status == HttpStatusCode.Unauthorized -> throw UnAuthorizedException()

@@ -14,10 +14,10 @@ import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DatePickerScreenViewModelTest : BaseCoroutineTest() {
@@ -33,11 +33,7 @@ class DatePickerScreenViewModelTest : BaseCoroutineTest() {
         datePickerScreenViewModel = DatePickerScreenViewModel(
             ageValidator = ageValidator,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
     }
@@ -115,11 +111,7 @@ class DatePickerScreenViewModelTest : BaseCoroutineTest() {
         val viewModel = DatePickerScreenViewModel(
             ageValidator = ageValidator,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
@@ -137,11 +129,7 @@ class DatePickerScreenViewModelTest : BaseCoroutineTest() {
         val viewModel = DatePickerScreenViewModel(
             ageValidator = ageValidator,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()

@@ -38,6 +38,7 @@ class ImageMessageSender(
         val imageFile = ("image_${LocalDateTime.now()}" to bytes)
         val multipartImage = imageFile.buildImageMultiPartFormData(
             fieldName = IMAGES_FILES_PARAM,
+            messageId = message.id.toString(),
             chatId = message.chatId.toString()
         )
 

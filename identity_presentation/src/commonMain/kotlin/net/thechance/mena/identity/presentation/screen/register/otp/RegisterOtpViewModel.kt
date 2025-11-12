@@ -13,14 +13,12 @@ import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
-import net.thechance.mena.identity.domain.entity.PhoneNumber as PhoneNumberEntity
 
 class RegisterOtpViewModel(
     private val registerRepository: RegisterRepository,
-    private val phoneNumber: String,
-    private val callingCode: String,
-    private val countryCode: String,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<RegisterOtpUIState, RegisterOtpUIEffect>(RegisterOtpUIState()),
     RegisterOtpInteractionListener {
@@ -50,14 +48,7 @@ class RegisterOtpViewModel(
 
     private fun createNavigateToEnterNameEffect(): RegisterOtpUIEffect.NavigateToEnterName {
         return RegisterOtpUIEffect.NavigateToEnterName(
-            phoneNumber = createPhoneNumber()
-        )
-    }
-
-    private fun createPhoneNumber(): PhoneNumberEntity {
-        return PhoneNumberEntity(
-            countryCode = callingCode,
-            localNumber = phoneNumber
+            phoneNumber = registerUIState.phoneNumber
         )
     }
 
@@ -92,8 +83,8 @@ class RegisterOtpViewModel(
 
     private suspend fun requestNewOTP() {
         registerRepository.requestOTP(
-            phoneNumber = createPhoneNumber(),
-            countryCodeName = countryCode
+            phoneNumber = registerUIState.phoneNumber,
+            countryCodeName = registerUIState.countryCode
         )
     }
 

@@ -3,6 +3,7 @@
 package net.thechance.mena.core_chat.data.contacts.fakes
 
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
@@ -35,11 +36,11 @@ val sampleContactDto = createContactDto(
 val sampleContact = sampleContactDto.toDomain()
 
 fun createPagedDataDto(
-    data: List<ContactDto>? = null,
-    pageNumber: Int? = 1,
-    pageSize: Int? = 10,
-    totalItems: Int? = 15,
-    totalPages: Int? = 2
+    data: List<ContactDto> = emptyList(),
+    pageNumber: Int = 1,
+    pageSize: Int = 10,
+    totalItems: Int = 15,
+    totalPages: Int = 2
 ) = PagedDataDto(
     data = data,
     pageNumber = pageNumber,
@@ -137,4 +138,19 @@ fun createChatSummaryDto(
     lastMessage = lastMessage,
     name = name,
     unReadMessagesCount = unReadMessagesCount
+)
+
+fun createCachedChatSummaryDto(
+    id: String = Uuid.random().toString(),
+    imageUrl: String? = "http://example.com/image.jpg",
+    name: String = "Test Chat",
+    unReadMessagesCount: Int = 1
+) = CachedChatSummaryDto(
+    id = id,
+    imageUrl = imageUrl ?: "",
+    name = name,
+    unReadMessagesCount = unReadMessagesCount,
+    lastMessageContent = "hello",
+    lastMessageSentAt = "2025-10-01T12:00:00",
+    lastMessageIsMine = false
 )

@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.video_player
 
-
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
@@ -35,29 +34,35 @@ import mena.trends_presentation.generated.resources.pause_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import platform.AVFoundation.AVLayerVideoGravityResizeAspectFill
 import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerItemStatusFailed
 import platform.AVFoundation.AVPlayerItemStatusReadyToPlay
 import platform.AVFoundation.AVPlayerItemStatusUnknown
 import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
+import platform.AVFoundation.AVURLAsset
 import platform.AVFoundation.actionAtItemEnd
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.duration
 import platform.AVFoundation.pause
 import platform.AVFoundation.play
+import platform.AVFoundation.rate
+import platform.AVFoundation.replaceCurrentItemWithPlayerItem
 import platform.AVFoundation.seekToTime
 import platform.AVFoundation.timeControlStatus
-import platform.AVKit.AVPlayerViewController
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMakeWithSeconds
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
+import platform.Foundation.NSURLErrorBadServerResponse
+
+private const val PREFERRED_TIME_SCALE = 600
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -65,7 +70,9 @@ actual fun VideoPlayer(
     url: String,
     isReelVisible: Boolean,
     modifier: Modifier,
+    cacheKey: String?,
     onVideoPlaying: () -> Unit,
+    onRequestRefresh: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -88,24 +95,68 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-    val player = remember(url) { AVPlayer(uRL = NSURL(string = url)) }
+
+    val headers = mapOf("X-ACCESS-KEY" to trendStorageAccessSecret)
+
+    val asset = remember(url) {
+        AVURLAsset.URLAssetWithURL(
+            URL = NSURL(string = url),
+            options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
+        )
+    }
+    val avPlayerItem = remember(url) { AVPlayerItem(asset) }
+
+    val player = remember(url) { AVPlayer(avPlayerItem) }
+
     player.actionAtItemEnd = 1
 
-    val playerViewController = remember {
-        AVPlayerViewController().apply {
-            showsPlaybackControls = false
-            videoGravity = AVLayerVideoGravityResizeAspectFill
+    val playerView = remember(url) { PlayerLayerView(player) }
+
+    LaunchedEffect(url) {
+
+        val currentTime = CMTimeGetSeconds(player.currentTime())
+        val wasPlaying = player.rate > 0.0f
+
+        val newAsset = AVURLAsset.URLAssetWithURL(
+            URL = NSURL(string = url),
+            options = mapOf("AVURLAssetHTTPHeaderFieldsKey" to headers)
+        )
+        val newPlayerItem = AVPlayerItem(newAsset)
+
+        player.replaceCurrentItemWithPlayerItem(newPlayerItem)
+
+        val time = CMTimeMakeWithSeconds(currentTime, PREFERRED_TIME_SCALE)
+        player.seekToTime(time)
+
+        if (wasPlaying) {
+            player.play()
+        }
+
+    }
+
+    LaunchedEffect(player) {
+        while (true) {
+            val item = player.currentItem
+            if (item?.status == AVPlayerItemStatusFailed) {
+                val error = item.error
+                if (error != null) {
+                    if (error.code == NSURLErrorBadServerResponse ||
+                        error.domain == "NSURLErrorDomain"
+                    ) {
+                        onRequestRefresh()
+                    }
+                }
+            }
+            delay(250)
         }
     }
 
     LaunchedEffect(url, isReelVisible) {
-        playerViewController.player = player
-
         replayReelWhenFinishedAutomatic(player)
 
         if (isReelVisible) {
             if (lastPosition > 0.0) {
-                val time = CMTimeMakeWithSeconds(lastPosition, 600)
+                val time = CMTimeMakeWithSeconds(lastPosition, PREFERRED_TIME_SCALE)
                 player.seekToTime(time)
             }
             player.play()
@@ -129,7 +180,7 @@ actual fun VideoPlayer(
                 }
 
                 AVPlayerItemStatusFailed -> true
-                AVPlayerItemStatusFailed, AVPlayerItemStatusUnknown, null -> false
+                AVPlayerItemStatusUnknown, null -> false
                 else -> false
             }
 
@@ -168,9 +219,10 @@ actual fun VideoPlayer(
         contentAlignment = Alignment.Center
     ) {
         UIKitView(
-            factory = { playerViewController.view },
-            update = {
-                it.setNeedsLayout()
+            factory = { playerView },
+            update = { view ->
+                view.setNeedsLayout()
+                view.layoutIfNeeded()
                 if (isPaused) player.pause() else player.play()
             },
             modifier = Modifier.matchParentSize()
@@ -218,7 +270,7 @@ actual fun VideoPlayer(
                                 if (duration > 0.0 && barWidth > 0f) {
                                     val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
                                     val seekSeconds = newProgress * duration
-                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, 600)
+                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
                                     player.seekToTime(seekTime)
                                 }
                             }
@@ -245,7 +297,7 @@ private fun replayReelWhenFinishedAutomatic(player: AVPlayer) {
         `object` = player.currentItem,
         queue = null
     ) { _ ->
-        player.seekToTime(CMTimeMakeWithSeconds(0.0, 600))
+        player.seekToTime(CMTimeMakeWithSeconds(0.0, PREFERRED_TIME_SCALE))
         player.play()
     }
 }

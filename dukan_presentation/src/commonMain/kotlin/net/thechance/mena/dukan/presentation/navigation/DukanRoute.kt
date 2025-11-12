@@ -59,4 +59,10 @@ sealed interface DukanRoute {
 
     @Serializable
     object SearchScreenRoute : DukanRoute
+
+    @Serializable
+    data object AddressesRoute : DukanRoute
+
+    @Serializable
+    data class DukanLocation(val latitude: Double, val longitude: Double) : DukanRoute
 }

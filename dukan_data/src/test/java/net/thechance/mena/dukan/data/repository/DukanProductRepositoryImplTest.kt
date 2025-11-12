@@ -7,6 +7,7 @@ import net.thechance.mena.dukan.data.repository.mockEngine.product.createProduct
 import net.thechance.mena.dukan.data.repository.mockEngine.product.createdProductResponseId
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultCreateProductResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultProductByIdResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultUploadImageResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
 import net.thechance.mena.dukan.data.repository.mockEngine.product.dummyImageUrls
 import net.thechance.mena.dukan.domain.model.CreateProductParams
@@ -171,6 +172,7 @@ class DukanProductRepositoryImplTest {
 
         assertTrue(called, "Expected the mock engine to be called")
     }
+
     @Test
     fun `toggleProductToFavorites calls correct endpoint`() = runTest {
         var called = false
@@ -186,4 +188,27 @@ class DukanProductRepositoryImplTest {
         assertTrue(called, "Expected the mock engine to be called")
     }
 
+    @Test
+    fun `upload product image calls correct endpoint and returns url`() = runTest {
+        val repository = createProductRepository(
+            uploadImageResponse = {
+                defaultUploadImageResponse()
+            }
+        )
+
+        val fileName = "image1.jpg"
+        val fileBytes = byteArrayOf(1, 2, 3)
+        val productId = createdProductResponseId
+
+        val result = repository.uploadProductImage(
+            fileName = fileName,
+            fileBytes = fileBytes,
+            productId = productId
+        )
+
+        assertEquals(
+            expected = "http://example.com/image1.jpg",
+            actual = result.trim('"')
+        )
+    }
 }

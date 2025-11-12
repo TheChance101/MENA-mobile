@@ -31,6 +31,7 @@ import net.thechance.mena.core_chat.domain.exception.ContactSyncFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsFetchFailedException
 import net.thechance.mena.core_chat.domain.exception.ContactsPermissionDeniedException
 import net.thechance.mena.core_chat.domain.exception.DataStoreException
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.UnAuthorizedException
 import net.thechance.mena.core_chat.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -148,7 +149,7 @@ class ContactsRepositoryImplTest {
             )
 
 
-            assertFailsWith<ContactsFetchFailedException> {
+            assertFailsWith<NoInternetException> {
                 repository.getUserContacts(pageNumber = 1)
             }
         }
@@ -182,7 +183,7 @@ class ContactsRepositoryImplTest {
             )
 
 
-            assertFailsWith<ContactSyncFailedException> {
+            assertFailsWith<NoInternetException> {
                 repository.syncContacts()
             }
         }
@@ -366,7 +367,7 @@ class ContactsRepositoryImplTest {
 
             val result = repository.getUserContacts(pageNumber = 1)
 
-            assertThat(result.data).isEqualTo(page1Contacts.data?.map { it.toDomain() })
+            assertThat(result.data).isEqualTo(page1Contacts.data.map { it.toDomain() })
         }
 
     @Test

@@ -69,7 +69,8 @@ class ProfileScreen : BaseScreen<
         AnimatedVisibility(state.showShareBottomSheet) {
             ShareSheet(
                 title = stringResource(Res.string.download_app_title),
-                message = stringResource(Res.string.share_message) + state.inviteLinkUrl,
+                message = stringResource(Res.string.share_message),
+                shareLink = state.inviteLinkUrl,
                 onDismiss = listener::onDismissBottomSheet
             )
         }

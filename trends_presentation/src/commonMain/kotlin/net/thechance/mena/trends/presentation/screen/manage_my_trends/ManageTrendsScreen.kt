@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,6 +61,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
@@ -222,7 +224,8 @@ private fun ManageTrendsScreenBody(
                 reels[index]?.let { reel ->
                     TrendItem(
                         item = reel,
-                        onTrendClick = listener::onClickReel
+                        onTrendClick = listener::onClickReel,
+                        onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
             }
@@ -259,9 +262,11 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
 private fun TrendItem(
     item: ReelUiState,
     onTrendClick: (id: String) -> Unit,
+    onGetRefreshedThumbnail: (reelId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f
+    val thumbnailUrl = remember(item.id) { item.thumbnailUrl }
 
     Box(
         modifier = modifier
@@ -272,16 +277,18 @@ private fun TrendItem(
         contentAlignment = Alignment.Center
 
     ) {
-        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotEmpty()) {
-            AsyncImage(
-                model = item.thumbnailUrl,
-                contentDescription = stringResource(resource = Res.string.trend_image_desc),
+        TrendsAnimatedVisibility(visible = thumbnailUrl.isNotBlank()) {
+            BaseAsyncImage(
+                url = thumbnailUrl,
+                contentDescription = stringResource(Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                onRequestRefresh = { onGetRefreshedThumbnail(item.id) },
+                imageCacheKey = item.id,
             )
         }
 
-        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isEmpty()) {
+        TrendsAnimatedVisibility(visible = thumbnailUrl.isBlank()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),

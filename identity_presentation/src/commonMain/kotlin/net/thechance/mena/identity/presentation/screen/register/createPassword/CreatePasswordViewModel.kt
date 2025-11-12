@@ -4,22 +4,20 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.error_confirm_password_not_match
 import mena.identity_presentation.generated.resources.error_password_mismatch
 import mena.identity_presentation.generated.resources.error_password_validation
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
 
 class CreatePasswordViewModel(
     private val passwordValidator: PasswordValidator,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val phoneNumber: PhoneNumber,
-    private val firstName: String,
-    private val lastName: String,
-    private val username: String,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<CreatePasswordUIState, CreatePasswordUIEffect>(
     CreatePasswordUIState()
@@ -39,7 +37,10 @@ class CreatePasswordViewModel(
         updateState {
             copy(
                 confirmPassword = password,
-                confirmPasswordErrorMessage = validatePasswordConfirmation(newPassword, password)
+                confirmPasswordErrorMessage =
+                    if (validatePasswordConfirmation(newPassword, password))
+                        Res.string.error_confirm_password_not_match
+                    else null,
             )
         }
         checkCreateButtonEnabled()
@@ -67,9 +68,8 @@ class CreatePasswordViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
             onSuccess = ::handleSavedDraft,
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -95,11 +95,13 @@ class CreatePasswordViewModel(
     private fun savePassword(password: String) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(phoneNumber, draft.copy(password = password))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
+                    ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(
+                    registerUIState.phoneNumber,
+                    draft.copy(password = password)
+                )
             },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -112,11 +114,7 @@ class CreatePasswordViewModel(
     }
 
     private fun createNavigateToDatePickerEffect() = CreatePasswordUIEffect.NavigateToDatePicker(
-        phoneNumber = phoneNumber,
-        firstName = firstName,
-        lastName = lastName,
-        username = username,
-        password = state.value.newPassword
+        registerUIState = registerUIState.copy(password = state.value.newPassword)
     )
 
     private fun checkCreateButtonEnabled() {

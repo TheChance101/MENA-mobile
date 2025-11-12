@@ -5,15 +5,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.OtpExpiredException
+import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
 import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 
 class RegisterPhoneEntryViewModel(
@@ -37,21 +41,21 @@ class RegisterPhoneEntryViewModel(
                     registrationDraftRepository.getDraft(phoneNumber)
                 }
             },
-            onSuccess = { savedDraft ->
-                savedDraft?.let { draft ->
-                    val phoneNumber = draft.phoneNumber ?: return@let
-                    updateState {
-                        copy(
-                            phoneNumber = phoneNumber.localNumber,
-                            currentCountry = findCountryByCallingCode(phoneNumber.countryCode)
-                        )
-                    }
-                    changeIsContinueEnabled()
-                }
-            },
-            onError = {},
+            onSuccess = ::onLoadSavedDataSuccess,
             dispatcher = dispatcher
         )
+    }
+
+    private fun onLoadSavedDataSuccess(savedDraft: RegistrationDraft?) {
+        savedDraft?.phoneNumber?.let { phoneNumber ->
+            updateState {
+                copy(
+                    phoneNumber = phoneNumber.localNumber,
+                    currentCountry = findCountryByCallingCode(phoneNumber.countryCode)
+                )
+            }
+        }
+        changeIsContinueEnabled()
     }
 
     private fun findCountryByCallingCode(callingCode: String): MenaCountry {
@@ -100,9 +104,13 @@ class RegisterPhoneEntryViewModel(
 
     private fun createNavigateToOTPEffect(): RegisterPhoneEntryUIEffect.NavigateToOTP {
         return RegisterPhoneEntryUIEffect.NavigateToOTP(
-            phoneNumber = state.value.phoneNumber,
-            callingCode = state.value.currentCountry.callingCode,
-            countryCode = state.value.currentCountry.countryCodeName
+            registerUIState = RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    countryCode = state.value.currentCountry.callingCode,
+                    localNumber = state.value.phoneNumber
+                ),
+                countryCode = state.value.currentCountry.countryCodeName
+            )
         )
     }
 
@@ -125,15 +133,13 @@ class RegisterPhoneEntryViewModel(
             val phoneNumber = createPhoneNumber()
             tryToExecute(
                 function = {
-                    val existingDraft = registrationDraftRepository.getDraft(phoneNumber)
-                        ?: net.thechance.mena.identity.domain.model.RegistrationDraft()
+                    val existingDraft =
+                        registrationDraftRepository.getDraft(phoneNumber) ?: RegistrationDraft()
                     registrationDraftRepository.saveDraft(
                         phoneNumber,
                         existingDraft.copy(phoneNumber = phoneNumber)
                     )
                 },
-                onSuccess = {},
-                onError = {},
                 dispatcher = dispatcher
             )
         }
@@ -157,6 +163,8 @@ class RegisterPhoneEntryViewModel(
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
+            is OtpExpiredException -> mapAuthenticationErrorToMessage(AuthenticationErrorState.InvalidMobileNumber)
+
             is AuthenticationException -> mapAuthenticationErrorToMessage(
                 handleAuthenticationException(throwable)
             )

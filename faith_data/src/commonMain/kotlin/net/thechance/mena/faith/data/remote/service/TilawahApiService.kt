@@ -5,6 +5,7 @@ import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.model.tilawah.RecitersRequest
+import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 
 interface TilawahApiService {
 
@@ -15,4 +16,10 @@ interface TilawahApiService {
 
     @GET("faith/tilawah/reciters")
     suspend fun getReciters(): Response<List<RecitersRequest>>
+
+    @GET("faith/tilawah/surah/sound")
+    suspend fun getSurahSoundUrl(
+        @Body body: SurahSoundRequest
+    ): Response<String>
+
 }

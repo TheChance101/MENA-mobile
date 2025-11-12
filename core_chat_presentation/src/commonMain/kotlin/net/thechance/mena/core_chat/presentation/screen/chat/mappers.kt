@@ -9,7 +9,6 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
-import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -18,6 +17,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 fun Message.toUi(): MessageUiState {
+
     return MessageUiState(
         id = id,
         senderId = senderId,
@@ -26,7 +26,8 @@ fun Message.toUi(): MessageUiState {
         status = status,
         isMine = isMine,
         content = content,
-        reactions = reactions
+        reactions = reactions,
+        waveformData = null
     )
 }
 
@@ -98,17 +99,21 @@ fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (Message
                     tempImages.add(msg)
                 }
             }
+
             is MessageContent.Audio -> {
                 groupAndClear()
-                grouped.add(ChatListItem.VoiceMessage(
-                    data = msg,
-                    isPlaying = false,
-                    isLoading = false,
-                    progress = 0f,
-                    duration = 0L,
-                    waveformData = generateWaveformData()
-                ))
+                grouped.add(
+                    ChatListItem.VoiceMessage(
+                        data = msg,
+                        isPlaying = false,
+                        isLoading = false,
+                        progress = 0f,
+                        duration = msg.content.audioDurationMs ?: 0L,
+                        waveformData = msg.waveformData ?: emptyList()
+                    )
+                )
             }
+
             is MessageContent.Text -> {
                 groupAndClear()
                 grouped.add(ChatListItem.TextMessage(msg))

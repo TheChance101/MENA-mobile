@@ -9,6 +9,7 @@ data class ProductSearch(
     val id: Uuid,
     val name: String,
     val dukanName: String,
+    val dukanId: Uuid,
     val imageUrl: String,
     val price: Double,
 )

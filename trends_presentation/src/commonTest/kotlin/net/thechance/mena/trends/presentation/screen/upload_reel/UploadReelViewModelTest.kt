@@ -148,6 +148,15 @@ class UploadReelViewModelTest : TestExtensions() {
     }
 
     @Test
+    fun `onClickUploadCard should send LaunchFilePicker effect`() = runTest(testDispatcher) {
+        viewModel.onClickUploadCard()
+
+        viewModel.effect.test {
+            assertThat(awaitItem()).isEqualTo(UploadReelScreenEffect.LaunchFilePicker)
+        }
+    }
+
+    @Test
     fun `onClickNext should send NavigateToAddDescription effect if upload thumbnail success`() = runTest(testDispatcher) {
         viewModel.onRetrieveVideo(validFile)
         advanceUntilIdle()

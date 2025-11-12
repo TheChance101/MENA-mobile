@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.data.remote.client
 
-import com.russhwolf.settings.Settings
+import com.russhwolf.settings.ExperimentalSettingsApi
+import com.russhwolf.settings.coroutines.FlowSettings
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
@@ -18,13 +19,15 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import net.thechance.mena.admin_panel.data.utils.accessToken
 import net.thechance.mena.admin_panel.data.utils.refreshToken
 
+@OptIn(ExperimentalSettingsApi::class)
 fun provideHttpClient(
     baseUrl: String,
-    settings: Settings,
+    settings: FlowSettings,
     refreshToken: suspend () -> Unit
 ): HttpClient {
     return HttpClient(engineFactory = CIO) {
@@ -52,16 +55,16 @@ fun provideHttpClient(
             bearer {
                 loadTokens {
                     BearerTokens(
-                        accessToken = settings.accessToken,
-                        refreshToken=settings.refreshToken
+                        accessToken = settings.accessToken.first(),
+                        refreshToken=settings.refreshToken.first()
                     )
 
                 }
                 refreshTokens {
                     refreshToken()
                     BearerTokens(
-                        accessToken = settings.accessToken,
-                        refreshToken=settings.refreshToken
+                        accessToken = settings.accessToken.first(),
+                        refreshToken=settings.refreshToken.first()
                     )
                 }
                 sendWithoutRequest { request ->

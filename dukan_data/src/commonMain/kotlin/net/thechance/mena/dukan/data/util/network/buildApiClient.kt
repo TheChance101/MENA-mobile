@@ -12,22 +12,28 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.identity.domain.service.LocalizationService
 
 
 expect val platformHttpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
 
 
-fun buildApiClient(
+fun buildDukanApiClient(
     authorizationService: AuthorizationService,
+    localizationService: LocalizationService,
     baseUrl: String
 ): HttpClient {
     return HttpClient(platformHttpClientEngineFactory) {
 
         defaultRequest {
             url(baseUrl)
+            val language = localizationService.getCurrentLanguage().iso
+            println("Accept-Language Test: $language")
+            header("Accept-Language", language)
         }
 
         install(ContentNegotiation) {
@@ -55,20 +61,29 @@ fun buildApiClient(
                 loadTokens {
                     BearerTokens(
                         accessToken = authorizationService.getAccessToken(),
-                        refreshToken = authorizationService.refreshToken()
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
-
                 refreshTokens {
-                    val newAccessToken = authorizationService.refreshToken()
                     BearerTokens(
-                        accessToken = newAccessToken,
-                        refreshToken = authorizationService.refreshToken()
+                        accessToken = authorizationService.getNewAccessToken(),
+                        refreshToken = authorizationService.getRefreshToken()
                     )
                 }
             }
         }
 
+        install(HttpTimeout) {
+            requestTimeoutMillis = 15_000
+            connectTimeoutMillis = 15_000
+            socketTimeoutMillis = 15_000
+        }
+    }
+}
+
+
+fun buildDukanCoilClient(): HttpClient {
+    return HttpClient(platformHttpClientEngineFactory) {
         install(HttpTimeout) {
             requestTimeoutMillis = 15_000
             connectTimeoutMillis = 15_000

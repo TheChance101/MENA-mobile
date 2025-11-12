@@ -444,12 +444,12 @@ class EditProductViewModel(
     private suspend fun uploadSingleImage(bitmap: ImageBitmap): String {
         val bytes = bitmap.toPngByteArray()
         val fileName = bytes.toFileName()
-        val result = productRepository.uploadProductImages(
-            fileName = listOf(fileName),
-            fileBytes = listOf(bytes),
+        val result = productRepository.uploadProductImage(
+            fileName = fileName,
+            fileBytes =bytes,
             productId = productId
         )
-        return result.first()
+        return result
     }
 
     private suspend fun validateFinalImageUrls(finalImageUrls: List<String>) {

@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,11 +13,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -27,8 +28,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
+import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.wide_image_shoppingcart
@@ -44,6 +47,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 fun LazyGridScope.wideImageProductsGrid(
     listener: DukanDetailsInteractionListener,
@@ -109,10 +113,13 @@ private fun ProductCard(
     onClick: () -> Unit,
     productAction: @Composable () -> Unit,
 ) {
+    var isError by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(false) }
+
     Column(
         modifier = modifier
             .size(width = 160.dp, height = 240.dp)
-            .clip(RoundedCornerShape(Theme.radius.sm))
+            .clip(SquircleShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
@@ -125,11 +132,25 @@ private fun ProductCard(
                 model = imageUrl,
                 contentDescription = stringResource(Res.string.wide_product_image),
                 contentScale = ContentScale.Crop,
+                onState = { state ->
+                    isError = state is AsyncImagePainter.State.Error
+                    isLoading = state is AsyncImagePainter.State.Loading
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(176.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
             )
+            if (isError || isLoading) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_no_image_loaded),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.Center),
+                    contentScale = ContentScale.Fit
+                )
+            }
             Box(
                 modifier = Modifier.align(Alignment.BottomCenter).offset(y = 12.dp)
             ) {

@@ -67,6 +67,7 @@ import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -78,6 +79,7 @@ import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -105,7 +107,6 @@ private fun UserReelScreenContent(
     state: UserReelState,
     listener: UserReelInteractionListener
 ) {
-
     Scaffold(
         overlays = {
             dialog(isVisible = state.isConfirmationDialogVisible) {
@@ -214,7 +215,8 @@ private fun UserReelScreenContent(
                     onDescriptionClick = listener::onClickDescription,
                     onPublisherInfoClick = listener::onClickPublisherInfo,
                     incrementViewsCount = { listener.increaseReelView(reel.id) },
-                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) }
+                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
+                    onGetRefreshUrl = listener::onGetRefreshVideoUrl
                 )
             }
         }
@@ -253,13 +255,17 @@ private fun ReelContent(
     onDescriptionClick: (isCollapsed: Boolean) -> Unit,
     onPublisherInfoClick: () -> Unit,
     incrementViewsCount: () -> Unit,
+    onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
 ) {
+    val rememberedUrl = remember(reel.id) { reel.videoUrl }
     VideoPlayer(
         modifier = Modifier.background(Theme.colorScheme.primary.primary),
-        url = reel.videoUrl,
+        url = rememberedUrl,
         isReelVisible = shouldRender,
-        onVideoPlaying = incrementViewsCount
+        onVideoPlaying = incrementViewsCount,
+        cacheKey = reel.id,
+        onRequestRefresh = { onGetRefreshUrl(reel.id) }
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()

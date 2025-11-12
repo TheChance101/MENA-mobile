@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -124,6 +123,23 @@ internal class HomeViewModel(
             state.value.reelsStateFlow.value.map { reel ->
                 reel.takeIf { it.id != reelId }
                     ?: reel.copy(isDescriptionExpanded = !reel.isDescriptionExpanded)
+            }
+    }
+
+    override fun onGetRefreshedThumbnail(reelId: String) {
+        tryToExecute(
+            block = { repository.getReelUrls(reelId).thumbnailUrl },
+            onSuccess = { refreshedUrl ->
+                onGetRefreshedThumbnailSuccess(refreshedUrl, reelId)
+            },
+        )
+    }
+
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String){
+        state.value.reelsStateFlow.value =
+            state.value.reelsStateFlow.value.map { reel ->
+                reel.takeIf { it.id != reelId }
+                    ?: reel.copy(thumbnailUrl = refreshedUrl)
             }
     }
 }

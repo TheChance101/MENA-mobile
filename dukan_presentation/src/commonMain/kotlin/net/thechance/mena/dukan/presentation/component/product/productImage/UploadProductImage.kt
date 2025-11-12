@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.dukan.presentation.component.product.productImage
 
 import androidx.compose.foundation.Image
@@ -5,8 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +30,9 @@ import net.thechance.mena.dukan.presentation.util.file.PlatformImageFile
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun UploadProductImage(
@@ -37,13 +43,29 @@ fun UploadProductImage(
 
     val borderColor = Theme.colorScheme.primary.primary
     val cornerRadiusValue = Theme.radius.md
-
     val scope = rememberCoroutineScope()
 
-    val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+    val debounceTimeMillis = 1000L
+    val lastLaunchTimeMillis = remember { mutableStateOf(0L) }
+    val isFilePickerLaunching = remember { mutableStateOf(false) }
+    val filePickerLauncher = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
+        isFilePickerLaunching.value = false
         file?.let { imageFile ->
             scope.launch {
                 onUploadImageClick(PlatformImageFile(imageFile))
+            }
+        }
+    }
+
+    val safeLaunch: () -> Unit = remember {
+        {
+            if (isFilePickerLaunching.value.not()) {
+                val now = Clock.System.now().toEpochMilliseconds()
+                if (now - lastLaunchTimeMillis.value > debounceTimeMillis ) {
+                    lastLaunchTimeMillis.value = now
+                    isFilePickerLaunching.value = true
+                    filePickerLauncher.launch()
+                }
             }
         }
     }
@@ -53,9 +75,10 @@ fun UploadProductImage(
             .size(size = 88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(size = cornerRadiusValue)
-            ).clip(RoundedCornerShape(size = cornerRadiusValue))
-            .clickable(onClick = { filePicker.launch() }, enabled = isUploadingImageEnabled)
+                shape = SquircleShape(cornerRadiusValue)
+            )
+            .clip(SquircleShape(cornerRadiusValue))
+            .clickable(onClick = { safeLaunch() }, enabled = isUploadingImageEnabled)
             .drawWithContent {
                 drawContent()
                 drawBorder(
@@ -65,7 +88,7 @@ fun UploadProductImage(
             },
         contentAlignment = Alignment.Center
     ) {
-      Image(
+        Image(
             modifier = Modifier.size(size = 24.dp),
             painter = painterResource(resource = Res.drawable.ic_add_image),
             contentDescription = stringResource(resource = Res.string.upload_dukan_image),

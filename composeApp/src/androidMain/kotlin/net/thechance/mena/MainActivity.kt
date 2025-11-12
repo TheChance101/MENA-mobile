@@ -1,5 +1,6 @@
 package net.thechance.mena
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,10 +15,9 @@ import net.thechance.mena.appEntryPoint.MainEntryViewModel
 import net.thechance.mena.identity.presentation.util.AppLocalizer
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
-    private val activityViewModel: MainEntryViewModel by viewModel<MainEntryViewModel>()
+    private val mainEntryViewModel: MainEntryViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         PermissionManager.init(this)
@@ -34,14 +34,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        activityViewModel.onDeepLinkChange(
-            deepLink = parseDeepLinkFromIntent()
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        mainEntryViewModel.onDeepLinkChange(
+            deepLink = parseDeepLinkFromIntent(intent)
         )
     }
 
-    private fun parseDeepLinkFromIntent(): DeepLink {
+    private fun parseDeepLinkFromIntent(intent: Intent): DeepLink {
         val appLinkData: Uri? = intent.data
         return DeepLink(
             userId = appLinkData?.getQueryParameter("userId"),

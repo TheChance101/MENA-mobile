@@ -15,10 +15,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,80 +29,60 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.itemKey
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.silver_tier_icon
-import mena.dukan_presentation.generated.resources.summary_details
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.viewModel.checkout.CartItem
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun CheckoutSummaryCard(
-    products: LazyPagingItems<CartItem>,
+    products: LazyPagingItems<CheckoutUiState.CartItem>,
+    totalPrice: Double,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(Res.string.summary_details),
-            style = Theme.typography.title.medium,
-            color = Theme.colorScheme.shadePrimary
-        )
-        Column(
-            modifier = Modifier
-                .padding(top = Theme.spacing._8)
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(
-                    RoundedCornerShape(
-                        topStart = Theme.spacing._16,
-                        topEnd = Theme.spacing._16,
-                        bottomStart = Theme.spacing._8,
-                        bottomEnd = Theme.spacing._8
-                    )
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clip(
+                SquircleShape(
+                    topStart = Theme.spacing._16,
+                    topEnd = Theme.spacing._16,
+                    bottomStart = Theme.spacing._8,
+                    bottomEnd = Theme.spacing._8
                 )
-                .background(Theme.colorScheme.background.surfaceLow)
-        ) {
-            Box(modifier = Modifier.wrapContentHeight()) {
-                SummaryItemsList(products = products)
-                SummaryTopCircles()
-            }
-            SummaryBottomSection()
+            )
+            .background(Theme.colorScheme.background.surfaceLow)
+    ) {
+        Box(modifier = Modifier.wrapContentHeight()) {
+            SummaryItemsList(products = products)
+            SummaryTopCircles()
         }
+        SummaryBottomSection(totalPrice)
     }
 }
 
 @Composable
-private fun SummaryItemsList(products: LazyPagingItems<CartItem>) {
+private fun SummaryItemsList(products: LazyPagingItems<CheckoutUiState.CartItem>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = Theme.spacing._24)
             .padding(horizontal = Theme.spacing._12),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-            userScrollEnabled = false
-        ) {
-            items(
-                count = products.itemCount,
-                key = products.itemKey { it.id }
-            ) { index ->
-                val cartItem = products[index]
-                if (cartItem != null) {
-                    CheckoutProductItem(cartItem = cartItem)
-                }
+        repeat(products.itemCount) { index ->
+            val cartItem = products[index]
+            if (cartItem != null) {
+                CheckoutProductItem(cartItem = cartItem)
             }
         }
-        CheckoutFeeItem(
-            modifier = Modifier.padding(top = 13.dp, bottom = Theme.spacing._24),
-            productName = "Platform fees",
-            price = 1.99
-        )
         DashedSeparator(
             modifier = Modifier
                 .padding(bottom = 11.dp)
@@ -130,7 +108,7 @@ private fun BoxScope.SummaryTopCircles() {
 }
 
 @Composable
-private fun SummaryBottomSection() {
+private fun SummaryBottomSection(totalPrice: Double) {
     Box(modifier = Modifier.wrapContentHeight()) {
         Column(
             modifier = Modifier
@@ -138,7 +116,7 @@ private fun SummaryBottomSection() {
                 .padding(top = 13.dp, bottom = 33.dp)
                 .padding(horizontal = Theme.spacing._12)
         ) {
-            CheckoutFeeItem(productName = "Total amount", price = 31.99)
+            CheckoutFeeItem(productName = "Total amount", price = totalPrice)
         }
 
         CircleRow(
@@ -152,7 +130,7 @@ private fun SummaryBottomSection() {
 
 @Composable
 private fun CheckoutProductItem(
-    cartItem: CartItem,
+    cartItem: CheckoutUiState.CartItem,
     modifier: Modifier = Modifier
 ) {
     Row(

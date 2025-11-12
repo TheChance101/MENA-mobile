@@ -7,7 +7,9 @@ import io.ktor.http.HttpHeaders
 
 fun Pair<String, ByteArray>.buildAudioMultiPartFormData(
     fieldName: String,
-    chatId: String
+    messageId: String,
+    chatId: String,
+    audioDurationMs: Long? = null
 ): MultiPartFormDataContent {
     val (name, byteArray) = this
     val extension = byteArray.getAudioExtension()
@@ -15,7 +17,9 @@ fun Pair<String, ByteArray>.buildAudioMultiPartFormData(
 
     return MultiPartFormDataContent(
         formData {
+            append("messageId", messageId)
             append("chatId", chatId)
+            audioDurationMs?.let { append("audioDurationMs", it.toString()) }
             append(
                 fieldName,
                 byteArray,

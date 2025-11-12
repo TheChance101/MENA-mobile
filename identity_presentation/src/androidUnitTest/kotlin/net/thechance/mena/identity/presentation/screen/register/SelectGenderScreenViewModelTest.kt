@@ -6,7 +6,6 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
@@ -18,6 +17,7 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -37,12 +37,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
-            birthDate = LocalDate(2000, 1, 1),
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
     }
@@ -121,12 +116,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
-            birthDate = LocalDate(2000, 1, 1),
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
@@ -144,12 +134,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            phoneNumber = phoneNumber,
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123",
-            password = "Password123",
-            birthDate = LocalDate(2000, 1, 1),
+            registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()

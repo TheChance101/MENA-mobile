@@ -4,6 +4,7 @@ import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.dto.UploadReelResponse
 import net.thechance.mena.trends.data.mapper.toEntity
@@ -26,6 +27,8 @@ internal val fakeReelDtoList = RemotePaginationResponse(
 )
 
 internal val fakeReelList = (fakeReelDtoList.results?.map(ReelDto::toEntity) ?: emptyList())
+
+internal val fakeReelUrls = ReelPathUrlsDto(videoPath = "video.mp4", thumbnailPath = "image.jpg")
 
 internal fun MockRequestHandleScope.getReelsResponse(
     reels: List<ReelDto> = fakeReelDtoList.results ?: emptyList()
@@ -72,6 +75,16 @@ internal fun MockRequestHandleScope.toggleLikeReelResponse(
 internal fun MockRequestHandleScope.addViewReelResponse(
 ) = respond(
     content = "",
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+internal fun MockRequestHandleScope.getReelUrlsResponse(
+) = respond(
+    content = jsonSerialization.encodeToString(
+        ReelPathUrlsDto.serializer(),
+        fakeReelUrls
+    ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )

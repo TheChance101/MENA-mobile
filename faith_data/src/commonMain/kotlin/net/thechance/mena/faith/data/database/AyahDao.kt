@@ -27,7 +27,6 @@ interface AyahDao {
 """)
     suspend fun getSur(): List<SurahDto>
 
-
     @Query("SELECT * FROM ayat WHERE aya_no = :ayahId AND sura_no = :surahId")
     suspend fun getAyah(ayahId: Int, surahId: Int): AyahDto
 

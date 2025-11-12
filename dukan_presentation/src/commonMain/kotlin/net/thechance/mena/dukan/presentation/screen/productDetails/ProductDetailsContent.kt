@@ -80,9 +80,7 @@ fun ProductDetailsContent(
                     onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
                     onPlusClick = {listener.onPlusClicked(state.product.id)},
                     onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
-                    productQuantity = state.product.inCartQuantity,
-                    productPrice = state.product.price,
-                    isLoading = state.isAddToCartLoading
+                    state = state
                 )
             }
         }

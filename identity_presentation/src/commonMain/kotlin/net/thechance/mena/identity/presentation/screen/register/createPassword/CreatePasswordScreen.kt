@@ -30,15 +30,13 @@ import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
 class CreatePasswordScreen(
-    private val phoneNumber: PhoneNumber,
-    private val firstName: String,
-    private val lastName: String,
-    private val username: String
+    private val registerUIState: RegisterUIState
 ) : BaseScreen<
         CreatePasswordViewModel,
         CreatePasswordUIState,
@@ -47,13 +45,7 @@ class CreatePasswordScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(
-            getScreenModel(
-                parameters = {
-                    parametersOf(phoneNumber, firstName, lastName, username)
-                }
-            )
-        )
+        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
     }
 
     @Composable
@@ -89,7 +81,9 @@ class CreatePasswordScreen(
                         onChangePassword = listener::onChangeConfirmPassword,
                         onTogglePasswordVisibility = listener::onToggleConfirmPasswordVisibility,
                         label = stringResource(Res.string.confirm_password_label),
-                        errorMessage = state.confirmPasswordErrorMessage,
+                        errorMessage = state.confirmPasswordErrorMessage?.let{
+                            stringResource(it)
+                        },
                         modifier = Modifier.padding(bottom = Theme.spacing._16)
                     )
 
@@ -122,15 +116,7 @@ class CreatePasswordScreen(
     ) {
         when (effect) {
             is CreatePasswordUIEffect.NavigateToDatePicker -> {
-                navigator.push(
-                    DatePickerScreen(
-                        phoneNumber = effect.phoneNumber,
-                        firstName = effect.firstName,
-                        lastName = effect.lastName,
-                        username = effect.username,
-                        password = effect.password
-                    )
-                )
+                navigator.push(DatePickerScreen(registerUIState = effect.registerUIState))
             }
         }
     }
@@ -141,13 +127,13 @@ class CreatePasswordScreen(
 fun PreviewCreatePasswordScreen() {
     MenaTheme {
         CreatePasswordScreen(
-            phoneNumber = net.thechance.mena.identity.domain.entity.PhoneNumber(
-                "+964",
-                "7901234567"
-            ),
-            firstName = "Mohammed",
-            lastName = "Ahmed",
-            username = "mohammed123"
+            registerUIState = RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    countryCode = "+971",
+                    localNumber = "555555555"
+                ),
+                countryCode = "AE"
+            )
         ).OnRender(
             state = CreatePasswordUIState(
                 newPassword = "Password123",

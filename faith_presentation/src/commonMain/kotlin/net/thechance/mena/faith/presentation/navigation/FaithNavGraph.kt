@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesScreen
+import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueScreen
 import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageScreen
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeScreen
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceScreen
@@ -20,7 +21,7 @@ import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearch
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahScreen
 import net.thechance.mena.identity.api.IdentityFeatureApi
 import org.koin.compose.getKoin
 
@@ -62,23 +63,25 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 composable<Route.NearbyMosquesRoute> {
                     NearbyMosquesScreen()
                 }
-                composable<Route.TilawahRoute> {
+                composable<Route.DownloadedSurScreen> {
                     DownloadedSurScreen()
                 }
                 composable<Route.DownloadedRecitersRoute> {
-                    DownloadedReciterScreen()
+                    TilawahScreen()
                 }
                 composable<Route.ReciterSearch> {
                     ReciterSearchScreen()
                 }
                 composable<Route.UserAddresses> {
-                    identityApi.NavigateToAddressesScreen()
+                    identityApi.NavigateToAddressesScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
                 composable<Route.UploadImageRoute> {
                     UploadImageScreen()
                 }
-                composable<Route.UserAddresses> {
-                    identityApi.NavigateToAddressesScreen()
+                composable<Route.CreateMosqueRoute> {
+                    CreateMosqueScreen()
                 }
             }
         }

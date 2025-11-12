@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.quran.tilwah
 import net.thechance.mena.faith.domain.model.Reciter
 
 data class TilawahUiState(
+    val surahId: Int? = null,
     val reciters: List<ReciterUi> = emptyList(),
     val selectedReciterId: Int? = null,
     val selectedReciterForDelete: Int? = null,
@@ -18,9 +19,9 @@ data class TilawahUiState(
     )
 }
 
-fun Reciter.toUi() = TilawahUiState.ReciterUi(
+fun Reciter.toUi(isDownloaded: Boolean) = TilawahUiState.ReciterUi(
     id = id,
     name = name,
     recitingType = tilawahType,
-    isDownloaded = true //Todo not implemented yet
+    isDownloaded = isDownloaded
 )

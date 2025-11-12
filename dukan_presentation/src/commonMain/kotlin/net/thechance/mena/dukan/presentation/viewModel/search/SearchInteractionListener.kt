@@ -12,6 +12,6 @@ interface SearchInteractionListener {
     fun onProductsSelected()
     fun onDukanClicked(dukanId: Uuid)
     fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite:Boolean)
-    fun onProductClicked(productId: Uuid)
+    fun onProductClicked(productId: Uuid,dukanId: Uuid)
     fun onSnackBarDismissed()
 }

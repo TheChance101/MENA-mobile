@@ -17,9 +17,7 @@ import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_favorite_filled
-import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
-import mena.dukan_presentation.generated.resources.share_icon
 import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -54,11 +52,6 @@ fun ProductDetailsAppBar(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         ) {
             AppBarIcon(
-                painter = painterResource(Res.drawable.ic_share),
-                contentDescription = stringResource(Res.string.share_icon),
-                onClick = listener::onShareClicked
-            )
-            AppBarIcon(
                 painter = painterResource(
                     if (state.isFavorite) {
                         Res.drawable.ic_favorite_filled
@@ -70,7 +63,7 @@ fun ProductDetailsAppBar(
                 onClick = listener::onToggleProductToFavoriteClicked
             )
             AppBarOptionContainer(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 onClick = listener::onViewCartClicked
             ) {
                 Icon(

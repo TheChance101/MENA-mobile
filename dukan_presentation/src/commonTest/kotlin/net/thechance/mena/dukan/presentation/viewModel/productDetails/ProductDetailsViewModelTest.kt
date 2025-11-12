@@ -17,10 +17,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.added_to_favorites
-import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.removed_from_favorites
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -79,10 +76,11 @@ class ProductDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
+
     @Test
     fun `init SHOULD set isLoading to false after successful load`() = runTest {
         advanceUntilIdle()
@@ -335,54 +333,6 @@ class ProductDetailsViewModelTest {
         verifySuspend { productRepository.toggleProductToFavorites(testProductId) }
     }
 
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenAddingToFavorites_SHOULD updateStateToTrue`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = false) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertTrue(state.isFavorite)
-        }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenAddingToFavorites_SHOULD showSuccessMessage`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = false) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertEquals(Res.string.added_to_favorites, state.snackBarState?.message)
-        }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenAddingToFavorites_SHOULD showSuccessSnackBarType`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = false) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertEquals(SnackBarType.SUCCESS, state.snackBarState?.snackBarType)
-        }
-
 
     @OptIn(ExperimentalUuidApi::class)
     @Test
@@ -398,54 +348,6 @@ class ProductDetailsViewModelTest {
 
             // Then
             verifySuspend { productRepository.toggleProductToFavorites(testProductId) }
-        }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenRemovingFromFavorites_SHOULD updateStateToFalse`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = true) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertFalse(state.isFavorite)
-        }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenRemovingFromFavorites_SHOULD showRemovedMessage`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = true) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertEquals(Res.string.removed_from_favorites, state.snackBarState?.message)
-        }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenRemovingFromFavorites_SHOULD showSuccessSnackBarType`() =
-        runTest {
-            // Given
-            productDetailsViewModel.updateState { copy(isFavorite = true) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } returns Unit
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertEquals(SnackBarType.SUCCESS, state.snackBarState?.snackBarType)
         }
 
 
@@ -466,7 +368,7 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD notChangeFavoriteState`() =
+    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD keep the change in ui`() =
         runTest {
             // Given
             val networkError = NoInternetException()
@@ -479,41 +381,9 @@ class ProductDetailsViewModelTest {
 
             // Then
             val state = productDetailsViewModel.state.value
-            assertFalse(state.isFavorite)
+            assertTrue(state.isFavorite)
         }
 
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD showErrorMessage`() = runTest {
-        // Given
-        val networkError = NoInternetException()
-        productDetailsViewModel.updateState { copy(isFavorite = false) }
-        everySuspend { productRepository.toggleProductToFavorites(any()) } throws networkError
-
-        // When
-        productDetailsViewModel.onToggleProductToFavoriteClicked()
-        advanceUntilIdle()
-
-        // Then
-        val state = productDetailsViewModel.state.value
-        assertEquals(Res.string.error_updating_favorites, state.snackBarState?.message)
-    }
-
-    @Test
-    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD showErrorSnackBarType`() =
-        runTest {
-            // Given
-            val networkError = NoInternetException()
-            productDetailsViewModel.updateState { copy(isFavorite = false) }
-            everySuspend { productRepository.toggleProductToFavorites(any()) } throws networkError
-
-            // When
-            productDetailsViewModel.onToggleProductToFavoriteClicked()
-            advanceUntilIdle()
-
-            // Then
-            val state = productDetailsViewModel.state.value
-            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
-        }
 
     private fun createViewModel() = ProductDetailsViewModel(
         productRepository = productRepository,

@@ -70,6 +70,10 @@ internal class UploadReelViewModel(
         )
     }
 
+    override fun onClickUploadCard() {
+        sendEffect(UploadReelScreenEffect.LaunchFilePicker)
+    }
+
     private suspend fun validateFile() {
         val selectedFile = state.value.selectedFile
 

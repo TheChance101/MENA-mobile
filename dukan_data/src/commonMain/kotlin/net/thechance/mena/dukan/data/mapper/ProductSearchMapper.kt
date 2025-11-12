@@ -11,6 +11,7 @@ fun ProductSearchDto.toDomain(): ProductSearch = ProductSearch(
     id = id,
     name = name,
     dukanName = dukanName,
+    dukanId = dukanId,
     price = price,
     imageUrl = mainImageUrl,
 )

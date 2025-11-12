@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,14 +23,15 @@ import mena.dukan_presentation.generated.resources.search_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun TopAppBar(
@@ -82,11 +82,8 @@ private fun DukanIconButton(
     Box(
         modifier = Modifier
             .size(40.dp)
-            .background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.md)
-            )
-            .clip(shape = RoundedCornerShape(Theme.radius.md)),
+            .clip(shape = SquircleShape(Theme.radius.md))
+            .background(Theme.colorScheme.background.surfaceLow),
         contentAlignment = Alignment.Center
     ) {
         DukanIcon(dukanStatus = dukanButtonStatus)
@@ -130,7 +127,7 @@ private fun DukanIcon(dukanStatus: MainScreenUiState.DukanStatusUi) {
             }
 
             MainScreenUiState.DukanStatusUi.Loading -> {
-                LoadingDots(modifier = Modifier.size(size = 20.dp))
+                DotsProgressIndicator()
             }
         }
     }

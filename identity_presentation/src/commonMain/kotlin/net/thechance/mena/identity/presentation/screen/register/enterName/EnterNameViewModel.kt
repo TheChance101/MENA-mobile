@@ -13,6 +13,7 @@ import net.thechance.mena.identity.presentation.base.error.ErrorState
 import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 
 class EnterNameViewModel(
@@ -112,10 +113,12 @@ class EnterNameViewModel(
     }
 
     private fun createNavigateToPasswordEffect() = EnterNameUIEffect.NavigateToPassword(
-        phoneNumber = phoneNumber,
-        firstName = state.value.firstName,
-        lastName = state.value.lastName,
-        username = state.value.username
+        registerUIState = RegisterUIState(
+            phoneNumber = phoneNumber,
+            firstName = state.value.firstName,
+            lastName = state.value.lastName,
+            username = state.value.username
+        )
     )
 
     private fun onUsernameCheckError(throwable: Throwable) {
