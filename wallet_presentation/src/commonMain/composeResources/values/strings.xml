@@ -139,4 +139,5 @@
     <string name="file_missing_description">This statement is no longer available because it was deleted or moved from your device.</string>
     <string name="share_image">Share Image</string>
     <string name="share_pdf">Share Pdf</string>
+    <string name="this_account_cant_receive_transactions">This account cannot receive payments.</string>
 </resources>

@@ -96,7 +96,6 @@ private fun AdminPanelScaffoldMainContent(
             ) {
                 Box(modifier = Modifier.wrapContentWidth()) {
                     AdminPanelSideBar(
-                        modifier = Modifier.padding(bottom = 34.dp),
                         selectedTab = state.selectedSidebarTab,
                         interactionListener = interactionListener
                     )

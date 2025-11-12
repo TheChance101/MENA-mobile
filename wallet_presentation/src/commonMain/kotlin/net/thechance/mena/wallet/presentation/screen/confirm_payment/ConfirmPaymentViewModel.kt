@@ -139,6 +139,7 @@ class ConfirmPaymentViewModel(
                 transactionId = transactionId,
                 submissionStatus = when (error) {
                     ErrorState.NoInternet -> SubmissionStatus.CONNECTION_LOST
+                    ErrorState.BlockedReceiver -> SubmissionStatus.BLOCKED_RECEIVER
                     else -> SubmissionStatus.UNKNOWN_ERROR
                 }
             )

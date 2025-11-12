@@ -90,7 +90,7 @@ internal class NearbyMosquesViewModel(
     }
 
     override fun onBackClick() {
-//        TODO("Not yet implemented")
+        sendEffect(NearbyMosquesEffect.NavigateBack)
     }
 
     override fun onAddMosqueClick() {

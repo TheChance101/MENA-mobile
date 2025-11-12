@@ -2,9 +2,11 @@ package net.thechance.mena.admin_panel.di
 
 import de.jensklingenberg.ktorfit.Ktorfit
 import net.thechance.mena.admin_panel.data.remote.api_service.AuthenticationApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.DukanApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.DepositApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.UserApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.createAuthenticationApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.createDukanApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.createDepositApiService
 import net.thechance.mena.admin_panel.data.remote.api_service.createUserApiService
 import org.koin.core.module.Module
@@ -17,6 +19,9 @@ actual val platformNetworkModule: Module = module {
     }
     single<UserApiService> {
         get<Ktorfit>(named(ADMIN_PANEL_KEY)).createUserApiService()
+    }
+    single<DukanApiService> {
+        get<Ktorfit>(named(ADMIN_PANEL_KEY)).createDukanApiService()
     }
     single<DepositApiService> {
         get<Ktorfit>(named(ADMIN_PANEL_KEY)).createDepositApiService()

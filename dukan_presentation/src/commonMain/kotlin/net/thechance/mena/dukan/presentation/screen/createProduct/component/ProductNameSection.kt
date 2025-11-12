@@ -37,6 +37,7 @@ fun ProductNameSection(
             onValueChanged = onProductNameChange,
             leadingIcon = painterResource(resource = Res.drawable.ic_product),
             leadingIconTint = Theme.colorScheme.shadePrimary,
+            maxCharacters = 50,
             enabled = isTextFieldEnabled,
             hint = ""
         )

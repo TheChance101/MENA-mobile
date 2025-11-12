@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.icon_curvy_right_direction
 import mena.faith_presentation.generated.resources.icon_next
 import mena.faith_presentation.generated.resources.icon_pause
 import mena.faith_presentation.generated.resources.icon_play
@@ -27,6 +28,7 @@ import mena.faith_presentation.generated.resources.next_ayah
 import mena.faith_presentation.generated.resources.pause
 import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.previous_ayah
+import mena.faith_presentation.generated.resources.read_all_surah
 import mena.faith_presentation.generated.resources.reciters
 import mena.faith_presentation.generated.resources.repeat
 import mena.faith_presentation.generated.resources.surah_ayah_format
@@ -48,6 +50,7 @@ fun AudioButtons(
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
     onRepeatClick: () -> Unit,
+    onTilawahClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -85,6 +88,12 @@ fun AudioButtons(
             )
 
             Row(
+                modifier = modifier
+                    .background(
+                        Theme.colorScheme.background.surface,
+                        RoundedCornerShape(Theme.radius.sm)
+                    )
+                    .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._12),
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._32),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -117,13 +126,29 @@ fun AudioButtons(
                 )
             }
 
-            Icon(
-                painter = painterResource(Res.drawable.icon_repeat),
-                contentDescription = stringResource(Res.string.repeat),
-                tint = Theme.colorScheme.primary.primary,
-                modifier = Modifier.size(24.dp)
-                    .clickable(onClick = onRepeatClick)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Icon(
+                    painter = painterResource(Res.drawable.icon_repeat),
+                    contentDescription = stringResource(Res.string.repeat),
+                    tint = Theme.colorScheme.primary.primary,
+                    modifier = Modifier.padding(end = Theme.spacing._12)
+                        .size(24.dp)
+                        .clickable(onClick = onRepeatClick)
+
+                )
+
+                Icon(
+                    painter = painterResource(Res.drawable.icon_curvy_right_direction),
+                    contentDescription = stringResource(Res.string.read_all_surah),
+                    tint = Theme.colorScheme.primary.primary,
+                    modifier = Modifier.size(24.dp)
+                        .clickable(onClick = onTilawahClick)
+
+                )
+            }
         }
     }
 }
@@ -140,7 +165,8 @@ private fun TilawahButtonsPreview() {
             onPreviousClick = {},
             onPlayPauseClick = {},
             onNextClick = {},
-            onRepeatClick = {}
+            onRepeatClick = {},
+            onTilawahClick = {}
         )
     }
 }
