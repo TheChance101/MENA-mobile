@@ -92,7 +92,7 @@ class ProfileScreenViewModel(
     override fun onLanguageClicked() =
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = true)) }
 
-    override fun onThemeClicked() =
+    override fun onThemeSettingsClicked() =
         updateState { copy(themeDialogUiState = themeDialogUiState.copy(isVisible = true)) }
 
     override fun onPrivacyAndPolicyClicked() =
@@ -103,14 +103,14 @@ class ProfileScreenViewModel(
 
 
     override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
         tryToExecute(
             function = { settingsRepository.applyLanguage(appLanguage) },
             onSuccess = {
                 updateState {
                     copy(
                         languageDialogUiState = languageDialogUiState.copy(
-                            isVisible = false
+                            isVisible = false,
+                            selectedAppLanguage = appLanguage
                         )
                     )
                 }

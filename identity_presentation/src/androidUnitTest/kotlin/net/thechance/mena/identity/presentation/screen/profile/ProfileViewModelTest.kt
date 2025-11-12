@@ -158,7 +158,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `should update state to show theme dialog when onThemeClicked`() = runTest {
-        viewModel.onThemeClicked()
+        viewModel.onThemeSettingsClicked()
 
         testDispatcher.scheduler.advanceUntilIdle()
 

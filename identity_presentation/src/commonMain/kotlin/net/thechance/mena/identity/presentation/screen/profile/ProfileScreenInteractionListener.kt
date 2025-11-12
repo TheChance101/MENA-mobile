@@ -14,7 +14,7 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
     fun onAddressesClicked()
     fun onPrivacySettingsClicked()
     fun onLanguageClicked()
-    fun onThemeClicked()
+    fun onThemeSettingsClicked()
     fun onPrivacyAndPolicyClicked()
     fun clearErrorMessage()
     fun onDismissLanguageDialog()

@@ -176,7 +176,7 @@ class ProfileScreen : BaseScreen<
                     item {
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
-                            onThemeClicked = listener::onThemeClicked,
+                            onThemeClicked = listener::onThemeSettingsClicked,
                             currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso,
                             currentTheme = state.currentTheme.name
                         )
