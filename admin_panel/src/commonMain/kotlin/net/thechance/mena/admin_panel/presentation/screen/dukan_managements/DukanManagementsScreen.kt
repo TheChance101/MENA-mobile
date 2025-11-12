@@ -4,47 +4,30 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import net.thechance.mena.admin_panel.navigation.DukanDetails
-import net.thechance.mena.admin_panel.navigation.LocalNavController
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
-import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementTableContent
-import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
-import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
-import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.EmptyDukanState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_management
-import net.thechance.mena.admin_panel.resources.no_dukan_results
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DukanManagementsScreen(
     viewmodel: DukanManagementViewmodel = koinViewModel()
 ) {
     val state by viewmodel.state.collectAsStateWithLifecycle()
-    val navController = LocalNavController.current
-    ObserveAsEffect(
-        effect = viewmodel.uiEffect,
-        onEffect = { effect ->
-            onDukanManagementEffect(
-                effect = effect,
-                navController = navController
-            )
-        }
-    )
+
     DukanManagementsContent(
         state = state,
         interactionListener = viewmodel
@@ -74,42 +57,18 @@ fun DukanManagementsContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DukanManagementHeader(
-                dukansNumbers = state.totalDukans,
-                onQueryChange = interactionListener::onSearchQueryChanged,
+                dukansNumbers = state.dukanCounts,
+                onQueryChange = interactionListener::onSearchQueryChange,
                 onClearQueryClicked = interactionListener::onClearQueryClicked,
                 query = state.query
             )
             when {
-                state.dukans.isEmpty() && !state.isLoading -> {
-                    if (state.query.isNotEmpty())
-                        EmptySearchState(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .offset(y = -(76.dp))
-                        )
-                    else {
-                        EmptyDukanState(
-                            description = stringResource(Res.string.no_dukan_results)
-                        )
-                    }
-                }
-
+                state.isLoading -> AdminPanelContentLoading()
+                state.dukans.isEmpty() -> EmptyDukanState()
                 else -> {
-                    DukanManagementTableContent(state, interactionListener)
+
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalUuidApi::class)
-private fun onDukanManagementEffect(
-    effect: DukanManagementEffect,
-    navController: NavController
-) {
-    when (effect) {
-        is DukanManagementEffect.NavigateToDukanDetails -> {
-            navController.navigate(DukanDetails)
         }
     }
 }
