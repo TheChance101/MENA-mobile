@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_location
@@ -41,12 +42,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun SmallImageDukanDetailsContent(
     state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
+    listener: DukanDetailsInteractionListener
 ) {
-
+    val shelves = state.shelves.collectAsLazyPagingItems()
 
     OnSystemBackPressed(listener::onBackClicked)
-
     Scaffold(
         topBar = {
             SmallImageDukanAppBar(
@@ -118,6 +118,7 @@ fun SmallImageDukanDetailsContent(
             SmallImageDukanShelvesContent(
                 state = state,
                 listener = listener,
+                shelves = shelves,
                 modifier = Modifier.padding(top = Theme.spacing._16)
             )
         }
