@@ -138,5 +138,6 @@
     <string name="add_mosque_message">تمت إضافة المسجد بنجاح.</string>
     <string name="mosque_image">صورة المسجد</string>
     <string name="read_all_surah">تلاوة السورة</string>
-
+    <string name="remove_aya">حذف الآية</string>
+    <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
 </resources>

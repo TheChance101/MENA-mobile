@@ -4,7 +4,7 @@ interface BookmarkInteractionListener {
     fun onBackClick()
     fun onDeleteBookmarkClick(bookmarkId: Int)
     fun onStartTilawahClick()
-    fun onConfirmDeleteDownloadedSurahClick()
+    fun onConfirmDeleteBookmarkClick()
     fun onDismissDeleteConfirmationDialog()
 
 }

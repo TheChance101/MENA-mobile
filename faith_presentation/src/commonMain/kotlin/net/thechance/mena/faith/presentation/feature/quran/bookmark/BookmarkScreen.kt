@@ -26,6 +26,8 @@ import mena.faith_presentation.generated.resources.empty_state_bookmark_descript
 import mena.faith_presentation.generated.resources.empty_state_bookmark_image
 import mena.faith_presentation.generated.resources.empty_state_bookmark_title
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
+import mena.faith_presentation.generated.resources.remove_aya
+import mena.faith_presentation.generated.resources.remove_aya_message
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -88,10 +90,10 @@ private fun Content(
             ) {
                 DeleteConfirmationDialog(
                     showDialog = uiState.showDeleteConfirmationDialog,
-                    onDeleteClick = { listener::onConfirmDeleteDownloadedSurahClick },
+                    onDeleteClick = listener::onConfirmDeleteBookmarkClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
-                    title = "Remove Aya",
-                    message = "Are you sure you want to remove this aya from bookmarks?"
+                    title = stringResource(Res.string.remove_aya),
+                    message = stringResource(Res.string.remove_aya_message)
                 )
             }
         }
@@ -199,7 +201,7 @@ private fun BookmarkScreenPreview() {
                 override fun onBackClick() {}
                 override fun onDeleteBookmarkClick(bookmarkId: Int) {}
                 override fun onStartTilawahClick() {}
-                override fun onConfirmDeleteDownloadedSurahClick() {}
+                override fun onConfirmDeleteBookmarkClick() {}
                 override fun onDismissDeleteConfirmationDialog() {}
             },
             snackBarState = SnackBarState()

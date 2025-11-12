@@ -31,6 +31,7 @@ class BookmarkViewModel(
     snackBarHandler,
 ),
     BookmarkInteractionListener {
+
     private val cachedBookmarksFlow =
         createBookmarksPagingSource()
             .map { pagingData ->
@@ -38,6 +39,7 @@ class BookmarkViewModel(
             }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
+    private var pendingDeleteBookmarkId: Int? = null
 
     private val filteredBookmarksFlow =
         combine(
@@ -56,26 +58,34 @@ class BookmarkViewModel(
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateToSur)
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
+        pendingDeleteBookmarkId = bookmarkId
+        updateState { it.copy(showDeleteConfirmationDialog = true) }
+    }
+
+    override fun onConfirmDeleteBookmarkClick() {
+        val bookmarkId = pendingDeleteBookmarkId ?: return
+
         tryToExecute(
-            execute = {
-                onConfirmDeleteDownloadedSurahClick()
-                bookmarkRepository.deleteAyahBookmark(bookmarkId)
-            },
+            execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = {
                 onDeleteBookmarkSuccess()
                 onDismissDeleteConfirmationDialog()
+                pendingDeleteBookmarkId = null
             },
-            onError = { removeDeletedBookmarkId(bookmarkId) },
+            onError = {
+                removeDeletedBookmarkId(bookmarkId)
+                onDismissDeleteConfirmationDialog()
+                pendingDeleteBookmarkId = null
+            },
             dispatcher = dispatcher
         )
     }
 
-    override fun onDismissDeleteConfirmationDialog() =
+    override fun onDismissDeleteConfirmationDialog() {
         updateState { it.copy(showDeleteConfirmationDialog = false) }
-
-    override fun onConfirmDeleteDownloadedSurahClick() =
-        updateState { it.copy(showDeleteConfirmationDialog = true) }
+        pendingDeleteBookmarkId = null
+    }
 
     private fun insertDeletedBookmarkId(id: Int) =
         deletedBookmarkIdsFlow.update { currentSet -> currentSet + id }
