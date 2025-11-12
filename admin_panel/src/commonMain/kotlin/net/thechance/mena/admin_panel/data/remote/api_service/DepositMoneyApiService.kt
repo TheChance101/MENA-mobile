@@ -8,17 +8,17 @@ import de.jensklingenberg.ktorfit.http.POST
 import net.thechance.mena.admin_panel.data.remote.dto.deposit.CountryDto
 import net.thechance.mena.admin_panel.data.remote.dto.deposit.DepositRequestDto
 
-interface DepositApiService {
-    @POST(DEPOSIT_END_POINT)
-    suspend fun deposit(@Body deposit: DepositRequestDto): Response<Unit>
+interface DepositMoneyApiService {
+    @POST(DEPOSIT_MONEY_END_POINT)
+    suspend fun depositMoney(@Body deposit: DepositRequestDto): Response<Unit>
 
     @GET(COUNTRIES_END_POINT)
     suspend fun getCountries(
         @Header("Accept-Language") language: String = "en"
     ): Response<List<CountryDto>>
 
-    private companion object {
+    private companion object Companion {
         const val COUNTRIES_END_POINT = "identity/authentication/countries"
-        const val DEPOSIT_END_POINT = "wallet/admin/deposit"
+        const val DEPOSIT_MONEY_END_POINT = "wallet/admin/deposit"
     }
 }

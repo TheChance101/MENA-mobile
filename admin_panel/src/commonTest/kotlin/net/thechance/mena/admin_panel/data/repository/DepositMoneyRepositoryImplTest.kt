@@ -9,20 +9,20 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.admin_panel.data.remote.api_service.DepositApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.DepositMoneyApiService
 import net.thechance.mena.admin_panel.data.remote.dto.deposit.DepositRequestDto
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
-class DepositRepositoryImplTest {
+class DepositMoneyRepositoryImplTest {
 
-    private lateinit var depositApiService: DepositApiService
-    private lateinit var depositRepository: DepositRepositoryImpl
+    private lateinit var depositMoneyApiService: DepositMoneyApiService
+    private lateinit var depositRepository: DepositMoneyRepositoryImpl
 
     @BeforeTest
     fun setup() {
-        depositApiService = mock<DepositApiService>(mode = MockMode.autofill)
-        depositRepository = DepositRepositoryImpl(depositApiService)
+        depositMoneyApiService = mock<DepositMoneyApiService>(mode = MockMode.autofill)
+        depositRepository = DepositMoneyRepositoryImpl(depositMoneyApiService)
     }
 
     @Test
@@ -33,13 +33,13 @@ class DepositRepositoryImplTest {
         )
 
         everySuspend {
-            depositApiService.deposit(fakeParams)
+            depositMoneyApiService.depositMoney(fakeParams)
         } returns successfulEmptyResponse()
 
-        depositRepository.deposit("01012345678" , 100.0)
+        depositRepository.depositMoney("01012345678" , 100.0)
     }
 
-    private companion object {
+    private companion object Companion {
         @OptIn(InternalAPI::class)
         private fun successfulEmptyResponse(): Response<Unit> {
             val mockHttpResponse: HttpResponse = mock(MockMode.autofill) {
