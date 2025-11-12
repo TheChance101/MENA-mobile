@@ -21,18 +21,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_store_location
 import net.thechance.mena.admin_panel.resources.img_no_internet
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DukanDetails(
     dukanName: String,
     dukanCategories: List<String>,
     dukanLocation: String,
+    dukanImg: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,13 +48,14 @@ internal fun DukanDetails(
             )
             .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(2f)
                 .clip(RoundedCornerShape(Theme.radius.md)),
-            painter = painterResource(Res.drawable.img_no_internet),
-            contentDescription = null
+            model = dukanImg,
+            contentScale = ContentScale.Crop,
+            contentDescription = null,
         )
         Text(
             modifier = Modifier.padding(top = 8.dp),
