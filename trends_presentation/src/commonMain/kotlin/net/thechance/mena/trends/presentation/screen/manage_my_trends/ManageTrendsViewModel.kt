@@ -22,7 +22,7 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class ManageTrendsViewModel(
-    @Provided private val repository: ReelsRepository,
+    @Provided private val reelsRepository: ReelsRepository,
     @Provided private val userRepository: UserRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState, ManageTrendsUiEffect>(ManageTrendsScreenState()),
@@ -38,7 +38,7 @@ internal class ManageTrendsViewModel(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    loadPage = { page -> repository.getAllCurrentUserReels(page) }
+                    loadPage = { page -> reelsRepository.getAllCurrentUserReels(page) }
                 )
             },
             onSuccess = ::onGetReelsSuccess,
@@ -86,34 +86,72 @@ internal class ManageTrendsViewModel(
 
     override fun onClickRetry() {
         updateState { copy(error = null) }
-        getReels()
+
         getCurrentUserInfo()
+        loadSelectedTabData(tab = state.value.selectTab)
     }
 
     override fun onSelectTab(tab: SelectTab) {
-        updateState { copy(selectTab = tab) }
+        if (state.value.selectTab != tab) {
+            updateState { copy(selectTab = tab) }
+
+            loadSelectedTabData(tab = tab)
+        }
+    }
+
+    private fun loadSelectedTabData(tab: SelectTab) {
+        when (tab) {
+            SelectTab.MyTrends -> getReels()
+            SelectTab.Favorites -> getFavoriteReels()
+        }
     }
 
     override fun onGetRefreshedThumbnail(reelId: String) {
         tryToExecute(
-            block = { repository.getReelUrls(reelId).thumbnailUrl },
-            onSuccess = { refreshedUrl ->
-                onGetRefreshedThumbnailSuccess(refreshedUrl, reelId)
-            },
+            block = { reelsRepository.getReelUrls(reelId).thumbnailUrl },
+            onSuccess = { refreshedUrl -> onGetRefreshedThumbnailSuccess(refreshedUrl, reelId) }
         )
     }
 
-
-    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String){
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String) {
         updateState {
             copy(
-                reels = state.value.reels.map { pagingData ->
-                    pagingData.map { reel ->
-                        reel.takeIf { it.id != reelId }
-                            ?: reel.copy(thumbnailUrl = refreshedUrl)
-                    }
-                }
+                reels = state.value.reels.updateThumbnail(reelId, refreshedUrl),
+                favoriteReels = state.value.favoriteReels.updateThumbnail(reelId, refreshedUrl)
             )
         }
     }
+
+    private fun Flow<PagingData<ReelUiState>>.updateThumbnail(
+        reelId: String,
+        url: String
+    ): Flow<PagingData<ReelUiState>> {
+        return this.map { pagingData ->
+            pagingData.map { reel ->
+                reel.takeIf { it.id != reelId } ?: reel.copy(thumbnailUrl = url)
+            }
+        }
+    }
+
+    private fun getFavoriteReels() {
+        tryToExecute(
+            block = {
+                createPager(
+                    scope = viewModelScope,
+                    loadPage = { page -> reelsRepository.getFavoriteReels(page) }
+                )
+            },
+            onSuccess = ::onGetFavoriteReelsSuccess,
+            onError = { errorState -> updateState { copy(error = errorState) } },
+            onStart = { updateState { copy(isLoading = true) } },
+            onEnd = { updateState { copy(isLoading = false) } },
+            dispatcher = defaultDispatcher
+        )
+    }
+
+    private fun onGetFavoriteReelsSuccess(flow: Flow<PagingData<Reel>>) {
+        val uiReelsFlow = flow.map { pagingData -> pagingData.map { it.toUiState() } }
+        updateState { copy(favoriteReels = uiReelsFlow, isLoading = false) }
+    }
+
 }

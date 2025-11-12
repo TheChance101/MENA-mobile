@@ -42,11 +42,13 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_arrow_left
+import mena.trends_presentation.generated.resources.ic_empty_trends
 import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
-import mena.trends_presentation.generated.resources.no_favorites_yet
+import mena.trends_presentation.generated.resources.no_favorites_description
+import mena.trends_presentation.generated.resources.no_favorites_title
 import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
@@ -63,6 +65,7 @@ import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.StatePlaceholder
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -108,10 +111,17 @@ private fun ManageTrendsScreenContent(
             )
         },
         content = {
-            val reels = state.reels.collectAsLazyPagingItems()
+            val trends = when (state.selectTab) {
+                SelectTab.MyTrends -> state.reels.collectAsLazyPagingItems()
+                SelectTab.Favorites -> state.favoriteReels.collectAsLazyPagingItems()
+            }
+
+            val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
+                    trends.loadState.refresh is LoadState.NotLoading &&
+                    trends.loadState.refresh.toErrorState() == null
 
             TrendsAnimatedVisibility(
-                visible = reels.loadState.refresh is LoadState.Loading,
+                visible = trends.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
@@ -122,7 +132,7 @@ private fun ManageTrendsScreenContent(
 
             TrendsAnimatedVisibility(
                 visible = state.error == null && state.isLoading.not(),
-                content = { ManageTrendsScreenBody(listener, state, reels) }
+                content = { ManageTrendsScreenBody(listener, state, trends) }
             )
         }
     )
@@ -132,12 +142,13 @@ private fun ManageTrendsScreenContent(
 private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
     state: ManageTrendsScreenState,
-    reels: LazyPagingItems<ReelUiState>
+    trends: LazyPagingItems<ReelUiState>
 ) {
     val cardWidth = 106.dp
-    val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
-            reels.loadState.refresh is LoadState.NotLoading &&
-            reels.loadState.refresh.toErrorState() == null
+    val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
+            trends.loadState.refresh is LoadState.NotLoading &&
+            trends.loadState.refresh.toErrorState() == null
+
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = cardWidth),
@@ -198,51 +209,55 @@ private fun ManageTrendsScreenBody(
             }
         }
 
-        if (state.selectTab == SelectTab.Favorites) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    text = stringResource(Res.string.no_favorites_yet),
-                    style = Theme.typography.label.medium,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    textAlign = TextAlign.Center
-                )
-            }
-            return@LazyVerticalGrid
-        }//temporary until we make implementation for it
-
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            TrendsAnimatedVisibility(
-                visible = shouldShowEmptyState,
-                content = { EmptyTrends(modifier = Modifier.padding(top = 74.dp)) }
-            )
-        }
-
-        if (reels.itemSnapshotList.isNotEmpty()) {
-            items(key = reels.itemKey(), count = reels.itemCount) { index ->
-                reels[index]?.let { reel ->
+        if (trends.itemSnapshotList.isNotEmpty()) {
+            items(key = trends.itemKey(), count = trends.itemCount) { index ->
+                trends[index]?.let { trend ->
                     TrendItem(
-                        item = reel,
+                        item = trend,
                         onTrendClick = listener::onClickReel,
                         onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
+            }
+        } else if (shouldShowEmptyState) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                EmptyStateForTab(tab = state.selectTab)
             }
         }
     }
 }
 
 @Composable
+private fun EmptyStateForTab(tab: SelectTab) {
+    if (tab == SelectTab.Favorites) {
+        EmptyFavorites(modifier = Modifier.padding(top = 74.dp))
+    } else {
+        EmptyTrends(isScrollable = false, modifier = Modifier.padding(top = 74.dp))
+    }
+}
+
+@Composable
+private fun EmptyFavorites(modifier: Modifier = Modifier) {
+    StatePlaceholder(
+        icon = painterResource(Res.drawable.ic_empty_trends),
+        title = stringResource(Res.string.no_favorites_title),
+        description = stringResource(Res.string.no_favorites_description),
+        isScrollable = false,
+        modifier = modifier
+    )
+}
+
+@Composable
 private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
     AppBar(
         onLeadingClick = onBackClick,
+        title = stringResource(Res.string.manage_trends_title),
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.back_arrow)
             )
-        },
-        title = stringResource(Res.string.manage_trends_title),
+        }
     )
 }
 
@@ -253,7 +268,7 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
         contentDescription = stringResource(Res.string.profile_image_desc),
         error = painterResource(Res.drawable.ic_placeholder_profile),
         modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
     )
 }
 
