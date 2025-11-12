@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.SkeletonOverlayShape
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 
 fun LazyGridScope.wideImageProductCardSkeletonGrid(productCount: Int) {
@@ -37,7 +37,7 @@ private fun ProductCardSkeleton(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .size(width = 160.dp, height = 240.dp)
-            .clip(RoundedCornerShape(Theme.radius.sm))
+            .clip(SquircleShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
     ) {
         SkeletonOverlayShape(
@@ -45,7 +45,7 @@ private fun ProductCardSkeleton(modifier: Modifier = Modifier) {
                 .padding(4.dp)
                 .fillMaxWidth()
                 .height(176.dp)
-                .clip(RoundedCornerShape(Theme.radius.sm))
+                .clip(SquircleShape(Theme.radius.sm))
         )
         ProductCardDetailsSkeleton()
     }

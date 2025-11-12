@@ -8,6 +8,7 @@ import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import org.koin.mp.KoinPlatform.getKoin
 
 actual class QuranPlayerImpl : QuranPlayer {
+
     private val context = getKoin().get<Context>()
     private val quranPlayer: ExoPlayer = ExoPlayer.Builder(context).build()
 
@@ -26,14 +27,15 @@ actual class QuranPlayerImpl : QuranPlayer {
 
     actual override fun playAyah(ayahUrl: String) {
         if (ayahUrl.isEmpty()) return
+
         if (ayahUrl != currentUrl) {
             currentUrl = ayahUrl
             quranPlayer.stop()
             quranPlayer.clearMediaItems()
-            val mediaItem = MediaItem.fromUri(ayahUrl)
-            quranPlayer.setMediaItem(mediaItem)
+            quranPlayer.setMediaItem(MediaItem.fromUri(ayahUrl))
             quranPlayer.prepare()
         }
+
         quranPlayer.play()
     }
 

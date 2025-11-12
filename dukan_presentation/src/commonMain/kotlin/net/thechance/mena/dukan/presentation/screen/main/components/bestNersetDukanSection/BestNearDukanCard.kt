@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -42,7 +42,7 @@ fun BestNearDukanCard(
             contentDescription = stringResource(Res.string.dukan_image),
             modifier = Modifier
                 .size(size = 60.dp)
-                .clip(RoundedCornerShape(Theme.radius.full)),
+                .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
         Text(

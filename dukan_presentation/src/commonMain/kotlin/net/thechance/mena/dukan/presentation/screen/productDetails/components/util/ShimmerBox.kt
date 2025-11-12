@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ShimmerBox(
@@ -22,7 +22,7 @@ fun ShimmerBox(
             .height(height)
             .background(
                 color = Theme.colorScheme.shadeSecondary.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(Theme.radius.xs)
+                shape = SquircleShape(Theme.radius.xs)
             )
     )
 }

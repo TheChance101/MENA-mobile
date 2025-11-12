@@ -58,7 +58,7 @@ class HomeViewModel(
     }
 
     init {
-        getBalanceAmount()
+        observeBalanceAmount()
         onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
@@ -183,27 +183,24 @@ class HomeViewModel(
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
-
-    private fun getBalanceAmount() {
-        tryToExecute(
+    private fun observeBalanceAmount() {
+        tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
-            execute = { balanceRepository.getBalance() },
-            onSuccess = ::onGetBalanceAmountSuccess,
+            collect = { balanceRepository.observeBalance() },
+            onCollect =  ::onObserveBalanceAmountSuccess ,
             onError = { onGetBalanceAmountError() }
         )
     }
 
-    private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
-        updateState {
-            it.copy(
-                balanceAmount = balanceAmount.toInt().toString(),
-                isBalanceLoading = false
-            )
-        }
+    private fun onObserveBalanceAmountSuccess(balanceAmount: Double?) {
+        if (balanceAmount == null) return
+        updateState { it.copy(
+            balanceAmount = balanceAmount.toInt().toString(),
+            isBalanceLoading = false) }
     }
 
     private fun onGetBalanceAmountError() {
-        updateState { it.copy(isBalanceLoading = false, balanceAmount = "--") }
+        updateState { it.copy(isBalanceLoading = false, balanceAmount = "") }
         showSnackBar(
             titleStringResource = Res.string.error,
             messageStringResource = Res.string.could_not_get_balance,

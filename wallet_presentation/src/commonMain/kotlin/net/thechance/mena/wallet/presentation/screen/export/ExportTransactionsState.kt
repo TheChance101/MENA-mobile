@@ -1,9 +1,13 @@
 package net.thechance.mena.wallet.presentation.screen.export
 
 import kotlinx.datetime.LocalDate
+import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.pick_end_date
+import mena.wallet_presentation.generated.resources.pick_start_date
 
 import net.thechance.mena.wallet.presentation.model.FilterType
 import net.thechance.mena.wallet.presentation.model.SnackBarState
+import net.thechance.mena.wallet.presentation.utils.orToday
 import org.jetbrains.compose.resources.StringResource
 
 data class ExportTransactionsState(
@@ -40,9 +44,18 @@ data class ExportTransactionsState(
         val messageRes: StringResource? = null,
     )
 
-    enum class DatePickerMode {
-        START_DATE,
-        END_DATE
+    enum class DatePickerMode(val titleRes: StringResource) {
+        START_DATE(Res.string.pick_start_date),
+        END_DATE(Res.string.pick_end_date)
     }
+
+    val defaultSelectedDate: LocalDate
+        get() = when (dateState.datePickerMode) {
+            DatePickerMode.START_DATE ->
+                dateState.defaultStartDate.orToday()
+
+            DatePickerMode.END_DATE ->
+                dateState.defaultEndDate.orToday()
+        }
 }
 

@@ -9,5 +9,5 @@ data class PaymentResultScreenState(
     val isLoading: Boolean = false,
     val tryAgainAttempts: Int = 0,
     val isTryAgainButtonEnabled: Boolean = true,
-    val isCloseButtonEnabled: Boolean = true
+    val isCloseButtonEnabled: Boolean = true,
 )

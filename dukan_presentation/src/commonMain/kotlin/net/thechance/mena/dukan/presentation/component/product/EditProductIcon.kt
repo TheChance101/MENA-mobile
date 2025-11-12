@@ -3,7 +3,7 @@ package net.thechance.mena.dukan.presentation.component.product
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +25,7 @@ fun EditProductIcon(
         painter = painterResource(Res.drawable.edit_product_pencil),
         contentDescription = stringResource(Res.string.edit_product_pencil),
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .background(Theme.colorScheme.primary.primary)
             .clickable(onClick = onClick)
             .padding(Theme.spacing._8)

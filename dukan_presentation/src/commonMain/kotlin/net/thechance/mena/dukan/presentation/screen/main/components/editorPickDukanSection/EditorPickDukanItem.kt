@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +39,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun EditorPickDukanItem(
@@ -57,7 +58,7 @@ fun EditorPickDukanItem(
         modifier = modifier
             .fillMaxWidth()
             .height(156.dp)
-            .clip(RoundedCornerShape(Theme.radius.lg))
+            .clip(SquircleShape(Theme.radius.lg))
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
@@ -118,7 +119,7 @@ fun EditorPickDukanItem(
                     painter = painterResource(favoriteIcon),
                     contentDescription = stringResource(Res.string.heart_icon),
                     modifier = Modifier
-                        .clip(RoundedCornerShape(Theme.radius.full))
+                        .clip(CircleShape)
                         .clickable(
                             onClick = onClickFavorite,
                             indication = null,

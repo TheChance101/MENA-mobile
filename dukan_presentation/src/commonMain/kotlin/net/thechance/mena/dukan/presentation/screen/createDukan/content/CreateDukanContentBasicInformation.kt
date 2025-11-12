@@ -64,7 +64,8 @@ fun CreateDukanPagerContent(
                     .padding(bottom = Theme.spacing._12),
                 leadingIcon = painterResource(Res.drawable.ic_shop),
                 title = stringResource(Res.string.dukan_name),
-                leadingIconTint = Theme.colorScheme.shadePrimary
+                leadingIconTint = Theme.colorScheme.shadePrimary,
+                maxCharacters = 50
             )
         }
 
