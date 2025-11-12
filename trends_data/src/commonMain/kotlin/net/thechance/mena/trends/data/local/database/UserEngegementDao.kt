@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import net.thechance.mena.trends.data.local.database.TrendsDatabaseConstants.ENGAGEMENTS_TABLE
 
 @Dao
 interface UserEngagementDao {
@@ -19,7 +20,7 @@ interface UserEngagementDao {
      */
     @Query(
         """
-        SELECT * FROM engagements 
+        SELECT * FROM $ENGAGEMENTS_TABLE 
         WHERE userId = :userId 
         AND watchEndTimestamp < :midnightTimestamp
         ORDER BY watchEndTimestamp DESC
@@ -38,7 +39,7 @@ interface UserEngagementDao {
      */
     @Query(
         """
-        DELETE FROM engagements 
+        DELETE FROM $ENGAGEMENTS_TABLE 
         WHERE userId = :userId 
         AND watchEndTimestamp < :midnightTimestamp
     """
