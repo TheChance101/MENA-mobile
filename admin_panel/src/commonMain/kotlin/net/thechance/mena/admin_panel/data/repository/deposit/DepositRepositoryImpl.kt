@@ -7,9 +7,8 @@ import net.thechance.mena.admin_panel.domain.repository.deposit.DepositRepositor
 
 class DepositRepositoryImpl(
     private val depositApiService: DepositApiService
-):  DepositRepository{
+) : DepositRepository {
     override suspend fun deposit(depositQueryParams: DepositQueryParams) {
         depositApiService.deposit(depositQueryParams.toRequest())
     }
-
 }
