@@ -29,6 +29,7 @@ data class EditProductUiState(
     val isTextFieldEnabled: Boolean = true,
     val isCancelImageEnabled: Boolean = true,
     val deleteDialog: DeleteDialogState? = null,
+    val isOutOfStock: Boolean = false,
 ) {
     data class DeleteDialogState(
         val title: StringResource,
