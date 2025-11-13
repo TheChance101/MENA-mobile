@@ -171,6 +171,7 @@ class DukanDetailsViewModel(
     }
 
     private fun loadProductsPaging() {
+        updateState { copy(productQuantity = emptyMap()) }
         tryToCollect(
             block = ::getProductPagingFlow,
             onCollect = ::onProductsLoaded,
@@ -211,7 +212,8 @@ class DukanDetailsViewModel(
 
     private fun updateQuantityProductPaging(products: PagingData<ProductUiState>): PagingData<ProductUiState> {
         return products.map {
-            updateProductQuantityInCart(it.id, it.inCartQuantity)
+            if (state.value.productQuantity[it.id] == null)
+                updateProductQuantityInCart(it.id, it.inCartQuantity)
             it
         }
     }
@@ -387,13 +389,9 @@ class DukanDetailsViewModel(
 
     fun refreshProducts() {
         if (!state.value.isConfigurationChanges) {
-            updateState { copy(isConfigurationChanges = true) }
+            loadShelvesPaging()
             loadCartInfo()
-
-            if (isWideImageStyle())
-                loadProductsPaging()
-            else
-                loadShelvesPaging()
+            updateState { copy(isConfigurationChanges = true) }
         }
     }
 }
