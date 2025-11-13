@@ -737,8 +737,8 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `saveLastAyahForTilawah should save progress for different surahs`() = runTest {
-        val progress1 = LastAyahForTilawah(AL_FATIHAH_NAME, SURAH_ID_1, AYAH_NUMBER_5)
-        val progress2 = LastAyahForTilawah(AL_BAQARAH_NAME, SURAH_ID_2, AYAH_NUMBER_100)
+        val progress1 = LastAyahForTilawah( SURAH_ID_1, AYAH_NUMBER_5)
+        val progress2 = LastAyahForTilawah( SURAH_ID_2, AYAH_NUMBER_100)
 
         repository.saveLastAyahForTilawah(progress1)
         repository.saveLastAyahForTilawah(progress2)
@@ -809,19 +809,16 @@ class QuranRepositoryImplTest {
         const val ARABIC_RECITER_QUERY = "مشاري"
 
         val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
-            surahName = AL_FATIHAH_NAME,
             surahId = 1,
             number = 3
         )
 
         val DEFAULT_TILAWAH = LastAyahForTilawah(
-            surahName = "Al-Fatiha",
             surahId = 1,
             number = 1
         )
 
         val SAVED_TILAWAH_PROGRESS = LastAyahForTilawah(
-            surahName = AL_BAQARAH_NAME,
             surahId = 2,
             number = 5
         )
