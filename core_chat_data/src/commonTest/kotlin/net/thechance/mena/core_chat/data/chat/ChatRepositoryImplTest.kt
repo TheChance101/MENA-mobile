@@ -18,8 +18,11 @@ import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -55,7 +58,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
+@OptIn(ExperimentalCoroutinesApi::class)
 class ChatRepositoryImplTest {
 
     private lateinit var httpClient: HttpClient
@@ -328,11 +331,9 @@ class ChatRepositoryImplTest {
             pageSize = pageSize
         )
 
-        httpClient = createHttpClient(
-            chatsSummariesResponse = {
-                mockSuccessPagedResponse(pagedData)
-            }
-        )
+        httpClient = createHttpClient(chatsSummariesResponse = {
+            mockSuccessPagedResponse(pagedData)
+        })
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
@@ -345,14 +346,19 @@ class ChatRepositoryImplTest {
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
         everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
 
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.ChatsSummariesSynced
+        val deferredState = async {
+            repository.observeChatSummariesSyncState().first { it is SyncState.ChatsSummariesSynced }
         }
+
         repository.getChatsSummary(pageNumber, pageSize)
+        advanceUntilIdle()
 
+        val emittedState = deferredState.await()
 
-        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
+        assertThat(emittedState)
+            .isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain() }))
     }
+
 
     @Test
     fun `should emit Offline when network is unavailable during chat sync`() = runTest {
@@ -375,13 +381,16 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it == SyncState.Offline
+        val deferredState = async {
+            repository.observeChatSummariesSyncState().first { it == SyncState.Offline }
         }
 
-        assertThat(emittedState is SyncState.Offline).isTrue()
+        repository.getChatsSummary(pageNumber, pageSize)
+        advanceUntilIdle()
+
+        val emittedState = deferredState.await()
+
+        assertThat(emittedState).isEqualTo(SyncState.Offline)
     }
 
     @Test
@@ -405,12 +414,14 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.Error
+        val deferredState = async {
+            repository.observeChatSummariesSyncState().first { it is SyncState.Error }
         }
 
         repository.getChatsSummary(pageNumber, pageSize)
+        advanceUntilIdle()
 
+        val emittedState = deferredState.await()
 
         assertThat(emittedState is SyncState.Error).isTrue()
     }
@@ -424,11 +435,13 @@ class ChatRepositoryImplTest {
         val preferences = mutablePreferencesOf(
             stringPreferencesKey("lastTimeChatSummariesSynced") to Clock.System.now().toString()
         )
+
         everySuspend { dataStore.data } returns flowOf(preferences)
         everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
         everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
         everySuspend { cachedChatSummaryDao.deleteMultipleChatSummaries(any()) } returns Unit
+
         httpClient = createHttpClient(
             deleteChatResponse = {
                 respond(
@@ -461,16 +474,17 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.DeletedChatsSynced
+        val deferredState = async {
+            repository.observeChatSummariesSyncState().first { it is SyncState.DeletedChatsSynced }
         }
 
         repository.getChatsSummary(pageNumber, pageSize)
+        advanceUntilIdle()
+
+        val emittedState = deferredState.await()
 
         assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
-
     }
-
 
     @Test
     fun `should return deleted chats after specific time successfully`() = runTest {
