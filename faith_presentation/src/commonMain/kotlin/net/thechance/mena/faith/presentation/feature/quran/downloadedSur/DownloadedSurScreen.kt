@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete_surah
+import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
@@ -25,6 +27,7 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DownloadedSurahCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,6 +83,8 @@ private fun Content(
                     showDialog = uiState.showDeleteConfirmationDialog,
                     onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
+                    title = stringResource(Res.string.delete_surah),
+                    message = stringResource(Res.string.delete_surah_dialog_message)
                 )
             }
         }

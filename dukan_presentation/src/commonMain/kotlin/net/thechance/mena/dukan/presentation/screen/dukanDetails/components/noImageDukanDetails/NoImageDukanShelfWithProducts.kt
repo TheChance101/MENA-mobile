@@ -1,8 +1,13 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -48,14 +53,22 @@ fun NoImageDukanShelfWithProducts(
             modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._8),
             viewAllColor = Color(dukanColor)
         )
-        shelf.products.forEachIndexed { index, product ->
-            val topPadding = if (index > 0) Theme.spacing._8 else 0.dp
-            ProductItem(
-                product = product,
-                listener = listener,
-                dukanColor = Color(dukanColor),
-                modifier = Modifier.padding(top = topPadding)
-            )
+        val spacing = Theme.spacing._8
+        val minCardWidth = 320.dp
+
+        LazyVerticalGrid(
+            modifier = Modifier.heightIn(min = 0.dp, max = 10_000.dp),
+            columns = GridCells.Adaptive(minSize = minCardWidth),
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing)
+        ) {
+            items(shelf.products) { product ->
+                ProductItem(
+                    product = product,
+                    listener = listener,
+                    dukanColor = Color(dukanColor)
+                )
+            }
         }
     }
 }

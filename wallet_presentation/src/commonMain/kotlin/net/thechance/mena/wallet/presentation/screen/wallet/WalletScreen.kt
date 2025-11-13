@@ -96,14 +96,13 @@ private fun WalletContent(
             modifier = Modifier
                 .fillMaxHeight()
                 .padding(horizontal = 16.dp)
-                .padding(vertical = 16.dp)
+                .padding(top = 16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             BalanceCard(
                 state = state.balanceState,
                 onRetry = interactionListener::onRetryLoadBalanceClicked,
-                modifier = Modifier
-                    .padding(top = 16.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
 
             LabeledButtonWithCircularIcon(
@@ -138,7 +137,7 @@ private fun WalletContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(vertical = 16.dp)
             )
         }
     }
