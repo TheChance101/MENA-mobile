@@ -61,7 +61,10 @@ class ReciterSearchViewModel(
         val searchResults = if (surahId != null) {
             reciters.map { reciter ->
                 reciter.toUi(
-                    isDownloaded = repository.isSurahAudioCached(surahId, reciter.id)
+                    isDownloaded = repository.isSurahAudioCached(
+                        surahId = surahId,
+                        reciterId = reciter.id
+                    )
                 )
             }
         } else {

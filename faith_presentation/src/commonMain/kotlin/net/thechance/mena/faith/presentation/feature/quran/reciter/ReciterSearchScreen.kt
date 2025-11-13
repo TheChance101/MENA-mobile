@@ -76,7 +76,7 @@ private fun Content(
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),
                 isNotEmptyResult = state.searchResults.isNotEmpty(),
-                results = state.searchResults,
+                reciterResults = state.searchResults,
                 modifier = Modifier.fillMaxWidth().weight(1f).padding(top = Theme.spacing._16)
             )
         }
@@ -87,7 +87,7 @@ private fun Content(
 private fun ResultList(
     isNotBlankQuery: Boolean,
     isNotEmptyResult: Boolean,
-    results: List<TilawahUiState.ReciterUi>,
+    reciterResults: List<TilawahUiState.ReciterUi>,
     modifier: Modifier = Modifier
 ) {
     val shouldShowResults = isNotBlankQuery && isNotEmptyResult
@@ -96,12 +96,12 @@ private fun ResultList(
     LazyColumn(
         modifier = modifier,
     ) {
-        items(results) { reciter ->
+        items(reciterResults) { reciter ->
             ReciterItem(
                 reciterId = reciter.id,
                 reciter = reciter.name,
                 recitingType = reciter.recitingType,
-                isDownloaded = reciter.isDownloaded,
+                isDownloaded = false,
                 onSelect = {},
                 onDownloadClick = {},
                 isSelectReciter = false,
