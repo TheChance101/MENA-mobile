@@ -31,7 +31,7 @@ internal class ManageTrendsViewModel(
 
     init {
         getCurrentUserInfo()
-        loadSelectedTabData(state.value.selectTab)
+        loadSelectedTabData(state.value.selectedTab)
     }
 
     fun getReels() {
@@ -78,7 +78,7 @@ internal class ManageTrendsViewModel(
     }
 
     override fun onClickReel(reelId: String) {
-        val reelSource = when (state.value.selectTab) {
+        val reelSource = when (state.value.selectedTab) {
             SelectTab.MyTrends -> Route.ReelSource.MyTrends
             SelectTab.Favorites -> Route.ReelSource.Favorites
         }
@@ -93,12 +93,12 @@ internal class ManageTrendsViewModel(
         updateState { copy(error = null) }
 
         getCurrentUserInfo()
-        loadSelectedTabData(tab = state.value.selectTab)
+        loadSelectedTabData(tab = state.value.selectedTab)
     }
 
     override fun onSelectTab(tab: SelectTab) {
-        if (state.value.selectTab != tab) {
-            updateState { copy(selectTab = tab) }
+        if (state.value.selectedTab != tab) {
+            updateState { copy(selectedTab = tab) }
             loadSelectedTabData(tab)
         }
     }
