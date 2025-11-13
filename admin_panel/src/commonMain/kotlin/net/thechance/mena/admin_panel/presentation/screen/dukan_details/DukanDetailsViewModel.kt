@@ -136,6 +136,9 @@ class DukanDetailsViewModel(
             updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id ?: "") }
             loadNextProducts()
         }
+        if (currentState.totalShelves.isEmpty()){
+            updateState { it.copy(totalShelves = (pagedShelves.totalPages * PAGE_SIZE).toString()) }
+        }
         updateState {
             it.copy(shelves = it.shelves + pagedShelves.items)
         }
