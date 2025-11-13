@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,10 +22,11 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
-import net.thechance.mena.identity.presentation.components.LoadingProgressBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCard
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCardShimmer
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressShimmerPlaceholders
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.MyAddressesAppBar
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.deleteAddressDialog
 import org.jetbrains.compose.resources.stringResource
@@ -82,7 +84,8 @@ class AddressesScreen(
                         onEditAddressClicked = listener::onEditAddressClicked,
                         onDeleteAddressClicked = listener::onDeleteAddressClicked,
                         onClickAddress = listener::onClickAddress,
-                        animateToCurrentLocation = state.animateToCurrentLocation
+                        animateToCurrentLocation = state.animateToCurrentLocation,
+                        isAddingNewAddress = state.isAddingNewAddress
                     )
                 }
 
@@ -98,11 +101,11 @@ class AddressesScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = state.isLoading,
+                    visible = state.isLoading && state.addresses.isEmpty(),
                     enter = fadeIn(animationSpec = tween(durationMillis = 500)),
                     exit = fadeOut(animationSpec = tween(durationMillis = 500))
                 ) {
-                    LoadingProgressBar()
+                    AddressShimmerPlaceholders()
                 }
             }
         }
@@ -135,15 +138,20 @@ private fun AddressesSection(
     onEditAddressClicked: (AddressUIState) -> Unit,
     onDeleteAddressClicked: (Uuid) -> Unit,
     onClickAddress: (Uuid) -> Unit,
-    animateToCurrentLocation: Boolean
+    animateToCurrentLocation: Boolean,
+    isAddingNewAddress: Boolean = false
 ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._16),
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+        contentPadding = PaddingValues(bottom = Theme.spacing._16)
     ) {
-        items(addresses) {
+        items(
+            items = addresses,
+            key = { it.id.toString() }
+        ) {
             AddressCard(
                 addressType = it.addressType,
                 onEditClick = { onEditAddressClicked(it) },
@@ -154,7 +162,15 @@ private fun AddressesSection(
                 animateToCurrentLocation = animateToCurrentLocation,
                 longitude = it.coordinates.longitude,
                 latitude = it.coordinates.latitude,
+                isDeleting = it.isDeleting,
+                isActivating = it.isActivating || it.isRefreshing
             )
+        }
+        
+        if (isAddingNewAddress) {
+            item {
+                AddressCardShimmer()
+            }
         }
     }
 }

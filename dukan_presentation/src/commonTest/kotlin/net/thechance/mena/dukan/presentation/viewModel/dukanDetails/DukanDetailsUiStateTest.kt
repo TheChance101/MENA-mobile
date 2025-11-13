@@ -85,6 +85,15 @@ class DukanDetailsUiStateTest {
     }
 
     @Test
+    fun `default state SHOULD have false dukan has product in cart`() = runTest {
+        // When
+        val state = DukanDetailsUiState()
+        // Then
+        assertEquals(false, state.hasProductInCart)
+    }
+
+
+    @Test
     fun `Coordinates SHOULD store latitude and longitude correctly`() = runTest {
         // Given
         val coords = DukanDetailsUiState.Coordinates(latitude = 30.0, longitude = 31.0)

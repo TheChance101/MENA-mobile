@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +23,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun CreateDukanContentSelectLocation(
@@ -68,7 +68,7 @@ private fun DukanLocationMapSection(
     )
     Map(
         modifier = Modifier
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .fillMaxWidth()
             .height(244.dp),
         isLocked = state.isMapLocked,

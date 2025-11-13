@@ -81,7 +81,7 @@ fun TransactionHistoryContent(
                 },
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
-                    if (state.history.isNotEmpty()) {
+                    if (state.history.isNotEmpty() || state.filterState.activeFilterCount > 0) {
                         Icon(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(16.dp))

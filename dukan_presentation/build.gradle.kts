@@ -55,6 +55,8 @@ kotlin {
             implementation(projects.identityDomain)
             implementation(projects.walletApi)
 
+            implementation(libs.squircle.shape)
+
             implementation(compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)

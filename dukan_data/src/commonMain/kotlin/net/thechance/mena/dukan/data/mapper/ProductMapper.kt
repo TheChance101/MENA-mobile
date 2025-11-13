@@ -24,7 +24,8 @@ fun UpdateProductParams.toUpdateProductRequest(): UpdateProductRequest {
         description = description?.takeIf { it.isNotBlank() },
         price = price,
         shelfId = shelfId?.takeIf { it.isNotBlank() },
-        imageUrls = imageUrls?.takeIf { it.isNotEmpty() }
+        imageUrls = imageUrls?.takeIf { it.isNotEmpty() },
+        isOutOfStock = isOutOfStock
     )
 }
 
@@ -38,7 +39,8 @@ fun ProductDto.toDomain(): Product = Product(
     createdAt = createdAt,
     quantityInCart = quantityInCart,
     shelfId = shelfId,
-    isFavorite = isFavorite
+    isFavorite = isFavorite,
+    isOutOfStock = isOutOfStock
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -51,5 +53,6 @@ fun ProductCartDto.toDomain(): Product = Product(
     quantityInCart = quantityInCart,
     createdAt = "",
     shelfId = null,
-    isFavorite = false
+    isFavorite = false,
+    isOutOfStock = false
 )

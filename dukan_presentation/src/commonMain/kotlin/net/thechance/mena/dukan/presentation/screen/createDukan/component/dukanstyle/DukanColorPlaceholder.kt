@@ -8,7 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,9 +36,9 @@ fun ColorOptionsPlaceholder(
     )
     Box(
         modifier = modifier.size(48.dp)
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .background(Theme.colorScheme.background.surface)
-            .border(1.dp, backgroundColor, RoundedCornerShape(Theme.radius.full))
+            .border(1.dp, backgroundColor)
             .clickable(
                 onClick = onClick,
                 indication = null,
@@ -48,7 +48,7 @@ fun ColorOptionsPlaceholder(
     ) {
         Box(
             modifier = Modifier.size(colorSize)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(backgroundColor)
         )
     }

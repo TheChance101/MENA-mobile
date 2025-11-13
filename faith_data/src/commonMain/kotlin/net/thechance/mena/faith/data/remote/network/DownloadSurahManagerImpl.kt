@@ -14,11 +14,11 @@ class DownloadSurahManagerImpl : DownloadSurahManager {
     override suspend fun downloadSurahFile(
         url: String,
         surahId: Int,
-        reciterName: String,
+        reciterId: Int,
     ): String {
         return withContext(Dispatchers.IO) {
             val downloadedFileName = url.substringAfterLast("/")
-            val filePath = "$reciterName/$surahId/$downloadedFileName"
+            val filePath = "$reciterId/$surahId/$downloadedFileName"
             val downloadedFilePath = downloadSurahFileToAppStorage(url, filePath)
             downloadedFilePath?.let {
                 val unZippedFilePath = unZipFile(it)

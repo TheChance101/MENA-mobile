@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import net.thechance.mena.wallet.domain.exceptions.BlockedReceiverException
 import net.thechance.mena.wallet.domain.exceptions.NoDataFoundException
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 
@@ -64,6 +65,7 @@ abstract class BaseViewModel<STATE, EFFECT>(initialState: STATE) : ViewModel() {
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
             is NoDataFoundException -> ErrorState.NoDataFound
+            is BlockedReceiverException -> ErrorState.BlockedReceiver
             else -> ErrorState.UnknownError
         }
     }

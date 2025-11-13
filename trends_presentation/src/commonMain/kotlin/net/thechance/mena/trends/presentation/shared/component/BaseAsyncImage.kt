@@ -13,6 +13,7 @@ import coil3.network.NetworkHeaders
 import coil3.network.httpHeaders
 import coil3.request.ImageRequest
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
+import net.thechance.mena.trends.presentation.shared.util.LocalImageLoader
 
 private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
 
@@ -27,6 +28,7 @@ fun BaseAsyncImage(
     onRequestRefresh: () -> Unit
 ){
     val context = LocalPlatformContext.current
+    val coilImageLoader = LocalImageLoader.current
 
     val networkHeaders = NetworkHeaders.Builder()
         .set("X-ACCESS-KEY", trendStorageAccessSecret)
@@ -53,6 +55,7 @@ fun BaseAsyncImage(
                     }
                 }
             },
+            imageLoader = coilImageLoader,
             alignment = alignment,
             contentDescription = contentDescription,
             contentScale = contentScale,

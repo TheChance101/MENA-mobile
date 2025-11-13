@@ -151,7 +151,7 @@ private fun Preview() {
                 override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                 override fun onSearchClick() {}
                 override fun onListenClick() {}
-                override fun onReciterClick() {}
+                override fun onReciterClick(surahId: Int) {}
                 override fun onNextAyahClick() {}
                 override fun onPlayPauseClick() {}
                 override fun onRepeatAyahClick() {}
@@ -164,6 +164,7 @@ private fun Preview() {
                 override fun onShareClick(ayahContent: String) {}
                 override fun highlightAyah(ayahNumber: Int) {}
                 override fun updateContinueTilawah(ayahNumber: Int) {}
+                override fun playSurah(surahId: Int) {}
                 override fun onInitialAyahScrolled() {}
             }
 

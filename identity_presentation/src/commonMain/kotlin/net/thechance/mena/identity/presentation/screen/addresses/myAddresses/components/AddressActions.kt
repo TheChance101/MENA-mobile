@@ -24,6 +24,8 @@ fun AddressActions(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isDeleting: Boolean = false,
+    isActivating: Boolean = false,
 ) {
     Row(modifier = modifier) {
         TextButton(
@@ -31,7 +33,8 @@ fun AddressActions(
             text = stringResource(Res.string.address_edit),
             trailingIcon = painterResource(Res.drawable.ic_edit_map),
             iconSize = Theme.spacing._16,
-            onClick = onEditClick
+            onClick = onEditClick,
+            isEnabled = !isDeleting && !isActivating
         )
         Spacer(
             Modifier
@@ -44,7 +47,8 @@ fun AddressActions(
             trailingIcon = painterResource(Res.drawable.ic_delete_address),
             onClick = onDeleteClick,
             iconSize = Theme.spacing._16,
-            contentColor = Theme.colorScheme.error
+            contentColor = Theme.colorScheme.error,
+            isEnabled = !isDeleting && !isActivating
         )
     }
 }
