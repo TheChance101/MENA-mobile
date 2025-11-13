@@ -15,6 +15,7 @@ import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.domain.usecase.CalculateDistanceUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
@@ -81,9 +82,7 @@ internal class NearbyMosquesViewModel(
                 println(" messi suu : ${mosques.size}")
                 handleSearchSuccess(mosques, uiState.value.query)
             },
-            onError = {
-                println(" messi err : ${it.exception}")
-            },
+            onError = ::handleSearchError,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -214,6 +213,14 @@ internal class NearbyMosquesViewModel(
         )
     }
 
+    private fun handleSearchError(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
+    }
+
     override fun onViewOnMapClick(coordinate: Coordinate) {
         sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
     }
@@ -225,4 +232,5 @@ internal class NearbyMosquesViewModel(
                 secondLocation = Mosque.Coordinates(coordinates.latitude, coordinates.longitude)
             )
         }?.roundTo2Decimals() ?: 0.0
+
 }
