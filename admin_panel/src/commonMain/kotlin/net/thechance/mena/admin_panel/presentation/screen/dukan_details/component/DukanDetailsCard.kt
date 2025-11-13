@@ -33,7 +33,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun DukanDetails(
+internal fun DukanDetailsCard(
     dukanName: String,
     dukanCategories: List<String>,
     dukanLocation: String,
@@ -135,7 +135,5 @@ private fun DukanLocation(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
-
     }
-
 }
