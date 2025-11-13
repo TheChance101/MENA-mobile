@@ -5,8 +5,17 @@ import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.faith.data.remote.model.PageResponse
 import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
+import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.POST
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import net.thechance.mena.faith.data.remote.model.mosque.MosqueResponseDto
 
 interface MosqueApiService {
+
+    @POST("faith/mosques")
+    suspend fun createMosque(
+        @Body body: MultiPartFormDataContent
+    ): Response<MosqueResponseDto>
 
     @GET("faith/mosques/nearby")
     suspend fun getNearbyMosques(

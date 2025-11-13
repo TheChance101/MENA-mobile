@@ -65,11 +65,6 @@ fun VoiceMessageLayout(
         else Theme.colorScheme.brand.brandVariant
 
 
-    val messagePaddingStart = if (message.isMine)
-        Theme.spacing._24
-    else
-        Theme.spacing._8
-
     val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
 
     val maxRadius = Theme.radius.md
@@ -95,7 +90,7 @@ fun VoiceMessageLayout(
 
 
     Column(
-        modifier = modifier.padding(start = messagePaddingStart, end = messagePaddingEnd),
+        modifier = modifier.padding( end = messagePaddingEnd),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
         horizontalAlignment = messageAlignment
     ) {
