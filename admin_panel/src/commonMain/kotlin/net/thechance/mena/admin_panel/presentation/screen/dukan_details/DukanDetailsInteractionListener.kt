@@ -9,4 +9,5 @@ interface DukanDetailsInteractionListener {
     fun onDeactivateDukanDialogDismissed()
     fun onConfirmDukanDeactivationBtnClicked()
     fun onDeactivateReasonChanged(reason: String)
+    fun onRetry()
 }

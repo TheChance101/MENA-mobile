@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
+import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DeactivateDukanDialog
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInCompactMode
@@ -69,7 +70,10 @@ private fun DukanDetailsScreenContent(
                     isDeactivateBtnLoading = state.isDeactivateBtnLoading,
                 )
             }
-        }
+        },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        onRetry = interactionListener::onRetry
     ) {
 
         BoxWithConstraints(

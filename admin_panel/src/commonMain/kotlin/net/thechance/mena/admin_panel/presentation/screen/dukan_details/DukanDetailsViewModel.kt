@@ -90,6 +90,13 @@ class DukanDetailsViewModel(
             }
     }
 
+    override fun onRetry() {
+        updateState { it.copy(errorState = null) }
+        getDukanDetails()
+        initializeShelvesPaginator()
+        loadNextShelves()
+    }
+
     private fun getDukanDetails() {
         tryToExecute(
             callee = { dukanRepository.getDukanDetails(Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9")) },
@@ -119,7 +126,7 @@ class DukanDetailsViewModel(
             onLoadUpdated = ::onShelvesPaginationLoading,
             onRequest = ::getPagedShelves,
             getNextKey = { currentKey, _ -> currentKey + 1 },
-            onError = {},
+            onError = ::onPaginationError,
             onSuccess = { result, _ -> onGetPagedShelvesSuccess(result) },
             endReached = { _, result -> result.items.isEmpty() || result.items.size < PAGE_SIZE }
         )
@@ -163,7 +170,7 @@ class DukanDetailsViewModel(
             onLoadUpdated = ::onProductsPaginationLoading,
             onRequest = ::getPagedProducts,
             getNextKey = { currentKey, _ -> currentKey + 1 },
-            onError = {},
+            onError = ::onPaginationError,
             onSuccess = { result, _ -> onGetPagedProductsSuccess(result) },
             endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
         )
@@ -190,6 +197,18 @@ class DukanDetailsViewModel(
     private fun loadNextProducts() {
         viewModelScope.launch(dispatcher) {
             productsPaginator.loadNextItems()
+        }
+    }
+
+    private suspend fun onPaginationError(error: Throwable?) {
+        error?.let {
+            val errorState = mapError(it)
+            updateState { it.copy(errorState = errorState) }
+            showSnackBar(
+                title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+                message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
+                isSuccess = false
+            )
         }
     }
 
