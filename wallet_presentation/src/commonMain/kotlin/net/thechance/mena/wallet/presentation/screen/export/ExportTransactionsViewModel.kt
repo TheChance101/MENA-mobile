@@ -66,7 +66,8 @@ class ExportTransactionsViewModel(
             oldState.copy(
                 isCustomFilterCardSelected = false,
                 isDownloadButtonEnabled = true,
-                isViewAndShareButtonEnabled = true
+                isViewAndShareButtonEnabled = true,
+                filterState = ExportTransactionsState.FilterState()
             )
         }
     }

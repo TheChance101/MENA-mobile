@@ -221,8 +221,9 @@ class SearchViewModelTest {
     @Test
     fun `onProductClicked should emit NavigateToProductDetails effect`() = runTest(testDispatcher) {
         val productId = Uuid.random()
-        searchViewModel.onProductClicked(productId)
-        val expectedEffect = SearchEffect.NavigateToProductDetails(productId = productId.toString())
+        val dukanId = Uuid.random()
+        searchViewModel.onProductClicked(productId,dukanId)
+        val expectedEffect = SearchEffect.NavigateToProductDetails(productId = productId.toString(),dukanId = dukanId.toString())
         val actualEffect = searchViewModel.effect.first()
         assertEquals(expectedEffect, actualEffect)
 

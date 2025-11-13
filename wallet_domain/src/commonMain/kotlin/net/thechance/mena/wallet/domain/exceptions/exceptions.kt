@@ -7,3 +7,5 @@ class NoInternetException(message: String = "No Internet") : WalletException(mes
 class UnknownNetworkException(message: String = "Unknown") : WalletException(message)
 
 class NoDataFoundException(message: String = "No Data Found") : WalletException(message)
+class BlockedReceiverException(message: String = "Receiver is blocked") : WalletException(message)
+

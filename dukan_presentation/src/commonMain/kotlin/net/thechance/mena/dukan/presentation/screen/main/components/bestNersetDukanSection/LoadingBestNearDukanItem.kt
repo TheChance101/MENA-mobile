@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +27,7 @@ fun LoadingBestNearDukanItem(
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceHigh)
         )
 
@@ -36,7 +36,7 @@ fun LoadingBestNearDukanItem(
                 .padding(top = Theme.spacing._4)
                 .width(56.dp)
                 .size(height = Theme.spacing._16, width = 56.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceHigh)
         )
     }

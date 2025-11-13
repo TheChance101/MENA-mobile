@@ -9,6 +9,7 @@ import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderIm
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
+import net.thechance.mena.core_chat.data.source.remote.network.createMediaHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import org.koin.core.qualifier.named
@@ -28,6 +29,11 @@ internal val networkModule = module {
             get(),
             httpClientEngineFactory,
             get(named(CHAT_JSON))
+        )
+    }
+    single(named(MEDIA_CLIENT)) {
+        createMediaHttpClient(
+            httpClientEngineFactory
         )
     }
     single<WebSocketManager> {
@@ -54,6 +60,7 @@ internal val networkModule = module {
 
 private const val BASE_URL = "baseUrl"
 const val CHAT_CLIENT = "chatClient"
+const val MEDIA_CLIENT = "mediaClient"
 const val CHAT_JSON = "chatJson"
 const val IMAGE_MESSAGE_SENDER = "image_message_sender"
 const val TEXT_MESSAGE_SENDER = "text_message_sender"

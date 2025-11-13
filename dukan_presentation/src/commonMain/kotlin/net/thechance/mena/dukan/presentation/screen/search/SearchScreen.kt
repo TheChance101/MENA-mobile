@@ -48,11 +48,10 @@ fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
             }
 
             is SearchEffect.NavigateToProductDetails -> {
-                // Todo (ProductDetails (dukanId) need to refactor after productDetailsResponse updated )
                 navController.navigate(
                     route = DukanRoute.ProductDetails(
                         productId = effect.productId,
-                        dukanId = ""
+                        dukanId = effect.dukanId
                     )
                 )
             }
@@ -71,7 +70,7 @@ private fun SearchContent(
     listener: SearchInteractionListener
 ) {
     Scaffold(
-        modifier = Modifier.imePadding(),
+        modifier = Modifier,
         topBar = {
             SearchHeader(
                 query = state.searchQuery,

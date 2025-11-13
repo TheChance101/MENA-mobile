@@ -64,7 +64,7 @@ private fun TimeAndStatus(chat: ChatUiState) {
         chat.lastMessage ?: return
 
         Text(
-            text = chat.lastMessage.time.asString(),
+            text = chat.lastMessage.uiTime.asString(),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )

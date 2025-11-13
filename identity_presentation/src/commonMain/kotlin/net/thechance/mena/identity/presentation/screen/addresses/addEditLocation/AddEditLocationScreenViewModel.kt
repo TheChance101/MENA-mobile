@@ -103,7 +103,7 @@ class AddEditLocationScreenViewModel(
     override fun onClickMap() {
         sendNewEffect(
             createNavigateToMapEffect(
-                addressModel = null,
+                addressModel = createAddressModelFromCurrentState(state.value.addressUIState),
                 onSuccess = ::onAddressFromPickLocation
             )
         )
