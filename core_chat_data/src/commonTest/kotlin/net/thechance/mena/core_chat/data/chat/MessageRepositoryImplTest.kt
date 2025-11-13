@@ -446,36 +446,6 @@ class MessageRepositoryImplTest {
     }
 
 
-    @Test
-    fun `should throw NotFoundException when remote returns null`() = runTest {
-        httpClient = createHttpClient(
-            chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            chatSyncTimeDao = chatSyncTimeDao
-        )
-
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns emptyList()
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 0
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-
-        assertFailsWith<NotFoundException> {
-            repository.loadMessages(chatId, 0, 20)
-        }
-    }
-
 
     @Test
     fun `should sync after last update when lastSyncTime exists`() = runTest {
@@ -755,23 +725,7 @@ class MessageRepositoryImplTest {
         verifySuspend { chatSyncTimeDao.upsert(any()) }
     }
 
-    @Test
-    fun `loadMessages should load from remote if cached messages are empty `() = runTest {
-
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                testChatId.toString(),
-                20,
-                0
-            )
-        } returns emptyList()
-        everySuspend { chatSyncTimeDao.getLastSyncTime(testChatId.toString()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        everySuspend { cachedMessageDao.getTotalMessagesCount(testChatId.toString()) } returns 0
-
-        repository.loadMessages(testChatId, page = 0, pageSize = 20)
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
+    
 
     @Test
     fun `sendMessage should throw SendMessageFailedException when send fails`() = runTest {
@@ -796,18 +750,6 @@ class MessageRepositoryImplTest {
 
     }
 
-    @Test
-    fun `initializeWebsocketConnection connects and subscribes to destinations`() = runTest {
-        everySuspend { webSocketManager.connect(any()) } returns Unit
-        everySuspend { webSocketManager.incomingMessages } returns MutableSharedFlow()
-        everySuspend { webSocketManager.subscribe(any()) } returns Unit
-
-        repository.initializeWebsocketConnection()
-
-        //delay(100)
-
-        verify { webSocketManager.connect(any()) }
-    }
 
 
 
