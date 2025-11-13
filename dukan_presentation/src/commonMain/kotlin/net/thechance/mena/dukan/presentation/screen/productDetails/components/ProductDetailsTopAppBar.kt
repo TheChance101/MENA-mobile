@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -60,6 +61,7 @@ fun ProductDetailsAppBar(
                     }
                 ),
                 contentDescription = stringResource(Res.string.favorite_icon),
+                tint = Color(state.dukanColor),
                 onClick = listener::onToggleProductToFavoriteClicked
             )
             AppBarOptionContainer(
@@ -80,6 +82,7 @@ private fun AppBarIcon(
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
+    tint: Color = Theme.colorScheme.primary.primary,
     modifier: Modifier = Modifier
 ) {
     AppBarOptionContainer(
@@ -87,7 +90,7 @@ private fun AppBarIcon(
     ) {
         Icon(
             painter = painter,
-            tint = Theme.colorScheme.primary.primary,
+            tint = tint,
             contentDescription = contentDescription,
             modifier = modifier.size(40.dp)
         )
