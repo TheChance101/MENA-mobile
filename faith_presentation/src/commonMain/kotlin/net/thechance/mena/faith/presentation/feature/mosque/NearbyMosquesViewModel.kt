@@ -41,7 +41,10 @@ internal class NearbyMosquesViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen) }
+            onError = {
+                sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
+                handleErrorBySnackBar(it)
+            }
         )
     }
 
@@ -82,7 +85,7 @@ internal class NearbyMosquesViewModel(
                 println(" messi suu : ${mosques.size}")
                 handleSearchSuccess(mosques, uiState.value.query)
             },
-            onError = ::handleSearchError,
+            onError = ::handleErrorBySnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -141,7 +144,10 @@ internal class NearbyMosquesViewModel(
             },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = ::handleNearbyMosquesSuccess,
-            onError = { updateState { it.copy(isLoading = false) } },
+            onError = { error ->
+                updateState { it.copy(isLoading = false) }
+                handleErrorBySnackBar(error)
+            },
             dispatcher = dispatcher
         )
     }
@@ -213,7 +219,7 @@ internal class NearbyMosquesViewModel(
         )
     }
 
-    private fun handleSearchError(error: ErrorState) {
+    private fun handleErrorBySnackBar(error: ErrorState) {
         snackbarHandler.showSnackBar(
             message = error.message,
             status = SnackBarState.Status.Error,
@@ -232,5 +238,4 @@ internal class NearbyMosquesViewModel(
                 secondLocation = Mosque.Coordinates(coordinates.latitude, coordinates.longitude)
             )
         }?.roundTo2Decimals() ?: 0.0
-
 }
