@@ -2,6 +2,7 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,9 @@ internal class ManageTrendsViewModel(
 
     init {
         getCurrentUserInfo()
-        loadSelectedTabData(state.value.selectedTab)
+        println("ManageTrendsViewModel init")
+        loadSelectedTabData(tab = SelectTab.MyTrends)
+        println("selected tab: ${state.value.selectedTab}")
     }
 
     fun getReels() {
@@ -71,9 +74,10 @@ internal class ManageTrendsViewModel(
     }
 
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = reelsFlow.map { pagingData: PagingData<Reel> ->
+        val uiReelsFlow = reelsFlow
+            .map { pagingData: PagingData<Reel> ->
             pagingData.map { reel -> reel.toUiState() }
-        }
+        }.cachedIn(viewModelScope)
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
@@ -137,7 +141,7 @@ internal class ManageTrendsViewModel(
         }
     }
 
-    private fun getFavoriteReels() {
+    fun getFavoriteReels() {
         tryToExecute(
             block = {
                 createPager(

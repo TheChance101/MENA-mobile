@@ -90,8 +90,8 @@ internal fun ManageTrendsScreen(
         }
     }
 
-    LaunchedEffect(state.selectedTab) {
-        viewModel.loadSelectedTabData(state.selectedTab)
+    LaunchedEffect(viewModel) {
+        viewModel.loadSelectedTabData(SelectTab.MyTrends)
     }
 
     ManageTrendsScreenContent(
@@ -119,7 +119,6 @@ private fun ManageTrendsScreenContent(
                     SelectTab.Favorites -> state.favoriteReels
                 }
             }.collectAsLazyPagingItems()
-
 
             TrendsAnimatedVisibility(
                 visible = trends.loadState.refresh is LoadState.Loading,
