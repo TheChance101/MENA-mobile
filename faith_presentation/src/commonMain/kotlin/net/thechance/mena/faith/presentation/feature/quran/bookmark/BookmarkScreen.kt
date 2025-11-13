@@ -26,6 +26,8 @@ import mena.faith_presentation.generated.resources.empty_state_bookmark_descript
 import mena.faith_presentation.generated.resources.empty_state_bookmark_image
 import mena.faith_presentation.generated.resources.empty_state_bookmark_title
 import mena.faith_presentation.generated.resources.ic_not_saved_book_mark
+import mena.faith_presentation.generated.resources.remove_aya
+import mena.faith_presentation.generated.resources.remove_aya_message
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -36,6 +38,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.BookmarkAppBar
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.BookmarkItems
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.component.EmptyBookmarkState
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DeleteConfirmationDialog
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.extentions.isEmpty
@@ -81,7 +84,19 @@ private fun Content(
                 isVisible = snackBarState.isVisible,
                 status = snackBarState.status,
             )
-        },
+        }, overlays = {
+            dialog(
+                isVisible = uiState.isDeleteConfirmationDialogVisible,
+            ) {
+                DeleteConfirmationDialog(
+                    showDialog = uiState.isDeleteConfirmationDialogVisible,
+                    onDeleteClick = listener::onConfirmDeleteBookmarkClick,
+                    onDismiss = listener::onDismissDeleteConfirmationDialog,
+                    title = stringResource(Res.string.remove_aya),
+                    message = stringResource(Res.string.remove_aya_message)
+                )
+            }
+        }
     ) {
         Column(
             modifier = Modifier
@@ -186,6 +201,8 @@ private fun BookmarkScreenPreview() {
                 override fun onBackClick() {}
                 override fun onDeleteBookmarkClick(bookmarkId: Int) {}
                 override fun onStartTilawahClick() {}
+                override fun onConfirmDeleteBookmarkClick() {}
+                override fun onDismissDeleteConfirmationDialog() {}
             },
             snackBarState = SnackBarState()
         )

@@ -34,12 +34,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class EditUserProfileViewModel(
+    val permissionsController: PermissionsController,
     private val ageValidator: AgeValidator,
     private val userRepository: UserRepository,
-    private val permissionsController: PermissionsController,
     private val imagesRepository: ImagesRepository,
     private val imageDecoder: ImageDecoder,
-    val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
     @OptIn(ExperimentalUuidApi::class)

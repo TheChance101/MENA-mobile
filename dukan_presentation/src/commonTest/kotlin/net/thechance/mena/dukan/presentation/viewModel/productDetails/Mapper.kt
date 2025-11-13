@@ -50,4 +50,11 @@ class ProductDetailsMapperTest {
         assertEquals(4, params.quantity)
         assertEquals("dukanId_1", params.dukanId)
     }
+
+    @Test
+    fun `toColor should map String color to Long`(){
+        val color = "#432CCD"
+        val colorLong = parseHexColor(color = color)
+        assertEquals(0xFF432CCD, colorLong)
+    }
 }
