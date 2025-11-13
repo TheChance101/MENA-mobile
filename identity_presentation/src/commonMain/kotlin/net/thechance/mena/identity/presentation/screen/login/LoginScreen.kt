@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -56,9 +57,13 @@ class LoginScreen : BaseScreen<
         listener: LoginScreenInteractionListener,
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
         LaunchedEffect(state.showCountryBottomSheet) {
-            if (state.showCountryBottomSheet)
+            if (state.showCountryBottomSheet) {
+                focusManager.clearFocus()
                 keyboardController?.hide()
+            }
+
         }
 
         Scaffold(

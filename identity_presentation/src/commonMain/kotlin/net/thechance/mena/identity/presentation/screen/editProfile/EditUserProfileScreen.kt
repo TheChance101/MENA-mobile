@@ -1,8 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -111,20 +108,13 @@ class EditUserProfileScreen : BaseScreen<
 
         Scaffold(
             snakeBar = {
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInHorizontally(initialOffsetX = { it }),
-                    exit = slideOutHorizontally(targetOffsetX = { it }),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SnackBar(
-                        title = stringResource(Res.string.error),
-                        message = state.errorMessage?.let { stringResource(it) } ?: "",
-                        leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-                            .padding(horizontal = Theme.spacing._16)
-                    )
-                }
+                SnackBar(
+                    isVisible = state.errorMessage != null,
+                    title = stringResource(Res.string.error),
+                    message = state.errorMessage?.let { stringResource(it) } ?: "",
+                    leadingIcon = painterResource(Res.drawable.ic_close_circle),
+                    onDismiss = listener::clearErrorMessage,
+                )
             },
             overlays = {
                 dialog(state.showEditImageDialog) {
