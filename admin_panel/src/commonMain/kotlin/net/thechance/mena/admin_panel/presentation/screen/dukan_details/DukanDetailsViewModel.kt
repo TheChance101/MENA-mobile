@@ -9,6 +9,7 @@ import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.model.PagedResult
 import net.thechance.mena.admin_panel.domain.repository.dukan.DukanRepository
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
@@ -34,13 +35,14 @@ class DukanDetailsViewModel(
     BaseViewModel<DukanDetailsScreenState, DukanDetailEffect>(DukanDetailsScreenState()),
     DukanDetailsInteractionListener {
 
-    private lateinit var shelvesPaginator: Paginator<Int, List<Shelf>>
+    private lateinit var shelvesPaginator: Paginator<Int, PagedResult<Shelf>>
     private lateinit var productsPaginator: Paginator<Int, List<Product>>
 
     init {
         getDukanDetails()
         initializeShelvesPaginator()
         loadNextShelves()
+        initializeProductsPaginator()
     }
 
     override fun onBackBtnClicked() {
@@ -58,7 +60,6 @@ class DukanDetailsViewModel(
     override fun onShelfSelected(shelfId: String) {
         if (currentState.selectedShelfId != shelfId) {
             updateState { it.copy(selectedShelfId = shelfId) }
-            initializeProductsPaginator()
             loadNextProducts()
         }
     }
@@ -118,21 +119,25 @@ class DukanDetailsViewModel(
             getNextKey = { currentKey, _ -> currentKey + 1 },
             onError = {},
             onSuccess = { result, _ -> onGetPagedShelvesSuccess(result) },
-            endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
+            endReached = { _, result -> result.items.isEmpty() || result.items.size < PAGE_SIZE }
         )
     }
 
-    private suspend fun getPagedShelves(page: Int): List<Shelf> {
+    private suspend fun getPagedShelves(page: Int): PagedResult<Shelf> {
         return dukanRepository.getDukanShelves(
             dukanId = Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9"),
             page = page,
             size = PAGE_SIZE
-        ).items
+        )
     }
 
-    private fun onGetPagedShelvesSuccess(shelves: List<Shelf>) {
+    private fun onGetPagedShelvesSuccess(pagedShelves: PagedResult<Shelf>) {
+        if (currentState.selectedShelfId.isEmpty()) {
+            updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id ?: "") }
+            loadNextProducts()
+        }
         updateState {
-            it.copy(shelves = it.shelves + shelves)
+            it.copy(shelves = it.shelves + pagedShelves.items)
         }
     }
 
