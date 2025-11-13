@@ -59,4 +59,5 @@
     <string name="error_failed_to_process_audio">Failed to process audio file. Please try again.</string>
     <string name="send_to">Send to</string>
     <string name="search_by_name">Search by name</string>
+    <string name="cannot_get_chat_for_that_contact">Cannot get chat for that contact</string>
 </resources>
