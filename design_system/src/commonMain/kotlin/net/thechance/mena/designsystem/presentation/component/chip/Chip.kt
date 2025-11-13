@@ -90,7 +90,8 @@ fun Chip(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
+
 @Composable
 private fun ChipPreview() {
     MenaTheme {
