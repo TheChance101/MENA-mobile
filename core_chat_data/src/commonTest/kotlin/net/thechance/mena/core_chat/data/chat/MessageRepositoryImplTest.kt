@@ -9,17 +9,18 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
 import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verify
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -36,19 +37,16 @@ import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.messagesender.AudioMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
+import net.thechance.mena.core_chat.data.messagesender.MessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.mockErrorPagedResponse
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
-import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
-import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
-import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
-import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
@@ -56,6 +54,7 @@ import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.ImageData
+import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
@@ -638,10 +637,12 @@ class MessageRepositoryImplTest {
     @Test
     fun `should send mark as read frame in markMessagesOfChatAsRead`() = runTest {
         everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
-        everySuspend { cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
-            chatId = chatId.toString(),
-            readCount = 0
-        ) }returns Unit
+        everySuspend {
+            cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
+                chatId = chatId.toString(),
+                readCount = 0
+            )
+        } returns Unit
         repository.markMessagesOfChatAsRead(chatId)
 
         verifySuspend {
@@ -712,9 +713,8 @@ class MessageRepositoryImplTest {
             repository.observeMessagesForChatOrAll(chatId).collect()
         }
 
-        delay(50) // Let the observer start
+        delay(50)
 
-        // Emit unknown destination message
         incomingFlow.emit(
             createMockIncomingMessage(
                 "/private/unknown",
@@ -722,10 +722,95 @@ class MessageRepositoryImplTest {
             )
         )
 
-        delay(100) // Should not throw exception
+        delay(100)
 
         job.cancel()
     }
+
+    @Test
+    fun `loadMessages should update last time synced every time it was called`() = runTest {
+        val message = Message(
+            id = testMessageId,
+            chatId = testChatId,
+            content = MessageContent.Text("Hello"),
+            isMine = false,
+            senderId = userId,
+            sendAt = LocalDateTime.now(),
+            status = MessageStatus.SENT,
+            reactions = emptyList(),
+        )
+
+        everySuspend {
+            cachedMessageDao.getMessagesByChatIdWithOffset(
+                testChatId.toString(),
+                20,
+                0
+            )
+        } returns listOf(message.toCachedMessageLocalDto())
+        everySuspend { chatSyncTimeDao.getLastSyncTime(testChatId.toString()) } returns null
+        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
+        everySuspend { cachedMessageDao.getTotalMessagesCount(testChatId.toString()) } returns 0
+
+        val result = repository.loadMessages(testChatId, page = 0, pageSize = 20)
+        verifySuspend { chatSyncTimeDao.upsert(any()) }
+    }
+
+    @Test
+    fun `loadMessages should load from remote if cached messages are empty `() = runTest {
+
+        everySuspend {
+            cachedMessageDao.getMessagesByChatIdWithOffset(
+                testChatId.toString(),
+                20,
+                0
+            )
+        } returns emptyList()
+        everySuspend { chatSyncTimeDao.getLastSyncTime(testChatId.toString()) } returns null
+        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
+        everySuspend { cachedMessageDao.getTotalMessagesCount(testChatId.toString()) } returns 0
+
+        repository.loadMessages(testChatId, page = 0, pageSize = 20)
+        verifySuspend { chatSyncTimeDao.upsert(any()) }
+    }
+
+    @Test
+    fun `sendMessage should throw SendMessageFailedException when send fails`() = runTest {
+
+        val mockSender: MessageSender = mock()
+        everySuspend { webSocketManager.isConnected() } returns true
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { mockSender.send(any()) } throws Exception("Send failed")
+        everySuspend {
+            pendingMessageDao.updateMessageStatus(
+                testMessageId.toString(),
+                MessageStatus.FAILED
+            )
+        } returns Unit
+        everySuspend { webSocketManager.sendTextFrame(any(), any()) } throws Exception("")
+
+
+        println(testMessageId.toString())
+        assertFailsWith<SendMessageFailedException> {
+            repository.sendMessage(testMessage)
+        }
+
+    }
+
+    @Test
+    fun `initializeWebsocketConnection connects and subscribes to destinations`() = runTest {
+        everySuspend { webSocketManager.connect(any()) } returns Unit
+        everySuspend { webSocketManager.incomingMessages } returns MutableSharedFlow()
+        everySuspend { webSocketManager.subscribe(any()) } returns Unit
+
+        repository.initializeWebsocketConnection()
+
+        //delay(100)
+
+        verify { webSocketManager.connect(any()) }
+    }
+
+
+
 
 
 
@@ -738,6 +823,8 @@ class MessageRepositoryImplTest {
 
 
     private companion object {
+        private val testChatId = Uuid.random()
+        private val testMessageId = Uuid.random()
         const val MARK_AS_READ_DESTINATION = "/app/chat.markAsRead"
         const val WEB_SOCKETS_USER_DESTINATION_PREFIX = "/user"
         const val PRIVATE_MESSAGES = "/private/messages"
@@ -745,5 +832,17 @@ class MessageRepositoryImplTest {
         const val REMOVE_REACTION_DESTINATION = "/app/chat.deleteMessageReaction"
         private val chatId = Uuid.random()
         private val userId = Uuid.random()
+
+
+        val testMessage = Message(
+            id = testMessageId,
+            chatId = testChatId,
+            content = MessageContent.Text("Hello world"),
+            isMine = false,
+            senderId = userId,
+            sendAt = LocalDateTime.now(),
+            status = MessageStatus.SENT,
+            reactions = emptyList(),
+        )
     }
 }
