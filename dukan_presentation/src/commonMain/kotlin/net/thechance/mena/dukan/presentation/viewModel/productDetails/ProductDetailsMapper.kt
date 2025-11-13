@@ -23,5 +23,4 @@ fun ProductDetailsUiState.ProductInfo.toDomainParams(dukanId: String): UpdatePro
         dukanId = dukanId
     )
 }
-
-fun String.toColor(): Long = removePrefix("#").toLong(16) or 0xFF000000
+fun toColor(color: String): Long = color.removePrefix("#").toLong(16) or 0xFF000000

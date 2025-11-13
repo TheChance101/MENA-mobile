@@ -47,19 +47,19 @@ class ProductDetailsViewModel(
         loadDukanInfo()
     }
 
-    private fun loadDukanInfo(){
+    private fun loadDukanInfo() {
         tryToExecute(
-            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId)},
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
             onSuccess = ::onLoadDukanSuccess,
             onError = ::onLoadDukanError
         )
     }
 
-    private fun onLoadDukanSuccess(dukan: Dukan){
-        updateState { copy(dukanColor = dukan.color.hexCode.toColor()) }
+    private fun onLoadDukanSuccess(dukan: Dukan) {
+        updateState { copy(dukanColor = toColor(color = dukan.color.hexCode)) }
     }
 
-    private fun onLoadDukanError(throwable: Throwable){
+    private fun onLoadDukanError(throwable: Throwable) {
         updateState { copy(dukanColor = 0xFF000000) }
     }
 
