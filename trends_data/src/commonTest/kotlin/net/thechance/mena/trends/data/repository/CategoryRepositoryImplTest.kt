@@ -6,8 +6,9 @@ import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.toByteArray
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.trends.data.dto.UpdateUserCategoriesRequest
-import net.thechance.mena.trends.data.mapper.toEntityList
+import net.thechance.mena.trends.data.remote.dto.UpdateUserCategoriesRequest
+import net.thechance.mena.trends.data.remote.mapper.toEntityList
+import net.thechance.mena.trends.data.remote.repository.CategoryRepositoryImpl
 import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.getAllCategoriesResponse
 import net.thechance.mena.trends.data.repository.util.jsonSerialization

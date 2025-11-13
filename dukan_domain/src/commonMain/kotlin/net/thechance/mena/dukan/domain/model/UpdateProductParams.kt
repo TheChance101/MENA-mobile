@@ -6,6 +6,7 @@ data class UpdateProductParams(
     val price: Double?,
     val shelfId: String?,
     val imageUrls: List<String>?,
+    val isOutOfStock: Boolean = false,
 )
 
 

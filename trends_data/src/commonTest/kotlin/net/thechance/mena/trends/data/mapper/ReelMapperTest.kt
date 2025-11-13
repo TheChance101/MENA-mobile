@@ -4,8 +4,9 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.ReelDto
+import net.thechance.mena.trends.data.remote.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.dto.ReelDto
+import net.thechance.mena.trends.data.remote.mapper.toEntity
 import kotlin.test.Test
 
 internal class ReelMapperTest {
