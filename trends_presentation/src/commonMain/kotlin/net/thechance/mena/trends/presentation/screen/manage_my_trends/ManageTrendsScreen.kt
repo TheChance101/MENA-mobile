@@ -38,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
@@ -91,11 +90,9 @@ internal fun ManageTrendsScreen(
         }
     }
 
-
-    LaunchedEffect(state.selectTab) {
-        viewModel.loadSelectedTabData(state.selectTab)
+    LaunchedEffect(state.selectedTab) {
+        viewModel.loadSelectedTabData(state.selectedTab)
     }
-
 
     ManageTrendsScreenContent(
         state = state,
@@ -116,10 +113,13 @@ private fun ManageTrendsScreenContent(
             )
         },
         content = {
-            val trends = when (state.selectTab) {
-                SelectTab.MyTrends -> state.reels.collectAsLazyPagingItems()
-                SelectTab.Favorites -> state.favoriteReels.collectAsLazyPagingItems()
-            }
+            val trends = remember(state.selectedTab) {
+                when (state.selectedTab) {
+                    SelectTab.MyTrends -> state.reels
+                    SelectTab.Favorites -> state.favoriteReels
+                }
+            }.collectAsLazyPagingItems()
+
 
             TrendsAnimatedVisibility(
                 visible = trends.loadState.refresh is LoadState.Loading,
@@ -146,13 +146,14 @@ private fun ManageTrendsScreenBody(
     trends: LazyPagingItems<ReelUiState>
 ) {
     val cardWidth = 106.dp
-    val trendsGridState = rememberLazyGridState()
+
+    val gridState = rememberLazyGridState()
     val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
             trends.loadState.refresh is LoadState.NotLoading
 
 
     LazyVerticalGrid(
-        state = trendsGridState,
+        state = gridState,
         columns = GridCells.Adaptive(minSize = cardWidth),
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
@@ -197,14 +198,14 @@ private fun ManageTrendsScreenBody(
             ) {
                 SegmentButton(
                     title = stringResource(Res.string.my_trends),
-                    isSelected = state.selectTab == SelectTab.MyTrends,
+                    isSelected = state.selectedTab == SelectTab.MyTrends,
                     onSelectChange = { listener.onSelectTab(SelectTab.MyTrends) },
                     modifier = Modifier.weight(1f)
                 )
 
                 SegmentButton(
                     title = stringResource(Res.string.favorite),
-                    isSelected = state.selectTab == SelectTab.Favorites,
+                    isSelected = state.selectedTab == SelectTab.Favorites,
                     onSelectChange = { listener.onSelectTab(SelectTab.Favorites) },
                     modifier = Modifier.weight(1f)
                 )
@@ -212,7 +213,10 @@ private fun ManageTrendsScreenBody(
         }
 
         if (trends.itemSnapshotList.isNotEmpty()) {
-            items(key = trends.itemKey(), count = trends.itemCount) { index ->
+            items(
+                count = trends.itemCount,
+                key = { index -> trends.peek(index)?.id ?: index }
+            ) { index ->
                 trends[index]?.let { trend ->
                     TrendItem(
                         item = trend,
@@ -223,7 +227,7 @@ private fun ManageTrendsScreenBody(
             }
         } else if (shouldShowEmptyState) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                EmptyStateForTab(tab = state.selectTab)
+                EmptyStateForTab(tab = state.selectedTab)
             }
         }
     }
@@ -282,7 +286,6 @@ private fun TrendItem(
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f
-    val thumbnailUrl = remember(item.id) { item.thumbnailUrl }
 
     Box(
         modifier = modifier
@@ -293,9 +296,9 @@ private fun TrendItem(
         contentAlignment = Alignment.Center
 
     ) {
-        TrendsAnimatedVisibility(visible = thumbnailUrl.isNotBlank()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isNotBlank()) {
             BaseAsyncImage(
-                url = thumbnailUrl,
+                url = item.thumbnailUrl,
                 contentDescription = stringResource(Res.string.trend_image_desc),
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
@@ -304,7 +307,7 @@ private fun TrendItem(
             )
         }
 
-        TrendsAnimatedVisibility(visible = thumbnailUrl.isBlank()) {
+        TrendsAnimatedVisibility(visible = item.thumbnailUrl.isBlank()) {
             Icon(
                 painter = painterResource(Res.drawable.ic_paly_now),
                 contentDescription = stringResource(Res.string.play_now),
