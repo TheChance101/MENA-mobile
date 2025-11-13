@@ -23,25 +23,24 @@ import kotlin.uuid.Uuid
 
 
 fun MessageDto.toDomain(): Message {
-    val content = when (content) {
-        is MessageContentDto.Text -> MessageContent.Text(content.text)
-        is MessageContentDto.Image -> MessageContent.Image(ImageData.ImageUrl(content.url))
-        is MessageContentDto.Audio -> MessageContent.Audio(
-            data = AudioData.AudioUrl(content.url),
-            audioDurationMs = content.duration
-        )
-    }
-
     return Message(
         id = (id).toUuid(),
         senderId = (senderId).toUuid(),
         chatId = (chatId).toUuid(),
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
-        content = content,
+        content = content.toDomain(),
         reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
     )
+}
+
+fun MessageContentDto.toDomain(): MessageContent {
+    return when(this) {
+        is MessageContentDto.Text -> MessageContent.Text(text)
+        is MessageContentDto.Image -> MessageContent.Image(ImageData.ImageUrl(url))
+        is MessageContentDto.Audio -> MessageContent.Audio(AudioData.AudioUrl(url), duration)
+    }
 }
 
 fun MessageReactionDto.toDomain(): MessageReaction {
