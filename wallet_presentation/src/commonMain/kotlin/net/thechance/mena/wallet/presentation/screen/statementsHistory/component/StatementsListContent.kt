@@ -16,7 +16,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -50,7 +54,7 @@ fun StatementsListContent(
         buffer = 2,
         loadNextItems = listener::onNextPageRequested
     )
-
+    var previousEditMode by rememberSaveable{ mutableStateOf(false) }
     val density = LocalDensity.current
     val maxRevealDistance = with(density) { 60.dp.toPx() }
     val historyIconRevealDistance = with(density) { 20.dp.toPx() }
@@ -61,30 +65,38 @@ fun StatementsListContent(
     val deleteButtonOffsetX = remember { Animatable(deleteButtonStartOffset) }
 
     LaunchedEffect(state.isEditMode) {
-        val animationSpec: AnimationSpec<Float> = tween(
-            durationMillis = 400,
-            easing = LinearEasing
-        )
-
-        launch {
-            cardOffsetX.animateTo(
-                targetValue = if (state.isEditMode) -maxRevealDistance else 0f,
-                animationSpec = animationSpec
+        if (previousEditMode != state.isEditMode) {
+            previousEditMode=state.isEditMode
+            val animationSpec: AnimationSpec<Float> = tween(
+                durationMillis = 400,
+                easing = LinearEasing
             )
+
+            launch {
+                cardOffsetX.animateTo(
+                    targetValue = if (state.isEditMode) -maxRevealDistance else 0f,
+                    animationSpec = animationSpec
+                )
+            }
+
+            launch {
+                historyIconOffsetX.animateTo(
+                    targetValue = if (state.isEditMode) -historyIconRevealDistance else 0f,
+                    animationSpec = animationSpec
+                )
+            }
+
+            launch {
+                deleteButtonOffsetX.animateTo(
+                    targetValue = if (state.isEditMode) 0f else deleteButtonStartOffset,
+                    animationSpec = animationSpec
+                )
+            }
         }
-
-        launch {
-            historyIconOffsetX.animateTo(
-                targetValue = if (state.isEditMode) -historyIconRevealDistance else 0f,
-                animationSpec = animationSpec
-            )
-        }
-
-        launch {
-            deleteButtonOffsetX.animateTo(
-                targetValue = if (state.isEditMode) 0f else deleteButtonStartOffset,
-                animationSpec = animationSpec
-            )
+        else{
+            cardOffsetX.snapTo(if (state.isEditMode) -maxRevealDistance else 0f)
+            historyIconOffsetX.snapTo(if (state.isEditMode) -historyIconRevealDistance else 0f)
+            deleteButtonOffsetX.snapTo(if (state.isEditMode) 0f else deleteButtonStartOffset)
         }
     }
 

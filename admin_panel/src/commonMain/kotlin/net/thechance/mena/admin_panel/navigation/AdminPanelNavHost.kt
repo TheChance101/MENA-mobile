@@ -11,6 +11,7 @@ import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementsScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreen
 import net.thechance.mena.admin_panel.presentation.screen.login.LoginScreen
+import net.thechance.mena.admin_panel.presentation.screen.SplashScreen.SplashScreen
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreen
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
@@ -19,14 +20,16 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
 
 @Composable
 fun AdminPanelNavHost(
-    isUserLoggedIn: Boolean,
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (isUserLoggedIn) UsersManagement else Login
+        startDestination = Splash
     ) {
+        composable<Splash> {
+            SplashScreen()
+        }
         composable<Login> {
             LoginScreen()
         }

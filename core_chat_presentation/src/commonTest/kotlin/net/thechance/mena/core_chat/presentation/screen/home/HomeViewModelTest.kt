@@ -13,6 +13,7 @@ import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -21,6 +22,7 @@ import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -65,7 +67,7 @@ class HomeViewModelTest {
     @Test
     fun `init should load balance amount when viewModel is created`() = runTest {
         val expectedBalance = 100.0
-        everySuspend { balanceRepository.getBalance() } returns expectedBalance
+        every { balanceRepository.observeBalance() } returns flowOf(expectedBalance)
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
 
         val viewModel = createViewModel()
@@ -123,7 +125,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.balanceAmount).isEqualTo("--")
+            assertThat(state.balanceAmount).isEqualTo("")
         }
     }
 

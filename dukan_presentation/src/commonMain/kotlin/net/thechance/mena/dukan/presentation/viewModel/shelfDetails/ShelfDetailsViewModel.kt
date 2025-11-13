@@ -114,24 +114,9 @@ class ShelfDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
 
         tryToExecute(
-            block = {
-                addToCartBlock(
-                    domainRequest = domainRequest,
-                    productQuantity = productQuantity
-                )
-            },
+            block = { dukanCartRepository.addProductQuantity(domainRequest) },
             onError = ::onErrorUpdateProductQuantity
         )
-    }
-
-    private suspend fun addToCartBlock(
-        domainRequest: UpdateProductCartQuantityParams,
-        productQuantity: Int
-    ) {
-        updateState { copy(hasProductInCart = true) }
-
-        if (productQuantity == 0) dukanCartRepository.addProductQuantity(domainRequest)
-        else dukanCartRepository.updateProductQuantity(domainRequest)
     }
 
     override fun onPlusClicked(

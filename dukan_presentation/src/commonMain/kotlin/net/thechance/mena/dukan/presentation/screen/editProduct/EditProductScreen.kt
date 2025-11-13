@@ -4,15 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
@@ -32,6 +28,7 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Prod
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
 import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
+import net.thechance.mena.dukan.presentation.screen.editProduct.component.StockStatusSection
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductInteractionListener
@@ -102,7 +99,6 @@ private fun EditProductContent(
                     .background(color = Theme.colorScheme.background.surface)
                     .padding(bottom = Theme.spacing._16)
                     .fillMaxWidth()
-                    .height(48.dp)
                     .padding(horizontal = Theme.spacing._16)
             )
         },
@@ -149,6 +145,14 @@ private fun EditProductContent(
             }
 
             item {
+                StockStatusSection(
+                    isOutOfStock = state.isOutOfStock,
+                    isEnabled = state.isTextFieldEnabled,
+                    onOutOfStockChange = interactionListener::onOutOfStockChange
+                )
+            }
+
+            item {
                 ImageSection(
                     images = state.images,
                     existingImageUrls = state.existingImageUrls,
@@ -172,7 +176,6 @@ private fun EditProductSnackBar(
         SnackBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(Theme.radius.md))
                 .clickable(onClick = interactionListener::onDismissSnackBar),
             onDismiss = interactionListener::onDismissSnackBar,
             snackBarUiState = snackBarState
