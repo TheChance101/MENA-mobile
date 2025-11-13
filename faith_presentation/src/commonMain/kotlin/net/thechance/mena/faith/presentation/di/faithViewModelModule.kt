@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.faith.presentation.base.snackbar.DefaultSnackbarHandlerImpl
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
-import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurViewModel
 import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueViewModel
@@ -16,7 +15,10 @@ import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewMo
 import net.thechance.mena.faith.presentation.feature.qiblah.calibratedevice.CalibrateDeviceViewModel
 import net.thechance.mena.faith.presentation.feature.qiblah.compass.CompassViewModel
 import net.thechance.mena.faith.presentation.feature.quran.bookmark.BookmarkViewModel
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurViewModel
 import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearchViewModel
+import net.thechance.mena.faith.presentation.feature.quran.reciter.args.ReciterArgs
+import net.thechance.mena.faith.presentation.feature.quran.reciter.args.ReciterArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgsImpl
@@ -25,6 +27,8 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.SurahViewModel
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgsImpl
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahViewModel
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.args.TilawahSurahArgs
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.args.TilawahSurahArgsImpl
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -37,6 +41,8 @@ internal val faithViewModelModule = module {
 
     factoryOf(::SurahArgsImpl) bind SurahArgs::class
     factoryOf(::SearchArgsImpl) bind SearchArgs::class
+    factoryOf(::TilawahSurahArgsImpl) bind TilawahSurahArgs::class
+    factoryOf(::ReciterArgsImpl) bind ReciterArgs::class
     viewModelOf(::SurahViewModel)
     viewModelOf(::SurViewModel)
     viewModelOf(::BookmarkViewModel)

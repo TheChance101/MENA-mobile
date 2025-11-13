@@ -24,9 +24,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +36,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -189,7 +189,8 @@ private fun VerticalPicker(
             pageSize = PageSize.Fixed(28.dp),
             flingBehavior = PagerDefaults.flingBehavior(
                 state = state,
-                pagerSnapDistance = PagerSnapDistance.atMost(1),
+                pagerSnapDistance = PagerSnapDistance.atMost(state.pageCount),
+                snapPositionalThreshold = 0f,
                 snapAnimationSpec = tween(durationMillis = 200, easing = LinearOutSlowInEasing)
             )
         ) { page ->
@@ -232,8 +233,10 @@ private fun WheelDatePickerPreview() {
             selectedMonthIndex = 5,
             selectedYearIndex = 104,
             days = (1..31).map { it.toString().padStart(2, '0') },
-            months = listOf("January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"),
+            months = listOf(
+                "January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ),
             years = (1920..2024).map { it.toString() },
             onDateChange = { _, _, _ -> },
         )

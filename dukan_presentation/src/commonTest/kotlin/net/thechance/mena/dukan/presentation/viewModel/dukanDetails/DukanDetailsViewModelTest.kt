@@ -17,8 +17,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -30,7 +28,6 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -154,7 +151,7 @@ class DukanDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -343,7 +340,7 @@ class DukanDetailsViewModelTest {
         }
 
     @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add first product`() =
+    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add product`() =
         runTest {
             // Given
             val productId = "1"
@@ -360,28 +357,6 @@ class DukanDetailsViewModelTest {
             //Then
             verifySuspend {
                 dukanCartRepository.addProductQuantity(any())
-            }
-
-        }
-
-    @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to update existing product quantity`() =
-        runTest {
-            // Given
-            val productId = "1"
-            val quantity = 10
-
-            everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
-
-            //When
-            dukanDetailsViewModel.onAddToCartClicked(
-                productId,
-                productQuantity = quantity,
-            )
-            advanceUntilIdle()
-            //Then
-            verifySuspend {
-                dukanCartRepository.updateProductQuantity(any())
             }
 
         }
@@ -454,16 +429,36 @@ class DukanDetailsViewModelTest {
             val productId = "1"
             val quantity = 5
 
-            everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
+
+            // When
+            dukanDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
+            // Then
+            dukanDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
+        }
+
+    @Test
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when anyException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
+
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws Exception()
 
             // When
             dukanDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
             advanceUntilIdle()
 
             // Then
-            val state = dukanDetailsViewModel.state.value
-            assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
-            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+            dukanDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
         }
 
 

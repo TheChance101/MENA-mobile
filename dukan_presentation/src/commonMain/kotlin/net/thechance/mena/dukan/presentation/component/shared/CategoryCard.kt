@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,11 +51,9 @@ fun CategoryCard(
         Box(
             modifier = Modifier
                 .padding(bottom = Theme.spacing._4)
+                .clip(shape = CircleShape)
+                .background(color = Theme.colorScheme.background.surfaceLow)
                 .size(size = iconContainerSize)
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(Theme.radius.full)
-                ).clip(shape = RoundedCornerShape(Theme.radius.full))
                 .clickable(onClick = onClick)
                 .skeletonLoading(isLoading = imageState == CategoryImageState.Loading),
             contentAlignment = Alignment.Center

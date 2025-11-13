@@ -78,6 +78,7 @@ class ChatViewModel(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val messages = _messages.asStateFlow()
     private val messagesMutex = Mutex()
+    private val waveformCache = mutableMapOf<Uuid, List<Float>>()
 
     private var hasResentPendingMessages = false
 
@@ -87,7 +88,6 @@ class ChatViewModel(
             onLoadUpdated = { },
             onRequest = ::getChatHistory,
             getNextKey = { currentPage, _ -> currentPage + 1 },
-            onError = { handleChatHistoryError() },
             onSuccess = { result, _ -> handleChatHistorySuccess(result) },
             endReached = { _, result -> result.isLastPage }
         )
@@ -120,12 +120,11 @@ class ChatViewModel(
             var earliestUnReadMessageTime: LocalDateTime = LocalDateTime.now()
             messages
                 .map { list ->
-                    list.map {
-                        if (it.status == MessageStatus.SENT && it.sendAt < earliestUnReadMessageTime) {
-                            earliestUnReadMessageTime = it.sendAt
-                            println(earliestUnReadMessageTime)
+                    list.map { message ->
+                        if (message.status == MessageStatus.SENT && message.sendAt < earliestUnReadMessageTime) {
+                            earliestUnReadMessageTime = message.sendAt
                         }
-                        it.toUi()
+                        message.toUiWithCachedWaveform()
                     }
                 }
                 .collectLatest { uiList ->
@@ -144,6 +143,19 @@ class ChatViewModel(
                 }
         }
     }
+
+    private fun Message.toUiWithCachedWaveform(): MessageUiState =
+        toUi().let { uiState ->
+            when {
+                uiState.content !is MessageContent.Audio -> uiState
+                else -> uiState.withCachedOrGeneratedWaveform(id)
+            }
+        }
+
+    private fun MessageUiState.withCachedOrGeneratedWaveform(messageId: Uuid): MessageUiState =
+        copy(waveformData = waveformCache.getOrPut(messageId) {
+            waveformData ?: generateWaveformData()
+        })
 
     private fun getUserInfo() {
         tryToExecute(
@@ -239,10 +251,7 @@ class ChatViewModel(
             content = content
         )
 
-        tryToExecute(
-            execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
-        )
+        sendMessage(message)
     }
 
     override fun onInputMessageChanged(value: String) {
@@ -270,12 +279,7 @@ class ChatViewModel(
 
         tryToExecute(
             execute = { messageRepository.sendMessage(message.toEntity()) },
-            onSuccess = { onSendMessageSuccess(message) }
         )
-    }
-
-    private suspend fun onSendMessageSuccess(message: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter { it.id != message.id && it.sendAt != message.sendTime } }
     }
 
     override fun onMessageClicked(messageId: Uuid) {
@@ -379,6 +383,8 @@ class ChatViewModel(
                 .filter { it.status == MessageStatus.LOADING }
                 .forEach { sendMessage(it.toUi()) }
         }
+
+        emitEffect(ChatScreenEffect.ScrollToBottom)
     }
 
     private suspend fun getChatHistory(page: Int): PagedData<Message> {
@@ -446,7 +452,7 @@ class ChatViewModel(
     }
 
     override fun onChatActionsMenuClicked() {
-        updateState { it.copy(isChatActionsDialogVisible = true) }
+        updateState { it.copy(isChatActionsDialogVisible = true, isAttachmentsOverlayVisible = false) }
     }
 
     override fun onChatActionsMenuDialogDismissed() {
@@ -633,10 +639,10 @@ class ChatViewModel(
                     val duration = audioPlayer.getDuration(filePath)
                     audioPlayer.play(filePath)
                     updateVoiceMessageState(messageId, duration = duration, isLoading = false)
-                    startProgressTracking(messageId, duration)
+                    startProgressTracking(messageId)
                 } else {
                     audioPlayer.play(filePath)
-                    startProgressTracking(messageId, voiceMessageItem.duration)
+                    startProgressTracking(messageId)
                 }
             },
             onError = {
@@ -649,8 +655,10 @@ class ChatViewModel(
         )
     }
 
-    private fun startProgressTracking(messageId: Uuid, duration: Long) {
+    private fun startProgressTracking(messageId: Uuid) {
         viewModelScope.launch {
+            val totalDuration = audioPlayer.getDurationOfCurrentAudio()
+            var lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
             while (true) {
                 delay(100)
 
@@ -658,23 +666,40 @@ class ChatViewModel(
                     it is ChatListItem.VoiceMessage && it.data.id == messageId
                 } as? ChatListItem.VoiceMessage
 
-                if (voiceMessageItem == null || !voiceMessageItem.isPlaying) break
+                if (voiceMessageItem == null || voiceMessageItem.isPlaying.not()) break
 
-                val currentPositionSeconds = audioPlayer.getCurrentPosition()
+                val currentPosition = audioPlayer.getCurrentPosition()
 
-                if (duration in 1..currentPositionSeconds) {
-                    audioPlayer.stop()
+                val completed = isPlaybackCompleted(totalDuration = totalDuration, currentPosition = currentPosition, lastPosition = lastPositionMilliSeconds)
+
+                if (completed) {
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
                     break
                 }
 
-                val progress = if (duration > 0) {
-                    currentPositionSeconds.toFloat() / duration.toFloat()
+                lastPositionMilliSeconds = currentPosition
+
+                val progress = if (totalDuration > 0) {
+                    currentPosition.toFloat() / totalDuration.toFloat()
                 } else 0f
 
                 updateVoiceMessageState(messageId, progress = progress)
             }
         }
+    }
+
+    private fun isPlaybackCompleted(
+        totalDuration: Long,
+        currentPosition: Long,
+        lastPosition: Long
+    ): Boolean {
+        if (totalDuration <= 0) return false
+
+        val remainingMs = totalDuration - currentPosition
+        val isNearEnd = currentPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+        val isStagnant = currentPosition == lastPosition && isNearEnd
+
+        return remainingMs <= 0 || isStagnant
     }
 
     private fun stopAnyPlayingVoiceMessage(excludeMessageId: Uuid) {
@@ -796,7 +821,10 @@ class ChatViewModel(
         sendMessage(message)
     }
 
-    private fun createAudioMessage(audioByteArray: ByteArray, audioDurationMs: Long?): MessageUiState {
+    private fun createAudioMessage(
+        audioByteArray: ByteArray,
+        audioDurationMs: Long?
+    ): MessageUiState {
         val chatId = state.value.chatId!!
         val senderId = state.value.chatRequesterId!!
         val content = MessageContent.Audio(
@@ -804,11 +832,16 @@ class ChatViewModel(
             audioDurationMs = audioDurationMs
         )
 
-        return MessageUiState(
+        val message = MessageUiState(
             chatId = chatId,
             senderId = senderId,
-            content = content
+            content = content,
+            waveformData = generateWaveformData()
         )
+
+        message.waveformData?.let { waveform -> waveformCache[message.id] = waveform }
+
+        return message
     }
 
     override fun onDownloadImageClicked(url: String) {
@@ -904,17 +937,13 @@ class ChatViewModel(
         }
     }
 
-    private fun handleChatHistoryError() {
-        updateState { state -> state.copy(paginationError = true) }
-    }
-
     private suspend fun handleChatHistorySuccess(result: PagedData<Message>) {
-        updateState { state -> state.copy(paginationError = false) }
         onGetChatHistorySuccess(result)
     }
 
     companion object {
         const val PAGE_SIZE = 40
         const val INITIAL_PAGE = 0
+        private const val AUDIO_END_THRESHOLD_RATIO = 0.90
     }
 }

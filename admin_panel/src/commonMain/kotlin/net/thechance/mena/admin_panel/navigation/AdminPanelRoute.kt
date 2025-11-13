@@ -6,6 +6,9 @@ import kotlinx.serialization.Serializable
 sealed interface AdminPanelRoute
 
 @Serializable
+data object Splash : AdminPanelRoute
+
+@Serializable
 data object Login : AdminPanelRoute
 
 @Serializable

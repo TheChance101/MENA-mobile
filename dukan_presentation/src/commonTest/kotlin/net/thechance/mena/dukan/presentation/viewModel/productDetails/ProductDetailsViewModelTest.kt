@@ -17,14 +17,14 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.added_to_favorites
-import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.removed_from_favorites
 import net.thechance.mena.dukan.domain.entity.Cart
+import net.thechance.mena.dukan.domain.entity.Color
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
@@ -43,6 +43,8 @@ class ProductDetailsViewModelTest {
 
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
     private val dukanCartRepository = mock<CartRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -71,6 +73,20 @@ class ProductDetailsViewModelTest {
 
     @OptIn(ExperimentalUuidApi::class)
     @Test
+    fun `init SHOULD load dukan details successfully`() = runTest {
+        everySuspend { dukanManagementRepository.getDukanDetailsByDukanId(any()) } returns dummyDukanDetails()
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals(parseHexColor(dummyDukanDetails().color.hexCode), state.dukanColor)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
     fun `init SHOULD load cart info successfully`() = runTest {
         everySuspend { dukanCartRepository.getCartInfo(any()) } returns dummyCart()
 
@@ -79,10 +95,11 @@ class ProductDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(500.0, state.totalPrice)
+            assertEquals(true, state.hasProductInCart)
             cancelAndIgnoreRemainingEvents()
         }
     }
+
     @Test
     fun `init SHOULD set isLoading to false after successful load`() = runTest {
         advanceUntilIdle()
@@ -353,7 +370,6 @@ class ProductDetailsViewModelTest {
         }
 
 
-
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD callRepository`() = runTest {
@@ -371,7 +387,7 @@ class ProductDetailsViewModelTest {
     }
 
     @Test
-    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD notChangeFavoriteState`() =
+    fun `onToggleProductToFavoriteClicked_whenErrorOccurs_SHOULD keep the change in ui`() =
         runTest {
             // Given
             val networkError = NoInternetException()
@@ -384,7 +400,7 @@ class ProductDetailsViewModelTest {
 
             // Then
             val state = productDetailsViewModel.state.value
-            assertFalse(state.isFavorite)
+            assertTrue(state.isFavorite)
         }
 
 
@@ -392,8 +408,8 @@ class ProductDetailsViewModelTest {
         productRepository = productRepository,
         defaultDispatcher = testDispatcher,
         savedStateHandle = savedStateHandle,
-        dukanCartRepository = dukanCartRepository
-
+        dukanCartRepository = dukanCartRepository,
+        dukanManagementRepository = dukanManagementRepository
     )
 }
 
@@ -417,4 +433,18 @@ private fun dummyProductDetails(): Product = Product(
     quantityInCart = 10,
     shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000124"),
     isFavorite = false
+)
+
+@OptIn(ExperimentalUuidApi::class)
+private fun dummyDukanDetails() = Dukan(
+    id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
+    name = "Test Dukan",
+    isFavorite = true,
+    address = "123 Test Street",
+    imageUrl = "https://example.com/image.png",
+    coordinates = Dukan.Coordinates(latitude = 30.0, longitude = 31.0),
+    color = Color(id = Uuid.random(), hexCode = "#FF0000"),
+    style = Dukan.Style.WIDE_IMAGE,
+    categories = emptySet(),
+    status = Dukan.Status.APPROVED,
 )

@@ -30,61 +30,90 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val authenticationRepository: AuthenticationRepository = koinInject()
         val registrationDraftRepository: RegistrationDraftRepository = koinInject()
 
+        val loginScreen = remember { LoginScreen() }
+        
+        val initialScreen = determineInitialScreenOnce(
+            authenticationRepository = authenticationRepository,
+            registrationDraftRepository = registrationDraftRepository
+        )
+
+        RenderScreenWithNavigator(
+            targetScreen = initialScreen,
+            defaultScreen = loginScreen
+        )
+    }
+
+    @Composable
+    private fun determineInitialScreenOnce(
+        authenticationRepository: AuthenticationRepository,
+        registrationDraftRepository: RegistrationDraftRepository
+    ): Any? {
         var initialScreen by remember { mutableStateOf<Any?>(null) }
+        var isDetermined by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
-            initialScreen =
-                determineInitialScreen(authenticationRepository, registrationDraftRepository)
+            if (!isDetermined) {
+                val screen = determineInitialScreen(
+                    authenticationRepository = authenticationRepository,
+                    registrationDraftRepository = registrationDraftRepository
+                )
+                initialScreen = if (screen is LoginScreen) null else screen
+                isDetermined = true
+            }
         }
 
-        RenderScreen(initialScreen)
+        return initialScreen
     }
 
     private suspend fun determineInitialScreen(
         authenticationRepository: AuthenticationRepository,
         registrationDraftRepository: RegistrationDraftRepository
-    ): Any? {
-        val authTokens = authenticationRepository.getAuthTokens() ?: return LoginScreen()
+    ): Any {
+        val authTokens = authenticationRepository.getAuthTokens()
+            ?: return LoginScreen()
 
         val lastPhoneNumber = registrationDraftRepository.getLastPhoneNumber()
             ?: return LoginScreen()
 
-        return determineScreenForRegistrationFlow(
+        return getRegistrationFlowScreen(
             authTokens = authTokens,
             lastPhoneNumber = lastPhoneNumber,
             registrationDraftRepository = registrationDraftRepository
         )
     }
 
-    private suspend fun determineScreenForRegistrationFlow(
+    private suspend fun getRegistrationFlowScreen(
         authTokens: AuthenticationTokens,
         lastPhoneNumber: PhoneNumber,
         registrationDraftRepository: RegistrationDraftRepository
     ): Any {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
-        return createScreenForRegistrationFlow(authTokens, lastPhoneNumber, imageUploadCompleted)
-    }
-
-    private fun createScreenForRegistrationFlow(
-        authTokens: AuthenticationTokens,
-        lastPhoneNumber: PhoneNumber,
-        imageUploadCompleted: Boolean
-    ): Any = if (imageUploadCompleted) {
-        AccountCreatedScreen(authTokens = authTokens)
-    } else {
-        UploadProfileImageScreen(
-            authTokens = authTokens,
-            phoneNumber = lastPhoneNumber
-        )
+        
+        return if (imageUploadCompleted) {
+            AccountCreatedScreen(authTokens = authTokens)
+        } else {
+            UploadProfileImageScreen(
+                authTokens = authTokens,
+                phoneNumber = lastPhoneNumber
+            )
+        }
     }
 
     @Composable
-    private fun RenderScreen(screen: Any?) {
-        when (screen) {
-            is UploadProfileImageScreen -> Navigator(screen)
-            is AccountCreatedScreen -> Navigator(screen)
-            is LoginScreen -> Navigator(screen)
-            null -> Navigator(LoginScreen())
+    private fun RenderScreenWithNavigator(
+        targetScreen: Any?,
+        defaultScreen: LoginScreen
+    ) {
+        when (targetScreen) {
+            is UploadProfileImageScreen -> {
+                Navigator(targetScreen)
+            }
+            is AccountCreatedScreen -> {
+                Navigator(targetScreen)
+            }
+            else -> {
+                Navigator(defaultScreen)
+            }
         }
     }
 

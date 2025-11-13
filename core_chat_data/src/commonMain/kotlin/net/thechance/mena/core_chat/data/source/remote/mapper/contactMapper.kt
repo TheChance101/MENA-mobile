@@ -14,9 +14,9 @@ import com.bilalazzam.contacts_provider.Contact as DeviceContact
 fun PagedDataDto<ContactDto>?.toPagedListOfContacts(): PagedData<Contact> {
     val pagedData = this ?: throw ContactsFetchFailedException("Response body is null")
     return PagedData(
-        data = pagedData.data.orEmpty().toListOfContact(),
-        totalItems = pagedData.totalItems ?: 0,
-        isLastPage = (pagedData.pageNumber ?: 0) >= (pagedData.totalPages ?: 0)
+        data = pagedData.data.toListOfContact(),
+        totalItems = pagedData.totalItems,
+        isLastPage = pagedData.pageNumber >= pagedData.totalPages
     )
 }
 

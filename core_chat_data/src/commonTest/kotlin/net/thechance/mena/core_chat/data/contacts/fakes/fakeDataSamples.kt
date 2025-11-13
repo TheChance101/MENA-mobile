@@ -36,11 +36,11 @@ val sampleContactDto = createContactDto(
 val sampleContact = sampleContactDto.toDomain()
 
 fun createPagedDataDto(
-    data: List<ContactDto>? = null,
-    pageNumber: Int? = 1,
-    pageSize: Int? = 10,
-    totalItems: Int? = 15,
-    totalPages: Int? = 2
+    data: List<ContactDto> = emptyList(),
+    pageNumber: Int = 1,
+    pageSize: Int = 10,
+    totalItems: Int = 15,
+    totalPages: Int = 2
 ) = PagedDataDto(
     data = data,
     pageNumber = pageNumber,

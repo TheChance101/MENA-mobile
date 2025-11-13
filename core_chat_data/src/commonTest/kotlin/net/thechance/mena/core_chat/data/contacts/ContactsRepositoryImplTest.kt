@@ -367,7 +367,7 @@ class ContactsRepositoryImplTest {
 
             val result = repository.getUserContacts(pageNumber = 1)
 
-            assertThat(result.data).isEqualTo(page1Contacts.data?.map { it.toDomain() })
+            assertThat(result.data).isEqualTo(page1Contacts.data.map { it.toDomain() })
         }
 
     @Test

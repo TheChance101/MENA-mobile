@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,7 +30,6 @@ import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 @Composable
 fun NoImageDukanProductAction(
@@ -103,7 +103,7 @@ private fun ProductQuantityButton(
             tint = dukanColor,
             contentDescription = stringResource(Res.string.remove_product),
             modifier = modifier.size(24.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceLow)
                 .clickable(
                     onClick = onMinusClick,
@@ -119,7 +119,7 @@ private fun ProductQuantityButton(
             color = Theme.colorScheme.primary.onPrimary,
             textAlign = TextAlign.Center,
             modifier = modifier.size(24.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(dukanColor)
                 .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._2)
         )
@@ -129,7 +129,7 @@ private fun ProductQuantityButton(
             tint = dukanColor,
             contentDescription = stringResource(Res.string.add_product),
             modifier = modifier.size(24.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
                 .background(Theme.colorScheme.background.surfaceLow)
                 .clickable(
                     onClick = onPlusClick,

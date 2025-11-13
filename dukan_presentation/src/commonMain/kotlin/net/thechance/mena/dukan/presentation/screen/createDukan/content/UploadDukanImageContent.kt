@@ -74,22 +74,22 @@ private fun UploadDukanImageSection(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
         )
-    }
-    Text(
-        text = stringResource(Res.string.image_size),
-        style = Theme.typography.title.small,
-        color = Theme.colorScheme.shadePrimary,
-        modifier = Modifier.padding(
-            top = Theme.spacing._16,
-            bottom = Theme.spacing._4
+
+        Text(
+            text = stringResource(Res.string.image_size),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(
+                top = Theme.spacing._16,
+                bottom = Theme.spacing._4
+            )
         )
-    )
 
-    UploadImageContainer(
-        onClick = interactionListener::onClickUploadImage,
-        image = state.croppedImage,
-    )
-
+        UploadImageContainer(
+            onClick = interactionListener::onClickUploadImage,
+            image = state.croppedImage,
+        )
+    }
 }
 
 @Preview

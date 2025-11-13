@@ -9,9 +9,11 @@ import kotlin.uuid.Uuid
 internal data class NearbyMosquesMapUiState(
     val mosques: List<MosqueUiState> = emptyList(),
     val selectedMosque: MosqueUiState? = null,
-    val mosquesSearchResults:  Flow<PagingData<MosqueUiState>>? = null,
+    val mosquesSearchResults: Flow<PagingData<MosqueUiState>>? = null,
+    val userLocation: Coordinate? = null,
     val centerOfMap: Coordinate? = null,
     val isLoading: Boolean = true,
+    val canMove: Boolean = true,
     val isMosqueBottomSheetVisible: Boolean = false,
     val isSearchResultsBottomSheetVisible: Boolean = false,
     val isSearchButtonVisible: Boolean = false,

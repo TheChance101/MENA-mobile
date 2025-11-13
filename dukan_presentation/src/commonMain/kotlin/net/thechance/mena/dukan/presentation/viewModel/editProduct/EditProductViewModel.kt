@@ -104,7 +104,8 @@ class EditProductViewModel(
                 price = product.price.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
-                isTextFieldEnabled = true
+                isTextFieldEnabled = true,
+                isOutOfStock = product.isOutOfStock
             ).updateButtonState()
         }
     }
@@ -234,6 +235,12 @@ class EditProductViewModel(
     override fun onDescriptionChange(description: String) {
         updateState {
             copy(description = description).updateButtonState()
+        }
+    }
+
+    override fun onOutOfStockChange(isOutOfStock: Boolean) {
+        updateState {
+            copy(isOutOfStock = isOutOfStock).updateButtonState()
         }
     }
 
@@ -485,7 +492,8 @@ class EditProductViewModel(
             description = trimmedDescription,
             price = state.value.price.toDoubleOrNull(),
             shelfId = state.value.selectedShelf?.id,
-            imageUrls = finalImageUrls
+            imageUrls = finalImageUrls,
+            isOutOfStock = state.value.isOutOfStock
         )
     }
 

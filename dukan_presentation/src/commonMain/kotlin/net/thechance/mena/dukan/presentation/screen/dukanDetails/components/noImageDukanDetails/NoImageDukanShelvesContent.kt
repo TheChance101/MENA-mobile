@@ -19,7 +19,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
-import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -31,17 +30,15 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 fun NoImageDukanShelvesContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
+    shelves: LazyPagingItems<ShelfUiState>
 ) {
     val lazyRowListState = rememberLazyListState()
-
     val lazyColumnListState = rememberLazyListState()
-
     val coroutineScope = rememberCoroutineScope()
     var chipsAlpha by rememberSaveable { mutableStateOf(0f) }
     val layoutInfo by remember {
         derivedStateOf { lazyColumnListState.layoutInfo }
     }
-    val shelves = state.shelves.collectAsLazyPagingItems()
 
     LaunchedEffect(layoutInfo) {
         synchronizeScrollsAndAlpha(
@@ -68,6 +65,7 @@ fun NoImageDukanShelvesContent(
                 coroutineScope = coroutineScope,
                 chipsAlpha = chipsAlpha
             )
+
             is LoadState.Error -> {}
         }
     }
@@ -81,7 +79,7 @@ private fun NoImageDukanShelvesContentLoaded(
     lazyColumnListState: LazyListState,
     coroutineScope: CoroutineScope,
     chipsAlpha: Float
-){
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
@@ -95,6 +93,8 @@ private fun NoImageDukanShelvesContentLoaded(
             )
         }
         stickyHeader(key = "ShelvesChips") {
+            val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
+
             NoImageDukanShelvesChips(
                 shelfs = shelves,
                 onClick = { shelfId, index ->
@@ -111,16 +111,17 @@ private fun NoImageDukanShelvesContentLoaded(
 
         items(count = shelves.itemCount, key = { shelves[it]?.id.orEmpty() }) {
             val shelf = shelves[it] ?: return@items
+            val products = state.shelfProductsLimited[shelf.id] ?: emptyList()
             NoImageDukanShelfWithProducts(
                 shelf = shelf,
-                listener = listener,
-                dukanColor = state.dukanInfo.color
+                products = products,
+                state = state,
+                listener = listener
             )
         }
     }
 }
 
-private const val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
 private fun synchronizeScrollsAndAlpha(
     index: Int,
     layoutInfo: LazyListLayoutInfo,
@@ -130,6 +131,8 @@ private fun synchronizeScrollsAndAlpha(
     lazyRowListState: LazyListState,
     chipsAlphaUpdate: (Float) -> Unit
 ) {
+    val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips
+
     val shelfIndex = index - SHELVES_OFFSET
     if (shelfIndex >= 0 && shelfIndex < shelfs.itemCount) {
         val shelfId = shelfs[shelfIndex]?.id.orEmpty()

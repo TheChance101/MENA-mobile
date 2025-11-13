@@ -25,6 +25,7 @@ import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.navigation.TransactionDetailsScreenRoute
+import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentBlockedReceiverContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentConnectionLostContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentSuccessContent
 import net.thechance.mena.wallet.presentation.screen.payment_result.component.PaymentUnknownErrorContent
@@ -46,7 +47,11 @@ fun PaymentResultScreen(
     ObserveAsEffect(
         effect = viewModel.uiEffect,
         onEffect = { effect ->
-            onPaymentResultEffect(effect, navController = navController, navigateBack = navigateBack)
+            onPaymentResultEffect(
+                effect,
+                navController = navController,
+                navigateBack = navigateBack
+            )
         }
     )
     PaymentResultScreenContent(
@@ -97,6 +102,10 @@ private fun PaymentResultScreenContent(
                         PaymentUnknownErrorContent(state, interactionListener)
                     }
 
+                    SubmissionStatus.BLOCKED_RECEIVER -> {
+                        PaymentBlockedReceiverContent(state, interactionListener)
+                    }
+
                     SubmissionStatus.SUCCESS -> {
                         PaymentSuccessContent(state, interactionListener)
                     }
@@ -110,14 +119,13 @@ private fun onPaymentResultEffect(
     effect: PaymentResultEffect,
     navController: NavController,
     navigateBack: () -> Unit
-    ) {
+) {
     when (effect) {
         is PaymentResultEffect.NavigateBack -> navController.popBackStack()
         is PaymentResultEffect.NavigateToTransactionDetails -> {
             navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
         }
-
-        is PaymentResultEffect.NavigateToPrePaymentScreen -> { navigateBack() }
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> navigateBack()
     }
 }
 

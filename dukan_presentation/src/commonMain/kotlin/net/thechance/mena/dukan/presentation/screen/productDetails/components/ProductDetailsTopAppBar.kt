@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -17,9 +18,7 @@ import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_favorite_filled
-import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
-import mena.dukan_presentation.generated.resources.share_icon
 import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -62,10 +61,11 @@ fun ProductDetailsAppBar(
                     }
                 ),
                 contentDescription = stringResource(Res.string.favorite_icon),
+                tint = Color(state.dukanColor),
                 onClick = listener::onToggleProductToFavoriteClicked
             )
             AppBarOptionContainer(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 onClick = listener::onViewCartClicked
             ) {
                 Icon(
@@ -82,6 +82,7 @@ private fun AppBarIcon(
     painter: Painter,
     contentDescription: String,
     onClick: () -> Unit,
+    tint: Color = Theme.colorScheme.primary.primary,
     modifier: Modifier = Modifier
 ) {
     AppBarOptionContainer(
@@ -89,7 +90,7 @@ private fun AppBarIcon(
     ) {
         Icon(
             painter = painter,
-            tint = Theme.colorScheme.primary.primary,
+            tint = tint,
             contentDescription = contentDescription,
             modifier = modifier.size(40.dp)
         )

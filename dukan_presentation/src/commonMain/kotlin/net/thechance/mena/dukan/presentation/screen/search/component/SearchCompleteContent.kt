@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -100,19 +100,18 @@ private fun SearchChips(
     Row(
         modifier = modifier
             .padding(top = Theme.spacing._12, start = Theme.spacing._16)
-            .fillMaxWidth()
-            .height(32.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
     ) {
         Chip(
             text = stringResource(resource = Res.string.dukans),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isDukanSelected,
             onClick = onDukansSelected,
         )
         Chip(
             text = stringResource(resource = Res.string.products),
-            modifier = Modifier.height(32.dp),
+            modifier = Modifier,
             isSelected = isProductSelected,
             onClick = onProductsSelected,
         )
@@ -123,7 +122,7 @@ private fun SearchChips(
 private fun DukansList(
     dukanPagingItems: LazyPagingItems<SearchUiState.DukanUiState>,
     onDukanClicked: (dukanId: Uuid) -> Unit,
-    onDukanFavoriteClicked: (dukan: Uuid,isFavorite:Boolean) -> Unit
+    onDukanFavoriteClicked: (dukan: Uuid, isFavorite: Boolean) -> Unit
 ) {
     AnimatedContent(
         targetState = dukanPagingItems.loadState.refresh,
@@ -175,7 +174,12 @@ private fun DukansList(
                                 imageUrl = dukan.imageUrl,
                                 onClick = { onDukanClicked(dukan.id) },
                                 isFavorite = dukan.isFavorite,
-                                onFavoriteClick = { onDukanFavoriteClicked(dukan.id,dukan.isFavorite) },
+                                onFavoriteClick = {
+                                    onDukanFavoriteClicked(
+                                        dukan.id,
+                                        dukan.isFavorite
+                                    )
+                                },
                             )
                         }
                     }
@@ -191,7 +195,7 @@ private fun DukansList(
 @Composable
 private fun ProductsList(
     productPagingItems: LazyPagingItems<SearchUiState.ProductUiState>,
-    onProductClicked: (productId: Uuid) -> Unit
+    onProductClicked: (productId: Uuid, dukanId: Uuid) -> Unit
 ) {
     AnimatedContent(
         targetState = productPagingItems.loadState.refresh,
@@ -226,13 +230,22 @@ private fun ProductsList(
                     )
                     return@AnimatedContent
                 }
-                LazyColumn(
+
+                val gridState = rememberLazyGridState()
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 320.dp),
+                    state = gridState,
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-                    contentPadding = PaddingValues(horizontal = Theme.spacing._16)
+                    contentPadding = PaddingValues(
+                        horizontal = Theme.spacing._16,
+                        vertical = Theme.spacing._8
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
                 ) {
                     items(
                         count = productPagingItems.itemCount,
+                        key = { index -> productPagingItems[index]?.id ?: index },
                         contentType = { "Product Search Card" }
                     ) { index ->
                         productPagingItems[index]?.let { product ->
@@ -243,7 +256,7 @@ private fun ProductsList(
                                 productPrice = product.price,
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
-                                onProductClick = { onProductClicked(product.id) },
+                                onProductClick = { onProductClicked(product.id, product.dukanId) },
                             )
                         }
                     }

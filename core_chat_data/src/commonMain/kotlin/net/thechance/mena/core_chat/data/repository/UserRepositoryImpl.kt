@@ -7,7 +7,6 @@ import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.User
-import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 
 class UserRepositoryImpl(
@@ -18,7 +17,7 @@ class UserRepositoryImpl(
             bodyType = typeInfo<UserDto>()
         ){
             client.get(USER_ENDPOINT)
-        }?.toDomain() ?: throw NotFoundException("User not found")
+        }.toDomain()
     }
 
     private companion object{

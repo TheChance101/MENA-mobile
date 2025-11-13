@@ -10,7 +10,7 @@ data class SetNewPasswordScreenUIState(
     val isLoading: Boolean = false,
     val isResetEnabled: Boolean = false,
     val errorMessage: StringResource? = null,
-    val newPasswordErrorMessage: String? = null,
-    val confirmPasswordErrorMessage: String? = null,
+    val newPasswordErrorMessage: StringResource? = null,
+    val confirmPasswordErrorMessage: StringResource? = null,
     val isDialogVisible: Boolean = false
 )
