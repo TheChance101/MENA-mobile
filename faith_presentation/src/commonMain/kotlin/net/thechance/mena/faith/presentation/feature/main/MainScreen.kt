@@ -68,7 +68,6 @@ fun MainScreen(
                 navController.navigate(
                     SurahDetailsRoute(
                         surahId = effect.surahId,
-                        surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
                     )
                 )
