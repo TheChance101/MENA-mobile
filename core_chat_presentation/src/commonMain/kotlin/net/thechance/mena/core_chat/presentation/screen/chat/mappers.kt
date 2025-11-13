@@ -118,6 +118,10 @@ fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (Message
                 groupAndClear()
                 grouped.add(ChatListItem.TextMessage(msg))
             }
+            is MessageContent.Ayah -> {
+                groupAndClear()
+                grouped.add(ChatListItem.AyahMessage(msg))
+            }
         }
     }
 
@@ -150,13 +154,19 @@ fun generateWaveformData(): List<Float> {
 }
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
-    if (item is ChatListItem.TextMessage && item.data.id == messageId)
-        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
-    else if (item is ChatListItem.VoiceMessage && item.data.id == messageId)
-        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
-    else item
-}
+    when {
+        item is ChatListItem.TextMessage && item.data.id == messageId ->
+            item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
 
+        item is ChatListItem.VoiceMessage && item.data.id == messageId ->
+            item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
+
+        item is ChatListItem.AyahMessage && item.data.id == messageId ->
+            item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
+
+        else -> item
+    }
+}
 
 fun List<MessageUiState>.buildListItems(shouldGroupImageMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
     return sortedByDescending { it.sendTime }.markLastInSeries()
