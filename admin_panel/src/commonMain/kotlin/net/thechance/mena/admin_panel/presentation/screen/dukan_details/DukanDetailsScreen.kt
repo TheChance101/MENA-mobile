@@ -17,6 +17,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DeactivateDukanDialog
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInCompactMode
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInFullScreenMode
@@ -55,6 +56,19 @@ private fun DukanDetailsScreenContent(
                 dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE,
                 onChangeDukanStatusBtnClicked = interactionListener::onChangeDukanStatusBtnClicked
             )
+        },
+        overlays = {
+            dialog(state.isDeactivateDukanDialogShown){
+                DeactivateDukanDialog(
+                    isVisible = it,
+                    onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
+                    onConfirmDeactivation = interactionListener::onConfirmDukanDeactivationBtnClicked,
+                    deactivateReason = state.deactivateReason,
+                    onChangeReason = interactionListener::onDeactivateReasonChanged,
+                    isDeactivateBtnEnabled = state.isDeactivateBtnEnabled,
+                    isDeactivateBtnLoading = state.isDeactivateBtnLoading,
+                )
+            }
         }
     ) {
 

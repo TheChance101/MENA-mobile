@@ -6,4 +6,7 @@ interface DukanDetailsInteractionListener {
     fun onNextShelvesPageRequested()
     fun onShelfSelected(shelfId: String)
     fun onNextProductsPageRequested()
+    fun onDeactivateDukanDialogDismissed()
+    fun onConfirmDukanDeactivationBtnClicked()
+    fun onDeactivateReasonChanged(reason: String)
 }

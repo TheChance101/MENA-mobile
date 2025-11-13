@@ -57,7 +57,7 @@
     <string name="sort">ترتيب</string>
 
     <string name="activate_dukan">تفعيل دكان</string>
-    <string name="deactivate_dukan">إلغاء التنشيط</string>
+    <string name="deactivate">إلغاء التنشيط</string>
     <string name="dukan_details">تفاصيل دكان</string>
     <string name="back_btn">زر العودة</string>
     <string name="shelves">رفوف</string>
@@ -65,4 +65,8 @@
     <string name="dukan_location">رمز موقع دكان</string>
     <string name="silver_img">صورة سيلفر</string>
     <string name="product_img">صورة منتج</string>
+    <string name="deactivate_dukan">إلغاء تنشيط دكان</string>
+    <string name="deactivate_dukan_header">إلغاء تنشيط دكان؟</string>
+    <string name="deactivate_dukan_content">هل أنت متأكد أنك تريد الاستمرار في إلغاء التنشيط؟</string>
+    <string name="deactivate_dukan_reason">أضف سبب الإلغاء هنا</string>
 </resources>

@@ -48,7 +48,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onChangeDukanStatusBtnClicked() {
-        //open dialog or change the status
+        updateState { it.copy(isDeactivateDukanDialogShown = true) }
     }
 
     override fun onNextShelvesPageRequested() {
@@ -65,6 +65,28 @@ class DukanDetailsViewModel(
 
     override fun onNextProductsPageRequested() {
         loadNextProducts()
+    }
+
+    override fun onDeactivateDukanDialogDismissed() {
+        updateState {
+            it.copy(
+                isDeactivateDukanDialogShown = false,
+                deactivateReason = "",
+                isDeactivateBtnLoading = false,
+            )
+        }
+    }
+
+    override fun onConfirmDukanDeactivationBtnClicked() {
+        //call endpoint
+    }
+
+    override fun onDeactivateReasonChanged(reason: String) {
+        reason
+            .takeIf { it.length < 200 }
+            ?.let { reason ->
+                updateState { it.copy(deactivateReason = reason) }
+            }
     }
 
     private fun getDukanDetails() {
