@@ -76,7 +76,6 @@ fun CurrentPasswordContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = Theme.spacing._12, top = Theme.spacing._24)
-                .imePadding()
         )
     }
 }
