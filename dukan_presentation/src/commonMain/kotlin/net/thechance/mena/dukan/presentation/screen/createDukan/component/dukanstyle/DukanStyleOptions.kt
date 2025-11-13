@@ -27,6 +27,10 @@ fun DukanStyleOptions(
                 verticalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 modifier = Modifier.weight(1f)
             ) {
+                val textStyleColor by animateColorAsState(
+                    if (state.selectedStyle == item.style) Theme.colorScheme.shadePrimary else Theme.colorScheme.shadeSecondary
+                )
+
                 when (item.style) {
                     CreateDukanUiState.Style.WIDE_IMAGE -> WideImageStyle(
                         state = state,
@@ -49,7 +53,7 @@ fun DukanStyleOptions(
                 Text(
                     text = item.name,
                     style = Theme.typography.label.small,
-                    color = Theme.colorScheme.shadeSecondary,
+                    color = textStyleColor,
                     textAlign = TextAlign.Center
                 )
             }
