@@ -18,6 +18,9 @@ data class ProductSearchDto(
     @SerialName("dukanName")
     val dukanName: String,
 
+    @SerialName("dukanId")
+    val dukanId: Uuid,
+
     @SerialName("price")
     val price: Double,
 

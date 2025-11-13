@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.mockkery)
+    alias(libs.plugins.room)
 }
 
 kotlin {
@@ -34,6 +35,8 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation(libs.kermit)
             implementation(projects.identityDomain)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         iosMain.dependencies {
@@ -54,14 +57,28 @@ ksp {
     arg("KOIN_CONFIG_CHECK", "true")
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     add("kspCommonMainMetadata", libs.koin.ksp.compiler)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
     if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
+}
+
+tasks.matching {
+    it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata"
+}.configureEach {
+    dependsOn("kspCommonMainKotlinMetadata")
 }
 
 android {

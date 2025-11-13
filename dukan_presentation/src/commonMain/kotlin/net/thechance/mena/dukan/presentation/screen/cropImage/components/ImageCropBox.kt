@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.cropImage.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,6 +39,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.imageCrop.computeImageBounds
 import net.thechance.mena.dukan.presentation.util.imageCrop.createCropperStyle
 import net.thechance.mena.dukan.presentation.util.imageCrop.toAspectRatio
+import sv.lib.squircleshape.SquircleShape
 
 
 @Composable
@@ -129,7 +129,7 @@ fun ImageCropBox(
     }
     Canvas(
         modifier = modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(cornerRadius))
+            .clip(SquircleShape(cornerRadius))
             .onGloballyPositioned { view = it.size }
             .background(backgroundColor)
             .disabledSystemGestureArea { touchRect }

@@ -96,7 +96,6 @@ private fun AdminPanelScaffoldMainContent(
             ) {
                 Box(modifier = Modifier.wrapContentWidth()) {
                     AdminPanelSideBar(
-                        modifier = Modifier.padding(bottom = 34.dp),
                         selectedTab = state.selectedSidebarTab,
                         interactionListener = interactionListener
                     )
@@ -106,7 +105,6 @@ private fun AdminPanelScaffoldMainContent(
         AdminPanelNavHost(
             modifier = Modifier.weight(1f),
             navController = navController,
-            isUserLoggedIn = state.authenticationStatus
         )
     }
 }

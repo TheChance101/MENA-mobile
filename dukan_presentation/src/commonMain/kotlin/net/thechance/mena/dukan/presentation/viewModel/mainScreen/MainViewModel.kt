@@ -59,7 +59,7 @@ class MainViewModel(
         }
     }
 
-    private fun getDukanState() {
+    fun getDukanState() {
         tryToExecute(
             onStart = ::onGetDukanStateStart,
             block = ::getDukanStateBlock,

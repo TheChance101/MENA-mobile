@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -17,10 +16,6 @@ fun ProductDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-
-    LaunchedEffect(Unit){
-        viewModel.refreshData()
-    }
 
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {

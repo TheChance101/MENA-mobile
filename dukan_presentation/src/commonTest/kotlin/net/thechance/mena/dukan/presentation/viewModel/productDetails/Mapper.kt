@@ -1,8 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toDomainParams
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -36,14 +34,14 @@ class ProductDetailsMapperTest {
     }
 
     @Test
-    fun `toDomainParams should map ProductUiState to domain params correctly`() {
-        val uiProduct = ShelfDetailsUiState.ProductUiState(
+    fun `toDomainParams should map ProductInfo to domain params correctly`() {
+        val uiProduct = ProductDetailsUiState.ProductInfo(
             id = "123",
             name = "Product",
             description = "Desc",
             price = 9.99,
-            imageUrl = "img.png",
-            inCartQuantity = 4
+            images = emptyList(),
+            inCartQuantity = 4,
         )
 
         val params = uiProduct.toDomainParams("dukanId_1")
@@ -51,5 +49,12 @@ class ProductDetailsMapperTest {
         assertEquals("123", params.productId)
         assertEquals(4, params.quantity)
         assertEquals("dukanId_1", params.dukanId)
+    }
+
+    @Test
+    fun `toColor should map String color to Long`(){
+        val color = "#432CCD"
+        val colorLong = parseHexColor(color = color)
+        assertEquals(0xFF432CCD, colorLong)
     }
 }

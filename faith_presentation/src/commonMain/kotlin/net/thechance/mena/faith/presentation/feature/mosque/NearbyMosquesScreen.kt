@@ -20,10 +20,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,10 +27,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.cash.paging.compose.collectAsLazyPagingItems
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.arrow_left
@@ -60,7 +53,7 @@ import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResu
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.MapNavigator
-import net.thechance.mena.faith.presentation.utils.MapView
+import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -78,7 +71,6 @@ internal fun NearbyMosquesScreen(
 
     LaunchedEffect(Unit) {
         val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-
         savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
             ?.collect { successMessage ->
                 successMessage?.let {
@@ -90,13 +82,12 @@ internal fun NearbyMosquesScreen(
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            NearbyMosquesEffect.NavigateBack -> {}
+            NearbyMosquesEffect.NavigateBack -> navController.navigateUp()
             NearbyMosquesEffect.NavigateToAddMosque -> navController.navigate(Route.CreateMosqueRoute)
             NearbyMosquesEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
             is NearbyMosquesEffect.NavigateToMap -> mapNavigator.openMapAtCoordinate(coordinate = effect.coordinate)
         }
     }
-
     Content(uiState = state, listener = viewModel)
 }
 
@@ -106,43 +97,7 @@ private fun Content(
     uiState: NearbyMosquesMapUiState,
     listener: NearbyMosquesInteractionListener
 ) {
-    val searchResultsPaging = uiState.mosquesSearchResults?.collectAsLazyPagingItems()
-
-    val markers: List<MosqueUiState> = buildList {
-        uiState.selectedMosque?.let { selected ->
-            add(selected)
-        }
-
-        if (uiState.selectedMosque == null) {
-            addAll(uiState.mosques)
-
-            if (searchResultsPaging != null && searchResultsPaging.itemCount > 0) {
-                (0 until searchResultsPaging.itemCount).forEach { index ->
-                    searchResultsPaging[index]?.let { mosque ->
-                        if (none { it.id == mosque.id }) add(mosque)
-                    }
-                }
-            }
-        }
-    }
-
-    val allMosques = buildList {
-        addAll(uiState.mosques)
-        if (searchResultsPaging != null && searchResultsPaging.itemCount > 0) {
-            (0 until searchResultsPaging.itemCount).forEach { index ->
-                searchResultsPaging[index]?.let { mosque ->
-                    if (none { it.id == mosque.id }) add(mosque)
-                }
-            }
-        }
-    }
-
-    var mapCenter by remember { mutableStateOf(uiState.centerOfMap) }
-
-    LaunchedEffect(uiState.centerOfMap) {
-        mapCenter = uiState.centerOfMap
-    }
-
+    val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
         topBar = {
             AppBar(
@@ -190,36 +145,25 @@ private fun Content(
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            val coroutineScope = rememberCoroutineScope()
-            var lastCenter by remember { mutableStateOf<Coordinate?>(null) }
-
             MapView(
                 modifier = Modifier.fillMaxSize(),
-                centerLatitude = mapCenter?.latitude ?: 0.0,
-                centerLongitude = mapCenter?.longitude ?: 0.0,
+                centerLatitude = uiState.centerOfMap?.latitude ?: 0.0,
+                centerLongitude = uiState.centerOfMap?.longitude ?: 0.0,
                 zoomLevel = 15.0,
-                markers = markers,
-                onMarkerClick = { marker ->
-                    val mosque = allMosques.find { it.id == marker.id }
-                    mosque?.let { listener.selectMosque(it) }
+                markers = uiState.mosques,
+                canMove = uiState.canMove,
+                onMarkerClick = {
+                    listener.selectMosque(it)
                 },
-                onMapClick = { lat, lon ->
-                    listener.mapPositionChanged(Coordinate(lat, lon))
+                onCameraMove = { _, _ ->
+                    listener.changeSearchButtonVisibility(false)
                 },
-                onCameraMove = { lat, lon ->
-                    val newCenter = Coordinate(lat, lon)
-                    lastCenter = newCenter
-                    listener.mapPositionChanged(newCenter)
+                onMapIdle = { lat, lon ->
+                    listener.changeSearchButtonVisibility(true)
+                    listener.changeMapMovement(false)
+                    listener.changeCenterOfMap(Coordinate(lat, lon))
                 }
             )
-
-            LaunchedEffect(lastCenter) {
-                listener.changeSearchButtonVisibility(false)
-                delay(800L)
-                listener.changeSearchButtonVisibility(true)
-            }
-            val keyboardController = LocalSoftwareKeyboardController.current
-
             Column(
                 modifier = Modifier
                     .padding(horizontal = Theme.spacing._12, vertical = 10.dp)
@@ -242,13 +186,16 @@ private fun Content(
                         }
                     )
                 )
-
-                if (uiState.isSearchButtonVisible) {
+                AnimatedVisibility(
+                    visible = uiState.isSearchButtonVisible,
+                    enter = fadeIn(tween()),
+                    exit = fadeOut(tween()),
+                ) {
                     SearchMosquesButton(onClick = {
-                        listener.onSearchByCoordinatesClick(
+                        listener.onSearchByCoordinates(
                             coordinate = Coordinate(
-                                latitude = mapCenter?.latitude ?: 0.0,
-                                longitude = mapCenter?.longitude ?: 0.0
+                                latitude = uiState.centerOfMap?.latitude ?: 0.0,
+                                longitude = uiState.centerOfMap?.longitude ?: 0.0
                             )
                         )
                     })
@@ -267,7 +214,6 @@ private fun Content(
                         .padding(bottom = Theme.spacing._24)
                 )
             }
-
             Icon(
                 modifier = Modifier
                     .padding(Theme.spacing._16)
@@ -275,10 +221,6 @@ private fun Content(
                     .background(color = Theme.colorScheme.primary.primary)
                     .clickable {
                         listener.getUserLocation()
-                        coroutineScope.launch {
-                            delay(300)
-                            mapCenter = uiState.centerOfMap
-                        }
                     }
                     .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
                     .align(Alignment.BottomStart),
@@ -317,15 +259,16 @@ private fun NearbyMosquesScreenPreview() {
             override fun getUserLocation() {}
             override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
             override fun onViewOnMapClick(coordinate: Coordinate) {}
-            override fun onSearchByCoordinatesClick(coordinate: Coordinate) {}
+            override fun onSearchByCoordinates(coordinate: Coordinate) {}
             override fun onSearchResultClick(mosque: MosqueUiState) {}
-            override fun mapPositionChanged(coordinate: Coordinate) {}
+            override fun changeCenterOfMap(coordinate: Coordinate) {}
             override fun onQueryChange(query: String) {}
             override fun onSearchSubmit() {}
             override fun changeSearchButtonVisibility(isVisible: Boolean) {}
             override fun onDismissSearchBottomSheet() {}
             override fun selectMosque(mosque: MosqueUiState) {}
             override fun unselectMosque() {}
+            override fun changeMapMovement(canMove: Boolean) {}
             override fun showSuccessMessage(message: String) {}
         }
     )

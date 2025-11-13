@@ -13,13 +13,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,10 +45,11 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 fun LazyGridScope.wideImageProductsGrid(
+    state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
-    cartColor: Color,
     productsShelf: LazyPagingItems<DukanDetailsUiState.ProductUiState>,
 ) {
 
@@ -60,9 +58,7 @@ fun LazyGridScope.wideImageProductsGrid(
         key = { index -> productsShelf[index]?.id ?: index }
     ) { index ->
         productsShelf[index]?.let { product ->
-            var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
-            var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
-
+            val quantity = state.productQuantity[product.id] ?: 0
             ProductCard(
                 imageUrl = product.imageUrl,
                 title = product.name,
@@ -70,31 +66,26 @@ fun LazyGridScope.wideImageProductsGrid(
                 onClick = { listener.onProductClicked(product.id) },
                 productAction = {
                     SmallAndWideImageDukanProductAction(
-                        showProductQuantity = toggleCartToQuantity,
-                        inCartQuantity = productQuantity,
-                        dukanColor = cartColor,
+                        showProductQuantity = quantity > 0,
+                        inCartQuantity = quantity,
+                        dukanColor = Color(state.dukanInfo.color),
                         cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
                         onAddToCartClick = {
-                            productQuantity += 1
-                            toggleCartToQuantity = true
                             listener.onAddToCartClicked(
                                 productId = product.id,
-                                productQuantity = productQuantity
+                                productQuantity = quantity + 1
                             )
                         },
                         onPlusClick = {
-                            productQuantity += 1
                             listener.onPlusClicked(
                                 productId = product.id,
-                                productQuantity = productQuantity
+                                productQuantity = quantity + 1
                             )
                         },
                         onMinusClick = {
-                            if (productQuantity == 1) toggleCartToQuantity = false
-                            productQuantity -= 1
                             listener.onMinusClicked(
                                 productId = product.id,
-                                productQuantity = productQuantity
+                                productQuantity = quantity - 1
                             )
                         }
                     )
@@ -119,7 +110,7 @@ private fun ProductCard(
     Column(
         modifier = modifier
             .size(width = 160.dp, height = 240.dp)
-            .clip(RoundedCornerShape(Theme.radius.sm))
+            .clip(SquircleShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
@@ -139,7 +130,7 @@ private fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(176.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
             )
             if (isError || isLoading) {
                 Image(

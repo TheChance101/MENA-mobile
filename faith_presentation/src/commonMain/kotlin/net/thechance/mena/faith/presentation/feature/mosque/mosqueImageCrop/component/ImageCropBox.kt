@@ -37,9 +37,9 @@ import com.attafitamim.krop.core.utils.times
 import com.attafitamim.krop.core.utils.viewMat
 import com.attafitamim.krop.ui.disabledSystemGestureArea
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.faith.presentation.utils.imageCrop.computeImageBounds
-import net.thechance.mena.faith.presentation.utils.imageCrop.createCropperStyle
-import net.thechance.mena.faith.presentation.utils.imageCrop.toAspectRatio
+import net.thechance.mena.faith.presentation.utils.extentions.imageCrop.computeImageBounds
+import net.thechance.mena.faith.presentation.utils.extentions.imageCrop.createCropperStyle
+import net.thechance.mena.faith.presentation.utils.extentions.imageCrop.toAspectRatio
 
 @Composable
 internal fun ImageCropBox(
@@ -151,7 +151,7 @@ internal fun ImageCropBox(
                         handles = style.handles,
                         viewMat = viewMat,
                         pending = pendingDrag,
-                        onPending = { pendingDrag = it },
+                        onPending = { },
                         zooming = zooming,
                         zoomLimits = zoomLimits,
                     )

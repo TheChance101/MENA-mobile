@@ -14,5 +14,7 @@ data class UpdateProductRequest(
     @SerialName("shelfId")
     val shelfId: String?,
     @SerialName("imageUrls")
-    val imageUrls: List<String>?
+    val imageUrls: List<String>?,
+    @SerialName("isOutOfStock")
+    val isOutOfStock: Boolean = false
 )

@@ -11,5 +11,5 @@ data class CreatePasswordUIState(
     val isCreateEnabled: Boolean = false,
     val errorMessage: StringResource? = null,
     val newPasswordErrorMessage: StringResource? = null,
-    val confirmPasswordErrorMessage: String? = null
+    val confirmPasswordErrorMessage: StringResource? = null
 )

@@ -36,7 +36,7 @@ class BookmarkViewModelTest {
 
     @BeforeTest
     fun setUp() {
-        testDispatcher  = StandardTestDispatcher()
+        testDispatcher = StandardTestDispatcher()
         viewModel = BookmarkViewModel(
             bookmarkRepository = repository,
             dispatcher = testDispatcher,
@@ -52,8 +52,7 @@ class BookmarkViewModelTest {
             bookmarkRepository = repository,
             dispatcher = testDispatcher,
             snackBarHandler = snackbarHandler
-
-            )
+        )
         advanceUntilIdle()
 
         viewModel.uiState.test {
@@ -68,9 +67,8 @@ class BookmarkViewModelTest {
         }
     }
 
-
     @Test
-    fun `onDeleteBookmarkClick should insert bookmark id when start`() = runTest(testDispatcher) {
+    fun `onDeleteBookmarkClick should show delete confirmation dialog`() = runTest(testDispatcher) {
         everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
 
         viewModel = BookmarkViewModel(
@@ -79,20 +77,22 @@ class BookmarkViewModelTest {
             snackBarHandler = snackbarHandler
         )
         advanceUntilIdle()
+
         viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
+        advanceUntilIdle()
 
         viewModel.uiState.test {
             val state = awaitItem()
-            val bookmarks = state.bookmarks.asSnapshot()
-            assertFalse(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
+            assertTrue(state.isDeleteConfirmationDialogVisible)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
-
     @Test
-    fun `onDeleteBookmarkClick should hide single deleted bookmark from uiState`() =
+    fun `onConfirmDeleteBookmarkClick should delete bookmark successfully`() =
         runTest(testDispatcher) {
             everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
+            everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) } returns Unit
 
             viewModel = BookmarkViewModel(
                 bookmarkRepository = repository,
@@ -100,31 +100,45 @@ class BookmarkViewModelTest {
                 snackBarHandler = snackbarHandler
             )
             advanceUntilIdle()
+
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
+            advanceUntilIdle()
+
+            viewModel.onConfirmDeleteBookmarkClick()
             advanceUntilIdle()
 
             viewModel.uiState.test {
                 val state = awaitItem()
                 val bookmarks = state.bookmarks.asSnapshot()
+
                 assertFalse(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
+                assertFalse(state.isDeleteConfirmationDialogVisible)
+                assertEquals(1, bookmarks.size)
                 cancelAndIgnoreRemainingEvents()
             }
         }
 
     @Test
-    fun `onDeleteBookmarkClick should hide all deleted bookmarks when multiple deletions occur`() =
+    fun `onConfirmDelete should hide all deleted bookmarks when multiple deletions occur`() =
         runTest(testDispatcher) {
             everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
+            everySuspend { repository.deleteAyahBookmark(any()) } returns Unit
 
             viewModel = BookmarkViewModel(
                 bookmarkRepository = repository,
                 dispatcher = testDispatcher,
                 snackBarHandler = snackbarHandler
-
-                )
+            )
             advanceUntilIdle()
+
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
+            advanceUntilIdle()
+            viewModel.onConfirmDeleteBookmarkClick()
+            advanceUntilIdle()
+
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID2)
+            advanceUntilIdle()
+            viewModel.onConfirmDeleteBookmarkClick()
             advanceUntilIdle()
 
             viewModel.uiState.test {
@@ -145,8 +159,7 @@ class BookmarkViewModelTest {
             bookmarkRepository = repository,
             dispatcher = testDispatcher,
             snackBarHandler = snackbarHandler
-
-            )
+        )
         advanceUntilIdle()
 
         viewModel.uiState.test {
@@ -160,31 +173,63 @@ class BookmarkViewModelTest {
     }
 
     @Test
-    fun `onDeleteBookmarkClick should restore bookmark on error`() = runTest {
-        val exception = Exception("Delete failed")
-        everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
-        everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) } throws exception
+    fun `onConfirmDeleteBookmarkClick should restore bookmark on error`() =
+        runTest(testDispatcher) {
+            val exception = Exception("Delete failed")
+            everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
+            everySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) } throws exception
 
-        viewModel = BookmarkViewModel(
-            bookmarkRepository = repository,
-            dispatcher = testDispatcher,
-            snackBarHandler = snackbarHandler
-
+            viewModel = BookmarkViewModel(
+                bookmarkRepository = repository,
+                dispatcher = testDispatcher,
+                snackBarHandler = snackbarHandler
             )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        viewModel.onDeleteBookmarkClick(bookmarkId = BOOKMARK_ID1)
-        advanceUntilIdle()
+            viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
+            advanceUntilIdle()
 
-        viewModel.uiState.test {
-            val state = awaitItem()
-            val bookmarks = state.bookmarks.asSnapshot()
+            viewModel.onConfirmDeleteBookmarkClick()
+            advanceUntilIdle()
 
-            assertEquals(2, bookmarks.size)
-            assertTrue(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
-            cancelAndIgnoreRemainingEvents()
+            viewModel.uiState.test {
+                val state = awaitItem()
+                val bookmarks = state.bookmarks.asSnapshot()
+
+                assertEquals(2, bookmarks.size)
+                assertTrue(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
+
+    @Test
+    fun `onDismissDeleteConfirmationDialog should hide dialog without deleting`() =
+        runTest(testDispatcher) {
+            everySuspend { repository.getAyahBookmarks(any(), any()) } returns fakeBookmarks
+
+            viewModel = BookmarkViewModel(
+                bookmarkRepository = repository,
+                dispatcher = testDispatcher,
+                snackBarHandler = snackbarHandler
+            )
+            advanceUntilIdle()
+
+            viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
+            advanceUntilIdle()
+
+            viewModel.onDismissDeleteConfirmationDialog()
+            advanceUntilIdle()
+
+            viewModel.uiState.test {
+                val state = awaitItem()
+                val bookmarks = state.bookmarks.asSnapshot()
+
+                assertFalse(state.isDeleteConfirmationDialogVisible)
+                assertEquals(2, bookmarks.size)
+                assertTrue(bookmarks.any { it.bookmarkId == BOOKMARK_ID1 })
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `onBackClick should emit NavigateBack effect`() = runTest(testDispatcher) {
@@ -194,7 +239,6 @@ class BookmarkViewModelTest {
             assertEquals(BookmarkEffect.NavigateBack, effect)
         }
     }
-
 
     @Test
     fun `onStartTilawahClick should emit NavigateSur effect`() = runTest(testDispatcher) {

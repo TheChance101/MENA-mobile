@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.content
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
@@ -21,12 +22,15 @@ fun NoImageDukanDetailsContent(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener,
 ) {
+    val shelves = state.shelves.collectAsLazyPagingItems()
+
+
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
         topBar = {
             NoImageDukanAppBar(
                 state = state.dukanInfo,
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 listener = listener
             )
         },
@@ -49,6 +53,7 @@ fun NoImageDukanDetailsContent(
         NoImageDukanShelvesContent(
             state = state,
             listener = listener,
+            shelves = shelves
         )
     }
 }
