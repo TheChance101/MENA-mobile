@@ -44,6 +44,7 @@ sealed interface ChatListItem {
     data class DateSeparator(val label: UiText) : ChatListItem
     data class TextMessage(val data: MessageUiState) : ChatListItem
     data class ImageMessages(val data: List<MessageUiState>) : ChatListItem
+    data class AyahMessage(val data: MessageUiState) : ChatListItem
     data class VoiceMessage(
         val data: MessageUiState,
         val isPlaying: Boolean,

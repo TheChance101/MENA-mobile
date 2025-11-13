@@ -91,5 +91,17 @@ fun ChatListItem(
                 )
             }
         }
+        is ChatListItem.AyahMessage -> {
+            AyahMessageLayout(
+                message = item.data,
+                showMessageInfo = item.data.isVisibleMessageInfo,
+                isMarkedLastInSeries = item.data.isLastInSeries,
+                chatAvatarUrl = chatAvatarUrl,
+                onFailClick = { onFailedMessageClick(item.data) },
+                onMessageLongClick = { onMessageLongClick(item.data) },
+                onMessageClick = { onMessageClick(item.data.id) },
+                modifier = modifier
+            )
+        }
     }
 }
