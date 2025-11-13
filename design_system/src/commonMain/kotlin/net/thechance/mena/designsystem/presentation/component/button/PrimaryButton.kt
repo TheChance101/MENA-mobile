@@ -41,7 +41,7 @@ fun PrimaryButton(
     disabledContentColor: Color = Theme.colorScheme.textDisabled,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = Theme.spacing._16,
-        vertical = Theme.spacing._8
+        vertical = 13.dp
     ),
     shape: Shape = SquircleShape(Theme.radius.md)
 ) {
@@ -76,40 +76,40 @@ fun PrimaryButton(
 @Composable
 private fun PrimaryButtonPreview() {
     MenaTheme {
-    var primaryButtonLoading by remember { mutableStateOf(false) }
+        var primaryButtonLoading by remember { mutableStateOf(false) }
 
-    LaunchedEffect(primaryButtonLoading) {
-        if (primaryButtonLoading) {
-            launch {
-                delay(1000)
-                primaryButtonLoading = false
+        LaunchedEffect(primaryButtonLoading) {
+            if (primaryButtonLoading) {
+                launch {
+                    delay(1000)
+                    primaryButtonLoading = false
+                }
             }
         }
-    }
 
-    PreviewComponent(
-        isScrollable = true,
-        title = "Primary button"
-    ) {
-        PrimaryButton(
-            text = "Button",
-            trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
-            onClick = {},
-            modifier = Modifier
-        )
-        PrimaryButton(
-            text = "Click me to test loading",
-            isLoading = primaryButtonLoading,
-            trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
-            onClick = { primaryButtonLoading = !primaryButtonLoading },
-        )
-        PrimaryButton(
-            text = "Button",
-            trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
-            onClick = {},
-            isEnabled = false,
-            modifier = Modifier
-        )
-    }
+        PreviewComponent(
+            isScrollable = true,
+            title = "Primary button"
+        ) {
+            PrimaryButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                modifier = Modifier
+            )
+            PrimaryButton(
+                text = "Click me to test loading",
+                isLoading = primaryButtonLoading,
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = { primaryButtonLoading = !primaryButtonLoading },
+            )
+            PrimaryButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                isEnabled = false,
+                modifier = Modifier
+            )
+        }
     }
 }

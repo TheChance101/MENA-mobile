@@ -34,7 +34,7 @@ fun OutlinedButton(
     disabledContentColor: Color = Theme.colorScheme.textDisabled,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = Theme.spacing._16,
-        vertical = Theme.spacing._8
+        vertical = 13.dp
     ),
     shape: Shape = SquircleShape(Theme.radius.md)
 ) {
