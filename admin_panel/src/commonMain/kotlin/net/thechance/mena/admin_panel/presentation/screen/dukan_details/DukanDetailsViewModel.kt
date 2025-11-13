@@ -56,9 +56,9 @@ class DukanDetailsViewModel(
         loadNextShelves()
     }
 
-    override fun onShelfSelected(shelfId: String) {
-        if (currentState.selectedShelfId != shelfId) {
-            updateState { it.copy(selectedShelfId = shelfId) }
+    override fun onShelfSelected(shelfId: Uuid) {
+        if (currentState.selectedShelfId != shelfId.toString()) {
+            updateState { it.copy(selectedShelfId = shelfId.toString()) }
             initializeProductsPaginator()
             loadNextProducts()
         }
@@ -99,7 +99,7 @@ class DukanDetailsViewModel(
 
     private fun getDukanDetails() {
         tryToExecute(
-            callee = { dukanRepository.getDukanDetails(Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9")) },
+            callee = { dukanRepository.getDukanDetails() },
             onSuccess = ::onGetDukanDetailsSuccess,
             onError = ::onGetDukanDetailsError,
             onStart = { updateState { it.copy(isDukanDetailsLoading = true) } },
@@ -138,7 +138,7 @@ class DukanDetailsViewModel(
 
     private suspend fun getPagedShelves(page: Int): PagedResult<Shelf> {
         return dukanRepository.getDukanShelves(
-            dukanId = Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9"),
+            dukanId = currentState.dukan.id,
             page = page,
             size = PAGE_SIZE
         )
@@ -146,7 +146,7 @@ class DukanDetailsViewModel(
 
     private fun onGetPagedShelvesSuccess(pagedShelves: PagedResult<Shelf>) {
         if (currentState.selectedShelfId.isEmpty()) {
-            updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id ?: "") }
+            updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id.toString()) }
             initializeProductsPaginator()
             loadNextProducts()
         }

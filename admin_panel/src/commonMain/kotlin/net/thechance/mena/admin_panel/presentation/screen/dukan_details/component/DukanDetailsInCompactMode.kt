@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreenState
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 internal fun DukanDetailsInCompactMode(
     state: DukanDetailsScreenState,

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details
 
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
@@ -11,13 +13,14 @@ import net.thechance.mena.admin_panel.resources.ic_activate
 import net.thechance.mena.admin_panel.resources.ic_block
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class DukanDetailsScreenState(
     val isDukanDetailsLoading: Boolean = false,
     val isShelvesLoading: Boolean = false,
     val isProductsLoading: Boolean = false,
     val errorState: ErrorState? = null,
-    val dukanStatus: DukanStatus = DukanStatus.DEACTIVE,
     val snackBar: SnackBarState = SnackBarState(),
     val dukan: DukanUi = DukanUi(),
     val shelves: List<Shelf> = listOf(),
@@ -32,10 +35,12 @@ data class DukanDetailsScreenState(
         get() = deactivateReason.length > 1
 
     data class DukanUi(
+        val id: Uuid = Uuid.random(),
         val name: String = "",
         val address: String = "",
         val imageUrl: String = "",
-        val categories: List<String> = listOf()
+        val categories: List<String> = listOf(),
+        val dukanStatus: DukanStatus = DukanStatus.DEACTIVE,
     )
 
     enum class DukanStatus(

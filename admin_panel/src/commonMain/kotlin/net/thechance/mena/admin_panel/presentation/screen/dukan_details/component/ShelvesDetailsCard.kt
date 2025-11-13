@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
 import androidx.compose.foundation.background
@@ -27,13 +29,15 @@ import net.thechance.mena.designsystem.presentation.component.indicator.DotsProg
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 internal fun ShelvesDetailsCard(
     totalShelves: String,
     shelves: List<Shelf>,
     selectedShelf: String,
-    onShelfClicked: (String) -> Unit,
+    onShelfClicked: (Uuid) -> Unit,
     onNextShelvesPageRequested: () -> Unit,
     onNextProductsPageRequested: () -> Unit,
     products: List<Product>,
@@ -117,7 +121,7 @@ private fun ShelfHeader(
 private fun shelves(
     shelves: List<Shelf>,
     selectedShelf: String,
-    onShelfClicked: (String) -> Unit,
+    onShelfClicked: (Uuid) -> Unit,
     onNextPageRequested: () -> Unit,
     isShelvesLoading: Boolean,
     modifier: Modifier = Modifier
@@ -139,7 +143,7 @@ private fun shelves(
             Chip(
                 modifier = Modifier.padding(start = 8.dp),
                 text = shelf.title,
-                isSelected = shelf.id == selectedShelf,
+                isSelected = shelf.id.toString() == selectedShelf,
                 onClick = { onShelfClicked(shelf.id) }
             )
         }
