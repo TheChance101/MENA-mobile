@@ -92,6 +92,7 @@ private fun Content(
                     reciter = reciterDetails.name,
                     recitingType = reciterDetails.recitingType,
                     isDownloaded = reciterDetails.isDownloaded,
+                    isDownloadShown = uiState.isDownloadButtonShown,
                     onSelect = {
                         listener.onSelectReciterClick(reciterDetails.id)
                     },

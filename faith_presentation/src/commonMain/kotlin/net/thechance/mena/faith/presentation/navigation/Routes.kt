@@ -41,7 +41,8 @@ internal sealed interface Route {
     @Serializable
     data class DownloadedRecitersRoute(
         val surahId: Int? = null,
-        val isCardsSwipable: Boolean = false
+        val isCardsSwipable: Boolean = false,
+        val isDownloadShown: Boolean = true
     ) : Route
 
     @Serializable

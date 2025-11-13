@@ -105,7 +105,8 @@ private fun ResultList(
                 onSelect = {},
                 onDownloadClick = {},
                 isSelectReciter = false,
-                isSwipeable = false
+                isSwipeable = false,
+                isDownloadShown = true,
             )
         }
     }

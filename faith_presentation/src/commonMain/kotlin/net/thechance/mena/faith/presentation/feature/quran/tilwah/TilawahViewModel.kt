@@ -26,6 +26,7 @@ class TilawahViewModel(
     initialState = TilawahUiState(
         surahId = tilawahArgs.surahId,
         isSwipeable = tilawahArgs.isSwipeToDeleteEnabled,
+        isDownloadButtonShown = tilawahArgs.isDownloadButtonShown,
     ),
     snackbarHandler = snackBarHandler,
 ), TilawahInteractionListener {
@@ -52,7 +53,6 @@ class TilawahViewModel(
             execute = {
                 tilawahArgs.surahId?.let {
                     downloadAndCacheSurah(it, reciterId)
-
                 }
             },
             onSuccess = { onDownloadComplete(reciterId) },

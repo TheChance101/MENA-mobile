@@ -49,7 +49,8 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
                 navController.navigate(
                     Route.DownloadedRecitersRoute(
                         surahId = effect.surahId,
-                        isCardsSwipable = true
+                        isCardsSwipable = true,
+                        isDownloadShown = false
                     )
                 )
             }

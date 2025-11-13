@@ -44,6 +44,7 @@ fun ReciterItem(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
+    isDownloadShown: Boolean,
     onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
     isSwipeable: Boolean,
@@ -62,6 +63,7 @@ fun ReciterItem(
                 reciter = reciter,
                 recitingType = recitingType,
                 isDownloaded = isDownloaded,
+                isDownloadShown = isDownloadShown,
                 modifier = contentModifier,
                 onDownloadClick = onDownloadClick,
                 onSelect = onSelect,
@@ -79,6 +81,7 @@ private fun CardContent(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
+    isDownloadShown: Boolean,
     onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
     isSelectReciter: Boolean,
@@ -130,7 +133,7 @@ private fun CardContent(
                 isDownloaded = isDownloaded
             )
         }
-
+        if (isDownloadShown)
         Icon(
             painterResource(Res.drawable.icon_download),
             contentDescription = stringResource(Res.string.success),
@@ -181,6 +184,7 @@ private fun Preview() {
             reciter = "Muhammad Siddiq Al-Minshawi",
             recitingType = "Teacher - Tajweed",
             isDownloaded = true,
+            isDownloadShown = true,
             onSelect = {},
             isSwipeable = true,
             onDownloadClick = {},
