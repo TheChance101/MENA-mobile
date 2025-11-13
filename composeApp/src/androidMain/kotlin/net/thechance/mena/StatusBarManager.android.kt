@@ -9,7 +9,7 @@ import net.thechance.mena.identity.domain.util.AppTheme
 
 
 @Composable
-actual fun SetStatusBarIconsDark(appTheme: AppTheme) {
+actual fun SetStatusBarIconsColor(appTheme: AppTheme) {
     val context = LocalContext.current
     SideEffect {
         (context as? ComponentActivity)?.window?.let { window ->

@@ -12,7 +12,7 @@ import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
 
 @Composable
-actual fun SetStatusBarIconsDark(appTheme: AppTheme) {
+actual fun SetStatusBarIconsColor(appTheme: AppTheme) {
     SideEffect {
         dispatch_async(dispatch_get_main_queue()) {
             val style: UIStatusBarStyle =

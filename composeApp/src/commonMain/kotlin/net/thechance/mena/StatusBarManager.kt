@@ -4,4 +4,4 @@ import androidx.compose.runtime.Composable
 import net.thechance.mena.identity.domain.util.AppTheme
 
 @Composable
-expect fun SetStatusBarIconsDark(appTheme: AppTheme)
+expect fun SetStatusBarIconsColor(appTheme: AppTheme)

@@ -7,7 +7,6 @@ import net.thechance.mena.appEntryPoint.EntryPoint
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.identity.domain.service.AppThemeService
 import net.thechance.mena.identity.domain.service.LocalizationService
-import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 
@@ -22,7 +21,7 @@ fun App() {
         language = currentLanguage.iso,
         appTheme = currentTheme.name ,
         content = {
-            SetStatusBarIconsDark(currentTheme)
+            SetStatusBarIconsColor(currentTheme)
             EntryPoint()
         }
     )
