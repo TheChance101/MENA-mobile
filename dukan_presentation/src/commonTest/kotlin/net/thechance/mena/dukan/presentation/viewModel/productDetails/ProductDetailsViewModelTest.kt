@@ -80,7 +80,7 @@ class ProductDetailsViewModelTest {
         advanceUntilIdle()
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(dummyDukanDetails().color.hexCode.toColor(), state.dukanColor)
+            assertEquals(toColor(dummyDukanDetails().color.hexCode), state.dukanColor)
             cancelAndIgnoreRemainingEvents()
         }
     }

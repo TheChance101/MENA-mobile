@@ -54,7 +54,7 @@ class ProductDetailsMapperTest {
     @Test
     fun `toColor should map String color to Long`(){
         val color = "#432CCD"
-        val colorLong = color.toColor()
+        val colorLong = toColor(color = color)
         assertEquals(0xFF432CCD, colorLong)
     }
 }
