@@ -6,7 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,7 +68,7 @@ private fun ProductCart(
         contentDescription = stringResource(Res.string.add_shopping_basket),
         modifier = Modifier
             .size(32.dp)
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .background(dukanColor)
             .clickable(
                 onClick = onClick,

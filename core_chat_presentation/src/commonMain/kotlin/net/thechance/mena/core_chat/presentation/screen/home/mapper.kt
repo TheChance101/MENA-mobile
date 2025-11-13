@@ -17,8 +17,9 @@ fun ChatSummary.toUi(): ChatUiState {
     val lastMessage = lastMessage?.let {
         ChatUiState.MessageUiState(
             text = it.content,
-            time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(it.sendAt),
-            isMine = it.isMine
+            uiTime = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(it.sendAt),
+            isMine = it.isMine,
+            time = it.sendAt,
         )
     }
     return ChatUiState(

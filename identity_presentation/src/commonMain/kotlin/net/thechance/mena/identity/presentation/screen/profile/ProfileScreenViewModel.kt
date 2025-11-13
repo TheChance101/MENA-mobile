@@ -52,8 +52,8 @@ class ProfileScreenViewModel(
         updateState {
             copy(
                 userName = user.username,
-                fullName = "${user.firstName} ${user.lastName}",
-                profileImageUrl = user.profileImageUrl.orEmpty(),
+                fullName = "${user.firstName.trim()} ${user.lastName.trim()}",
+                profileImageUrl = user.profileImageUrl,
                 isSuccess = true,
                 inviteLinkUrl = "$SHARE_URL${user.id}"
             )

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -16,6 +15,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun DukanCartDeleteActionButton(
@@ -30,7 +30,7 @@ fun DukanCartDeleteActionButton(
             .padding(vertical = Theme.spacing._8)
             .width(48.dp)
             .clip(
-                RoundedCornerShape(
+                SquircleShape(
                     topEnd = Theme.radius.md,
                     bottomEnd = Theme.radius.md
                 )

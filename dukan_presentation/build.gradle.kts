@@ -55,6 +55,8 @@ kotlin {
             implementation(projects.identityDomain)
             implementation(projects.walletApi)
 
+            implementation(libs.squircle.shape)
+
             implementation(compose.runtime)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
@@ -71,9 +73,11 @@ kotlin {
 
             // maps
             implementation(libs.maplibre.compose)
+            implementation(libs.bundles.coil)
         }
         iosMain.dependencies {
-
+            implementation(libs.bundles.coil)
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -85,7 +85,10 @@ abstract class BaseViewModel<S, E>(
             try {
                 val result = block()
                 onSuccess(result)
-            } catch (e: Exception) {
+            } catch (e: CancellationException){
+                return@launch
+            }
+            catch (e: Exception) {
                 onError(e)
             }
         }

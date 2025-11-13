@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -32,15 +31,16 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun WideImageDukanDetailsContent(
     state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
+    listener: DukanDetailsInteractionListener
 ) {
+    val shelves = state.shelves.collectAsLazyPagingItems()
     val productShelf = state.productsShelf.collectAsLazyPagingItems()
 
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
         topBar = {
             WideImageDukanAppBar(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 onBackClicked = listener::onBackClicked,
                 onCartClicked = listener::onViewCartClicked
             )
@@ -82,17 +82,19 @@ fun WideImageDukanDetailsContent(
                 WideImageDukanShelves(
                     state = state,
                     listener = listener,
+                    shelves = shelves
                 )
             }
             when (productShelf.loadState.refresh) {
                 is LoadState.Loading -> wideImageProductCardSkeletonGrid(productCount = 6)
                 is LoadState.NotLoading -> {
                     wideImageProductsGrid(
+                        state = state,
                         listener = listener,
-                        cartColor = Color(state.dukanInfo.color),
                         productsShelf = productShelf
                     )
                 }
+
                 is LoadState.Error -> {}
             }
         }
@@ -105,7 +107,7 @@ private fun WideImageDukanDetailsPreview() {
     MenaTheme {
         WideImageDukanDetailsContent(
             state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
+            listener = PreviewDukanDetailsInteractionListener
         )
     }
 }

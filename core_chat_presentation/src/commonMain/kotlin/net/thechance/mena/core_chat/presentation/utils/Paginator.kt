@@ -5,9 +5,9 @@ class Paginator<Key, Items>(
     private val onLoadUpdated: (Boolean) -> Unit,
     private val onRequest: suspend (nextKey: Key) -> Items,
     private val getNextKey: suspend (currentKey: Key, result: Items) -> Key,
-    private val onError: suspend (Throwable?) -> Unit,
     private val onSuccess: suspend (result: Items, newKey: Key) -> Unit,
-    private val endReached: (currentKey: Key, result: Items) -> Boolean
+    private val endReached: (currentKey: Key, result: Items) -> Boolean,
+    private val onError: suspend (Throwable?) -> Unit = {}
 ) {
 
     private var currentKey = initialKey

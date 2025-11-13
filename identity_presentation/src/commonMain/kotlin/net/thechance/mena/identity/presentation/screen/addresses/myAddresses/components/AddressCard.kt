@@ -1,6 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,10 +19,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
@@ -30,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.components.util.MapStyle
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.SetAnchorInCenter
+import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.maplibre.compose.camera.CameraPosition
@@ -52,9 +59,35 @@ fun AddressCard(
     longitude: Double?,
     latitude: Double?,
     animateToCurrentLocation: Boolean,
+    isDeleting: Boolean = false,
+    isActivating: Boolean = false,
 ) {
+    val scale by animateFloatAsState(
+        targetValue = if (isDeleting) 0f else 1f,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = LinearEasing
+        ),
+        label = "DeleteScale"
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isDeleting) 0f else 1f,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = LinearEasing
+        ),
+        label = "DeleteAlpha"
+    )
+
     Column(
         Modifier.fillMaxWidth()
+            .graphicsLayer(
+                scaleX = scale,
+                scaleY = scale,
+                alpha = alpha,
+                transformOrigin = TransformOrigin.Center
+            )
             .background(
                 Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.lg)
@@ -64,10 +97,13 @@ fun AddressCard(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rippleIndication(),
                 onClick = onClickAddress,
-                enabled = isMainAddress != true
+                enabled = isMainAddress != true && !isDeleting && !isActivating
             )
             .padding(Theme.spacing._8)
             .padding(end = 4.dp)
+            .then(
+                if (isActivating) Modifier.shimmerLoading(isLoading = true) else Modifier
+            )
     ) {
         AddressHeader(
             addressType = addressType,
@@ -87,7 +123,12 @@ fun AddressCard(
         )
 
 
-        AddressActions(onEditClick = onEditClick, onDeleteClick = onDeleteClick)
+        AddressActions(
+            onEditClick = onEditClick,
+            onDeleteClick = onDeleteClick,
+            isDeleting = isDeleting,
+            isActivating = isActivating
+        )
     }
 }
 

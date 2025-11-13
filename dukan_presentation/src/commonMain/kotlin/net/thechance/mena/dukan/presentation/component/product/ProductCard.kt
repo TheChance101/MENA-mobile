@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +34,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 
 @Composable
@@ -57,17 +57,17 @@ fun ProductCard(
             .fillMaxWidth()
             .background(
                 color = productCardBackground ?: Color.Transparent,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             )
             .height(104.dp)
-            .clip(RoundedCornerShape(size = Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .clickable(onClick = onProductClick)
             .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
                 color = productImageBackground,
-                shape = RoundedCornerShape(Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             )
         ) {
             AsyncImage(
@@ -79,7 +79,7 @@ fun ProductCard(
                 },
                 modifier = Modifier
                     .size(96.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm)),
+                    .clip(SquircleShape(Theme.radius.sm)),
                 contentScale = ContentScale.Crop
             )
             if (isError || isLoading) {

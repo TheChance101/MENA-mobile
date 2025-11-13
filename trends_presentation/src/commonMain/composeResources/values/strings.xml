@@ -104,7 +104,9 @@
 
     <string name="no_connection_icon">No Connection Icon</string>
     <string name="no_connection_title">Oops! It looks like you’re offline.</string>
+    <string name="something_went_wrong_title">Something went wrong!</string>
     <string name="no_connection_description">Check your connection and try again</string>
+    <string name="something_went_wrong_description">We couldn't load the content... Please try again</string>
     <string name="re_try">Re-try</string>
 
     <string name="no_favorites_yet">No favorites yet</string>

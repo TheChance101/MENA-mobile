@@ -1,17 +1,15 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.SomethingWentWrong
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.koin.compose.viewmodel.koinViewModel
@@ -39,21 +37,27 @@ internal fun MainContainerScreen(
         }
     }
 
-    MainContainerScreenContent(state = state)
+    MainContainerScreenContent(state = state, listener = viewModel)
 }
 
 @Composable
-private fun MainContainerScreenContent(state: MainContainerState) {
-    TrendsAnimatedVisibility(
-        visible = state.isCategoriesAlreadySelectedByUser == null
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Theme.colorScheme.background.surface.copy(alpha = 0.7f)),
-            contentAlignment = Alignment.Center
+private fun MainContainerScreenContent(
+    state: MainContainerState,
+    listener: MainContainerInteractionListener
+) {
+    Scaffold {
+        TrendsAnimatedVisibility(
+            visible = state.isCategoriesAlreadySelectedByUser == null
         ) {
-            DotsProgressIndicator()
+            LoadingProgressBar()
+        }
+
+        TrendsAnimatedVisibility(state.error is ErrorState.RequestFailed) {
+            SomethingWentWrong(onRetry = listener::onClickRetry)
+        }
+
+        TrendsAnimatedVisibility(state.error is ErrorState.NoInternet) {
+            NoConnection(onRetry = listener::onClickRetry)
         }
     }
 }

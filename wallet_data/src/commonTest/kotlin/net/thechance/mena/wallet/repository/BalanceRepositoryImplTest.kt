@@ -8,6 +8,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.balance.BalanceRepositoryImpl
@@ -40,6 +41,32 @@ class BalanceRepositoryImplTest {
         assertFailsWith<UnknownNetworkException> {
             balanceRepository.getBalance()
         }
+    }
+
+    @Test
+    fun `observeBalance fetches and emits balance when initial value is zero`() = runTest {
+        networkClient = createNetworkClient(getRespond = balanceResonance)
+        balanceRepository = BalanceRepositoryImpl(networkClient)
+
+        val flow = balanceRepository.observeBalance()
+
+        val emitted = flow.first { it == BALANCE }
+
+        assertEquals(BALANCE, emitted)
+    }
+
+    @Test
+    fun `observeBalance returns current value immediately when already set`() = runTest {
+        networkClient = createNetworkClient(getRespond = balanceResonance)
+        balanceRepository = BalanceRepositoryImpl(networkClient)
+
+        val initial = balanceRepository.getBalance()
+        assertEquals(BALANCE, initial)
+
+        val flow = balanceRepository.observeBalance()
+        val emitted = flow.first()
+
+        assertEquals(BALANCE, emitted)
     }
 
     private companion object {

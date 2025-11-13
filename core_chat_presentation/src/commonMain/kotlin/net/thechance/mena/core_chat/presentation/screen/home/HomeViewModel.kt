@@ -8,10 +8,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
-import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
@@ -58,41 +56,46 @@ class HomeViewModel(
     }
 
     init {
-        getBalanceAmount()
+        observeBalanceAmount()
         onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
         observeDeleteChat()
         observeChatSummariesSyncState()
     }
+
     private fun observeChatSummariesSyncState() {
         tryToCollect(
             collect = { chatRepository.observeChatSummariesSyncState() },
-            onCollect = {
-                delay(100)
-                when (it) {
-                    is SyncState.Error -> showErrorLoadingChatsSnackBar()
-                    is SyncState.Offline -> showNoInternetSnackBar()
-                    is SyncState.ChatsSummariesSynced -> {
-                        updateState { state ->
-                            state.copy(
-                                chats = it.chatSummaries.sortedByDescending { chatSummary -> chatSummary.lastMessage?.sendAt }
-                                    .map { chatSummary -> chatSummary.toUi() }
-                            )
-                        }
-                    }
-                    is SyncState.DeletedChatsSynced -> {
-                        val deletedChatIdsSet = it.chatIds.toSet()
-                        updateState { state ->
-                            state.copy(
-                                chats = state.chats.filter { chat -> chat.id !in deletedChatIdsSet }
-                            )
-                        }
-                    }
-                    else -> Unit
-                }
-            }
+            onCollect = ::onCollectSyncString
         )
+    }
+
+    private suspend fun onCollectSyncString(syncState: SyncState?) {
+        delay(100)
+        when (syncState) {
+            is SyncState.Error -> showErrorLoadingChatsSnackBar()
+            is SyncState.Offline -> showNoInternetSnackBar()
+            is SyncState.ChatsSummariesSynced -> onChatsSummariesSynced(syncState)
+            is SyncState.DeletedChatsSynced -> {
+                updateState { it.copy(chats = it.chats.filterNot { syncState.chatIds.contains(it.id) }) }
+            }
+
+            else -> Unit
+        }
+    }
+
+    private fun onChatsSummariesSynced(syncState: SyncState.ChatsSummariesSynced) {
+        updateState { state ->
+            state.copy(
+                chats = syncState.chatSummaries
+                    .map { chatSummary -> chatSummary.toUi() }
+                    .let { chatSummaries -> chatSummaries + state.chats }
+                    .distinctBy { it.id }
+                    .sortedByDescending { chatSummary -> chatSummary.lastMessage?.time }
+
+            )
+        }
     }
 
     private fun listenToMarkAsReadEvent() {
@@ -160,8 +163,9 @@ class HomeViewModel(
         val updatedChatSummary = chatSummary.copy(
             lastMessage = ChatUiState.MessageUiState(
                 text = (message.content as MessageContent.Text).text,
-                time = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
+                uiTime = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(message.sendAt),
                 isMine = message.isMine,
+                time = message.sendAt,
             ),
             status =
                 if (message.isMine) ChatUiState.Status.Sent
@@ -172,32 +176,35 @@ class HomeViewModel(
         )
 
         val updatedChats =
-            listOf(updatedChatSummary) +
-                    state.value.chats.filterNot { it.id == message.chatId }
+            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
 
-    private fun getBalanceAmount() {
-        tryToExecute(
+    private fun observeBalanceAmount() {
+        tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
-            execute = { balanceRepository.getBalance() },
-            onSuccess = ::onGetBalanceAmountSuccess,
-            onError = { onGetBalanceAmountError() }
+            collect = { balanceRepository.observeBalance() },
+            onCollect = ::onObserveBalanceAmountSuccess,
+            onError = { onObserveBalanceAmountError() }
         )
     }
 
-    private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
-        updateState { it.copy(balanceAmount = balanceAmount.toInt().toString(), isBalanceLoading = false) }
+    private fun onObserveBalanceAmountSuccess(balanceAmount: Double?) {
+        if (balanceAmount == null) {
+            onObserveBalanceAmountError()
+            return
+        }
+        updateState {
+            it.copy(
+                balanceAmount = balanceAmount.toInt().toString(),
+                isBalanceLoading = false
+            )
+        }
     }
 
-    private fun onGetBalanceAmountError() {
-        updateState { it.copy(isBalanceLoading = false, balanceAmount = "--") }
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.could_not_get_balance,
-            isError = true
-        )
+    private fun onObserveBalanceAmountError() {
+        updateState { it.copy(isBalanceLoading = false, balanceAmount = "") }
     }
 
     override fun onChatsListScrolled() {
@@ -232,7 +239,8 @@ class HomeViewModel(
             isError = true
         )
     }
-    private fun showErrorLoadingChatsSnackBar(){
+
+    private fun showErrorLoadingChatsSnackBar() {
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,
@@ -241,11 +249,15 @@ class HomeViewModel(
     }
 
     private fun onLoadChatsSummarySuccess(items: PagedData<ChatSummary>) {
-        val chats = items.data
-            .sortedByDescending { it.lastMessage?.sendAt }
-            .map { chat -> chat.toUi() }
+        val chats = state.value.chats + items.data.map { chat -> chat.toUi() }
 
-        updateState { it.copy(chats = it.chats + chats) }
+        updateState {
+            it.copy(
+                chats = chats
+                    .distinctBy { it.id }
+                    .sortedByDescending { it.lastMessage?.time }
+            )
+        }
     }
 
     override fun onNewChatClicked() {

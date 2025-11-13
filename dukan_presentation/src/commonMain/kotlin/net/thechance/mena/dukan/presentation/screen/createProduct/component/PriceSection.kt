@@ -1,13 +1,11 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct.component
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_price
 import mena.dukan_presentation.generated.resources.price
@@ -36,7 +34,6 @@ fun PriceSection(
         )
         TextField(
             modifier = Modifier.padding(top = Theme.spacing._4)
-                .height(48.dp)
                 .padding(horizontal = Theme.spacing._16),
             value = price,
             onValueChanged = onPriceChange,

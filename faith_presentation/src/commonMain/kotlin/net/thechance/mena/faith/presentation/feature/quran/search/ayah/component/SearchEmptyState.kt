@@ -49,6 +49,7 @@ internal fun SearchEmptyState(
             text = stringResource(getTitleResource(isStartState)),
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary,
+            textAlign = TextAlign.Center,
         )
 
         Text(

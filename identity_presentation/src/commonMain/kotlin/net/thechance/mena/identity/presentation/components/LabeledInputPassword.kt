@@ -40,8 +40,8 @@ internal fun LabeledInputPassword(
             onValueChanged = onChangePassword::invoke,
             hint = "",
             trailingIcon = painterResource(
-                if (isPasswordVisible) Res.drawable.ic_open_eye
-                else Res.drawable.ic_close_eye
+                if (isPasswordVisible) Res.drawable.ic_close_eye
+                else Res.drawable.ic_open_eye
             ),
             leadingIcon = painterResource(Res.drawable.ic_lock),
             showTrailingDivider = false,

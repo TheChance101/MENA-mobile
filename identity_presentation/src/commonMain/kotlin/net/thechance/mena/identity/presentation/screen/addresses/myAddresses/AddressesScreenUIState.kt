@@ -17,7 +17,10 @@ data class AddressesScreenUIState(
     val errorMessage: StringResource? = null,
     val snackBarUiState: SnackBarUiState = SnackBarUiState(),
     val animateToCurrentLocation: Boolean = false,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isAddingNewAddress: Boolean = false,
+    val pendingSnackBar: SnackBarUiState? = null,
+    val editedAddressId: Uuid? = null
 )
 
 @OptIn(ExperimentalUuidApi::class)
@@ -35,6 +38,9 @@ data class AddressUIState(
     val isMainAddress: Boolean = false,
     val addressDetails: String = "",
     val coordinates: CoordinatesUiState = CoordinatesUiState(),
+    val isDeleting: Boolean = false,
+    val isActivating: Boolean = false,
+    val isRefreshing: Boolean = false,
 )
 
 data class CoordinatesUiState(

@@ -7,11 +7,8 @@ data class MessageDto(
     val id: String,
     val senderId: String,
     val chatId: String,
-    val text: String? = null,
-    val imageUrl: String? = null,
-    val audioUrl: String? = null,
+    val content: MessageContentDto,
     val reactions: List<MessageReactionDto> = emptyList(),
-    val audioDurationMs: Long? = null,
     val sendAt: String,
     val isRead: Boolean,
     val isMine: Boolean
@@ -19,6 +16,7 @@ data class MessageDto(
 
 @Serializable
 data class SendMessageDto(
+    val messageId: String,
     val chatId: String,
     val text: String? = null
 )

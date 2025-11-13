@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,7 +28,6 @@ import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_favorite_filled
-import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
 import mena.dukan_presentation.generated.resources.wide_dukan_image
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -43,6 +42,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun WideImageDukanAppBar(
@@ -129,7 +129,7 @@ private fun DukanImageAndTitle(
         modifier = modifier
             .fillMaxWidth()
             .height(188.dp)
-            .clip(RoundedCornerShape(Theme.radius.md)),
+            .clip(SquircleShape(Theme.radius.md)),
         contentAlignment = Alignment.Center
     ) {
         AsyncImage(
@@ -176,7 +176,7 @@ private fun DukanIconButton(
         tint = iconColor,
         modifier = modifier
             .size(40.dp)
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .clickable(
                 onClick = onIconClick,
                 indication = null,
@@ -186,7 +186,7 @@ private fun DukanIconButton(
             .border(
                 width = 3.dp,
                 color = Theme.colorScheme.background.surface,
-                shape = RoundedCornerShape(Theme.radius.full)
+                shape = CircleShape
             )
             .padding(Theme.spacing._8 + Theme.spacing._2)
     )

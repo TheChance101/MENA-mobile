@@ -21,7 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -146,7 +146,7 @@ private fun DeleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun rememberRecordingTimer(): Long {
-    var totalSeconds by remember { mutableStateOf(0L) }
+    var totalSeconds by rememberSaveable { mutableStateOf(0L) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -160,7 +160,7 @@ private fun rememberRecordingTimer(): Long {
 
 @Composable
 private fun rememberWaveformData(): List<Float> {
-    var waveData by remember { mutableStateOf(listOf<Float>()) }
+    var waveData by rememberSaveable { mutableStateOf(listOf<Float>()) }
 
     LaunchedEffect(Unit) {
         while (true) {

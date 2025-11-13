@@ -25,7 +25,7 @@ fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
         title = stringResource(Res.string.app_name),
-        alwaysOnTop = true,
+        alwaysOnTop = false,
         icon = painterResource(Res.drawable.mena_logo),
         state = rememberWindowState(placement = WindowPlacement.Maximized)
     ) {
