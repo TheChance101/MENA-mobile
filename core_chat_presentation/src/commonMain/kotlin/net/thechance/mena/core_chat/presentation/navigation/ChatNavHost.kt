@@ -20,7 +20,7 @@ import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBa
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
-import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareAyahScreen
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMessageScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.api.WalletApi
@@ -34,7 +34,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
     onNavigateBackFromChat: () -> Unit = {},
-    onNavigateBackFromShareAyah: () -> Unit = {},
+    onNavigateBackFromShareMessage: () -> Unit = {},
     startDestination: ChatRoute = HomeRoute
 ) {
 
@@ -62,7 +62,7 @@ fun ChatNavHost(
                         navController.popBackStack()
                     })
                 }
-                composable<ShareAyahRoute> { ShareAyahScreen(onClickBack = onNavigateBackFromShareAyah) }
+                composable<ShareAyahRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
 
             Box(

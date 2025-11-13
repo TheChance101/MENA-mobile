@@ -4,7 +4,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-interface ShareAyahInterActionListener{
+interface ShareMessageInteractionListener{
     fun onChangeSearchQuery(query: String)
     fun onClickContact(contactId: Uuid?)
     fun onClickBack()

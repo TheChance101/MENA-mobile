@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.cannot_get_chat_for_that_contact
 import mena.core_chat_presentation.generated.resources.could_not_load_the_contacts
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.Contact
@@ -30,11 +31,11 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class ShareAyahViewModel(
+class ShareMessageViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
-) : BaseViewModel<ShareAyahScreenState, ShareAyahEffect>(ShareAyahScreenState()),
-    ShareAyahInterActionListener {
+) : BaseViewModel<ShareMessageScreenState, ShareMessageEffect>(ShareMessageScreenState()),
+    ShareMessageInteractionListener {
 
     val searchQueryFlow = MutableStateFlow("")
 
@@ -105,7 +106,7 @@ class ShareAyahViewModel(
         isError: Boolean = false
     ) {
         emitEffect(
-            ShareAyahEffect.ShowSnackBar(
+            ShareMessageEffect.ShowSnackBar(
                 SnackBarData(
                     title = UiText.StringRes(titleStringResource),
                     message = UiText.StringRes(messageStringResource),
@@ -139,7 +140,7 @@ class ShareAyahViewModel(
     }
 
     override fun onClickBack() {
-        emitEffect(effect = ShareAyahEffect.NavigateBack)
+        emitEffect(effect = ShareMessageEffect.NavigateBack)
     }
 
     override fun onClickClearQuery() {
@@ -155,13 +156,13 @@ class ShareAyahViewModel(
     private fun onContactClickError() {
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
-            messageStringResource = Res.string.something_went_wrong,
+            messageStringResource = Res.string.cannot_get_chat_for_that_contact,
             isError = true
         )
     }
 
     private fun onContactClickSuccess(chatId: Uuid, chatName: String) {
-        emitEffect(ShareAyahEffect.NavigateToChatScreen(chatId = chatId, chatName = chatName))
+        emitEffect(ShareMessageEffect.NavigateToChatScreen(chatId = chatId, chatName = chatName))
     }
 
     companion object {

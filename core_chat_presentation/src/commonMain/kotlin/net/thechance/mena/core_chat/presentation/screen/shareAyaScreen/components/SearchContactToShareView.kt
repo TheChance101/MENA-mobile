@@ -17,18 +17,18 @@ import net.thechance.mena.core_chat.presentation.components.ErrorView
 import net.thechance.mena.core_chat.presentation.components.LoadingView
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.ContactsList
-import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareAyahInterActionListener
-import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareAyahScreenState
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMessageInteractionListener
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMessageScreenState
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun ShareAyahSearchContactContent(
+fun SearchContactToShareView(
     contacts: LazyPagingItems<ContactUiState>,
-    interactions: ShareAyahInterActionListener,
-    state: ShareAyahScreenState
+    interactions: ShareMessageInteractionListener,
+    state: ShareMessageScreenState
 ) {
     AnimatedContent(
         targetState = contacts.loadState.refresh,

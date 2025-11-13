@@ -15,7 +15,7 @@ import mena.core_chat_presentation.generated.resources.send_to
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.ChatDetailsRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
-import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.components.ShareAyahSearchContactContent
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.components.SearchContactToShareView
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -27,21 +27,21 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
-fun ShareAyahScreen(
-    viewModel: ShareAyahViewModel = koinViewModel<ShareAyahViewModel>(),
+fun ShareMessageScreen(
+    viewModel: ShareMessageViewModel = koinViewModel<ShareMessageViewModel>(),
     onClickBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val effects = viewModel.effect
     EffectsHandler(effects = effects, onClickBack = onClickBack)
-    ShareAyahContent(state = state, interactions = viewModel as ShareAyahInterActionListener)
+    ShareMessageContent(state = state, interactions = viewModel)
 }
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun ShareAyahContent(
-    state: ShareAyahScreenState,
-    interactions: ShareAyahInterActionListener,
+private fun ShareMessageContent(
+    state: ShareMessageScreenState,
+    interactions: ShareMessageInteractionListener,
 ) {
 
     val contacts = state.contacts.collectAsLazyPagingItems()
@@ -67,22 +67,22 @@ fun ShareAyahContent(
             )
         }
     ) {
-        ShareAyahSearchContactContent(contacts = contacts, state = state, interactions = interactions)
+        SearchContactToShareView(contacts = contacts, state = state, interactions = interactions)
     }
 }
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-private fun EffectsHandler(effects: SharedFlow<ShareAyahEffect>, onClickBack: () -> Unit) {
+private fun EffectsHandler(effects: SharedFlow<ShareMessageEffect>, onClickBack: () -> Unit) {
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
     EffectHandler(effects = effects) { effect ->
         when (effect) {
-            ShareAyahEffect.NavigateBack -> {
+            ShareMessageEffect.NavigateBack -> {
                 onClickBack()
             }
 
-            is ShareAyahEffect.NavigateToChatScreen -> {
+            is ShareMessageEffect.NavigateToChatScreen -> {
                 navController.navigate(
                     ChatDetailsRoute(
                         chatId = effect.chatId.toString(),
@@ -91,7 +91,7 @@ private fun EffectsHandler(effects: SharedFlow<ShareAyahEffect>, onClickBack: ()
                 )
             }
 
-            is ShareAyahEffect.ShowSnackBar -> snackBarHostController.showSnackBar(effect.snackBarData)
+            is ShareMessageEffect.ShowSnackBar -> snackBarHostController.showSnackBar(effect.snackBarData)
         }
     }
 }
