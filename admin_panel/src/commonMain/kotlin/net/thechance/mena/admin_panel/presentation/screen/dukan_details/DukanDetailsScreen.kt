@@ -73,7 +73,7 @@ private fun DukanDetailsScreenContent(
     ) {
 
         BoxWithConstraints(
-            modifier = Modifier.fillMaxSize().padding(16.dp)
+            modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ){
             val isCompact = maxWidth < 800.dp
 

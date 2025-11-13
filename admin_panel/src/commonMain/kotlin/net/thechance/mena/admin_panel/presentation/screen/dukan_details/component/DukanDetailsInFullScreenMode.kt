@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -18,7 +19,9 @@ internal fun DukanDetailsInFullScreenMode(
     interactionListener: DukanDetailsInteractionListener
 ) {
     Row(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(bottom = 16.dp)
+            .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
         DukanDetailsCard(
