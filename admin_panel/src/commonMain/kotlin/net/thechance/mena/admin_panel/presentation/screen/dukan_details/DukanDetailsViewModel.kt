@@ -42,7 +42,6 @@ class DukanDetailsViewModel(
         getDukanDetails()
         initializeShelvesPaginator()
         loadNextShelves()
-        initializeProductsPaginator()
     }
 
     override fun onBackBtnClicked() {
@@ -60,6 +59,7 @@ class DukanDetailsViewModel(
     override fun onShelfSelected(shelfId: String) {
         if (currentState.selectedShelfId != shelfId) {
             updateState { it.copy(selectedShelfId = shelfId) }
+            initializeProductsPaginator()
             loadNextProducts()
         }
     }
@@ -95,6 +95,8 @@ class DukanDetailsViewModel(
             callee = { dukanRepository.getDukanDetails(Uuid.parse("3e2ac1b3-e322-465a-b454-1af7625ffae9")) },
             onSuccess = ::onGetDukanDetailsSuccess,
             onError = ::onGetDukanDetailsError,
+            onStart = { updateState { it.copy(isDukanDetailsLoading = true) } },
+            onFinish = { updateState { it.copy(isDukanDetailsLoading = false) } },
             dispatcher = dispatcher
         )
     }
@@ -114,13 +116,17 @@ class DukanDetailsViewModel(
     private fun initializeShelvesPaginator() {
         shelvesPaginator = Paginator(
             initialKey = INITIAL_PAGE,
-            onLoadUpdated = {},
+            onLoadUpdated = ::onShelvesPaginationLoading,
             onRequest = ::getPagedShelves,
             getNextKey = { currentKey, _ -> currentKey + 1 },
             onError = {},
             onSuccess = { result, _ -> onGetPagedShelvesSuccess(result) },
             endReached = { _, result -> result.items.isEmpty() || result.items.size < PAGE_SIZE }
         )
+    }
+
+    private fun onShelvesPaginationLoading(isLoading: Boolean) {
+        updateState { it.copy(isShelvesLoading = isLoading) }
     }
 
     private suspend fun getPagedShelves(page: Int): PagedResult<Shelf> {
@@ -134,9 +140,10 @@ class DukanDetailsViewModel(
     private fun onGetPagedShelvesSuccess(pagedShelves: PagedResult<Shelf>) {
         if (currentState.selectedShelfId.isEmpty()) {
             updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id ?: "") }
+            initializeProductsPaginator()
             loadNextProducts()
         }
-        if (currentState.totalShelves.isEmpty()){
+        if (currentState.totalShelves.isEmpty()) {
             updateState { it.copy(totalShelves = (pagedShelves.totalPages * PAGE_SIZE).toString()) }
         }
         updateState {
@@ -153,13 +160,17 @@ class DukanDetailsViewModel(
     private fun initializeProductsPaginator() {
         productsPaginator = Paginator(
             initialKey = INITIAL_PAGE,
-            onLoadUpdated = {},
+            onLoadUpdated = ::onProductsPaginationLoading,
             onRequest = ::getPagedProducts,
             getNextKey = { currentKey, _ -> currentKey + 1 },
             onError = {},
             onSuccess = { result, _ -> onGetPagedProductsSuccess(result) },
             endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
         )
+    }
+
+    private fun onProductsPaginationLoading(isLoading: Boolean) {
+        updateState { it.copy(isProductsLoading = isLoading) }
     }
 
     private suspend fun getPagedProducts(page: Int): List<Product> {

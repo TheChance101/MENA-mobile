@@ -26,13 +26,15 @@ internal fun DukanDetailsInCompactMode(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         DukanDetailsCard(
+            modifier = Modifier.fillMaxWidth(),
             dukanName = state.dukan.name,
             dukanCategories = state.dukan.categories,
             dukanLocation = state.dukan.address,
             dukanImg = state.dukan.imageUrl,
-            modifier = Modifier.fillMaxWidth()
+            isLoading = state.isDukanDetailsLoading
         )
         ShelvesDetailsCard(
+            modifier = Modifier.fillMaxWidth(),
             totalShelves = state.totalShelves,
             shelves = state.shelves,
             selectedShelf = state.selectedShelfId,
@@ -40,7 +42,8 @@ internal fun DukanDetailsInCompactMode(
             onNextShelvesPageRequested = interactionListener::onNextShelvesPageRequested,
             products = state.products,
             onNextProductsPageRequested = interactionListener::onNextProductsPageRequested,
-            modifier = Modifier.fillMaxWidth()
+            isProductLoading = state.isProductsLoading,
+            isShelvesLoading = state.isShelvesLoading
         )
     }
 }

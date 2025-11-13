@@ -12,7 +12,9 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
 data class DukanDetailsScreenState(
-    val isLoading: Boolean = false,
+    val isDukanDetailsLoading: Boolean = false,
+    val isShelvesLoading: Boolean = false,
+    val isProductsLoading: Boolean = false,
     val dukanStatus: DukanStatus = DukanStatus.DEACTIVE,
     val snackBar: SnackBarState = SnackBarState(),
     val dukan: DukanUi = DukanUi(),

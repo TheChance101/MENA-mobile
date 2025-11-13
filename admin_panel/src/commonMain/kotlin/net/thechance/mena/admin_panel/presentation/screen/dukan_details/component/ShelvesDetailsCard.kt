@@ -18,10 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.shelves
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -35,6 +37,8 @@ internal fun ShelvesDetailsCard(
     onNextShelvesPageRequested: () -> Unit,
     onNextProductsPageRequested: () -> Unit,
     products: List<Product>,
+    isProductLoading: Boolean,
+    isShelvesLoading: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,24 +48,34 @@ internal fun ShelvesDetailsCard(
                 shape = RoundedCornerShape(Theme.radius.xl)
             )
     ) {
-        ShelfHeader(
-            modifier = Modifier.padding(top = 16.dp, start = 16.dp),
-            totalShelves = totalShelves
-        )
 
-        shelves(
-            modifier = Modifier.padding(top = 12.dp),
-            shelves = shelves,
-            selectedShelf = selectedShelf,
-            onShelfClicked = onShelfClicked,
-            onNextPageRequested = onNextShelvesPageRequested,
-        )
+        when{
+            isShelvesLoading && shelves.isEmpty() -> {
+                UsersLoadingIndicator()
+            }
+            else -> {
+                ShelfHeader(
+                    modifier = Modifier.padding(top = 16.dp, start = 16.dp),
+                    totalShelves = totalShelves
+                )
 
-        productsList(
-            modifier = Modifier.padding(top = 12.dp),
-            products = products,
-            onNextPageRequested = onNextProductsPageRequested,
-        )
+                shelves(
+                    modifier = Modifier.padding(top = 12.dp),
+                    shelves = shelves,
+                    selectedShelf = selectedShelf,
+                    onShelfClicked = onShelfClicked,
+                    onNextPageRequested = onNextShelvesPageRequested,
+                    isShelvesLoading = isShelvesLoading
+                )
+
+                productsList(
+                    modifier = Modifier.padding(top = 12.dp),
+                    products = products,
+                    onNextPageRequested = onNextProductsPageRequested,
+                    isProductLoading = isProductLoading
+                )
+            }
+        }
     }
 }
 
@@ -105,6 +119,7 @@ private fun shelves(
     selectedShelf: String,
     onShelfClicked: (String) -> Unit,
     onNextPageRequested: () -> Unit,
+    isShelvesLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -127,6 +142,9 @@ private fun shelves(
                 isSelected = shelf.id == selectedShelf,
                 onClick = { onShelfClicked(shelf.id) }
             )
+        }
+        if (isShelvesLoading){
+            item { DotsProgressIndicator(dotSize = 4.dp, spaceBetween = 2.dp) }
         }
     }
 }

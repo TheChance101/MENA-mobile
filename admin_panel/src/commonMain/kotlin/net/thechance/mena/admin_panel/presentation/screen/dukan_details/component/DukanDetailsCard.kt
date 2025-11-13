@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
@@ -38,6 +40,7 @@ internal fun DukanDetailsCard(
     dukanCategories: List<String>,
     dukanLocation: String,
     dukanImg: String,
+    isLoading: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -48,43 +51,56 @@ internal fun DukanDetailsCard(
             )
             .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
-        KamelImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2f)
-                .clip(RoundedCornerShape(Theme.radius.md)),
-            resource = { asyncPainterResource(data = dukanImg) },
-            contentDescription = stringResource(Res.string.dukan_img),
-            contentScale = ContentScale.Crop,
-            onLoading = {
-                DotsProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    dotSize = 4.dp,
-                    spaceBetween = 2.dp
+        when {
+            isLoading -> {
+                Box(
+                    modifier = modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ){ UsersLoadingIndicator() }
+            }
+            else -> {
+                KamelImage(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(2f)
+                        .clip(RoundedCornerShape(Theme.radius.md)),
+                    resource = { asyncPainterResource(data = dukanImg) },
+                    contentDescription = stringResource(Res.string.dukan_img),
+                    contentScale = ContentScale.Crop,
+                    onLoading = {
+                        DotsProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center),
+                            dotSize = 4.dp,
+                            spaceBetween = 2.dp
+                        )
+                    },
+                    onFailure = {},
+                    animationSpec = tween(durationMillis = 300)
                 )
-            },
-            onFailure = {},
-            animationSpec = tween(durationMillis = 300)
-        )
-        Text(
-            modifier = Modifier.padding(top = 8.dp),
-            text = dukanName,
-            style = Theme.typography.title.large,
-            color = Theme.colorScheme.shadePrimary
-        )
-        DukanCategories(modifier = Modifier.padding(top = 2.dp), categories = dukanCategories)
-        Box(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .fillMaxWidth()
-                .aspectRatio(2f)
-                .background(
-                    color = Theme.colorScheme.stroke,
-                    shape = RoundedCornerShape(Theme.radius.md)
+                Text(
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = dukanName,
+                    style = Theme.typography.title.large,
+                    color = Theme.colorScheme.shadePrimary
                 )
-                .clip(RoundedCornerShape(Theme.radius.md)),
-        )
-        DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukanLocation)
+                DukanCategories(
+                    modifier = Modifier.padding(top = 2.dp),
+                    categories = dukanCategories
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(top = 16.dp)
+                        .fillMaxWidth()
+                        .aspectRatio(2f)
+                        .background(
+                            color = Theme.colorScheme.stroke,
+                            shape = RoundedCornerShape(Theme.radius.md)
+                        )
+                        .clip(RoundedCornerShape(Theme.radius.md)),
+                )
+                DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukanLocation)
+            }
+        }
     }
 }
 

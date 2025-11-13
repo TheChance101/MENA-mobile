@@ -25,16 +25,18 @@ internal fun DukanDetailsInFullScreenMode(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
         DukanDetailsCard(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
             dukanName = state.dukan.name,
             dukanCategories = state.dukan.categories,
             dukanLocation = state.dukan.address,
             dukanImg = state.dukan.imageUrl,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxHeight()
-                .verticalScroll(rememberScrollState())
+            isLoading = state.isDukanDetailsLoading
         )
         ShelvesDetailsCard(
+            modifier = Modifier.weight(1f).fillMaxHeight(),
             totalShelves = state.totalShelves,
             shelves = state.shelves,
             selectedShelf = state.selectedShelfId,
@@ -42,7 +44,8 @@ internal fun DukanDetailsInFullScreenMode(
             onNextShelvesPageRequested = interactionListener::onNextShelvesPageRequested,
             products = state.products,
             onNextProductsPageRequested = interactionListener::onNextProductsPageRequested,
-            modifier = Modifier.weight(1f).fillMaxHeight()
+            isProductLoading = state.isProductsLoading,
+            isShelvesLoading = state.isShelvesLoading
         )
     }
 }

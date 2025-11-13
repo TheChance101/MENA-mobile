@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_details.compone
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.img_silver
@@ -35,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun productsList(
     products: List<Product>,
     onNextPageRequested: () -> Unit,
+    isProductLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -46,15 +49,33 @@ internal fun productsList(
         loadNextItems = onNextPageRequested
     )
 
-    LazyColumn(
-        modifier = modifier.height(600.dp),
-        state = listState,
-    ) {
-        items(products) { product ->
-            ProductCard(
-                modifier = Modifier.padding(bottom = 8.dp),
-                product = product
-            )
+    when {
+        isProductLoading && products.isEmpty() -> {
+            Box(
+                modifier = modifier.height(600.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                UsersLoadingIndicator()
+            }
+        }
+
+        else -> {
+            LazyColumn(
+                modifier = modifier.height(600.dp),
+                state = listState,
+            ) {
+                items(products) { product ->
+                    ProductCard(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        product = product
+                    )
+                }
+                if (isProductLoading) {
+                    item {
+                        UsersLoadingIndicator()
+                    }
+                }
+            }
         }
     }
 }
@@ -95,27 +116,34 @@ private fun ProductCard(
                 color = Theme.colorScheme.shadeTertiary
             )
             Spacer(modifier = Modifier.weight(1f))
-            Row {
-                product.discountedPrice?.let {
-                    Text(
-                        text = it.toString(),
-                        style = Theme.typography.label.small,
-                        color = Theme.colorScheme.shadeTertiary
-                    )
-                }
-
-                Text(
-                    modifier = Modifier.padding(start = 2.dp),
-                    text = product.price.toString(),
-                    style = Theme.typography.label.large,
-                    color = Theme.colorScheme.shadePrimary
-                )
-                Image(
-                    modifier = Modifier.size(20.dp),
-                    painter = painterResource(Res.drawable.img_silver),
-                    contentDescription = stringResource(Res.string.silver_img)
-                )
-            }
+            ProductPrice(discountedPrice = product.discountedPrice, price = product.price)
         }
+    }
+}
+
+@Composable
+private fun ProductPrice(
+    discountedPrice: Double?,
+    price: Double,
+) {
+    Row {
+        discountedPrice?.let {
+            Text(
+                text = it.toString(),
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.shadeTertiary
+            )
+        }
+        Text(
+            modifier = Modifier.padding(start = 2.dp),
+            text = price.toString(),
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
+        )
+        Image(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(Res.drawable.img_silver),
+            contentDescription = stringResource(Res.string.silver_img)
+        )
     }
 }
