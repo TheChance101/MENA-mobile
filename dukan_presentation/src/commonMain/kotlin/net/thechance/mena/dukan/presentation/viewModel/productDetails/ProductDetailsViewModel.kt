@@ -56,7 +56,7 @@ class ProductDetailsViewModel(
     }
 
     private fun onLoadDukanSuccess(dukan: Dukan) {
-        updateState { copy(dukanColor = toColor(color = dukan.color.hexCode)) }
+        updateState { copy(dukanColor = parseHexColor(color = dukan.color.hexCode)) }
     }
 
     private fun onLoadDukanError(throwable: Throwable) {
