@@ -41,7 +41,6 @@ fun DukansDiscountSection(
     dukanDiscountImages: List<String>,
     dukanDiscount: Int,
     dukanId: String,
-    dukanColor: Color,
     onClick: (dukanId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -55,7 +54,6 @@ fun DukansDiscountSection(
             dukanDiscount = dukanDiscount,
             dukanId = dukanId,
             onClick = onClick,
-            dukanColor = dukanColor,
             modifier = Modifier.padding(horizontal = Theme.spacing._16)
                 .padding(bottom = Theme.spacing._8 + Theme.spacing._2)
         )
@@ -73,7 +71,6 @@ private fun DukanDiscountImagesAndText(
     pagerState: PagerState,
     dukanDiscount: Int,
     dukanId: String,
-    dukanColor: Color,
     onClick: (dukanId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -107,7 +104,7 @@ private fun DukanDiscountImagesAndText(
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    dukanColor.copy(alpha = 0.8f),
+                                    Color.Black.copy(alpha = 0.8f),
                                     Color.Transparent
                                 )
                             )
@@ -173,7 +170,6 @@ private fun DukanDiscountPreview() {
             dukanDiscountImages = listOf(),
             dukanDiscount = 10,
             dukanId = "1",
-            dukanColor = Color.Red,
             onClick = {}
         )
     }

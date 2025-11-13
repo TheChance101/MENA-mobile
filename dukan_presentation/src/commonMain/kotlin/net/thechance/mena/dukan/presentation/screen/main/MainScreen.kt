@@ -240,7 +240,6 @@ fun MainScreenSections(
                 },
                 dukanDiscount = 10,
                 dukanId = "1",
-                dukanColor = Color.Blue,
                 modifier = Modifier.padding(bottom = Theme.spacing._24)
             )
         }
