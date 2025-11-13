@@ -2,7 +2,7 @@ package net.thechance.mena.trends.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-internal sealed interface Route {
+sealed interface Route {
     @Serializable
     data object Categories : Route
 
@@ -12,9 +12,11 @@ internal sealed interface Route {
     @Serializable
     data class ReelDetails(
         val reelId: String,
-        val isFromHome: Boolean = false,
-        val isFromManageTrends: Boolean = false
+        val source: ReelSource = ReelSource.Home
     ) : Route
+
+    @Serializable
+    enum class ReelSource { Home, MyTrends, Favorites }
 
     @Serializable
     data object ManageReels : Route
