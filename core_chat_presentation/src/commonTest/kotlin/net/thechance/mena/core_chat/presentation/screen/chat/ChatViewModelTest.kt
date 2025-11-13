@@ -861,6 +861,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -901,6 +902,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -978,6 +980,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -1017,6 +1020,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -1057,6 +1061,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -1066,6 +1071,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message2Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message2Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -1113,6 +1119,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message1Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
@@ -1122,6 +1129,7 @@ class ChatViewModelTest {
                 is ChatListItem.TextMessage -> item.data.id == message2Id
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message2Id
+                is ChatListItem.AyahMessage -> item.data.isMine
                 is ChatListItem.DateSeparator -> false
             }
         }
