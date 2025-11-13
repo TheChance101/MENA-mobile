@@ -10,7 +10,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.source.remote.dto.message.MessageContentDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageContentDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -88,7 +88,6 @@ fun createMessageDto(
     id: String = Uuid.random().toString(),
     senderId: String = Uuid.random().toString(),
     chatId: String = Uuid.random().toString(),
-    type: String = "TEXT",
     content: MessageContentDto = MessageContentDto.Text("Hello from history"),
     reactions: List<MessageReactionDto> = emptyList(),
     sendAt: String = "2025-10-01T12:00:00Z",
@@ -98,7 +97,6 @@ fun createMessageDto(
     id = id,
     senderId = senderId,
     chatId = chatId,
-    type = type,
     content = content,
     reactions = reactions,
     sendAt = sendAt,

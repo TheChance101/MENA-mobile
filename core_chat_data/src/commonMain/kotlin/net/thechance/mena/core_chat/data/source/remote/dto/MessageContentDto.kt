@@ -1,11 +1,14 @@
-package net.thechance.mena.core_chat.data.source.remote.dto.message
+@file:OptIn(ExperimentalSerializationApi::class)
 
-import kotlinx.serialization.Polymorphic
+package net.thechance.mena.core_chat.data.source.remote.dto
+
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 @Serializable
-@Polymorphic
+@JsonClassDiscriminator("type")
 sealed class MessageContentDto {
 
     @Serializable

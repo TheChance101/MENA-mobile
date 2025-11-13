@@ -8,7 +8,7 @@ import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.Mes
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.*
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
-import net.thechance.mena.core_chat.data.source.remote.dto.message.MessageContentDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageContentDto
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.data.utils.toUuid
