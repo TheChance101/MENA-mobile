@@ -129,18 +129,20 @@ class ProfileScreenViewModel(
     override fun onConfirmThemeSelection() {
         tryToExecute(
             function = { settingsRepository.applyAppTheme(state.value.themeDialogUiState.selectedAppTheme) },
-            onSuccess = {
-                updateState {
-                    copy(
-                        themeDialogUiState = themeDialogUiState.copy(
-                            isVisible = false,
-                        ),
-                        currentTheme = state.value.themeDialogUiState.selectedAppTheme
-                    )
-                }
-            },
+            onSuccess = { onThemeConfirmationSuccess() },
             onError = ::onUserInfoError,
         )
+    }
+
+    private fun onThemeConfirmationSuccess() {
+        updateState {
+            copy(
+                themeDialogUiState = themeDialogUiState.copy(
+                    isVisible = false,
+                ),
+                currentTheme = state.value.themeDialogUiState.selectedAppTheme
+            )
+        }
     }
 
     override fun onSelectTheme(appTheme: AppTheme) {
