@@ -725,7 +725,7 @@ class MessageRepositoryImplTest {
         verifySuspend { chatSyncTimeDao.upsert(any()) }
     }
 
-    
+
 
     @Test
     fun `sendMessage should throw SendMessageFailedException when send fails`() = runTest {
