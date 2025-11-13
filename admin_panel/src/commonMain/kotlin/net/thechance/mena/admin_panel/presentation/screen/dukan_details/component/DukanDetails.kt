@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,11 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
 import net.thechance.mena.admin_panel.resources.ic_store_location
+import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -48,14 +51,23 @@ internal fun DukanDetails(
             )
             .padding(vertical = 16.dp, horizontal = 16.dp)
     ) {
-        AsyncImage(
+        KamelImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(2f)
                 .clip(RoundedCornerShape(Theme.radius.md)),
-            model = dukanImg,
-            contentScale = ContentScale.Crop,
+            resource = { asyncPainterResource(data = dukanImg) },
             contentDescription = stringResource(Res.string.dukan_img),
+            contentScale = ContentScale.Crop,
+            onLoading = {
+                DotsProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    dotSize = 4.dp,
+                    spaceBetween = 2.dp
+                )
+            },
+            onFailure = {},
+            animationSpec = tween(durationMillis = 300)
         )
         Text(
             modifier = Modifier.padding(top = 8.dp),

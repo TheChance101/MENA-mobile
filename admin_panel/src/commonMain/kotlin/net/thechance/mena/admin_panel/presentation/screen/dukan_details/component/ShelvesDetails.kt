@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,7 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
@@ -179,14 +181,19 @@ private fun ProductCard(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        AsyncImage(
+        KamelImage(
             modifier = Modifier
                 .padding(end = 8.dp, start = 16.dp)
                 .size(96.dp)
                 .clip(RoundedCornerShape(Theme.radius.sm)),
-            model = product.imageUrls.any(),
-            contentScale = ContentScale.Crop,
+            resource = { asyncPainterResource(data = product.imageUrls.first()) },
             contentDescription = stringResource(Res.string.product_img),
+            contentScale = ContentScale.Crop,
+            onLoading = {
+
+            },
+            onFailure = {},
+            animationSpec = tween(durationMillis = 300)
         )
         Column {
             Text(

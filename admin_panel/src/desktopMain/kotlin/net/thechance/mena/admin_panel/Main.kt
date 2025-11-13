@@ -4,6 +4,10 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import io.kamel.core.config.KamelConfig
+import io.kamel.core.config.takeFrom
+import io.kamel.image.config.Default
+import io.kamel.image.config.resourcesFetcher
 import net.thechance.mena.admin_panel.di.AppModule
 import net.thechance.mena.admin_panel.di.networkModule
 import net.thechance.mena.admin_panel.resources.Res
@@ -15,6 +19,12 @@ import org.koin.core.context.startKoin
 import org.koin.ksp.generated.module
 
 fun main() = application {
+
+    val desktopConfig = KamelConfig {
+        takeFrom(KamelConfig.Default)
+        resourcesFetcher()
+    }
+
     startKoin {
         modules(
             AppModule().module,

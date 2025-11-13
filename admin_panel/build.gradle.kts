@@ -63,6 +63,9 @@ kotlin {
             //flow settings
             implementation(libs.multiplatform.settings.coroutines)
 
+            //kamel async
+            implementation(libs.kamel.image.default)
+
         }
 
         commonTest.dependencies {
