@@ -94,8 +94,6 @@ private fun Content(
                     showDialog = uiState.showDeleteConfirmationDialog,
                     onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
-                    title = stringResource(Res.string.delete_surah),
-                    message = stringResource(Res.string.delete_surah_dialog_message)
                 )
             }
         }

@@ -24,8 +24,6 @@ fun ScaffoldScope.DeleteConfirmationDialog(
     message: String,
     onDeleteClick: () -> Unit,
     onDismiss: () -> Unit,
-    title: String ,
-    message: String,
 ) {
     Dialog(
         isVisible = showDialog,
