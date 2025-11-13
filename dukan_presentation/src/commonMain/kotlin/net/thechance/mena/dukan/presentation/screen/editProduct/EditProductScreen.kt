@@ -28,6 +28,7 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Prod
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
 import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
+import net.thechance.mena.dukan.presentation.screen.editProduct.component.StockStatusSection
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductInteractionListener
@@ -140,6 +141,14 @@ private fun EditProductContent(
                     description = state.description,
                     isTextFieldEnabled = state.isTextFieldEnabled,
                     onDescriptionChange = interactionListener::onDescriptionChange
+                )
+            }
+
+            item {
+                StockStatusSection(
+                    isOutOfStock = state.isOutOfStock,
+                    isEnabled = state.isTextFieldEnabled,
+                    onOutOfStockChange = interactionListener::onOutOfStockChange
                 )
             }
 

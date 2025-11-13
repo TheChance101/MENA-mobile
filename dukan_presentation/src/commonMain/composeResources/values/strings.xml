@@ -177,4 +177,5 @@
     <string name="checkout_dialog_title">Checkout Feature</string>
     <string name="checkout_dialog_description">This feature is not implemented yet.</string>
     <string name="back_to_dukan_screen_icon">Back to dukan screen icon</string>
+    <string name="product_is_out_of_stock">Product is out of stock</string>
 </resources>

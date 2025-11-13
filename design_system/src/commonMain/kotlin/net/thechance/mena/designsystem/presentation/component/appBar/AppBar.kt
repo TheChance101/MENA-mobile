@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -50,9 +51,9 @@ fun AppBar(
         Text(
             text = title,
             color = titleColor,
-            style = Theme.typography.title.medium,
-            modifier = Modifier.weight(1f)
+            style = Theme.typography.title.medium
         )
+        Spacer(modifier = Modifier.weight(1f))
         trailingContent?.let {
             Row(
                 modifier = Modifier.padding(start = 8.dp),

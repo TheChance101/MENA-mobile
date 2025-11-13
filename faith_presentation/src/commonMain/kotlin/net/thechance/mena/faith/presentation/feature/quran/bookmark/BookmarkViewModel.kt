@@ -27,13 +27,17 @@ class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     snackBarHandler: SnackbarHandler,
-) : BaseViewModel<BookMarkUiState, BookmarkEffect>(BookMarkUiState(), snackBarHandler),
+) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
+        BookMarkUiState(),
+        snackBarHandler,
+    ),
     BookmarkInteractionListener {
 
     private val cachedBookmarksFlow = createBookmarksPagingSource()
         .map { pagingData -> pagingData.map(AyahBookmark::toUiState) }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
+    private var pendingDeleteBookmarkId: Int? = null
 
     private val filteredBookmarksFlow = combine(cachedBookmarksFlow, deletedBookmarkIdsFlow)
     { pagingData, deletedIds ->
@@ -49,6 +53,13 @@ class BookmarkViewModel(
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateToSur)
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
+        pendingDeleteBookmarkId = bookmarkId
+        updateState { it.copy(isDeleteConfirmationDialogVisible = true) }
+    }
+
+    override fun onConfirmDeleteBookmarkClick() {
+        val bookmarkId = pendingDeleteBookmarkId ?: return
+
         tryToExecute(
             dispatcher = dispatcher,
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
@@ -57,8 +68,15 @@ class BookmarkViewModel(
             onError = {
                 removeDeletedBookmarkId(bookmarkId)
                 onDeleteBookmarkError(it)
+                onDismissDeleteConfirmationDialog()
+                pendingDeleteBookmarkId = null
             },
         )
+    }
+
+    override fun onDismissDeleteConfirmationDialog() {
+        updateState { it.copy(isDeleteConfirmationDialogVisible = false) }
+        pendingDeleteBookmarkId = null
     }
 
     private fun insertDeletedBookmarkId(id: Int) =
@@ -76,7 +94,13 @@ class BookmarkViewModel(
         }
     }
 
-    private fun onDeleteBookmarkSuccess() =
+    private fun onDeleteBookmarkSuccess() {
+        onDeleteBookmarkSuccessSnackbar()
+        onDismissDeleteConfirmationDialog()
+        pendingDeleteBookmarkId = null
+    }
+
+    private fun onDeleteBookmarkSuccessSnackbar() =
         snackbarHandler.showSnackBar(
             message = Res.string.bookmark_removed_successfully,
             status = SnackBarState.Status.Success,

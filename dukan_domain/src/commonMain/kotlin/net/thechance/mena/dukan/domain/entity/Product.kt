@@ -13,5 +13,6 @@ data class Product(
     val createdAt: String,
     val quantityInCart: Int,
     val shelfId: Uuid?,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val isOutOfStock: Boolean = false
 )
