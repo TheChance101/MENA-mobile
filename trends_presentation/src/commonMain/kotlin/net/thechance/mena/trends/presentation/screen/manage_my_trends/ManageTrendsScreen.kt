@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -61,7 +62,6 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
-import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
@@ -83,14 +83,18 @@ internal fun ManageTrendsScreen(
         when (effect) {
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
-                navController.navigate(Route.ReelDetails(effect.reelId, isFromManageTrends = true))
+                navController.navigate(
+                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource)
+                )
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getReels()
+
+    LaunchedEffect(state.selectTab) {
+        viewModel.loadSelectedTabData(state.selectTab)
     }
+
 
     ManageTrendsScreenContent(
         state = state,
@@ -115,10 +119,6 @@ private fun ManageTrendsScreenContent(
                 SelectTab.MyTrends -> state.reels.collectAsLazyPagingItems()
                 SelectTab.Favorites -> state.favoriteReels.collectAsLazyPagingItems()
             }
-
-            val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
-                    trends.loadState.refresh is LoadState.NotLoading &&
-                    trends.loadState.refresh.toErrorState() == null
 
             TrendsAnimatedVisibility(
                 visible = trends.loadState.refresh is LoadState.Loading,
@@ -145,12 +145,13 @@ private fun ManageTrendsScreenBody(
     trends: LazyPagingItems<ReelUiState>
 ) {
     val cardWidth = 106.dp
+    val trendsGridState = rememberLazyGridState()
     val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
-            trends.loadState.refresh is LoadState.NotLoading &&
-            trends.loadState.refresh.toErrorState() == null
+            trends.loadState.refresh is LoadState.NotLoading
 
 
     LazyVerticalGrid(
+        state = trendsGridState,
         columns = GridCells.Adaptive(minSize = cardWidth),
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),

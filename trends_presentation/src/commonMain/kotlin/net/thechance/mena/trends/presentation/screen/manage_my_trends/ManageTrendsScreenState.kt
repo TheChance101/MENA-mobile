@@ -15,7 +15,7 @@ internal data class ManageTrendsScreenState(
     val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
-    val selectTab: SelectTab = SelectTab.MyTrends,
+    val selectTab: SelectTab = SelectTab.MyTrends
 )
 internal data class ReelUiState(
     val id: String,

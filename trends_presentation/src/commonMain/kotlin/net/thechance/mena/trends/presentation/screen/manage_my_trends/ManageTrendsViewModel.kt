@@ -14,6 +14,7 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
@@ -29,8 +30,8 @@ internal class ManageTrendsViewModel(
     ManageTrendsInteractionListener {
 
     init {
-        getReels()
         getCurrentUserInfo()
+        loadSelectedTabData(state.value.selectTab)
     }
 
     fun getReels() {
@@ -77,7 +78,11 @@ internal class ManageTrendsViewModel(
     }
 
     override fun onClickReel(reelId: String) {
-        sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId))
+        val reelSource = when (state.value.selectTab) {
+            SelectTab.MyTrends -> Route.ReelSource.MyTrends
+            SelectTab.Favorites -> Route.ReelSource.Favorites
+        }
+        sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId, reelSource))
     }
 
     override fun onClickBack() {
@@ -94,12 +99,11 @@ internal class ManageTrendsViewModel(
     override fun onSelectTab(tab: SelectTab) {
         if (state.value.selectTab != tab) {
             updateState { copy(selectTab = tab) }
-
-            loadSelectedTabData(tab = tab)
+            loadSelectedTabData(tab)
         }
     }
 
-    private fun loadSelectedTabData(tab: SelectTab) {
+    fun loadSelectedTabData(tab: SelectTab) {
         when (tab) {
             SelectTab.MyTrends -> getReels()
             SelectTab.Favorites -> getFavoriteReels()
@@ -153,5 +157,4 @@ internal class ManageTrendsViewModel(
         val uiReelsFlow = flow.map { pagingData -> pagingData.map { it.toUiState() } }
         updateState { copy(favoriteReels = uiReelsFlow, isLoading = false) }
     }
-
 }
