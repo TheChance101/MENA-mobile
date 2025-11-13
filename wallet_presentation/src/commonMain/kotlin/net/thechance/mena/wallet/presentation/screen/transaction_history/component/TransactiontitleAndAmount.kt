@@ -35,7 +35,7 @@ fun TransactionTitleAndAmount(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = transactionTitle,
+                text = "$transactionTitle ",
                 style = Theme.typography.body.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = 1,

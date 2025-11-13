@@ -112,7 +112,7 @@
     <string name="dropdown_icon">أيقونة القائمة المنسدلة</string>
     <string name="next_prayer_time_icon">يقونة المصلي</string>
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
-    <string name="search_hint">ابحث...</string>
+    <string name="search_hint">...ابحث</string>
     <string name="no_mosques_found_by_keyword">لم يتم العثور على أي مساجد، يرجى المحاولة باستخدام كلمة مفتاحية أخرى.</string>
     <string name="downloaded">تم التنزيل</string>
     <string name="reciters">القراء</string>
@@ -132,9 +132,12 @@
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
     <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
     <string name="listen">استماع</string>
-
+    <string name="download_icon">ايقونة التنزيل</string>
+    <string name="prayer_time"> وقت الصلاة </string>
     <string name="kilometer_unit">كم</string>
     <string name="add_mosque_message">تمت إضافة المسجد بنجاح.</string>
     <string name="mosque_image">صورة المسجد</string>
-
+    <string name="read_all_surah">تلاوة السورة</string>
+    <string name="remove_aya">حذف الآية</string>
+    <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
 </resources>

@@ -4,6 +4,6 @@ interface DownloadSurahManager {
     suspend fun downloadSurahFile(
         url: String,
         surahId: Int,
-        reciterName: String,
+        reciterId: Int,
     ): String
 }

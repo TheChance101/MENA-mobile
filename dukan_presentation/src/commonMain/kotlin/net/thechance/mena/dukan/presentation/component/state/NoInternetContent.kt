@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -50,7 +49,6 @@ fun NoInternetContent(
         )
         PrimaryButton(
             modifier = Modifier
-                .heightIn(min = 48.dp)
                 .fillMaxWidth(),
             text = stringResource(Res.string.retry_button),
             onClick = onRetry,

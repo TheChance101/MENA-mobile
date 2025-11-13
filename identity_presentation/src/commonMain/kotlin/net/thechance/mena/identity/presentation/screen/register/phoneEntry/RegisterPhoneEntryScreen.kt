@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -55,9 +56,13 @@ class RegisterPhoneEntryScreen : BaseScreen<
         listener: RegisterPhoneEntryInteractionListener
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
         LaunchedEffect(state.showCountryBottomSheet) {
-            if (state.showCountryBottomSheet)
+            if (state.showCountryBottomSheet){
+                focusManager.clearFocus()
                 keyboardController?.hide()
+
+            }
         }
 
         Scaffold(
@@ -100,7 +105,8 @@ class RegisterPhoneEntryScreen : BaseScreen<
                         isEnabled = state.isRegisterEnabled,
                         isLoading = state.isLoading,
                         contentPadding = PaddingValues(vertical = 13.dp),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12)
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = Theme.spacing._24, bottom = Theme.spacing._12)
                     )
 
                     AuthPrompt(

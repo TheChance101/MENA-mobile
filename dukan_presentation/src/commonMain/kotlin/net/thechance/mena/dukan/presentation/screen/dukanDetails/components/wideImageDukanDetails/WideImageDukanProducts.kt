@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -48,6 +47,7 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 fun LazyGridScope.wideImageProductsGrid(
     listener: DukanDetailsInteractionListener,
@@ -119,7 +119,7 @@ private fun ProductCard(
     Column(
         modifier = modifier
             .size(width = 160.dp, height = 240.dp)
-            .clip(RoundedCornerShape(Theme.radius.sm))
+            .clip(SquircleShape(Theme.radius.sm))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(onClick = onClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4)
@@ -139,7 +139,7 @@ private fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(176.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
             )
             if (isError || isLoading) {
                 Image(

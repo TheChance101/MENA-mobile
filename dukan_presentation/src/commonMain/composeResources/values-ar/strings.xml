@@ -130,6 +130,7 @@
     <string name="arrow_right_icon">أيقونة السهم الأيمن</string>
     <string name="share_icon">أيقونة المشاركة</string>
     <string name="remove_product">حذف المنتج</string>
+    <string name="remove_product_successfully">تم حذف المنتج بنجاح</string>
     <string name="checkout">Checkout</string>
     <string name="confirm_order">تأكيد الطلب</string>
     <string name="deliver_to">التوصيل إلى</string>
@@ -177,5 +178,5 @@
     <string name="checkout_dialog_title">ميزة الدفع</string>
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
     <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
-
+    <string name="product_is_out_of_stock">المنتج غير متوفر</string>
 </resources>

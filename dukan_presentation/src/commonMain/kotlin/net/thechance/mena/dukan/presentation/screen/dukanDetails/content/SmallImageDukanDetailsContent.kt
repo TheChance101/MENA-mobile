@@ -50,7 +50,7 @@ fun SmallImageDukanDetailsContent(
     Scaffold(
         topBar = {
             SmallImageDukanAppBar(
-                isBadgeVisible = state.totalPrice > 0,
+                isBadgeVisible = state.hasProductInCart,
                 listener = listener
             )
         },

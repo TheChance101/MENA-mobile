@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,9 +34,10 @@ fun CurrentPasswordContent(
     onChangeCurrentPassword: (String) -> Unit,
     onToggleCurrentPasswordVisibility: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
+    val scrollState = rememberScrollState()
 
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(modifier.fillMaxSize().verticalScroll(scrollState)) {
         Text(
             text = stringResource(Res.string.verify_current_password),
             style = Theme.typography.title.medium,
@@ -72,7 +75,7 @@ fun CurrentPasswordContent(
             contentPadding = PaddingValues(vertical = 13.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = Theme.spacing._12)
+                .padding(bottom = Theme.spacing._12, top = Theme.spacing._24)
                 .imePadding()
         )
     }
@@ -80,7 +83,7 @@ fun CurrentPasswordContent(
 
 @Preview(showBackground = true)
 @Composable
-private fun CurrentPasswordContentPreview(){
+private fun CurrentPasswordContentPreview() {
     MenaTheme {
         CurrentPasswordContent(
             state = CurrentPasswordContentUIState(),

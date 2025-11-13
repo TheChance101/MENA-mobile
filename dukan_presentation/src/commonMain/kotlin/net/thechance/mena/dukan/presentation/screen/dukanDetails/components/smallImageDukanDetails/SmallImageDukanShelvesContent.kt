@@ -4,9 +4,12 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -112,32 +116,43 @@ private fun ShelfProducts(
     cartColor: Color
 ) {
 
-    val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
-    val lazyListState = rememberLazyListState()
-    val flingBehavior = rememberSnapFlingBehavior(
-        lazyListState = lazyListState,
-        snapPosition = SnapPosition.Center
-    )
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val productPairs = remember(shelf.products) { shelf.products.chunked(2) }
+        val lazyListState = rememberLazyListState()
+        val flingBehavior = rememberSnapFlingBehavior(
+            lazyListState = lazyListState,
+            snapPosition = SnapPosition.Center
+        )
 
-    LazyRow(
-        modifier = Modifier.padding(bottom = Theme.spacing._8),
-        state = lazyListState,
-        contentPadding = PaddingValues(horizontal = Theme.spacing._16),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        flingBehavior = flingBehavior
-    ) {
-        itemsIndexed(productPairs) { index, pair ->
-            Column(
-                modifier = Modifier.fillParentMaxWidth(if (index == productPairs.lastIndex) 1f else 0.95f),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
-            ) {
-                pair.forEach { product ->
-                    key(product.id) {
-                        ProductItem(
-                            product = product,
-                            cartColor = cartColor,
-                            listener = listener
-                        )
+        val screenWidth = maxWidth
+        val horizontalSpacing =
+            Theme.spacing._8 * 2 + Theme.spacing._16 * 2
+        val cardWidth = when {
+            screenWidth < 500.dp -> screenWidth - horizontalSpacing - 40.dp
+            screenWidth < 800.dp -> screenWidth * 0.45f
+            else -> screenWidth * 0.3f
+        }
+
+        LazyRow(
+            modifier = Modifier.padding(bottom = Theme.spacing._8),
+            state = lazyListState,
+            contentPadding = PaddingValues(horizontal = Theme.spacing._16),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            flingBehavior = flingBehavior
+        ) {
+            itemsIndexed(productPairs) { index, pair ->
+                Column(
+                    modifier = Modifier.width(cardWidth),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+                ) {
+                    pair.forEach { product ->
+                        key(product.id) {
+                            ProductItem(
+                                product = product,
+                                cartColor = cartColor,
+                                listener = listener
+                            )
+                        }
                     }
                 }
             }

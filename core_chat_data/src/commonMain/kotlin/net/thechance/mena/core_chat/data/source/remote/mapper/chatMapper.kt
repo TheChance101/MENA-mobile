@@ -12,9 +12,9 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
-import net.thechance.mena.core_chat.data.utils.getUuidOrNull
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
+import net.thechance.mena.core_chat.data.utils.toUuid
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
@@ -40,9 +40,9 @@ fun MessageDto.toDomain(): Message? {
     }
 
     return Message(
-        id = getUuidOrNull(id) ?: return null,
-        senderId = getUuidOrNull(senderId) ?: return null,
-        chatId = getUuidOrNull(chatId) ?: return null,
+        id = (id).toUuid(),
+        senderId = (senderId).toUuid(),
+        chatId = (chatId).toUuid(),
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
         content = content,
@@ -54,17 +54,17 @@ fun MessageDto.toDomain(): Message? {
 fun MessageReactionDto.toDomain(): MessageReaction {
     return MessageReaction(
         emoji = emoji,
-        userId = getUuidOrNull(userId) ?: error("Invalid user ID"),
-        messageId = getUuidOrNull(messageId) ?: error("Invalid message ID")
+        userId = (userId).toUuid(),
+        messageId = (messageId).toUuid(),
     )
 }
 
-fun ChatDto.toDomain(): Chat? {
+fun ChatDto.toDomain(): Chat {
     return Chat(
-        id = getUuidOrNull(id) ?: return null,
+        id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = getUuidOrNull(requesterId) ?: return null
+        requesterId = requesterId.toUuid()
     )
 }
 
@@ -79,10 +79,10 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
 
 fun CachedChatLocalDto.toDomain(): Chat? {
     return Chat(
-        id = getUuidOrNull(id) ?: return null,
+        id = (id).toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = getUuidOrNull(requesterId) ?: return null
+        requesterId = requesterId.toUuid(),
     )
 }
 
@@ -232,10 +232,8 @@ fun List<MessageDto>.toListOfMessages(): List<Message> {
 
 fun PagedDataDto<MessageDto>.toPagedListOfMessages(): PagedData<Message> {
     return PagedData(
-        data = data
-            .orEmpty()
-            .toListOfMessages(),
-        totalItems = totalItems ?: 0,
-        isLastPage = (pageNumber ?: 0) >= (totalPages ?: 0)
+        data = data.toListOfMessages(),
+        totalItems = totalItems,
+        isLastPage = pageNumber >= totalPages
     )
 }
