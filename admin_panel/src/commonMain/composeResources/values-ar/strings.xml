@@ -55,4 +55,12 @@
     <string name="user_activated">تم تفعيل المستخدم</string>
     <string name="user_blocked">تم حظر المستخدم</string>
     <string name="sort">ترتيب</string>
+
+    <!-- Deposit -->
+    <string name="deposit">إيداع</string>
+    <string name="fill_a_wallet">شحن المحفظة</string>
+    <string name="fill_a_wallet_description">أدخل رقم الهاتف والمبلغ لإعادة شحن المحفظة</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="amount">المبلغ</string>
+    <string name="fill_the_wallet">اشحن المحفظة</string>
 </resources>

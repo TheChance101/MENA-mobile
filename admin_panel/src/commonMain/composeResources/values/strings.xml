@@ -54,4 +54,14 @@
     <string name="user_activated">User has been activated</string>
     <string name="user_blocked">User has been blocked</string>
     <string name="sort">Sort</string>
+
+    <!-- Deposit -->
+    <string name="deposit">Deposit</string>
+    <string name="fill_a_wallet">fill a wallet</string>
+    <string name="fill_a_wallet_description">Enter phone number and amount to recharge wallet</string>
+    <string name="phone_number">phone number</string>
+    <string name="amount">Amount</string>
+    <string name="fill_the_wallet">fill the wallet</string>
+
+
 </resources>
