@@ -34,7 +34,6 @@ class ConfirmPaymentViewModel(
     private val transactionId = Uuid.parse(args.transactionId)
 
     init {
-        getTransactionDetails(transactionId)
         getUserBalance()
     }
 
@@ -49,52 +48,6 @@ class ConfirmPaymentViewModel(
     override fun onRefresh() {
         updateState { it.copy(errorState = null) }
         getUserBalance()
-        getTransactionDetails(transactionId)
-    }
-
-    private fun getUserBalance() {
-        tryToExecute(
-            callee = { balanceRepository.getBalance() },
-            onSuccess = ::onGetUserBalanceSuccess,
-            onError = ::onGetUserBalanceError,
-            onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
-            dispatcher = dispatcher
-        )
-    }
-
-    private suspend fun onGetUserBalanceSuccess(balance: Double) {
-        updateState {
-            it.copy(
-                isGetBalanceLoading = false,
-                paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
-                    amount = formatAmount(currentState.amount),
-                    status = balance >= currentState.amount,
-                    balance = formatAmount(balance)
-                )
-            )
-        }
-        updateUserMessage()
-    }
-
-    private suspend fun updateUserMessage() {
-        val userMessage = if (state.value.paymentUiState.status) {
-            stringProvider.getString(
-                Res.string.confirm_payment_content_success,
-                state.value.paymentUiState.balance
-            )
-        } else {
-            stringProvider.getString(
-                Res.string.confirm_payment_content_failed,
-                state.value.paymentUiState.balance
-            )
-        }
-        updateState {
-            it.copy(userMessage = userMessage)
-        }
-    }
-
-    private fun onGetUserBalanceError(errorState: ErrorState) {
-        updateState { it.copy(isGetBalanceLoading = false, errorState = errorState) }
     }
 
     private fun onSubmitTransactionSuccess() {
@@ -135,11 +88,29 @@ class ConfirmPaymentViewModel(
         )
     }
 
-    private fun getTransactionDetails(transactionId: Uuid) {
+    private fun getUserBalance() {
+        tryToExecute(
+            callee = { balanceRepository.getBalance() },
+            onSuccess = ::onGetUserBalanceSuccess,
+            onError = ::onGetUserBalanceError,
+            onStart = { updateState { it.copy(isGetBalanceLoading = true) } },
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetUserBalanceSuccess(balance: Double) {
+        getTransactionDetails(transactionId, balance)
+    }
+
+    private fun onGetUserBalanceError(errorState: ErrorState) {
+        updateState { it.copy(isGetBalanceLoading = false, errorState = errorState) }
+    }
+
+    private fun getTransactionDetails(transactionId: Uuid, balance: Double) {
         tryToExecute(
             onStart = ::onGetTransactionDetailsStart,
             callee = { transactionRepository.getTransactionById(transactionId) },
-            onSuccess = ::onGetTransactionDetailsSuccess,
+            onSuccess = { transaction -> onGetTransactionDetailsSuccess(transaction, balance) },
             onError = ::onGetTransactionDetailsError
 
         )
@@ -149,16 +120,37 @@ class ConfirmPaymentViewModel(
         updateState { it.copy(isGetTransactionDetailsLoading = true) }
     }
 
-    private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
+    private suspend fun onGetTransactionDetailsSuccess(transaction: Transaction, balance: Double) {
         updateState {
             it.copy(
-                amount = transaction.amount,
                 isGetTransactionDetailsLoading = false,
+                isGetBalanceLoading = false,
+                amount = transaction.amount,
                 receiverUiState = transaction.toReceiverInfoUiState(),
                 paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
-                    amount = formatAmount(transaction.amount)
+                    amount = formatAmount(transaction.amount),
+                    status = balance >= transaction.amount,
+                    balance = formatAmount(balance)
                 )
             )
+        }
+        updateUserMessage()
+    }
+
+    private suspend fun updateUserMessage() {
+        val userMessage = if (state.value.paymentUiState.status) {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_success,
+                state.value.paymentUiState.balance
+            )
+        } else {
+            stringProvider.getString(
+                Res.string.confirm_payment_content_failed,
+                state.value.paymentUiState.balance
+            )
+        }
+        updateState {
+            it.copy(userMessage = userMessage)
         }
     }
 

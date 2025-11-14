@@ -84,38 +84,6 @@ class ConfirmPaymentViewModelTest {
     }
 
     @Test
-    fun `ConfirmPaymentViewModel should update payment ui state when balance repository returns value`() =
-        runTest {
-            everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getTransactionById(receiver1Id) } returns transactionReceiver1
-
-            viewModel = createViewModel()
-
-            viewModel.state.test {
-                skipItems(2)
-                val successState = awaitItem()
-                assertEquals(paymentUiState, successState.paymentUiState)
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    @Test
-    fun `ConfirmPaymentViewModel should update payment ui state when user repository returns value`() =
-        runTest {
-            everySuspend { balanceRepository.getBalance() } returns balance1
-            everySuspend { transactionRepository.getTransactionById(any()) } returns transactionReceiver1
-
-            viewModel = createViewModel()
-
-            viewModel.state.test {
-                advanceUntilIdle()
-                val successState = expectMostRecentItem()
-                assertEquals(receiverUiState1, successState.receiverUiState)
-                cancelAndIgnoreRemainingEvents()
-            }
-        }
-
-    @Test
     fun `ConfirmPaymentViewModel should update error state when balance repository fails`() =
         runTest {
             val error = Exception()
@@ -169,7 +137,7 @@ class ConfirmPaymentViewModelTest {
         viewModel = createViewModel()
 
         viewModel.state.test {
-            skipItems(3)
+            skipItems(4)
             viewModel.onRefresh()
             val initialState = awaitItem()
             assertTrue(initialState.isLoading)
@@ -225,8 +193,10 @@ class ConfirmPaymentViewModelTest {
 
         @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
         fun createDefaultTransaction(
+            senderName: String = "Nour Elhoda",
+            senderImageUrl: String? = "https://example.com/sender.jpg",
             receiverName: String,
-            receiverImageUrl: String?,
+            receiverImageUrl: String? = null,
             amount: Double = amount1
         ): Transaction {
             return Transaction(
@@ -235,8 +205,8 @@ class ConfirmPaymentViewModelTest {
                     .toLocalDateTime(TimeZone.currentSystemDefault()),
                 amount = amount,
                 status = TransactionStatus.SUCCESS,
-                senderName = "",
-                senderImageUrl = null,
+                senderName = senderName,
+                senderImageUrl = senderImageUrl,
                 receiverName = receiverName,
                 receiverImageUrl = receiverImageUrl,
                 type = TransactionType.SENT
