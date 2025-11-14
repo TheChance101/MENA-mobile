@@ -11,8 +11,8 @@ data class UserEngagement(
     val id: Long = 0,
     val userId: String,
     val trendId: String,
-    val watchStartTime: LocalDateTime,
-    val watchEndTime: LocalDateTime,
+    val watchStartTime: LocalDateTime?,
+    val watchEndTime: LocalDateTime?,
     val videoDurationInMilliseconds: Long,
     val percentageOfVideoWatched: Float,
 )

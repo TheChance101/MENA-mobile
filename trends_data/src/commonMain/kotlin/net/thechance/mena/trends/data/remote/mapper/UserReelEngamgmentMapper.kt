@@ -7,8 +7,8 @@ internal fun ReelWatchSession.toUserEngagement(userId: String): UserEngagement {
     return UserEngagement(
         userId = userId,
         trendId = reelId,
-        watchStartTimestamp = watchStartTime,
-        watchEndTimestamp = watchEndTime,
+        watchStartTime = watchStartTime,
+        watchEndTime = watchEndTime,
         videoDurationInMilliseconds = videoDurationInMilliseconds,
         percentageOfVideoWatched = percentageOfVideoWatched
     )
