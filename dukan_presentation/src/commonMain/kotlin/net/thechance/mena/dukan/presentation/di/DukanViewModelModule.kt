@@ -17,6 +17,7 @@ import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductVi
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageShelf.ManageShelfViewModel
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsViewModel
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsViewModel
 import net.thechance.mena.dukan.presentation.viewModel.search.SearchViewModel
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsViewModel
@@ -44,4 +45,5 @@ internal val dukanViewModelModule = module {
     viewModelOf(::CheckoutViewModel)
     viewModelOf(::SearchViewModel)
     viewModelOf(::DukanLocationViewModel)
+    viewModelOf(::OrderDetailsViewModel)
 }
