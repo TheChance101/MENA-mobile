@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
-    val pageInfo : UserPageInfo = UserPageInfo(),
+    val pageInfo: UserPageInfo = UserPageInfo(),
     val sort: SortState = SortState(),
     val isLoading: Boolean = true,
     val errorState: ErrorState? = null,
@@ -25,6 +25,7 @@ data class UsersManagementScreenState(
     )
 
     data class UserItem(
+        val index: Int,
         val id: Uuid,
         val fullName: String,
         val phoneNumber: String,
@@ -40,7 +41,8 @@ data class UsersManagementScreenState(
 
     enum class SortDirection {
         ASC, DESC;
-       fun toggle(): SortDirection = if (this == ASC) DESC else ASC
+
+        fun toggle(): SortDirection = if (this == ASC) DESC else ASC
     }
 
     enum class SortType {

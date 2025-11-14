@@ -216,9 +216,8 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `state should initialize with correct surahId and surahName from args`() = runTest {
+    fun `state should initialize with correct surahId from args`() = runTest {
         everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
@@ -227,7 +226,6 @@ class SearchViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
-        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
     }
 
     @Test

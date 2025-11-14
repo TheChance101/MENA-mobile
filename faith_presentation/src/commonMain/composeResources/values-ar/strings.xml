@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="qiblah">قبله</string>
+    <!-- General Terms -->
+    <string name="sur">سور</string>
+    <string name="quran">قرآن</string>
+    <string name="makki">مكية</string>
+    <string name="madani">مدنية</string>
+    <string name="ayat">ايات</string>
+
+    <string name="qiblah">القبلة</string>
     <plurals name="time_seconds_ago">
         <item quantity="zero">منذ أقل من ثانية</item>
         <item quantity="one">منذ ثانية واحدة</item>
@@ -78,6 +85,8 @@
     <string name="no_results_found_title">لم يتم العثور على نتائج!</string>
     <string name="no_results_found_subtitle">يرجى المحاولة مرة أخرى بكلمة بحث أخرى.</string>
     <string name="back">رجوع</string>
+    <string name="motion_configuration">حرك هاتقك علي شكل ثمانية كما هو مُبين في الشكل المقابل</string>
+    <string name="continue_btn">استمر</string>
     <string name="upload_mosque_image">اضف صورة للمسجد</string>
     <string name="click_to_upload">اضغط للرفع</string>
     <string name="faith_title">الإيمان</string>
@@ -100,8 +109,9 @@
     <string name="navigate_next">الانتقال للشاشة التالية</string>
     <string name="surah_al_fatiha">الفاتحة</string>
     <string name="mosque_image_description">أيقونة المسجد</string>
-    <string name="device_angle_to_qiblah">زاوية الجهاز إلى القبله</string>
-    <string name="qibla_direction">اتجاه القبله</string>
+    <string name="device_angle_to_qiblah">زاوية الجهاز إلى القبلة</string>
+    <string name="calibrate_device">ظبط زاوية الجهاز</string>
+    <string name="qibla_direction">اتجاه القبلة</string>
     <string name="surah_ayah_format">%1$s: %2$d آية</string>
     <string name="cancel_icon">أيقونة الإلغاء</string>
     <string name="mosque_details">تفاصيل المسجد</string>
@@ -125,19 +135,24 @@
 
 
     <!--  Downloaded sur  -->
-    <string name="downloaded_sur">السور المحمله</string>
+    <string name="downloaded_sur">السور التي تم تنزيلها</string>
     <string name="reciter_list">قائمة القرآء</string>
-    <string name="delete_surah">حذف السوره</string>
+    <string name="delete_surah">حذف السورة</string>
     <string name="delete">حذف</string>
-    <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السوره من التنزيلات؟</string>
-    <string name="surah_deleted_successfully">تم حذف السوره بنجاح</string>
+    <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السورة من التنزيلات؟</string>
+    <string name="surah_deleted_successfully">تم حذف السورة بنجاح</string>
     <string name="listen">استماع</string>
-    <string name="download_icon">ايقونة التنزيل</string>
+    <string name="download_icon">أيقونة التنزيل</string>
     <string name="prayer_time"> وقت الصلاة </string>
     <string name="kilometer_unit">كم</string>
     <string name="add_mosque_message">تمت إضافة المسجد بنجاح.</string>
     <string name="mosque_image">صورة المسجد</string>
     <string name="read_all_surah">تلاوة السورة</string>
     <string name="remove_aya">حذف الآية</string>
+    <string name="bookmark_added_successfully">تم إضافة الإشارة المرجعية بنجاح</string>
+    <string name="bookmark_removed_successfully">تم حذف الإشارة المرجعية بنجاح</string>
+    <string name="send_to">إرسال إلي</string>
+    <string name="bookmark">إشارة مرجعية</string>
+    <string name="copy">نسخ</string>
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
 </resources>

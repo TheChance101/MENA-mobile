@@ -34,7 +34,7 @@ class SurahViewModel(
     private val quranPlayer: QuranPlayer,
     snackbarHandler: SnackbarHandler
 ) : BaseViewModel<SurahUiState, SurahScreenEffect>(
-    initialState = SurahUiState(surahId = surahArgs.surahId, surahName = surahArgs.surahName),
+    initialState = SurahUiState(surahId = surahArgs.surahId),
     snackbarHandler = snackbarHandler
 ), SurahInteractionListener {
 
@@ -84,7 +84,6 @@ class SurahViewModel(
             execute = {
                 val lastAyah = LastAyahForTilawah(
                     surahId = surahArgs.surahId,
-                    surahName = surahArgs.surahName,
                     number = ayahNumber
                 )
                 quranRepository.saveLastAyahForTilawah(lastAyah)
@@ -117,7 +116,7 @@ class SurahViewModel(
     }
 
     override fun onSearchClick() {
-        sendEffect(SurahScreenEffect.NavigateToSearchScreen(surahArgs.surahId, surahArgs.surahName))
+        sendEffect(SurahScreenEffect.NavigateToSearchScreen(surahArgs.surahId))
     }
 
     override fun onListenClick() = playAyah(uiState.value.selectedAyahNumber ?: 1)
@@ -259,6 +258,7 @@ class SurahViewModel(
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
         handleBasmalaVisibility(surahArgs.surahId)
+
         updateState {
             it.copy(
                 ayatOfSurah = ayat,
@@ -266,6 +266,14 @@ class SurahViewModel(
                 selectedAyahNumber = surahArgs.ayahNumber
             )
         }
+        updateSurahName(surahArgs.surahId)
+    }
+    private fun updateSurahName(surahId: Int) {
+        tryToExecute(
+            execute = { quranRepository.getSurahById(surahId) },
+            onSuccess = { surah -> updateState { it.copy(surahName = surah.name) } },
+            dispatcher = dispatcher
+        )
     }
 
     private fun handleCopySuccess(ayahContent: String) {
