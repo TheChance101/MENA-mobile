@@ -205,8 +205,7 @@ private fun BalanceContent(
                 }
                 BalanceErrorContent(
                     errorMessage = errorMessage,
-                    onRetry = onRetry,
-                    modifier = Modifier.padding(vertical = 7.dp)
+                    onRetry = onRetry
                 )
             }
 

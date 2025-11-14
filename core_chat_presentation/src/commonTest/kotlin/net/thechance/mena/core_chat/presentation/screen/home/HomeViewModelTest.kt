@@ -28,7 +28,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
@@ -474,6 +473,7 @@ class HomeViewModelTest {
             if (effect is HomeScreenEffect.ShowSnackBar) {
                 assertThat(effect.snackBarData.isError).isTrue()
             }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 

@@ -8,7 +8,9 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageContentDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -86,9 +88,8 @@ fun createMessageDto(
     id: String = Uuid.random().toString(),
     senderId: String = Uuid.random().toString(),
     chatId: String = Uuid.random().toString(),
-    text: String = "Hello from history",
-    imageUrl: String = "http://example.com/image.jpg",
-    audioUrl: String = "http://example.com/audio.m4a",
+    content: MessageContentDto = MessageContentDto.Text("Hello from history"),
+    reactions: List<MessageReactionDto> = emptyList(),
     sendAt: String = "2025-10-01T12:00:00Z",
     isRead: Boolean = false,
     isMine: Boolean = true
@@ -96,15 +97,13 @@ fun createMessageDto(
     id = id,
     senderId = senderId,
     chatId = chatId,
-    text = text,
-    imageUrl = imageUrl,
-    audioUrl = audioUrl,
+    content = content,
+    reactions = reactions,
     sendAt = sendAt,
     isRead = isRead,
     isMine = isMine
 )
-
-fun createChatDto(
+    fun createChatDto(
     id: String = Uuid.random().toString(),
     name: String = "Test Chat",
     imageUrl: String? = null,
