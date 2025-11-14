@@ -33,6 +33,7 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.navigation.OrderDetailsRoute
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -169,6 +170,7 @@ fun ChatScreenContent(
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
+                onViewOrderDetailsClick = interactions::onViewOrderDetailsClicked
             )
         }
 
@@ -242,6 +244,10 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.ScrollToBottom -> {
                 scope.launch { chatLazyListState.animateScrollToItem(0) }
+            }
+
+            is ChatScreenEffect.NavigateToOrderDetails -> {
+                navController.navigate(OrderDetailsRoute(effect.orderId))
             }
         }
     }

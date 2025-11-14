@@ -40,6 +40,7 @@ kotlin {
             implementation(projects.walletDomain)
             implementation(projects.coreChatDomain)
             implementation(projects.designSystem)
+            implementation(projects.dukanApi)
 
             // Compose
             implementation(compose.runtime)
