@@ -229,11 +229,11 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun getDistanceFromUser(coordinates: Mosque.Coordinates) =
-        uiState.value.userLocation?.let { location ->
+        uiState.value.userLocation?.let { userLocation ->
             calculateDistanceUseCase(
                 firstLocation = Mosque.Coordinates(
-                    latitude = location.latitude,
-                    longitude = location.longitude
+                    latitude = userLocation.latitude,
+                    longitude = userLocation.longitude
                 ),
                 secondLocation = Mosque.Coordinates(
                     latitude = coordinates.latitude,
