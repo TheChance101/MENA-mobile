@@ -13,9 +13,17 @@ fun Dukan.toUi() = DukanDetailsScreenState.DukanUi(
     categories = categories.map { it.title },
     latitude = latitude,
     longitude = longitude,
-    dukanStatus = when(activationStatus){
+    dukanStatus = when (activationStatus) {
         ActivationStatus.ACTIVATED -> DukanDetailsScreenState.DukanStatus.ACTIVE
         ActivationStatus.DEACTIVATED -> DukanDetailsScreenState.DukanStatus.DEACTIVE
         else -> DukanDetailsScreenState.DukanStatus.DEACTIVE
     }
 )
+
+fun oldPrice(price: Double, discountedPrice: Double?): String? {
+    discountedPrice?.let {
+        if (it == 0.0) return null
+        return (price - discountedPrice).toString()
+    }
+    return null
+}

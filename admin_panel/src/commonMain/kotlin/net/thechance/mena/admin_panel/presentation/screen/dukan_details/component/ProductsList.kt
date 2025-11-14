@@ -1,10 +1,12 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,10 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.oldPrice
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
@@ -90,12 +94,12 @@ private fun ProductCard(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(4.dp).height(96.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
             modifier = Modifier
-                .padding(end = 8.dp, start = 16.dp)
+                .padding(end = 4.dp, start = 16.dp)
                 .size(96.dp)
                 .clip(RoundedCornerShape(Theme.radius.sm)),
             model = product.imageUrls.first(),
@@ -104,7 +108,7 @@ private fun ProductCard(
             placeholder = painterResource(Res.drawable.dukan_placholder),
             error = painterResource(Res.drawable.dukan_placholder),
         )
-        Column {
+        Column(modifier = Modifier.fillMaxHeight().padding(4.dp)) {
             Text(
                 text = product.name,
                 style = Theme.typography.label.medium,
@@ -127,22 +131,27 @@ private fun ProductPrice(
     discountedPrice: Double?,
     price: Double,
 ) {
-    Row(verticalAlignment = Alignment.Bottom) {
-        discountedPrice?.let {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        oldPrice(discountedPrice = discountedPrice, price = price)?.let {
             Text(
-                text = it.toString(),
+                modifier = Modifier.alignByBaseline(),
+                text = it,
                 style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadeTertiary
+                color = Theme.colorScheme.shadeTertiary,
+                textDecoration = TextDecoration.LineThrough
             )
         }
         Text(
-            modifier = Modifier.padding(start = 2.dp),
+            modifier = Modifier.padding(start = 2.dp).alignByBaseline(),
             text = price.toString(),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
         Image(
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier.padding(start = 4.dp).size(20.dp).alignByBaseline(),
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_img)
         )
