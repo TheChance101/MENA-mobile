@@ -1,24 +1,47 @@
 package net.thechance.mena.admin_panel.presentation.screen.deposit.component
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.amount
+import net.thechance.mena.admin_panel.resources.ic_add_money
+import net.thechance.mena.admin_panel.resources.ic_silver_icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.BasicTextField
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AmountInputField(
     amount: Double,
-    onAmountChanged: (String) -> Unit,
+    onAmountChanged: (Double) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BasicTextField(
-        value = amount.toString(),
-        onValueChanged = { onAmountChanged(it) },
-        hint = "",
-        leadingIconTint = Res.drawable.ic_silver_icon,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(Res.string.amount),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = Theme.spacing._4)
         )
+        BasicTextField(
+            value = amount.toString(),
+            onValueChanged = { newText ->
+                val number = newText.toDoubleOrNull() ?: 0.0
+                onAmountChanged(number)
+            },
+            hint = "",
+             leadingIcon = painterResource(Res.drawable.ic_add_money),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
+            )
+    }
 }

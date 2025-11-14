@@ -10,12 +10,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.ic_phone
+import net.thechance.mena.admin_panel.resources.phone_number
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberLeadingContent
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberTextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -26,7 +26,7 @@ internal fun PhoneNumberInputField(
     phoneNumber: String,
     onPhoneChange: (String) -> Unit,
     countryCode: String,
-    countryFlag: Painter,
+    countryFlag: String,
     onClickCountry: () -> Unit,
     modifier: Modifier = Modifier,
     label: String = stringResource(Res.string.phone_number)
@@ -53,7 +53,7 @@ internal fun PhoneNumberInputField(
 @Composable
 private fun PhoneNumberInput(
     countryCode: String,
-    countryFlag: Painter,
+    countryFlag: String,
     onCountryClick: () -> Unit,
     phoneNumber: String,
     onPhoneChange: (String) -> Unit,
@@ -67,7 +67,7 @@ private fun PhoneNumberInput(
     ) {
         MobileNumberLeadingContent(
             countryCode = countryCode,
-            countryPainter = countryFlag,
+            countryFlag= countryFlag,
             onClick = onCountryClick
         )
 
