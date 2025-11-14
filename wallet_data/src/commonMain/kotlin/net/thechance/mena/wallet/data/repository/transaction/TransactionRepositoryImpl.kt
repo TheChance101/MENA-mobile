@@ -64,13 +64,9 @@ class TransactionRepositoryImpl(
         const val PAYMENT_PATH = "wallet/payments"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
-        const val RECEIVER_DETAILS = "/receiver-details"
         const val ADD_TRANSACTION_PATH = "$TRANSACTION_PATH$ADD_TRANSACTION"
 
         fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
-        fun getTransactionReceiverPath(transactionId: Uuid) =
-            "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
-
         fun getSubmitTransactionPath(transactionId: Uuid) =
             "$PAYMENT_PATH/$transactionId/submit"
     }
