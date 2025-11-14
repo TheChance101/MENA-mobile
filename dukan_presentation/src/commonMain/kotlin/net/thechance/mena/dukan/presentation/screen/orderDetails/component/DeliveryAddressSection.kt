@@ -38,11 +38,11 @@ fun DeliveryAddressSection(
         modifier = modifier
     ) {
         Text(
-            modifier = Modifier.padding(bottom = Theme.spacing._8),
             text = stringResource(Res.string.deliver_to),
             style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadePrimary
-        )
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(bottom = Theme.spacing._8),
+            )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -57,7 +57,7 @@ fun DeliveryAddressSection(
             Text(
                 text = address,
                 style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary,
+                color = Theme.colorScheme.shadeSecondary,
                 modifier = Modifier
                     .padding(start = Theme.spacing._8)
                     .weight(1f)
