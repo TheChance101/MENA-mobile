@@ -28,6 +28,7 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.test.BeforeTest
@@ -42,7 +43,7 @@ class QuranRepositoryImplTest {
     private val surahSoundDao: SurahAudioDao = mock(MockMode.autofill)
     private val recitersDao: RecitersDao = mock(MockMode.autofill)
     private val tilawahApiService = mock<TilawahApiService>(MockMode.autofill)
-    private val localizationService: LocalizationService = mock(MockMode.autofill)
+    private val settingsRepository: SettingsRepository = mock(MockMode.autofill)
     private lateinit var repository: QuranRepository
 
     @BeforeTest
@@ -53,15 +54,14 @@ class QuranRepositoryImplTest {
             surahSoundDao = surahSoundDao,
             recitersDao = recitersDao,
             tilawahApiService = tilawahApiService,
-            localizationService = localizationService
+            localizationService = LocalizationService(settingsRepository)
         )
     }
 
     @Test
     fun `getSur Should return list of sur when called`() = runTest {
         everySuspend { mockDao.getSur() } returns SURAH_DTOS
-        every { localizationService.getCurrentLanguage() } returns AppLanguage.ENGLISH
-
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.getSur()
 
