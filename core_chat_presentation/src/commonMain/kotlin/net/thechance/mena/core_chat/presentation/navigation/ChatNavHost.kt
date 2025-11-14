@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarHostController
@@ -22,16 +23,21 @@ import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.api.DukanApi
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("No NavController provided")
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
+    dukanApi: DukanApi = koinInject(),
     onNavigateBackFromChat: () -> Unit = {},
     startDestination: ChatRoute = HomeRoute
 ) {
@@ -59,6 +65,11 @@ fun ChatNavHost(
                     walletApi.WalletEntry(navigateBack = {
                         navController.popBackStack()
                     })
+                }
+                composable<OrderDetailsRoute> {
+                    dukanApi.OrderDetailsEntry(
+                        orderId = it.toRoute<OrderDetailsRoute>().orderId
+                    )
                 }
             }
 
