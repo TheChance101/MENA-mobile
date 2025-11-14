@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +47,7 @@ fun PdfViewer(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
         ) {
-            itemsIndexed(pages!!) { _, page ->
+            items(pages.orEmpty()) { page ->
                 AsyncImage(
                     model = page,
                     contentDescription = null,
