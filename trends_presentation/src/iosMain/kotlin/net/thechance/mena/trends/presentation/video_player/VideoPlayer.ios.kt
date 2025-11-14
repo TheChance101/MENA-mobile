@@ -141,14 +141,17 @@ actual fun VideoPlayer(
             if (item?.status == AVPlayerItemStatusFailed) {
                 val error = item.error
                 if (error != null) {
-                    if (error.domain == "NSURLErrorDomain" && error.code.toInt() == -1009) {
-                        onNetworkError()
-                        return@LaunchedEffect
-                    }
+                    when {
+                        error.domain == "NSURLErrorDomain" &&
+                                error.code.toInt() == -1009 -> {
+                            onNetworkError()
+                            return@LaunchedEffect
+                        }
 
-                    if (error.code == NSURLErrorBadServerResponse) {
-                        onRequestRefresh()
-                        return@LaunchedEffect
+                        error.code == NSURLErrorBadServerResponse -> {
+                            onRequestRefresh()
+                            return@LaunchedEffect
+                        }
                     }
                 }
             }

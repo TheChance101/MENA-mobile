@@ -131,20 +131,19 @@ actual fun VideoPlayer(
                     override fun onPlayerError(error: PlaybackException) {
                         val cause = error.cause
 
-                        if (cause is UnknownHostException ||
-                            error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED
-                        ) {
-                            onNetworkError()
-                            return
-                        }
+                        when {
+                            cause is UnknownHostException ||
+                                    error.errorCode == PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED -> {
+                                onNetworkError()
+                            }
 
-                        if (cause is HttpDataSource.InvalidResponseCodeException &&
-                            cause.responseCode == HTTP_UNAUTHORIZED_STATUS_EXCEPTION
-                        ) {
-                            onRequestRefresh()
-                            return
+                            cause is HttpDataSource.InvalidResponseCodeException &&
+                                    cause.responseCode == HTTP_UNAUTHORIZED_STATUS_EXCEPTION -> {
+                                onRequestRefresh()
+                            }
+
+                            else -> super.onPlayerError(error)
                         }
-                        super.onPlayerError(error)
                     }
 
                     override fun onPlaybackStateChanged(state: Int) {
