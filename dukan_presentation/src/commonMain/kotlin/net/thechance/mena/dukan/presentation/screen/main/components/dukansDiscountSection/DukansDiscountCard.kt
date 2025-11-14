@@ -2,10 +2,6 @@
 
 package net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +36,6 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
@@ -58,28 +53,21 @@ fun DukansDiscountSection(
 
     val pagerState = rememberPagerState(pageCount = { state.size })
 
-    AnimatedContent(
-        targetState = state.isEmpty(),
-        transitionSpec = { fadeIn() togetherWith fadeOut() }
-    ) { isLoading ->
-        if (isLoading) LoadingDukanPlaceholder()
-        else {
-            Box(modifier.fillWidthOfParent(parentPadding = Theme.spacing._16)) {
-                DukanDiscountImagesAndText(
-                    state = state,
-                    pagerState = pagerState,
-                    onClick = onClick,
-                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._8 + Theme.spacing._2)
-                )
+    Box(modifier.fillWidthOfParent(parentPadding = Theme.spacing._16)) {
+        DukanDiscountImagesAndText(
+            state = state,
+            pagerState = pagerState,
+            onClick = onClick,
+            modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                .padding(bottom = Theme.spacing._8 + Theme.spacing._2)
+        )
 
-                Indicator(
-                    pagerState = pagerState,
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                )
-            }
-        }
+        Indicator(
+            pagerState = pagerState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
+
 }
 
 @Composable
@@ -161,7 +149,7 @@ private fun DukanDiscountText(
         )
 
         PrimaryButton(
-            text = stringResource(Res.string.shop_now) ,
+            text = stringResource(Res.string.shop_now),
             onClick = { onClick(dukanId) },
             trailingIcon = painterResource(Res.drawable.ic_arrow_right),
             iconStartPadding = Theme.spacing._2,
