@@ -37,12 +37,14 @@ fun PagesIndicatorRow(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PageNavigationButton(
-            icon = Res.drawable.ic_arrow_left,
-            isEnabled = currentPage > 0,
-            onClick = { onPageChanged(currentPage - 1) },
-            modifier = Modifier.padding(end = 6.dp)
-        )
+        if (totalPages > 1) {
+            PageNavigationButton(
+                icon = Res.drawable.ic_arrow_left,
+                isEnabled = currentPage > 0,
+                onClick = { onPageChanged(currentPage - 1) },
+                modifier = Modifier.padding(end = 6.dp)
+            )
+        }
 
         displayedPages.forEach { pageItem ->
             when (pageItem) {
@@ -56,13 +58,14 @@ fun PagesIndicatorRow(
                 PageItem.Ellipsis -> PageEllipsisBox(modifier = Modifier.padding(horizontal = 2.dp))
             }
         }
-
-        PageNavigationButton(
-            icon = Res.drawable.ic_arrow_right,
-            isEnabled = currentPage < totalPages - 1,
-            onClick = { onPageChanged(currentPage + 1) },
-            modifier = Modifier.padding(start = 6.dp)
-        )
+        if (totalPages > 1) {
+            PageNavigationButton(
+                icon = Res.drawable.ic_arrow_right,
+                isEnabled = currentPage < totalPages - 1,
+                onClick = { onPageChanged(currentPage + 1) },
+                modifier = Modifier.padding(start = 6.dp)
+            )
+        }
     }
 }
 
@@ -155,7 +158,7 @@ private fun PageNumberButton(
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(animatedBackgroundColor)
-            .clickable { onClick() }
+            .clickable (enabled = !isSelected){ onClick() }
             .padding(vertical = 4.dp)
             .wrapContentHeight(Alignment.CenterVertically)
     )

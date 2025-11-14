@@ -63,6 +63,7 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSURLErrorBadServerResponse
 
 private const val PREFERRED_TIME_SCALE = 600
+private const val NSURLErrorNotConnectedToInternet = -1009
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -73,6 +74,7 @@ actual fun VideoPlayer(
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
+    onNetworkError: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -140,10 +142,17 @@ actual fun VideoPlayer(
             if (item?.status == AVPlayerItemStatusFailed) {
                 val error = item.error
                 if (error != null) {
-                    if (error.code == NSURLErrorBadServerResponse ||
-                        error.domain == "NSURLErrorDomain"
-                    ) {
-                        onRequestRefresh()
+                    when {
+                        error.domain == "NSURLErrorDomain" &&
+                                error.code.toInt() == NSURLErrorNotConnectedToInternet -> {
+                            onNetworkError()
+                            return@LaunchedEffect
+                        }
+
+                        error.code == NSURLErrorBadServerResponse -> {
+                            onRequestRefresh()
+                            return@LaunchedEffect
+                        }
                     }
                 }
             }

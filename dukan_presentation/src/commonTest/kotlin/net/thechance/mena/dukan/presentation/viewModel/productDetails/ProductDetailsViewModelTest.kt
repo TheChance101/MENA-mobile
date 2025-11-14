@@ -21,6 +21,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -140,7 +141,7 @@ class ProductDetailsViewModelTest {
         advanceUntilIdle()
 
         val state = productDetailsViewModel.state.value
-        assertEquals(dummyProductDetails().price, state.product.price)
+        assertEquals(dummyProductDetails().price.base, state.product.price)
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -424,7 +425,10 @@ private fun dummyProductDetails(): Product = Product(
     id = Uuid.parse("a1b2c3d4-e5f6-7890-1234-567890abcdef"),
     name = "Vintage T-Shirt",
     description = "A very cool vintage t-shirt.",
-    price = 29.99,
+    price = Price(
+        base = 29.99,
+        final = 29.99
+    ),
     imageUrls = listOf(
         "http://example.com/image1.jpg",
         "http://example.com/image2.jpg"

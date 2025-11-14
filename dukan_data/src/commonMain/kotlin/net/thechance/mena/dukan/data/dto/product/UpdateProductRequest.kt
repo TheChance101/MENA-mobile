@@ -10,7 +10,7 @@ data class UpdateProductRequest(
     @SerialName("description")
     val description: String?,
     @SerialName("price")
-    val price: Double?,
+    val price: PriceDto,
     @SerialName("shelfId")
     val shelfId: String?,
     @SerialName("imageUrls")
