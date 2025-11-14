@@ -161,7 +161,6 @@ private fun onWalletEffect(
         is WalletEffect.NavigateToConfirmPaymentScreen -> {
             navController.navigate(
                 ConfirmPaymentScreenRoute(
-                    amount = effect.amount,
                     transactionId = effect.transactionId.toString()
                 )
             )
