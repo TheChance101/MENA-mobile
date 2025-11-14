@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.screen.orderDetails
 
 import androidx.compose.foundation.layout.PaddingValues
@@ -5,7 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -17,12 +22,32 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.CustomerInformationSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.DeliveryAddressSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.OrderSummary
+import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsEffect
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
-fun OrderDetailsScreen() {
+fun OrderDetailsScreen(
+    orderId: Uuid,
+    viewModel: OrderDetailsViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    ObserveAsEffect(viewModel.effect){ effect ->
+        when(effect){
+            OrderDetailsEffect.NavigateBack -> {} // Todo add navigate back action
+        }
+    }
+
+    LaunchedEffect(key1 = state.orderUiState){
+        viewModel.loadOrderDetails(orderId)
+    }
+
     OrderDetailsContent()
 }
 
