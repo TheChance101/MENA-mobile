@@ -102,26 +102,10 @@ private fun DukanDiscountImagesAndText(
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
             currentIndex = page
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                AsyncImage(
-                    model = state[page].imageUrl,
-                    contentDescription = stringResource(Res.string.dukan_image),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color.Black.copy(alpha = 0.8f),
-                                    Color.Transparent
-                                )
-                            )
-                        )
-                )
-            }
+            PannerItem(
+                state = state,
+                page = page
+            )
         }
         DukanDiscountText(
             dukanDiscount = state[currentIndex].discount,
@@ -156,33 +140,71 @@ private fun DukanDiscountText(
             color = Theme.colorScheme.primary.onPrimary,
             modifier = Modifier.padding(bottom = Theme.spacing._8)
         )
+        ShopNowButton(
+            dukanId = dukanId,
+            onClick = onClick,
+        )
+    }
+}
 
-        Row(
+@Composable
+private fun ShopNowButton(
+    dukanId: Uuid,
+    onClick: (dukanId: Uuid) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .clip(RoundedCornerShape(Theme.radius.full))
+            .background(Theme.colorScheme.primary.onPrimary)
+            .clickable(
+                onClick = { onClick(dukanId) },
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ).padding(
+                horizontal = Theme.spacing._12,
+                vertical = Theme.spacing._4
+            ),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(Res.string.shop_now),
+            color = Theme.colorScheme.primary.primary,
+            style = Theme.typography.label.medium,
             modifier = Modifier
-                .clip(RoundedCornerShape(Theme.radius.full))
-                .background(Theme.colorScheme.primary.onPrimary)
-                .clickable(
-                    onClick = { onClick(dukanId) },
-                    indication = null,
-                    interactionSource = MutableInteractionSource()
-                ).padding(
-                    horizontal = Theme.spacing._12,
-                    vertical = Theme.spacing._4
-                ),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(Res.string.shop_now),
-                color = Theme.colorScheme.primary.primary,
-                style = Theme.typography.label.medium,
-                modifier = Modifier
-            )
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = null,
-            )
-        }
+        )
+        Icon(
+            painter = painterResource(Res.drawable.ic_arrow_right),
+            contentDescription = null,
+        )
+    }
+}
+
+@Composable
+private fun PannerItem(
+    modifier: Modifier = Modifier,
+    state: List<MainScreenUiState.DukanTopDiscount>,
+    page: Int
+) {
+    Box(modifier = modifier.fillMaxSize()) {
+        AsyncImage(
+            model = state[page].imageUrl,
+            contentDescription = stringResource(Res.string.dukan_image),
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.8f),
+                            Color.Transparent
+                        )
+                    )
+                )
+        )
     }
 }
 
