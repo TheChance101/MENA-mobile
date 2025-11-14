@@ -158,7 +158,7 @@ class CreateDukanViewModel(
     }
 
     override fun onNameChanged(name: String) {
-        updateState { copy(name = limitNameLength(name), snackBarState = null) }
+        updateState { copy(name = mapDukanNameToValidName(name), snackBarState = null) }
         updateNextButtonEnableState()
     }
 
@@ -232,7 +232,8 @@ class CreateDukanViewModel(
         if (!isBasicInformationStepValid(state.value)) {
             return
         }
-        checkNameUniqueness(state.value.name)
+        val trimmedName = state.value.name.trim()
+        checkNameUniqueness(trimmedName)
     }
 
     private fun nextStep(step: CreateDukanStep): CreateDukanStep {
@@ -314,11 +315,23 @@ class CreateDukanViewModel(
         )
     }
 
-    private fun limitNameLength(name: String): String {
-        return if (name.length > MAX_NAME_LENGTH)
-            name.trim().take(MAX_NAME_LENGTH)
+    private fun mapDukanNameToValidName(name: String): String {
+        var validName = ""
+        name.forEachIndexed { index, ch ->
+            validName = if (name.last()!= ch ) {
+                if (name[index].isWhitespace() && name[index + 1].isWhitespace()) {
+                    name.removeRange(index + 1, index + 1)
+                } else
+                    name
+            }else{
+                name
+            }
+        }
+        return if (name.length > MAX_NAME_LENGTH) {
+            validName.take(MAX_NAME_LENGTH)
+        }
         else
-            name.trim()
+            validName
     }
 
     private fun handleNameValidationResult(isTaken: Boolean) {
