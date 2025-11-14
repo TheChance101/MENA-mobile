@@ -12,6 +12,7 @@ import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.Duka
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreen
 import net.thechance.mena.admin_panel.presentation.screen.login.LoginScreen
 import net.thechance.mena.admin_panel.presentation.screen.SplashScreen.SplashScreen
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreen
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreen
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
@@ -44,6 +45,9 @@ fun AdminPanelNavHost(
         }
         composable<DukanManagement> {
             DukanManagementsScreen(modifier)
+        }
+        composable<DukanDetails> {
+            DukanDetailsScreen()
         }
     }
 }
