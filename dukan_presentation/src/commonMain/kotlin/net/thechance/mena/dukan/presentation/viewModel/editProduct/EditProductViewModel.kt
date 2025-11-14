@@ -102,7 +102,7 @@ class EditProductViewModel(
         updateState {
             copy(
                 productName = product.name,
-                price = product.price.toString(),
+                price = product.price.base.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
                 isTextFieldEnabled = true,
@@ -454,7 +454,7 @@ class EditProductViewModel(
         val fileName = bytes.toFileName()
         val result = productRepository.uploadProductImage(
             fileName = fileName,
-            fileBytes =bytes,
+            fileBytes = bytes,
             productId = productId
         )
         return result
@@ -491,7 +491,7 @@ class EditProductViewModel(
         return UpdateProductParams(
             name = trimmedName,
             description = trimmedDescription,
-            price = Price(base =  state.value.price.toDoubleOrNull()?:0.0),
+            price = Price(base = state.value.price.toDoubleOrNull() ?: 0.0),
             shelfId = state.value.selectedShelf?.id,
             imageUrls = finalImageUrls,
             isOutOfStock = state.value.isOutOfStock

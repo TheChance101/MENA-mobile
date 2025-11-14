@@ -38,6 +38,7 @@ import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.product_name_is_already_exist
 import mena.dukan_presentation.generated.resources.save_product_success
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
@@ -100,7 +101,7 @@ class EditProductViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertEquals(fakeProduct().name, state.productName)
-            assertEquals(fakeProduct().price.toString(), state.price)
+            assertEquals(fakeProduct().price.base.toString(), state.price)
             assertEquals(fakeProduct().description, state.description)
             cancelAndIgnoreRemainingEvents()
         }
@@ -575,8 +576,8 @@ class EditProductViewModelTest {
     @Test
     fun `onSaveProductClicked - invalid product shows validation error`() = scope.runTest {
         viewModel.updateStateWithValidProduct(
-                productName = "Test",
-                price = "abc",
+            productName = "Test",
+            price = "abc",
             selectedShelf = createSimpleShelfUi(),
             images = listOf(createValidProductImageUi())
         )
@@ -600,10 +601,10 @@ class EditProductViewModelTest {
         everySuspend { productRepository.deleteProductImages(any(), any()) } returns Unit
 
         viewModel.updateStateWithValidProduct(
-                productName = "Duplicate Name",
-                description = "Nice description".padEnd(120, 'z'),
+            productName = "Duplicate Name",
+            description = "Nice description".padEnd(120, 'z'),
             existingImageUrls = fakeProduct().imageUrls
-            )
+        )
 
         viewModel.onSaveProductClicked()
         advanceUntilIdle()
@@ -1090,7 +1091,7 @@ class EditProductViewModelTest {
 
         val state = testViewModel.state.value
         assertEquals(fakeProduct().name, state.productName)
-        assertEquals(fakeProduct().price.toString(), state.price)
+        assertEquals("99.99", state.price)
         assertTrue(state.existingImageUrls.isEmpty())
     }
 
@@ -1161,7 +1162,7 @@ class EditProductViewModelTest {
     fun `getProductData - product with zero price SHOULD load successfully`() = scope.runTest {
         setupProductRepositoryWithCustomProduct(
             productRepository,
-            fakeProduct().copy(price = 0.0)
+            fakeProduct().copy(price = Price(base = 0.0, final = 0.0))
         )
 
         val testViewModel = createEditProductViewModel(
@@ -1173,16 +1174,15 @@ class EditProductViewModelTest {
         advanceUntilIdle()
 
         val state = testViewModel.state.value
-        assertEquals("0.0", state.price)
+        assertEquals("0.0", state.price.trim())
     }
 
     @Test
     fun `getProductData - product with very large price SHOULD load successfully`() =
         scope.runTest {
-            val largePrice = 999999.99
             setupProductRepositoryWithCustomProduct(
                 productRepository,
-                fakeProduct().copy(price = largePrice)
+                fakeProduct().copy(price = Price(base = 999999.99))
             )
 
             val testViewModel = createEditProductViewModel(
@@ -1194,7 +1194,7 @@ class EditProductViewModelTest {
             advanceUntilIdle()
 
             val state = testViewModel.state.value
-            assertEquals(largePrice.toString(), state.price)
+            assertEquals("999999.99", state.price)
         }
 
     @Test
@@ -1379,55 +1379,63 @@ class EditProductViewModelTest {
     }
 
     @Test
-    fun `onGetProductDataSuccess - when shelves are not empty SHOULD select product shelf`() = scope.runTest {
-        val productWithShelf = fakeProduct().copy(shelfId = testShelfId)
-        everySuspend { productRepository.getProductById(any()) } returns productWithShelf
-        
-        val testViewModel = createEditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            productId = productId,
-            dispatcher = dispatcher
-        )
-        
-        advanceUntilIdle()
+    fun `onGetProductDataSuccess - when shelves are not empty SHOULD select product shelf`() =
+        scope.runTest {
+            val productWithShelf = fakeProduct().copy(shelfId = testShelfId)
+            everySuspend { productRepository.getProductById(any()) } returns productWithShelf
 
-        val state = testViewModel.state.value
-        assertEquals(productWithShelf.name, state.productName)
-        assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded")
-        assertNotNull(state.selectedShelf, "Product shelf should be selected when shelves are not empty")
-        assertEquals(testShelfId.toString(), state.selectedShelf.id)
-        
-        val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
-        assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
-        assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
-    }
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+
+            advanceUntilIdle()
+
+            val state = testViewModel.state.value
+            assertEquals(productWithShelf.name, state.productName)
+            assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded")
+            assertNotNull(
+                state.selectedShelf,
+                "Product shelf should be selected when shelves are not empty"
+            )
+            assertEquals(testShelfId.toString(), state.selectedShelf.id)
+
+            val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
+            assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
+            assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
+        }
 
     @Test
-    fun `onGetProductDataSuccess - when shelves loaded before product data SHOULD select product shelf`() = scope.runTest {
-        val productWithShelf = fakeProduct().copy(shelfId = testShelfId)
-        everySuspend { productRepository.getProductById(any()) } returns productWithShelf
-        everySuspend { shelfRepository.getMyDukanShelves() } returns fakeShelves()
-        
-        val testViewModel = createEditProductViewModel(
-            productRepository = productRepository,
-            shelfRepository = shelfRepository,
-            productId = productId,
-            dispatcher = dispatcher
-        )
-        
-        advanceUntilIdle()
+    fun `onGetProductDataSuccess - when shelves loaded before product data SHOULD select product shelf`() =
+        scope.runTest {
+            val productWithShelf = fakeProduct().copy(shelfId = testShelfId)
+            everySuspend { productRepository.getProductById(any()) } returns productWithShelf
+            everySuspend { shelfRepository.getMyDukanShelves() } returns fakeShelves()
 
-        val state = testViewModel.state.value
-        assertEquals(productWithShelf.name, state.productName)
-        assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded before product data")
-        assertNotNull(state.selectedShelf, "Product shelf should be selected when shelves are loaded before product data")
-        assertEquals(testShelfId.toString(), state.selectedShelf.id)
-        
-        val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
-        assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
-        assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
-    }
+            val testViewModel = createEditProductViewModel(
+                productRepository = productRepository,
+                shelfRepository = shelfRepository,
+                productId = productId,
+                dispatcher = dispatcher
+            )
+
+            advanceUntilIdle()
+
+            val state = testViewModel.state.value
+            assertEquals(productWithShelf.name, state.productName)
+            assertTrue(state.shelves.isNotEmpty(), "Shelves should be loaded before product data")
+            assertNotNull(
+                state.selectedShelf,
+                "Product shelf should be selected when shelves are loaded before product data"
+            )
+            assertEquals(testShelfId.toString(), state.selectedShelf.id)
+
+            val shelfWithMatchingId = state.shelves.firstOrNull { it.id == testShelfId.toString() }
+            assertNotNull(shelfWithMatchingId, "Shelf with product shelf ID should exist")
+            assertTrue(shelfWithMatchingId.isSelected, "Matching shelf should be selected")
+        }
 }
 
 @OptIn(ExperimentalUuidApi::class)
@@ -1520,7 +1528,10 @@ private fun fakeProduct(): Product {
         id = Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"),
         name = "Test Product",
         description = "Test Description".padEnd(120, 'x'),
-        price = 99.99,
+        price = Price(
+            base = 99.99,
+            final = 99.99
+        ),
         shelfId = testShelfId,
         imageUrls = listOf("image1.jpg", "image2.jpg"),
         createdAt = "2025-09-16T15:06:57.507394",
