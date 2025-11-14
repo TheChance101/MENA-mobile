@@ -42,59 +42,6 @@ class UsersManagementViewModel(
         getUsers()
     }
 
-    private fun getUsers() {
-        val queryParams = getUserQueryParams()
-
-        tryToExecute(
-            callee = { userRepository.getUsers(queryParams) },
-            onSuccess = ::onGetUsersSuccess,
-            onError = ::onError,
-            onStart = { updateState { it.copy(isLoading = true) } },
-            onFinish = { updateState { it.copy(isLoading = false) } },
-            dispatcher = dispatcher
-        )
-    }
-
-    private fun getUserQueryParams(): UserQueryParams {
-        val trimmedQuery = currentState.query
-            .trim().replace(Regex("\\s+"), " ").ifBlank { null }
-
-        return UserQueryParams(
-            searchInput = trimmedQuery,
-            sortType = currentState.sort.type.toEntity(),
-            sortDirection = currentState.sort.direction.toEntity(),
-            page = currentState.pageInfo.page,
-            size = PAGE_SIZE
-        )
-    }
-
-    private fun onGetUsersSuccess(result: PagedResult<User>) {
-        updateState {
-            it.copy(
-                users = result.items.mapIndexed { index, user ->
-                    user.toUIState(
-                        currentPage = result.currentPage,
-                        indexInList = index
-                    )
-                },
-                pageInfo = UsersManagementScreenState.UserPageInfo(
-                    page = result.currentPage,
-                    totalPages = result.totalPages
-                ),
-                errorState = null
-            )
-        }
-    }
-
-    private suspend fun onError(errorState: ErrorState) {
-        updateState { it.copy(errorState = errorState) }
-        showSnackBar(
-            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
-            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
-            isSuccess = false
-        )
-    }
-
     override fun onSortClicked(type: UsersManagementScreenState.SortType) {
         val newDirection = if (currentState.sort.type == type) {
             currentState.sort.direction.toggle()
@@ -159,6 +106,66 @@ class UsersManagementViewModel(
         onBlockDialogDismissed()
     }
 
+    override fun mapError(throwable: Throwable): ErrorState {
+        return when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            else -> ErrorState.UnknownError
+        }
+    }
+
+    private fun getUsers() {
+        val queryParams = getUserQueryParams()
+
+        tryToExecute(
+            callee = { userRepository.getUsers(queryParams) },
+            onSuccess = ::onGetUsersSuccess,
+            onError = ::onError,
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onFinish = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun getUserQueryParams(): UserQueryParams {
+        val trimmedQuery = currentState.query
+            .trim().replace(Regex("\\s+"), " ").ifBlank { null }
+
+        return UserQueryParams(
+            searchInput = trimmedQuery,
+            sortType = currentState.sort.type.toEntity(),
+            sortDirection = currentState.sort.direction.toEntity(),
+            page = currentState.pageInfo.page,
+            size = PAGE_SIZE
+        )
+    }
+
+    private fun onGetUsersSuccess(result: PagedResult<User>) {
+        updateState {
+            it.copy(
+                users = result.items.mapIndexed { index, user ->
+                    user.toUIState(
+                        currentPage = result.currentPage,
+                        indexInList = index
+                    )
+                },
+                pageInfo = UsersManagementScreenState.UserPageInfo(
+                    page = result.currentPage,
+                    totalPages = result.totalPages
+                ),
+                errorState = null
+            )
+        }
+    }
+
+    private suspend fun onError(errorState: ErrorState) {
+        updateState { it.copy(errorState = errorState) }
+        showSnackBar(
+            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
+    }
+
     private fun updateUserStatus(userId: Uuid, newStatus: User.Status) {
         tryToExecute(
             callee = { userRepository.updateUserStatus(userId, newStatus) },
@@ -194,6 +201,7 @@ class UsersManagementViewModel(
         isSuccess: Boolean,
         durationMillis: Long = 3000L
     ) {
+        if (state.value.snackBar.isVisible && state.value.snackBar.message == message) return
         updateState { oldState ->
             oldState.copy(
                 snackBar = SnackBarState(
@@ -213,13 +221,6 @@ class UsersManagementViewModel(
     private fun hideSnackBar() {
         updateState { oldState ->
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
-        }
-    }
-
-    override fun mapError(throwable: Throwable): ErrorState {
-        return when (throwable) {
-            is NoInternetException -> ErrorState.NoInternet
-            else -> ErrorState.UnknownError
         }
     }
 

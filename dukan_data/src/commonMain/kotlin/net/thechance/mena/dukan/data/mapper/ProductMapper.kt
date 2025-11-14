@@ -13,7 +13,7 @@ fun CreateProductParams.toCreateProductRequest(): CreateProductRequest {
     return CreateProductRequest(
         name = name,
         description = description,
-        price = price,
+        price = price.toRequest(),
         shelfId = shelfId
     )
 }
@@ -22,7 +22,7 @@ fun UpdateProductParams.toUpdateProductRequest(): UpdateProductRequest {
     return UpdateProductRequest(
         name = name?.takeIf { it.isNotBlank() },
         description = description?.takeIf { it.isNotBlank() },
-        price = price,
+        price = price.toRequest(),
         shelfId = shelfId?.takeIf { it.isNotBlank() },
         imageUrls = imageUrls?.takeIf { it.isNotEmpty() },
         isOutOfStock = isOutOfStock
@@ -34,7 +34,7 @@ fun ProductDto.toDomain(): Product = Product(
     id = id,
     name = name,
     description = description,
-    price = price,
+    price = price.toDomain(),
     imageUrls = imageUrls,
     createdAt = createdAt,
     quantityInCart = quantityInCart,
@@ -48,7 +48,7 @@ fun ProductCartDto.toDomain(): Product = Product(
     id = id,
     name = name,
     description = description,
-    price = price,
+    price = price.toDomain(),
     imageUrls = listOf(imageUrl),
     quantityInCart = quantityInCart,
     createdAt = "",
