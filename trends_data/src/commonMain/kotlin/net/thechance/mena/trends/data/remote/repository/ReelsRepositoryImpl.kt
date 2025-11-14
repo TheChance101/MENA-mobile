@@ -178,7 +178,7 @@ internal class ReelsRepositoryImpl(
     ): List<Reel> {
         val endpoint = reelId?.let {
             "$FAVORITE_REEL_ENDPOINT/$it"
-        } ?: "$FAVORITE_REEL_ENDPOINT"
+        } ?: FAVORITE_REEL_ENDPOINT
 
         return safeApiCall<RemotePaginationResponse<ReelDto>> {
             networkClient.get(endpoint) {

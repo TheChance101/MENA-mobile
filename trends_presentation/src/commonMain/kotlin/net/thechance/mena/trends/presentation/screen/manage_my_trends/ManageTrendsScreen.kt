@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
@@ -62,6 +63,7 @@ import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
@@ -148,8 +150,8 @@ private fun ManageTrendsScreenBody(
 
     val gridState = rememberLazyGridState()
     val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
-            trends.loadState.refresh is LoadState.NotLoading
-
+            trends.loadState.refresh is LoadState.NotLoading &&
+            trends.loadState.refresh.toErrorState() == null
 
     LazyVerticalGrid(
         state = gridState,
@@ -212,10 +214,8 @@ private fun ManageTrendsScreenBody(
         }
 
         if (trends.itemSnapshotList.isNotEmpty()) {
-            items(
-                count = trends.itemCount,
-                key = { index -> trends.peek(index)?.id ?: index }
-            ) { index ->
+            items(key = trends.itemKey(), count = trends.itemCount) { index ->
+
                 trends[index]?.let { trend ->
                     TrendItem(
                         item = trend,

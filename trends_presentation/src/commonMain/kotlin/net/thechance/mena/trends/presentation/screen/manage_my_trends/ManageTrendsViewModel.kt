@@ -74,7 +74,7 @@ internal class ManageTrendsViewModel(
         val uiReelsFlow = reelsFlow
             .map { pagingData: PagingData<Reel> ->
             pagingData.map { reel -> reel.toUiState() }
-        }.cachedIn(viewModelScope)
+        }
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
