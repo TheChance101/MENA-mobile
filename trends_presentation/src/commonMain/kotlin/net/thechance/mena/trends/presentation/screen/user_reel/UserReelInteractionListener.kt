@@ -13,4 +13,5 @@ internal interface UserReelInteractionListener {
     fun increaseReelView(reelId: String)
     fun onClickLike(reelId: String, isLiked: Boolean)
     fun onGetRefreshVideoUrl(reelId: String)
+    fun saveUserReelEngagement(reelWatchSessionState: ReelWatchSessionState, reelId: String)
 }
