@@ -62,7 +62,7 @@ fun ChatNavHost(
                         navController.popBackStack()
                     })
                 }
-                composable<ShareAyahRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
+                composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
 
             Box(
