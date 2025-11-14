@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 
-import androidx.compose.ui.unit.DpOffset
 import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -22,9 +21,9 @@ import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToM
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toAddressInput
+import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState.AddEditAddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.util.isSaveEnabled
@@ -107,10 +106,6 @@ class AddEditLocationScreenViewModel(
                 onSuccess = ::onAddressFromPickLocation
             )
         )
-    }
-
-    override fun onSetAnchorLocation(anchorLocation: DpOffset) {
-        updateState { copy(anchorLocation = anchorLocation) }
     }
 
     override fun onClickEdit() {
