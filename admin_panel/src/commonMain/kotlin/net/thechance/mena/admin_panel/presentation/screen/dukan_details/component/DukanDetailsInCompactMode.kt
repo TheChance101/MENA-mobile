@@ -33,6 +33,8 @@ internal fun DukanDetailsInCompactMode(
             dukanCategories = state.dukan.categories,
             dukanLocation = state.dukan.address,
             dukanImg = state.dukan.imageUrl,
+            latitude = state.dukan.latitude,
+            longitude = state.dukan.longitude,
             isLoading = state.isDukanDetailsLoading
         )
         ShelvesDetailsCard(

@@ -41,6 +41,8 @@ data class DukanDetailsScreenState(
         val imageUrl: String = "",
         val categories: List<String> = listOf(),
         val dukanStatus: DukanStatus = DukanStatus.DEACTIVE,
+        val latitude: Double = 0.0,
+        val longitude: Double = 0.0
     )
 
     enum class DukanStatus(

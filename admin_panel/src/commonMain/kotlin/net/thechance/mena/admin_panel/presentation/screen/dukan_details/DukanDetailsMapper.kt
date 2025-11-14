@@ -11,6 +11,8 @@ fun Dukan.toUi() = DukanDetailsScreenState.DukanUi(
     address = address,
     imageUrl = imageUrl,
     categories = categories.map { it.title },
+    latitude = latitude,
+    longitude = longitude,
     dukanStatus = when(activationStatus){
         ActivationStatus.ACTIVATED -> DukanDetailsScreenState.DukanStatus.ACTIVE
         ActivationStatus.DEACTIVATED -> DukanDetailsScreenState.DukanStatus.DEACTIVE

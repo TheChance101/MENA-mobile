@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.OSMMapView
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
@@ -39,6 +40,8 @@ internal fun DukanDetailsCard(
     dukanCategories: List<String>,
     dukanLocation: String,
     dukanImg: String,
+    latitude: Double,
+    longitude: Double,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -80,17 +83,7 @@ internal fun DukanDetailsCard(
                     modifier = Modifier.padding(top = 2.dp),
                     categories = dukanCategories
                 )
-                Box(
-                    modifier = Modifier
-                        .padding(top = 16.dp)
-                        .fillMaxWidth()
-                        .aspectRatio(2f)
-                        .background(
-                            color = Theme.colorScheme.stroke,
-                            shape = RoundedCornerShape(Theme.radius.md)
-                        )
-                        .clip(RoundedCornerShape(Theme.radius.md)),
-                )
+                DukanLocationMap(latitude = latitude, longitude = longitude)
                 DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukanLocation)
             }
         }
@@ -121,6 +114,30 @@ private fun DukanCategories(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun DukanLocationMap(
+    latitude: Double,
+    longitude: Double,
+    modifier: Modifier = Modifier
+){
+    Box(
+        modifier = modifier
+            .padding(top = 16.dp)
+            .fillMaxWidth()
+            .aspectRatio(2f)
+            .clip(RoundedCornerShape(Theme.radius.md)),
+    ){
+        OSMMapView(
+            modifier = Modifier.fillMaxSize(),
+            latitude = latitude,
+            longitude = longitude,
+            markerWidth = 60,
+            markerHeight = 80,
+            initialZoom = 100
+        )
     }
 }
 
