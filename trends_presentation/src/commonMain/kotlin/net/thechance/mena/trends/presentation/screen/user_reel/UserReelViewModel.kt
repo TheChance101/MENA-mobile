@@ -131,7 +131,7 @@ internal class UserReelViewModel(
 
     override fun onClickRetry(reelId: String) {
         updateState { copy(currentReelId = reelId, error = null) }
-        getFeedReels()
+        onGetRefreshVideoUrl(reelId)
     }
 
     override fun onNetworkError() {
