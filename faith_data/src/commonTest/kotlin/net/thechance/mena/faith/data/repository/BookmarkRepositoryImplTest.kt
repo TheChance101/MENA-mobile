@@ -23,6 +23,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.ExperimentalTime
@@ -40,7 +41,8 @@ class BookmarkRepositoryImplTest {
     fun setup() {
         repository = BookmarkRepositoryImpl(
             ayahDao = mockDao,
-            bookmarkApiService = apiService
+            bookmarkApiService = apiService,
+            localizationService = LocalizationService(mock(MockMode.autofill))
         )
     }
 
