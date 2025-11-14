@@ -13,7 +13,7 @@ data class TopDiscountedDukanDto(
     val imageUrl: String,
 
     @SerialName("discount")
-    val discount: Int,
+    val discount: Double,
 
     @SerialName("id")
     val id: Uuid

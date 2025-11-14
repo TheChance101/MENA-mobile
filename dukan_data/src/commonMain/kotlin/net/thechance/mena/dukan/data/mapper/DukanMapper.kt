@@ -80,6 +80,6 @@ fun TopDiscountedDukanDto.toEntity(): TopDiscountedDukanPreview{
     return TopDiscountedDukanPreview(
         id = id,
         imageUrl = imageUrl,
-        discount = discount
+        discount = discount.toInt()
     )
 }
