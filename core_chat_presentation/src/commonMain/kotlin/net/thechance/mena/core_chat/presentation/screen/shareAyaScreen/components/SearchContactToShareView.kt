@@ -31,35 +31,35 @@ fun SearchContactToShareView(
     state: ShareMessageScreenState
 ) {
     AnimatedContent(
-        targetState = contacts.loadState.refresh,
+        targetState = contacts.loadState.refresh to (contacts.itemCount == 0),
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
-    ) { loadState ->
-        when (loadState) {
-            is LoadState.Loading -> {
-                LoadingView()
-            }
-
-            is LoadState.Error -> {
-                ErrorView(
-                    title = stringResource(Res.string.something_went_wrong),
-                    message = stringResource(Res.string.could_not_load_contacts),
-                    onRetry = interactions::onClickClearQuery
+    ) { (loadState, isEmptyList) ->
+        Column {
+            SearchBar(
+                value = state.searchQuery,
+                hint = stringResource(Res.string.search_by_name),
+                onValueChange = { query -> interactions.onChangeSearchQuery(query = query) },
+                onClearQueryClicked = interactions::onClickClearQuery,
+                modifier = Modifier.padding(
+                    horizontal = Theme.spacing._16,
+                    vertical = Theme.spacing._8
                 )
-            }
+            )
+            when (loadState) {
+                is LoadState.Loading -> {
+                    if (isEmptyList) LoadingView()
+                }
 
-            else -> {
-                Column {
-                    SearchBar(
-                        value = state.searchQuery,
-                        hint = stringResource(Res.string.search_by_name),
-                        onValueChange = { query -> interactions.onChangeSearchQuery(query = query) },
-                        onClearQueryClicked = interactions::onClickClearQuery,
-                        modifier = Modifier.padding(
-                            horizontal = Theme.spacing._16,
-                            vertical = Theme.spacing._8
-                        )
+                is LoadState.Error -> {
+                    if (isEmptyList) ErrorView(
+                        title = stringResource(Res.string.something_went_wrong),
+                        message = stringResource(Res.string.could_not_load_contacts),
+                        onRetry = interactions::onClickClearQuery
                     )
+                }
+
+                else -> {
                     ContactsList(
                         contacts = contacts,
                         onContactClick = interactions::onClickContact
