@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_profile
@@ -21,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.visualTransformation.LengthBasedPhoneVisualTransformation
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -30,6 +32,7 @@ fun CustomerInformationSection(
     userPhoneNumber:String,
     modifier: Modifier = Modifier
 ) {
+
     Column(modifier = modifier) {
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._8),
@@ -78,6 +81,9 @@ private fun UserInformation(
     phoneNumber: String,
     modifier: Modifier = Modifier
 ) {
+    val phoneVisualTransformation = LengthBasedPhoneVisualTransformation(phoneNumberMasks)
+    val formattedPhoneNumber = phoneVisualTransformation.filter(AnnotatedString(phoneNumber))
+
     Column(
         modifier = modifier
             .padding(start = Theme.spacing._8),
@@ -86,12 +92,14 @@ private fun UserInformation(
         Text(
             text = name,
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1
         )
         Text(
-            text = phoneNumber,
+            text = "+${formattedPhoneNumber.text.text}",
             style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadeSecondary
+            color = Theme.colorScheme.shadeSecondary,
+            maxLines = 1
         )
     }
 }
@@ -107,3 +115,11 @@ private fun CustomerInformationSectionPreview() {
         )
     }
 }
+
+private val phoneNumberMasks = mapOf(
+    8 to "##\u00A0###\u00A0###",
+    11 to "###\u00A0####\u00A0####",
+    12 to "##\u00A0###\u00A0###\u00A0####",
+    13 to "###\u00A0###\u00A0####\u00A0###",
+    14 to "###\u00A0###\u00A0####\u00A0####",
+)
