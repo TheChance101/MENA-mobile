@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +30,7 @@ import net.thechance.mena.dukan.presentation.util.file.PlatformImageFile
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -75,8 +75,9 @@ fun UploadProductImage(
             .size(size = 88.dp)
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(size = cornerRadiusValue)
-            ).clip(RoundedCornerShape(size = cornerRadiusValue))
+                shape = SquircleShape(cornerRadiusValue)
+            )
+            .clip(SquircleShape(cornerRadiusValue))
             .clickable(onClick = { safeLaunch() }, enabled = isUploadingImageEnabled)
             .drawWithContent {
                 drawContent()

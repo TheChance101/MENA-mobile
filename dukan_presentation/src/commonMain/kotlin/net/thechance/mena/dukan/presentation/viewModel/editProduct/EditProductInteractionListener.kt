@@ -19,6 +19,7 @@ interface EditProductInteractionListener {
     fun onSaveProductClicked()
     fun onDismissSnackBar()
     fun onCropImageBackClicked()
+    fun onOutOfStockChange(isOutOfStock: Boolean)
 }
 
 

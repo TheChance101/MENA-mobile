@@ -30,7 +30,7 @@
     <string name="pay_button">زر الدفع</string>
     <string name="receiver">المستلم</string>
     <string name="date">التاريخ</string>
-    <string name="transaction_id">id المعاملة</string>
+    <string name="transaction_id">رقم المعاملة</string>
     <string name="purchase">شراء</string>
     <string name="transfer">تحويل</string>
     <string name="failed_icon">أيقونة الفشل</string>
@@ -76,7 +76,7 @@
     <string name="transactions_history">سجل المعاملات</string>
     <string name="filter">الفلاتر</string>
     <string name="transaction_pay">تسوق عبر الإنترنت</string>
-    <string name="transaction_send">إرسال إلى </string>
+    <string name="transaction_send">إرسال إلى</string>
     <string name="transaction_receive"> استلام من</string>
     <string name="money_icon">أيقونة المال</string>
     <string name="transaction_type_icon">أيقونة نوع المعاملة</string>
@@ -119,7 +119,7 @@
     <string name="confirm_payment_content_success">لديك %1$s فضة في المحفظة</string>
     <string name="confirm_payment_content_failed">لديك فقط %1$s فضة في محفظتك، وهذا لا يكفي.</string>
     <string name="You_are_about_to_pay">أنت على وشك الدفع</string>
-    <string name="pay_amount">%1$s ادفع</string>
+    <string name="pay_amount">ادفع %1$s</string>
     <string name="user_img">صورة المستخدم</string>
 
     <string name="transaction_successful">تمت العملية بنجاح!</string>

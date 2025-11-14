@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,7 +46,7 @@ fun SmallImageDukanImageAndTitle(
             contentDescription = stringResource(Res.string.dukan_image),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(56.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
+                .clip(CircleShape)
         )
         Text(
             text = dukanInfoState.name,
@@ -69,7 +69,7 @@ fun SmallImageDukanIconButton(
         painter = icon,
         contentDescription = stringResource(Res.string.dukan_icon),
         tint = iconColor,
-        modifier = modifier.clip(RoundedCornerShape(Theme.radius.full))
+        modifier = modifier.clip(CircleShape)
             .background(iconColor.copy(alpha = 0.06f))
             .clickable(
                 onClick = onIconClick,

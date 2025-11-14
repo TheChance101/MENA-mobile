@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -31,6 +31,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUi
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun SmallImageStyle(
@@ -49,7 +50,7 @@ fun SmallImageStyle(
     Box(
         modifier = modifier
             .height(198.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
+            .clip(SquircleShape(Theme.radius.md))
             .background(Theme.colorScheme.background.surfaceLow)
             .clickable(
                 onClick = onClick,
@@ -59,7 +60,7 @@ fun SmallImageStyle(
                 if (isSelected) Modifier.border(
                     1.dp,
                     Theme.colorScheme.primary.primary,
-                    RoundedCornerShape(Theme.radius.md)
+                    SquircleShape(Theme.radius.md)
                 )
                 else Modifier
             ),
@@ -136,7 +137,7 @@ private fun SmallImage(modifier: Modifier = Modifier) {
         tint = Theme.colorScheme.primary.onPrimary,
         contentDescription = stringResource(Res.string.style_has_small_image_icon),
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .background(Theme.colorScheme.background.surface)
             .padding(Theme.spacing._4 + Theme.spacing._2)
             .size(20.dp)

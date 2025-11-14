@@ -71,7 +71,12 @@ class UsersManagementViewModel(
     private fun onGetUsersSuccess(result: PagedResult<User>) {
         updateState {
             it.copy(
-                users = result.items.map(User::toUIState),
+                users = result.items.mapIndexed { index, user ->
+                    user.toUIState(
+                        currentPage = result.currentPage,
+                        indexInList = index
+                    )
+                },
                 pageInfo = UsersManagementScreenState.UserPageInfo(
                     page = result.currentPage,
                     totalPages = result.totalPages

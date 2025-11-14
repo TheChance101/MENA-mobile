@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.error
@@ -33,6 +35,7 @@ import mena.trends_presentation.generated.resources.upload_failed
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
@@ -41,6 +44,7 @@ import net.thechance.mena.trends.presentation.shared.util.isSuccess
 import net.thechance.mena.trends.presentation.shared.util.isUploading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun VideoLoadingCardItem(
@@ -77,8 +81,8 @@ fun VideoLoadingCardItem(
         )
 
         Column(Modifier.padding(start = Theme.spacing._8)) {
-            Row(Modifier.height(40.dp)) {
-                VideoInfoSection(
+            Row(Modifier.heightIn(min = 40.dp)) {
+            VideoInfoSection(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
@@ -139,6 +143,7 @@ private fun VideoInfoSection(
                     color = Theme.colorScheme.shadeSecondary,
                     style = Theme.typography.label.extraSmall
                 )
+
             }
 
             UploadReelScreenState.UploadingReelState.FAILED -> {
@@ -210,5 +215,20 @@ private fun VideoActionsSection(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun VideoUploadSuccessPreview() {
+    MenaTheme {
+        VideoLoadingCardItem(
+            title = "Upload Reel",
+            sizeUploaded = "20 MB",
+            videoSize = "20 MB",
+            uploadingState = UploadReelScreenState.UploadingReelState.SUCCESS,
+            progress = 1f,
+            onAction = {}
+        )
     }
 }

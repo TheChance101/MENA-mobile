@@ -8,10 +8,8 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
-import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
@@ -58,7 +56,7 @@ class HomeViewModel(
     }
 
     init {
-        getBalanceAmount()
+        observeBalanceAmount()
         onChatsListScrolled()
         listenToIncomingMessages()
         listenToMarkAsReadEvent()
@@ -178,22 +176,25 @@ class HomeViewModel(
         )
 
         val updatedChats =
-            listOf(updatedChatSummary) +
-                    state.value.chats.filterNot { it.id == message.chatId }
+            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
 
-    private fun getBalanceAmount() {
-        tryToExecute(
+    private fun observeBalanceAmount() {
+        tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
-            execute = { balanceRepository.getBalance() },
-            onSuccess = ::onGetBalanceAmountSuccess,
-            onError = { onGetBalanceAmountError() }
+            collect = { balanceRepository.observeBalance() },
+            onCollect = ::onObserveBalanceAmountSuccess,
+            onError = { onObserveBalanceAmountError() }
         )
     }
 
-    private fun onGetBalanceAmountSuccess(balanceAmount: Double) {
+    private fun onObserveBalanceAmountSuccess(balanceAmount: Double?) {
+        if (balanceAmount == null) {
+            onObserveBalanceAmountError()
+            return
+        }
         updateState {
             it.copy(
                 balanceAmount = balanceAmount.toInt().toString(),
@@ -202,13 +203,8 @@ class HomeViewModel(
         }
     }
 
-    private fun onGetBalanceAmountError() {
-        updateState { it.copy(isBalanceLoading = false, balanceAmount = "--") }
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.could_not_get_balance,
-            isError = true
-        )
+    private fun onObserveBalanceAmountError() {
+        updateState { it.copy(isBalanceLoading = false, balanceAmount = "") }
     }
 
     override fun onChatsListScrolled() {

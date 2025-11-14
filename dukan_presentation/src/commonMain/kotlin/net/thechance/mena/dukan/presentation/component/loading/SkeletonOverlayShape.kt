@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun SkeletonOverlayShape(
@@ -74,7 +74,7 @@ private fun FadeSkeletonItem() {
                 .padding(top =Theme.spacing._8)
                 .fillMaxWidth()
                 .height(92.dp)
-                .clip(RoundedCornerShape(Theme.spacing._16))
+                .clip(SquircleShape(Theme.spacing._16))
         )
         SkeletonOverlayShape(
             modifier = Modifier

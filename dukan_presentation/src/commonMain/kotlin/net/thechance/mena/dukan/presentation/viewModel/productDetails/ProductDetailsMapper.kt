@@ -23,3 +23,4 @@ fun ProductDetailsUiState.ProductInfo.toDomainParams(dukanId: String): UpdatePro
         dukanId = dukanId
     )
 }
+fun parseHexColor(color: String): Long = color.removePrefix("#").toLong(16) or 0xFF000000

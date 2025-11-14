@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,13 +19,14 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
 import net.thechance.mena.dukan.presentation.util.formatPrice
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun DukanCartBottomBar(totalPrice: Double, onCheckoutClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(topStart = Theme.radius.xl, topEnd = Theme.radius.xl))
+            .clip(SquircleShape(topStart = Theme.radius.xl, topEnd = Theme.radius.xl))
             .background(Theme.colorScheme.background.surfaceLow)
             .padding(Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
