@@ -73,6 +73,7 @@ actual fun VideoPlayer(
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
+    onNetworkError: () -> Unit,
     content: @Composable () -> Unit
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -140,10 +141,14 @@ actual fun VideoPlayer(
             if (item?.status == AVPlayerItemStatusFailed) {
                 val error = item.error
                 if (error != null) {
-                    if (error.code == NSURLErrorBadServerResponse ||
-                        error.domain == "NSURLErrorDomain"
-                    ) {
+                    if (error.domain == "NSURLErrorDomain" && error.code.toInt() == -1009) {
+                        onNetworkError()
+                        return@LaunchedEffect
+                    }
+
+                    if (error.code == NSURLErrorBadServerResponse) {
                         onRequestRefresh()
+                        return@LaunchedEffect
                     }
                 }
             }
