@@ -5,6 +5,5 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 data class DeleteChatEvent(
-    val chatId: Uuid,
-    val deletedByUserId: Uuid
+    val chatId: Uuid
 )

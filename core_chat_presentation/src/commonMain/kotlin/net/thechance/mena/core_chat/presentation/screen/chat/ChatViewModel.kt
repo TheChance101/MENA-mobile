@@ -33,7 +33,6 @@ import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
-import mena.core_chat_presentation.generated.resources.this_chat_was_deleted
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
@@ -429,23 +428,9 @@ class ChatViewModel(
 
     private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
         if (deleteChatEvent == null) return
-
-        val currentUserId = state.value.chatRequesterId
-        val messageRes = if (currentUserId == deleteChatEvent.deletedByUserId) {
-            Res.string.chat_deleted_successfully
-        } else {
-            Res.string.this_chat_was_deleted
-        }
-
-        showSnackBar(
-            titleStringResource = Res.string.success,
-            messageStringResource = messageRes,
-            isError = false
-        )
-
+        onDeleteChatSuccess()
         emitEffect(ChatScreenEffect.NavigateBack)
     }
-
 
     private fun observeReadMessages() {
         tryToCollect(
