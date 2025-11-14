@@ -68,7 +68,7 @@ fun ChatNavHost(
                 }
                 composable<OrderDetailsRoute> {
                     dukanApi.OrderDetailsEntry(
-                        orderId = it.toRoute<OrderDetailsRoute>().orderId
+                        orderId = Uuid.parse(it.toRoute<OrderDetailsRoute>().orderId)
                     )
                 }
             }

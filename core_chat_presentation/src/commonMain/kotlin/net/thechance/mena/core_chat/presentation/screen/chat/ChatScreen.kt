@@ -247,7 +247,7 @@ private fun EffectsHandler(
             }
 
             is ChatScreenEffect.NavigateToOrderDetails -> {
-                navController.navigate(OrderDetailsRoute(effect.orderId))
+                navController.navigate(OrderDetailsRoute(effect.orderId.toString()))
             }
         }
     }
