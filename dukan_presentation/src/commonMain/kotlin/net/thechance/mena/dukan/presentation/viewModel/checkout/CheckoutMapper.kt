@@ -10,7 +10,7 @@ fun Product.toUiState(): CheckoutUiState.CartItem {
     return CheckoutUiState.CartItem(
         id = this.id.toString(),
         name = this.name,
-        price = this.price,
+        price = this.price.base,
         quantity = this.quantityInCart
     )
 }
