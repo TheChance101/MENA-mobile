@@ -78,6 +78,7 @@ class ChatViewModel(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val messages = _messages.asStateFlow()
     private val messagesMutex = Mutex()
+    private val sendRecordMutex = Mutex()
     private val waveformCache = mutableMapOf<Uuid, List<Float>>()
 
     private var hasResentPendingMessages = false
@@ -780,14 +781,21 @@ class ChatViewModel(
     }
 
     override fun onSendRecordClicked() {
-        val filePath = audioRecordRepository.stopRecording()
-        updateState { it.copy(isRecordingVoice = false) }
+        viewModelScope.launch {
+            if (!sendRecordMutex.tryLock()) return@launch
+            try {
+                val filePath = audioRecordRepository.stopRecording()
+                updateState { it.copy(isRecordingVoice = false) }
 
-        if (!validateRecordingData(filePath)) {
-            return
+                if (!validateRecordingData(filePath)) return@launch
+
+                processAndSendAudioMessage(filePath)
+
+                delay(600)
+            } finally {
+                sendRecordMutex.unlock()
+            }
         }
-
-        processAndSendAudioMessage(filePath)
     }
 
     private fun validateRecordingData(filePath: String): Boolean {
