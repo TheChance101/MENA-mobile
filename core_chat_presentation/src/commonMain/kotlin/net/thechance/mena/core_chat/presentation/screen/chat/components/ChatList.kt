@@ -32,6 +32,7 @@ fun ChatList(
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
+    onViewOrderDetailsClick: (Uuid) -> Unit
 ) {
     val isConnectedToNetwork by rememberNetworkStatus()
 
@@ -65,6 +66,7 @@ fun ChatList(
                 onMessageVoiceClick = onMessageVoiceClick,
                 onFailedMessageClick = onFailedMessageClick,
                 onMessageLongClick = onMessageLongClick,
+                onViewOrderDetailsClick = onViewOrderDetailsClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }

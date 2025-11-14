@@ -52,6 +52,7 @@ sealed interface ChatListItem {
         val duration: Long,
         val waveformData: List<Float> = emptyList()
     ) : ChatListItem
+    data class OrderMessage(val data: MessageUiState): ChatListItem
 }
 
 data class MessageUiState(

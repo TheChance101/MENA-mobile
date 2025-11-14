@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
@@ -29,6 +30,7 @@ fun ChatListItem(
     onMessageVoiceClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
+    onViewOrderDetailsClick: (Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (item) {
@@ -93,6 +95,21 @@ fun ChatListItem(
                     onFailClick = { onFailedMessageClick(markedMessage) },
                 )
             }
+        }
+
+        is ChatListItem.OrderMessage -> {
+            val markedMessage = item.data
+            OrderMessageLayout(
+                modifier = modifier,
+                message = markedMessage,
+                chatAvatarUrl = chatAvatarUrl,
+                showMessageInfo = (markedMessage.isVisibleMessageInfo || markedMessage.isLastInSeries || markedMessage.status == MessageStatus.FAILED),
+                isMarkedLastInSeries = markedMessage.isLastInSeries,
+                onMessageClick = { onMessageClick(markedMessage.id) },
+                onFailClick = { onFailedMessageClick(markedMessage) },
+                onMessageLongClick = { onMessageLongClick(markedMessage) },
+                onViewOrderDetailsClick = { onViewOrderDetailsClick((markedMessage.content as MessageContent.Order).orderId) }
+            )
         }
     }
 }
