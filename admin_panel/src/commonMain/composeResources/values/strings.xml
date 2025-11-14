@@ -68,4 +68,5 @@
     <string name="deactivate_dukan_header">Deactivate Dukan?</string>
     <string name="deactivate_dukan_content">Are you sure you want to continue with deactivating?</string>
     <string name="deactivate_dukan_reason">Add deactivate reason here</string>
+    <string name="empty_shelf_title">This shelf is empty</string>
 </resources>

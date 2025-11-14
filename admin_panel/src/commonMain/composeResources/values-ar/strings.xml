@@ -69,4 +69,5 @@
     <string name="deactivate_dukan_header">إلغاء تنشيط دكان؟</string>
     <string name="deactivate_dukan_content">هل أنت متأكد أنك تريد الاستمرار في إلغاء التنشيط؟</string>
     <string name="deactivate_dukan_reason">أضف سبب الإلغاء هنا</string>
+    <string name="empty_shelf_title">هذا الرف فارغ</string>
 </resources>

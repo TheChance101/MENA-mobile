@@ -59,6 +59,10 @@ internal fun productsList(
             }
         }
 
+        products.isEmpty() -> {
+            EmptyShelfScreen()
+        }
+
         else -> {
             LazyColumn(
                 modifier = modifier.height(600.dp),
