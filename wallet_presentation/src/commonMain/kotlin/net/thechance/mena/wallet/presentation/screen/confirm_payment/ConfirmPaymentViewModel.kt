@@ -32,7 +32,6 @@ class ConfirmPaymentViewModel(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
     private val transactionId = Uuid.parse(args.transactionId)
-   private val currentAmount = currentState.amount
 
     init {
         getTransactionDetails(transactionId)
@@ -68,8 +67,8 @@ class ConfirmPaymentViewModel(
             it.copy(
                 isGetBalanceLoading = false,
                 paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
-                    amount = formatAmount(currentAmount),
-                    status = balance >= currentAmount,
+                    amount = formatAmount(currentState.amount),
+                    status = balance >= currentState.amount,
                     balance = formatAmount(balance)
                 )
             )
@@ -103,7 +102,7 @@ class ConfirmPaymentViewModel(
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
                 receiverName = state.value.receiverUiState.name,
-                amount = currentAmount,
+                amount = currentState.amount,
                 transactionId = transactionId,
                 submissionStatus = SubmissionStatus.SUCCESS
             )
@@ -115,7 +114,7 @@ class ConfirmPaymentViewModel(
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
                 receiverName = state.value.receiverUiState.name,
-                amount = currentAmount,
+                amount = currentState.amount,
                 transactionId = transactionId,
                 submissionStatus = when (error) {
                     ErrorState.NoInternet -> SubmissionStatus.CONNECTION_LOST
