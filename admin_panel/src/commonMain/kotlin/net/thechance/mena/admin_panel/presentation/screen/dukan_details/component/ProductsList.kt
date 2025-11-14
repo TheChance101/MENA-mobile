@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -60,7 +61,7 @@ internal fun productsList(
         }
 
         products.isEmpty() -> {
-            EmptyShelfScreen()
+            EmptyShelfScreen(modifier = Modifier.fillMaxSize())
         }
 
         else -> {
@@ -101,10 +102,8 @@ private fun ProductCard(
             resource = { asyncPainterResource(data = product.imageUrls.first()) },
             contentDescription = stringResource(Res.string.product_img),
             contentScale = ContentScale.Crop,
-            onLoading = {
-
-            },
-            onFailure = {},
+            onLoading = { LoadingImage(Modifier.align(Alignment.Center)) },
+            onFailure = { ImagePlaceHolder(Modifier.fillMaxSize().align(Alignment.Center)) },
             animationSpec = tween(durationMillis = 300)
         )
         Column {

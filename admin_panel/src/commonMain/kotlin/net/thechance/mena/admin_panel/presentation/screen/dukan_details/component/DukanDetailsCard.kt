@@ -29,7 +29,6 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
 import net.thechance.mena.admin_panel.resources.ic_store_location
-import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -67,14 +66,8 @@ internal fun DukanDetailsCard(
                     resource = { asyncPainterResource(data = dukanImg) },
                     contentDescription = stringResource(Res.string.dukan_img),
                     contentScale = ContentScale.Crop,
-                    onLoading = {
-                        DotsProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
-                            dotSize = 4.dp,
-                            spaceBetween = 2.dp
-                        )
-                    },
-                    onFailure = {},
+                    onLoading = { LoadingImage(Modifier.align(Alignment.Center)) },
+                    onFailure = { ImagePlaceHolder(Modifier.fillMaxSize().align(Alignment.Center)) },
                     animationSpec = tween(durationMillis = 300)
                 )
                 Text(

@@ -41,7 +41,6 @@ class DukanDetailsViewModel(
     init {
         getDukanDetails()
         initializeShelvesPaginator()
-        loadNextShelves()
     }
 
     override fun onBackBtnClicked() {
@@ -110,6 +109,7 @@ class DukanDetailsViewModel(
 
     private fun onGetDukanDetailsSuccess(dukan: Dukan) {
         updateState { it.copy(dukan = dukan.toUi()) }
+        loadNextShelves()
     }
 
     private suspend fun onGetDukanDetailsError(error: ErrorState) {

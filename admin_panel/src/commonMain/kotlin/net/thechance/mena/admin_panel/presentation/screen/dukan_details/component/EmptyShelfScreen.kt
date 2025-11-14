@@ -12,7 +12,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun EmptyShelfScreen(modifier: Modifier = Modifier) {
+internal fun EmptyShelfScreen(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center
