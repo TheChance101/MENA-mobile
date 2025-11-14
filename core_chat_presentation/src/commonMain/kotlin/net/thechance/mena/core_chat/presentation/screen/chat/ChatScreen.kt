@@ -229,14 +229,8 @@ fun AudioLifecycleObserver(viewModel: ChatViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> {
-                    viewModel.onStopAudioPlayback()
-                }
-                Lifecycle.Event.ON_STOP -> {
-                    viewModel.onStopAudioPlayback()
-                }
-                else -> {}
+            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                viewModel.onStopAudioPlayback()
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
