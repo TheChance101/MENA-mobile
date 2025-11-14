@@ -7,7 +7,6 @@ import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 
 interface QuranRepository {
-    suspend fun getSurahDetails(surahId: Int): Surah
     suspend fun getSur(): List<Surah>
     suspend fun getAyatOfSurah(surahId: Int): List<Ayah>
     suspend fun getLastAyahForTilawah(): LastAyahForTilawah
@@ -18,13 +17,9 @@ interface QuranRepository {
     suspend fun getAyahSoundUrl(ayahNumber: Int, surahNumber: Int, reciterId: Int): String
     suspend fun isSurahAudioCached(surahId: Int, reciterId: Int): Boolean
     suspend fun getSurahById(surahId: Int): Surah
-
     suspend fun getSurahAudioCachePath(surahId: Int, reciterId: Int): String?
-
     suspend fun saveSurahAudioToCache(surahId: Int, reciterId: Int, localPath: String)
-
     suspend fun deleteSurahWithSpecificReciter(surahId: Int)
-
     suspend fun getRemoteSurahSoundUrl(surahId: Int, reciterId: Int): String
     suspend fun getReciters(): List<Reciter>
     suspend fun getReciterById(reciterId: Int): Reciter

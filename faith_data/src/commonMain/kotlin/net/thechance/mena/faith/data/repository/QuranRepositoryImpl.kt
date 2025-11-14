@@ -36,10 +36,6 @@ class QuranRepositoryImpl(
     private val tilawahDataStore: TilawahDataStore,
     private val localizationService: LocalizationService,
 ) : QuranRepository {
-    override suspend fun getSurahDetails(surahId: Int): Surah = executeLocalSafely{
-        ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
-    }
-
     override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
             ayahDao.getSur().map { it.toSurah(localizationService.getCurrentLanguage()) }
@@ -113,13 +109,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getSurahById(surahId: Int): Surah =
         executeLocalSafely {
-            ayahDao.getSur().map { it.toSurah() }.find { it.id == surahId }
-                ?: Surah(
-                    id = 1,
-                    order = Surah.SurahOrder.AlFatihah,
-                    name = "الفاتحة",
-                    ayahCount = 7
-                )
+            ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
