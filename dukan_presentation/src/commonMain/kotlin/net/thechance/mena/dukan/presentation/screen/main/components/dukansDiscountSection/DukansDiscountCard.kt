@@ -3,10 +3,11 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,8 +16,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +38,6 @@ import mena.dukan_presentation.generated.resources.dukan_discount_title
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.ic_arrow_right
 import mena.dukan_presentation.generated.resources.shop_now
-import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -78,6 +83,8 @@ private fun DukanDiscountImagesAndText(
     modifier: Modifier = Modifier
 ) {
 
+    var currentIndex by remember { mutableStateOf(0) }
+
     LaunchedEffect(pagerState) {
         while (state.size > 1) {
             delay(3000)
@@ -92,6 +99,7 @@ private fun DukanDiscountImagesAndText(
             .clip(RoundedCornerShape(Theme.radius.lg))
     ) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+            currentIndex = page
 
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
@@ -112,13 +120,13 @@ private fun DukanDiscountImagesAndText(
                             )
                         )
                 )
-                DukanDiscountText(
-                    dukanDiscount = state[page].discount,
-                    dukanId = state[page].id,
-                    onClick = onClick
-                )
             }
         }
+        DukanDiscountText(
+            dukanDiscount = state[currentIndex].discount,
+            dukanId = state[currentIndex].id,
+            onClick = onClick
+        )
     }
 }
 
@@ -148,19 +156,26 @@ private fun DukanDiscountText(
             modifier = Modifier.padding(bottom = Theme.spacing._8)
         )
 
-        PrimaryButton(
-            text = stringResource(Res.string.shop_now),
-            onClick = { onClick(dukanId) },
-            trailingIcon = painterResource(Res.drawable.ic_arrow_right),
-            iconStartPadding = Theme.spacing._2,
-            containerColor = Theme.colorScheme.primary.onPrimary,
-            contentColor = Theme.colorScheme.primary.primary,
-            contentPadding = PaddingValues(
-                horizontal = Theme.spacing._12,
-                vertical = Theme.spacing._4
-            ),
-            shape = RoundedCornerShape(Theme.radius.full)
-        )
+        Row(
+            modifier = Modifier.clickable(onClick = { onClick(dukanId) })
+                .clip(RoundedCornerShape(Theme.radius.full))
+                .background(Theme.colorScheme.primary.onPrimary),
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2)
+        ) {
+            Text(
+                text = stringResource(Res.string.shop_now),
+                color = Theme.colorScheme.primary.primary,
+                style = Theme.typography.label.medium,
+                modifier = Modifier.padding(
+                    horizontal = Theme.spacing._12,
+                    vertical = Theme.spacing._4
+                )
+            )
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_right),
+                contentDescription = null,
+            )
+        }
     }
 }
 
