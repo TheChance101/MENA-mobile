@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
-import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.img_silver
@@ -56,7 +56,7 @@ internal fun productsList(
                 modifier = modifier.height(600.dp),
                 contentAlignment = Alignment.Center
             ) {
-                UsersLoadingIndicator()
+                LoadingIndicator()
             }
         }
 
@@ -77,7 +77,7 @@ internal fun productsList(
                 }
                 if (isProductLoading) {
                     item {
-                        UsersLoadingIndicator()
+                        LoadingIndicator()
                     }
                 }
             }

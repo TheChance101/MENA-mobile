@@ -24,7 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
-import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersLoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
@@ -55,7 +55,7 @@ internal fun DukanDetailsCard(
                 Box(
                     modifier = modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ){ UsersLoadingIndicator() }
+                ){ LoadingIndicator() }
             }
             else -> {
                 KamelImage(

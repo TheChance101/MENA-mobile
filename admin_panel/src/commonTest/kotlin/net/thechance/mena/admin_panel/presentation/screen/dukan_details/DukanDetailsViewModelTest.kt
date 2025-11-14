@@ -55,10 +55,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
         initViewModel()
         advanceUntilIdle()
@@ -76,10 +76,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
         initViewModel()
         advanceUntilIdle()
@@ -97,10 +97,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
             initViewModel()
 
@@ -118,10 +118,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
         initViewModel()
         advanceUntilIdle()
@@ -143,10 +143,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
             initViewModel()
             advanceUntilIdle()
@@ -166,10 +166,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
         initViewModel()
         advanceUntilIdle()
@@ -190,10 +190,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
             initViewModel()
             advanceUntilIdle()
@@ -213,10 +213,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
             initViewModel()
             advanceUntilIdle()
@@ -240,10 +240,10 @@ class DukanDetailsViewModelTest {
 
         everySuspend { dukanRepository.getDukanDetails() } returns dukan
         everySuspend { dukanRepository.getDukanShelves(any(), any(), any()) } returns
-                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalItems = shelves.size)
+                PagedResult(items = shelves, totalPages = 1, currentPage = 0, totalElements = shelves.size)
 
         everySuspend { dukanRepository.getShelfProducts(any(), any(), any()) } returns
-                PagedResult(items = products, totalPages = 1, currentPage = 0, totalItems = products.size)
+                PagedResult(items = products, totalPages = 1, currentPage = 0, totalElements = products.size)
 
             initViewModel()
             advanceUntilIdle()
