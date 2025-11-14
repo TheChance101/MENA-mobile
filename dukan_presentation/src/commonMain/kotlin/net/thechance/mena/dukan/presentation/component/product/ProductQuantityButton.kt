@@ -32,6 +32,7 @@ fun ProductQuantityButton(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     inCartQuantity: Int,
+    dukanColor: Color = Theme.colorScheme.primary.primary,
     backgroundColor: Color = Theme.colorScheme.background.surface,
     iconPadding: PaddingValues = PaddingValues(Theme.spacing._4 + Theme.spacing._2)
 ) {
@@ -46,7 +47,7 @@ fun ProductQuantityButton(
         Icon(
             painter = painterResource(Res.drawable.remove_01),
             contentDescription = stringResource(Res.string.remove_product),
-            tint = Theme.colorScheme.primary.primary,
+            tint = dukanColor,
             modifier = Modifier
                 .clip(CircleShape)
                 .background(color = Theme.colorScheme.background.surfaceLow)
@@ -66,7 +67,7 @@ fun ProductQuantityButton(
         Icon(
             painter = painterResource(Res.drawable.add_icon),
             contentDescription = stringResource(Res.string.add_product),
-            tint = Theme.colorScheme.primary.primary,
+            tint = dukanColor,
             modifier = Modifier
                 .clip(CircleShape)
                 .background(color = Theme.colorScheme.background.surfaceLow)
