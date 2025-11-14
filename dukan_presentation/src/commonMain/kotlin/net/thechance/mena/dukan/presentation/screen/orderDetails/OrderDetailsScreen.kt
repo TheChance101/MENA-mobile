@@ -16,7 +16,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.CustomerInformationSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.DeliveryAddressSection
-import net.thechance.mena.dukan.presentation.screen.orderDetails.component.OrderDetailsList
+import net.thechance.mena.dukan.presentation.screen.orderDetails.component.OrderSummary
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -32,7 +32,7 @@ private fun OrderDetailsContent() {
         topBar = {
             AppBar(
                 title = "Order #", // Todo add order number Id
-                onLeadingClick = {}, // Todo add back action
+                titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16,
                     vertical = Theme.spacing._8
@@ -44,6 +44,7 @@ private fun OrderDetailsContent() {
                         tint = Theme.colorScheme.primary.primary
                     )
                 },
+                onLeadingClick = {}, // Todo add back action
             )
         }
     ) {
@@ -55,7 +56,7 @@ private fun OrderDetailsContent() {
             )
         ) {
             item {
-                OrderDetailsList()
+                OrderSummary()
             }
             item {
                 DeliveryAddressSection(
@@ -68,7 +69,7 @@ private fun OrderDetailsContent() {
             item {
                 CustomerInformationSection(
                     userName = "John Doe", // Todo add real user name
-                    userPhoneNumber = "+1234567890", // Todo add real phone number
+                    userPhoneNumber = "201127270752", // Todo add real phone number
                     modifier = Modifier
                         .padding(top = Theme.spacing._12)
                 )
