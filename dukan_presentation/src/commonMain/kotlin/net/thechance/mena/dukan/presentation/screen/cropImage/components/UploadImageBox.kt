@@ -22,8 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -100,25 +100,12 @@ fun UploadImageContainer(
                 .aspectRatio(16f / 9f)
                 .align(Alignment.TopCenter)
                 .clip(SquircleShape(radius))
-                .background(Theme.colorScheme.brand.onBrand)
                 .drawWithContent {
                     drawContent()
-                    val outline = SquircleShape(radius).createOutline(
-                        size = size,
-                        layoutDirection = layoutDirection,
-                        density = this
-                    )
-                    val path = when (outline) {
-                        is Outline.Generic -> outline.path
-                        else -> return@drawWithContent
-                    }
-                    drawPath(
-                        path = path,
+                    drawRoundRect(
                         color = borderColor,
-                        style = Stroke(
-                            width = 2.dp.toPx(),
-                            pathEffect = dashEffect
-                        )
+                        style = Stroke(width = 2.dp.toPx(), pathEffect = dashEffect),
+                        cornerRadius = CornerRadius(radius.toPx())
                     )
                 }
                 .clickable { safeLaunch() },

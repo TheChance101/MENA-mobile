@@ -179,4 +179,7 @@
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
     <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
     <string name="product_is_out_of_stock">المنتج غير متوفر</string>
+    <string name="shop_now">تسوق الآن</string>
+    <string name="dukan_discount_details">احصل على خصم لكل طلب، صالح اليوم فقط.</string>
+    <string name="dukan_discount_title">%1$s% خصم\nعرض اليوم</string>
 </resources>

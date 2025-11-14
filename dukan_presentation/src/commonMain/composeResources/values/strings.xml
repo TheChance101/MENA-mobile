@@ -178,4 +178,7 @@
     <string name="checkout_dialog_description">This feature is not implemented yet.</string>
     <string name="back_to_dukan_screen_icon">Back to dukan screen icon</string>
     <string name="product_is_out_of_stock">Product is out of stock</string>
+    <string name="shop_now">Shop Now</string>
+    <string name="dukan_discount_details">Get discount for every order, only valid for today.</string>
+    <string name="dukan_discount_title">%1$s% DISCOUNT\nToday special</string>
 </resources>

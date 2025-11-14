@@ -1,5 +1,11 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,60 +31,69 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.delay
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.dukan_discount_details
+import mena.dukan_presentation.generated.resources.dukan_discount_title
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.ic_arrow_right
+import mena.dukan_presentation.generated.resources.shop_now
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlaceholder
 import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
+import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun DukansDiscountSection(
-    dukanDiscountImages: List<String>,
-    dukanDiscount: Int,
-    dukanId: String,
-    onClick: (dukanId: String) -> Unit,
+    state: List<MainScreenUiState.DukanTopDiscount>,
+    onClick: (dukanId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    val pagerState = rememberPagerState(pageCount = { dukanDiscountImages.size })
+    val pagerState = rememberPagerState(pageCount = { state.size })
 
-    Box(modifier.fillWidthOfParent(parentPadding = Theme.spacing._16)) {
-        DukanDiscountImagesAndText(
-            dukanDiscountImages = dukanDiscountImages,
-            pagerState = pagerState,
-            dukanDiscount = dukanDiscount,
-            dukanId = dukanId,
-            onClick = onClick,
-            modifier = Modifier.padding(horizontal = Theme.spacing._16)
-                .padding(bottom = Theme.spacing._8 + Theme.spacing._2)
-        )
+    AnimatedContent(
+        targetState = state.isEmpty(),
+        transitionSpec = { fadeIn() togetherWith fadeOut() }
+    ) { isLoading ->
+        if (isLoading) LoadingDukanPlaceholder()
+        else {
+            Box(modifier.fillWidthOfParent(parentPadding = Theme.spacing._16)) {
+                DukanDiscountImagesAndText(
+                    state = state,
+                    pagerState = pagerState,
+                    onClick = onClick,
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                        .padding(bottom = Theme.spacing._8 + Theme.spacing._2)
+                )
 
-        Indicator(
-            pagerState = pagerState,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+                Indicator(
+                    pagerState = pagerState,
+                    modifier = Modifier.align(Alignment.BottomCenter)
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun DukanDiscountImagesAndText(
-    dukanDiscountImages: List<String>,
+    state: List<MainScreenUiState.DukanTopDiscount>,
     pagerState: PagerState,
-    dukanDiscount: Int,
-    dukanId: String,
-    onClick: (dukanId: String) -> Unit,
+    onClick: (dukanId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     LaunchedEffect(pagerState) {
-        while (dukanDiscountImages.size > 1) {
+        while (state.size > 1) {
             delay(3000)
-            val nextPage = (pagerState.currentPage + 1) % dukanDiscountImages.size
+            val nextPage = (pagerState.currentPage + 1) % state.size
             pagerState.animateScrollToPage(nextPage)
         }
     }
@@ -89,11 +104,10 @@ private fun DukanDiscountImagesAndText(
             .clip(RoundedCornerShape(Theme.radius.lg))
     ) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-            val model = dukanDiscountImages[page]
 
             Box(modifier = Modifier.fillMaxSize()) {
                 AsyncImage(
-                    model = model,
+                    model = state[page].imageUrl,
                     contentDescription = stringResource(Res.string.dukan_image),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
@@ -111,8 +125,8 @@ private fun DukanDiscountImagesAndText(
                         )
                 )
                 DukanDiscountText(
-                    dukanDiscount = dukanDiscount,
-                    dukanId = dukanId,
+                    dukanDiscount = state[page].discount,
+                    dukanId = state[page].id,
                     onClick = onClick
                 )
             }
@@ -123,8 +137,8 @@ private fun DukanDiscountImagesAndText(
 @Composable
 private fun DukanDiscountText(
     dukanDiscount: Int,
-    dukanId: String,
-    onClick: (dukanId: String) -> Unit
+    dukanId: Uuid,
+    onClick: (dukanId: Uuid) -> Unit
 ) {
 
     Column(
@@ -133,21 +147,21 @@ private fun DukanDiscountText(
         verticalArrangement = Arrangement.Bottom
     ) {
         Text(
-            text = "$dukanDiscount% DISCOUNT\nToday special",
+            text = stringResource(Res.string.dukan_discount_title, dukanDiscount),
             style = Theme.typography.title.large,
             color = Theme.colorScheme.primary.onPrimary,
             modifier = Modifier.padding(bottom = Theme.spacing._4)
         )
 
         Text(
-            text = "Get discount for every order, only valid for today.",
+            text = stringResource(Res.string.dukan_discount_details),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.onPrimary,
             modifier = Modifier.padding(bottom = Theme.spacing._8)
         )
 
         PrimaryButton(
-            text = "Shop Now",
+            text = stringResource(Res.string.shop_now) ,
             onClick = { onClick(dukanId) },
             trailingIcon = painterResource(Res.drawable.ic_arrow_right),
             iconStartPadding = Theme.spacing._2,
@@ -167,9 +181,7 @@ private fun DukanDiscountText(
 private fun DukanDiscountPreview() {
     MenaTheme {
         DukansDiscountSection(
-            dukanDiscountImages = listOf(),
-            dukanDiscount = 10,
-            dukanId = "1",
+            state = listOf(),
             onClick = {}
         )
     }

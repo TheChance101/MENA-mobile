@@ -26,10 +26,10 @@ import kotlin.math.abs
 fun Indicator(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    pageCount: Int = 5,
     dotWidth: Int = 5
 ) {
 
+    val pageCount by remember { mutableStateOf(if (pagerState.pageCount <= 5) pagerState.pageCount else 5) }
     val activeIndex by remember(pagerState.currentPage) { mutableStateOf(pagerState.currentPage % pageCount) }
 
     Box(
@@ -53,9 +53,9 @@ fun Indicator(
                 val pageOffset = (index - activeIndex) + pagerState.currentPageOffsetFraction
 
                 val dotWidth = when {
-                    pageOffset > 1.0f || pageOffset < -1.0f -> dotWidth.dp
+                    pageOffset > 1f || pageOffset < -1f -> dotWidth.dp
                     else -> {
-                        val animatedFraction = 1.0f - abs(pageOffset)
+                        val animatedFraction = 1f - abs(pageOffset)
                         dotWidth.dp + (15.dp * animatedFraction)
                     }
                 }
