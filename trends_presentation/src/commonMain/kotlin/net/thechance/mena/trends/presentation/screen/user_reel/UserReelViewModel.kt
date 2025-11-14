@@ -26,10 +26,10 @@ internal class UserReelViewModel(
 
     init {
         updateState { copy(currentReelId = userReelArgs.realId) }
-        getFeedReals()
+        getFeedReels()
     }
 
-    private fun getFeedReals() {
+    private fun getFeedReels() {
         tryToCollectFlow(
             block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
@@ -131,7 +131,7 @@ internal class UserReelViewModel(
 
     override fun onClickRetry(reelId: String) {
         updateState { copy(currentReelId = reelId, error = null) }
-        getFeedReals()
+        getFeedReels()
     }
 
     override fun onNetworkError() {
