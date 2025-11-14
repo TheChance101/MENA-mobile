@@ -82,7 +82,6 @@ internal class NearbyMosquesViewModel(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques ->
-                println(" messi suu : ${mosques.size}")
                 handleSearchSuccess(mosques, uiState.value.query)
             },
             onError = ::handleErrorBySnackBar,
