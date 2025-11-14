@@ -90,8 +90,8 @@ internal fun ManageTrendsScreen(
         }
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.loadSelectedTabData(SelectTab.MyTrends)
+    LaunchedEffect(state.selectedTab) {
+        viewModel.loadSelectedTabData(state.selectedTab)
     }
 
     ManageTrendsScreenContent(
@@ -105,6 +105,8 @@ private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
     listener: ManageTrendsInteractionListener
 ) {
+
+
     Scaffold(
         topBar = {
             TrendsAnimatedVisibility(
@@ -113,11 +115,9 @@ private fun ManageTrendsScreenContent(
             )
         },
         content = {
-            val trends = remember(state.selectedTab) {
-                when (state.selectedTab) {
-                    SelectTab.MyTrends -> state.reels
-                    SelectTab.Favorites -> state.favoriteReels
-                }
+            val trends = when (state.selectedTab) {
+                SelectTab.MyTrends -> state.reels
+                SelectTab.Favorites -> state.favoriteReels
             }.collectAsLazyPagingItems()
 
             TrendsAnimatedVisibility(

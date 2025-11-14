@@ -32,9 +32,6 @@ internal class ManageTrendsViewModel(
 
     init {
         getCurrentUserInfo()
-        println("ManageTrendsViewModel init")
-        loadSelectedTabData(tab = SelectTab.MyTrends)
-        println("selected tab: ${state.value.selectedTab}")
     }
 
     fun getReels() {
