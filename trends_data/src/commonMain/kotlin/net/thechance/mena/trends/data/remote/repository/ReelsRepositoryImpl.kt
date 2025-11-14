@@ -18,9 +18,12 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.io.buffered
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.data.di.DEFAULT_CLIENT_NAME
 import net.thechance.mena.trends.data.di.UPLOAD_CLIENT_NAME
+import net.thechance.mena.trends.data.local.database.UserEngagementDao
 import net.thechance.mena.trends.data.remote.dto.ReelDto
 import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
@@ -28,6 +31,7 @@ import net.thechance.mena.trends.data.remote.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 import net.thechance.mena.trends.data.remote.mapper.toReelUrls
+import net.thechance.mena.trends.data.remote.mapper.toUserEngagement
 import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
@@ -44,17 +48,22 @@ import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
     @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
     @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
-    @Provided private val videoFileHandler: VideoFileHandler
+    @Provided private val videoFileHandler: VideoFileHandler,
+    @Provided private val userEngagementDao: UserEngagementDao,
+    @Provided private val userRepository: UserRepository,
 ) : ReelsRepository {
 
     private val observableUploadingFlow: MutableSharedFlow<UploadReelProgress> = MutableSharedFlow()
@@ -188,5 +197,10 @@ internal class ReelsRepositoryImpl(
                 )
             }
         )
+    }
+
+    override suspend fun saveUserEngagementWithReel(reelWatchSession: ReelWatchSession) {
+        val userId = userRepository.getUser().first()?.id.toString()
+        userEngagementDao.insertEngagement(reelWatchSession.toUserEngagement(userId))
     }
 }
