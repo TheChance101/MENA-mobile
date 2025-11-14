@@ -47,7 +47,7 @@ fun AyahMessageLayout(
     chatAvatarUrl: String? = null,
 ) {
     val ayahContent = message.content as? MessageContent.Ayah ?: return
-
+    val surahName = message.surahName ?: "Unknown Surah"
     val messageBackground =
         if (message.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
@@ -140,7 +140,7 @@ fun AyahMessageLayout(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = ayahContent.surahName,
+                                text = surahName,
                                 style = Theme.typography.label.small,
                                 color = Theme.colorScheme.shadePrimary
                             )
@@ -157,7 +157,7 @@ fun AyahMessageLayout(
                         }
 
                         Text(
-                            text = ayahContent.ayahText,
+                            text = ayahContent.ayahContent,
                             style = Theme.typography.quran.medium,
                             color = Theme.colorScheme.shadeSecondary,
                             modifier = Modifier.fillMaxWidth()
@@ -212,8 +212,8 @@ private fun AyahMessageLayoutPreview() {
                     status = MessageStatus.READ,
                     isMine = false,
                     content = MessageContent.Ayah(
-                        ayahText = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
-                        surahName = "Al-Nisa",
+                        ayahContent = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
+                        surahId = 4,
                         ayahNumber = 176
                     ),
                     reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random()))
