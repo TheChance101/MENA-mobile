@@ -9,5 +9,5 @@ interface WalletApi {
     fun WalletEntry(navigateBack: () -> Unit)
     @OptIn(ExperimentalUuidApi::class)
     @Composable
-    fun ConfirmPaymentEntry(transactionId: Uuid, totalAmount: Double, navigateBack: () -> Unit)
+    fun ConfirmPaymentEntry(transactionId: Uuid, navigateBack: () -> Unit)
 }
