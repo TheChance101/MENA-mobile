@@ -47,7 +47,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getLastAyahForTilawah(): LastAyahForTilawah {
         return tilawahDataStore.getLastAyah()
-            ?: LastAyahForTilawah(number = 1, surahId = 1, surahName = "Al-Fatiha")
+            ?: LastAyahForTilawah(number = 1, surahId = 1)
     }
 
     override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) =
@@ -104,6 +104,17 @@ class QuranRepositoryImpl(
     override suspend fun isSurahAudioCached(surahId: Int, reciterId: Int): Boolean =
         executeLocalSafely {
             getSurahAudioCachePath(surahId, reciterId) != null
+        }
+
+    override suspend fun getSurahById(surahId: Int): Surah =
+        executeLocalSafely {
+            ayahDao.getSur().map { it.toSurah() }.find { it.id == surahId }
+                ?: Surah(
+                    id = 1,
+                    order = Surah.SurahOrder.AlFatihah,
+                    name = "الفاتحة",
+                    ayahCount = 7
+                )
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =

@@ -7,10 +7,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.madimi_one_regular
-import mena.design_system.generated.resources.noto_sans_arabic_semi_bold
 import mena.design_system.generated.resources.noto_sans_arabic_medium
 import mena.design_system.generated.resources.noto_sans_arabic_regular
-
+import mena.design_system.generated.resources.noto_sans_arabic_semi_bold
 import mena.design_system.generated.resources.poppins_medium
 import mena.design_system.generated.resources.poppins_regular
 import mena.design_system.generated.resources.poppins_semi_bold

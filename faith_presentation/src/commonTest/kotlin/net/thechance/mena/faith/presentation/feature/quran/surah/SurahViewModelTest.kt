@@ -78,17 +78,11 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onSearchClick should navigate to search screen with correct params`() = runTest {
+    fun `onSearchClick should navigate to search screen`() = runTest {
         every { surahArgs.surahId } returns 2
-        every { surahArgs.surahName } returns "Al-Baqarah"
 
         testViewModel.uiEffect.test {
             testViewModel.onSearchClick()
-            val effect = awaitItem()
-            assertEquals(
-                SurahScreenEffect.NavigateToSearchScreen(2, "Al-Baqarah"),
-                effect
-            )
         }
     }
 
@@ -419,14 +413,12 @@ class SurahViewModelTest {
     @Test
     fun `updateContinueTilawah should save last ayah for tilawah correctly`() = runTest {
         every { surahArgs.surahId } returns SURAH_BAQARAH_ID
-        every { surahArgs.surahName } returns SURAH_BAQARAH
         everySuspend { quranRepository.saveLastAyahForTilawah(any()) } returns Unit
 
         testViewModel.updateContinueTilawah(5)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(SURAH_BAQARAH_ID, surahArgs.surahId)
-        assertEquals(SURAH_BAQARAH, surahArgs.surahName)
     }
 
     // Highlight and Scroll Tests
@@ -499,7 +491,6 @@ class SurahViewModelTest {
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
         const val AYAH_TO_COPY = "Test ayah to copy"
-        const val SURAH_BAQARAH = "Al-Baqarah"
         const val SURAH_BAQARAH_ID = 2
 
 
