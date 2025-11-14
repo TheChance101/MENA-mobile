@@ -18,7 +18,10 @@ data class ProductDto(
     val shelfId: Uuid,
 
     @SerialName("price")
-    val price: Double,
+    val price: PriceDto,
+
+    @SerialName("discount")
+    val discount: Double? = null,
 
     @SerialName("description")
     val description: String,

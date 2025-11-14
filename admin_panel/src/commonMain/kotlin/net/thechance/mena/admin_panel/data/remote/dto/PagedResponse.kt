@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PagedResponse<T>(
     @SerialName("totalElements")
-    val totalElements: Long?,
+    val totalElements: Int?,
     @SerialName("page")
     val page: Int?,
     @SerialName("pageSize")

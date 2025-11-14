@@ -355,7 +355,6 @@ class ChatRepositoryImplTest {
         job.cancel()
     }
 
-
     @Test
     fun `should emit Offline when network is unavailable during chat sync`() = runTest {
         val pageNumber = 0
@@ -414,7 +413,6 @@ class ChatRepositoryImplTest {
         job.cancel()
     }
 
-
     @Test
     fun `should emit DeletedChatsSynced when lastSyncTime is not null`() = runTest {
         val pageNumber = 0
@@ -424,6 +422,7 @@ class ChatRepositoryImplTest {
         val preferences = mutablePreferencesOf(
             stringPreferencesKey("lastTimeChatSummariesSynced") to Clock.System.now().toString()
         )
+
         everySuspend { dataStore.data } returns flowOf(preferences)
         everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
@@ -465,6 +464,8 @@ class ChatRepositoryImplTest {
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
 
         val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.DeletedChatsSynced }
+
+        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
 
         job.cancel()
     }

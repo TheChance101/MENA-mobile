@@ -53,10 +53,10 @@ class SurViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         viewModel.uiEffect.test {
-            viewModel.onSurahClick(AL_FATIHAH_ID, AL_FATIHAH_NAME)
+            viewModel.onSurahClick(AL_FATIHAH_ID)
 
             assertEquals(
-                SurEffect.NavigateToSurahDetails(AL_FATIHAH_ID, AL_FATIHAH_NAME),
+                SurEffect.NavigateToSurahDetails(AL_FATIHAH_ID),
                 awaitItem()
             )
         }
@@ -95,7 +95,6 @@ class SurViewModelTest {
     private companion object {
         val emptyUiState = SurUiState(emptyList())
         const val AL_FATIHAH_ID = 1
-        const val AL_FATIHAH_NAME = "Al-Fatihah"
         val surList = listOf(
             Surah(
                 id = 1,

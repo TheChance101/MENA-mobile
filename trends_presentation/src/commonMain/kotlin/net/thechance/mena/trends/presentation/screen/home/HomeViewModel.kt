@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -34,8 +35,16 @@ internal class HomeViewModel(
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            onSuccess = { updatedReel -> updateReelInPagingData(reelId) { updatedReel.toUiState() } }
+            onSuccess = { updatedReel ->
+                onAddLikeSuccess(reelId = reelId, updatedReel = updatedReel)
+            }
         )
+    }
+
+    private fun onAddLikeSuccess(reelId: String, updatedReel: Reel) {
+        updateReelInPagingData(reelId) {
+            updatedReel.toUiState().copy(isDescriptionExpanded = it.isDescriptionExpanded)
+        }
     }
 
     private fun updateLikesOnUi(reelId: String) {
@@ -135,7 +144,7 @@ internal class HomeViewModel(
         )
     }
 
-    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String){
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String) {
         state.value.reelsStateFlow.value =
             state.value.reelsStateFlow.value.map { reel ->
                 reel.takeIf { it.id != reelId }

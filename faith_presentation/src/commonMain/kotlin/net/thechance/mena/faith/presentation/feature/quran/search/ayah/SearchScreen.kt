@@ -47,7 +47,6 @@ fun SearchScreen(
                 navController.navigate(
                     SurahDetailsRoute(
                         surahId = effect.surahId,
-                        surahName = effect.surahName,
                         ayahNumber = effect.ayahId
                     )
                 )

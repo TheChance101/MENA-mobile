@@ -24,6 +24,7 @@ import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.edit_shelf_successfully
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
@@ -667,7 +668,10 @@ private fun fakeProducts(): List<Product> {
             id = Uuid.random(),
             name = "iPhone 15",
             description = "Latest iPhone model",
-            price = 999.99,
+            price = Price(
+                base = 999.99,
+                final = 999.99
+            ),
             createdAt = "2023-08-01T10:00:00Z",
             imageUrls = listOf("https://example.com/iphone.jpg"),
             quantityInCart = 10,
@@ -678,7 +682,10 @@ private fun fakeProducts(): List<Product> {
             id = Uuid.random(),
             name = "MacBook Pro",
             description = "Professional laptop",
-            price = 1999.99,
+            price = Price(
+                base = 1999.99,
+                final = 1999.99
+            ),
             imageUrls = listOf("https://example.com/macbook.jpg"),
             createdAt = "2023-08-01T10:00:00Z",
             quantityInCart = 10,
@@ -689,7 +696,10 @@ private fun fakeProducts(): List<Product> {
             id = Uuid.random(),
             name = "T-Shirt",
             description = "Cotton t-shirt",
-            price = 29.99,
+            price = Price(
+                base = 29.99,
+                final = 29.99
+            ),
             createdAt = "2023-08-01T10:00:00Z",
             imageUrls = listOf("https://example.com/tshirt.jpg"),
             quantityInCart = 20,
