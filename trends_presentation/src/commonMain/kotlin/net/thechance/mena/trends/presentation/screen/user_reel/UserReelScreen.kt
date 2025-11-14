@@ -67,7 +67,6 @@ import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
@@ -79,7 +78,6 @@ import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -191,7 +189,7 @@ private fun UserReelScreenContent(
         )
 
         LaunchedEffect(pagerState.currentPage) {
-            if(reels.itemCount > 0) {
+            if (reels.itemCount > 0) {
                 reels[pagerState.currentPage]?.let { reel ->
                     listener.onChangeCurrentReel(reel.id)
                 }
@@ -216,7 +214,8 @@ private fun UserReelScreenContent(
                     onPublisherInfoClick = listener::onClickPublisherInfo,
                     incrementViewsCount = { listener.increaseReelView(reel.id) },
                     onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
-                    onGetRefreshUrl = listener::onGetRefreshVideoUrl
+                    onGetRefreshUrl = listener::onGetRefreshVideoUrl,
+                    saveReelWatchSession = { listener.saveUserReelEngagement(it, reel.id) }
                 )
             }
         }
@@ -257,6 +256,7 @@ private fun ReelContent(
     incrementViewsCount: () -> Unit,
     onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit
 ) {
     val rememberedUrl = remember(reel.id) { reel.videoUrl }
     VideoPlayer(
@@ -265,7 +265,8 @@ private fun ReelContent(
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount,
         cacheKey = reel.id,
-        onRequestRefresh = { onGetRefreshUrl(reel.id) }
+        onRequestRefresh = { onGetRefreshUrl(reel.id) },
+        saveReelWatchSession = saveReelWatchSession,
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
@@ -290,7 +291,8 @@ private fun ReelContent(
 
             PublisherInfo(
                 userName = reel.username,
-                timeOfPublish = reel.createdAt?.asString() ?: stringResource(resource = Res.string.just_now),
+                timeOfPublish = reel.createdAt?.asString()
+                    ?: stringResource(resource = Res.string.just_now),
                 description = reel.description,
                 avatar = reel.profileImageUrl,
                 modifier = Modifier.align(Alignment.BottomCenter),

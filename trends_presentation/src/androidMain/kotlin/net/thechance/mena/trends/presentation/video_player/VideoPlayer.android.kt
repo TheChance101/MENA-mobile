@@ -48,6 +48,7 @@ import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
+import net.thechance.mena.trends.presentation.screen.user_reel.ReelWatchSessionState
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -55,6 +56,7 @@ import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
+import net.thechance.mena.trends.presentation.video_player.utils.getCurrentTime
 
 private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
 
@@ -67,7 +69,8 @@ actual fun VideoPlayer(
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
-    content: @Composable () -> Unit
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
+    content: @Composable (() -> Unit)
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -114,6 +117,8 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
+    val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
@@ -150,7 +155,9 @@ actual fun VideoPlayer(
                             else -> false
                         }
                     }
+
                 })
+
                 seekTo(lastPosition)
             }
     }
@@ -173,9 +180,12 @@ actual fun VideoPlayer(
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true
             exoPlayer.play()
+            reelWatchSessionState.watchStartTime = getCurrentTime()
+
         } else {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
+            reelWatchSessionState.watchEndTime = getCurrentTime()
         }
 
         onVideoPlaying()
@@ -184,6 +194,7 @@ actual fun VideoPlayer(
     LaunchedEffect(exoPlayer.isPlaying) {
         while (true) {
             duration = exoPlayer.duration.coerceAtLeast(1L)
+            reelWatchSessionState.videoDurationInMilliseconds = duration
             val position = exoPlayer.currentPosition
             currentProgress = position.toFloat() / duration.toFloat()
             delay(SEEK_BAR_DURATION_MS)
@@ -263,6 +274,9 @@ actual fun VideoPlayer(
             when (event) {
                 Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_PAUSE -> {
                     lastPosition = exoPlayer.currentPosition
+                    reelWatchSessionState.watchedDurationInMilliseconds = lastPosition
+                    reelWatchSessionState.watchEndTime = getCurrentTime()
+                    saveReelWatchSession(reelWatchSessionState)
                     exoPlayer.pause()
                 }
 
@@ -282,6 +296,9 @@ actual fun VideoPlayer(
         onDispose {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
+            reelWatchSessionState.watchedDurationInMilliseconds = lastPosition
+            reelWatchSessionState.watchEndTime = getCurrentTime()
+            saveReelWatchSession(reelWatchSessionState)
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
