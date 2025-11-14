@@ -43,6 +43,7 @@ import kotlin.math.roundToInt
 fun SwappableCard(
     id: Int,
     onClick: () -> Unit,
+    isSwipeable: Boolean = true,
     modifier: Modifier = Modifier,
     backgroundIcon: Painter = painterResource(Res.drawable.bookmark),
     contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
@@ -64,41 +65,47 @@ fun SwappableCard(
         label = stringResource(Res.string.swipe_animation)
     )
 
-    Box(modifier.fillMaxWidth()) {
-        AnimatedVisibility(
-            visible = animatedOffsetX < 0f,
-            enter = fadeIn(tween()),
-            exit = fadeOut(tween()),
-            modifier = Modifier.matchParentSize()
-        ) {
-            SwipeBackground(
-                painter = backgroundIcon,
-                contentDescription = contentDescription,
-                onClick = {
-                    currentSwipedCardId.intValue = -1
-                    onClick()
-                }
+    if (isSwipeable) {
+        Box(modifier.fillMaxWidth()) {
+            AnimatedVisibility(
+                visible = animatedOffsetX < 0f,
+                enter = fadeIn(tween()),
+                exit = fadeOut(tween()),
+                modifier = Modifier
+                    .matchParentSize()
+                    .padding(vertical = Theme.spacing._4)
+            ) {
+                SwipeBackground(
+                    painter = backgroundIcon,
+                    contentDescription = contentDescription,
+                    onClick = {
+                        currentSwipedCardId.intValue = -1
+                        onClick()
+                    }
+                )
+            }
+            cardContent(
+                Modifier
+                    .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+                    .pointerInput(id) {
+                        detectHorizontalDragGestures(
+                            onDragEnd = {
+                                if (rawOffsetX <= -swipeThreshold) {
+                                    currentSwipedCardId.intValue = id
+                                    rawOffsetX = -swipeThreshold
+                                } else {
+                                    currentSwipedCardId.intValue = -1
+                                    rawOffsetX = 0f
+                                }
+                            }
+                        ) { _, dragAmount ->
+                            rawOffsetX = (rawOffsetX + dragAmount).coerceIn(-swipeThreshold, 0f)
+                        }
+                    }
             )
         }
-        cardContent(
-            Modifier
-                .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
-                .pointerInput(id) {
-                    detectHorizontalDragGestures(
-                        onDragEnd = {
-                            if (rawOffsetX <= -swipeThreshold) {
-                                currentSwipedCardId.intValue = id
-                                rawOffsetX = -swipeThreshold
-                            } else {
-                                currentSwipedCardId.intValue = -1
-                                rawOffsetX = 0f
-                            }
-                        }
-                    ) { _, dragAmount ->
-                        rawOffsetX = (rawOffsetX + dragAmount).coerceIn(-swipeThreshold, 0f)
-                    }
-                }
-        )
+    } else {
+        cardContent(modifier)
     }
 }
 

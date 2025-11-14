@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -37,6 +36,14 @@ fun ProductDetailsContent(
             ProductDetailsAppBar(
                 state = state,
                 listener = listener
+            )
+        },
+        bottomBar = {
+            AddToCartSection(
+                onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
+                onPlusClick = {listener.onPlusClicked(state.product.id)},
+                onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
+                state = state
             )
         },
         snakeBar = {
@@ -75,13 +82,6 @@ fun ProductDetailsContent(
                         isLoading = state.isLoading
                     )
                 }
-                AddToCartSection(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
-                    onPlusClick = {listener.onPlusClicked(state.product.id)},
-                    onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
-                    state = state
-                )
             }
         }
     }

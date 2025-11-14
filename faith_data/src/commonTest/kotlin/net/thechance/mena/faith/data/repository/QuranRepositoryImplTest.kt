@@ -19,9 +19,7 @@ import net.thechance.mena.faith.data.database.SurahAudioDao
 import net.thechance.mena.faith.data.database.SurahAudioDto
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
-import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
 import net.thechance.mena.faith.data.remote.model.tilawah.RecitersRequest
-import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
@@ -293,7 +291,7 @@ class QuranRepositoryImplTest {
     fun `getRemoteSurahSoundUrl should return url from api service`() = runTest {
         everySuspend {
             tilawahApiService.getSurahSoundUrl(
-                SurahSoundRequest(reciterId = RECITER_ID_1, surahNumber = SURAH_ID_1)
+                reciterId = RECITER_ID_1, surahNumber = SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1_RECITER_1)
 
@@ -302,10 +300,8 @@ class QuranRepositoryImplTest {
         assertEquals(REMOTE_URL_SURAH_1_RECITER_1, result)
         verifySuspend {
             tilawahApiService.getSurahSoundUrl(
-                SurahSoundRequest(
-                    RECITER_ID_1,
-                    SURAH_ID_1
-                )
+                RECITER_ID_1,
+                SURAH_ID_1
             )
         }
     }
@@ -313,11 +309,11 @@ class QuranRepositoryImplTest {
     @Test
     fun `getRemoteSurahSoundUrl should call api with different surah and reciter ids`() = runTest {
         everySuspend {
-            tilawahApiService.getSurahSoundUrl(SurahSoundRequest(RECITER_ID_1, SURAH_ID_1))
+            tilawahApiService.getSurahSoundUrl(RECITER_ID_1, SURAH_ID_1)
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
         everySuspend {
-            tilawahApiService.getSurahSoundUrl(SurahSoundRequest(RECITER_ID_2, SURAH_ID_2))
+            tilawahApiService.getSurahSoundUrl(RECITER_ID_2, SURAH_ID_2)
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_2)
 
         val result1 = repository.getRemoteSurahSoundUrl(SURAH_ID_1, RECITER_ID_1)
@@ -354,9 +350,7 @@ class QuranRepositoryImplTest {
     fun `getAyahSoundUrl should return remote url when surah is not cached`() = runTest {
         everySuspend { surahSoundDao.getCachedAudioPath(SURAH_ID_1, RECITER_ID_1) } returns null
         everySuspend {
-            tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
-            )
+            tilawahApiService.getAyahSoundUrl(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
         val result = repository.getAyahSoundUrl(
@@ -377,7 +371,7 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
+                RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -402,11 +396,9 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(
                     reciterId = RECITER_ID_1,
                     ayahNumber = AYAH_NUMBER_5,
                     surahNumber = SURAH_ID_1
-                )
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -483,7 +475,7 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
+                RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -512,7 +504,7 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_OUT_OF_BOUNDS, SURAH_ID_1)
+                RECITER_ID_1, AYAH_NUMBER_OUT_OF_BOUNDS, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -597,7 +589,7 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
+                RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_AYAH_1_SURAH_1)
 
@@ -618,7 +610,7 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_LAST_AL_BAQARAH, SURAH_ID_2)
+                RECITER_ID_1, AYAH_NUMBER_LAST_AL_BAQARAH, SURAH_ID_2
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_AYAH_LAST_SURAH_2)
 
@@ -643,13 +635,13 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1)
+                RECITER_ID_1, AYAH_NUMBER_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_RECITER_1_AYAH)
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(RECITER_ID_2, AYAH_NUMBER_1, SURAH_ID_1)
+                RECITER_ID_2, AYAH_NUMBER_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_RECITER_2_AYAH)
 
@@ -725,7 +717,7 @@ class QuranRepositoryImplTest {
     fun `getRemoteSurahSoundUrl should handle network errors gracefully`() = runTest {
         everySuspend {
             tilawahApiService.getSurahSoundUrl(
-                SurahSoundRequest(RECITER_ID_1, SURAH_ID_1)
+                RECITER_ID_1, SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -737,8 +729,8 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `saveLastAyahForTilawah should save progress for different surahs`() = runTest {
-        val progress1 = LastAyahForTilawah(AL_FATIHAH_NAME, SURAH_ID_1, AYAH_NUMBER_5)
-        val progress2 = LastAyahForTilawah(AL_BAQARAH_NAME, SURAH_ID_2, AYAH_NUMBER_100)
+        val progress1 = LastAyahForTilawah( SURAH_ID_1, AYAH_NUMBER_5)
+        val progress2 = LastAyahForTilawah( SURAH_ID_2, AYAH_NUMBER_100)
 
         repository.saveLastAyahForTilawah(progress1)
         repository.saveLastAyahForTilawah(progress2)
@@ -809,19 +801,16 @@ class QuranRepositoryImplTest {
         const val ARABIC_RECITER_QUERY = "مشاري"
 
         val TILAWAH_AYAH_TO_SAVE = LastAyahForTilawah(
-            surahName = AL_FATIHAH_NAME,
             surahId = 1,
             number = 3
         )
 
         val DEFAULT_TILAWAH = LastAyahForTilawah(
-            surahName = "Al-Fatiha",
             surahId = 1,
             number = 1
         )
 
         val SAVED_TILAWAH_PROGRESS = LastAyahForTilawah(
-            surahName = AL_BAQARAH_NAME,
             surahId = 2,
             number = 5
         )
