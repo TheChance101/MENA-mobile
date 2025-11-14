@@ -81,9 +81,7 @@ internal class NearbyMosquesViewModel(
         tryToExecute(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques ->
-                handleSearchSuccess(mosques, uiState.value.query)
-            },
+            onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
             onError = ::handleErrorBySnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
@@ -233,8 +231,14 @@ internal class NearbyMosquesViewModel(
     private fun getDistanceFromUser(coordinates: Mosque.Coordinates) =
         uiState.value.userLocation?.let { location ->
             calculateDistanceUseCase(
-                firstLocation = Mosque.Coordinates(location.latitude, location.longitude),
-                secondLocation = Mosque.Coordinates(coordinates.latitude, coordinates.longitude)
+                firstLocation = Mosque.Coordinates(
+                    latitude = location.latitude,
+                    longitude = location.longitude
+                ),
+                secondLocation = Mosque.Coordinates(
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude
+                )
             )
         }?.roundTo2Decimals() ?: 0.0
 }
