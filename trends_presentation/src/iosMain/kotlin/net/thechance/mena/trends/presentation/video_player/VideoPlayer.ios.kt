@@ -63,6 +63,7 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSURLErrorBadServerResponse
 
 private const val PREFERRED_TIME_SCALE = 600
+private const val NSURLErrorNotConnectedToInternet = -1009
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
@@ -143,7 +144,7 @@ actual fun VideoPlayer(
                 if (error != null) {
                     when {
                         error.domain == "NSURLErrorDomain" &&
-                                error.code.toInt() == -1009 -> {
+                                error.code.toInt() == NSURLErrorNotConnectedToInternet -> {
                             onNetworkError()
                             return@LaunchedEffect
                         }
