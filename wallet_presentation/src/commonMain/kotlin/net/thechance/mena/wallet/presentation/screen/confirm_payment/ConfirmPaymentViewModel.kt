@@ -32,7 +32,7 @@ class ConfirmPaymentViewModel(
     ConfirmPaymentScreenState()
 ), ConfirmPaymentInteractionListener {
     private val transactionId = Uuid.parse(args.transactionId)
-    private var amount: Double = 0.0
+   private val currentAmount = currentState.amount
 
     init {
         getTransactionDetails(transactionId)
@@ -68,8 +68,8 @@ class ConfirmPaymentViewModel(
             it.copy(
                 isGetBalanceLoading = false,
                 paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
-                    amount = formatAmount(amount),
-                    status = balance >= amount,
+                    amount = formatAmount(currentAmount),
+                    status = balance >= currentAmount,
                     balance = formatAmount(balance)
                 )
             )
@@ -103,7 +103,7 @@ class ConfirmPaymentViewModel(
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
                 receiverName = state.value.receiverUiState.name,
-                amount = amount,
+                amount = currentAmount,
                 transactionId = transactionId,
                 submissionStatus = SubmissionStatus.SUCCESS
             )
@@ -115,7 +115,7 @@ class ConfirmPaymentViewModel(
         sendEffect(
             effect = ConfirmPaymentEffect.NavigateToPaymentResultScreen(
                 receiverName = state.value.receiverUiState.name,
-                amount = amount,
+                amount = currentAmount,
                 transactionId = transactionId,
                 submissionStatus = when (error) {
                     ErrorState.NoInternet -> SubmissionStatus.CONNECTION_LOST
@@ -151,9 +151,9 @@ class ConfirmPaymentViewModel(
     }
 
     private fun onGetTransactionDetailsSuccess(transaction: Transaction) {
-        amount = transaction.amount
         updateState {
             it.copy(
+                amount = transaction.amount,
                 isGetTransactionDetailsLoading = false,
                 receiverUiState = transaction.toReceiverInfoUiState(),
                 paymentUiState = ConfirmPaymentScreenState.PaymentUiState(
