@@ -1,6 +1,5 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,14 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.dukan_img
+import net.thechance.mena.admin_panel.resources.dukan_placholder
 import net.thechance.mena.admin_panel.resources.img_silver
-import net.thechance.mena.admin_panel.resources.product_img
 import net.thechance.mena.admin_panel.resources.silver_img
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -94,17 +93,16 @@ private fun ProductCard(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        KamelImage(
+        AsyncImage(
             modifier = Modifier
                 .padding(end = 8.dp, start = 16.dp)
                 .size(96.dp)
                 .clip(RoundedCornerShape(Theme.radius.sm)),
-            resource = { asyncPainterResource(data = product.imageUrls.first()) },
-            contentDescription = stringResource(Res.string.product_img),
+            model = product.imageUrls.first(),
+            contentDescription = stringResource(Res.string.dukan_img),
             contentScale = ContentScale.Crop,
-            onLoading = { LoadingImage(Modifier.align(Alignment.Center)) },
-            onFailure = { ImagePlaceHolder(Modifier.fillMaxSize().align(Alignment.Center)) },
-            animationSpec = tween(durationMillis = 300)
+            placeholder = painterResource(Res.drawable.dukan_placholder),
+            error = painterResource(Res.drawable.dukan_placholder),
         )
         Column {
             Text(
@@ -129,7 +127,7 @@ private fun ProductPrice(
     discountedPrice: Double?,
     price: Double,
 ) {
-    Row {
+    Row(verticalAlignment = Alignment.Bottom) {
         discountedPrice?.let {
             Text(
                 text = it.toString(),

@@ -18,7 +18,6 @@ collection = "1.5.0"
 composeMultiplatform = "1.9.0"
 composeHotReload="1.0.0-rc02"
 junit = "4.13.2"
-kamelImageDefault = "1.0.8"
 kermit = "2.0.8"
 kmpCapturableCompose = "0.1.1"
 kotlin = "2.2.10"
@@ -88,7 +87,6 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
-kamel-image-default = { module = "media.kamel:kamel-image-default", version.ref = "kamelImageDefault" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
 multiplatform-settings-coroutines = { module = "com.russhwolf:multiplatform-settings-coroutines", version.ref = "multiplatformSettings" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }

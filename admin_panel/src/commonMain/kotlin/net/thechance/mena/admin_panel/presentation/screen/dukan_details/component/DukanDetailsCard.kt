@@ -1,6 +1,5 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,13 +21,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import io.kamel.image.KamelImage
-import io.kamel.image.asyncPainterResource
+import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.presentation.component.OSMMapView
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
+import net.thechance.mena.admin_panel.resources.dukan_placholder
 import net.thechance.mena.admin_panel.resources.ic_store_location
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -61,17 +60,16 @@ internal fun DukanDetailsCard(
                 ){ LoadingIndicator() }
             }
             else -> {
-                KamelImage(
+                AsyncImage(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(2f)
                         .clip(RoundedCornerShape(Theme.radius.md)),
-                    resource = { asyncPainterResource(data = dukanImg) },
+                    model = dukanImg,
                     contentDescription = stringResource(Res.string.dukan_img),
                     contentScale = ContentScale.Crop,
-                    onLoading = { LoadingImage(Modifier.align(Alignment.Center)) },
-                    onFailure = { ImagePlaceHolder(Modifier.fillMaxSize().align(Alignment.Center)) },
-                    animationSpec = tween(durationMillis = 300)
+                    placeholder = painterResource(Res.drawable.dukan_placholder),
+                    error = painterResource(Res.drawable.dukan_placholder),
                 )
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
@@ -131,7 +129,7 @@ private fun DukanLocationMap(
             .clip(RoundedCornerShape(Theme.radius.md)),
     ){
         OSMMapView(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Theme.radius.md)),
             latitude = latitude,
             longitude = longitude,
             markerWidth = 60,
