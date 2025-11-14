@@ -165,6 +165,9 @@ private fun DukanDiscountText(
                     onClick = { onClick(dukanId) },
                     indication = null,
                     interactionSource = MutableInteractionSource()
+                ).padding(
+                    horizontal = Theme.spacing._12,
+                    vertical = Theme.spacing._4
                 ),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
             verticalAlignment = Alignment.CenterVertically
@@ -173,10 +176,7 @@ private fun DukanDiscountText(
                 text = stringResource(Res.string.shop_now),
                 color = Theme.colorScheme.primary.primary,
                 style = Theme.typography.label.medium,
-                modifier = Modifier.padding(
-                    horizontal = Theme.spacing._12,
-                    vertical = Theme.spacing._4
-                )
+                modifier = Modifier
             )
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_right),
