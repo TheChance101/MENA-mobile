@@ -27,6 +27,17 @@
     <string name="last_visit_date">Last visit date</string>
     <string name="status">Status</string>
 
+    <!-- Dukan Requests Table Headers -->
+    <string name="image">Image</string>
+    <string name="dukan_name">Dukan name</string>
+    <string name="location">Location</string>
+    <string name="date">Date</string>
+
+    <!-- Dukan Requests -->
+    <string name="requests">Requests</string>
+    <string name="view_details">View details</string>
+
+
     <!-- User Status -->
     <string name="active">Active</string>
     <string name="blocked">Blocked</string>

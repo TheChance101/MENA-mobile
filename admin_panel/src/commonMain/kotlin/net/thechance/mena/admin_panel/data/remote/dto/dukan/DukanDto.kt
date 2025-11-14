@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.data.remote.dto.dukan
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

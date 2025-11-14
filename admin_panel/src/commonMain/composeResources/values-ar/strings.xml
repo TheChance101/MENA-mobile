@@ -26,6 +26,15 @@
     <string name="last_visit_date">تاريخ آخر زيارة</string>
     <string name="status">الحالة</string>
 
+    <!-- Dukan Requests Table Headers -->
+    <string name="image">الصورة</string>
+    <string name="dukan_name">اسم الدكان</string>
+    <string name="location">الموقع</string>
+    <string name="date">التاريخ</string>
+
+    <!-- Dukan Requests -->
+    <string name="requests">طلبات</string>
+    <string name="view_details">عرض التفاصيل</string>
     <!-- User Status -->
     <string name="active">نشط</string>
     <string name="blocked">محظور</string>

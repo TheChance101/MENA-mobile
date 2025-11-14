@@ -12,7 +12,7 @@ import kotlin.time.Instant
 fun parseLocalDateTimeOrDefault(
     value: String?,
     defaultDateTime: LocalDateTime = DEFAULT_DATE_TIME
-) : LocalDateTime {
+): LocalDateTime {
     return value?.let {
         runCatching {
             val normalized = if (it.endsWith("Z") || it.contains('+')) it else it + "Z"

@@ -4,5 +4,5 @@ data class PagedResult<T>(
     val items: List<T>,
     val totalPages: Int,
     val currentPage: Int,
-    val totalItems: Int
+    val totalElements: Int
 )

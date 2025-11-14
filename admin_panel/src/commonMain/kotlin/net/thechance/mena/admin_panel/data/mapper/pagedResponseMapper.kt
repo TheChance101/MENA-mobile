@@ -12,7 +12,7 @@ fun <DTO, ENTITY> PagedResponse<DTO>.toEntityPagedResult(
         items = items?.map { it.mapper() }.orEmpty(),
         totalPages = totalPages ?: 0,
         currentPage = page ?: 0,
-        totalItems = totalElements ?: 0
+        totalElements = totalElements ?: 0
     )
 }
 
@@ -23,6 +23,6 @@ fun <DTO, ENTITY> DukanPagedResponse<DTO>.toEntityPagedResult(
         items = content?.map { it.mapper() }.orEmpty(),
         totalPages = totalPages ?: 0,
         currentPage = number ?: 0,
-        totalItems = totalElements ?: 0
+        totalElements = totalElements ?: 0
     )
 }
