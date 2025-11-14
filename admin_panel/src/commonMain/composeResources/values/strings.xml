@@ -5,7 +5,6 @@
     <string name="logout_disc">Are you sure you want to logout your account? you can login again using yours credential.</string>
     <string name="dukans_management">Dukans Management</string>
     <string name="dukan_requests">Dukan Requests</string>
-    <string name="deposit">Deposit</string>
     <string name="mena">MENA</string>
 
     <!-- Error Messages -->
@@ -59,7 +58,6 @@
     <string name="deposit">Deposit</string>
     <string name="fill_a_wallet">fill a wallet</string>
     <string name="fill_a_wallet_description">Enter phone number and amount to recharge wallet</string>
-    <string name="phone_number">phone number</string>
     <string name="amount">Amount</string>
     <string name="fill_the_wallet">fill the wallet</string>
 

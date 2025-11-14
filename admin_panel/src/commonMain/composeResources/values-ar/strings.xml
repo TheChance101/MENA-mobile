@@ -12,7 +12,6 @@
     <!-- Navigation -->
     <string name="dukans_management">إدارة الدكان</string>
     <string name="dukan_requests">طلبات الدكان</string>
-    <string name="deposit">الإيداع</string>
     <string name="log_out">تسجيل الخروج</string>
 
     <!-- Users Management -->
@@ -60,7 +59,6 @@
     <string name="deposit">إيداع</string>
     <string name="fill_a_wallet">شحن المحفظة</string>
     <string name="fill_a_wallet_description">أدخل رقم الهاتف والمبلغ لإعادة شحن المحفظة</string>
-    <string name="phone_number">رقم الهاتف</string>
     <string name="amount">المبلغ</string>
     <string name="fill_the_wallet">اشحن المحفظة</string>
 </resources>
