@@ -9,12 +9,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -42,7 +39,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun OrderDetailsList(
+fun OrderSummary(
     modifier: Modifier = Modifier
 ) {
     val circleColor = Theme.colorScheme.background.surface
@@ -50,7 +47,7 @@ fun OrderDetailsList(
     val circleHeight = 26.dp
     val circleWidthPx = with(LocalDensity.current) { circleWidth.toPx() }
     val circleHeightPx = with(LocalDensity.current) { circleHeight.toPx() }
-    val gapPx = with(LocalDensity.current) { 2.dp.toPx() }
+    val gapPx = with(LocalDensity.current) { 1.dp.toPx() }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -66,17 +63,16 @@ fun OrderDetailsList(
             )
             .drawBehind {
                 val spacePerCircle = circleWidthPx + gapPx
-                if (spacePerCircle <= 0f) return@drawBehind
                 val circleCount = (size.width / spacePerCircle).toInt().coerceAtLeast(0)
                 if (circleCount == 0) return@drawBehind
                 val totalWidthNeeded = circleCount * circleWidthPx + (circleCount - 1) * gapPx
-                val startX = (size.width - totalWidthNeeded) / 2f
-                val y = size.height - circleHeightPx / 2f
+                val circlesStartX = (size.width - totalWidthNeeded) / 2f
+                val circleYPosition = size.height - circleHeightPx / 2f
                 repeat(circleCount) { index ->
-                    val x = startX + index * (circleWidthPx + gapPx)
+                    val x = circlesStartX + index * (circleWidthPx + gapPx)
                     drawOval(
                         color = circleColor,
-                        topLeft = Offset(x, y),
+                        topLeft = Offset(x, circleYPosition),
                         size = Size(circleWidthPx, circleHeightPx)
                     )
                 }
@@ -84,26 +80,50 @@ fun OrderDetailsList(
     ) {
         OrderDateTime(
             modifier = Modifier
-                .padding(vertical = Theme.spacing._12)
+                .padding(
+                    vertical = Theme.spacing._12,
+                    horizontal = Theme.spacing._12
+                )
         )
-        VerticalLine()
-        ProductsInOrderList(
+
+        VerticalLine(
             modifier = Modifier.padding(
-                top = Theme.spacing._16,
-                bottom = Theme.spacing._24
+                horizontal = Theme.spacing._12
             )
         )
-        DashedSeparator(
+
+        ProductsInOrderList(
             modifier = Modifier
-                .padding(horizontal = 2.dp)
+                .padding(
+                    top = Theme.spacing._16,
+                ).padding(horizontal = Theme.spacing._12)
         )
+
+        DiscountSection(
+            discountAmount = 10.0,
+            modifier = Modifier
+                .padding(top = Theme.spacing._12)
+                .padding(horizontal = Theme.spacing._12)
+        )
+
+        PlatformFeesSection(
+            platformFeesAmount = 5.0,
+            modifier = Modifier
+                .padding(
+                    top = Theme.spacing._12,
+                    bottom = Theme.spacing._24
+                ).padding(horizontal = Theme.spacing._12)
+        )
+
+        TicketDivider()
+
         TotalAmountInOrder(
             totalAmount = 250.0,
             modifier = Modifier
                 .padding(
                     top = Theme.spacing._24,
                     bottom = Theme.spacing._32
-                )
+                ).padding(horizontal = Theme.spacing._12)
         )
     }
 }
@@ -123,6 +143,7 @@ private fun OrderDateTime(
         )
         Text(
             text = "12/04/2025",
+            maxLines = 1,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
         )
@@ -145,15 +166,13 @@ private fun VerticalLine(
 private fun ProductsInOrderList(
     modifier: Modifier = Modifier
 ) {
-    LazyVerticalGrid(
-        columns = GridCells.Adaptive(minSize = 304.dp),
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(140.dp, 200.dp),
+            .wrapContentHeight(),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
-        items(10) {
+        repeat(4) {
             ProductInOrderItem(
                 title = "Product Name Here$it",
                 price = 25.0,
@@ -163,7 +182,50 @@ private fun ProductsInOrderList(
         }
     }
 }
-
+@Composable
+fun DiscountSection(
+    discountAmount: Double,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Discount",
+            style = Theme.typography.label.medium,
+            color = Theme.colorScheme.shadeSecondary // Todo check color from design system
+        )
+        Text(
+            text = "-$discountAmount%",
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
+        )
+    }
+}
+@Composable
+fun PlatformFeesSection(
+    platformFeesAmount: Double,
+    modifier: Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Platform fees",
+            style = Theme.typography.label.medium,
+            color = Theme.colorScheme.shadeSecondary // Todo color from design system
+        )
+        Text(
+            text = "-$platformFeesAmount%",
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
+        )
+    }
+}
 @Composable
 private fun ProductInOrderItem(
     title: String,
@@ -183,11 +245,12 @@ private fun ProductInOrderItem(
             contentDescription = "Product of Order Image",
             placeholder = painterResource(resource = Res.drawable.ic_no_image_loaded),
             error = painterResource(resource = Res.drawable.ic_no_image_loaded),
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier
+                .size(40.dp)
+                .padding(end = Theme.spacing._8)
         )
         Text(
             modifier = Modifier
-                .padding(start = Theme.spacing._8)
                 .fillMaxWidth()
                 .weight(1f),
             text = title,
@@ -202,22 +265,24 @@ private fun ProductInOrderItem(
             Text(
                 text = price.toString(),
                 style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadePrimary
+                color = Theme.colorScheme.shadePrimary,
+                maxLines = 1
             )
             Icon(
-                modifier = Modifier
-                    .size(20.dp),
+                modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.silver_tc),
                 contentDescription = stringResource(Res.string.silver_tier_icon)
             )
         }
     }
 }
-
 @Composable
-private fun QuantityCircleIcon(quantity: Int) {
+private fun QuantityCircleIcon(
+    quantity: Int,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(28.dp)
             .clip(CircleShape)
             .background(Theme.colorScheme.background.surface)
@@ -230,26 +295,47 @@ private fun QuantityCircleIcon(quantity: Int) {
         )
     }
 }
-
 @Composable
-private fun DashedSeparator(
+private fun TicketDivider(
     modifier: Modifier = Modifier
 ) {
     val dashColor = Theme.colorScheme.stroke
+    val circleColor = Theme.colorScheme.background.surface
+    val circleWidth = 21.dp
+    val circleHeight = 26.dp
+    val circleWidthPx = with(LocalDensity.current) { circleWidth.toPx() }
+    val circleHeightPx = with(LocalDensity.current) { circleHeight.toPx() }
+
     Canvas(
         modifier = modifier
             .fillMaxWidth()
             .height(1.dp)
     ) {
+        val circleHorizontalPaddingOffset = 30f
+        val circleVerticalPaddingOffset = 7f
+        val lineStartPaddingOffset = 20f
+        val lineEndPaddingOffset = 30f
+        val rightCircleX = (size.width - circleWidthPx)
+        val circleY = (size.height - circleHeightPx / 2f) + circleVerticalPaddingOffset
+        drawOval(
+            color = circleColor,
+            topLeft = Offset(-circleHorizontalPaddingOffset, circleY),
+            size = Size(circleWidthPx, circleHeightPx)
+        )
         drawLine(
             color = dashColor,
-            start = Offset(0f, size.height / 2),
-            end = Offset(size.width, size.height / 2),
-            strokeWidth = 1.dp.toPx(),
+            start = Offset(circleWidthPx - lineStartPaddingOffset, size.height / 2),
+            end = Offset(size.width - lineEndPaddingOffset, size.height / 2),
+            strokeWidth = 0.5.dp.toPx(),
             pathEffect = PathEffect.dashPathEffect(
                 floatArrayOf(4.dp.toPx(), 4.dp.toPx()),
                 0f
             )
+        )
+        drawOval(
+            color = circleColor,
+            topLeft = Offset(rightCircleX + circleHorizontalPaddingOffset, circleY),
+            size = Size(circleWidthPx, circleHeightPx)
         )
     }
 }
@@ -267,9 +353,12 @@ fun TotalAmountInOrder(
         Text(
             text = "Total amount",
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadeSecondary
         )
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
             Text(
                 text = totalAmount.toString(),
                 maxLines = 1,
@@ -278,7 +367,6 @@ fun TotalAmountInOrder(
             )
             Icon(
                 modifier = Modifier
-                    .padding(start = Theme.spacing._4)
                     .size(20.dp),
                 painter = painterResource(Res.drawable.silver_tc),
                 contentDescription = stringResource(Res.string.silver_tier_icon)
@@ -291,6 +379,6 @@ fun TotalAmountInOrder(
 @Composable
 private fun OrderDetailsScreenPreview() {
     MenaTheme {
-        OrderDetailsList()
+        OrderSummary()
     }
 }
