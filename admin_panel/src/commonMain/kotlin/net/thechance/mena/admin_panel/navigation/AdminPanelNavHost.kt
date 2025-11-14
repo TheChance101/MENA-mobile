@@ -40,7 +40,7 @@ fun AdminPanelNavHost(
             DepositScreen(modifier)
         }
         composable<DukanRequests> {
-            DukanRequestsScreen(modifier)
+            DukanRequestsScreen()
         }
         composable<DukanManagement> {
             DukanManagementsScreen(modifier)

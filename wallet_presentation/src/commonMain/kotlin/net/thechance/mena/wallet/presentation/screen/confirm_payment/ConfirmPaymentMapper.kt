@@ -1,8 +1,8 @@
 package net.thechance.mena.wallet.presentation.screen.confirm_payment
 
-import net.thechance.mena.wallet.domain.model.TransactionReceiver
+import net.thechance.mena.wallet.domain.entity.Transaction
 
-fun TransactionReceiver.toUiState() = ConfirmPaymentScreenState.ReceiverUiState(
-    name = name,
-    profileImg = imgUrl
+fun Transaction.toReceiverInfoUiState() = ConfirmPaymentScreenState.ReceiverUiState(
+    name = receiverName,
+    profileImg = receiverImageUrl
 )

@@ -16,8 +16,12 @@ class TilawahViewModel(
     private val surahArgs: TilawahSurahArgs,
     private val downloadManager: DownloadSurahManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<TilawahUiState, TilawahEffect>(TilawahUiState(surahId = surahArgs.surahId)),
-    TilawahInteractionListener {
+) : BaseViewModel<TilawahUiState, TilawahEffect>(
+    initialState = TilawahUiState(
+        surahId = surahArgs.surahId,
+        isSwipeable = surahArgs.isSwipeToDeleteEnabled,
+    ),
+), TilawahInteractionListener {
 
     init {
         getAllReciters()

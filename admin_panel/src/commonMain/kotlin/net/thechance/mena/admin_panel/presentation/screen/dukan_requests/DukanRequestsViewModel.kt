@@ -1,0 +1,167 @@
+package net.thechance.mena.admin_panel.presentation.screen.dukan_requests
+
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
+import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.model.DukanQueryParams
+import net.thechance.mena.admin_panel.domain.model.PagedResult
+import net.thechance.mena.admin_panel.domain.repository.dukan.DukanRepository
+import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
+import net.thechance.mena.admin_panel.presentation.base.ErrorState
+import net.thechance.mena.admin_panel.presentation.model.SnackBarState
+import net.thechance.mena.admin_panel.presentation.utils.StringProvider
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
+import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.Provided
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+@OptIn(ExperimentalUuidApi::class)
+@KoinViewModel
+class DukanRequestsViewModel(
+    @Provided private val dukanRepository: DukanRepository,
+    @Provided private val stringProvider: StringProvider,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+) : BaseViewModel<DukanRequestsScreenState, Unit>(
+    DukanRequestsScreenState()
+), DukanRequestsInteractionListener {
+
+    init {
+        getRequestedDukans()
+    }
+
+    private fun getRequestedDukans() {
+        val queryParams = getDukanQueryParams()
+        tryToExecute(
+            callee = { dukanRepository.getDukans(queryParams) },
+            onSuccess = ::onGetRequestedDukansSuccess,
+            onError = ::onError,
+            onStart = { updateState { it.copy(isLoading = true) } },
+            onFinish = { updateState { it.copy(isLoading = false) } },
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetRequestedDukansSuccess(result: PagedResult<Dukan>) {
+        updateState {
+            it.copy(
+                dukans = result.items.mapIndexed { index, dukan ->
+                    dukan.toUIState(
+                        currentPage = result.currentPage,
+                        indexInList = index
+                    )
+                },
+                totalDukanRequests = result.totalElements,
+                pageInfo = DukanRequestsScreenState.DukanPageInfo(
+                    page = result.currentPage,
+                    totalPages = result.totalPages
+                ),
+                errorState = null
+            )
+        }
+    }
+
+    private fun getDukanQueryParams(): DukanQueryParams {
+        return DukanQueryParams(
+            sortType = currentState.sort.type.toEntity(),
+            sortDirection = currentState.sort.direction.toEntity(),
+            status = Dukan.Status.PENDING,
+            page = currentState.pageInfo.page,
+            size = PAGE_SIZE,
+            searchInput = null,
+            activationStatus = null
+        )
+    }
+
+    override fun onSortClicked(type: DukanRequestsScreenState.SortType) {
+        val newDirection = if (currentState.sort.type == type) {
+            currentState.sort.direction.toggle()
+        } else {
+            DukanRequestsScreenState.SortDirection.ASC
+        }
+        updateState {
+            it.copy(
+                sort = DukanRequestsScreenState.SortState(
+                    type = type,
+                    direction = newDirection
+                ),
+                pageInfo = it.pageInfo.copy(page = 0)
+            )
+        }
+        getRequestedDukans()
+    }
+
+    override fun onViewDetailsClicked(dukanId: Uuid) {}
+
+    override fun onRetryClicked() {
+        getRequestedDukans()
+    }
+
+    override fun onPageChanged(page: Int) {
+        updateState { it.copy(pageInfo = it.pageInfo.copy(page = page)) }
+        getRequestedDukans()
+    }
+
+    override fun onApproveDukanClicked(dukanId: Uuid) {}
+
+    override fun onRejectDukanDialogClicked(dukanId: Uuid) {}
+
+    override fun onRejectDukanDialogCanceled() {}
+
+    override fun onRejectDukanConfirmed() {}
+    override fun onRejectionMessageChanged() {}
+
+    override fun mapError(throwable: Throwable): ErrorState {
+        return when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            else -> ErrorState.UnknownError
+        }
+    }
+
+    private suspend fun onError(errorState: ErrorState) {
+        updateState { it.copy(errorState = errorState) }
+        showSnackBar(
+            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
+    }
+
+    private suspend fun showSnackBar(
+        title: String,
+        message: String,
+        isSuccess: Boolean,
+        durationMillis: Long = DURATION_MILLIS
+    ) {
+        updateState { oldState ->
+            oldState.copy(
+                snackBar = SnackBarState(
+                    isVisible = true,
+                    title = title,
+                    message = message,
+                    isSuccess = isSuccess
+                )
+            )
+        }
+
+        delay(durationMillis)
+
+        hideSnackBar()
+    }
+
+    private fun hideSnackBar() {
+        updateState { oldState ->
+            oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
+        }
+    }
+
+
+    private companion object {
+        const val PAGE_SIZE = 8
+        const val DURATION_MILLIS = 3000L
+
+    }
+}

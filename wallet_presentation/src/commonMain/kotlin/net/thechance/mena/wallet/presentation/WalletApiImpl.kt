@@ -20,12 +20,10 @@ class WalletApiImpl : WalletApi {
     @Composable
     override fun ConfirmPaymentEntry(
         transactionId: Uuid,
-        totalAmount: Double,
         navigateBack: () -> Unit
     ) {
         NavigationHost(
             startDestination = ConfirmPaymentScreenRoute(
-                amount = totalAmount,
                 transactionId = transactionId.toString()
             ),
             navigateBack = navigateBack

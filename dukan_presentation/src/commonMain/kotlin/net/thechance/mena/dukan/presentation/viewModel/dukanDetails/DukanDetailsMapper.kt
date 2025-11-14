@@ -34,7 +34,7 @@ fun Product.toUiState() = DukanDetailsUiState.ProductUiState(
     id = id.toString(),
     name = name,
     description = description,
-    price = price,
+    price = price.base,
     imageUrl = imageUrls.firstOrNull().orEmpty(),
     inCartQuantity = quantityInCart,
 )

@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -15,7 +14,6 @@ class TilawahDataStoreImpl(private val dataStore: DataStore<Preferences>) : Tila
         dataStore.edit { prefs ->
             prefs[AYAH_NUMBER] = ayah.number
             prefs[SURAH_ID] = ayah.surahId
-            prefs[SURAH_NAME] = ayah.surahName
         }
     }
 
@@ -24,7 +22,6 @@ class TilawahDataStoreImpl(private val dataStore: DataStore<Preferences>) : Tila
         LastAyahForTilawah(
             number = prefs[AYAH_NUMBER] ?: return@map null,
             surahId = prefs[SURAH_ID] ?: return@map null,
-            surahName = prefs[SURAH_NAME] ?: return@map null
         )
     }
 
@@ -45,7 +42,6 @@ class TilawahDataStoreImpl(private val dataStore: DataStore<Preferences>) : Tila
     private companion object {
         val AYAH_NUMBER = intPreferencesKey("ayah_number")
         val SURAH_ID = intPreferencesKey("surah_id")
-        val SURAH_NAME = stringPreferencesKey("surah_name")
         val DEFAULT_RECITER = intPreferencesKey("default_reciter")
 
     }
