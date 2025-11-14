@@ -5,7 +5,7 @@ import net.thechance.mena.faith.domain.entity.Surah
 
 data class SearchUiState(
     val surahId: Int?,
-    val surahName: String?,
+    val surahName: String? = null,
     val query: String = "",
     val searchResults: List<SearchResult> = emptyList(),
     val queryHint: String = ""
