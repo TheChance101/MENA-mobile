@@ -11,5 +11,6 @@ class MessageSenderFactory(
         is MessageContent.Text -> textMessageSender
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
+        is MessageContent.Order -> throw IllegalArgumentException("Order message sender is not implemented yet")
     }
 }

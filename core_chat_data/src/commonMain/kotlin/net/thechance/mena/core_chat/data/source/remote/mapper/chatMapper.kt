@@ -40,6 +40,12 @@ fun MessageContentDto.toDomain(): MessageContent {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageData.ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioData.AudioUrl(url), duration)
+        is MessageContentDto.Order -> MessageContent.Order(
+            orderId = orderId.toUuid(),
+            numberOfItems = numberOfItems ?: 0,
+            deliverTo = deliverTo.orEmpty(),
+            totalPrice = totalPrice ?: 0.0
+        )
     }
 }
 
