@@ -17,7 +17,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,6 +38,7 @@ import mena.dukan_presentation.generated.resources.dukan_discount_title
 import mena.dukan_presentation.generated.resources.dukan_image
 import mena.dukan_presentation.generated.resources.ic_arrow_right
 import mena.dukan_presentation.generated.resources.shop_now
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -166,7 +166,8 @@ private fun DukanDiscountText(
                     indication = null,
                     interactionSource = MutableInteractionSource()
                 ),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = stringResource(Res.string.shop_now),
