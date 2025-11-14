@@ -2,7 +2,6 @@ package net.thechance.mena.admin_panel.data.remote.dto.dukan
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
 
 @Serializable
 data class DukanDto(
@@ -18,8 +17,12 @@ data class DukanDto(
     val latitude: Double? = null,
     @SerialName("longitude")
     val longitude: Double? = null,
-    @SerialName("color")
-    val color: ColorDto? = null,
+    @SerialName("status")
+    val status: String? = null,
+    @SerialName("activationStatus")
+    val activationStatus: String? = null,
+    @SerialName("createdAt")
+    val createdAt: String? = null,
     @SerialName("categories")
     val categories: List<CategoryDto>? = null
 )

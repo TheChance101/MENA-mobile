@@ -10,10 +10,14 @@ import net.thechance.mena.admin_panel.data.remote.dto.dukan.ProductDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ShelfDto
 
 interface DukanApiService {
-    @GET(DUKAN_DETAILS_ENDPOINT)
-    suspend fun getDukanDetails(
-        @Path("dukanId") dukanId: String
-    ): Response<DukanDto>
+    @GET(DUKAN_ADMIN_BASE)
+    suspend fun getDukans(
+        @Query("status") status: String,
+        @Query("query") query: String? = null,
+        @Query("sort") sort: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("size") size: Int? = null
+    ): Response<DukanPagedResponse<DukanDto>>
 
     @GET(DUKAN_SHELVES_ENDPOINT)
     suspend fun getDukanShelves(
@@ -31,7 +35,6 @@ interface DukanApiService {
 
     private companion object {
         const val DUKAN_ADMIN_BASE = "dukan/admin"
-        const val DUKAN_DETAILS_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}"
         const val DUKAN_SHELVES_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{dukanId}"
         const val SHELF_PRODUCTS_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{shelfId}/products"
     }

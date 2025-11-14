@@ -30,14 +30,11 @@ import net.thechance.mena.wallet.presentation.utils.splitPdfToPngs
 fun PdfViewer(
     pdf: ByteArray,
 ) {
-    var pages by remember { mutableStateOf(emptyList<ByteArray>()) }
-    var finishedSplittingThePdfToPages by remember { mutableStateOf(false) }
+    var pages by remember { mutableStateOf<List<ByteArray>?>(null) }
     LaunchedEffect(pdf) {
         pages = splitPdfToPngs(pdfData = pdf)
-        finishedSplittingThePdfToPages = true
     }
-
-    if (finishedSplittingThePdfToPages.not()) {
+    if (pages == null) {
         Box(modifier = Modifier.fillMaxSize()) {
             ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
         }
@@ -50,7 +47,7 @@ fun PdfViewer(
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp)
         ) {
-            itemsIndexed(pages) { index, page ->
+            itemsIndexed(pages!!) { _, page ->
                 AsyncImage(
                     model = page,
                     contentDescription = null,
