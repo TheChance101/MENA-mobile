@@ -55,7 +55,9 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                     SearchScreen()
                 }
                 composable<Route.SurahDetailsRoute> {
-                    SurahScreen()
+                    SurahScreen(
+                        onClickBack = { navController.navigateUp() }
+                    )
                 }
                 composable<Route.CompassRoute> {
                     CompassScreen()

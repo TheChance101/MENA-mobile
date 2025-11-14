@@ -58,7 +58,8 @@ fun MainTopBar(
                 Text(
                     text = locationName,
                     color = Theme.colorScheme.shadePrimary,
-                    style = Theme.typography.label.small
+                    style = Theme.typography.label.small,
+                    maxLines = 1
                 )
             }
         }

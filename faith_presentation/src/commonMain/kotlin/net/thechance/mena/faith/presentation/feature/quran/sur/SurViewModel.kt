@@ -16,8 +16,8 @@ class SurViewModel(
         initializeSur()
     }
 
-    override fun onSurahClick(surahId: Int, surahName: String) =
-        sendEffect(SurEffect.NavigateToSurahDetails(surahId, surahName))
+    override fun onSurahClick(surahId: Int) =
+        sendEffect(SurEffect.NavigateToSurahDetails(surahId))
 
     override fun onBackClick() = sendEffect(SurEffect.NavigateBack)
 

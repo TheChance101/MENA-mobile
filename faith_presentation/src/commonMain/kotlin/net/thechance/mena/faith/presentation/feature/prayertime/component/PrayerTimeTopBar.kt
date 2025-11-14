@@ -54,8 +54,8 @@ internal fun PrayerTimeTopBar(uiState: PrayerTimeUiState, onClick: () -> Unit) {
             text = uiState.address.takeCityAndCountry(),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
-            modifier = Modifier.padding(end = Theme.spacing._8)
-
+            modifier = Modifier.padding(end = Theme.spacing._8),
+            maxLines = 1
         )
     }
 }

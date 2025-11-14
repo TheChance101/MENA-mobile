@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toUiState
 import kotlin.test.Test
@@ -16,7 +17,10 @@ class ProductDetailsMapperTest {
             id = Uuid.random(),
             name = "Test Product",
             description = "Description",
-            price = 10.0,
+            price = Price(
+                base = 10.0,
+                final = 10.0
+            ),
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
             createdAt = "2023-01-01",
@@ -28,7 +32,7 @@ class ProductDetailsMapperTest {
 
         assertEquals(product.name, uiState.name)
         assertEquals(product.description, uiState.description)
-        assertEquals(product.price, uiState.price, 0.0)
+        assertEquals(product.price.base, uiState.price, 0.0)
         assertEquals("image.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
     }
@@ -49,5 +53,12 @@ class ProductDetailsMapperTest {
         assertEquals("123", params.productId)
         assertEquals(4, params.quantity)
         assertEquals("dukanId_1", params.dukanId)
+    }
+
+    @Test
+    fun `toColor should map String color to Long`() {
+        val color = "#432CCD"
+        val colorLong = parseHexColor(color = color)
+        assertEquals(0xFF432CCD, colorLong)
     }
 }

@@ -52,7 +52,7 @@ kotlin {
             implementation(libs.bundles.ktorfit)
 
             // Coil
-            implementation(libs.coil.compose)
+            implementation(libs.bundles.coil)
 
             //Navigation
             implementation(libs.androidx.navigation.compose)
@@ -79,7 +79,13 @@ kotlin {
                 implementation(libs.ktor.client.cio)
                 implementation(compose.desktop.currentOs)
                 implementation(libs.kotlinx.coroutines.swing)
-            }
+
+                // map
+                implementation(libs.jxmapviewer)
+
+                // Batik
+                implementation(libs.batik.transcoder)
+                implementation(libs.batik.codec)            }
         }
     }
 }

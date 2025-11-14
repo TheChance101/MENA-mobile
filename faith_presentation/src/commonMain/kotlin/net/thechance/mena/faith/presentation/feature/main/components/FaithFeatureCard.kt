@@ -45,7 +45,7 @@ fun FaithFeatureCard(
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_column_mosque),
-            stringResource(Res.string.mosque_image_description),
+            contentDescription = stringResource(Res.string.mosque_image_description),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
