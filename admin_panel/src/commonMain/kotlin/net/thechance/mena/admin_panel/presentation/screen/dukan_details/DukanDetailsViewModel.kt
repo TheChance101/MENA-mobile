@@ -151,9 +151,7 @@ class DukanDetailsViewModel(
             loadNextProducts()
         }
         if (currentState.totalShelves.isEmpty()) {
-            pagedShelves.totalItems?.also { totalItems ->
-                updateState { it.copy(totalShelves = totalItems.toString()) }
-            }
+            updateState { it.copy(totalShelves = pagedShelves.totalItems.toString()) }
         }
         updateState {
             it.copy(shelves = it.shelves + pagedShelves.items)
