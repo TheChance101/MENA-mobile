@@ -6,6 +6,5 @@ interface DepositInteractionListener {
     fun onAmountChanged(amount : Double)
     fun onCountryCodeSelected()
     fun onCountryCodeChanged(country : DepositScreenState.CountryUiState)
-
     fun onCountryBottomSheetDismissed()
 }
