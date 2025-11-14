@@ -5,14 +5,12 @@ import net.thechance.mena.wallet.data.dto.remote.FirstTransactionDateDto
 import net.thechance.mena.wallet.data.dto.remote.PagedResponse
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
-import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toEntityList
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
 import kotlin.uuid.ExperimentalUuidApi
@@ -54,12 +52,6 @@ class TransactionRepositoryImpl(
                 )
             }
         }
-    }
-
-    override suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver {
-        return safeApiCall<TransactionReceiverDto> {
-            networkClient.get(getTransactionReceiverPath(transactionId))
-        }.toEntity()
     }
 
     override suspend fun submitTransaction(transactionId: Uuid) = safeApiCall<Unit> {
