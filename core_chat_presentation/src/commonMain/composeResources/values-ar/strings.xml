@@ -59,4 +59,5 @@
     <string name="send_to">ارسال الى</string>
     <string name="search_by_name">ابحث بالأسم</string>
     <string name="cannot_get_chat_for_that_contact">تعذر ايجاد المحاداثة لهذاالشخص</string>
+    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
 </resources>

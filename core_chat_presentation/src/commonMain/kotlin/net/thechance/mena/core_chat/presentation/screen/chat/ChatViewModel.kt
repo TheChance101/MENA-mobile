@@ -68,7 +68,7 @@ class ChatViewModel(
     private val audioRecordRepository: AudioRecordRepository,
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
-    private val permissionsController: PermissionsController,
+    val permissionsController: PermissionsController,
     private val audioPlayer: AudioPlayer,
     chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO

@@ -52,7 +52,7 @@ import net.thechance.mena.identity.presentation.screen.editProfile.components.Ed
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
 import net.thechance.mena.identity.presentation.screen.editProfile.components.MoreActionsButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
-import net.thechance.mena.identity.presentation.screen.editProfile.dialog.GetImageDialog
+import net.thechance.mena.identity.presentation.screen.editProfile.components.dialog.GetImageDialog
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource

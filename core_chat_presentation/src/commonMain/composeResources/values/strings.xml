@@ -59,4 +59,5 @@
     <string name="send_to">Send to</string>
     <string name="search_by_name">Search by name</string>
     <string name="cannot_get_chat_for_that_contact">Cannot get chat for that contact</string>
+    <string name="next_prayer_in">Next prayer %1$s in:</string>
 </resources>
