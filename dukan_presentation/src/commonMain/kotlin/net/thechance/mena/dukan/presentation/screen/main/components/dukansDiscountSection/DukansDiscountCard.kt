@@ -89,9 +89,13 @@ private fun DukanDiscountImagesAndText(
 
     LaunchedEffect(pagerState) {
         while (state.size > 1) {
-            delay(1500)
-            val nextPage = (pagerState.currentPage + 1) % state.size
-            pagerState.animateScrollToPage(nextPage)
+            if (!pagerState.isScrollInProgress) {
+                delay(1500)
+                val nextPage = (pagerState.currentPage + 1) % state.size
+                pagerState.animateScrollToPage(nextPage)
+            } else {
+                delay(500)
+            }
         }
     }
 
