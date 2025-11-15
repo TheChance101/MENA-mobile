@@ -4,6 +4,7 @@ package net.thechance.mena.admin_panel.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -53,10 +54,16 @@ fun AdminPanelNavHost(
                 DukanManagementsScreen()
             }
             composable<DukanDetails> { backStackEntry ->
-                val dukanId = Uuid.parse(backStackEntry.toRoute<DukanDetails>().dukanId)
-                DukanDetailsScreen(
-                    dukanId = dukanId
-                )
+                val dukanIdOrNull = runCatching {
+                    Uuid.parse(backStackEntry.toRoute<DukanDetails>().dukanId)
+                }.getOrNull()
+                if (dukanIdOrNull == null) {
+                    LaunchedEffect(Unit) {
+                        navController.popBackStack()
+                    }
+                } else {
+                    DukanDetailsScreen(dukanId = dukanIdOrNull)
+                }
             }
         }
     }
