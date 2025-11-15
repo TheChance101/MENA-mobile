@@ -3,8 +3,8 @@ package net.thechance.mena.identity.presentation.mapper
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
