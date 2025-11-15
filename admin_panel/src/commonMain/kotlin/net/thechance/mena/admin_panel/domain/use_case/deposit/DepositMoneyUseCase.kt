@@ -4,10 +4,12 @@ import net.thechance.mena.admin_panel.domain.exceptions.InvalidAmountException
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
 import net.thechance.mena.admin_panel.domain.model.Country
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
+import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
 
 @Single
 class DepositMoneyUseCase(
+    @Provided
     private val depositRepository: DepositMoneyRepository,
 ) {
     suspend fun deposit(phoneNumber: String, amount: Double, selectedCountry: Country) {

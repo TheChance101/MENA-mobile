@@ -7,9 +7,11 @@ data class DepositScreenState(
     val country: CountryUiState = CountryUiState(),
     val amount: Double = 0.0,
     val snackBar: SnackBarState = SnackBarState(),
-    val isFillWalletButtonEnabled: Boolean = false,
-    val isCountryBottomSheetVisible: Boolean = false,
+    val isLoadingCountries: Boolean = false,
+    val availableCountries : List<CountryUiState> =emptyList()
 ) {
+    val isFillWalletButtonEnabled: Boolean
+        get() = phoneNumber.isNotBlank() && amount > 0
     data class CountryUiState(
         val name: String = "",
         val callingCode: String = "",

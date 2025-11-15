@@ -40,6 +40,8 @@ internal fun AmountInputField(
             },
             hint = "",
              leadingIcon = painterResource(Res.drawable.ic_add_money),
+            showTrailingDivider = true,
+             trailingIcon = painterResource(Res.drawable.ic_add_money),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
 
             )

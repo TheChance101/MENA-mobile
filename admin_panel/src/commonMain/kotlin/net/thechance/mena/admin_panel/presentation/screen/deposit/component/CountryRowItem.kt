@@ -1,7 +1,6 @@
-package net.thechance.mena.identity.presentation.components
+package net.thechance.mena.admin_panel.presentation.screen.deposit.component
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,17 +15,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
 import net.thechance.mena.designsystem.presentation.component.button.radioButton.RadioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.designsystem.presentation.util.rippleIndication
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
+
 @Composable
 internal fun CountryRowItem(
     selectedCountry: DepositScreenState.CountryUiState,

@@ -3,28 +3,26 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.DropdownMenu
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.amount
 import net.thechance.mena.admin_panel.resources.ic_arrow_down
 import net.thechance.mena.admin_panel.resources.ic_phone
+import net.thechance.mena.admin_panel.resources.phone_number
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberTextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.components.CountryRowItem
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun PhoneNumberInputField(
@@ -36,41 +34,50 @@ fun PhoneNumberInputField(
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    Box(modifier = modifier) {
-        MobileNumberTextField(
-            value = phoneNumber,
-            onValueChanged = onPhoneChange,
-            hint = "",
-            leadingIcon = painterResource(Res.drawable.ic_phone),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-            leadingContent = {
-                CountryCodeSelector(
-                    countryFlag = selectedCountry.flagEmoji,
-                    countryCode = selectedCountry.callingCode,
-                    onClick = { expanded = true }
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        CountryDropdownMenu(
-            expanded = expanded,
-            onDismiss = { expanded = false },
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(Res.string.phone_number),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
-                .width(328.dp)
-                .heightIn(max = 220.dp)
-                .background(
-                    Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(16.dp)
-                ),
-            selectedCountry = selectedCountry,
-            availableCountries = availableCountries,
-            onCountrySelected = {
-                onCountrySelected(it)
-                expanded = false
-            }
+                .fillMaxWidth()
+                .padding(bottom = Theme.spacing._4)
         )
+        Box(modifier = modifier) {
+            MobileNumberTextField(
+                value = phoneNumber,
+                onValueChanged = onPhoneChange,
+                hint = "",
+                leadingIcon = painterResource(Res.drawable.ic_phone),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                leadingContent = {
+                    CountryCodeSelector(
+                        countryFlag = selectedCountry.flagEmoji,
+                        countryCode = selectedCountry.callingCode,
+                        onClick = { expanded = true }
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            CountryDropdownMenu(
+                expanded = expanded,
+                onDismiss = { expanded = false },
+                modifier = Modifier
+                    .width(328.dp)
+                    .heightIn(max = 220.dp)
+                    .background(
+                        Theme.colorScheme.background.surfaceLow,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
+                selectedCountry = selectedCountry,
+                availableCountries = availableCountries,
+                onCountrySelected = {
+                    onCountrySelected(it)
+                    expanded = false
+                }
+            )
+        }
     }
 }
 

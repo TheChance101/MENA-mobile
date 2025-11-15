@@ -3,12 +3,17 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
+import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toEntity
+import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUi
+import net.thechance.mena.admin_panel.presentation.screen.login.LoginErrorState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
@@ -27,10 +32,18 @@ class DepositViewModel (
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ): BaseViewModel<DepositScreenState, DepositEffect>(DepositScreenState()), DepositInteractionListener
 {
-    override fun mapError(throwable: Throwable): ErrorState {
-        TODO("Not yet implemented")
+    init {
+        getAvailableCountries()
     }
 
+    override fun mapError(throwable: Throwable): ErrorState {
+        return when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            is InvalidPasswordException -> LoginErrorState.InvalidCredentials
+            is UnauthorizedException -> LoginErrorState.InvalidCredentials
+            else -> ErrorState.UnknownError
+        }
+    }
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
             callee=::onFillWalletButtonClicked,
@@ -48,19 +61,10 @@ class DepositViewModel (
         updateState { it.copy(amount = amount) }
     }
 
-    override fun onCountryCodeSelected() {
-        updateState { it.copy(isCountryBottomSheetVisible = true) }
-    }
 
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
         updateState { it.copy(country = country) }
-        onCountryBottomSheetDismissed()
     }
-
-    override fun onCountryBottomSheetDismissed() {
-        updateState { it.copy(isCountryBottomSheetVisible = false) }
-    }
-
     private suspend fun onFillWalletButtonClicked(){
         depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount =currentState.amount , currentState.country.toEntity())
     }
@@ -70,6 +74,12 @@ class DepositViewModel (
             message = "yes",
             isSuccess = true
         )
+        updateState {
+            it.copy(
+                phoneNumber = "",
+                amount = 0.0
+            )
+        }
 
     }
     private suspend fun showSnackBar(
@@ -105,7 +115,32 @@ class DepositViewModel (
             isSuccess = false
         )
     }
+    private fun getAvailableCountries() {
+        tryToExecute(
+            onStart = { updateState { it.copy(isLoadingCountries = true) } },
+            callee = ::getCountries,
+            onSuccess = ::onGetCountriesSuccess,
+            onError = ::onGetCountriesError,
+            onFinish = { updateState { it.copy(isLoadingCountries = false) } },
+            dispatcher = dispatcher
+        )
+    }
 
+    private suspend fun getCountries(): List<DepositScreenState.CountryUiState> {
+        return depositMoneyRepository.getCountries().map { it.toUi() }
+    }
 
+    private fun onGetCountriesSuccess(availableCountries: List<DepositScreenState.CountryUiState>) {
+        updateState {
+            it.copy(
+                availableCountries = availableCountries,
+                country = availableCountries.firstOrNull() ?: it.country
+            )
+        }
+    }
 
+    private suspend fun onGetCountriesError(errorState: ErrorState) {
+        println("lll")
+
+    }
 }

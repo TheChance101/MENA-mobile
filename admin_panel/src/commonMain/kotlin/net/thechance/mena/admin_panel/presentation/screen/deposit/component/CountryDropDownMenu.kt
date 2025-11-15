@@ -12,7 +12,6 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.pick_country
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.components.CountryRowItem
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
