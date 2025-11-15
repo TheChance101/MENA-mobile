@@ -4,5 +4,5 @@ sealed class SurahScreenEffect {
     object NavigateBack : SurahScreenEffect()
     data class ShareAyah(val ayah: String) : SurahScreenEffect()
     data class NavigateToDownloadedRecitersScreen(val surahId: Int) : SurahScreenEffect()
-    data class NavigateToSearchScreen(val surahId: Int, val surahName: String) : SurahScreenEffect()
+    data class NavigateToSearchScreen(val surahId: Int) : SurahScreenEffect()
 }

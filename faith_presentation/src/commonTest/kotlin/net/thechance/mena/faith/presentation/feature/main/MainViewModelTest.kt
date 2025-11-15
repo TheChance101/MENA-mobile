@@ -322,7 +322,6 @@ class MainViewModelTests {
 
     private companion object {
         const val SURAH_ID = 1
-        const val SURAH_NAME = "Al-Fatihah"
         const val AYAH_NUMBER = 1
 
         @OptIn(ExperimentalTime::class)
@@ -350,7 +349,6 @@ class MainViewModelTests {
         val fakeAyah = LastAyahForTilawah(
             number = AYAH_NUMBER,
             surahId = SURAH_ID,
-            surahName = SURAH_NAME
         )
 
         val emptyAddress = fakeAddress.copy(addressLine = "")

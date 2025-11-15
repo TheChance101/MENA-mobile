@@ -11,8 +11,6 @@ import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toReciter
 import net.thechance.mena.faith.data.mapper.toReciterDto
 import net.thechance.mena.faith.data.mapper.toSurah
-import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
-import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
@@ -47,7 +45,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getLastAyahForTilawah(): LastAyahForTilawah {
         return tilawahDataStore.getLastAyah()
-            ?: LastAyahForTilawah(number = 1, surahId = 1, surahName = "Al-Fatiha")
+            ?: LastAyahForTilawah(number = 1, surahId = 1)
     }
 
     override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) =
@@ -97,13 +95,25 @@ class QuranRepositoryImpl(
         reciterId: Int
     ): String = executeApiSafely {
         tilawahApiService.getSurahSoundUrl(
-            SurahSoundRequest(reciterId, surahId)
+            reciterId = reciterId,
+            surahNumber = surahId,
         )
     }
 
     override suspend fun isSurahAudioCached(surahId: Int, reciterId: Int): Boolean =
         executeLocalSafely {
             getSurahAudioCachePath(surahId, reciterId) != null
+        }
+
+    override suspend fun getSurahById(surahId: Int): Surah =
+        executeLocalSafely {
+            ayahDao.getSur().map { it.toSurah() }.find { it.id == surahId }
+                ?: Surah(
+                    id = 1,
+                    order = Surah.SurahOrder.AlFatihah,
+                    name = "الفاتحة",
+                    ayahCount = 7
+                )
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
@@ -127,7 +137,9 @@ class QuranRepositoryImpl(
 
         return executeApiSafely<String> {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(reciterId, ayahNumber, surahNumber)
+                reciterId = reciterId,
+                ayahNumber = ayahNumber,
+                surahNumber = surahNumber,
             )
         }
     }

@@ -41,7 +41,8 @@ fun Section(
     }
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
+
 @Composable
 private fun PreviewSection() {
     MenaTheme {

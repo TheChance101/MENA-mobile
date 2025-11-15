@@ -54,6 +54,7 @@ private fun Content(
 
             items(uiState.reciters) { reciter ->
                 ReciterItem(
+                    reciterId = reciter.id,
                     reciter = reciter.name,
                     recitingType = reciter.recitingType,
                     isDownloaded = reciter.isDownloaded,
@@ -63,7 +64,8 @@ private fun Content(
                     onDownloadClick = {
                         listener.onDownloadClick(reciterId = reciter.id)
                     },
-                    isSelectReciter = reciter.id == uiState.selectedReciterId
+                    isSelectReciter = reciter.id == uiState.selectedReciterId,
+                    isSwipeable = uiState.isSwipeable,
                 )
             }
         }

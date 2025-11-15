@@ -13,6 +13,7 @@ import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -26,10 +27,10 @@ internal class UserReelViewModel(
 
     init {
         updateState { copy(currentReelId = userReelArgs.realId) }
-        getFeedReals()
+        getFeedReels()
     }
 
-    private fun getFeedReals() {
+    private fun getFeedReels() {
         tryToCollectFlow(
             block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
@@ -127,7 +128,16 @@ internal class UserReelViewModel(
         )
     }
 
-    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String){
+    override fun onClickRetry(reelId: String) {
+        updateState { copy(currentReelId = reelId, error = null) }
+        onGetRefreshVideoUrl(reelId)
+    }
+
+    override fun onNetworkError() {
+        updateState { copy(error = ErrorState.NoInternet) }
+    }
+
+    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String) {
         state.value.reelsStateFlow.value =
             state.value.reelsStateFlow.value.map { reel ->
                 reel.takeIf { it.id != reelId }
@@ -183,7 +193,7 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
-            onError = { errorState -> updateState { copy(error = errorState) } },
+            onError = { errorState -> updateState { copy(error = errorState, isReelDeleted = false) } },
             dispatcher = defaultDispatcher
         )
     }

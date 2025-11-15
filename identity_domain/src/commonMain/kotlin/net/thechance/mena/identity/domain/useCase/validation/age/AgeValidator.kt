@@ -11,7 +11,7 @@ class AgeValidator {
     fun isValid(date: LocalDate): Boolean {
         val today = Clock.System.now().toLocalDateTime(TimeZone.Companion.currentSystemDefault()).date
         val yearAdjustment =
-            if (today.month < date.month || (today.month == date.month && today.day < date.day)) 1 else 0
+            if (today.month < date.month || (today.month == date.month && today.day <= date.day)) 1 else 0
         val age = today.year - date.year - yearAdjustment
 
         return age >= MIN_AGE

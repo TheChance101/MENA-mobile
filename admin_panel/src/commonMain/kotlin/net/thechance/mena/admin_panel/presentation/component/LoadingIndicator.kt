@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.users_management.component
+package net.thechance.mena.admin_panel.presentation.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 
 @Composable
-fun UsersLoadingIndicator() {
+fun LoadingIndicator() {
     Box(modifier = Modifier.fillMaxSize()) {
         DotsProgressIndicator(
             modifier = Modifier
