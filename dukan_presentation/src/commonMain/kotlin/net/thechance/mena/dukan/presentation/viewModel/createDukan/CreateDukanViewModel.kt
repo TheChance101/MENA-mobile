@@ -308,7 +308,7 @@ class CreateDukanViewModel(
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
-            onStart = {updateState { copy(isNextCreateButtonLoading = true) }},
+            onStart = { updateState { copy(isNextCreateButtonLoading = true) } },
             block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
             onError = ::onNameValidationError
@@ -316,22 +316,22 @@ class CreateDukanViewModel(
     }
 
     private fun mapDukanNameToValidName(name: String): String {
-        var validName = ""
-        name.forEachIndexed { index, ch ->
-            validName = if (name.last()!= ch ) {
-                if (name[index].isWhitespace() && name[index + 1].isWhitespace()) {
-                    name.removeRange(index + 1, index + 1)
-                } else
-                    name
-            }else{
-                name
+        val validDukanName = StringBuilder()
+        var isPreviousCharWhitespace = false
+
+        for (ch in name) {
+            if (ch.isWhitespace()) {
+                if (validDukanName.isEmpty() || isPreviousCharWhitespace) continue
+                validDukanName.append(' ')
+                isPreviousCharWhitespace = true
+            } else {
+                validDukanName.append(ch)
+                isPreviousCharWhitespace = false
             }
+            if (validDukanName.length >= MAX_NAME_LENGTH) break
         }
-        return if (name.length > MAX_NAME_LENGTH) {
-            validName.take(MAX_NAME_LENGTH)
-        }
-        else
-            validName
+
+        return validDukanName.toString()
     }
 
     private fun handleNameValidationResult(isTaken: Boolean) {
