@@ -55,8 +55,8 @@ internal class ReelRepositoryImplTest {
         networkClient,
         uploadClient,
         videoHandler,
-        userEngagementDao,
-        userRepository
+        userRepository,
+        userEngagementDao
     )
 
     @Test
@@ -66,8 +66,8 @@ internal class ReelRepositoryImplTest {
                 networkClient,
                 uploadClient,
                 videoHandler,
-                userEngagementDao,
-                userRepository
+                userRepository,
+                userEngagementDao
             )
 
             val reels = repository.getAllCurrentUserReels(pageNumber = 1)
@@ -81,8 +81,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = repository.getFeedReels(page = 1)
@@ -97,8 +97,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
         val result = runCatching { repository.deleteReelById("1") }
 
@@ -113,8 +113,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = runCatching {
@@ -134,8 +134,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         repository.uploadReel(FAKE_FILE_PATH, FAKE_SIZE)
@@ -152,8 +152,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         assertFails {
@@ -171,8 +171,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         assertFails {
@@ -188,8 +188,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = runCatching {
@@ -206,8 +206,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val emissions = mutableListOf(
@@ -232,8 +232,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         assertFails {
@@ -277,8 +277,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = runCatching { repository.getAllCurrentUserReels(pageNumber = 1) }
@@ -296,8 +296,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = repository.addReelLike(REEL_ID)
@@ -315,8 +315,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = runCatching {
@@ -337,8 +337,8 @@ internal class ReelRepositoryImplTest {
             networkClient,
             uploadClient,
             videoHandler,
-            userEngagementDao,
-            userRepository
+            userRepository,
+            userEngagementDao
         )
 
         val result = repository.getReelUrls(REEL_ID)
