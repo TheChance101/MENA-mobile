@@ -72,6 +72,6 @@
     <string name="amount">Amount</string>
     <string name="pick_country">Pick country</string>
     <string name="fill_the_wallet">fill the wallet</string>
-
-
+    <string name="no_account_error_description">There is no account related to this phone number</string>
+    <string name="no_account_error_title">Error</string>
 </resources>

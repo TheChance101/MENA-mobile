@@ -19,8 +19,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun AmountInputField(
-    amount: Double,
-    onAmountChanged: (Double) -> Unit,
+    amount: String,
+    onAmountChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -33,10 +33,9 @@ internal fun AmountInputField(
                 .padding(bottom = Theme.spacing._4)
         )
         BasicTextField(
-            value = amount.toString(),
+            value = amount,
             onValueChanged = { newText ->
-                val number = newText.toDoubleOrNull() ?: 0.0
-                onAmountChanged(number)
+                onAmountChanged(newText)
             },
             hint = "",
              leadingIcon = painterResource(Res.drawable.ic_add_money),

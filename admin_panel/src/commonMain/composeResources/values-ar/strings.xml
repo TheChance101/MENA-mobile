@@ -71,4 +71,8 @@
     <string name="fill_a_wallet_description">أدخل رقم الهاتف والمبلغ لإعادة شحن المحفظة</string>
     <string name="amount">المبلغ</string>
     <string name="fill_the_wallet">اشحن المحفظة</string>
+    <string name="no_account_error_description">لا يوجد حساب مرتبط بهذا الرقم</string>
+    <string name="no_account_error_title">خطأ</string>
+
+
 </resources>

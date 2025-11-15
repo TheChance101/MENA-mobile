@@ -16,6 +16,7 @@ class DepositMoneyRepositoryImpl(
     private val publicApiService: PublicApiService
 ) : DepositMoneyRepository {
     override suspend fun depositMoney(phoneNumber: String, amount: Double) {
+        println("repo")
         executeApiSafely<Unit> {
             depositMoneyApiService.depositMoney(DepositRequestDto(
                 phoneNumber,
@@ -25,7 +26,6 @@ class DepositMoneyRepositoryImpl(
     }
 
     override suspend fun getCountries(language: String): List<Country> {
-        println("repo")
         return executeApiSafely<List<CountryDto>> {
             publicApiService.getCountries(language)
         }.map { it.toEntity() }

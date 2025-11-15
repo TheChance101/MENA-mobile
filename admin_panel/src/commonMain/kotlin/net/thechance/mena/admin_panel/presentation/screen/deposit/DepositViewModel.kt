@@ -39,8 +39,6 @@ class DepositViewModel (
     override fun mapError(throwable: Throwable): ErrorState {
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
-            is InvalidPasswordException -> LoginErrorState.InvalidCredentials
-            is UnauthorizedException -> LoginErrorState.InvalidCredentials
             else -> ErrorState.UnknownError
         }
     }
@@ -57,7 +55,7 @@ class DepositViewModel (
         updateState { it.copy(phoneNumber = phoneNumber) }
     }
 
-    override fun onAmountChanged(amount : Double) {
+    override fun onAmountChanged(amount : String) {
         updateState { it.copy(amount = amount) }
     }
 
@@ -66,7 +64,7 @@ class DepositViewModel (
         updateState { it.copy(country = country) }
     }
     private suspend fun onFillWalletButtonClicked(){
-        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount =currentState.amount , currentState.country.toEntity())
+        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount =currentState.amount.toDouble() , currentState.country.toEntity())
     }
     private suspend fun onDepositSuccess(){
         showSnackBar(
@@ -77,7 +75,7 @@ class DepositViewModel (
         updateState {
             it.copy(
                 phoneNumber = "",
-                amount = 0.0
+                amount =""
             )
         }
 
