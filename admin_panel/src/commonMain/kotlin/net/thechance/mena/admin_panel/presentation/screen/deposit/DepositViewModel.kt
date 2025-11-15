@@ -3,9 +3,7 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.thechance.mena.admin_panel.domain.exceptions.InvalidPasswordException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
-import net.thechance.mena.admin_panel.domain.exceptions.UnauthorizedException
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -13,10 +11,10 @@ import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toEntity
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUi
-import net.thechance.mena.admin_panel.presentation.screen.login.LoginErrorState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
+import net.thechance.mena.admin_panel.resources.Res
 
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -68,8 +66,8 @@ class DepositViewModel (
     }
     private suspend fun onDepositSuccess(){
         showSnackBar(
-            title = "success",
-            message = "yes",
+            title = stringProvider.getString(Res.drawable.success_deposit_title),
+            message = stringProvider.getString(Res.drawable.success_deposit_desciption),
             isSuccess = true
         )
         updateState {

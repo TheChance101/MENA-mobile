@@ -73,6 +73,9 @@
     <string name="fill_the_wallet">اشحن المحفظة</string>
     <string name="no_account_error_description">لا يوجد حساب مرتبط بهذا الرقم</string>
     <string name="no_account_error_title">خطأ</string>
+    <string name="success_deposit_title">نجاح</string>
+    <string name="success_deposit_description">تم إيداع المبلغ بنجاح</string>
+
 
 
 </resources>
