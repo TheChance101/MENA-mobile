@@ -25,7 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DukanManagementHeader(
-    dukansNumbers: String,
+    dukansNumbers: Int,
     onQueryChange: (String) -> Unit,
     onClearQueryClicked: () -> Unit,
     query: String,
@@ -38,7 +38,7 @@ fun DukanManagementHeader(
             .wrapContentHeight(),
     ) {
         DukansCount(
-            dukansNumbers = dukansNumbers,
+            dukansNumbers = dukansNumbers.toString(),
             modifier = Modifier.align(Alignment.CenterStart)
         )
         SearchBar(

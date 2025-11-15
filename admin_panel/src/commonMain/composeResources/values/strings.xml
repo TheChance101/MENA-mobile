@@ -43,7 +43,7 @@
     <string name="blocked">Blocked</string>
     <string name="block">Block</string>
     <string name="activate">Activate</string>
-
+    <string name="deactivated">Deactivated</string>
     <!-- Search -->
     <string name="no_search_result">No search result!</string>
     <string name="no_search_result_description">please try with another keyword.</string>
@@ -54,7 +54,7 @@
     <string name= "dukans">Dukans</string>
     <string name="dukan_management">Dukan Management</string>
     <string name="dukan_search_hint">Search by dukan name, loction,...</string>
-
+    <string name="added_date">Added date</string>
     <!-- Dialogs -->
     <string name="block_user">Block user</string>
     <string name="block_user_confirmation_message">Are you sure you want to continue with blocking?</string>

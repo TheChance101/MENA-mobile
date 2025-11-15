@@ -41,6 +41,7 @@
     <string name="blocked">محظور</string>
     <string name="block">حظر</string>
     <string name="activate">تفعيل</string>
+    <string name="deactivated">نشط</string>
 
     <!-- Search -->
     <string name="no_search_result">لا توجد نتائج بحث!</string>
@@ -51,6 +52,7 @@
     <string name="no_dukan_results_description">ستظهر الدكاكين هنا فور إضافتها.</string>
     <string name="dukans">الدكاكين</string>
     <string name="dukan_search_hint">ابحث باسم الدكان، الموقع،...</string>
+    <string name="added_date">تاريخ الإضافة</string>
     <!-- Dialogs -->
     <string name="block_user">حظر المستخدم</string>
     <string name="block_user_confirmation_message">هل أنت متأكد من أنك تريد المتابعة بالحظر؟</string>
