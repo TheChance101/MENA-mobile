@@ -94,7 +94,6 @@ private fun DukanListTable(
         itemsIndexed(items = dukan) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
-                index = index,
                 dukan = dukanItem,
                 isLastItem = isLastItem,
                 hasBackground = index % 2 != 0,
@@ -108,7 +107,6 @@ private fun DukanListTable(
 
 @Composable
 private fun DukanItemRow(
-    index: Int,
     isLastItem: Boolean,
     dukan: DukanManagementScreenState.Dukan,
     onViewDetailsClicked: () -> Unit,
@@ -139,7 +137,7 @@ private fun DukanItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        TableCellText(text = index.toString(), modifier = Modifier.weight(0.069f))
+        TableCellText(text = dukan.index.toString(), modifier = Modifier.weight(0.069f))
 
         Box(
             modifier = Modifier.weight(0.099f),
