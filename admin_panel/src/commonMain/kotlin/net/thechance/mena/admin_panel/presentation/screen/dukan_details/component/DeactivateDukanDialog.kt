@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.cancel
 import net.thechance.mena.admin_panel.resources.deactivate
@@ -49,77 +50,103 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
     isDeactivateButtonLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-    BasicDialog(
-        onDismiss = onDismiss,
-        isVisible = isVisible,
-        contentColor = Theme.colorScheme.background.surface,
-        contentPadding = PaddingValues(24.dp),
-        modifier = modifier
-            .background(
-                color = Theme.colorScheme.background.surface,
-                shape = RoundedCornerShape(24.dp)
-            )
-            .width(400.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Theme.colorScheme.background.surface),
-            horizontalAlignment = Alignment.Start
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = onDismiss
+    ){
+        BasicDialog(
+            onDismiss = onDismiss,
+            isVisible = isVisible,
+            contentColor = Theme.colorScheme.background.surface,
+            contentPadding = PaddingValues(24.dp),
+            modifier = modifier
+                .background(
+                    color = Theme.colorScheme.background.surface,
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .width(400.dp)
         ) {
-            Icon(
-                painter = painterResource(Res.drawable.ic_store_remove),
-                contentDescription = stringResource(Res.string.deactivate_dukan),
-                modifier = Modifier
-                    .size(88.dp)
-                    .background(
-                        color = Theme.colorScheme.background.bgError,
-                        shape = CircleShape
-                    )
-                    .padding(20.dp),
-                tint = Theme.colorScheme.error
-            )
-
-            Text(
-                modifier = Modifier.padding(top = 12.dp),
-                text = stringResource(Res.string.deactivate_dukan_header),
-                style = Theme.typography.title.medium,
-                color = Theme.colorScheme.shadePrimary
-            )
-            Text(
-                text = stringResource(Res.string.deactivate_dukan_content),
-                style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadeSecondary
-            )
-            Text(
-                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
-                text = stringResource(Res.string.deactivate_dukan_reason),
-                style = Theme.typography.title.small,
-                color = Theme.colorScheme.shadePrimary
-            )
-
-            BasicTextField(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .heightIn(min = 96.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(Theme.radius.md))
-                    .background(color = Theme.colorScheme.background.surfaceLow)
-                    .padding(8.dp),
-                value = deactivationReason,
-                onValueChange = { onReasonChanged(it) },
-                textStyle = Theme.typography.body.small,
-                maxLines = 6,
-                cursorBrush = SolidColor(Theme.colorScheme.primary.primary),
-            )
-
-            DialogButtons(
+            DialogContent(
                 onDismiss = onDismiss,
-                onConfirmDeactivation = onDeactivationConfirmed,
-                isDeactivateBtnEnabled = isDeactivateButtonEnabled,
-                isDeactivateBtnLoading = isDeactivateButtonLoading
+                onDeactivationConfirmed = onDeactivationConfirmed,
+                deactivationReason = deactivationReason,
+                onReasonChanged = onReasonChanged,
+                isDeactivateButtonEnabled = isDeactivateButtonEnabled,
+                isDeactivateButtonLoading = isDeactivateButtonLoading
             )
         }
+    }
+}
+
+@Composable
+private fun DialogContent(
+    onDismiss: () -> Unit,
+    onDeactivationConfirmed: () -> Unit,
+    deactivationReason: String,
+    onReasonChanged: (String) -> Unit,
+    isDeactivateButtonEnabled: Boolean,
+    isDeactivateButtonLoading: Boolean,
+){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Theme.colorScheme.background.surface),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.ic_store_remove),
+            contentDescription = stringResource(Res.string.deactivate_dukan),
+            modifier = Modifier
+                .size(88.dp)
+                .background(
+                    color = Theme.colorScheme.background.bgError,
+                    shape = CircleShape
+                )
+                .padding(20.dp),
+            tint = Theme.colorScheme.error
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 12.dp),
+            text = stringResource(Res.string.deactivate_dukan_header),
+            style = Theme.typography.title.medium,
+            color = Theme.colorScheme.shadePrimary
+        )
+
+        Text(
+            text = stringResource(Res.string.deactivate_dukan_content),
+            style = Theme.typography.body.small,
+            color = Theme.colorScheme.shadeSecondary
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
+            text = stringResource(Res.string.deactivate_dukan_reason),
+            style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary
+        )
+
+        BasicTextField(
+            modifier = Modifier
+                .padding(bottom = 24.dp)
+                .heightIn(min = 96.dp)
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(Theme.radius.md))
+                .background(color = Theme.colorScheme.background.surfaceLow)
+                .padding(8.dp),
+            value = deactivationReason,
+            onValueChange = { onReasonChanged(it) },
+            textStyle = Theme.typography.body.small,
+            maxLines = 6,
+            cursorBrush = SolidColor(Theme.colorScheme.primary.primary),
+        )
+
+        DialogButtons(
+            onDismiss = onDismiss,
+            onConfirmDeactivation = onDeactivationConfirmed,
+            isDeactivateBtnEnabled = isDeactivateButtonEnabled,
+            isDeactivateBtnLoading = isDeactivateButtonLoading
+        )
     }
 }
 
