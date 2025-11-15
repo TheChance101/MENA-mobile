@@ -265,7 +265,7 @@ private fun ReelContent(
     incrementViewsCount: () -> Unit,
     onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
-    saveReelWatchSession: (ReelWatchSessionState) -> Unit
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
     onNetworkError: () -> Unit
 ) {
     val rememberedUrl = remember(reel.id) { reel.videoUrl }
