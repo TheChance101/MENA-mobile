@@ -197,7 +197,6 @@ actual fun VideoPlayer(
             exoPlayer.playWhenReady = true
             exoPlayer.play()
             reelWatchSessionState.watchStartTime = getCurrentTime()
-
         } else {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
@@ -296,7 +295,7 @@ actual fun VideoPlayer(
                 Lifecycle.Event.ON_RESUME -> {
                     if (isReelVisible) {
                         if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
-                        exoPlayer.play()
+                        if (!isPause) exoPlayer.play()
                     }
                 }
 
