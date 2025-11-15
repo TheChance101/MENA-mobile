@@ -102,7 +102,7 @@ private fun DukanDiscountImagesAndText(
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
             currentIndex = page
 
-            PannerItem(
+            BannerItem(
                 state = state,
                 page = page
             )
@@ -141,23 +141,21 @@ private fun DukanDiscountText(
             modifier = Modifier.padding(bottom = Theme.spacing._8)
         )
         ShopNowButton(
-            dukanId = dukanId,
-            onClick = onClick,
+            onClick = { onClick(dukanId) }
         )
     }
 }
 
 @Composable
 private fun ShopNowButton(
-    dukanId: Uuid,
-    onClick: (dukanId: Uuid) -> Unit,
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(Theme.radius.full))
             .background(Theme.colorScheme.primary.onPrimary)
             .clickable(
-                onClick = { onClick(dukanId) },
+                onClick = onClick,
                 indication = null,
                 interactionSource = MutableInteractionSource()
             ).padding(
@@ -181,7 +179,7 @@ private fun ShopNowButton(
 }
 
 @Composable
-private fun PannerItem(
+private fun BannerItem(
     modifier: Modifier = Modifier,
     state: List<MainScreenUiState.DukanTopDiscount>,
     page: Int
