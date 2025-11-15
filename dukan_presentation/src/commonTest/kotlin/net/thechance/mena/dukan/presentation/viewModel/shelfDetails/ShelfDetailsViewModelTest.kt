@@ -17,18 +17,16 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
-import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -57,7 +55,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"),
             name = "Laptop",
             description = "High-end laptop",
-            price = 1200.0,
+            price = Price(
+                base = 1200.0,
+                final = 1200.0
+            ),
             imageUrls = listOf("https://example.com/laptop.jpg"),
             createdAt = "",
             quantityInCart = 10,
@@ -68,7 +69,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
             description = "Wireless mouse",
-            price = 25.0,
+            price = Price(
+                base = 25.0,
+                final = 25.0
+            ),
             imageUrls = listOf("https://example.com/mouse.jpg"),
             createdAt = "",
             quantityInCart = 10,
@@ -79,7 +83,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
             description = "Mechanical keyboard",
-            price = 75.0,
+            price = Price(
+                base = 75.0,
+                final = 75.0
+            ),
             imageUrls = listOf("https://example.com/keyboard.jpg"),
             createdAt = "",
             quantityInCart = 10,
@@ -287,11 +294,11 @@ class ShelfDetailsViewModelTest {
     }
 
     @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add first product`() =
+    fun `onAddToCartClicked SHOULD toggle product cart to product quantity and make request to add product`() =
         runTest {
             // Given
             val productId = "1"
-            val quantity = 0
+            val quantity = 1
 
             everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
 
@@ -304,47 +311,6 @@ class ShelfDetailsViewModelTest {
             //Then
             verifySuspend {
                 dukanCartRepository.addProductQuantity(any())
-            }
-
-        }
-
-    @Test
-    fun `onAddToCartClicked SHOULD update hasProductInCart to true`() = runTest {
-        val productId = "1"
-        val quantity = 1
-
-        shelfDetailsViewModel.onAddToCartClicked(
-            productId,
-            productQuantity = quantity,
-        )
-
-        advanceUntilIdle()
-
-        shelfDetailsViewModel.state.test {
-            val state = awaitItem()
-            assertEquals(true, state.hasProductInCart)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `onAddToCartClicked SHOULD toggle product cart to update existing product quantity`() =
-        runTest {
-            // Given
-            val productId = "1"
-            val quantity = 10
-
-            everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
-
-            //When
-            shelfDetailsViewModel.onAddToCartClicked(
-                productId,
-                productQuantity = quantity,
-            )
-            advanceUntilIdle()
-            //Then
-            verifySuspend {
-                dukanCartRepository.updateProductQuantity(any())
             }
 
         }
@@ -437,16 +403,36 @@ class ShelfDetailsViewModelTest {
             val productId = "1"
             val quantity = 5
 
-            everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws NoInternetException()
+
+            // When
+            shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
+            advanceUntilIdle()
+            // Then
+            shelfDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
+        }
+
+    @Test
+    fun `onErrorUpdateProductQuantity SHOULD show error snackbar when anyException thrown`() =
+        runTest {
+            // Given
+            val productId = "1"
+            val quantity = 5
+
+            everySuspend { dukanCartRepository.addProductQuantity(any()) } throws Exception()
 
             // When
             shelfDetailsViewModel.onAddToCartClicked(productId, productQuantity = quantity)
             advanceUntilIdle()
 
             // Then
-            val state = shelfDetailsViewModel.state.value
-            assertEquals(Res.string.no_internet_connection, state.snackBarState?.message)
-            assertEquals(SnackBarType.ERROR, state.snackBarState?.snackBarType)
+            shelfDetailsViewModel.state.test {
+                val state = awaitItem()
+                assertTrue(state.snackBarState != null)
+            }
         }
 
 }

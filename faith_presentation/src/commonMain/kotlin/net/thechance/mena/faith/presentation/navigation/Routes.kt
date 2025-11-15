@@ -10,7 +10,6 @@ internal sealed interface Route {
     @Serializable
     data class SurahDetailsRoute(
         val surahId: Int,
-        val surahName: String,
         val ayahNumber: Int? = null
     ) : Route
 
@@ -33,13 +32,21 @@ internal sealed interface Route {
     data object NearbyMosquesRoute : Route
 
     @Serializable
-    data object TilawahRoute : Route
+    data class DownloadedSurScreen(
+        val surahId: Int? = null
+    ) : Route
+
 
     @Serializable
-    data object DownloadedRecitersRoute : Route
+    data class DownloadedRecitersRoute(
+        val surahId: Int? = null,
+        val isCardsSwipable: Boolean = false,
+    ) : Route
 
     @Serializable
-    data object ReciterSearch: Route
+    data class ReciterSearch(
+        val surahId: Int? = null
+    ) : Route
     
     @Serializable
     data object UserAddresses : Route

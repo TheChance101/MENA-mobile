@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,12 +40,9 @@ fun MoreCategoryCard(
     ) {
         Box(
             modifier = Modifier
-                .background(
-                    color = Theme.colorScheme.background.surfaceLow,
-                    shape = RoundedCornerShape(Theme.radius.full)
-                )
+                .clip(CircleShape)
+                .background(Theme.colorScheme.background.surfaceLow)
                 .size(60.dp)
-                .clip(RoundedCornerShape(Theme.radius.full))
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {

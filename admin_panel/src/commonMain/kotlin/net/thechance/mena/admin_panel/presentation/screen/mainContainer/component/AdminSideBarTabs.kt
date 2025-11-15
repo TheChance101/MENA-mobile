@@ -54,7 +54,7 @@ fun AdminSideBarTabs(
                     .padding(horizontal = 8.dp)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(16.dp))
-                    .clickable { onTabSelected(tab) },
+                    .clickable(enabled = selectedTab != tab) { onTabSelected(tab) },
                 title = stringResource(tab.title),
                 selectedIcon = painterResource(tab.selectedIconRes),
                 notSelectedIcon = painterResource(tab.unSelectedIconRes),

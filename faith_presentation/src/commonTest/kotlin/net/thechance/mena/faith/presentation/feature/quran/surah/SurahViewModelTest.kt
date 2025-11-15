@@ -78,30 +78,14 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onSearchClick should navigate to search screen with correct params`() = runTest {
+    fun `onSearchClick should navigate to search screen`() = runTest {
         every { surahArgs.surahId } returns 2
-        every { surahArgs.surahName } returns "Al-Baqarah"
 
         testViewModel.uiEffect.test {
             testViewModel.onSearchClick()
-            val effect = awaitItem()
-            assertEquals(
-                SurahScreenEffect.NavigateToSearchScreen(2, "Al-Baqarah"),
-                effect
-            )
         }
     }
 
-    @Test
-    fun `onReciterClick should navigate to downloaded reciters screen`() = runTest {
-        testViewModel.uiEffect.test {
-            testViewModel.onReciterClick()
-            val effect = awaitItem()
-            assertEquals(SurahScreenEffect.NavigateToDownloadedRecitersScreen, effect)
-        }
-    }
-
-    // Audio Player Tests
     @Test
     fun `onListenClick should play ayah with selected ayah number`() = runTest {
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
@@ -429,57 +413,67 @@ class SurahViewModelTest {
     @Test
     fun `updateContinueTilawah should save last ayah for tilawah correctly`() = runTest {
         every { surahArgs.surahId } returns SURAH_BAQARAH_ID
-        every { surahArgs.surahName } returns SURAH_BAQARAH
         everySuspend { quranRepository.saveLastAyahForTilawah(any()) } returns Unit
 
         testViewModel.updateContinueTilawah(5)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(SURAH_BAQARAH_ID, surahArgs.surahId)
-        assertEquals(SURAH_BAQARAH, surahArgs.surahName)
     }
 
     // Highlight and Scroll Tests
     @Test
-    fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
-        testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+    fun `onReciterClick should navigate to downloaded reciters screen`() = runTest {
+        testViewModel.uiEffect.test {
+            testViewModel.onReciterClick(surahArgs.surahId)
+            val effect = awaitItem()
+            assertEquals(
+                SurahScreenEffect.NavigateToDownloadedRecitersScreen(
+                    surahArgs.surahId
+                ), effect
+            )
+        }
+        fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
+            testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
 
-        assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.selectedAyahNumber)
-        assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.initialAyahToScroll)
-    }
+            assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.selectedAyahNumber)
+            assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.initialAyahToScroll)
+        }
 
-    @Test
-    fun `onInitialAyahScrolled should clear selection after delay when not playing`() = runTest {
-        testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
-        testViewModel.onInitialAyahScrolled()
-        advanceUntilIdle()
+        @Test
+        fun `onInitialAyahScrolled should clear selection after delay when not playing`() =
+            runTest {
+                testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+                testViewModel.onInitialAyahScrolled()
+                advanceUntilIdle()
 
-        assertNull(testViewModel.uiState.value.selectedAyahNumber)
-        assertNull(testViewModel.uiState.value.initialAyahToScroll)
-    }
+                assertNull(testViewModel.uiState.value.selectedAyahNumber)
+                assertNull(testViewModel.uiState.value.initialAyahToScroll)
+            }
 
-    // Audio Loading Tests
-    @Test
-    fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest {
-        val testUrl = "https://example.com/ayah.mp3"
-        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns testUrl
+        // Audio Loading Tests
+        @Test
+        fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest {
+            val testUrl = "https://example.com/ayah.mp3"
+            everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns testUrl
 
-        testViewModel.onListenClick()
-        advanceUntilIdle()
+            testViewModel.onListenClick()
+            advanceUntilIdle()
 
-        assertEquals(testUrl, testViewModel.uiState.value.currentPlayingAyahUrl)
-    }
+            assertEquals(testUrl, testViewModel.uiState.value.currentPlayingAyahUrl)
+        }
 
-    @Test
-    fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
-        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+        @Test
+        fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
+            everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
 
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
-        testViewModel.onListenClick()
-        advanceUntilIdle()
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+            testViewModel.onListenClick()
+            advanceUntilIdle()
 
-        assertTrue(testViewModel.uiState.value.isPlayerVisible)
-        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+            assertTrue(testViewModel.uiState.value.isPlayerVisible)
+            assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+        }
     }
 
 
@@ -497,7 +491,6 @@ class SurahViewModelTest {
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
         const val AYAH_TO_COPY = "Test ayah to copy"
-        const val SURAH_BAQARAH = "Al-Baqarah"
         const val SURAH_BAQARAH_ID = 2
 
 

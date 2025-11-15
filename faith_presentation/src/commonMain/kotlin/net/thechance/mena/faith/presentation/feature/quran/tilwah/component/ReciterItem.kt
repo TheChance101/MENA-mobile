@@ -1,7 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.quran.tilwah.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,16 +15,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete
 import mena.faith_presentation.generated.resources.downloaded
+import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_tick_double_check
+import mena.faith_presentation.generated.resources.icon_download
+import mena.faith_presentation.generated.resources.icon_play
+import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.success
-import net.thechance.mena.designsystem.presentation.component.button.radioButton.RadioButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.components.PlayButton
+import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -30,29 +40,78 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReciterItem(
+    reciterId: Int,
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
+    isSwipeable: Boolean,
+    onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
-    isSelectedShown: Boolean,
-    isSelected: Boolean = false,
+    isSelectReciter: Boolean,
     modifier: Modifier = Modifier
 ) {
+    SwappableCard(
+        isSwipeable = isSwipeable,
+        id = reciterId,
+        onClick = {},
+        backgroundIcon = painterResource(Res.drawable.ic_delete),
+        contentDescription = stringResource(Res.string.delete),
+        cardContent = { contentModifier ->
+            CardContent(
+                reciter = reciter,
+                recitingType = recitingType,
+                isDownloaded = isDownloaded,
+                modifier = contentModifier,
+                onDownloadClick = onDownloadClick,
+                onSelect = onSelect,
+                isSelectReciter = isSelectReciter,
+            )
+        },
+        modifier = modifier
+            .padding(horizontal = Theme.spacing._16)
+            .padding(bottom = Theme.spacing._8)
+    )
+}
+
+@Composable
+private fun CardContent(
+    reciter: String,
+    recitingType: String,
+    isDownloaded: Boolean,
+    onDownloadClick: () -> Unit,
+    onSelect: () -> Unit = {},
+    isSelectReciter: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val borderColor = if (isSelectReciter)
+        Theme.colorScheme.primary.primary else Theme.colorScheme.background.surfaceLow
     Row(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._8)
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(RoundedCornerShape(Theme.radius.md))
             .background(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
-            .clickable(onClick = onSelect)
-            .padding(Theme.spacing._8),
+            .padding(Theme.spacing._8)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = { onSelect() }
+                )
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
+        PlayButton(
+            painterIcon = painterResource(Res.drawable.icon_play),
+            contentDescription = stringResource(Res.string.play),
+        )
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -63,17 +122,17 @@ fun ReciterItem(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
-
             RecitersDetails(
                 recitingType = recitingType,
                 isDownloaded = isDownloaded
             )
         }
-        if (isSelectedShown)
-            RadioButton(
-                isSelected = isSelected,
-                onClick = onSelect
-            )
+        Icon(
+            painterResource(Res.drawable.icon_download),
+            contentDescription = stringResource(Res.string.success),
+            modifier = Modifier.size(size = 20.dp)
+                .clickable(onClick = onDownloadClick)
+        )
     }
 }
 
@@ -114,12 +173,14 @@ private fun RecitersDetails(
 private fun Preview() {
     QuranTheme {
         ReciterItem(
-            reciter = "Muhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-MinshawiMuhammad Siddiq Al-Minshawi",
+            reciterId = 1,
+            reciter = "Muhammad Siddiq Al-Minshawi",
             recitingType = "Teacher - Tajweed",
             isDownloaded = true,
-            isSelected = true,
             onSelect = {},
-            isSelectedShown = true
+            onDownloadClick = {},
+            isSelectReciter = false,
+            isSwipeable = true,
         )
     }
 }

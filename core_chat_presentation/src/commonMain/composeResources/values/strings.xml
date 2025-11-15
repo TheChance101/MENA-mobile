@@ -52,7 +52,6 @@
     <string name="delete_chat_confirmation_message">Are you sure you want to delete this chat, you will lose all messages and can’t restore them?</string>
     <string name="could_not_delete_chat">Could not delete chat</string>
     <string name="chat_deleted_successfully">Chat deleted successfully</string>
-    <string name="could_not_get_balance">Could not get current balance</string>
     <string name="no_internet_connected">You're not connected to internet, check connection and try again.</string>
     <string name="error_recording_failed">Failed to start recording. Please try again.</string>
     <string name="error_invalid_recording">Invalid recording. Please try recording again.</string>

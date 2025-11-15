@@ -68,7 +68,6 @@ fun MainScreen(
                 navController.navigate(
                     SurahDetailsRoute(
                         surahId = effect.surahId,
-                        surahName = effect.surahName,
                         ayahNumber = effect.ayahNumber
                     )
                 )
@@ -78,7 +77,7 @@ fun MainScreen(
             MainScreenEffect.NavigateToQiblah -> navController.navigate(Route.CalibrateDeviceRoute)
             MainScreenEffect.NavigateToMosques -> navController.navigate(Route.NearbyMosquesRoute)
             MainScreenEffect.NavigateToPrayerTime -> navController.navigate(Route.PrayerTimeRoute)
-            MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.TilawahRoute)
+            MainScreenEffect.NavigateToTilawah -> navController.navigate(Route.DownloadedSurScreen())
             MainScreenEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
         }
     }

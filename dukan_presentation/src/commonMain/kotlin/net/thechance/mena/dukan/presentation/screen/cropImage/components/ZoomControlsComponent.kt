@@ -3,9 +3,12 @@ package net.thechance.mena.dukan.presentation.screen.cropImage.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,13 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.reset
 import mena.dukan_presentation.generated.resources.ic_add
 import mena.dukan_presentation.generated.resources.ic_remove
+import mena.dukan_presentation.generated.resources.reset
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.shared.VerticalDivider
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -46,7 +48,7 @@ fun ZoomControls(
 
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
+            .clip(CircleShape)
             .background(backgroundColor)
             .padding(horizontal = Theme.spacing._12, vertical = 6.dp),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
@@ -68,9 +70,11 @@ fun ZoomControls(
             iconTint = zoomInButtonIconTint
         )
 
-        VerticalDivider(
-            thickness = 1.dp,
-            color = Theme.colorScheme.stroke
+        Box(
+            modifier = modifier
+                .width(1.dp)
+                .height(20.dp)
+                .background(Theme.colorScheme.stroke)
         )
 
         TextButton(

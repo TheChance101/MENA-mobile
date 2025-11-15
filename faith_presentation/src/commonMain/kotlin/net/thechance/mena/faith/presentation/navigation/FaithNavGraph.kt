@@ -21,7 +21,7 @@ import net.thechance.mena.faith.presentation.feature.quran.reciter.ReciterSearch
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchScreen
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
-import net.thechance.mena.faith.presentation.feature.quran.tilwah.DownloadedReciterScreen
+import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahScreen
 import net.thechance.mena.identity.api.IdentityFeatureApi
 import org.koin.compose.getKoin
 
@@ -55,7 +55,9 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                     SearchScreen()
                 }
                 composable<Route.SurahDetailsRoute> {
-                    SurahScreen()
+                    SurahScreen(
+                        onClickBack = { navController.navigateUp() }
+                    )
                 }
                 composable<Route.CompassRoute> {
                     CompassScreen()
@@ -63,11 +65,11 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 composable<Route.NearbyMosquesRoute> {
                     NearbyMosquesScreen()
                 }
-                composable<Route.TilawahRoute> {
+                composable<Route.DownloadedSurScreen> {
                     DownloadedSurScreen()
                 }
                 composable<Route.DownloadedRecitersRoute> {
-                    DownloadedReciterScreen()
+                    TilawahScreen()
                 }
                 composable<Route.ReciterSearch> {
                     ReciterSearchScreen()

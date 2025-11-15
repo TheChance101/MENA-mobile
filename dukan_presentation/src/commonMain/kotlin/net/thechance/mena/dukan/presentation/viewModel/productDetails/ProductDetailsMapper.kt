@@ -9,7 +9,7 @@ fun Product.toUiState(): ProductDetailsUiState.ProductInfo {
     return ProductDetailsUiState.ProductInfo(
         id = id.toString(),
         name = name,
-        price = price,
+        price = price.base,
         description = description,
         images = imageUrls,
         inCartQuantity = quantityInCart
@@ -23,3 +23,4 @@ fun ProductDetailsUiState.ProductInfo.toDomainParams(dukanId: String): UpdatePro
         dukanId = dukanId
     )
 }
+fun parseHexColor(color: String): Long = color.removePrefix("#").toLong(16) or 0xFF000000

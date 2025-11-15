@@ -11,5 +11,6 @@ expect fun VideoPlayer(
     cacheKey: String? = null,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
+    onNetworkError: () -> Unit,
     content: @Composable () -> Unit
 )

@@ -13,10 +13,12 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -27,6 +29,7 @@ import org.jetbrains.compose.resources.StringResource
 class ProductDetailsViewModel(
     private val productRepository: ProductRepository,
     private val dukanCartRepository: CartRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ProductDetailsUiState, ProductDetailsEffects>(
@@ -35,9 +38,29 @@ class ProductDetailsViewModel(
 ), ProductDetailsInteractionListener {
     private val args = savedStateHandle.toRoute<DukanRoute.ProductDetails>()
 
+    private var previousProductQuantity: Int = 0
+
+
     init {
         loadProductDetails()
         loadCartInfo()
+        loadDukanInfo()
+    }
+
+    private fun loadDukanInfo() {
+        tryToExecute(
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
+            onSuccess = ::onLoadDukanSuccess,
+            onError = ::onLoadDukanError
+        )
+    }
+
+    private fun onLoadDukanSuccess(dukan: Dukan) {
+        updateState { copy(dukanColor = parseHexColor(color = dukan.color.hexCode)) }
+    }
+
+    private fun onLoadDukanError(throwable: Throwable) {
+        updateState { copy(dukanColor = 0xFF000000) }
     }
 
     private fun loadCartInfo() {
@@ -67,16 +90,17 @@ class ProductDetailsViewModel(
 
     private fun onLoadProductSuccess(product: Product) {
         val productUiInfo = product.toUiState()
-        updateState { copy(isFirstQuantityOne = productUiInfo.inCartQuantity == 0) }
         updateState {
             copy(
                 isLoading = false,
                 product = productUiInfo,
                 selectedImageUrl = productUiInfo.images.firstOrNull() ?: "",
                 errorState = null,
-                isFavorite = product.isFavorite
+                isFavorite = product.isFavorite,
+                isFirstQuantityOne = productUiInfo.inCartQuantity == 0
             )
         }
+        previousProductQuantity = product.quantityInCart
     }
 
     private fun onLoadProductError(throwable: Throwable) {
@@ -136,6 +160,7 @@ class ProductDetailsViewModel(
     override fun onPlusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
             updateState { copy(product.copy(inCartQuantity = product.inCartQuantity + 1)) }
+            updateAddToCartButtonIsEnable()
         }
     }
 
@@ -144,7 +169,12 @@ class ProductDetailsViewModel(
             updateState {
                 copy(product.copy(inCartQuantity = if (product.inCartQuantity > 0) product.inCartQuantity - 1 else product.inCartQuantity))
             }
+            updateAddToCartButtonIsEnable()
         }
+    }
+
+    private fun updateAddToCartButtonIsEnable() {
+        updateState { copy(isButtonEnable = product.inCartQuantity != previousProductQuantity) }
     }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
@@ -157,6 +187,7 @@ class ProductDetailsViewModel(
     }
 
     private fun onSuccessUpdateProductQuantity(success: Unit) {
+        previousProductQuantity = state.value.product.inCartQuantity
         if (state.value.product.inCartQuantity == 0) removeProductFromCartSuccessfully()
         else addProductToCartSuccessfully()
 
@@ -166,7 +197,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                hasProductInCart = true
+                isButtonEnable = product.inCartQuantity != previousProductQuantity
             )
         }
         val messageRes = Res.string.add_product_success
@@ -177,7 +208,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                hasProductInCart = false
+                isButtonEnable = product.inCartQuantity != previousProductQuantity
             )
         }
         val messageRes = Res.string.remove_product_successfully

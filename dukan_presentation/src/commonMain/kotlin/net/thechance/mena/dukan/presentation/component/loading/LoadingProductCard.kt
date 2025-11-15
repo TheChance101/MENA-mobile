@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun LoadingProductCard(
@@ -35,20 +35,20 @@ fun LoadingProductCard(
             .fillMaxWidth()
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(size = Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             ).height(104.dp)
             .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
                 color = Theme.colorScheme.background.surfaceHigh,
-                shape = RoundedCornerShape(Theme.radius.md)
+                shape = SquircleShape(Theme.radius.md)
             )
         ) {
             Box(
                 modifier = Modifier
                     .size(96.dp)
-                    .clip(RoundedCornerShape(Theme.radius.sm))
+                    .clip(SquircleShape(Theme.radius.sm))
                     .background(Theme.colorScheme.background.surfaceHigh),
             )
         }
@@ -121,6 +121,5 @@ private fun ProductCardSkeletonGridPreview() {
                 LoadingProductCard()
             }
         }
-
     }
 }

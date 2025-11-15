@@ -7,14 +7,14 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class DukanApiImpl: DukanApi {
+class DukanApiImpl : DukanApi {
     @Composable
     override fun TabEntry() {
         DukanNavHost()
     }
 
     @Composable
-    override fun OrderDetailsEntry(orderId: Uuid) {
+    override fun OrderDetailsEntry(orderId: Uuid, onNavigateBack: () -> Unit) {
 
     }
 }

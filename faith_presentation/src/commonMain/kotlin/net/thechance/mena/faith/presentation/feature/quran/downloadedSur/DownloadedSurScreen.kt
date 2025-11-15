@@ -10,6 +10,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete_surah
+import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
@@ -25,11 +27,13 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DownloadedSurahCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
@@ -37,8 +41,17 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
-            DownloadedSurEffect.NavigateToRecitersScreen -> navController.navigate(Route.DownloadedRecitersRoute)
-            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> Unit // TODO("Navigate to downloaded surah reciters when done")
+            is DownloadedSurEffect.NavigateToRecitersScreen ->
+                navController.navigate(Route.DownloadedRecitersRoute(surahId = effect.surahId))
+
+            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
+                navController.navigate(
+                    Route.DownloadedRecitersRoute(
+                        surahId = effect.surahId,
+                        isCardsSwipable = true,
+                    )
+                )
+            }
         }
     }
 
@@ -58,7 +71,7 @@ private fun Content(
     Scaffold(
         topBar = {
             DownloadedSurAppBar(
-                onRecitersSettingsClick = listener::onReciterSettingsClick,
+                onRecitersSettingsClick = { listener.onReciterSettingsClick() },
                 onBackClick = listener::onBackClick,
             )
         },
@@ -77,6 +90,8 @@ private fun Content(
                     showDialog = uiState.showDeleteConfirmationDialog,
                     onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
+                    title = stringResource(Res.string.delete_surah),
+                    message = stringResource(Res.string.delete_surah_dialog_message)
                 )
             }
         }
@@ -146,15 +161,10 @@ private fun PreviewDownloadedSurScreen() {
             listener =
                 object : DownloadedSurInteractionListener {
                     override fun onReciterSettingsClick() {}
-
                     override fun onDownloadedSurahClick(surahId: Int) {}
-
                     override fun onBackClick() {}
-
                     override fun onDeleteSurahClick(surahId: Int) {}
-
                     override fun onDismissDeleteConfirmationDialog() {}
-
                     override fun onConfirmDeleteDownloadedSurahClick() {}
                 },
         )

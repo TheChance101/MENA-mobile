@@ -1,8 +1,7 @@
 package net.thechance.mena.dukan.presentation.viewModel.productDetails
 
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsUiState
-import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toDomainParams
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.toUiState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,7 +17,10 @@ class ProductDetailsMapperTest {
             id = Uuid.random(),
             name = "Test Product",
             description = "Description",
-            price = 10.0,
+            price = Price(
+                base = 10.0,
+                final = 10.0
+            ),
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
             createdAt = "2023-01-01",
@@ -30,20 +32,20 @@ class ProductDetailsMapperTest {
 
         assertEquals(product.name, uiState.name)
         assertEquals(product.description, uiState.description)
-        assertEquals(product.price, uiState.price, 0.0)
+        assertEquals(product.price.base, uiState.price, 0.0)
         assertEquals("image.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
     }
 
     @Test
-    fun `toDomainParams should map ProductUiState to domain params correctly`() {
-        val uiProduct = ShelfDetailsUiState.ProductUiState(
+    fun `toDomainParams should map ProductInfo to domain params correctly`() {
+        val uiProduct = ProductDetailsUiState.ProductInfo(
             id = "123",
             name = "Product",
             description = "Desc",
             price = 9.99,
-            imageUrl = "img.png",
-            inCartQuantity = 4
+            images = emptyList(),
+            inCartQuantity = 4,
         )
 
         val params = uiProduct.toDomainParams("dukanId_1")
@@ -51,5 +53,12 @@ class ProductDetailsMapperTest {
         assertEquals("123", params.productId)
         assertEquals(4, params.quantity)
         assertEquals("dukanId_1", params.dukanId)
+    }
+
+    @Test
+    fun `toColor should map String color to Long`() {
+        val color = "#432CCD"
+        val colorLong = parseHexColor(color = color)
+        assertEquals(0xFF432CCD, colorLong)
     }
 }

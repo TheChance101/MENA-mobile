@@ -21,6 +21,7 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
@@ -79,7 +80,10 @@ class DukanCartViewModelTest {
         id = Uuid.parse("123e4567-e89b-12d3-a456-426614174002"),
         name = "Phone",
         description = "Smart phone",
-        price = 200.0,
+        price = Price(
+            base = 200.0,
+            final = 200.0
+        ),
         imageUrls = listOf("phone.png"),
         createdAt = "2025-10-10T12:00:00Z",
         quantityInCart = 2,

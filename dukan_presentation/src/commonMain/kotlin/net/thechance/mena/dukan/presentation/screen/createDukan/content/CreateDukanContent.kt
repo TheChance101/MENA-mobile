@@ -55,7 +55,6 @@ fun CreateDukanContent(
         listener = listener,
         pagerState = pagerState
     )
-
 }
 
 @Composable
