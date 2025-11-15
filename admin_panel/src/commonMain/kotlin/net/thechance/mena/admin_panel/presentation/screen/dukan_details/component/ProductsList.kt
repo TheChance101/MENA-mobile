@@ -30,7 +30,6 @@ import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
-import net.thechance.mena.admin_panel.resources.img_silver
 import net.thechance.mena.admin_panel.resources.silver_img
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -163,7 +162,7 @@ private fun ProductPrice(
                 .padding(start = 4.dp)
                 .size(20.dp)
                 .alignByBaseline(),
-            painter = painterResource(Res.drawable.img_silver),
+            painter = painterResource(Res.drawable.silver_img),
             contentDescription = stringResource(Res.string.silver_img)
         )
     }
