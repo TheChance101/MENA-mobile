@@ -21,6 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun DukansCounter(
     count: Int,
+    title: String = stringResource(Res.string.requests),
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -29,7 +30,7 @@ fun DukansCounter(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(Res.string.requests),
+            text = title,
             style = Theme.typography.title.small,
             modifier = Modifier.padding(end = 8.dp)
         )
