@@ -324,7 +324,7 @@ class ChatViewModel(
             execute = {
                 safeUpdateMessages { messages ->
                 messages.map {
-                    if (it.id == message.id)
+                    if (it.id == message.messageDetails.id)
                         it.copy(status = MessageStatus.LOADING)
                     else
                         it
