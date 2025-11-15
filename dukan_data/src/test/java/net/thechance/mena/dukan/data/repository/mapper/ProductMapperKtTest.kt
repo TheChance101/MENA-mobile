@@ -1,10 +1,12 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import net.thechance.mena.dukan.data.dto.product.CreateProductRequest
+import net.thechance.mena.dukan.data.dto.product.PriceDto
 import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import org.junit.Test
@@ -19,17 +21,16 @@ class ProductMapperKtTest {
     fun `toCreateProductRequest maps params correctly to request object`() {
 
         val params = CreateProductParams(
-            name = "Demo Product",
-            description = "A description",
-            price = 10.5,
-            shelfId = "shelf-123"
+            name = "Demo Product", description = "A description", price = Price(
+                base = 10.5, final = 10.5
+            ), shelfId = "shelf-123"
         )
 
         val request: CreateProductRequest = params.toCreateProductRequest()
 
         assertEquals("Demo Product", request.name)
         assertEquals("A description", request.description)
-        assertEquals(10.5, request.price)
+        assertEquals(10.5, request.price.base)
         assertEquals("shelf-123", request.shelfId)
     }
 
@@ -43,7 +44,9 @@ class ProductMapperKtTest {
             id = id,
             name = "Demo Product",
             description = "A description",
-            price = 10.5,
+            price = PriceDto(
+                base = 10.5, final = 10.5
+            ),
             shelfId = shelfId,
             imageUrls = listOf("url1", "url2"),
             createdAt = "2025-09-26T15:26:41.300823Z",
@@ -55,7 +58,7 @@ class ProductMapperKtTest {
         assertEquals(id, product.id)
         assertEquals("Demo Product", product.name)
         assertEquals("A description", product.description)
-        assertEquals(10.5, product.price)
+        assertEquals(10.5, product.price.base)
         assertEquals(listOf("url1", "url2"), product.imageUrls)
         assertEquals("2025-09-26T15:26:41.300823Z", product.createdAt)
     }
@@ -63,12 +66,9 @@ class ProductMapperKtTest {
 
     private val id = Uuid.random()
     private val dto = ProductCartDto(
-        id = id,
-        name = "Demo Product",
-        description = "A description",
-        price = 10.5,
-        quantityInCart = 10,
-        imageUrl = "url1"
+        id = id, name = "Demo Product", description = "A description", price = PriceDto(
+            base = 10.5, final = 10.5
+        ), quantityInCart = 10, imageUrl = "url1"
     )
     private val product = dto.toDomain()
 
@@ -91,7 +91,7 @@ class ProductMapperKtTest {
 
     @Test
     fun `ProductCartDto toDomain price maps correctly`() {
-        assertEquals(10.5, product.price)
+        assertEquals(10.5, product.price.base)
     }
 
     @Test
@@ -104,6 +104,7 @@ class ProductMapperKtTest {
     fun `ProductCartDto toDomain quantityInCart maps correctly`() {
         assertEquals(10, product.quantityInCart)
     }
+
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `toDomain maps isFavorite correctly when true`() {
@@ -114,7 +115,9 @@ class ProductMapperKtTest {
             id = id,
             name = "Demo Product",
             description = "A description",
-            price = 10.5,
+            price = PriceDto(
+                base = 10.5, final = 10.5
+            ),
             shelfId = shelfId,
             imageUrls = listOf("url1", "url2"),
             createdAt = "2025-09-26T15:26:41.300823Z",
@@ -137,7 +140,9 @@ class ProductMapperKtTest {
             id = id,
             name = "Demo Product",
             description = "A description",
-            price = 10.5,
+            price = PriceDto(
+                base = 10.5, final = 10.5
+            ),
             shelfId = shelfId,
             imageUrls = listOf("url1", "url2"),
             createdAt = "2025-09-26T15:26:41.300823Z",

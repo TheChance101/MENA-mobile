@@ -52,6 +52,9 @@ pagingTesting = "3.3.6"
 kotlinxDatetimeVersion = "0.4.0"
 # Maps version
 map-libra = "0.11.1"
+jxmapviewer = "2.6"
+# Batik version
+batik = "1.17"
 # GeoCoder
 compass = "2.4.0"
 androidx-datastore = "1.1.7"
@@ -184,6 +187,11 @@ navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-co
 
 # Map
 maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "map-libra" }
+jxmapviewer = { module = "org.jxmapviewer:jxmapviewer2", version.ref = "jxmapviewer" }
+
+# Batik
+batik-transcoder = { module = "org.apache.xmlgraphics:batik-transcoder", version.ref = "batik" }
+batik-codec = { module = "org.apache.xmlgraphics:batik-codec", version.ref = "batik" }
 
 # GeoCoder
 compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }

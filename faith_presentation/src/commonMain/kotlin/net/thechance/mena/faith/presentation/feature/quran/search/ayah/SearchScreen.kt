@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.start_searching_title
+import mena.faith_presentation.generated.resources.start_searching_subtitle_for_ayah
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -44,7 +44,6 @@ fun SearchScreen(
                 navController.navigate(
                     SurahDetailsRoute(
                         surahId = effect.surahId,
-                        surahName = effect.surahName,
                         ayahNumber = effect.ayahId
                     )
                 )
@@ -91,7 +90,7 @@ private fun Content(
                 isStartState = state.query.isBlank(),
                 isResultsState = state.searchResults.isEmpty(),
                 modifier = Modifier.fillMaxWidth().weight(1f),
-                subtitle = Res.string.start_searching_title
+                subtitle = Res.string.start_searching_subtitle_for_ayah
             )
             ResultList(
                 isNotBlankQuery = state.query.isNotBlank(),

@@ -35,6 +35,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
+import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
@@ -220,7 +221,7 @@ class ProfileScreen : BaseScreen<
             }
 
             ProfileScreenUIEffect.NavigateContactUsScreen -> {
-                navigator.push(NotImplementedScreen())
+                navigator.push(ContactUsScreen())
             }
 
             is ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {

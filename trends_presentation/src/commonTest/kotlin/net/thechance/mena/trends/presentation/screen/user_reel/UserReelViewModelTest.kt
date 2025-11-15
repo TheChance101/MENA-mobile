@@ -354,6 +354,28 @@ class UserReelViewModelTest {
         }
     }
 
+    @Test
+    fun `onClickRetry should update currentReelId clear error and reload reels`() = runTest {
+        viewModel.onNetworkError()
+        advanceUntilIdle()
+
+        viewModel.onClickRetry("123")
+        advanceUntilIdle()
+
+        verifySuspend { viewModel.onGetRefreshVideoUrl(any()) }
+    }
+
+    @Test
+    fun `onNetworkError should update error state to NoInternet`() = runTest {
+        viewModel.onNetworkError()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.error).isEqualTo(ErrorState.NoInternet)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()

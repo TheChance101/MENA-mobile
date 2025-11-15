@@ -18,7 +18,7 @@ fun Product.toUiState(): ManageDukanUiState.ProductUiState {
         id = id.toString(),
         name = name,
         description = description,
-        price = price,
+        price = price.base,
         imageUrl = imageUrls.firstOrNull().orEmpty()
     )
 }

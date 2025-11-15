@@ -11,6 +11,11 @@ import kotlin.uuid.Uuid
 data class CartDto(
     @SerialName("id")
     val id: Uuid,
-    @SerialName("totalPrice")
-    val totalPrice: Double
-)
+    @SerialName("totalPriceBeforeDiscount")
+    val totalPriceBeforeDiscount: Double,
+    @SerialName("totalPriceAfterDiscount")
+    val totalPriceAfterDiscount: Double,
+    @SerialName("discount")
+    val discount: Double,
+
+    )

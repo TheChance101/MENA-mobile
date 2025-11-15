@@ -19,8 +19,7 @@ data class TransactionDetailsScreenRoute(
 
 @Serializable
 data class ConfirmPaymentScreenRoute(
-    val transactionId: String,
-    val amount: Double
+    val transactionId: String
 ) : WalletRoute()
 
 @Serializable

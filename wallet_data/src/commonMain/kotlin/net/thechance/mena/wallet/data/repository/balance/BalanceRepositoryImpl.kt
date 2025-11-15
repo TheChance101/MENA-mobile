@@ -16,7 +16,7 @@ class BalanceRepositoryImpl(
     private val networkClient: NetworkClient
 ) : BalanceRepository {
 
-    private val balanceFlow = MutableStateFlow(0.0)
+    private val balanceFlow = MutableStateFlow<Double?>(null)
 
     override suspend fun getBalance(): Double {
         return safeApiCall<BalanceDto> {
@@ -26,7 +26,7 @@ class BalanceRepositoryImpl(
         }
     }
 
-    override fun observeBalance(): Flow<Double> {
+    override fun observeBalance(): Flow<Double?> {
         return balanceFlow.onSubscription {
             // getBalance is wrapped with runCatching to fetch balance on subscription without propagating exceptions to the flow
             runCatching { getBalance() }

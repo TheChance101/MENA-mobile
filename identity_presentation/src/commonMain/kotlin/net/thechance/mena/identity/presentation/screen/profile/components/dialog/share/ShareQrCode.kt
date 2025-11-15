@@ -24,10 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
-import io.github.alexzhirkevich.qrose.toByteArray
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.copy_to_clipboard_success
 import mena.identity_presentation.generated.resources.copy_to_clipboard_success_message
@@ -57,6 +59,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeInteractionListener
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIState
+import net.thechance.mena.identity.presentation.screen.profile.components.dialog.utils.createQrCodeByteArray
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -122,6 +125,9 @@ private fun ScaffoldScope.ShareQrCodeContent(
     modifier: Modifier = Modifier
 ) {
     val clipboard = LocalClipboard.current
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    val screenSize = LocalWindowInfo.current.containerSize
 
     state.snackBarTitle?.let { title ->
         CopyToClipboardSnackBar(
@@ -194,11 +200,13 @@ private fun ScaffoldScope.ShareQrCodeContent(
                     contentDescription = stringResource(Res.string.download_icon_content_description),
                     isLoading = state.isLoading,
                     onClick = {
-                        listener.onClickDownload(
-                            qrCodePainter.toByteArray(
-                                width = qrCodePainter.intrinsicSize.width.toInt(),
-                                height = qrCodePainter.intrinsicSize.height.toInt()
-                            )
+                        createQrCodeByteArray(
+                            painter = qrCodePainter,
+                            density = density,
+                            layoutDirection = layoutDirection,
+                            screenSize = screenSize
+                        ).run(
+                            block = listener::onClickDownload
                         )
                     }
                 )

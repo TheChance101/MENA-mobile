@@ -1,7 +1,6 @@
 package net.thechance.mena.core_chat.api
 
 import androidx.compose.runtime.Composable
-import kotlin.uuid.ExperimentalUuidApi
 
 interface CoreChatApi {
     @Composable
@@ -9,4 +8,7 @@ interface CoreChatApi {
 
     @Composable
     fun ChatEntry(userId: String, onNavigateBack: () -> Unit)
+
+    @Composable
+    fun ShareAyahToChatEntry(surahId: String, ayahNumber: Int, ayahContent: String, onNavigateBack: () -> Unit)
 }
