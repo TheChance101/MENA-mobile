@@ -55,14 +55,13 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
         onDismiss = onDismiss,
         isVisible = isVisible,
         contentColor = Theme.colorScheme.background.surface,
+        contentPadding = PaddingValues(24.dp),
         modifier = modifier
             .background(
                 color = Theme.colorScheme.background.surface,
                 shape = RoundedCornerShape(24.dp)
             )
-            .fillMaxWidth(0.35f)
-            .widthIn(min = 400.dp)
-            .padding(24.dp)
+            .width(400.dp)
     ) {
         Column(
             modifier = Modifier

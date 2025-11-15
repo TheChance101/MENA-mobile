@@ -46,7 +46,7 @@ internal fun DukanDetailsCard(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.xl)
             )
-            .padding(vertical = 16.dp, horizontal = 16.dp)
+            .padding(16.dp)
     ) {
         when {
             isLoading -> {
@@ -88,6 +88,7 @@ internal fun DukanDetailsCard(
 private fun DukanCategories(
     categories: List<String>,
     modifier: Modifier = Modifier,
+    dotBackgroundColor: Color = Color(0xFFD9D9D9)
 ) {
     Row(
         modifier = modifier,
@@ -104,7 +105,7 @@ private fun DukanCategories(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
                         .size(3.dp)
-                        .background(color = Color(0xFFD9D9D9), shape = CircleShape)
+                        .background(color = dotBackgroundColor, shape = CircleShape)
                 )
             }
         }
@@ -125,7 +126,9 @@ private fun DukanLocationMap(
             .clip(RoundedCornerShape(Theme.radius.md)),
     ){
         OSMMapView(
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(Theme.radius.md)),
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(Theme.radius.md)),
             latitude = latitude,
             longitude = longitude,
             markerWidth = 60,
@@ -145,7 +148,9 @@ private fun DukanLocation(
         horizontalArrangement = Arrangement.Center,
     ) {
         Icon(
-            modifier = Modifier.size(16.dp).padding(end = 4.dp),
+            modifier = Modifier
+                .size(16.dp)
+                .padding(end = 4.dp),
             painter = painterResource(Res.drawable.ic_store_location),
             contentDescription = stringResource(Res.string.dukan_location),
             tint = Theme.colorScheme.shadeSecondary

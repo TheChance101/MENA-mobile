@@ -55,7 +55,8 @@ private fun DukanDetailsScreenContent(
             DukanDetailsAppBar(
                 onBackBtnClicked = interactionListener::onBackButtonClicked,
                 dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE,
-                onChangeDukanStatusBtnClicked = interactionListener::onChangeDukanStatusButtonClicked
+                onChangeDukanStatusBtnClicked =
+                    interactionListener::onChangeDukanStatusButtonClicked
             )
         },
         overlays = {
@@ -63,7 +64,8 @@ private fun DukanDetailsScreenContent(
                 DeactivateDukanDialog(
                     isVisible = it,
                     onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
-                    onDeactivationConfirmed = interactionListener::onConfirmDukanDeactivationButtonClicked,
+                    onDeactivationConfirmed =
+                        interactionListener::onConfirmDukanDeactivationButtonClicked,
                     deactivationReason = state.deactivateReason,
                     onReasonChanged = interactionListener::onDeactivateReasonChanged,
                     isDeactivateButtonEnabled = state.isDeactivateBtnEnabled,

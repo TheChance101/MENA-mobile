@@ -94,7 +94,9 @@ private fun ProductCard(
     modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.padding(4.dp).height(96.dp),
+        modifier = modifier
+            .padding(4.dp)
+            .height(96.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         AsyncImage(
@@ -108,7 +110,11 @@ private fun ProductCard(
             placeholder = painterResource(Res.drawable.ic_dukan_placholder),
             error = painterResource(Res.drawable.ic_dukan_placholder),
         )
-        Column(modifier = Modifier.fillMaxHeight().padding(4.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .padding(4.dp)
+        ) {
             Text(
                 text = product.name,
                 style = Theme.typography.label.medium,
@@ -145,13 +151,18 @@ private fun ProductPrice(
             )
         }
         Text(
-            modifier = Modifier.padding(start = 2.dp).alignByBaseline(),
+            modifier = Modifier
+                .padding(start = 2.dp)
+                .alignByBaseline(),
             text = price.toString(),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
         Image(
-            modifier = Modifier.padding(start = 4.dp).size(20.dp).alignByBaseline(),
+            modifier = Modifier
+                .padding(start = 4.dp)
+                .size(20.dp)
+                .alignByBaseline(),
             painter = painterResource(Res.drawable.img_silver),
             contentDescription = stringResource(Res.string.silver_img)
         )
