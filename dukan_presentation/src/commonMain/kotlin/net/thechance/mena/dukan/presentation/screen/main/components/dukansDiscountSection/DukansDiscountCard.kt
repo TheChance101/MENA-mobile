@@ -192,7 +192,7 @@ private fun ShopNowButton(
                 interactionSource = MutableInteractionSource()
             ).padding(
                 horizontal = Theme.spacing._12,
-                vertical = Theme.spacing._2 + Theme.spacing._4
+                vertical = Theme.spacing._4
             ),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
         verticalAlignment = Alignment.CenterVertically

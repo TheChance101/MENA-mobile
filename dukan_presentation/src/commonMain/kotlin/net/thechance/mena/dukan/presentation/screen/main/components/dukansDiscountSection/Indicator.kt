@@ -29,7 +29,7 @@ fun Indicator(
     dotWidth: Int = 5
 ) {
 
-    val pageCount by remember { mutableStateOf(if (pagerState.pageCount <= 5) pagerState.pageCount else 5) }
+    val pageCount by remember { mutableStateOf(minOf(pagerState.pageCount,5)) }
     val activeIndex by remember(pagerState.currentPage) { mutableStateOf(pagerState.currentPage % pageCount) }
 
     Box(
