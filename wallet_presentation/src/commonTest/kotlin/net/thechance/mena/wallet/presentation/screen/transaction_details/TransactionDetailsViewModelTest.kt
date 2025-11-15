@@ -281,6 +281,8 @@ class TransactionDetailsViewModelTest {
             amount = 5000.0,
             status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
+            senderImageUrl = "",
+            receiverImageUrl = "",
             receiverName = "Nour Elhoda",
             type = TransactionType.RECEIVED
         )

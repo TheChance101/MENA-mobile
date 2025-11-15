@@ -24,6 +24,8 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onRecordClicked()
     fun onCancelRecordClicked()
     fun onSendRecordClicked()
+
+    fun onStopAudioPlayback()
 }
 
 interface MessageListInteractionListener {
