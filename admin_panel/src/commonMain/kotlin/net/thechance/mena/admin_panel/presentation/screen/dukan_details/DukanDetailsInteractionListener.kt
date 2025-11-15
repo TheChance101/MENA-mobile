@@ -5,13 +5,13 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface DukanDetailsInteractionListener {
-    fun onBackBtnClicked()
-    fun onChangeDukanStatusBtnClicked()
+    fun onBackButtonClicked()
+    fun onChangeDukanStatusButtonClicked()
     fun onNextShelvesPageRequested()
     fun onShelfSelected(shelfId: Uuid)
     fun onNextProductsPageRequested()
     fun onDeactivateDukanDialogDismissed()
-    fun onConfirmDukanDeactivationBtnClicked()
+    fun onConfirmDukanDeactivationButtonClicked()
     fun onDeactivateReasonChanged(reason: String)
     fun onRetry()
 }

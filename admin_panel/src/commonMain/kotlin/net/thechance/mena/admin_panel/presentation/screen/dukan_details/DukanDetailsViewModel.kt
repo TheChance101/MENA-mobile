@@ -43,11 +43,11 @@ class DukanDetailsViewModel(
         initializeShelvesPaginator()
     }
 
-    override fun onBackBtnClicked() {
+    override fun onBackButtonClicked() {
         sendEffect(DukanDetailEffect.NavigateBack)
     }
 
-    override fun onChangeDukanStatusBtnClicked() {
+    override fun onChangeDukanStatusButtonClicked() {
         updateState { it.copy(isDeactivateDukanDialogShown = true) }
     }
 
@@ -77,7 +77,7 @@ class DukanDetailsViewModel(
         }
     }
 
-    override fun onConfirmDukanDeactivationBtnClicked() {
+    override fun onConfirmDukanDeactivationButtonClicked() {
         //call endpoint
     }
 
@@ -108,7 +108,7 @@ class DukanDetailsViewModel(
     }
 
     private fun onGetDukanDetailsSuccess(dukan: Dukan) {
-        updateState { it.copy(dukan = dukan.toUi()) }
+        updateState { it.copy(dukan = dukan.toUiState()) }
         loadNextShelves()
     }
 
@@ -146,9 +146,11 @@ class DukanDetailsViewModel(
 
     private fun onGetPagedShelvesSuccess(pagedShelves: PagedResult<Shelf>) {
         if (currentState.selectedShelfId.isEmpty()) {
-            updateState { it.copy(selectedShelfId = pagedShelves.items.firstOrNull()?.id.toString()) }
-            initializeProductsPaginator()
-            loadNextProducts()
+            pagedShelves.items.firstOrNull()?.let { item ->
+                updateState { it.copy(selectedShelfId = item.id.toString()) }
+                initializeProductsPaginator()
+                loadNextProducts()
+            }
         }
         if (currentState.totalShelves.isEmpty()) {
             updateState { it.copy(totalShelves = pagedShelves.totalElements.toString()) }

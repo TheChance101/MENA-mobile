@@ -65,7 +65,7 @@ class DukanDetailsViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(dukanUi.id, state.dukan.id)
+            assertEquals(dukanItemUiState.id, state.dukan.id)
             assertFalse(state.isDukanDetailsLoading)
             cancelAndIgnoreRemainingEvents()
         }
@@ -105,7 +105,7 @@ class DukanDetailsViewModelTest {
             initViewModel()
 
             viewModel.uiEffect.test {
-                viewModel.onBackBtnClicked()
+                viewModel.onBackButtonClicked()
 
                 val effect = awaitItem()
                 assertTrue(effect is DukanDetailEffect.NavigateBack)
@@ -198,7 +198,7 @@ class DukanDetailsViewModelTest {
             initViewModel()
             advanceUntilIdle()
 
-            viewModel.onChangeDukanStatusBtnClicked()
+            viewModel.onChangeDukanStatusButtonClicked()
             advanceUntilIdle()
 
             viewModel.state.test {
@@ -221,7 +221,7 @@ class DukanDetailsViewModelTest {
             initViewModel()
             advanceUntilIdle()
 
-            viewModel.onChangeDukanStatusBtnClicked()
+            viewModel.onChangeDukanStatusButtonClicked()
             advanceUntilIdle()
 
             viewModel.onDeactivateDukanDialogDismissed()
@@ -301,7 +301,7 @@ class DukanDetailsViewModelTest {
             )
         )
 
-        val dukanUi = DukanDetailsScreenState.DukanUi(
+        val dukanItemUiState = DukanDetailsScreenState.DukanItemUiState(
             id = dukanId,
             name = dukanName,
             address = dukanAddress,

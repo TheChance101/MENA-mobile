@@ -27,7 +27,7 @@ import net.thechance.mena.admin_panel.presentation.component.OSMMapView
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
-import net.thechance.mena.admin_panel.resources.dukan_placholder
+import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
 import net.thechance.mena.admin_panel.resources.ic_store_location
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -68,8 +68,8 @@ internal fun DukanDetailsCard(
                     model = dukanImg,
                     contentDescription = stringResource(Res.string.dukan_img),
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(Res.drawable.dukan_placholder),
-                    error = painterResource(Res.drawable.dukan_placholder),
+                    placeholder = painterResource(Res.drawable.ic_dukan_placholder),
+                    error = painterResource(Res.drawable.ic_dukan_placholder),
                 )
                 Text(
                     modifier = Modifier.padding(top = 8.dp),

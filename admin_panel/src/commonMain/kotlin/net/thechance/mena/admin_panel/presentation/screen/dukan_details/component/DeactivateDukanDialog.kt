@@ -44,11 +44,11 @@ import org.jetbrains.compose.resources.stringResource
 internal fun ScaffoldScope.DeactivateDukanDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    onConfirmDeactivation: () -> Unit,
-    deactivateReason: String,
-    onChangeReason: (String) -> Unit,
-    isDeactivateBtnEnabled: Boolean,
-    isDeactivateBtnLoading: Boolean,
+    onDeactivationConfirmed: () -> Unit,
+    deactivationReason: String,
+    onReasonChanged: (String) -> Unit,
+    isDeactivateButtonEnabled: Boolean,
+    isDeactivateButtonLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
     BasicDialog(
@@ -84,6 +84,7 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
             )
 
             Text(
+                modifier = Modifier.padding(top = 12.dp),
                 text = stringResource(Res.string.deactivate_dukan_header),
                 style = Theme.typography.title.medium,
                 color = Theme.colorScheme.shadePrimary
@@ -109,8 +110,8 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
                     .background(color = Theme.colorScheme.background.surfaceLow)
                     .focusRequester(FocusRequester())
                     .padding(8.dp),
-                value = deactivateReason,
-                onValueChange = { onChangeReason(it) },
+                value = deactivationReason,
+                onValueChange = { onReasonChanged(it) },
                 textStyle = Theme.typography.body.small,
                 maxLines = 6,
                 cursorBrush = SolidColor(Theme.colorScheme.primary.primary),
@@ -118,9 +119,9 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
 
             DialogButtons(
                 onDismiss = onDismiss,
-                onConfirmDeactivation = onConfirmDeactivation,
-                isDeactivateBtnEnabled = isDeactivateBtnEnabled,
-                isDeactivateBtnLoading = isDeactivateBtnLoading
+                onConfirmDeactivation = onDeactivationConfirmed,
+                isDeactivateBtnEnabled = isDeactivateButtonEnabled,
+                isDeactivateBtnLoading = isDeactivateButtonLoading
             )
         }
     }

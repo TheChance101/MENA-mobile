@@ -5,7 +5,7 @@ import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan.ActivationStatus
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-fun Dukan.toUi() = DukanDetailsScreenState.DukanUi(
+fun Dukan.toUiState() = DukanDetailsScreenState.DukanItemUiState(
     id = id,
     name = name,
     address = address,

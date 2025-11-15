@@ -22,7 +22,7 @@ data class DukanDetailsScreenState(
     val isProductsLoading: Boolean = false,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
-    val dukan: DukanUi = DukanUi(),
+    val dukan: DukanItemUiState = DukanItemUiState(),
     val shelves: List<Shelf> = listOf(),
     val selectedShelfId: String = "",
     val totalShelves: String = "",
@@ -34,7 +34,7 @@ data class DukanDetailsScreenState(
     val isDeactivateBtnEnabled: Boolean
         get() = deactivateReason.length > 1
 
-    data class DukanUi(
+    data class DukanItemUiState(
         val id: Uuid = Uuid.random(),
         val name: String = "",
         val address: String = "",
