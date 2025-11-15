@@ -11,8 +11,6 @@ import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toReciter
 import net.thechance.mena.faith.data.mapper.toReciterDto
 import net.thechance.mena.faith.data.mapper.toSurah
-import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
-import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
@@ -97,7 +95,8 @@ class QuranRepositoryImpl(
         reciterId: Int
     ): String = executeApiSafely {
         tilawahApiService.getSurahSoundUrl(
-            SurahSoundRequest(reciterId, surahId)
+            reciterId = reciterId,
+            surahNumber = surahId,
         )
     }
 
@@ -138,7 +137,9 @@ class QuranRepositoryImpl(
 
         return executeApiSafely<String> {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(reciterId, ayahNumber, surahNumber)
+                reciterId = reciterId,
+                ayahNumber = ayahNumber,
+                surahNumber = surahNumber,
             )
         }
     }

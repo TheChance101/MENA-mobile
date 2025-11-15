@@ -5,14 +5,12 @@ import net.thechance.mena.wallet.data.dto.remote.FirstTransactionDateDto
 import net.thechance.mena.wallet.data.dto.remote.PagedResponse
 import net.thechance.mena.wallet.data.dto.remote.PendingTransactionRequestBody
 import net.thechance.mena.wallet.data.dto.remote.TransactionDto
-import net.thechance.mena.wallet.data.dto.remote.TransactionReceiverDto
 import net.thechance.mena.wallet.data.mapper.toEntity
 import net.thechance.mena.wallet.data.mapper.toEntityList
 import net.thechance.mena.wallet.data.mapper.toRequest
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.utils.safeApiCall
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
-import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.koin.core.annotation.Single
 import kotlin.uuid.ExperimentalUuidApi
@@ -56,12 +54,6 @@ class TransactionRepositoryImpl(
         }
     }
 
-    override suspend fun getTransactionReceiver(transactionId: Uuid): TransactionReceiver {
-        return safeApiCall<TransactionReceiverDto> {
-            networkClient.get(getTransactionReceiverPath(transactionId))
-        }.toEntity()
-    }
-
     override suspend fun submitTransaction(transactionId: Uuid) = safeApiCall<Unit> {
         networkClient.post(getSubmitTransactionPath(transactionId))
     }
@@ -72,13 +64,9 @@ class TransactionRepositoryImpl(
         const val PAYMENT_PATH = "wallet/payments"
         const val FIRST_TRANSACTION_DATE_PATH = "$TRANSACTION_PATH/first-date"
         const val ADD_TRANSACTION = "/p2p/initiate"
-        const val RECEIVER_DETAILS = "/receiver-details"
         const val ADD_TRANSACTION_PATH = "$TRANSACTION_PATH$ADD_TRANSACTION"
 
         fun getTransactionByIdPath(transactionId: Uuid) = "$TRANSACTION_PATH/$transactionId"
-        fun getTransactionReceiverPath(transactionId: Uuid) =
-            "$TRANSACTION_PATH/$transactionId$RECEIVER_DETAILS"
-
         fun getSubmitTransactionPath(transactionId: Uuid) =
             "$PAYMENT_PATH/$transactionId/submit"
     }

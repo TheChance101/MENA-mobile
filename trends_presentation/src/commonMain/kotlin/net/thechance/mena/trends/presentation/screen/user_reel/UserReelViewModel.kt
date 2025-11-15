@@ -13,6 +13,7 @@ import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -26,10 +27,10 @@ internal class UserReelViewModel(
 
     init {
         updateState { copy(currentReelId = userReelArgs.realId) }
-        getFeedReals()
+        getFeedReels()
     }
 
-    private fun getFeedReals() {
+    private fun getFeedReels() {
         tryToCollectFlow(
             block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
@@ -104,7 +105,7 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        if (state.value.isReelDeleted == null) {
+        if(state.value.isReelDeleted == null) {
             tryToExecute(
                 block = { reelsRepository.addReelView(reelId) },
                 dispatcher = defaultDispatcher
@@ -154,6 +155,16 @@ internal class UserReelViewModel(
             reelWatchSessionState.watchedDurationInMilliseconds.toFloat() / reelWatchSessionState.videoDurationInMilliseconds * 100
         reelWatchSessionState.reelId = reelId
         return reelWatchSessionState.toEntity(percentageOfVideoWatched)
+    }
+
+    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String) {
+    override fun onClickRetry(reelId: String) {
+        updateState { copy(currentReelId = reelId, error = null) }
+        onGetRefreshVideoUrl(reelId)
+    }
+
+    override fun onNetworkError() {
+        updateState { copy(error = ErrorState.NoInternet) }
     }
 
     private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String) {
@@ -212,7 +223,7 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
-            onError = { errorState -> updateState { copy(error = errorState) } },
+            onError = { errorState -> updateState { copy(error = errorState, isReelDeleted = false) } },
             dispatcher = defaultDispatcher
         )
     }

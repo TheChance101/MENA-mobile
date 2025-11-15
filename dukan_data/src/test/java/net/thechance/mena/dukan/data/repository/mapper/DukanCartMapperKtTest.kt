@@ -38,7 +38,9 @@ class DukanCartMapperKtTest {
         val id = Uuid.random()
         val dto = CartDto(
             id = id,
-            totalPrice = 150.0
+            totalPriceBeforeDiscount = 150.0,
+            totalPriceAfterDiscount = 150.0,
+            discount = 0.0
         )
 
         val status = dto.toDomain()
