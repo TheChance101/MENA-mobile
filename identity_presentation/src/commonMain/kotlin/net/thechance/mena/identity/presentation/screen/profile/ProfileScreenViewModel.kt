@@ -131,6 +131,7 @@ class ProfileScreenViewModel(
             function = { settingsRepository.applyAppTheme(state.value.themeDialogUiState.selectedAppTheme) },
             onSuccess = { onThemeConfirmationSuccess() },
             onError = ::onUserInfoError,
+            dispatcher = dispatcher
         )
     }
 
