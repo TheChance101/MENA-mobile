@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +27,7 @@ import kotlin.math.abs
 fun Indicator(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
-    dotWidth: Int = 5
+    defaultDotWidth: Int = 5
 ) {
 
     val pageCount by remember { mutableStateOf(minOf(pagerState.pageCount,5)) }
@@ -34,6 +35,7 @@ fun Indicator(
 
     Box(
         modifier = modifier
+            .width(72.dp)
             .clip(shape = RoundedCornerShape(Theme.radius.full))
             .background(color = Theme.colorScheme.background.surfaceLow)
             .border(
@@ -50,15 +52,15 @@ fun Indicator(
         ) {
             repeat(pageCount) { index ->
 
-                val pageOffset = (index - activeIndex) + pagerState.currentPageOffsetFraction
+                val pageOffset = ((index - activeIndex) + pagerState.currentPageOffsetFraction).coerceIn(-1f, 1f)
 
-                val dotWidth = when {
-                    pageOffset > 1f || pageOffset < -1f -> dotWidth.dp
-                    else -> {
-                        val animatedFraction = 1f - abs(pageOffset)
-                        dotWidth.dp + (15.dp * animatedFraction)
-                    }
+                val dotWidth = if (abs(pageOffset) >= 1f) {
+                    defaultDotWidth.dp
+                } else {
+                    val animatedFraction = 1f - abs(pageOffset)
+                    defaultDotWidth.dp + (15.dp * animatedFraction)
                 }
+
 
                 val dotColor by animateColorAsState(
                     targetValue = if (activeIndex == index) Theme.colorScheme.primary.primary else Theme.colorScheme.stroke,
