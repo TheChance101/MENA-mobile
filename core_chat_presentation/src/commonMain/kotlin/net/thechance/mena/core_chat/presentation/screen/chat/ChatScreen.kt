@@ -64,7 +64,7 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
-    BindEffect(controller)
+    BindEffect(viewModel.permissionsController)
 
     BackHandler(enabled = true) {
         viewModel.onBackClicked()
