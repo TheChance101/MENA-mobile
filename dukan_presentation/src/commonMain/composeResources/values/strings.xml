@@ -179,4 +179,6 @@
     <string name="checkout_dialog_description">This feature is not implemented yet.</string>
     <string name="back_to_dukan_screen_icon">Back to dukan screen icon</string>
     <string name="product_is_out_of_stock">Product is out of stock</string>
+    <string name="price_after_discount_bigger_than_base_price">Price after discount bigger than base price</string>
+
 </resources>

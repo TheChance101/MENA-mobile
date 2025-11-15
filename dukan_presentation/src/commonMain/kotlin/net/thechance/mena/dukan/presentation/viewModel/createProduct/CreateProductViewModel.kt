@@ -16,6 +16,7 @@ import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.price_after_discount_bigger_than_base_price
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -350,6 +351,7 @@ class CreateProductViewModel(
             productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
             productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
             productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH -> Res.string.error_description_length
+            productUiState.priceAfterDiscount > productUiState.price -> Res.string.price_after_discount_bigger_than_base_price
             else -> null
         }
     }
