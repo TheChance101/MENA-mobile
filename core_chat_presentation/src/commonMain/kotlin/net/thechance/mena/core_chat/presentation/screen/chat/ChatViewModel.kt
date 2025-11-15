@@ -320,8 +320,18 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-
-        sendMessage(message)
+        tryToExecute(
+            execute = {
+                safeUpdateMessages { messages ->
+                messages.map {
+                    if (it.id == message.id)
+                        it.copy(status = MessageStatus.LOADING)
+                    else
+                        it
+                }}
+            },
+            onSuccess = { sendMessage(message) }
+        )
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -443,7 +453,8 @@ class ChatViewModel(
             it.copy(
                 isImagePagerVisible = true,
                 selectedImageMessages = messages,
-                currentImageIndexForPreview = initialImageIndex
+                currentImageIndexForPreview = initialImageIndex,
+                isAttachmentsOverlayVisible = false
             )
         }
     }

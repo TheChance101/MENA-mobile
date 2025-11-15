@@ -51,7 +51,8 @@
     <string name="react_to_message">التفاعل مع الرسالة</string>
     <string name="delete_chat_confirmation_message">هل أنت متأكد أنك تريد حذف هذه المحادثة؟ ستفقد جميع الرسائل ولن تتمكن من استعادتها؟</string>
     <string name="could_not_delete_chat">لم نتمكن من حذف المحادثة</string>
-    <string name="chat_deleted_successfully">تم حذف المحادثة بنجاح</string>
+    <string name="chat_deleted_successfully">تم حذف المحادثة</string>
+    <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
     <string name="no_internet_connected">أنت غير متصل بالإنترنت، تحقق من الاتصال وحاول مرة أخرى.</string>
     <string name="error_recording_failed">فشل بدء التسجيل. يرجى المحاولة مرة أخرى.</string>
     <string name="error_invalid_recording">تسجيل غير صالح. يرجى محاولة التسجيل مرة أخرى.</string>
