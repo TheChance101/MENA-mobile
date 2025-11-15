@@ -862,6 +862,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -902,6 +903,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -979,6 +981,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -1018,6 +1021,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -1058,6 +1062,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -1067,6 +1072,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message2Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message2Id
             }
         }
 
@@ -1114,6 +1120,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message1Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message1Id
             }
         }
 
@@ -1123,6 +1130,7 @@ class ChatViewModelTest {
                 is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
                 is ChatListItem.VoiceMessage -> item.data.id == message2Id
                 is ChatListItem.DateSeparator -> false
+                is ChatListItem.OrderMessage -> item.data.id == message2Id
             }
         }
 
