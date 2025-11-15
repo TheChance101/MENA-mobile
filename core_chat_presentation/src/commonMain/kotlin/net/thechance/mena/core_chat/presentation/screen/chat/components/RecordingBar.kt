@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +34,6 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_delete
 import mena.core_chat_presentation.generated.resources.ic_mic
 import mena.core_chat_presentation.generated.resources.ic_send
-import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -49,6 +50,7 @@ fun RecordingBar(
 ) {
     val totalSeconds = rememberRecordingTimer()
     val waveData = rememberWaveformData()
+    val hasSent = remember { mutableStateOf(false) }
     Column(
         modifier = modifier.padding( Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy( Theme.spacing._8)
@@ -86,11 +88,12 @@ fun RecordingBar(
         ) {
             DeleteButton(onCancelClick)
 
-            FabButton(
-                painter = painterResource(Res.drawable.ic_send),
-                modifier = Modifier.size(52.dp, 48.dp),
-                onClick = onSendClick,
-                iconSize = 20.dp
+            SendButton(
+                onSendClick = {
+                    hasSent.value = true
+                    onSendClick()
+                },
+                enabled = !hasSent.value
             )
         }
     }
@@ -143,10 +146,39 @@ private fun DeleteButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+private fun SendButton(
+    onSendClick: () -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(52.dp, 48.dp)
+            .background(
+                color = Theme.colorScheme.primary.primary,
+                shape = RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .clickable(
+                enabled = enabled,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onSendClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.ic_send),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
 
 @Composable
 private fun rememberRecordingTimer(): Long {
-    var totalSeconds by remember { mutableStateOf(0L) }
+    var totalSeconds by rememberSaveable { mutableStateOf(0L) }
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -160,7 +192,7 @@ private fun rememberRecordingTimer(): Long {
 
 @Composable
 private fun rememberWaveformData(): List<Float> {
-    var waveData by remember { mutableStateOf(listOf<Float>()) }
+    var waveData by rememberSaveable { mutableStateOf(listOf<Float>()) }
 
     LaunchedEffect(Unit) {
         while (true) {

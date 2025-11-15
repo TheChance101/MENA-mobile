@@ -68,7 +68,7 @@ class ChatViewModel(
     private val audioRecordRepository: AudioRecordRepository,
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
-    private val permissionsController: PermissionsController,
+    val permissionsController: PermissionsController,
     private val audioPlayer: AudioPlayer,
     chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -668,23 +668,39 @@ class ChatViewModel(
 
                 if (voiceMessageItem == null || voiceMessageItem.isPlaying.not()) break
 
-                if (
-                    audioPlayer.getCurrentPosition() == lastPositionMilliSeconds
-                    && lastPositionMilliSeconds > .9 * totalDuration
-                ) {
-                    audioPlayer.stop()
+                val currentPosition = audioPlayer.getCurrentPosition()
+
+                val completed =
+                    isPlaybackCompleted(totalDuration = totalDuration, currentPosition = currentPosition, lastPosition = lastPositionMilliSeconds)
+
+                if (completed) {
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
                     break
                 }
-                lastPositionMilliSeconds = audioPlayer.getCurrentPosition()
+
+                lastPositionMilliSeconds = currentPosition
 
                 val progress = if (totalDuration > 0) {
-                    lastPositionMilliSeconds.toFloat() / totalDuration.toFloat()
+                    currentPosition.toFloat() / totalDuration.toFloat()
                 } else 0f
 
                 updateVoiceMessageState(messageId, progress = progress)
             }
         }
+    }
+
+    private fun isPlaybackCompleted(
+        totalDuration: Long,
+        currentPosition: Long,
+        lastPosition: Long
+    ): Boolean {
+        if (totalDuration <= 0) return false
+
+        val remainingMs = totalDuration - currentPosition
+        val isNearEnd = currentPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+        val isStagnant = currentPosition == lastPosition && isNearEnd
+
+        return remainingMs <= 0 || isStagnant
     }
 
     private fun stopAnyPlayingVoiceMessage(excludeMessageId: Uuid) {
@@ -926,8 +942,24 @@ class ChatViewModel(
         onGetChatHistorySuccess(result)
     }
 
+    override fun onStopAudioPlayback() {
+        audioPlayer.pause()
+        if (audioRecordRepository.isRecording()) audioRecordRepository.stopRecording()
+
+        updateState { currentState ->
+            val updatedItems = currentState.chatListItems.map { item ->
+                if (item is ChatListItem.VoiceMessage && item.isPlaying) item.copy(isPlaying = false) else item
+            }
+            currentState.copy(
+                chatListItems = updatedItems,
+                isRecordingVoice = false
+            )
+        }
+    }
+
     companion object {
         const val PAGE_SIZE = 40
         const val INITIAL_PAGE = 0
+        private const val AUDIO_END_THRESHOLD_RATIO = 0.90
     }
 }

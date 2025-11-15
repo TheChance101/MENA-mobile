@@ -31,7 +31,8 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SurahScreen(
-    viewModel: SurahViewModel = koinViewModel()
+    viewModel: SurahViewModel = koinViewModel(),
+    onClickBack: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
@@ -39,14 +40,11 @@ fun SurahScreen(
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
-            is SurahScreenEffect.NavigateBack -> navController.navigateUp()
+            is SurahScreenEffect.NavigateBack -> onClickBack()
             is SurahScreenEffect.ShareAyah -> {}
             is SurahScreenEffect.NavigateToSearchScreen -> {
                 navController.navigate(
-                    SearchRoute(
-                        effect.surahId,
-                        effect.surahName
-                    )
+                    SearchRoute(effect.surahId)
                 )
             }
 
@@ -196,12 +194,8 @@ private fun Preview() {
                     override fun onInitialAyahScrolled() {}
                     override fun highlightAyah(ayahNumber: Int) {}
                     override fun updateContinueTilawah(ayahNumber: Int) {}
-                    override fun playSurah(
-                        surahNumber: Int,
-                        ayahNumber: Int,
-                        reciterId: Int
-                    ) {
-                    }
+                    override fun onConfigrationChange() {}
+                    override fun playSurah(surahNumber: Int, ayahNumber: Int, reciterId: Int) {}
                 },
                 snackBarState = SnackBarState()
             )

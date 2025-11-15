@@ -21,7 +21,6 @@ class SearchViewModel(
 ) : BaseViewModel<SearchUiState, SearchEffect>(
     SearchUiState(
         searchArgs.surahId,
-        searchArgs.surahName
     )
 ), SearchInteractionListener {
 

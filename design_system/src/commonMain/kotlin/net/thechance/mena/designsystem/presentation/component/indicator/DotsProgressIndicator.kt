@@ -75,7 +75,7 @@ fun DotsProgressIndicator(
 }
 
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 private fun DotsProgressIndicatorPreview() {
     Box(

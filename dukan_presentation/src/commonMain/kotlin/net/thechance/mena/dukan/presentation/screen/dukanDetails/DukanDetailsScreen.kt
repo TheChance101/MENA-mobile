@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
-import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
+import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
@@ -28,8 +28,7 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-
-    LaunchedEffect(Unit) {
+    LaunchedEffect(!state.isConfigurationChanges) {
         viewModel.refreshProducts()
     }
 
@@ -50,6 +49,7 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToProductDetails -> navController.navigate(
                 DukanRoute.ProductDetails(productId = effect.productId, dukanId = effect.dukanId)
             )
+
             is DukanDetailsEffects.NavigateToCart ->
                 navController.navigate(DukanCart(effect.dukanId))
         }
@@ -76,7 +76,7 @@ private fun DukanDetailsContent(
     when (state.dukanInfo.style) {
         DukanDetailsUiState.Style.WIDE_IMAGE -> WideImageDukanDetailsContent(
             state = state,
-            listener = listener,
+            listener = listener
         )
 
         DukanDetailsUiState.Style.SMALL_IMAGE -> SmallImageDukanDetailsContent(

@@ -23,6 +23,9 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.identity.domain.repository.SettingsRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
+import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.ExperimentalTime
@@ -34,13 +37,15 @@ class BookmarkRepositoryImplTest {
 
     private val mockDao: AyahDao = MockAyahDao()
     private val apiService: BookmarkApiService = mock(MockMode.autofill)
+    private val settingsRepository: SettingsRepository = mock(MockMode.autofill)
     private lateinit var repository: BookmarkRepository
 
     @BeforeTest
     fun setup() {
         repository = BookmarkRepositoryImpl(
             ayahDao = mockDao,
-            bookmarkApiService = apiService
+            bookmarkApiService = apiService,
+            localizationService = LocalizationService(settingsRepository)
         )
     }
 
@@ -51,6 +56,7 @@ class BookmarkRepositoryImplTest {
             everySuspend {
                 apiService.getBookmarks(any(), any())
             } returns successfulGetBookmarkResponse()
+            everySuspend { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
             // When
             val response = repository.getAyahBookmarks(PAGE_NUMBER, PAGE_SIZE)
@@ -65,6 +71,7 @@ class BookmarkRepositoryImplTest {
         everySuspend {
             apiService.getBookmarks(any(), any())
         } returns successfulGetBookmarkResponse()
+        everySuspend { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         // When
         repository.getAyahBookmarks(PAGE_NUMBER, PAGE_SIZE)
@@ -80,6 +87,7 @@ class BookmarkRepositoryImplTest {
         runTest {
             // Given
             everySuspend { apiService.addBookmark(any()) } returns successfulAddBookmarkResponse()
+            everySuspend { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
             // When
             val bookmark = repository.addAyahBookmark(surahId = 1, ayahNumber = 1)
@@ -92,6 +100,7 @@ class BookmarkRepositoryImplTest {
     fun `addAyahBookmark should call API with correct request`() = runTest {
         // Given
         everySuspend { apiService.addBookmark(any()) } returns successfulAddBookmarkResponse()
+        everySuspend { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         // When
         repository.addAyahBookmark(surahId = 1, ayahNumber = 1)
