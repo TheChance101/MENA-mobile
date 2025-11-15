@@ -3,7 +3,9 @@ package net.thechance.mena.trends.data.mapper
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
-import net.thechance.mena.trends.data.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.mapper.toEntity
+import net.thechance.mena.trends.data.remote.mapper.toEntityList
 import net.thechance.mena.trends.domain.entity.Category
 import kotlin.test.Test
 

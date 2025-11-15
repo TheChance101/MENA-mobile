@@ -8,10 +8,11 @@ data class Product(
     val id: Uuid,
     val name: String,
     val description: String,
-    val price: Double,
+    val price: Price,
     val imageUrls: List<String>,
     val createdAt: String,
     val quantityInCart: Int,
     val shelfId: Uuid?,
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    val isOutOfStock: Boolean = false
 )

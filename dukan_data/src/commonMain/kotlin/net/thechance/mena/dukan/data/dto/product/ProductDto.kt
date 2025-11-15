@@ -18,7 +18,10 @@ data class ProductDto(
     val shelfId: Uuid,
 
     @SerialName("price")
-    val price: Double,
+    val price: PriceDto,
+
+    @SerialName("discount")
+    val discount: Double? = null,
 
     @SerialName("description")
     val description: String,
@@ -33,5 +36,8 @@ data class ProductDto(
     val quantityInCart : Int,
 
     @SerialName("isFavorite")
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+
+    @SerialName("isOutOfStock")
+    val isOutOfStock: Boolean = false
 )

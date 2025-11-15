@@ -40,11 +40,7 @@ fun SurScreen(
             is SurEffect.NavigateToBookmark -> navController.navigate(Route.BookmarksRoute)
             is SurEffect.NavigateToSurahDetails -> {
                 navController.navigate(
-                    Route.SurahDetailsRoute(
-                        surahId = effect.surahId,
-                        surahName = effect.surahName
-                    )
-                )
+                    Route.SurahDetailsRoute(surahId = effect.surahId))
             }
 
             SurEffect.NavigateToSearch -> {
@@ -98,7 +94,6 @@ private fun Content(
                     onClick = {
                         listener.onSurahClick(
                             surah.id,
-                            surah.surahName
                         )
                     }
                 )
@@ -141,7 +136,7 @@ private fun SurScreenPreview() {
                 )
             ),
             listener = object : SurInteractionListener {
-                override fun onSurahClick(surahId: Int, surahName: String) = Unit
+                override fun onSurahClick(surahId: Int) = Unit
                 override fun onBackClick() = Unit
                 override fun onBookmarkClick() = Unit
                 override fun onSearchClick() {}

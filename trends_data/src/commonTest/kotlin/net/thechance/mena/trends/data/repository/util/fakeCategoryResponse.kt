@@ -4,9 +4,9 @@ import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpStatusCode
-import net.thechance.mena.trends.data.dto.CategoryDto
-import net.thechance.mena.trends.data.dto.SubmitCategoriesRequestDto
-import net.thechance.mena.trends.data.dto.UpdateUserCategoriesResponse
+import net.thechance.mena.trends.data.remote.dto.CategoryDto
+import net.thechance.mena.trends.data.remote.dto.SubmitCategoriesRequestDto
+import net.thechance.mena.trends.data.remote.dto.UpdateUserCategoriesResponse
 
 internal val mockCategories = listOf(
     CategoryDto("uuid 1", "Sport", "⚽", false),

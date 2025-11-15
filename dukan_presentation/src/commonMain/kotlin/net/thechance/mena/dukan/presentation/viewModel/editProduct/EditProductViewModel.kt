@@ -26,6 +26,7 @@ import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.product_name_is_already_exist
 import mena.dukan_presentation.generated.resources.save_product_success
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
@@ -101,10 +102,11 @@ class EditProductViewModel(
         updateState {
             copy(
                 productName = product.name,
-                price = product.price.toString(),
+                price = product.price.base.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
-                isTextFieldEnabled = true
+                isTextFieldEnabled = true,
+                isOutOfStock = product.isOutOfStock
             ).updateButtonState()
         }
     }
@@ -234,6 +236,12 @@ class EditProductViewModel(
     override fun onDescriptionChange(description: String) {
         updateState {
             copy(description = description).updateButtonState()
+        }
+    }
+
+    override fun onOutOfStockChange(isOutOfStock: Boolean) {
+        updateState {
+            copy(isOutOfStock = isOutOfStock).updateButtonState()
         }
     }
 
@@ -446,7 +454,7 @@ class EditProductViewModel(
         val fileName = bytes.toFileName()
         val result = productRepository.uploadProductImage(
             fileName = fileName,
-            fileBytes =bytes,
+            fileBytes = bytes,
             productId = productId
         )
         return result
@@ -483,9 +491,10 @@ class EditProductViewModel(
         return UpdateProductParams(
             name = trimmedName,
             description = trimmedDescription,
-            price = state.value.price.toDoubleOrNull(),
+            price = Price(base = state.value.price.toDoubleOrNull() ?: 0.0),
             shelfId = state.value.selectedShelf?.id,
-            imageUrls = finalImageUrls
+            imageUrls = finalImageUrls,
+            isOutOfStock = state.value.isOutOfStock
         )
     }
 

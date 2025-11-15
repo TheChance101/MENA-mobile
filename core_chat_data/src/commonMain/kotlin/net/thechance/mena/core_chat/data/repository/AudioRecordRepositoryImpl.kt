@@ -6,8 +6,8 @@ import io.ktor.util.reflect.typeInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
-import net.thechance.mena.core_chat.data.utils.audio.AudioRecorder
 import net.thechance.mena.core_chat.data.utils.FileManager
+import net.thechance.mena.core_chat.data.utils.audio.AudioRecorder
 import net.thechance.mena.core_chat.data.utils.tryNetworkCall
 import net.thechance.mena.core_chat.domain.exception.AudioFileNotFound
 import net.thechance.mena.core_chat.domain.exception.InvalidAudioFile
@@ -54,6 +54,7 @@ class AudioRecordRepositoryImpl(
 
         val audioBytes = tryNetworkCall<ByteArray>(
             bodyType = typeInfo<ByteArray>(),
+            maxAttempts = 3
         ) {
             client.get(audioUrl)
         } ?: throw NotFoundException("Audio file not found on server")

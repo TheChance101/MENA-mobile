@@ -2,14 +2,12 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noI
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -19,9 +17,10 @@ import net.thechance.mena.dukan.presentation.component.product.NoImageDukanProdu
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewDukanDetailsInteractionListener
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanInfo
-import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProducts
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeDukanDetails
+import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductsLimited
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -29,10 +28,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NoImageDukanShelfWithProducts(
     shelf: ShelfUiState,
-    listener: DukanDetailsInteractionListener,
-    dukanColor: Long,
+    products: List<ProductUiState>,
+    state: DukanDetailsUiState,
+    listener: DukanDetailsInteractionListener
 ) {
-
     Column(
         Modifier.padding(horizontal = Theme.spacing._16)
             .padding(top = Theme.spacing._16)
@@ -46,16 +45,25 @@ fun NoImageDukanShelfWithProducts(
                 )
             },
             modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._8),
-            viewAllColor = Color(dukanColor)
+            viewAllColor = Color(state.dukanInfo.color)
         )
-        shelf.products.forEachIndexed { index, product ->
-            val topPadding = if (index > 0) Theme.spacing._8 else 0.dp
-            ProductItem(
-                product = product,
-                listener = listener,
-                dukanColor = Color(dukanColor),
-                modifier = Modifier.padding(top = topPadding)
-            )
+        val spacing = Theme.spacing._8
+        val minCardWidth = 320.dp
+
+        LazyVerticalGrid(
+            modifier = Modifier.heightIn(min = 0.dp, max = 10_000.dp),
+            columns = GridCells.Adaptive(minSize = minCardWidth),
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing),
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(spacing)
+        ) {
+            items(products) { product ->
+                ProductItem(
+                    product = product,
+                    listener = listener,
+                    dukanColor = Color(state.dukanInfo.color),
+                    quantity = state.productQuantity[product.id] ?: 0
+                )
+            }
         }
     }
 }
@@ -65,17 +73,10 @@ fun NoImageDukanShelfWithProducts(
 private fun ProductItem(
     product: ProductUiState,
     listener: DukanDetailsInteractionListener,
+    quantity: Int,
     dukanColor: Color,
     modifier: Modifier = Modifier
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
-
-    LaunchedEffect(product) {
-        toggleCartToQuantity = product.inCartQuantity > 0
-        productQuantity = product.inCartQuantity
-    }
-
     ProductCard(
         productName = product.name,
         productImageUrl = product.imageUrl,
@@ -86,30 +87,25 @@ private fun ProductItem(
         onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
             NoImageDukanProductAction(
-                showProductQuantity = toggleCartToQuantity,
-                inCartQuantity = productQuantity,
+                showProductQuantity = quantity > 0,
+                inCartQuantity = quantity,
                 dukanColor = dukanColor,
                 onAddToCartClick = {
-                    toggleCartToQuantity = true
-                    productQuantity += 1
                     listener.onAddToCartClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = quantity + 1
                     )
                 },
                 onPlusClick = {
-                    productQuantity += 1
                     listener.onPlusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = quantity + 1
                     )
                 },
                 onMinusClick = {
-                    if (productQuantity == 1) toggleCartToQuantity = false
-                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = quantity - 1
                     )
                 }
             )
@@ -122,12 +118,10 @@ private fun ProductItem(
 private fun ShelfWithProductsNoImageDukanPreview() {
     MenaTheme {
         NoImageDukanShelfWithProducts(
-            shelf = ShelfUiState(
-                name = "Clothes",
-                products = fakeProducts
-            ),
+            shelf = ShelfUiState(name = "Clothes"),
             listener = PreviewDukanDetailsInteractionListener,
-            dukanColor = fakeDukanInfo.color
+            state = fakeDukanDetails,
+            products = fakeProductsLimited["1"] ?: emptyList()
         )
     }
 }

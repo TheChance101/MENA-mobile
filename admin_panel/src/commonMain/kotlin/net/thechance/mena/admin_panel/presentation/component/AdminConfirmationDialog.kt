@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
@@ -37,6 +38,7 @@ fun ScaffoldScope.AdminConfirmationDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
+    scrimColor: Color = Theme.colorScheme.primary.primary.copy(.66f),
     modifier: Modifier = Modifier
 ) {
     BasicDialog(
@@ -45,6 +47,7 @@ fun ScaffoldScope.AdminConfirmationDialog(
         dialogCornerShape = RoundedCornerShape(24.dp),
         contentPadding = PaddingValues(24.dp),
         hasDismissButton = false,
+        scrimColor = scrimColor,
         contentColor = Theme.colorScheme.background.surfaceLow,
         actionButtons = {
             AdminConfirmationDialogActionButtons(
@@ -54,7 +57,7 @@ fun ScaffoldScope.AdminConfirmationDialog(
                 confirmationButtonText = confirmationButtonText
             )
         },
-        modifier = modifier.fillMaxWidth(0.35f)
+        modifier = modifier
     ) {
         AdminConfirmationDialogContent(
             dialogIcon = dialogIcon,

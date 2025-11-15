@@ -305,6 +305,8 @@ class TransactionHistoryViewModelTest {
                 status = TransactionStatus.SUCCESS,
                 senderName = "Alice",
                 receiverName = "Bob",
+                senderImageUrl = "",
+                receiverImageUrl = "",
                 type = TransactionType.SENT
             ),
             Transaction(
@@ -317,6 +319,8 @@ class TransactionHistoryViewModelTest {
                 status = TransactionStatus.FAILED,
                 senderName = "Charlie",
                 receiverName = "You",
+                senderImageUrl = "",
+                receiverImageUrl = "",
                 type = TransactionType.RECEIVED
             ),
             Transaction(
@@ -329,6 +333,8 @@ class TransactionHistoryViewModelTest {
                 status = TransactionStatus.SUCCESS,
                 senderName = "Online Shop",
                 receiverName = "You",
+                senderImageUrl = "",
+                receiverImageUrl = "",
                 type = TransactionType.ONLINE_PURCHASE
             ),
         )

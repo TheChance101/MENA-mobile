@@ -15,13 +15,15 @@ import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 class BookmarkRepositoryImpl(
     private val ayahDao: AyahDao,
-    private val bookmarkApiService: BookmarkApiService
+    private val bookmarkApiService: BookmarkApiService,
+    private val localizationService: LocalizationService,
 ) : BookmarkRepository {
 
     override suspend fun addAyahBookmark(surahId: Int, ayahNumber: Int): AyahBookmark {
@@ -33,12 +35,13 @@ class BookmarkRepositoryImpl(
                 )
             )
         }
+
         val surah = executeLocalSafely { ayahDao.getSurah(surahId) }
-        val ayah = executeLocalSafely { ayahDao.getAyah(surahId, ayahNumber) }
+        val ayah = executeLocalSafely { ayahDao.getAyah(ayahId = ayahNumber, surahId = surahId) }
 
         return AyahBookmark(
             id = bookmarkDto.id.toInt(),
-            surah = surah.toSurah(),
+            surah = surah.toSurah(localizationService.getCurrentLanguage()),
             ayah = ayah.toAyah(),
             createdAt = Instant.parse(bookmarkDto.createdAt)
         )
@@ -59,7 +62,8 @@ class BookmarkRepositoryImpl(
                     executeLocalSafely {
                         ayahDao.getAyah(ayahId = ayahId, surahId = surahId)
                     }
-                }
+                },
+                localizationService.getCurrentLanguage()
             )
         } ?: emptyList()
     }

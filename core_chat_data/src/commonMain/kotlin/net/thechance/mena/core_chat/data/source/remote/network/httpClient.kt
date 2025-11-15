@@ -71,3 +71,23 @@ fun createHttpClient(
         }
     }
 }
+
+fun createMediaHttpClient(
+    httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>
+): HttpClient {
+    val timeOutIntervalMilliSeconds = 30_000L
+
+    return HttpClient(httpClientEngineFactory) {
+
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.ALL
+        }
+
+        install(HttpTimeout) {
+            requestTimeoutMillis = timeOutIntervalMilliSeconds
+            connectTimeoutMillis = timeOutIntervalMilliSeconds
+            socketTimeoutMillis = timeOutIntervalMilliSeconds
+        }
+    }
+}

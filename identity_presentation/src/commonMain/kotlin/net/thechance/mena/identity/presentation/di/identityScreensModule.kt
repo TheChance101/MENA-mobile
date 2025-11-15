@@ -5,12 +5,14 @@ import net.thechance.mena.identity.presentation.screen.addresses.enableLocationS
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsViewModel
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
+import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedViewModel
@@ -63,6 +65,8 @@ val identityScreensModule = module {
     factoryOf(::DatePickerScreenViewModel)
     factoryOf(::SelectGenderScreenViewModel)
     factoryOf(::ChangePasswordScreenViewModel)
+    factoryOf(::PrivacyAndPolicyScreenViewModel)
+    factoryOf(::ContactUsViewModel)
 
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->
