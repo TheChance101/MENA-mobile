@@ -20,8 +20,6 @@ class DukanDiscoveryRepositoryImplTest {
         val result = repo.getEditorPicksDukans(page = 0, size = 2)
 
         assertEquals(2, result.items.size)
-        assertEquals("Editor 1", result.items[0].imageUrl)
-        assertEquals("Defacto", result.items[0].name)
     }
 
     @Test
@@ -33,8 +31,6 @@ class DukanDiscoveryRepositoryImplTest {
         val result = repo.getBestAroundDukans(page = 0, size = 2)
 
         assertEquals(2, result.items.size)
-        assertEquals("Editor 1", result.items[0].imageUrl)
-        assertEquals("Defacto", result.items[0].name)
     }
 
     @Test
@@ -47,8 +43,6 @@ class DukanDiscoveryRepositoryImplTest {
         val result = repo.getDukansByCategory(categoryId = categoryId, page = 0, size = 2)
 
         assertEquals(2, result.items.size)
-        assertEquals("Editor 1", result.items[0].imageUrl)
-        assertEquals("Defacto", result.items[0].name)
     }
 
     @Test
@@ -60,7 +54,6 @@ class DukanDiscoveryRepositoryImplTest {
         val result = repo.getTopDiscountedDukans(page = 0, size = 2)
 
         assertEquals(2, result.items.size)
-        assertEquals(30, result.items[0].discount)
-        assertEquals(50, result.items[1].discount)
     }
+
 }

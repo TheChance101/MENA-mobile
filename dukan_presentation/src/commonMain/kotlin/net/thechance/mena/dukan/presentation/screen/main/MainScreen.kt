@@ -73,6 +73,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 @Composable
@@ -233,7 +234,7 @@ fun MainScreenSections(
                 DukansDiscountSection(
                     state = state.dukanTopDiscount,
                     onClick = listener::onShopNowClicked,
-                    modifier = Modifier.padding(bottom = Theme.spacing._24)
+                    modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._24)
                 )
             }
         }
