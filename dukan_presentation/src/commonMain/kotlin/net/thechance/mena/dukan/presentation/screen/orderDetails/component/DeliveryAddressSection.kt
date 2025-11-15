@@ -20,10 +20,12 @@ import mena.dukan_presentation.generated.resources.arrow_right_icon
 import mena.dukan_presentation.generated.resources.deliver_to
 import mena.dukan_presentation.generated.resources.ic_arrow_right
 import mena.dukan_presentation.generated.resources.ic_location
+import mena.dukan_presentation.generated.resources.location
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -82,7 +84,7 @@ private fun OrderAddressIcon() {
         Icon(
             modifier = Modifier.align(Alignment.Center),
             painter = painterResource(Res.drawable.ic_location),
-            contentDescription = "location icon",
+            contentDescription = stringResource(Res.string.location),
             tint = Theme.colorScheme.primary.primary
         )
     }
@@ -93,7 +95,7 @@ private fun OrderAddressIcon() {
 private fun DeliveryAddressSectionPreview() {
     MenaTheme {
         DeliveryAddressSection(
-            address = "123 Main St, City, Country",
+            address = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
             onClick = {}
         )
     }

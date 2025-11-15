@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.screen.orderDetails.component
 
 import androidx.compose.foundation.Canvas
@@ -26,20 +28,35 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.discount
 import mena.dukan_presentation.generated.resources.ic_clock_time
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
+import mena.dukan_presentation.generated.resources.order_date_icon
+import mena.dukan_presentation.generated.resources.platform_fees
+import mena.dukan_presentation.generated.resources.product_order_image
 import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.silver_tier_icon
+import mena.dukan_presentation.generated.resources.total_amount
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.domain.model.ProductOrder
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @Composable
 fun OrderSummary(
+    orderDate:String,
+    productsInOrder: List<OrderDetailsUiState.ProductInOrderUiState>,
+    discountAmount: Double,
+    platformFeesAmount: Double,
+    totalAmount: Double,
     modifier: Modifier = Modifier
 ) {
     val circleColor = Theme.colorScheme.background.surface
@@ -79,6 +96,7 @@ fun OrderSummary(
             },
     ) {
         OrderDateTime(
+            orderDate  = orderDate,
             modifier = Modifier
                 .padding(
                     vertical = Theme.spacing._12,
@@ -93,6 +111,7 @@ fun OrderSummary(
         )
 
         ProductsInOrderList(
+            productsInOrder = productsInOrder,
             modifier = Modifier
                 .padding(
                     top = Theme.spacing._16,
@@ -100,14 +119,14 @@ fun OrderSummary(
         )
 
         DiscountSection(
-            discountAmount = 10.0,
+            discountAmount = discountAmount,
             modifier = Modifier
                 .padding(top = Theme.spacing._12)
                 .padding(horizontal = Theme.spacing._12)
         )
 
         PlatformFeesSection(
-            platformFeesAmount = 5.0,
+            platformFeesAmount = platformFeesAmount,
             modifier = Modifier
                 .padding(
                     top = Theme.spacing._12,
@@ -118,7 +137,7 @@ fun OrderSummary(
         TicketDivider()
 
         TotalAmountInOrder(
-            totalAmount = 250.0,
+            totalAmount = totalAmount,
             modifier = Modifier
                 .padding(
                     top = Theme.spacing._24,
@@ -130,6 +149,7 @@ fun OrderSummary(
 
 @Composable
 private fun OrderDateTime(
+    orderDate: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -138,11 +158,11 @@ private fun OrderDateTime(
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_clock_time),
-            contentDescription = "Order Date",
+            contentDescription = stringResource(Res.string.order_date_icon),
             tint = Theme.colorScheme.shadePrimary,
         )
         Text(
-            text = "12/04/2025",
+            text = orderDate,
             maxLines = 1,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
@@ -164,6 +184,7 @@ private fun VerticalLine(
 
 @Composable
 private fun ProductsInOrderList(
+    productsInOrder: List<OrderDetailsUiState.ProductInOrderUiState>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -172,13 +193,15 @@ private fun ProductsInOrderList(
             .wrapContentHeight(),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
     ) {
-        repeat(4) {
-            ProductInOrderItem(
-                title = "Product Name Here$it",
-                price = 25.0,
-                quantity = it + 1,
-                imageUrl = "",
-            )
+        repeat(productsInOrder.size) { index ->
+            productsInOrder[index].let { product ->
+                ProductInOrderItem(
+                    name = product.name,
+                    price = product.price,
+                    quantity = product.quantity,
+                    imageUrl = product.imageUrl,
+                )
+            }
         }
     }
 }
@@ -193,7 +216,7 @@ fun DiscountSection(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Discount",
+            text = stringResource(Res.string.discount),
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary // Todo check color from design system
         )
@@ -215,12 +238,12 @@ fun PlatformFeesSection(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            text = "Platform fees",
+            text = stringResource(Res.string.platform_fees),
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadeSecondary // Todo color from design system
+            color = Theme.colorScheme.shadeSecondary
         )
         Text(
-            text = "-$platformFeesAmount%",
+            text = "$platformFeesAmount%",
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
@@ -228,7 +251,7 @@ fun PlatformFeesSection(
 }
 @Composable
 private fun ProductInOrderItem(
-    title: String,
+    name: String,
     price: Double,
     quantity: Int,
     imageUrl: String,
@@ -242,7 +265,7 @@ private fun ProductInOrderItem(
         QuantityCircleIcon(quantity = quantity)
         AsyncImage(
             model = imageUrl,
-            contentDescription = "Product of Order Image",
+            contentDescription = stringResource(Res.string.product_order_image),
             placeholder = painterResource(resource = Res.drawable.ic_no_image_loaded),
             error = painterResource(resource = Res.drawable.ic_no_image_loaded),
             modifier = Modifier
@@ -253,7 +276,7 @@ private fun ProductInOrderItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f),
-            text = title,
+            text = name,
             maxLines = 1,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
@@ -351,7 +374,7 @@ fun TotalAmountInOrder(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Total amount",
+            text = stringResource(Res.string.total_amount),
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -379,6 +402,13 @@ fun TotalAmountInOrder(
 @Composable
 private fun OrderDetailsScreenPreview() {
     MenaTheme {
-        OrderSummary()
+        OrderSummary(
+            orderDate = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.orderDate,
+            productsInOrder = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.productInOrder,
+            discountAmount = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.discount,
+            platformFeesAmount =  PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.platformFees,
+            totalAmount =  PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.totalAmount,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }

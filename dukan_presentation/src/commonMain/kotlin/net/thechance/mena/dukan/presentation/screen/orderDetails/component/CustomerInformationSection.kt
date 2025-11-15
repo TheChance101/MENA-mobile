@@ -17,13 +17,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.customer_information
 import mena.dukan_presentation.generated.resources.ic_profile
+import mena.dukan_presentation.generated.resources.profile_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import net.thechance.mena.dukan.presentation.util.visualTransformation.LengthBasedPhoneVisualTransformation
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -36,7 +40,7 @@ fun CustomerInformationSection(
     Column(modifier = modifier) {
         Text(
             modifier = Modifier.padding(bottom = Theme.spacing._8),
-            text = "Customer Information", // Todo add string resource
+            text = stringResource(Res.string.customer_information),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
@@ -70,7 +74,7 @@ private fun UserProfileIcon() {
         Icon(
             modifier = Modifier.align(Alignment.Center),
             painter = painterResource(Res.drawable.ic_profile),
-            contentDescription = ""
+            contentDescription = stringResource(Res.string.profile_icon)
         )
     }
 }
@@ -109,8 +113,8 @@ private fun UserInformation(
 private fun CustomerInformationSectionPreview() {
     MenaTheme {
         CustomerInformationSection(
-            userName = "John Doe",
-            userPhoneNumber = "+1234567890",
+            userName = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.customerName,
+            userPhoneNumber = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.customerPhone,
             modifier = Modifier.padding(16.dp)
         )
     }
@@ -118,8 +122,11 @@ private fun CustomerInformationSectionPreview() {
 
 private val phoneNumberMasks = mapOf(
     8 to "##\u00A0###\u00A0###",
+    9 to "###\u00A0###\u00A0###",
+    10 to "##\u00A0####\u00A0####",
     11 to "###\u00A0####\u00A0####",
     12 to "##\u00A0###\u00A0###\u00A0####",
     13 to "###\u00A0###\u00A0####\u00A0###",
     14 to "###\u00A0###\u00A0####\u00A0####",
+    15 to "####\u00A0###\u00A0####\u00A0####",
 )

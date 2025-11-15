@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
+import mena.dukan_presentation.generated.resources.order_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -22,8 +23,13 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.CustomerInformationSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.DeliveryAddressSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.OrderSummary
+import net.thechance.mena.dukan.presentation.util.MapsNavigator
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsEffect
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsInteractionListener
+import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -35,28 +41,51 @@ import kotlin.uuid.Uuid
 @Composable
 fun OrderDetailsScreen(
     orderId: Uuid,
+    onNavigationBackToChat: () -> Unit,
     viewModel: OrderDetailsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ObserveAsEffect(viewModel.effect){ effect ->
-        when(effect){
-            OrderDetailsEffect.NavigateBack -> {} // Todo add navigate back action
+    ObserveAsEffect(viewModel.effect) { effect ->
+        when (effect) {
+            OrderDetailsEffect.NavigateBack -> {
+                onNavigationBackToChat()
+            }
+
+            is OrderDetailsEffect.NavigateToAddressOnMap -> {
+                MapsNavigator.getDirections(
+                    startLat = effect.startLatitude,
+                    startLng = effect.startLongitude,
+                    endLat = effect.endLatitude,
+                    endLng = effect.endLongitude,
+                )
+            }
         }
     }
 
-    LaunchedEffect(key1 = state.orderUiState){
+    LaunchedEffect(key1 = state.orderUiState) {
         viewModel.loadOrderDetails(orderId)
     }
 
-    OrderDetailsContent()
+    OrderDetailsContent(
+        state = state,
+        interactionListener = viewModel
+    )
+
 }
 
 @Composable
-private fun OrderDetailsContent() {
+private fun OrderDetailsContent(
+    state: OrderDetailsUiState,
+    interactionListener: OrderDetailsInteractionListener
+) {
+
     Scaffold(
         topBar = {
             AppBar(
-                title = "Order #", // Todo add order number Id
+                title = stringResource(
+                    Res.string.order_title,
+                    state.orderUiState.orderNumber
+                ),
                 titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16,
@@ -69,7 +98,7 @@ private fun OrderDetailsContent() {
                         tint = Theme.colorScheme.primary.primary
                     )
                 },
-                onLeadingClick = {}, // Todo add back action
+                onLeadingClick = interactionListener::onBackClicked,
             )
         }
     ) {
@@ -81,32 +110,41 @@ private fun OrderDetailsContent() {
             )
         ) {
             item {
-                OrderSummary()
+                OrderSummary(
+                    orderDate = state.orderUiState.orderDate,
+                    productsInOrder = state.orderUiState.productInOrder,
+                    discountAmount = state.orderUiState.discount,
+                    platformFeesAmount = state.orderUiState.platformFees,
+                    totalAmount = state.orderUiState.totalAmount,
+                )
             }
             item {
                 DeliveryAddressSection(
-                    address = "123 Main St, City, Country", // Todo add real address
-                    onClick = {}, // Todo add change address action
-                    modifier = Modifier
-                        .padding(top = Theme.spacing._24)
+                    address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
+                    onClick = interactionListener::onAddressDeliveryClicked,
+                    modifier = Modifier.padding(top = Theme.spacing._24)
                 )
             }
             item {
                 CustomerInformationSection(
-                    userName = "John Doe", // Todo add real user name
-                    userPhoneNumber = "201127270752", // Todo add real phone number
-                    modifier = Modifier
-                        .padding(top = Theme.spacing._12)
+                    userName = state.orderUiState.customerName,
+                    userPhoneNumber = state.orderUiState.customerPhone,
+                    modifier = Modifier.padding(top = Theme.spacing._12)
                 )
             }
         }
     }
 }
 
-@Preview
+@Preview(locale = "en")
+@Preview(locale = "ar")
+
 @Composable
 private fun OrderDetailsScreenPreview() {
     MenaTheme {
-        OrderDetailsContent()
+        OrderDetailsContent(
+            state = PreviewOrderDetailsUiState.orderDetailsUiState,
+            interactionListener = PreviewOrderDetailsInteractionListener
+        )
     }
 }

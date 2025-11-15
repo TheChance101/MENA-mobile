@@ -179,4 +179,12 @@
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
     <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
     <string name="product_is_out_of_stock">المنتج غير متوفر</string>
+    <string name="order_title">الطلب #%1$d</string>
+    <string name="order_date_icon">ايقونة تاريخ الطلب</string>
+    <string name="product_order_image">صورة المنتج الخاص بالطلب</string>
+    <string name="total_amount">المجموع</string>
+    <string name="discount">الخصم</string>
+    <string name="platform_fees">رسوم المنصة</string>
+    <string name="customer_information">معلومات العميل</string>
+    <string name="profile_icon">ايقونة البروفايل</string>
 </resources>
