@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component
+package net.thechance.mena.admin_panel.presentation.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -24,7 +24,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun DukanStatus(
+fun ActivationStatus(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
