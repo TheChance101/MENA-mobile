@@ -99,6 +99,7 @@ actual fun VideoPlayer(
     )
 
     val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val isWatchedToEnd = remember { mutableStateOf(false) }
 
     val headers = mapOf("X-ACCESS-KEY" to trendStorageAccessSecret)
 
@@ -155,7 +156,7 @@ actual fun VideoPlayer(
     }
 
     LaunchedEffect(url, isReelVisible) {
-        replayReelWhenFinishedAutomatic(player)
+        replayReelWhenFinishedAutomatic(player) { isWatchedToEnd.value = true }
 
         if (isReelVisible) {
             if (lastPosition > 0.0) {
@@ -292,7 +293,8 @@ actual fun VideoPlayer(
     DisposableEffect(Unit) {
         onDispose {
             lastPosition = CMTimeGetSeconds(player.currentTime())
-            reelWatchSessionState.watchedDurationInMilliseconds = lastPosition.toLong()
+            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+                lastPosition.toLong()
             reelWatchSessionState.watchEndTime = getCurrentTime()
             saveReelWatchSession(reelWatchSessionState)
             player.pause()
@@ -301,12 +303,13 @@ actual fun VideoPlayer(
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun replayReelWhenFinishedAutomatic(player: AVPlayer) {
+private fun replayReelWhenFinishedAutomatic(player: AVPlayer, onVideoEnded: () -> Unit) {
     NSNotificationCenter.defaultCenter.addObserverForName(
         name = AVPlayerItemDidPlayToEndTimeNotification,
         `object` = player.currentItem,
         queue = null
     ) { _ ->
+        onVideoEnded()
         player.seekToTime(CMTimeMakeWithSeconds(0.0, PREFERRED_TIME_SCALE))
         player.play()
     }

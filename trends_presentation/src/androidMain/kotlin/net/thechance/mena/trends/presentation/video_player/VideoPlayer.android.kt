@@ -118,6 +118,7 @@ actual fun VideoPlayer(
     )
 
     val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val isWatchedToEnd = remember { mutableStateOf(false) }
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
@@ -152,10 +153,14 @@ actual fun VideoPlayer(
                                 true
                             }
 
+                            Player.STATE_ENDED -> {
+                                if (!isWatchedToEnd.value) isWatchedToEnd.value = true
+                                false
+                            }
+
                             else -> false
                         }
                     }
-
                 })
 
                 seekTo(lastPosition)
@@ -274,9 +279,6 @@ actual fun VideoPlayer(
             when (event) {
                 Lifecycle.Event.ON_STOP, Lifecycle.Event.ON_PAUSE -> {
                     lastPosition = exoPlayer.currentPosition
-                    reelWatchSessionState.watchedDurationInMilliseconds = lastPosition
-                    reelWatchSessionState.watchEndTime = getCurrentTime()
-                    saveReelWatchSession(reelWatchSessionState)
                     exoPlayer.pause()
                 }
 
@@ -296,7 +298,8 @@ actual fun VideoPlayer(
         onDispose {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
-            reelWatchSessionState.watchedDurationInMilliseconds = lastPosition
+            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+                lastPosition
             reelWatchSessionState.watchEndTime = getCurrentTime()
             saveReelWatchSession(reelWatchSessionState)
             lifecycleOwner.lifecycle.removeObserver(observer)
