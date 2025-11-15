@@ -259,6 +259,9 @@
     <string name="last_name_label">Last name</string>
     <string name="username_label">Username</string>
     <string name="share_message">I would like you to join me on the *MENA* app! Install the app, or just reach out to me in the chat here:</string>
+    <!-- Privacy and policy-->
+    <string name="last_update">Last update: %1$s</string>
+    <string name="privacy_and_policy">Privacy and policy</string>
 
     <!-- Contact Us Screen -->
     <string name="contact_us">Contact us</string>
