@@ -67,6 +67,8 @@ import platform.Foundation.NSURLErrorBadServerResponse
 private const val PREFERRED_TIME_SCALE = 600
 private const val NSURLErrorNotConnectedToInternet = -1009
 
+private const val DELAY_TIME = 250L
+
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun VideoPlayer(
@@ -160,7 +162,7 @@ actual fun VideoPlayer(
                     }
                 }
             }
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 
@@ -206,7 +208,7 @@ actual fun VideoPlayer(
 
             if (waiting) isInitialBuffering = !isStartPlaying
 
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 
@@ -226,7 +228,7 @@ actual fun VideoPlayer(
                     }
                 }
             }
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 

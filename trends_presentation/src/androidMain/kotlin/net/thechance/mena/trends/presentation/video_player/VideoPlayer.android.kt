@@ -44,7 +44,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import androidx.media3.ui.R
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -71,8 +70,8 @@ actual fun VideoPlayer(
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
-    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
     onNetworkError: () -> Unit,
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
