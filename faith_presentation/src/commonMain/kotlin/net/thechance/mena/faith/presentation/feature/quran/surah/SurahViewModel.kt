@@ -291,17 +291,20 @@ class SurahViewModel(
     }
 
     private fun onLoadSurahSoundSuccess(ayahSoundUrl: String) {
-        updateState {
-            it.copy(
-                isAyahSoundPlaying = true,
-                isAyahActionButtonsVisible = false,
-                isPlayerVisible = true,
-                currentPlayingAyahUrl = ayahSoundUrl,
-                currentPlayingAyahNumber = it.selectedAyahNumber
-            )
-        }
-        quranPlayer.playAyah(ayahSoundUrl)
-        updateSurahPlayback()
+        tryToExecute(
+            execute = {
+                updateState {
+                    it.copy(
+                        isAyahSoundPlaying = true,
+                        isAyahActionButtonsVisible = false,
+                        isPlayerVisible = true,
+                        currentPlayingAyahUrl = ayahSoundUrl,
+                        currentPlayingAyahNumber = it.selectedAyahNumber
+                    )
+                }
+                quranPlayer.playAyah(ayahSoundUrl)
+            },
+            onSuccess = { updateSurahPlayback() })
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
@@ -368,9 +371,7 @@ class SurahViewModel(
     private fun updatePlayPause() {
         quranPlayer.onAyahCompleted {
             updateState { it.copy(isAyahSoundPlaying = false) }
-            if (uiState.value.isAutoPlayEnabled) {
-                playNextAyahAutomatically()
-            }
+            if (uiState.value.isAutoPlayEnabled) playNextAyahAutomatically()
         }
     }
 
@@ -390,17 +391,7 @@ class SurahViewModel(
             viewModelScope.launch(Main) {
                 playAyah(nextAyahNumber)
             }
-        } else {
-            updateState {
-                it.copy(
-                    isPlayerVisible = false,
-                    selectedAyahNumber = null,
-                    currentPlayingAyahNumber = null,
-                    isAyahSoundPlaying = false,
-                    isAutoPlayEnabled = false
-                )
-            }
-        }
+        } else resetPlayerState()
     }
 
     private fun playNextAyahInSurah() {
@@ -415,16 +406,18 @@ class SurahViewModel(
                 ayahNumber = nextAyahNumber,
                 reciterId = uiState.value.currentReciter.id
             )
-        } else {
-            updateState {
-                it.copy(
-                    isPlayerVisible = false,
-                    selectedAyahNumber = null,
-                    currentPlayingAyahNumber = null,
-                    isAyahSoundPlaying = false,
-                    isAutoPlayEnabled = false
-                )
-            }
+        } else resetPlayerState()
+    }
+
+    private fun resetPlayerState() {
+        updateState {
+            it.copy(
+                isPlayerVisible = false,
+                selectedAyahNumber = null,
+                currentPlayingAyahNumber = null,
+                isAyahSoundPlaying = false,
+                isAutoPlayEnabled = false
+            )
         }
     }
 }
