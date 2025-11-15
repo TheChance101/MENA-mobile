@@ -23,8 +23,8 @@ fun String.formatPrice(): String {
     }
 }
 
-fun String.filterPriceInput(): String {
-    return this.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR }
+fun filterPriceInput(price: String): String {
+    return price.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR }
 }
 
 const val PRICE_DECIMAL_SEPARATOR = '.'

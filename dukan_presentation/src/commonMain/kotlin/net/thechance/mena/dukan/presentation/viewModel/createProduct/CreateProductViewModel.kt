@@ -22,9 +22,9 @@ import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.util.filterPriceInput
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
@@ -85,7 +85,7 @@ class CreateProductViewModel(
     override fun onPriceChange(price: String) {
         updateState {
             copy(
-                price = price.filterPriceInput(),
+                price = filterPriceInput(price)
             ).updateButtonState()
         }
     }
@@ -93,7 +93,7 @@ class CreateProductViewModel(
     override fun onPriceAfterDiscountChange(price: String) {
         updateState {
             copy(
-                priceAfterDiscount = price.filterPriceInput(),
+                priceAfterDiscount = filterPriceInput(price)
             ).updateButtonState()
         }
     }
@@ -138,6 +138,7 @@ class CreateProductViewModel(
                 imageBitmap = imageBitmap,
                 imageSizeInMegabyte = imageSizeInMegabyte
             )
+
             else -> true
         }
     }
@@ -237,7 +238,7 @@ class CreateProductViewModel(
         uploadProductImages()
     }
 
-    private suspend fun uploadProductImages(){
+    private suspend fun uploadProductImages() {
         val productId = productRepository.createProduct(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )

@@ -230,7 +230,7 @@ class EditProductViewModel(
     override fun onPriceChange(price: String) {
         updateState {
             copy(
-                price = price.filterPriceInput(),
+                price = filterPriceInput(price)
             ).updateButtonState()
         }
     }
@@ -238,7 +238,7 @@ class EditProductViewModel(
     override fun onPriceAfterDiscountChange(price: String) {
         updateState {
             copy(
-                priceAfterDiscount = price.filterPriceInput(),
+                priceAfterDiscount = filterPriceInput(price)
             ).updateButtonState()
         }
     }
