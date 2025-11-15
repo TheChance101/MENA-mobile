@@ -1,5 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_managements
 
+import net.thechance.mena.admin_panel.domain.model.DukansSortType
+import net.thechance.mena.admin_panel.domain.model.SortDirection
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import kotlin.uuid.ExperimentalUuidApi
@@ -10,36 +12,28 @@ data class DukanManagementScreenState(
     val query: String = "",
     val isLoading: Boolean = false,
     val pageInfo: PageInfo = PageInfo(),
+    val totalDukans: Int = 0,
     val sort: SortState = SortState(),
     val isBlockDialogShown: Boolean = false,
     val snackBar: SnackBarState = SnackBarState(),
-    val dukanCounts: String = "",
     val dukans: List<Dukan> = emptyList(),
     val errorState: ErrorState? = null,
     val selectedDukanId: Uuid? = null
 ) {
     data class Dukan(
         val id: Uuid,
+        val index: Int,
         val name: String,
+        val imageUrl: String,
         val location: String,
         val addedDate: String,
         val isActive: Boolean = true
     )
 
     data class SortState(
-        val type: SortType = SortType.DUKAN_NAME,
+        val type: DukansSortType = DukansSortType.NAME,
         val direction: SortDirection = SortDirection.ASC
     )
-
-    enum class SortDirection {
-        ASC, DESC;
-
-        fun toggle(): SortDirection = if (this == ASC) DESC else ASC
-    }
-
-    enum class SortType {
-        DUKAN_NAME, STATUS, ADDED_DATE
-    }
 
     data class PageInfo(
         val page: Int = 0,
