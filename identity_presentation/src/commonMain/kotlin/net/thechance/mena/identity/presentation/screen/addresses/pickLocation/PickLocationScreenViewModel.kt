@@ -11,12 +11,12 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleLocationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.jetbrains.compose.resources.StringResource

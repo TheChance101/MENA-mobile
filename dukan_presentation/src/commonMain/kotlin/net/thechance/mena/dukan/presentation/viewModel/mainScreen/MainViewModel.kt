@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
 
 import androidx.lifecycle.viewModelScope
@@ -18,6 +20,7 @@ import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
@@ -28,6 +31,8 @@ import net.thechance.mena.dukan.presentation.viewModel.createDukan.toUiState
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState.DukanStatusUi
 
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MainViewModel(
     private val dukanManagementRepository: DukanManagementRepository,
@@ -51,12 +56,30 @@ class MainViewModel(
         if (fetchJob?.isActive == true) return
         fetchJob = viewModelScope.launch(defaultDispatcher) {
             getDukanState()
+            getDukanTopDiscount()
             getCategories()
             loadEditorPicksDukans()
             loadBestNearestDukans()
         }.also { job ->
             job.invokeOnCompletion { fetchJob = null }
         }
+    }
+
+    private fun getDukanTopDiscount() {
+        tryToExecute(
+            block = ::dukanTopDiscountPagingSource,
+            onSuccess = ::onGetDukanTopDiscountSuccess,
+        )
+    }
+
+    private suspend fun dukanTopDiscountPagingSource(): List<TopDiscountedDukanPreview> {
+        val page = 0
+        val maxSize = 5
+        return dukanDiscoveryRepository.getTopDiscountedDukans(page = page, size = maxSize).items
+    }
+
+    private fun onGetDukanTopDiscountSuccess(dukanTopDiscount: List<TopDiscountedDukanPreview>){
+        updateState { copy(dukanTopDiscount  = dukanTopDiscount.map { it.toUiState() }) }
     }
 
     fun getDukanState() {
@@ -305,6 +328,10 @@ class MainViewModel(
                 )
             }
         )
+    }
+
+    override fun onShopNowClicked(dukanId: Uuid) {
+        emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId.toString()))
     }
 
     private fun setFavoriteState(

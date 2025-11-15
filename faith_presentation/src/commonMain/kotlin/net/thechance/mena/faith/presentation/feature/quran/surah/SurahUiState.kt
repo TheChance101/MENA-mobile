@@ -16,6 +16,7 @@ data class SurahUiState(
     val selectedAyah: String = "",
     val selectedAyahNumber: Int? = null,
     val initialAyahToScroll: Int? = null,
+    val lastVisibleAyahNumber: Int = 0,
     val isLoading: Boolean = false,
     val isBasmalaVisible: Boolean = false
 )

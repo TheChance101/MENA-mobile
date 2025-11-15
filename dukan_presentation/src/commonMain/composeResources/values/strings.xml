@@ -92,6 +92,7 @@
     <string name="product_name">Product name</string>
     <string name="shelf">shelf</string>
     <string name="price">Price</string>
+    <string name="price_after_discount">Price after discount</string>
     <string name="description">Description</string>
     <string name="image_1_1">Image (1:1)</string>
     <string name="one_selection_for_each_product">One selection for each product</string>
@@ -178,4 +179,8 @@
     <string name="checkout_dialog_description">This feature is not implemented yet.</string>
     <string name="back_to_dukan_screen_icon">Back to dukan screen icon</string>
     <string name="product_is_out_of_stock">Product is out of stock</string>
+    <string name="price_after_discount_bigger_than_base_price">Price after discount bigger than base price</string>
+    <string name="shop_now">Shop Now</string>
+    <string name="dukan_discount_details">Get discount for every order, only valid for today.</string>
+    <string name="dukan_discount_title">%1$s% DISCOUNT\nToday special</string>
 </resources>

@@ -13,12 +13,19 @@ fun ByteArray.toFileName(): String {
 
 fun String.formatPrice(): String {
     return this.let { str ->
-        if ('.' in str) {
-            val (intPart, decimalPart) = str.split('.')
+        if (PRICE_DECIMAL_SEPARATOR in str) {
+            val (intPart, decimalPart) = str.split(PRICE_DECIMAL_SEPARATOR)
             val limitedDecimal = decimalPart.take(2)
-            "$intPart,$limitedDecimal"
+            "$intPart$NEW_PRICE_DECIMAL_SEPARATOR$limitedDecimal"
         } else {
-            "$str,00"
+            "$str${NEW_PRICE_DECIMAL_SEPARATOR}00"
         }
     }
 }
+
+fun filterPriceInput(price: String): String {
+    return price.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR }
+}
+
+const val PRICE_DECIMAL_SEPARATOR = '.'
+const val NEW_PRICE_DECIMAL_SEPARATOR = ','
