@@ -31,8 +31,7 @@ fun CountryDropdownMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismiss,
-            offset = DpOffset(0.dp, 4.dp),
-            modifier = modifier
+            modifier = modifier.padding(0.dp)
         ) {
             Column(
                 modifier = Modifier
