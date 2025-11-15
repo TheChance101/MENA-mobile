@@ -22,6 +22,7 @@ import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchScr
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurScreen
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahScreen
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.TilawahScreen
+import net.thechance.mena.faith.presentation.example.HijriDatePickerExampleScreen
 import net.thechance.mena.identity.api.IdentityFeatureApi
 import org.koin.compose.getKoin
 
@@ -34,7 +35,7 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
         QuranTheme {
             NavHost(
                 navController = navController,
-                startDestination = Route.MainRoute
+                startDestination = Route.HijriDatePickerExampleRoute
             ) {
                 composable<Route.MainRoute> {
                     MainScreen()
@@ -84,6 +85,9 @@ fun FaithNavigation(identityApi: IdentityFeatureApi = getKoin().get()) {
                 }
                 composable<Route.CreateMosqueRoute> {
                     CreateMosqueScreen()
+                }
+                composable<Route.HijriDatePickerExampleRoute> {
+                    HijriDatePickerExampleScreen()
                 }
             }
         }

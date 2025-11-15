@@ -62,4 +62,7 @@ internal sealed interface Route {
 
     @Serializable
     data object UploadImageRoute : Route
+
+    @Serializable
+    data object HijriDatePickerExampleRoute : Route
 }
