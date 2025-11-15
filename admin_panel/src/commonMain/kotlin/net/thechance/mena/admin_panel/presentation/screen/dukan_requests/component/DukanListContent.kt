@@ -31,7 +31,6 @@ import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsButton
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreenState
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_dukan_location
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
@@ -57,16 +56,11 @@ fun DukanListContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
         )
-        if (state.isLoading) {
-            LoadingIndicator()
-        } else {
-            DukanListTable(
-                dukan = state.dukans,
-                onViewDetailsClicked = listener::onViewDetailsClicked,
-                modifier = Modifier.weight(1f),
-                pageInfo = state.pageInfo
-            )
-        }
+        DukanListTable(
+            dukan = state.dukans,
+            onViewDetailsClicked = listener::onViewDetailsClicked,
+            modifier = Modifier.weight(1f),
+        )
 
         PagesIndicatorRow(
             currentPage = state.pageInfo.page,
@@ -82,7 +76,6 @@ fun DukanListContent(
 @Composable
 private fun DukanListTable(
     dukan: List<DukanRequestsScreenState.DukanItem>,
-    pageInfo: DukanRequestsScreenState.DukanPageInfo,
     onViewDetailsClicked: (dukanId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
