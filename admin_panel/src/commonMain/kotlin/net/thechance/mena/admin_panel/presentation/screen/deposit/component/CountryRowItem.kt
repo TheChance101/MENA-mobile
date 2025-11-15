@@ -46,8 +46,6 @@ internal fun CountryRowItem(
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
                 onClick = { onClick(selectedCountry) }
             )
             .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
