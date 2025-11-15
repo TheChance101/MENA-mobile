@@ -15,7 +15,7 @@ import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanListContent
 import net.thechance.mena.admin_panel.presentation.component.DukansCounter
 import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_requests
 import net.thechance.mena.admin_panel.resources.no_dukan_results_description_for_requests
@@ -48,7 +48,7 @@ private fun DukanRequestsScreenContent(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
             when {
-                state.isLoading -> LoadingIndicator()
+                state.isLoading -> AdminPanelContentLoading()
                 state.dukans.isEmpty() -> EmptyDukanState(
                     description = stringResource(Res.string.no_dukan_results_description_for_requests)
                 )
