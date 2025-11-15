@@ -32,7 +32,8 @@ internal fun DukanDetailsInFullScreenMode(
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
             dukan = state.dukan,
-            isLoading = state.isDukanDetailsLoading
+            isLoading = state.isDukanDetailsLoading,
+            isMapVisible = state.isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.weight(1f).fillMaxHeight(),

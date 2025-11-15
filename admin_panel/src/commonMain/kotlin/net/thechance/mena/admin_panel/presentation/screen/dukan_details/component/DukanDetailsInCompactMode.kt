@@ -30,7 +30,8 @@ internal fun DukanDetailsInCompactMode(
         DukanDetailsCard(
             modifier = Modifier.fillMaxWidth(),
             dukan = state.dukan,
-            isLoading = state.isDukanDetailsLoading
+            isLoading = state.isDukanDetailsLoading,
+            isMapVisible = state.isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.fillMaxWidth(),

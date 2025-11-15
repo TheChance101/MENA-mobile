@@ -28,6 +28,7 @@ data class DukanDetailsScreenState(
     val totalShelves: String = "",
     val products: List<Product> = listOf(),
     val isDeactivateDukanDialogShown: Boolean = false,
+    val isMapVisible: Boolean = true,
     val deactivateReason: String = "",
     val isDeactivateBtnLoading: Boolean = false,
 ) {

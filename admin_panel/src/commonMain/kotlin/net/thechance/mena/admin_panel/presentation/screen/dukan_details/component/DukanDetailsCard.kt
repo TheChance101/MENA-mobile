@@ -1,5 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +32,7 @@ import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
 import net.thechance.mena.admin_panel.resources.ic_store_location
+import net.thechance.mena.admin_panel.resources.img_map_placeholder
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -38,6 +41,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun DukanDetailsCard(
     dukan: DukanDetailsScreenState.DukanItemUiState,
     isLoading: Boolean,
+    isMapVisible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -53,8 +57,9 @@ internal fun DukanDetailsCard(
                 Box(
                     modifier = modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ){ LoadingIndicator() }
+                ) { LoadingIndicator() }
             }
+
             else -> {
                 AsyncImage(
                     modifier = Modifier
@@ -77,7 +82,11 @@ internal fun DukanDetailsCard(
                     modifier = Modifier.padding(top = 2.dp),
                     categories = dukan.categories
                 )
-                DukanLocationMap(latitude = dukan.latitude, longitude = dukan.longitude)
+                DukanLocationMap(
+                    latitude = dukan.latitude,
+                    longitude = dukan.longitude,
+                    isMapVisible = isMapVisible
+                )
                 DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukan.address)
             }
         }
@@ -116,25 +125,36 @@ private fun DukanCategories(
 private fun DukanLocationMap(
     latitude: Double,
     longitude: Double,
+    isMapVisible: Boolean,
     modifier: Modifier = Modifier
-){
+) {
     Box(
         modifier = modifier
             .padding(top = 16.dp)
             .fillMaxWidth()
             .aspectRatio(2f)
             .clip(RoundedCornerShape(Theme.radius.md)),
-    ){
-        OSMMapView(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(Theme.radius.md)),
-            latitude = latitude,
-            longitude = longitude,
-            markerWidth = 60,
-            markerHeight = 80,
-            initialZoom = 100
-        )
+    ) {
+        Crossfade(isMapVisible) { isVisible ->
+            if (isVisible) {
+                OSMMapView(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(Theme.radius.md)),
+                    latitude = latitude,
+                    longitude = longitude,
+                    markerWidth = 60,
+                    markerHeight = 80,
+                    initialZoom = 100
+                )
+            } else {
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(Res.drawable.img_map_placeholder),
+                    contentDescription = null
+                )
+            }
+        }
     }
 }
 

@@ -48,7 +48,11 @@ class DukanDetailsViewModel(
     }
 
     override fun onChangeDukanStatusButtonClicked() {
-        updateState { it.copy(isDeactivateDukanDialogShown = true) }
+        updateState { it.copy(isMapVisible = false) }
+        viewModelScope.launch {
+            delay(500)
+            updateState { it.copy(isDeactivateDukanDialogShown = true) }
+        }
     }
 
     override fun onNextShelvesPageRequested() {
@@ -74,6 +78,10 @@ class DukanDetailsViewModel(
                 deactivateReason = "",
                 isDeactivateBtnLoading = false,
             )
+        }
+        viewModelScope.launch {
+            delay(500)
+            updateState { it.copy(isMapVisible = true) }
         }
     }
 
