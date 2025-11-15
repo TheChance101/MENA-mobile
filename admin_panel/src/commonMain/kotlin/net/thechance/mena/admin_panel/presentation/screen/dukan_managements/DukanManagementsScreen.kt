@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -83,7 +84,11 @@ fun DukanManagementsContent(
                 state.isLoading -> AdminPanelContentLoading()
                 state.dukans.isEmpty() -> {
                     if (state.query.isNotEmpty())
-                        EmptySearchState()
+                        EmptySearchState(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .offset(y = -(76.dp))
+                        )
                     else {
                         EmptyDukanState(
                             description = stringResource(Res.string.no_dukan_results)
