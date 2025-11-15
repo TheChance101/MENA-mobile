@@ -4,14 +4,24 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
 import assertk.assertions.isSuccess
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.data.local.database.UserEngagementDao
+import net.thechance.mena.trends.data.remote.mapper.toUserEngagement
 import net.thechance.mena.trends.data.remote.repository.ReelsRepositoryImpl
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.addViewReelResponse
@@ -25,10 +35,14 @@ import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import kotlin.test.Test
 import kotlin.test.assertFails
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 internal class ReelRepositoryImplTest {
 
     private var networkClient: HttpClient = createReelsHttpClient { getReelsResponse() }
@@ -334,11 +348,47 @@ internal class ReelRepositoryImplTest {
         assertThat(result.thumbnailUrl).isEqualTo(fakeReelUrls.thumbnailPath)
     }
 
+    @Test
+    fun `should save user engagement for each reel in room database when insert function in dao called `() =
+        runTest {
+            everySuspend { userRepository.getUser() } returns user
+            everySuspend { userEngagementDao.insertEngagement(any()) } returns 1
+            repository.saveUserEngagementWithReel(reelWatchSession)
+
+            verifySuspend {
+                userEngagementDao.insertEngagement(
+                    reelWatchSession.toUserEngagement(
+                        user.first().id.toString()
+                    )
+                )
+            }
+        }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
         const val FAKE_FILE_PATH = "path/to/file"
         const val FAKE_DURATION = 1000L
         const val REEL_ID = "12345"
+
+        val reelWatchSession = ReelWatchSession(
+            reelId = "1",
+            watchStartTime = LocalDateTime(2024, 12, 10, 15, 30),
+            watchEndTime = LocalDateTime(2024, 12, 10, 15, 31),
+            videoDurationInMilliseconds = 60000,
+            percentageOfVideoWatched = 100.0f
+        )
+
+        val user = flowOf(
+            User(
+                id = Uuid.random(),
+                firstName = "Hend",
+                lastName = "Sayed",
+                profileImageUrl = "https://example.com/profile.jpg",
+                username = "hend123",
+                birthDate = LocalDate(1995, 11, 15),
+                gender = Gender.FEMALE
+            )
+        )
     }
 }
