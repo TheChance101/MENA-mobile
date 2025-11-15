@@ -47,6 +47,7 @@ import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiSt
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -88,7 +89,7 @@ private fun DukanDiscountImagesAndText(
 
     LaunchedEffect(pagerState) {
         while (state.size > 1) {
-            delay(3000)
+            delay(1500)
             val nextPage = (pagerState.currentPage + 1) % state.size
             pagerState.animateScrollToPage(nextPage)
         }
@@ -97,86 +98,24 @@ private fun DukanDiscountImagesAndText(
     Box(
         modifier = modifier.fillMaxWidth()
             .height(184.dp)
-            .clip(RoundedCornerShape(Theme.radius.lg))
+            .clip(SquircleShape(Theme.radius.lg))
     ) {
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
             currentIndex = page
 
-            BannerItem(
-                state = state,
-                page = page
-            )
+            BannerItem(state = state, page = page, modifier = Modifier.fillMaxSize())
         }
-        DukanDiscountText(
-            dukanDiscount = state[currentIndex].discount,
-            dukanId = state[currentIndex].id,
-            onClick = onClick
-        )
-    }
-}
 
-@Composable
-private fun DukanDiscountText(
-    dukanDiscount: Int,
-    dukanId: Uuid,
-    onClick: (dukanId: Uuid) -> Unit
-) {
-
-    Column(
-        Modifier.fillMaxSize()
-            .padding(bottom = 19.dp, start = Theme.spacing._12, end = Theme.spacing._12),
-        verticalArrangement = Arrangement.Bottom
-    ) {
-        Text(
-            text = stringResource(Res.string.dukan_discount_title, dukanDiscount),
-            style = Theme.typography.title.large,
-            color = Theme.colorScheme.primary.onPrimary,
-            modifier = Modifier.padding(bottom = Theme.spacing._4)
-        )
-
-        Text(
-            text = stringResource(Res.string.dukan_discount_details),
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.primary.onPrimary,
-            modifier = Modifier.padding(bottom = Theme.spacing._8)
-        )
         ShopNowButton(
-            onClick = { onClick(dukanId) }
-        )
+            modifier = Modifier.align(Alignment.BottomStart)
+                .padding(start = Theme.spacing._12, bottom = 19.dp),
+            onClick = { onClick(state[currentIndex].id) })
     }
 }
 
-@Composable
-private fun ShopNowButton(
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(Theme.radius.full))
-            .background(Theme.colorScheme.primary.onPrimary)
-            .clickable(
-                onClick = onClick,
-                indication = null,
-                interactionSource = MutableInteractionSource()
-            ).padding(
-                horizontal = Theme.spacing._12,
-                vertical = Theme.spacing._4
-            ),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(Res.string.shop_now),
-            color = Theme.colorScheme.primary.primary,
-            style = Theme.typography.label.medium,
-            modifier = Modifier
-        )
-        Icon(
-            painter = painterResource(Res.drawable.ic_arrow_right),
-            contentDescription = null,
-        )
-    }
-}
 
 @Composable
 private fun BannerItem(
@@ -184,7 +123,7 @@ private fun BannerItem(
     state: List<MainScreenUiState.DukanTopDiscount>,
     page: Int
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
         AsyncImage(
             model = state[page].imageUrl,
             contentDescription = stringResource(Res.string.dukan_image),
@@ -202,6 +141,70 @@ private fun BannerItem(
                         )
                     )
                 )
+        )
+        DukanDiscountText(
+            dukanDiscount = state[page].discount,
+            modifier = Modifier.padding(bottom = Theme.spacing._8)
+        )
+    }
+}
+
+@Composable
+private fun DukanDiscountText(
+    dukanDiscount: Int,
+    modifier: Modifier = Modifier
+) {
+
+    Column(
+        modifier.fillMaxSize()
+            .padding(start = Theme.spacing._12, end = Theme.spacing._12),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(Res.string.dukan_discount_title, dukanDiscount),
+            style = Theme.typography.title.large,
+            color = Theme.colorScheme.primary.onPrimary,
+            modifier = Modifier.padding(bottom = Theme.spacing._4)
+        )
+
+        Text(
+            text = stringResource(Res.string.dukan_discount_details),
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.primary.onPrimary,
+            modifier = Modifier.padding(bottom = Theme.spacing._8)
+        )
+
+    }
+}
+
+@Composable
+private fun ShopNowButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(Theme.radius.full))
+            .background(Theme.colorScheme.primary.onPrimary)
+            .clickable(
+                onClick = onClick,
+                indication = null,
+                interactionSource = MutableInteractionSource()
+            ).padding(
+                horizontal = Theme.spacing._12,
+                vertical = Theme.spacing._2 + Theme.spacing._4
+            ),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._2),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(Res.string.shop_now),
+            color = Theme.colorScheme.primary.primary,
+            style = Theme.typography.label.medium,
+        )
+        Icon(
+            painter = painterResource(Res.drawable.ic_arrow_right),
+            contentDescription = null,
         )
     }
 }
