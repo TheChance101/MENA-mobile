@@ -58,7 +58,7 @@
     <string name="error_failed_to_process_audio">فشل معالجة ملف الصوت. يرجى المحاولة مرة أخرى.</string>
     <string name="new_order">طلب جديد</string>
     <string name="number_of_items">عدد العناصر</string>
-    <string name="to">إلي</string>
+    <string name="to">الى</string>
     <string name="total_price">اجمالي السعر</string>
     <string name="view_order_details">عرض تفاصيل الطلب</string>
 </resources>
