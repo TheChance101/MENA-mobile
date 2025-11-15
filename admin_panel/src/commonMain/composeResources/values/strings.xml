@@ -51,6 +51,7 @@
     <!-- Dukan Management -->
     <string name="no_dukan_results">There is no dukan right now!</string>
     <string name="no_dukan_results_description">Dukans will display here after added.</string>
+    <string name="no_dukan_results_description_for_requests">Dukans that need for review will display here after added.</string>
     <string name= "dukans">Dukans</string>
     <string name="dukan_management">Dukan Management</string>
     <string name="dukan_search_hint">Search by dukan name, loction,...</string>

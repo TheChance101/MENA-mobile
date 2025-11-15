@@ -50,6 +50,7 @@
     <!-- Dukan Management -->
     <string name="no_dukan_results">لا يوجد دكاكين الأن!</string>
     <string name="no_dukan_results_description">ستظهر الدكاكين هنا فور إضافتها.</string>
+    <string name="no_dukan_results_description_for_requests">ستظهر هنا الدكاكين التي تحتاج للمراجعة</string>
     <string name="dukans">الدكاكين</string>
     <string name="dukan_search_hint">ابحث باسم الدكان، الموقع،...</string>
     <string name="added_date">تاريخ الإضافة</string>
