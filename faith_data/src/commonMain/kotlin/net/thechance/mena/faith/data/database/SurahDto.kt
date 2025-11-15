@@ -6,7 +6,9 @@ data class SurahDto(
     @ColumnInfo(name = "sura_no")
     val number: Int,
     @ColumnInfo(name = "sura_name_en")
-    val name: String,
+    val nameEn: String,
+    @ColumnInfo(name = "sura_name_ar")
+    val nameAr: String,
     @ColumnInfo(name = "ayahCount")
     val ayahCount: Int?
 )

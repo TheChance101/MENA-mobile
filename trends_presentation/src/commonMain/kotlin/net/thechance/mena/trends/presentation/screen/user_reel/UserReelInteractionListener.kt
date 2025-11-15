@@ -13,4 +13,6 @@ internal interface UserReelInteractionListener {
     fun increaseReelView(reelId: String)
     fun onClickLike(reelId: String, isLiked: Boolean)
     fun onGetRefreshVideoUrl(reelId: String)
+    fun onClickRetry(reelId: String)
+    fun onNetworkError()
 }

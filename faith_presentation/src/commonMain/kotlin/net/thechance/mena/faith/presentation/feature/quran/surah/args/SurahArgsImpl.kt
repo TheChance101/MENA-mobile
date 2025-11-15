@@ -10,7 +10,6 @@ class SurahArgsImpl(
     private val surahScreenArgs = savedStateHandle.toRoute<Route.SurahDetailsRoute>()
 
     override val surahId: Int = surahScreenArgs.surahId
-    override val surahName: String = surahScreenArgs.surahName
     override val ayahNumber: Int? = surahScreenArgs.ayahNumber
         ?: savedStateHandle["ayahNumber"]
 

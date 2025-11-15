@@ -18,9 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +29,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.checkmark
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -145,25 +144,44 @@ fun Checkbox(
     }
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 private fun CheckboxPreview() {
     MenaTheme {
-        var checkboxState by remember { mutableStateOf(ToggleableState.Off) }
-
-        Box(
-            modifier = Modifier
-                .size(180.dp)
-                .background(Theme.colorScheme.background.surface),
-            contentAlignment = Alignment.Center
+        PreviewComponent(
+            title = "check box"
         ) {
             Checkbox(
-                checkedState = checkboxState,
-                label = "Label",
-                isEnabled = true,
-                onCheckedChange = { currentState ->
-                    checkboxState = currentState.getNextCheckboxState()
-                }
+                checkedState = ToggleableState.Off,
+                onCheckedChange = {}
+            )
+
+            Checkbox(
+                checkedState = ToggleableState.Off,
+                isEnabled = false,
+                onCheckedChange = {}
+            )
+
+            Checkbox(
+                checkedState = ToggleableState.On,
+                onCheckedChange = {}
+            )
+
+            Checkbox(
+                checkedState = ToggleableState.On,
+                isEnabled = false,
+                onCheckedChange = {}
+            )
+
+            Checkbox(
+                checkedState = ToggleableState.Indeterminate,
+                onCheckedChange = {}
+            )
+
+            Checkbox(
+                checkedState = ToggleableState.Indeterminate,
+                isEnabled = false,
+                onCheckedChange = {}
             )
         }
     }
