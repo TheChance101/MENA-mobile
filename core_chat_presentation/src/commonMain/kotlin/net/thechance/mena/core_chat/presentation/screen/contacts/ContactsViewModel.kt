@@ -12,11 +12,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.contact_not_mena_user
-import mena.core_chat_presentation.generated.resources.could_not_load_the_contacts
+import mena.core_chat_presentation.generated.resources.error
+import mena.core_chat_presentation.generated.resources.no_internet
+import mena.core_chat_presentation.generated.resources.no_internet_connected
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ChatException
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
@@ -47,7 +50,7 @@ class ContactsViewModel(
         tryToCollect(
             collect = ::loadContactsOperation,
             onCollect = ::onLoadContactsSuccess,
-            onError = { onDataLoadError() }
+            onError = ::onOperationFailed
         )
     }
 
@@ -93,11 +96,11 @@ class ContactsViewModel(
         navigateToChatByUserId(contactUserId)
     }
 
-    private fun navigateToChatByUserId(contactId: Uuid) {
+    private fun navigateToChatByUserId(userId: Uuid) {
         tryToExecute(
-            execute = { chatRepository.getChatByContactUserId(contactId) },
+            execute = { chatRepository.getChatByOtherUserId(userId) },
             onSuccess = ::onContactClickSuccess,
-            onError = { onContactClickError() },
+            onError = ::onOperationFailed,
         )
     }
 
@@ -110,20 +113,22 @@ class ContactsViewModel(
         )
     }
 
-    private fun onContactClickError() {
-        showSnackBar(
-            titleStringResource = Res.string.something_went_wrong,
-            messageStringResource = Res.string.contact_not_mena_user,
-            isError = true
-        )
-    }
+    private fun onOperationFailed(e: Throwable) {
+        when (e) {
+            is NoInternetException -> {
+                showSnackBar(
+                    titleStringResource = Res.string.no_internet,
+                    messageStringResource = Res.string.no_internet_connected,
+                    isError = true
+                )
+            }
 
-    private fun onDataLoadError() {
-        showSnackBar(
-            titleStringResource = Res.string.something_went_wrong,
-            messageStringResource = Res.string.could_not_load_the_contacts,
-            isError = true
-        )
+            else -> showSnackBar(
+                titleStringResource = Res.string.error,
+                messageStringResource = Res.string.something_went_wrong,
+                isError = true
+            )
+        }
     }
 
     private fun showSnackBar(
@@ -142,7 +147,7 @@ class ContactsViewModel(
         )
     }
 
-    private fun createContactsPagingSource(onError: ((ChatException) -> Unit)? = { onDataLoadError() })
+    private fun createContactsPagingSource(onError: ((ChatException) -> Unit)? = ::onOperationFailed)
             : PagingSource<Int, Contact> {
         return BasePagingSource(
             onError = onError,
