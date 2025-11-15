@@ -215,6 +215,12 @@ class EditProductViewModelTest {
     }
 
     @Test
+    fun `onPriceAfterDiscountChange SHOULD update price after discount`() = scope.runTest {
+        viewModel.onPriceAfterDiscountChange("99.99")
+        assertEquals("99.99", viewModel.state.value.priceAfterDiscount)
+    }
+
+    @Test
     fun `onPriceChange SHOULD filter non-digit characters`() = scope.runTest {
         viewModel.onPriceChange("99.99abc")
         assertEquals("99.99", viewModel.state.value.price)

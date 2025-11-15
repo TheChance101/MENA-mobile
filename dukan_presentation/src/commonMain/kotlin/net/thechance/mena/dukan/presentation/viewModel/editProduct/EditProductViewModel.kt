@@ -44,6 +44,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
+import net.thechance.mena.dukan.presentation.util.filterPriceInput
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
 import net.thechance.mena.dukan.presentation.util.toFileName
@@ -103,6 +104,7 @@ class EditProductViewModel(
             copy(
                 productName = product.name,
                 price = product.price.base.toString(),
+                priceAfterDiscount = product.price.final.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
                 isTextFieldEnabled = true,
@@ -228,7 +230,15 @@ class EditProductViewModel(
     override fun onPriceChange(price: String) {
         updateState {
             copy(
-                price = price.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR },
+                price = price.filterPriceInput(),
+            ).updateButtonState()
+        }
+    }
+
+    override fun onPriceAfterDiscountChange(price: String) {
+        updateState {
+            copy(
+                priceAfterDiscount = price.filterPriceInput(),
             ).updateButtonState()
         }
     }
@@ -491,7 +501,10 @@ class EditProductViewModel(
         return UpdateProductParams(
             name = trimmedName,
             description = trimmedDescription,
-            price = Price(base = state.value.price.toDoubleOrNull() ?: 0.0),
+            price = Price(
+                base = state.value.price.toDoubleOrNull() ?: 0.0,
+                final = state.value.priceAfterDiscount.toDoubleOrNull()
+            ),
             shelfId = state.value.selectedShelf?.id,
             imageUrls = finalImageUrls,
             isOutOfStock = state.value.isOutOfStock
@@ -640,6 +653,5 @@ class EditProductViewModel(
         const val MIN_DESCRIPTION_LENGTH = 100
         const val MAX_DESCRIPTION_LENGTH = 3000
         const val PRICE_EXCLUSIVE_LOWER_BOUND = 0.0
-        const val PRICE_DECIMAL_SEPARATOR = '.'
     }
 }

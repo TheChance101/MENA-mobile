@@ -92,6 +92,7 @@
     <string name="product_name">Product name</string>
     <string name="shelf">shelf</string>
     <string name="price">Price</string>
+    <string name="price_after_discount">Price after discount</string>
     <string name="description">Description</string>
     <string name="image_1_1">Image (1:1)</string>
     <string name="one_selection_for_each_product">One selection for each product</string>
