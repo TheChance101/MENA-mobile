@@ -14,6 +14,7 @@ import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLo
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementTableContent
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.EmptyDukanState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_management
@@ -24,11 +25,13 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DukanManagementsScreen(
-    viewmodel: DukanManagementViewmodel = koinViewModel()
+    viewmodel: DukanManagementViewmodel = koinViewModel(),
+    modifier: Modifier = Modifier
 ) {
     val state by viewmodel.state.collectAsStateWithLifecycle()
 
     DukanManagementsContent(
+        modifier = modifier,
         state = state,
         interactionListener = viewmodel
     )
@@ -57,7 +60,7 @@ fun DukanManagementsContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DukanManagementHeader(
-                dukansNumbers = state.dukanCounts,
+                dukansNumbers = state.totalDukans,
                 onQueryChange = interactionListener::onSearchQueryChange,
                 onClearQueryClicked = interactionListener::onClearQueryClicked,
                 query = state.query
@@ -66,7 +69,7 @@ fun DukanManagementsContent(
                 state.isLoading -> AdminPanelContentLoading()
                 state.dukans.isEmpty() -> EmptyDukanState()
                 else -> {
-
+                    DukanManagementTableContent(state, interactionListener)
                 }
             }
         }
