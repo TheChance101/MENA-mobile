@@ -61,8 +61,7 @@ fun UsersListContent(
                 users = state.users,
                 onToggleUserStatusClicked = listener::onToggleUserStatusClicked,
                 horizontalScrollState = horizontalScrollState,
-                modifier = Modifier.fillMaxWidth().weight(1f),
-                pageInfo = state.pageInfo
+                modifier = Modifier.fillMaxWidth().weight(1f)
             )
         }
 
@@ -80,7 +79,6 @@ fun UsersListContent(
 @Composable
 private fun UsersListTable(
     users: List<UsersManagementScreenState.UserItem>,
-    pageInfo: UsersManagementScreenState.UserPageInfo,
     onToggleUserStatusClicked: (userId: Uuid, userStatus: User.Status) -> Unit,
     horizontalScrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier,
