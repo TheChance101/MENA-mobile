@@ -26,8 +26,12 @@ class UiStateMapperTest {
 
         val uiState = myStatus.toUiState()
 
-        assertEquals("My Dukan", uiState.name)
-        assertEquals(MainScreenUiState.DukanStatusUi.Approved, uiState.status)
+        assertEquals(
+            MainScreenUiState.DukanState(
+                name = "My Dukan",
+                status = MainScreenUiState.DukanStatusUi.Approved
+            ), uiState
+        )
     }
 
     @Test
@@ -65,9 +69,13 @@ class UiStateMapperTest {
 
         val uiState = dukan.toBestNearestUiState()
 
-        assertEquals(dukan.id.toString(), uiState.id)
-        assertEquals("Editor Pick", uiState.name)
-        assertEquals("image_url", uiState.imageUrl)
+        assertEquals(
+            MainScreenUiState.BestNearestDukanUiState(
+                id = dukan.id.toString(),
+                name = dukan.name,
+                imageUrl = dukan.imageUrl
+            ), uiState
+        )
     }
 
     @Test
@@ -93,10 +101,14 @@ class UiStateMapperTest {
 
         val uiState = dukan.toEditorPickUiState()
 
-        assertEquals(dukan.id.toString(), uiState.id)
-        assertEquals("Editor Pick", uiState.name)
-        assertEquals("image_url", uiState.imageUrl)
-        assertEquals(false, uiState.isFavorite)
+        assertEquals(
+            MainScreenUiState.EditorPickDukanUiState(
+                id = dukan.id.toString(),
+                name = dukan.name,
+                imageUrl = dukan.imageUrl,
+                isFavorite = dukan.isFavorite
+            ), uiState
+        )
     }
 
     @Test
@@ -109,8 +121,12 @@ class UiStateMapperTest {
 
         val uiState = topDukan.toUiState()
 
-        assertEquals(topDukan.id, uiState.id)
-        assertEquals("discount_image", uiState.imageUrl)
-        assertEquals(25, uiState.discount)
+        assertEquals(
+            MainScreenUiState.DukanTopDiscount(
+                id = topDukan.id,
+                imageUrl = topDukan.imageUrl,
+                discount = topDukan.discount
+            ), uiState
+        )
     }
 }
