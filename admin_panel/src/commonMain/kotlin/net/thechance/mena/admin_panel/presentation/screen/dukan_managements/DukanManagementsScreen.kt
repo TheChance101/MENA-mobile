@@ -18,10 +18,12 @@ import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementTableContent
-import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.EmptyDukanState
+import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
+import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_management
+import net.thechance.mena.admin_panel.resources.no_dukan_results
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -79,7 +81,16 @@ fun DukanManagementsContent(
             )
             when {
                 state.isLoading -> AdminPanelContentLoading()
-                state.dukans.isEmpty() -> EmptyDukanState()
+                state.dukans.isEmpty() -> {
+                    if (state.query.isNotEmpty())
+                        EmptySearchState()
+                    else {
+                        EmptyDukanState(
+                            description = stringResource(Res.string.no_dukan_results)
+                        )
+                    }
+                }
+
                 else -> {
                     DukanManagementTableContent(state, interactionListener)
                 }
