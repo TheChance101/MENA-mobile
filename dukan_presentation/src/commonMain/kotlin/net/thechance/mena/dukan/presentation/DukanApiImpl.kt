@@ -16,6 +16,9 @@ class DukanApiImpl : DukanApi {
 
     @Composable
     override fun OrderDetailsEntry(orderId: Uuid, onNavigateBack: () -> Unit) {
-        OrderDetailsScreen(orderId)
+        OrderDetailsScreen(
+            orderId = orderId,
+            onNavigationBackToChat = onNavigateBack
+        )
     }
 }

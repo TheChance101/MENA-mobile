@@ -10,12 +10,13 @@ data class OrderDetailsUiState(
 ) {
     data class OrderUiState(
         val orderId: Uuid = Uuid.random(),
+        val orderNumber: Int = 0,
         val orderDate: String = "",
         val productInOrder: List<ProductInOrderUiState> = emptyList(),
         val discount: Double = 0.0,
         val platformFees: Double = 0.0,
         val totalAmount: Double = 0.0,
-        val addressDelivered: String = "",
+        val addressDeliveryUiState: AddressDeliveryUiState = AddressDeliveryUiState(),
         val customerName: String = "",
         val customerPhone: String = "",
     )
@@ -26,5 +27,13 @@ data class OrderDetailsUiState(
         val imageUrl: String,
         val name: String,
         val price: Double,
+    )
+
+    data class AddressDeliveryUiState(
+        val addressDeliveryTitle: String = "",
+        val startLatitude: Double = 0.0,
+        val startLongitude: Double = 0.0,
+        val endLatitude: Double = 0.0,
+        val endLongitude: Double = 0.0
     )
 }
