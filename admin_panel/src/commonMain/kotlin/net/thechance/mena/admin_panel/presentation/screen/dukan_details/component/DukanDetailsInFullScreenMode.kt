@@ -31,12 +31,7 @@ internal fun DukanDetailsInFullScreenMode(
                 .weight(1f)
                 .fillMaxHeight()
                 .verticalScroll(rememberScrollState()),
-            dukanName = state.dukan.name,
-            dukanCategories = state.dukan.categories,
-            dukanLocation = state.dukan.address,
-            dukanImg = state.dukan.imageUrl,
-            latitude = state.dukan.latitude,
-            longitude = state.dukan.longitude,
+            dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading
         )
         ShelvesDetailsCard(

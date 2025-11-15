@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
 import net.thechance.mena.admin_panel.presentation.component.OSMMapView
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreenState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.dukan_location
@@ -35,12 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun DukanDetailsCard(
-    dukanName: String,
-    dukanCategories: List<String>,
-    dukanLocation: String,
-    dukanImg: String,
-    latitude: Double,
-    longitude: Double,
+    dukan: DukanDetailsScreenState.DukanItemUiState,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -65,7 +61,7 @@ internal fun DukanDetailsCard(
                         .fillMaxWidth()
                         .aspectRatio(2f)
                         .clip(RoundedCornerShape(Theme.radius.md)),
-                    model = dukanImg,
+                    model = dukan.imageUrl,
                     contentDescription = stringResource(Res.string.dukan_img),
                     contentScale = ContentScale.Crop,
                     placeholder = painterResource(Res.drawable.ic_dukan_placholder),
@@ -73,16 +69,16 @@ internal fun DukanDetailsCard(
                 )
                 Text(
                     modifier = Modifier.padding(top = 8.dp),
-                    text = dukanName,
+                    text = dukan.name,
                     style = Theme.typography.title.large,
                     color = Theme.colorScheme.shadePrimary
                 )
                 DukanCategories(
                     modifier = Modifier.padding(top = 2.dp),
-                    categories = dukanCategories
+                    categories = dukan.categories
                 )
-                DukanLocationMap(latitude = latitude, longitude = longitude)
-                DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukanLocation)
+                DukanLocationMap(latitude = dukan.latitude, longitude = dukan.longitude)
+                DukanLocation(modifier = Modifier.padding(top = 8.dp), location = dukan.address)
             }
         }
     }
