@@ -86,8 +86,7 @@ class ShareMessageViewModel(
                 if (state.value.searchQuery.isEmpty())
                     contactsRepository.getUserContacts(page)
                 else
-                    contactsRepository.getUserContacts(page)
-                //TODO: CALL contactsRepository.getUserContactsByName(page, state.value.searchQuery)
+                    contactsRepository.getContactsByName(name = state.value.searchQuery, pageNumber = page, isMenaUser = true)
             }
         )
     }
@@ -120,6 +119,7 @@ class ShareMessageViewModel(
         viewModelScope.launch {
             updateState { it.copy(searchQuery = query) }
             searchQueryFlow.value = query
+            if (state.value.searchQuery.isEmpty()) onClearQueryClicked()
         }
     }
 
