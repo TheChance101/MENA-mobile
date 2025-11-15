@@ -12,3 +12,12 @@ fun DepositScreenState.CountryUiState.toEntity(): Country {
         flagEmoji = flagEmoji
     )
 }
+fun Country.toUi(): DepositScreenState.CountryUiState {
+    return DepositScreenState.CountryUiState(
+        name=name ,
+        phoneNumberRegex=phoneNumberRegex,
+        callingCode = callingCode,
+        countryCodeName = countryCodeName,
+        flagEmoji = flagEmoji
+    )
+}
