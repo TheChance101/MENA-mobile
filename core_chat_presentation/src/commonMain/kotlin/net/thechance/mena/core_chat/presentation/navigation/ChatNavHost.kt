@@ -68,7 +68,10 @@ fun ChatNavHost(
                 }
                 composable<OrderDetailsRoute> {
                     dukanApi.OrderDetailsEntry(
-                        orderId = Uuid.parse(it.toRoute<OrderDetailsRoute>().orderId)
+                        orderId = Uuid.parse(it.toRoute<OrderDetailsRoute>().orderId),
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
                     )
                 }
             }
