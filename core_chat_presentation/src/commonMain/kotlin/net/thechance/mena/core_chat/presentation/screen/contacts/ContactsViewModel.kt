@@ -4,6 +4,7 @@ package net.thechance.mena.core_chat.presentation.screen.contacts
 
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -21,6 +22,7 @@ import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BasePagingSource
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
+import net.thechance.mena.core_chat.presentation.utils.PhoneNumberFormatterUtil
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -57,7 +59,14 @@ class ContactsViewModel(
     }
 
     private fun onLoadContactsSuccess(pagingData: PagingData<ContactUiState>?) {
-        updateState { it.copy(contacts = flowOf(pagingData ?: PagingData.empty())) }
+        val contacts = pagingData?.map {
+            it.copy(
+                phoneNumber =
+                    runCatching { PhoneNumberFormatterUtil.format(it.phoneNumber) }.getOrNull()
+                        ?: it.phoneNumber
+            )
+        }
+        updateState { it.copy(contacts = flowOf(contacts ?: PagingData.empty())) }
     }
 
     override fun onRefreshContactsClicked() {
