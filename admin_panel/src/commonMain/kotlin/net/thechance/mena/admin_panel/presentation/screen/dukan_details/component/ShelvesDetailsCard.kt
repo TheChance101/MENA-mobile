@@ -63,7 +63,7 @@ internal fun ShelvesDetailsCard(
                     totalShelves = totalShelves
                 )
 
-                shelves(
+                Shelves(
                     modifier = Modifier.padding(top = 12.dp),
                     shelves = shelves,
                     selectedShelf = selectedShelf,
@@ -72,7 +72,7 @@ internal fun ShelvesDetailsCard(
                     isShelvesLoading = isShelvesLoading
                 )
 
-                productsList(
+                ProductsList(
                     modifier = Modifier.padding(top = 12.dp),
                     products = products,
                     onNextPageRequested = onNextProductsPageRequested,
@@ -118,7 +118,7 @@ private fun ShelfHeader(
 }
 
 @Composable
-private fun shelves(
+private fun Shelves(
     shelves: List<Shelf>,
     selectedShelf: String,
     onShelfClicked: (Uuid) -> Unit,

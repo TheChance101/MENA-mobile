@@ -1,10 +1,10 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -18,8 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
@@ -107,7 +105,6 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(Theme.radius.md))
                     .background(color = Theme.colorScheme.background.surfaceLow)
-                    .focusRequester(FocusRequester())
                     .padding(8.dp),
                 value = deactivationReason,
                 onValueChange = { onReasonChanged(it) },
@@ -133,8 +130,10 @@ private fun DialogButtons(
     isDeactivateBtnEnabled: Boolean,
     isDeactivateBtnLoading: Boolean,
 ){
-    Row {
-        Spacer(Modifier.weight(1f))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
         OutlinedButton(
             modifier = Modifier
                 .padding(end = 8.dp)

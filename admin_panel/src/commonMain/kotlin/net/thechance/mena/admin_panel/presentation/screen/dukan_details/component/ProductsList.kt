@@ -38,7 +38,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun productsList(
+internal fun ProductsList(
     products: List<Product>,
     onNextPageRequested: () -> Unit,
     isProductLoading: Boolean,
