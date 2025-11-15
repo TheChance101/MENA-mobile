@@ -131,7 +131,11 @@ private fun AttachButton(onClick: () -> Unit) {
                 .disabled,
             shape = RoundedCornerShape(Theme.radius.md)
         ).clip(RoundedCornerShape(Theme.radius.md))
-            .clickable(onClick = onClick),
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
