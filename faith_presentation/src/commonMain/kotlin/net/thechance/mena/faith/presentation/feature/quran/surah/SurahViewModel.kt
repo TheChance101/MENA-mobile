@@ -97,7 +97,7 @@ class SurahViewModel(
     override fun playSurah(surahId: Int) {}
 
     override fun onInitialAyahScrolled() {
-        if (uiState.value.isAyahSoundPlaying) return
+        if (uiState.value.isAyahSoundPlaying || uiState.value.isPlayerVisible) return
         viewModelScope.launch {
             delay(2000L)
             updateState { it.copy(selectedAyahNumber = null, initialAyahToScroll = null) }
@@ -268,6 +268,7 @@ class SurahViewModel(
         }
         updateSurahName(surahArgs.surahId)
     }
+
     private fun updateSurahName(surahId: Int) {
         tryToExecute(
             execute = { quranRepository.getSurahById(surahId) },
