@@ -128,6 +128,13 @@
     <string name="reciters">القراء</string>
     <string name="search_results">نتائج البحث</string>
     <string name="no_nearby_mosques_found">لم يتم العثور على أي مساجد بالجوار، ابحث بمكان آخر</string>
+    <string name="bookmarks">الإشارات</string>
+    <string name="empty_state_bookmark_title">لم يتم حفظ أي آية بعد!</string>
+    <string name="empty_state_bookmark_description">ابدأ تلاوتك وقم بوضع إشارة مرجعية على الآية التي ترغب في العودة إليها لاحقًا.</string>
+    <string name="empty_state_bookmark_image">صورة الإشارات المرجعية الفارغة</string>
+    <string name="start_tilawah">ابدأ تلاوة</string>
+    <string name="bookmark_icon">علامة الإشارات</string>
+
 
     <string name="reset">إعادة تعيين</string>
     <string name="upload_another_image">تحميل صورة أخرى</string>

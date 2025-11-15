@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.utils
+package net.thechance.mena.identity.presentation.util
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
