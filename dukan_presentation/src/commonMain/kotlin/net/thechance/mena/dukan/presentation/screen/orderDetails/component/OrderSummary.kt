@@ -41,14 +41,12 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.domain.model.ProductOrder
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @Composable
 fun OrderSummary(
