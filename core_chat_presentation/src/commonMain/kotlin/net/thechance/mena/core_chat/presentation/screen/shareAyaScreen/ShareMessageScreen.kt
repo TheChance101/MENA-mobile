@@ -63,7 +63,7 @@ private fun ShareMessageContent(
                         tint = Theme.colorScheme.primary.primary,
                     )
                 },
-                onLeadingClick = interactions::onClickBack,
+                onLeadingClick = interactions::onBackClicked,
             )
         }
     ) {

@@ -5,8 +5,8 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface ShareMessageInteractionListener{
-    fun onChangeSearchQuery(query: String)
-    fun onClickContact(contactId: Uuid?)
-    fun onClickBack()
-    fun onClickClearQuery()
+    fun onSearchQueryChanged(query: String)
+    fun onContactClicked(contactId: Uuid?)
+    fun onBackClicked()
+    fun onClearQueryClicked()
 }

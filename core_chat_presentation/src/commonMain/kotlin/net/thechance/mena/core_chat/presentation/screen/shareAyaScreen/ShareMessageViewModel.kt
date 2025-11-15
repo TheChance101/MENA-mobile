@@ -116,14 +116,14 @@ class ShareMessageViewModel(
         )
     }
 
-    override fun onChangeSearchQuery(query: String) {
+    override fun onSearchQueryChanged(query: String) {
         viewModelScope.launch {
             updateState { it.copy(searchQuery = query) }
             searchQueryFlow.value = query
         }
     }
 
-    override fun onClickContact(contactId: Uuid?) {
+    override fun onContactClicked(contactId: Uuid?) {
         if (contactId == null)
             onContactClickError()
         else
@@ -139,11 +139,11 @@ class ShareMessageViewModel(
             )
     }
 
-    override fun onClickBack() {
+    override fun onBackClicked() {
         emitEffect(effect = ShareMessageEffect.NavigateBack)
     }
 
-    override fun onClickClearQuery() {
+    override fun onClearQueryClicked() {
         updateContacts("")
         searchQueryFlow.value = ""
     }
