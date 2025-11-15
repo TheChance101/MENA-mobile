@@ -70,7 +70,7 @@ internal fun CountryRowItem(
             )
 
             Text(
-                text = selectedCountry.callingCode,
+                text = "(${selectedCountry.callingCode})",
                 color = Theme.colorScheme.shadeSecondary,
                 style = Theme.typography.label.small,
             )
