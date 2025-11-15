@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -19,17 +20,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
-import net.thechance.mena.admin_panel.presentation.component.DukanImage
-import net.thechance.mena.admin_panel.presentation.component.DukanLocation
+import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsButton
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreenState
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.ic_dukan_location
+import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
+import net.thechance.mena.admin_panel.resources.image
+import net.thechance.mena.admin_panel.resources.location
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -45,25 +56,20 @@ fun DukanListContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
         )
-        if (state.isLoading) {
-            AdminPanelContentLoading()
-        } else {
-            DukanListTable(
-                dukan = state.dukans,
-                onViewDetailsClicked = listener::onViewDetailsClicked,
-                modifier = Modifier.weight(1f),
-            )
-            if (state.pageInfo.totalPages > 1) {
-                PagesIndicatorRow(
-                    currentPage = state.pageInfo.page,
-                    totalPages = state.pageInfo.totalPages,
-                    onPageChanged = listener::onPageChanged,
-                    modifier = Modifier
-                        .padding(top = 8.dp, bottom = 14.dp)
-                        .align(Alignment.Start)
-                )
-            }
-        }
+        DukanListTable(
+            dukan = state.dukans,
+            onViewDetailsClicked = listener::onViewDetailsClicked,
+            modifier = Modifier.weight(1f),
+        )
+
+        PagesIndicatorRow(
+            currentPage = state.pageInfo.page,
+            totalPages = state.pageInfo.totalPages,
+            onPageChanged = listener::onPageChanged,
+            modifier = Modifier
+                .padding(top = 8.dp, bottom = 14.dp)
+                .align(Alignment.Start)
+        )
     }
 }
 
@@ -152,4 +158,47 @@ private fun DukanItemRow(
                 .weight(0.8f)
         )
     }
+}
+
+@Composable
+private fun DukanLocation(
+    location: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(Res.drawable.ic_dukan_location),
+            contentDescription = stringResource(Res.string.location),
+            modifier = Modifier.size(20.dp)
+        )
+        Text(
+            text = location,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            softWrap = false,
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
+        )
+    }
+}
+
+@Composable
+private fun DukanImage(
+    imageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    AsyncImage(
+        model = imageUrl,
+        contentDescription = stringResource(Res.string.image),
+        error = painterResource(Res.drawable.ic_dukan_placholder),
+        placeholder = painterResource(Res.drawable.ic_dukan_placholder),
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(width = 64.dp, height = 44.dp)
+            .clip(RoundedCornerShape(Theme.radius.sm))
+    )
 }
