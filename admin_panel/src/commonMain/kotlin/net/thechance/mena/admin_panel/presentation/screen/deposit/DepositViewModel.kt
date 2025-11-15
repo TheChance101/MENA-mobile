@@ -3,6 +3,8 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.thechance.mena.admin_panel.domain.exceptions.InvalidAmountException
+import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
@@ -15,6 +17,8 @@ import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
 import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.success_deposit_description
+import net.thechance.mena.admin_panel.resources.success_deposit_title
 
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -37,6 +41,8 @@ class DepositViewModel (
     override fun mapError(throwable: Throwable): ErrorState {
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
+            is InvalidPhoneNumberException-> DepositErrorState.NoAccount
+            is InvalidAmountException-> DepositErrorState.NoAccount
             else -> ErrorState.UnknownError
         }
     }
@@ -66,8 +72,8 @@ class DepositViewModel (
     }
     private suspend fun onDepositSuccess(){
         showSnackBar(
-            title = stringProvider.getString(Res.drawable.success_deposit_title),
-            message = stringProvider.getString(Res.drawable.success_deposit_desciption),
+            title = stringProvider.getString(Res.string.success_deposit_title),
+            message = stringProvider.getString(Res.string.success_deposit_description),
             isSuccess = true
         )
         updateState {
@@ -136,7 +142,11 @@ class DepositViewModel (
     }
 
     private suspend fun onGetCountriesError(errorState: ErrorState) {
-        println("lll")
+        showSnackBar(
+            title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
+            message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
 
     }
 }
