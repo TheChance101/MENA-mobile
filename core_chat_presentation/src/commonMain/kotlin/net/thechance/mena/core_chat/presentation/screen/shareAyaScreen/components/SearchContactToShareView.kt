@@ -30,41 +30,36 @@ fun SearchContactToShareView(
     interactions: ShareMessageInteractionListener,
     state: ShareMessageScreenState
 ) {
-    AnimatedContent(
-        targetState = contacts.loadState.refresh to (contacts.itemCount == 0),
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) { (loadState, isEmptyList) ->
-        Column {
-            SearchBar(
-                value = state.searchQuery,
-                hint = stringResource(Res.string.search_by_name),
-                onValueChange = { query -> interactions.onChangeSearchQuery(query = query) },
-                onClearQueryClicked = interactions::onClickClearQuery,
-                modifier = Modifier.padding(
-                    horizontal = Theme.spacing._16,
-                    vertical = Theme.spacing._8
-                )
+    Column {
+        SearchBar(
+            value = state.searchQuery,
+            hint = stringResource(Res.string.search_by_name),
+            onValueChange = { query -> interactions.onSearchQueryChanged(query = query) },
+            onClearQueryClicked = interactions::onClearQueryClicked,
+            modifier = Modifier.padding(
+                horizontal = Theme.spacing._16,
+                vertical = Theme.spacing._8
             )
-            when (loadState) {
-                is LoadState.Loading -> {
-                    if (isEmptyList) LoadingView()
-                }
+        )
+        AnimatedContent(
+            targetState = contacts.loadState.refresh to (contacts.itemCount == 0),
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) { (loadState, isEmptyList) ->
+            if (loadState is LoadState.Loading && isEmptyList) {
+                LoadingView()
+            } else if (loadState is LoadState.Error && isEmptyList) {
 
-                is LoadState.Error -> {
-                    if (isEmptyList) ErrorView(
-                        title = stringResource(Res.string.something_went_wrong),
-                        message = stringResource(Res.string.could_not_load_contacts),
-                        onRetry = interactions::onClickClearQuery
-                    )
-                }
-
-                else -> {
-                    ContactsList(
-                        contacts = contacts,
-                        onContactClick = interactions::onClickContact
-                    )
-                }
+                ErrorView(
+                    title = stringResource(Res.string.something_went_wrong),
+                    message = stringResource(Res.string.could_not_load_contacts),
+                    onRetry = interactions::onClearQueryClicked
+                )
+            } else {
+                ContactsList(
+                    contacts = contacts,
+                    onContactClick = interactions::onContactClicked
+                )
             }
         }
     }
