@@ -11,13 +11,9 @@ import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
-
 @OptIn(ExperimentalUuidApi::class)
 @Composable
-fun DukanDetailsScreen(
-    dukanId: Uuid
-) {
+fun DukanDetailsScreen() {
     val navController = LocalNavController.current
     Column(
         Modifier.fillMaxSize(),
