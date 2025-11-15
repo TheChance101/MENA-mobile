@@ -12,6 +12,7 @@ interface EditProductInteractionListener {
     fun onProductNameChange(name: String)
     fun onShelfSelect(shelfUiState: CreateProductUiState.ShelfUiState)
     fun onPriceChange(price: String)
+    fun onPriceAfterDiscountChange(price: String)
     fun onDescriptionChange(description: String)
     fun onUploadImageClicked(image: ImageFile)
     fun onCancelImageClicked(image: ImageBitmap)

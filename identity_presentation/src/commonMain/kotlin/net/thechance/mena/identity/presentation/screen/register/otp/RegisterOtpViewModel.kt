@@ -9,8 +9,7 @@ import kotlinx.coroutines.launch
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
@@ -110,7 +109,7 @@ class RegisterOtpViewModel(
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
             is AuthenticationException -> mapAuthenticationErrorToMessage(
-                handleAuthenticationException(throwable)
+                handleRegisterOtpException(throwable)
             )
 
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))

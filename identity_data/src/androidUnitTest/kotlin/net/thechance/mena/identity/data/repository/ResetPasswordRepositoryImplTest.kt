@@ -10,10 +10,10 @@ import net.thechance.mena.identity.data.dto.resetPassword.response.OtpResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.PhoneNumber
-import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
-import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OtpExpiredException
+import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
+import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.TooManyRequestsException
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import kotlin.test.Test
 
 class ResetPasswordRepositoryImplTest {
@@ -33,7 +33,7 @@ class ResetPasswordRepositoryImplTest {
                     phoneNumber = phoneNumber,
                     countryCodeName = countryCode
                 )
-            }.isInstanceOf<InvalidMobileNumberException>()
+            }.isInstanceOf<InvalidCredentialsException>()
 
         }
 
@@ -62,7 +62,7 @@ class ResetPasswordRepositoryImplTest {
                 forgetPasswordRepository.verifyOTPCode(
                     otpCode = "123456",
                 )
-            }.isInstanceOf<InvalidOTPException>()
+            }.isInstanceOf<UnAuthorizedException>()
         }
     }
 
@@ -77,7 +77,7 @@ class ResetPasswordRepositoryImplTest {
                 forgetPasswordRepository.verifyOTPCode(
                     otpCode = "123456",
                 )
-            }.isInstanceOf<OtpExpiredException>()
+            }.isInstanceOf<InvalidRequestException>()
         }
     }
 
