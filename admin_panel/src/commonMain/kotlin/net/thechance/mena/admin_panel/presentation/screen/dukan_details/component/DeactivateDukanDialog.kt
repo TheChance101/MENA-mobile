@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Popup
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.cancel
 import net.thechance.mena.admin_panel.resources.deactivate
@@ -50,31 +49,26 @@ internal fun ScaffoldScope.DeactivateDukanDialog(
     isDeactivateButtonLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Popup(
-        alignment = Alignment.Center,
-        onDismissRequest = onDismiss
-    ){
-        BasicDialog(
-            onDismiss = onDismiss,
-            isVisible = isVisible,
-            contentColor = Theme.colorScheme.background.surface,
-            contentPadding = PaddingValues(24.dp),
-            modifier = modifier
-                .background(
-                    color = Theme.colorScheme.background.surface,
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .width(400.dp)
-        ) {
-            DialogContent(
-                onDismiss = onDismiss,
-                onDeactivationConfirmed = onDeactivationConfirmed,
-                deactivationReason = deactivationReason,
-                onReasonChanged = onReasonChanged,
-                isDeactivateButtonEnabled = isDeactivateButtonEnabled,
-                isDeactivateButtonLoading = isDeactivateButtonLoading
+    BasicDialog(
+        onDismiss = onDismiss,
+        isVisible = isVisible,
+        contentColor = Theme.colorScheme.background.surface,
+        contentPadding = PaddingValues(24.dp),
+        modifier = modifier
+            .background(
+                color = Theme.colorScheme.background.surface,
+                shape = RoundedCornerShape(24.dp)
             )
-        }
+            .width(400.dp)
+    ) {
+        DialogContent(
+            onDismiss = onDismiss,
+            onDeactivationConfirmed = onDeactivationConfirmed,
+            deactivationReason = deactivationReason,
+            onReasonChanged = onReasonChanged,
+            isDeactivateButtonEnabled = isDeactivateButtonEnabled,
+            isDeactivateButtonLoading = isDeactivateButtonLoading
+        )
     }
 }
 
