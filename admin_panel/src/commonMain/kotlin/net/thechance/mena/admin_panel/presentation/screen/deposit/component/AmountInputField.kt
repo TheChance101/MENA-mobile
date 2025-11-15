@@ -10,6 +10,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.amount
 import net.thechance.mena.admin_panel.resources.ic_add_money
+import net.thechance.mena.admin_panel.resources.ic_coin
 import net.thechance.mena.admin_panel.resources.ic_silver_icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.BasicTextField
@@ -40,7 +41,7 @@ internal fun AmountInputField(
             hint = "",
              leadingIcon = painterResource(Res.drawable.ic_add_money),
             showTrailingDivider = true,
-             trailingIcon = painterResource(Res.drawable.ic_add_money),
+             trailingIcon = painterResource(Res.drawable.ic_coin),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
 
             )
