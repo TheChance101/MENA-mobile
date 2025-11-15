@@ -201,6 +201,7 @@ internal class ReelsRepositoryImpl(
 
     override suspend fun saveUserEngagementWithReel(reelWatchSession: ReelWatchSession) {
         val userId = userRepository.getUser().first()?.id.toString()
-        userEngagementDao.insertEngagement(reelWatchSession.toUserEngagement(userId))
+        if (reelWatchSession.watchStartTime != null)
+            userEngagementDao.insertEngagement(reelWatchSession.toUserEngagement(userId))
     }
 }
