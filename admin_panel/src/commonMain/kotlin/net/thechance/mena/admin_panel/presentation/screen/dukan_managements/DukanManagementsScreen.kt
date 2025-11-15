@@ -76,7 +76,7 @@ fun DukanManagementsContent(
         ) {
             DukanManagementHeader(
                 dukansNumbers = state.totalDukans,
-                onQueryChange = interactionListener::onSearchQueryChange,
+                onQueryChange = interactionListener::onSearchQueryChanged,
                 onClearQueryClicked = interactionListener::onClearQueryClicked,
                 query = state.query
             )

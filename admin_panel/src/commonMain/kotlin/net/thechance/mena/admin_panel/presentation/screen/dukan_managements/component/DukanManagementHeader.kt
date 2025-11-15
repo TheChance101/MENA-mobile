@@ -33,7 +33,7 @@ fun DukanManagementHeader(
 ) {
     Box(
         modifier = modifier
-            .padding(start = 16.dp, bottom = 12.dp)
+            .padding(start = 16.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
     ) {
