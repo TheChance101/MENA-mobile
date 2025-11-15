@@ -1,18 +1,24 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.admin_panel.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementsScreen
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreen
 import net.thechance.mena.admin_panel.presentation.screen.login.LoginScreen
 import net.thechance.mena.admin_panel.presentation.screen.SplashScreen.SplashScreen
+import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreen
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreen
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("Admin NavController not provided")
@@ -20,30 +26,38 @@ val LocalNavController = staticCompositionLocalOf<NavHostController> {
 
 @Composable
 fun AdminPanelNavHost(
-    navController: NavHostController = rememberNavController(),
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    NavHost(
-        navController = navController,
-        startDestination = Splash
-    ) {
-        composable<Splash> {
-            SplashScreen()
-        }
-        composable<Login> {
-            LoginScreen()
-        }
-        composable<UsersManagement> {
-            UsersManagementScreen()
-        }
-        composable<Deposit> {
-            DepositScreen(modifier)
-        }
-        composable<DukanRequests> {
-            DukanRequestsScreen()
-        }
-        composable<DukanManagement> {
-            DukanManagementsScreen()
+    CompositionLocalProvider(LocalNavController provides navController) {
+        NavHost(
+            navController = navController,
+            startDestination = Splash,
+        ) {
+            composable<Splash> {
+                SplashScreen()
+            }
+            composable<Login> {
+                LoginScreen()
+            }
+            composable<UsersManagement> {
+                UsersManagementScreen()
+            }
+            composable<Deposit> {
+                DepositScreen(modifier)
+            }
+            composable<DukanRequests> {
+                DukanRequestsScreen()
+            }
+            composable<DukanManagement> {
+                DukanManagementsScreen()
+            }
+            composable<DukanDetails> { backStackEntry ->
+                val dukanId = Uuid.parse(backStackEntry.toRoute<DukanDetails>().dukanId)
+                DukanDetailsScreen(
+                    dukanId = dukanId
+                )
+            }
         }
     }
 }

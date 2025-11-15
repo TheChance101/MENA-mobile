@@ -1,114 +1,33 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.LocalNavController
-import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
-import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DeactivateDukanDialog
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInCompactMode
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInFullScreenMode
-import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
-import org.koin.compose.viewmodel.koinViewModel
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
-internal fun DukanDetailsScreen(
-    viewModel: DukanDetailsViewModel = koinViewModel()
+fun DukanDetailsScreen(
+    dukanId: Uuid
 ) {
-
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val adminPanelNavController = LocalNavController.current
-
-    ObserveAsEffect(
-        effect = viewModel.uiEffect,
-        onEffect = { effect -> onDukanDetailsEffect(effect, adminPanelNavController) }
-    )
-
-    DukanDetailsScreenContent(
-        state = state,
-        interactionListener = viewModel
-    )
-}
-
-@OptIn(ExperimentalAnimationApi::class)
-@Composable
-private fun DukanDetailsScreenContent(
-    state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
-){
-    PanelScaffold(
-        topBar = {
-            DukanDetailsAppBar(
-                onBackBtnClicked = interactionListener::onBackButtonClicked,
-                dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE,
-                onChangeDukanStatusBtnClicked =
-                    interactionListener::onChangeDukanStatusButtonClicked
-            )
-        },
-        overlays = {
-            dialog(state.isDeactivateDukanDialogShown){
-                DeactivateDukanDialog(
-                    isVisible = it,
-                    onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
-                    onDeactivationConfirmed =
-                        interactionListener::onConfirmDukanDeactivationButtonClicked,
-                    deactivationReason = state.deactivateReason,
-                    onReasonChanged = interactionListener::onDeactivateReasonChanged,
-                    isDeactivateButtonEnabled = state.isDeactivateBtnEnabled,
-                    isDeactivateButtonLoading = state.isDeactivateBtnLoading,
-                )
-            }
-        },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-        errorState = state.errorState,
-        onRetry = interactionListener::onRetry
+    val navController = LocalNavController.current
+    Column(
+        Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-
-        BoxWithConstraints(
-            modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 16.dp, end = 16.dp)
-        ){
-            val isCompact = maxWidth < 800.dp
-
-            AnimatedContent(
-                targetState = isCompact,
-                transitionSpec = {
-                    ContentTransform(
-                        targetContentEnter = fadeIn(tween(300)),
-                        initialContentExit = fadeOut(tween(300))
-                    )
-                },
-                label = "layoutTransition"
-            ) { compact ->
-                if (compact) {
-                    DukanDetailsInCompactMode(state = state, interactionListener = interactionListener)
-                }
-                else{
-                    DukanDetailsInFullScreenMode(state = state, interactionListener = interactionListener)
-                }
-            }
-        }
-    }
-}
-
-private fun onDukanDetailsEffect(
-    effect: DukanDetailEffect,
-    navController: NavController
-) {
-    when (effect) {
-        DukanDetailEffect.NavigateBack -> navController.popBackStack()
+        Text(
+            text = "Details Screen",
+            style = Theme.typography.title.large,
+            modifier = Modifier.clickable { navController.popBackStack() }
+        )
     }
 }

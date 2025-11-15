@@ -24,4 +24,4 @@ data object DukanRequests : AdminPanelRoute
 data object DukanManagement : AdminPanelRoute
 
 @Serializable
-data object DukanDetails : AdminPanelRoute
+data class DukanDetails(val dukanId: String) : AdminPanelRoute
