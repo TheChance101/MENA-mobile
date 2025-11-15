@@ -62,8 +62,8 @@ internal class ReelsRepositoryImpl(
     @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
     @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
     @Provided private val videoFileHandler: VideoFileHandler,
-    private val userEngagementDao: UserEngagementDao,
     @Provided private val userRepository: UserRepository,
+    private val userEngagementDao: UserEngagementDao,
 ) : ReelsRepository {
 
     private val observableUploadingFlow: MutableSharedFlow<UploadReelProgress> = MutableSharedFlow()
