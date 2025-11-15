@@ -105,7 +105,7 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        if(state.value.isReelDeleted == null) {
+        if (state.value.isReelDeleted == null) {
             tryToExecute(
                 block = { reelsRepository.addReelView(reelId) },
                 dispatcher = defaultDispatcher
@@ -143,7 +143,7 @@ internal class UserReelViewModel(
                     )
                 )
             },
-            dispatcher = defaultDispatcher
+            dispatcher = defaultDispatcher,
         )
     }
 
@@ -157,7 +157,6 @@ internal class UserReelViewModel(
         return reelWatchSessionState.toEntity(percentageOfVideoWatched)
     }
 
-    private fun onGetRefreshVideoUrl(refreshedUrl: String, reelId: String) {
     override fun onClickRetry(reelId: String) {
         updateState { copy(currentReelId = reelId, error = null) }
         onGetRefreshVideoUrl(reelId)
@@ -223,7 +222,14 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
-            onError = { errorState -> updateState { copy(error = errorState, isReelDeleted = false) } },
+            onError = { errorState ->
+                updateState {
+                    copy(
+                        error = errorState,
+                        isReelDeleted = false
+                    )
+                }
+            },
             dispatcher = defaultDispatcher
         )
     }
