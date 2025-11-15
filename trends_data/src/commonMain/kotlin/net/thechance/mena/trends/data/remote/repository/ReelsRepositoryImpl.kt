@@ -62,7 +62,7 @@ internal class ReelsRepositoryImpl(
     @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
     @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
     @Provided private val videoFileHandler: VideoFileHandler,
-    @Provided private val userEngagementDao: UserEngagementDao,
+    private val userEngagementDao: UserEngagementDao,
     @Provided private val userRepository: UserRepository,
 ) : ReelsRepository {
 
