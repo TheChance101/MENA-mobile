@@ -1,12 +1,9 @@
 package net.thechance.mena.faith.presentation.feature.prayertime
 
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
@@ -28,9 +25,6 @@ class PrayerTimeViewModel(
 ) : BaseViewModel<PrayerTimeUiState, PrayerTimeEffect>(PrayerTimeUiState()),
     PrayerTimeInteractionListener {
 
-    private var countdownJob: Job? = null
-    private var currentAddress: Address? = null
-
     init {
         getUserLocation()
     }
@@ -45,7 +39,6 @@ class PrayerTimeViewModel(
     }
 
     private fun onGetUserLocationSuccess(address: Address) {
-        currentAddress = address
         updateState { state -> state.copy(address = address.addressLine) }
 
         tryToExecute(
@@ -61,55 +54,50 @@ class PrayerTimeViewModel(
     }
 
     private fun onPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
-        val filteredPrayerTimes = prayerTimes.filter { it.name != PrayerName.SUNRISE }
-        val hijriDate = getHijriReadableDate(prayerTimes)
-
-        updateState {
-            it.copy(
-                prayerTimes = filteredPrayerTimes,
-                currentDate = hijriDate
-            )
-        }
-
-        startNextPrayerObserver()
+        tryToExecute(
+            execute = {
+                val filteredPrayerTimes = prayerTimes.filter { it.name != PrayerName.SUNRISE }
+                val hijriDate = getHijriReadableDate(prayerTimes)
+                updateState {
+                    it.copy(
+                        prayerTimes = filteredPrayerTimes,
+                        currentDate = hijriDate
+                    )
+                }
+            },
+            onSuccess = { startNextPrayerObserver() })
     }
 
-    private fun startNextPrayerObserver() {
-        val address = currentAddress ?: return
-        countdownJob?.cancel()
+    private suspend fun startNextPrayerObserver() {
+        val address = locationService.getActiveAddress()!!
 
-        countdownJob = viewModelScope.launch(dispatcher) {
-            prayerTimeService.getNextPrayer(address).collectLatest { nextPrayer ->
-                if (nextPrayer != null) startCountdownTimer(nextPrayer)
-                else {
-                    updateState { state ->
-                        state.copy(
-                            nextPrayerName = null,
-                            nextPrayerCountdown = ""
-                        )
-                    }
+        prayerTimeService.getNextPrayer(address).collectLatest { nextPrayer ->
+            if (nextPrayer != null) startCountdownTimer(nextPrayer)
+            else {
+                updateState { state ->
+                    state.copy(
+                        nextPrayerName = null,
+                        nextPrayerCountdown = ""
+                    )
                 }
             }
         }
     }
 
     private fun startCountdownTimer(nextPrayer: PrayerTime) {
-        while (true) {
-            val currentTime = Clock.System.now()
-            val remainingMillis =
-                nextPrayer.time.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
-
-            if (remainingMillis <= 0) break
-
-            updateState { state ->
-                state.copy(
-                    nextPrayerName = nextPrayer.name,
-                    nextPrayerCountdown = formatCountdown(remainingMillis)
-                )
-            }
-        }
-
-        startNextPrayerObserver()
+        val currentTime = Clock.System.now()
+        val remainingMillis =
+            nextPrayer.time.toEpochMilliseconds() - currentTime.toEpochMilliseconds()
+        tryToExecute(
+            execute = {
+                updateState { state ->
+                    state.copy(
+                        nextPrayerName = nextPrayer.name,
+                        nextPrayerCountdown = formatCountdown(remainingMillis)
+                    )
+                }
+            },
+            onSuccess = { startNextPrayerObserver() })
     }
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)

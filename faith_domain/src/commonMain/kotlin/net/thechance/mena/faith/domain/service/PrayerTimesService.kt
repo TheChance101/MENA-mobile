@@ -33,7 +33,7 @@ class PrayerTimeService(val prayerTimeRepository: PrayerTimeRepository) {
     }
 
     @OptIn(ExperimentalTime::class)
-    fun Instant.plusDays(days: Int): Instant {
+    private fun Instant.plusDays(days: Int): Instant {
         val x = this.toEpochMilliseconds() + days * 24 * 60 * 60 * 1000
         return Instant.fromEpochMilliseconds(x)
     }
