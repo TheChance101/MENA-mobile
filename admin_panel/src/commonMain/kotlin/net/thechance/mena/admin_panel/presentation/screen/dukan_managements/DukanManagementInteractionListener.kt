@@ -6,7 +6,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 interface DukanManagementInteractionListener {
-    fun onSearchQueryChange(query: String)
+    fun onSearchQueryChanged(query: String)
     fun onClearQueryClicked()
     fun onRetryClicked()
     fun onViewDetailsClicked(dukanId: Uuid)

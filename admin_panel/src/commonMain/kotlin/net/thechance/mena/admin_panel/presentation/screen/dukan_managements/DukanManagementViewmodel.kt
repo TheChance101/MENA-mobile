@@ -36,7 +36,7 @@ class DukanManagementViewmodel(
         getDukans()
     }
 
-    override fun onSearchQueryChange(query: String) {
+    override fun onSearchQueryChanged(query: String) {
         if (query == currentState.query) return
 
         updateState { it.copy(query = query) }
