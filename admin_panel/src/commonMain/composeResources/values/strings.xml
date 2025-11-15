@@ -70,6 +70,7 @@
     <string name="fill_a_wallet">fill a wallet</string>
     <string name="fill_a_wallet_description">Enter phone number and amount to recharge wallet</string>
     <string name="amount">Amount</string>
+    <string name="pick_country">Pick country</string>
     <string name="fill_the_wallet">fill the wallet</string>
 
 

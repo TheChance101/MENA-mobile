@@ -31,17 +31,8 @@ val networkModule = module {
             .build()
     }
 
-    single<Ktorfit>(named(PUBLIC_KEY)) {
-        Ktorfit.Builder()
-            .httpClient(client = get<HttpClient>(named(PUBLIC_KEY)))
-            .baseUrl(url = get<String>(named(BASE_URL_KEY)))
-            .converterFactories(ResponseConverterFactory())
-            .build()
-    }
-
     includes(platformNetworkModule)
 }
 
 private const val BASE_URL_KEY = "baseUrl"
 internal const val ADMIN_PANEL_KEY = "adminPanel"
-internal const val PUBLIC_KEY = "public"
