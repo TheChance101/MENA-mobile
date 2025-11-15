@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.oldPrice
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
+import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
@@ -140,10 +140,10 @@ private fun ProductPrice(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Start
     ) {
-        oldPrice(discountedPrice = discountedPrice, price = price)?.let {
+        discountedPrice?.let {
             Text(
                 modifier = Modifier.alignByBaseline(),
-                text = it,
+                text = formatAmount(it),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
                 textDecoration = TextDecoration.LineThrough
@@ -153,7 +153,7 @@ private fun ProductPrice(
             modifier = Modifier
                 .padding(start = 2.dp)
                 .alignByBaseline(),
-            text = price.toString(),
+            text = formatAmount(price),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )

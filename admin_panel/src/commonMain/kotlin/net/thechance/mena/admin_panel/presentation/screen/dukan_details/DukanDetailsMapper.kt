@@ -19,11 +19,3 @@ fun Dukan.toUiState() = DukanDetailsScreenState.DukanItemUiState(
         else -> DukanDetailsScreenState.DukanStatus.DEACTIVE
     }
 )
-
-fun oldPrice(price: Double, discountedPrice: Double?): String? {
-    discountedPrice?.let {
-        if (it == 0.0) return null
-        return (price - discountedPrice).toString()
-    }
-    return null
-}
