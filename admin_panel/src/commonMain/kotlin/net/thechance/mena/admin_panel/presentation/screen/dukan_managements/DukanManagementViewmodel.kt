@@ -113,15 +113,15 @@ class DukanManagementViewmodel(
     private fun getDukans() {
         tryToExecute(
             callee = { dukanRepository.getDukans(getDukansQueryParams()) },
-            onSuccess = ::onSuccessGetDukans,
-            onError = ::onFailureGetDukans,
+            onSuccess = ::onGetDukansSuccess,
+            onError = ::onGetDukansError,
             onStart = { updateState { it.copy(isLoading = true) } },
             onFinish = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
     }
 
-    private fun onSuccessGetDukans(result: PagedResult<Dukan>) {
+    private fun onGetDukansSuccess(result: PagedResult<Dukan>) {
         dukans = result.items
         updateState {
             it.copy(
@@ -137,13 +137,12 @@ class DukanManagementViewmodel(
                     totalPages = result.totalPages
                 ),
                 totalDukans = result.totalElements,
-                isLoading = false,
                 errorState = null
             )
         }
     }
 
-    private fun onFailureGetDukans(errorState: ErrorState) {
+    private fun onGetDukansError(errorState: ErrorState) {
         updateState {
             it.copy(
                 errorState = errorState,
