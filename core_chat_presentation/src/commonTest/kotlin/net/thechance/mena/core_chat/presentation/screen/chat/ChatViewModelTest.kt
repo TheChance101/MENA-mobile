@@ -886,6 +886,7 @@ class ChatViewModelTest {
                     is TextMessageUiState -> item.messageDetails.id == message1Id
                     is ImageMessageUiState -> item.messageDetails.id == message1Id
                     is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is OrderMessageUiState -> item.messageDetails.id == message1Id
                     is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
                     else -> false
                 }
@@ -895,6 +896,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> updatedMessage.messageDetails
                 is ImageMessageUiState -> updatedMessage.messageDetails
                 is AudioMessageUiState -> updatedMessage.messageDetails
+                is OrderMessageUiState -> updatedMessage.messageDetails
                 is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
                 else -> null
             }
@@ -928,6 +930,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> item.messageDetails.id == message1Id
                 is ImageMessageUiState -> item.messageDetails.id == message1Id
                 is AudioMessageUiState -> item.messageDetails.id == message1Id
+                is OrderMessageUiState -> item.messageDetails.id == message1Id
                 else -> false
             }
         }
@@ -936,6 +939,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage.messageDetails
             is ImageMessageUiState -> updatedMessage.messageDetails
             is AudioMessageUiState -> updatedMessage.messageDetails
+            is OrderMessageUiState -> updatedMessage.messageDetails
             else -> null
         }
 
@@ -1012,6 +1016,7 @@ class ChatViewModelTest {
                     is TextMessageUiState -> item.messageDetails.id == message1Id
                     is ImageMessageUiState -> item.messageDetails.id == message1Id
                     is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is OrderMessageUiState -> item.messageDetails.id == message1Id
                     is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
                     else -> false
                 }
@@ -1021,6 +1026,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> updatedMessage.messageDetails
                 is ImageMessageUiState -> updatedMessage.messageDetails
                 is AudioMessageUiState -> updatedMessage.messageDetails
+                is OrderMessageUiState -> updatedMessage.messageDetails
                 is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
                 else -> null
             }
@@ -1055,6 +1061,7 @@ class ChatViewModelTest {
                     is TextMessageUiState -> item.messageDetails.id == message1Id
                     is ImageMessageUiState -> item.messageDetails.id == message1Id
                     is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is OrderMessageUiState -> item.messageDetails.id == message1Id
                     is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
                     else -> false
                 }
@@ -1064,6 +1071,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> updatedMessage.messageDetails
                 is ImageMessageUiState -> updatedMessage.messageDetails
                 is AudioMessageUiState -> updatedMessage.messageDetails
+                is OrderMessageUiState -> updatedMessage.messageDetails
                 is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
                 else -> null
             }
@@ -1097,6 +1105,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> item.messageDetails.id == message1Id
                 is ImageMessageUiState -> item.messageDetails.id == message1Id
                 is AudioMessageUiState -> item.messageDetails.id == message1Id
+                is OrderMessageUiState -> item.messageDetails.id == message1Id
                 is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
                 else -> false
             }
@@ -1108,6 +1117,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> item.messageDetails.id == message2Id
                 is ImageMessageUiState -> item.messageDetails.id == message2Id
                 is AudioMessageUiState -> item.messageDetails.id == message2Id
+                is OrderMessageUiState -> item.messageDetails.id == message2Id
                 is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message2Id }
                 else -> false
             }
@@ -1117,6 +1127,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage1.messageDetails
             is ImageMessageUiState -> updatedMessage1.messageDetails
             is AudioMessageUiState -> updatedMessage1.messageDetails
+            is OrderMessageUiState -> updatedMessage1.messageDetails
             is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
             else -> null
         }
@@ -1125,6 +1136,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage2.messageDetails
             is ImageMessageUiState -> updatedMessage2.messageDetails
             is AudioMessageUiState -> updatedMessage2.messageDetails
+            is OrderMessageUiState -> updatedMessage2.messageDetails
             is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
 
             else -> null
@@ -1159,6 +1171,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> item.messageDetails.id == message1Id
                 is ImageMessageUiState -> item.messageDetails.id == message1Id
                 is AudioMessageUiState -> item.messageDetails.id == message1Id
+                is OrderMessageUiState -> item.messageDetails.id == message1Id
                 is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
                 else -> false
             }
@@ -1169,6 +1182,7 @@ class ChatViewModelTest {
                 is TextMessageUiState -> item.messageDetails.id == message2Id
                 is ImageMessageUiState -> item.messageDetails.id == message2Id
                 is AudioMessageUiState -> item.messageDetails.id == message2Id
+                is OrderMessageUiState -> item.messageDetails.id == message2Id
                 is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message2Id }
                 else -> false
             }
@@ -1178,6 +1192,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage1.messageDetails
             is ImageMessageUiState -> updatedMessage1.messageDetails
             is AudioMessageUiState -> updatedMessage1.messageDetails
+            is OrderMessageUiState -> updatedMessage1.messageDetails
             is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
 
             else -> null
@@ -1187,6 +1202,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage2.messageDetails
             is ImageMessageUiState -> updatedMessage2.messageDetails
             is AudioMessageUiState -> updatedMessage2.messageDetails
+            is OrderMessageUiState -> updatedMessage2.messageDetails
             is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
 
             else -> null
