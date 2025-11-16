@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.presentation.screen.chat.AudioMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
@@ -59,6 +60,7 @@ fun ChatList(
                     is ImageMessageUiState -> item.messageDetails.id.toString()
                     is AudioMessageUiState -> item.messageDetails.id.toString()
                     is OrderMessageUiState -> item.messageDetails.id.toString()
+                    is AyahMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
                 }
             }

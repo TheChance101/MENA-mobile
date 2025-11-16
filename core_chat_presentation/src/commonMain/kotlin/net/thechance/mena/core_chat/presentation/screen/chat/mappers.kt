@@ -9,6 +9,7 @@ import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Audio
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Ayah
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Image
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Order
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Text
