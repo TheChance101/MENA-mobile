@@ -85,8 +85,6 @@ private fun DukanDiscountImagesAndText(
     modifier: Modifier = Modifier
 ) {
 
-    var currentIndex by remember { mutableStateOf(0) }
-
     LaunchedEffect(pagerState) {
         while (state.size > 1) {
             if (!pagerState.isScrollInProgress) {
@@ -108,7 +106,6 @@ private fun DukanDiscountImagesAndText(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            currentIndex = page
 
             BannerItem(state = state, page = page, modifier = Modifier.fillMaxSize())
         }
@@ -116,7 +113,7 @@ private fun DukanDiscountImagesAndText(
         ShopNowButton(
             modifier = Modifier.align(Alignment.BottomStart)
                 .padding(start = Theme.spacing._12, bottom = 19.dp),
-            onClick = { onClick(state[currentIndex].id) })
+            onClick = { onClick(state[pagerState.currentPage].id) })
     }
 }
 

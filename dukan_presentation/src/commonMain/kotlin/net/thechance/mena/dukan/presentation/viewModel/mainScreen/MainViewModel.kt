@@ -75,11 +75,14 @@ class MainViewModel(
     private suspend fun dukanTopDiscountPagingSource(): List<TopDiscountedDukanPreview> {
         val page = 0
         val maxSize = 5
-        return dukanDiscoveryRepository.getTopDiscountedDukans(page = page, size = maxSize).items
+        return dukanDiscoveryRepository.getTopDiscountedDukans(
+            page = page,
+            size = maxSize
+        ).items.filter { it.discount > 0 }
     }
 
-    private fun onGetDukanTopDiscountSuccess(dukanTopDiscount: List<TopDiscountedDukanPreview>){
-        updateState { copy(dukanTopDiscount  = dukanTopDiscount.map { it.toUiState() }) }
+    private fun onGetDukanTopDiscountSuccess(dukanTopDiscount: List<TopDiscountedDukanPreview>) {
+        updateState { copy(dukanTopDiscount = dukanTopDiscount.map { it.toUiState() }) }
     }
 
     fun getDukanState() {
@@ -349,6 +352,7 @@ class MainViewModel(
     override fun onSearchButtonClicked() {
         emitEffect(MainScreenEffect.NavigateToSearchScreen)
     }
+
     private fun showSnackBar(message: StringResource, type: SnackBarType) {
         updateState {
             copy(
