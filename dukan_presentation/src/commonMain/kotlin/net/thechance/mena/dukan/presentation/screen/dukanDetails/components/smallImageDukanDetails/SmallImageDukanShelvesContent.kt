@@ -72,7 +72,6 @@ private fun ShelfContent(
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
-            top = 0.dp,
             bottom = Theme.spacing._16
         ),
     ) {
