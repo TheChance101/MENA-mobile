@@ -14,7 +14,7 @@ interface
 MessageRepository {
     suspend fun sendMessage(message: Message)
     suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message>
-    suspend fun deleteMessage(message: Message)
+    suspend fun deleteMessageById(messageId: Uuid)
     fun observeMessagesForChatOrAll(chatId: Uuid? = null): Flow<Message>
     fun observeReadMessages(): Flow<MarkMessageAsReadEvent>
     fun observeDeleteChat(): Flow<DeleteChatEvent>

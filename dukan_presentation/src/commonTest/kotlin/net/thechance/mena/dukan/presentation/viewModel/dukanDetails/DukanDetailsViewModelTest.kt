@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -518,7 +519,10 @@ private fun fakeProducts(): List<Product> = listOf(
         id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Laptop",
         description = "A cool laptop",
-        price = 1200.0,
+        price = Price(
+            base = 1200.0,
+            final = 1200.0
+        ),
         imageUrls = emptyList(),
         createdAt = "2025-10-10T12:00:00Z",
         quantityInCart = 10,

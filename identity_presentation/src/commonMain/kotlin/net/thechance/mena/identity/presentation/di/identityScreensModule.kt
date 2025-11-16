@@ -5,12 +5,14 @@ import net.thechance.mena.identity.presentation.screen.addresses.enableLocationS
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsViewModel
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
+import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedViewModel
@@ -21,8 +23,8 @@ import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpV
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageViewModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ResetPasswordOtpScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreenViewModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
@@ -49,8 +51,8 @@ val identityScreensModule = module {
     factoryOf(::NotImplementedScreenViewModel)
     factoryOf(::CreatePasswordViewModel)
     factoryOf(::AccountCreatedViewModel)
-    factoryOf(::ForgetPasswordPhoneEntryScreenViewModel)
-    factoryOf(::ForgetPasswordOtpScreenViewModel)
+    factoryOf(::ResetPasswordPhoneEntryScreenViewModel)
+    factoryOf(::ResetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
     factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
@@ -63,6 +65,8 @@ val identityScreensModule = module {
     factoryOf(::DatePickerScreenViewModel)
     factoryOf(::SelectGenderScreenViewModel)
     factoryOf(::ChangePasswordScreenViewModel)
+    factoryOf(::PrivacyAndPolicyScreenViewModel)
+    factoryOf(::ContactUsViewModel)
 
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->

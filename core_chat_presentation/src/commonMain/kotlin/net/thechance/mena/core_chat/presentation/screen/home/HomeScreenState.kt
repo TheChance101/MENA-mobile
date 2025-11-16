@@ -11,7 +11,9 @@ data class HomeScreenState(
     val isSynced: Boolean = false,
     val isError: Boolean = false,
     val balanceAmount: String = "0",
-    val chats: List<ChatUiState> = emptyList()
+    val chats: List<ChatUiState> = emptyList(),
+    val prayerUiState: PrayerUiState? = null,
+    val weatherUiState: WeatherUiState? = null
 ) {
     data class ChatUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,
@@ -34,4 +36,15 @@ data class HomeScreenState(
             data object Received : Status()
         }
     }
+
+    data class PrayerUiState(
+        val nextPrayerName: String,
+        val nextPrayerTime: String,
+    )
+    data class WeatherUiState(
+        val currentTemperature: String,
+        val weatherCondition: String,
+        val maxTemperature: String,
+        val minTemperature: String,
+    )
 }

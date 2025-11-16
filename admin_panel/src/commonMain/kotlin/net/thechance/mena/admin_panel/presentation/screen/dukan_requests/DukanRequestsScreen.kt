@@ -1,24 +1,63 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_requests
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import net.thechance.mena.designsystem.presentation.component.text.Text
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
+import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
+import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanListContent
+import net.thechance.mena.admin_panel.presentation.component.DukansCounter
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.dukan_requests
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DukanRequestsScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun DukanRequestsScreen(viewModel: DukanRequestsViewModel = koinViewModel()) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    DukanRequestsScreenContent(state = state, listener = viewModel)
+}
+
+@Composable
+private fun DukanRequestsScreenContent(
+    state: DukanRequestsScreenState,
+    listener: DukanRequestsInteractionListener
+) {
+    PanelScaffold(
+        topBar = { DukanRequestsTopBar() },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        onRetry = listener::onRetryClicked
     ) {
-        Text(
-            text = "Dukan Requests Screen",
-            style = Theme.typography.title.large
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            DukansCounter(
+                count = state.totalDukanRequests,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+            )
+            DukanListContent(
+                state = state,
+                listener = listener,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
+}
+
+@Composable
+private fun DukanRequestsTopBar() {
+    AppBar(
+        title = stringResource(Res.string.dukan_requests),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+        modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
+    )
 }

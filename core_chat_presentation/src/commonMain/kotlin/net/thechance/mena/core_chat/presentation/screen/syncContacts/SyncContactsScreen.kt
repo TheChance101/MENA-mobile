@@ -49,7 +49,7 @@ fun SyncContactsScreen() {
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) { factory.createPermissionsController() }
     val viewModel: SyncContactsViewModel = koinViewModel { parametersOf(controller) }
-    BindEffect(controller)
+    BindEffect(viewModel.permissionsController)
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val effects = viewModel.effect

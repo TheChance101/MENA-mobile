@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -35,7 +36,7 @@ import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -56,9 +57,13 @@ class LoginScreen : BaseScreen<
         listener: LoginScreenInteractionListener,
     ) {
         val keyboardController = LocalSoftwareKeyboardController.current
+        val focusManager = LocalFocusManager.current
         LaunchedEffect(state.showCountryBottomSheet) {
-            if (state.showCountryBottomSheet)
+            if (state.showCountryBottomSheet) {
+                focusManager.clearFocus()
                 keyboardController?.hide()
+            }
+
         }
 
         Scaffold(
@@ -137,7 +142,7 @@ class LoginScreen : BaseScreen<
     ) {
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterPhoneEntryScreen())
-            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ForgetPasswordPhoneEntryScreen())
+            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ResetPasswordPhoneEntryScreen())
             LoginScreenUIEffect.NavigateToHome -> {}
         }
     }

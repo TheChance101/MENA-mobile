@@ -183,7 +183,6 @@ private fun ChatSummaryList(
         LazyColumn(
             state = listState,
             modifier = Modifier
-                .padding(horizontal = Theme.spacing._16)
                 .fillMaxWidth(),
             contentPadding = PaddingValues(vertical = Theme.spacing._12),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)

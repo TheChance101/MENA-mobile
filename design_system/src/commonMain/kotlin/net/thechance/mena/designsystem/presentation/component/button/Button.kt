@@ -28,6 +28,10 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
+import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun Button(
@@ -90,6 +94,20 @@ fun Button(
             }
         } else {
             content(buttonContentColor)
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ButtonPreview() {
+    MenaTheme {
+        Button(onClick = {}) {
+            Text(
+                text="Button",
+                style = Theme.typography.body.medium
+
+            )
         }
     }
 }
