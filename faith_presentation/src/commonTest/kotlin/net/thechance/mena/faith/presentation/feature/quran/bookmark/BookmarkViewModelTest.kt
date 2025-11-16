@@ -101,16 +101,13 @@ class BookmarkViewModelTest {
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
             advanceUntilIdle()
 
-            // Verify dialog is shown
             assertTrue(viewModel.uiState.value.isDeleteConfirmationDialogVisible)
 
             viewModel.onConfirmDeleteBookmarkClick()
             advanceUntilIdle()
 
-            // Verify dialog is hidden after deletion
             assertFalse(viewModel.uiState.value.isDeleteConfirmationDialogVisible)
 
-            // Verify the repository delete method was called
             verifySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) }
         }
 
@@ -126,23 +123,19 @@ class BookmarkViewModelTest {
             )
             advanceUntilIdle()
 
-            // Delete first bookmark
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID1)
             advanceUntilIdle()
             viewModel.onConfirmDeleteBookmarkClick()
             advanceUntilIdle()
 
-            // Delete second bookmark
             viewModel.onDeleteBookmarkClick(BOOKMARK_ID2)
             advanceUntilIdle()
             viewModel.onConfirmDeleteBookmarkClick()
             advanceUntilIdle()
 
-            // Verify both repository delete calls were made
             verifySuspend { repository.deleteAyahBookmark(BOOKMARK_ID1) }
             verifySuspend { repository.deleteAyahBookmark(BOOKMARK_ID2) }
 
-            // Verify dialog is hidden
             assertFalse(viewModel.uiState.value.isDeleteConfirmationDialogVisible)
         }
 

@@ -53,7 +53,7 @@ fun PrayerTimeScreen(
     }
     Content(
         uiState = uiState,
-        snackBar = snackBarState,
+        snackBarState = snackBarState,
         listener = viewModel
     )
 }
@@ -62,7 +62,7 @@ fun PrayerTimeScreen(
 @Composable
 private fun Content(
     uiState: PrayerTimeUiState,
-    snackBar: SnackBarState,
+    snackBarState: SnackBarState,
     listener: PrayerTimeInteractionListener
 ) {
     Scaffold(
@@ -84,9 +84,9 @@ private fun Content(
         },
         snakeBar = {
             FaithSnackBar(
-                message = snackBar.message,
-                isVisible = snackBar.isVisible,
-                status = snackBar.status
+                message = snackBarState.message,
+                isVisible = snackBarState.isVisible,
+                status = snackBarState.status
             )
         }
     ) {
