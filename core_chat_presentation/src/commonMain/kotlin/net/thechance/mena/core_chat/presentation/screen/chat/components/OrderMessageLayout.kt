@@ -197,7 +197,7 @@ private fun OrderDetails(
     Row {
         OrderInfo(text = newOrder)
         OrderInfo(
-            text = orderNumber,
+            text = "#$orderNumber",
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
