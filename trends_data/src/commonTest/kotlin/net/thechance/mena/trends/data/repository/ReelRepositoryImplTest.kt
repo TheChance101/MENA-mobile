@@ -251,6 +251,18 @@ internal class ReelRepositoryImplTest {
 
     }
 
+    @Test
+    fun `should return the specific favorite reel given a trendId`() = runTest {
+            networkClient = createReelsHttpClient {
+                getReelsResponse()
+            }
+            repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+
+            val result = repository.getFavoriteReels(1, reelId = REEL_ID)
+
+            assertThat(result).isEqualTo(fakeReelList)
+    }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }

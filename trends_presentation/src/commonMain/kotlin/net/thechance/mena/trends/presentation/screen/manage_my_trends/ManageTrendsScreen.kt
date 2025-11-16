@@ -107,8 +107,6 @@ private fun ManageTrendsScreenContent(
     state: ManageTrendsScreenState,
     listener: ManageTrendsInteractionListener
 ) {
-
-
     Scaffold(
         topBar = {
             TrendsAnimatedVisibility(
@@ -147,7 +145,6 @@ private fun ManageTrendsScreenBody(
     trends: LazyPagingItems<ReelUiState>
 ) {
     val cardWidth = 106.dp
-
     val gridState = rememberLazyGridState()
     val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
             trends.loadState.refresh is LoadState.NotLoading &&
