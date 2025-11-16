@@ -58,4 +58,9 @@
     <string name="error_invalid_recording">تسجيل غير صالح. يرجى محاولة التسجيل مرة أخرى.</string>
     <string name="error_failed_to_process_audio">فشل معالجة ملف الصوت. يرجى المحاولة مرة أخرى.</string>
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
+    <string name="new_order">طلب جديد</string>
+    <string name="number_of_items">عدد العناصر</string>
+    <string name="to">الى</string>
+    <string name="total_price">اجمالي السعر</string>
+    <string name="view_order_details">عرض تفاصيل الطلب</string>
 </resources>
