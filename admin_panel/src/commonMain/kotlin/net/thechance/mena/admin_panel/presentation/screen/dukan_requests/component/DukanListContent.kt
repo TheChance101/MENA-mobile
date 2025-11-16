@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.DukanImage
 import net.thechance.mena.admin_panel.presentation.component.DukanLocation
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
@@ -44,20 +45,24 @@ fun DukanListContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked
         )
-        DukanListTable(
-            dukan = state.dukans,
-            onViewDetailsClicked = listener::onViewDetailsClicked,
-            modifier = Modifier.weight(1f),
-        )
+        if (state.isLoading) {
+            AdminPanelContentLoading()
+        } else {
+            DukanListTable(
+                dukan = state.dukans,
+                onViewDetailsClicked = listener::onViewDetailsClicked,
+                modifier = Modifier.weight(1f),
+            )
 
-        PagesIndicatorRow(
-            currentPage = state.pageInfo.page,
-            totalPages = state.pageInfo.totalPages,
-            onPageChanged = listener::onPageChanged,
-            modifier = Modifier
-                .padding(top = 8.dp, bottom = 14.dp)
-                .align(Alignment.Start)
-        )
+            PagesIndicatorRow(
+                currentPage = state.pageInfo.page,
+                totalPages = state.pageInfo.totalPages,
+                onPageChanged = listener::onPageChanged,
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 14.dp)
+                    .align(Alignment.Start)
+            )
+        }
     }
 }
 
