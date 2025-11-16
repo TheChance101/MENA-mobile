@@ -138,7 +138,7 @@ class MessageRepositoryImplTest {
         )
         everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
-        repository.deleteMessageById(message)
+        repository.deleteMessageById(message.id)
 
         verifySuspend { pendingMessageDao.deleteMessageById(message.id.toString()) }
     }
