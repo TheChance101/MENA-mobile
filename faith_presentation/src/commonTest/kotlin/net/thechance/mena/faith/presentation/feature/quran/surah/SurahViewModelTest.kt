@@ -226,11 +226,7 @@ class SurahViewModelTest {
 
     @Test
     fun `playSurah should play audio from selected ayah to ath the end of surah`() = runTest {
-        testViewModel.playSurah(
-            surahNumber = SURAH_BAQARAH_ID,
-            ayahNumber = TRACKED_AYAH_NUMBER,
-            reciterId = RECITER_ID
-        )
+        testViewModel.playSurah(surahNumber = SURAH_BAQARAH_ID)
 
         assertEquals(testViewModel.uiState.value.selectedAyahNumber, TRACKED_AYAH_NUMBER)
         assertTrue(testViewModel.uiState.value.isAutoPlayEnabled)
@@ -521,8 +517,6 @@ class SurahViewModelTest {
         const val AYAH_CONTENT = "Test ayah content"
         const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH_ID = 2
-        const val RECITER_ID = 5
-
 
         private val dummyAyat = listOf(
             Ayah(
