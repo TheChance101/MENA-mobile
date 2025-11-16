@@ -349,6 +349,31 @@ internal class ReelRepositoryImplTest {
     }
 
     @Test
+    fun `should get Favorites Reel when getFavorites called successfully`() = runTest {
+        networkClient = createReelsHttpClient {
+            getReelsResponse()
+        }
+        repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+
+        val result = repository.getFavoriteReels(1)
+
+        assertThat(result).isEqualTo(fakeReelList)
+
+    }
+
+    @Test
+    fun `should return the specific favorite reel given a trendId`() = runTest {
+            networkClient = createReelsHttpClient {
+                getReelsResponse()
+            }
+            repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+
+            val result = repository.getFavoriteReels(1, reelId = REEL_ID)
+
+            assertThat(result).isEqualTo(fakeReelList)
+    }
+
+    @Test
     fun `should save user engagement for each reel in room database when insert function in dao called `() =
         runTest {
             everySuspend { userRepository.getUser() } returns user

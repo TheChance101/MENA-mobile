@@ -21,4 +21,5 @@ interface ReelsRepository {
     suspend fun addReelView(reelId: String)
     suspend fun getReelUrls(reelId: String): ReelUrls
     suspend fun saveUserEngagementWithReel(reelWatchSession: ReelWatchSession)
+    suspend fun getFavoriteReels(pageNumber: Int, reelId: String? = null): List<Reel>
 }

@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 
-import androidx.compose.ui.unit.DpOffset
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -11,16 +10,17 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleLocationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.jetbrains.compose.resources.StringResource
-import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 
 class PickLocationScreenViewModel(
@@ -40,12 +40,12 @@ class PickLocationScreenViewModel(
         if (addressModel != null) {
             updateState {
                 copy(
-                    currentLocation = Coordinates(
+                    currentLocation = CoordinatesUiState(
                         latitude = addressModel.coordinates.latitude,
                         longitude = addressModel.coordinates.longitude
-                    ).toUiState(),
+                    ),
+                    showAnchor = true,
                     address = addressModel.addressDetails,
-                    isMapLocked = true,
                     animateToCurrentLocation = true,
                     isMainAddress = addressModel.isMainAddress
                 )
@@ -53,17 +53,8 @@ class PickLocationScreenViewModel(
         }
     }
 
-    override fun onClickMap(
-        coordinates: PickLocationScreenUIState.CoordinatesUiState,
-        pointerLocation: DpOffset
-    ) {
-        updateState {
-            copy(
-                isMapLocked = true,
-                currentLocation = coordinates,
-                pointerLocation = pointerLocation
-            )
-        }
+    override fun onClickMap(coordinates: CoordinatesUiState) {
+        updateState { copy(currentLocation = coordinates, showAnchor = true) }
         getLocationName()
     }
 
@@ -91,22 +82,10 @@ class PickLocationScreenViewModel(
     }
 
     override fun onMoveCamera(
-        cameraPosition: CameraPosition
+        coordinates: CoordinatesUiState
     ) {
-        updateState { copy(cameraPosition = cameraPosition, animateToCurrentLocation = false) }
-    }
-
-    override fun onClickEdit() {
-        updateState {
-            copy(
-                address = "",
-                currentLocation = PickLocationScreenUIState.CoordinatesUiState(),
-                pointerLocation = null,
-                isMapLocked = false,
-                animateToCurrentLocation = false
-            )
-        }
-        changeIsConfirmEnabled()
+        updateState { copy(currentLocation = coordinates, animateToCurrentLocation = false, showAnchor = true) }
+        getLocationName()
     }
 
     override fun onClickGps() {
@@ -128,9 +107,9 @@ class PickLocationScreenViewModel(
             updateState {
                 copy(
                     currentLocation = coordinates.toUiState(),
-                    isMapLocked = true,
                     animateToCurrentLocation = true,
-                    isGpsButtonLoading = false
+                    isGpsButtonLoading = false,
+                    showAnchor = true
                 )
             }
             getLocationName()
@@ -212,12 +191,8 @@ class PickLocationScreenViewModel(
         sendNewEffect(PickLocationScreenUIEffect.NavigateBack)
     }
 
-    override fun onSetAnchorLocation(pointerLocation: DpOffset) {
-        updateState { copy(pointerLocation = pointerLocation, animateToCurrentLocation = false) }
-    }
-
     private fun changeIsConfirmEnabled() {
-        if (state.value.isMapLocked && state.value.address.isNotBlank()) {
+        if (state.value.address.isNotBlank()) {
             updateState { copy(isConfirmEnabled = true) }
         } else {
             updateState { copy(isConfirmEnabled = false) }

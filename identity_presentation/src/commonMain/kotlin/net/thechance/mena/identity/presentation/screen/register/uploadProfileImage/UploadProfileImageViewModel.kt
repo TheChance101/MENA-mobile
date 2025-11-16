@@ -14,8 +14,7 @@ import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
@@ -48,7 +47,6 @@ class UploadProfileImageViewModel(
         tryToExecute(
             function = { getCachedImageBytes(phoneNumber) },
             onSuccess = ::handleCachedImageLoaded,
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -149,8 +147,6 @@ class UploadProfileImageViewModel(
     private fun markImageUploadCompleted() {
         tryToExecute(
             function = { registrationDraftRepository.setImageUploadCompleted(true) },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -214,8 +210,6 @@ class UploadProfileImageViewModel(
     private fun saveImageForPhoneNumber(imageBitmap: ImageBitmap, phoneNumber: PhoneNumber) {
         tryToExecute(
             function = { encodeAndSaveImage(imageBitmap, phoneNumber) },
-            onSuccess = {},
-            onError = {},
             dispatcher = dispatcher
         )
     }
@@ -249,13 +243,6 @@ class UploadProfileImageViewModel(
         updateState { copy(errorMessage = mapErrorMessage(throwable)) }
     }
 
-    private fun mapErrorMessage(throwable: Throwable): StringResource = when (throwable) {
-        is AuthenticationException -> mapAuthenticationErrorToMessage(
-            handleAuthenticationException(throwable)
-        )
-        else -> mapErrorToMessage(ErrorState.GenericError(throwable))
-    }
-
     private suspend fun <T> withTemporaryTokens(
         authTokens: AuthenticationTokens,
         block: suspend () -> T
@@ -266,4 +253,11 @@ class UploadProfileImageViewModel(
 
     private fun getImageKey(phoneNumber: PhoneNumber) =
         "register_image_${phoneNumber.getFormattedPhoneNumber()}"
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource = when (throwable) {
+        is AuthenticationException -> mapAuthenticationErrorToMessage(
+            handleUploadProfileImageException(throwable)
+        )
+        else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+    }
 }

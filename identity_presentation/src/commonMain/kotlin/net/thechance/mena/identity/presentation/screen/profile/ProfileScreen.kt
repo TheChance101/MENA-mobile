@@ -39,6 +39,7 @@ import net.thechance.mena.identity.presentation.screen.changePassword.ChangePass
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
 import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
+import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.InviteFriendsCard
@@ -223,7 +224,7 @@ class ProfileScreen : BaseScreen<
             }
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {
-                navigator.push(NotImplementedScreen())
+                navigator.push(PrivacyAndPolicyScreen())
             }
         }
     }
