@@ -49,6 +49,7 @@ import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
+import net.thechance.mena.core_chat.presentation.provider.SurahNameProvider
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.Paginator
@@ -68,6 +69,7 @@ class ChatViewModel(
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
     val permissionsController: PermissionsController,
+    private val surahNameProvider: SurahNameProvider,
     private val audioPlayer: AudioPlayer,
     chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -132,15 +134,18 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    updateState { it.copy(chatListItems = messageList.toChatItems()) }
+                    val newChatListItems = messageList.toChatItems(surahNameProvider)
+                    updateState {
+                        it.copy(chatListItems = newChatListItems)
+                    }
                 }
         }
     }
 
-    private fun List<Message>.toChatItems(): List<ChatListItem> {
+    private suspend fun List<Message>.toChatItems(surahNameProvider: SurahNameProvider): List<ChatListItem> {
         if (firstUnReadByMeMessageTime == null) setFirstUnReadByMeMessageTime(this)
         return sortedByDescending { it.sendAt }
-            .map { it.toUi() }
+            .map { it.toUi(surahNameProvider) }
             .map { if (it is AudioMessageUiState) it.useCacheWaveform() else it }
             .markIsLastMessages()
             .addDateSeparators()
@@ -367,11 +372,15 @@ class ChatViewModel(
     private fun subscribeToPendingMessages(chatId: Uuid) {
         tryToCollect(
             collect = { messageRepository.observePendingMessagesByChatId(chatId) },
-            onCollect = ::onCollectPendingMessages
+            onCollect = { messages ->
+                viewModelScope.launch(dispatcher) {
+                    onCollectPendingMessages(messages, surahNameProvider)
+                }
+            }
         )
     }
 
-    private suspend fun onCollectPendingMessages(messages: List<Message>?) {
+    private suspend fun onCollectPendingMessages(messages: List<Message>?, surahNameProvider: SurahNameProvider) {
         val pendingMessages = messages ?: emptyList()
         safeUpdateMessages { current ->
             current
@@ -385,7 +394,9 @@ class ChatViewModel(
             hasResentPendingMessages = true
             pendingMessages
                 .filter { it.status == MessageStatus.LOADING }
-                .forEach { sendMessage(it.toUi()) }
+                .forEach {
+                    sendMessage(it.toUi(surahNameProvider))
+                }
         }
 
         emitEffect(ChatScreenEffect.ScrollToBottom)
