@@ -16,10 +16,7 @@ class PrayerTimeService(val prayerTimeRepository: PrayerTimeRepository) {
         val now = Clock.System.now()
         val todayPrayers = prayerTimeRepository.getPrayerTimes(date = now, address = address)
 
-        if (todayPrayers.isEmpty()) {
-            emit(null)
-            return@flow
-        }
+        if (todayPrayers.isEmpty()) emit(null)
 
         val nextPrayer = todayPrayers.firstOrNull { it.time > now }
 
