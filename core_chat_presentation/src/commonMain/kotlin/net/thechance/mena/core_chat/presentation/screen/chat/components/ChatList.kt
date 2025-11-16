@@ -59,12 +59,12 @@ fun ChatList(
                     is ImagesGroupChatItem -> item.imagesUiState.first().messageDetails.id.toString()
                     is ImageMessageUiState -> item.messageDetails.id.toString()
                     is AudioMessageUiState -> item.messageDetails.id.toString()
-                    is OrderMessageUiState -> item.messageDetails.id.toString()
                     is AyahMessageUiState -> item.messageDetails.id.toString()
+                    is OrderMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
                 }
             }
-        ) { _ , item ->
+        ) { _, item ->
             val isLastItem = items.indexOf(item) == 0
             val paddingBottom = if (isLastItem)
                 0.dp
