@@ -972,7 +972,7 @@ class ChatViewModelTest {
         val updatedMessages = chatListItems.fromChatItems()
 
         assertThat(updatedMessages).isNotEmpty()
-        val imageMessages = updatedMessages.map{ it.toUi() as ImageMessageUiState }
+        val imageMessages = updatedMessages.map { it.toUi() as ImageMessageUiState }
 
         viewModel.onMessageImageClicked(imageMessages, 0)
         advanceUntilIdle()
@@ -980,8 +980,10 @@ class ChatViewModelTest {
         val selectedImageMessages = viewModel.state.value.selectedImageMessages
         assertThat(selectedImageMessages).isNotEmpty()
         assertThat(selectedImageMessages.first().messageDetails.reactions.size).isEqualTo(1)
-        assertThat(selectedImageMessages.first().messageDetails.reactions.first().emoji).isEqualTo(reaction)
-        assertThat(selectedImageMessages.first().messageDetails.reactions.first().userId).isEqualTo(otherUserId)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().emoji)
+            .isEqualTo(reaction)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().userId)
+            .isEqualTo(otherUserId)
     }
 
     @Test
@@ -1035,7 +1037,8 @@ class ChatViewModelTest {
             val userId2 = Uuid.parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
             val reaction1 = MessageReaction(reactionToRemove, userId1, message1Id)
             val reaction2 = MessageReaction(reactionToKeep, userId2, message1Id)
-            val message = messages.first().copy(id = message1Id, reactions = listOf(reaction1, reaction2))
+            val message =
+                messages.first().copy(id = message1Id, reactions = listOf(reaction1, reaction2))
 
             everySuspend {
                 messageRepository.loadMessages(chatId, any(), any())
@@ -1114,7 +1117,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage1.messageDetails
             is ImageMessageUiState -> updatedMessage1.messageDetails
             is AudioMessageUiState -> updatedMessage1.messageDetails
-            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull{ it.messageDetails.id == message1Id }?.messageDetails
+            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
             else -> null
         }
 
@@ -1122,7 +1125,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage2.messageDetails
             is ImageMessageUiState -> updatedMessage2.messageDetails
             is AudioMessageUiState -> updatedMessage2.messageDetails
-            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull{ it.messageDetails.id == message2Id }?.messageDetails
+            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
 
             else -> null
         }
@@ -1175,7 +1178,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage1.messageDetails
             is ImageMessageUiState -> updatedMessage1.messageDetails
             is AudioMessageUiState -> updatedMessage1.messageDetails
-            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull{ it.messageDetails.id == message1Id }?.messageDetails
+            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
 
             else -> null
         }
@@ -1184,7 +1187,7 @@ class ChatViewModelTest {
             is TextMessageUiState -> updatedMessage2.messageDetails
             is ImageMessageUiState -> updatedMessage2.messageDetails
             is AudioMessageUiState -> updatedMessage2.messageDetails
-            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull{ it.messageDetails.id == message2Id }?.messageDetails
+            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
 
             else -> null
         }
@@ -1203,13 +1206,12 @@ class ChatViewModelTest {
      *  1. Remove DateSeparator items
      *  2. Ungroup ImagesGroupChatItem into ImageMessageUiState items
      *  3. Convert MessageUiState → Message
-     *  4. Restore original sorting (ascending sendAt)
      */
     fun List<ChatListItem>.fromChatItems(): List<Message> {
         val flattened = this.flatMap { item ->
             when (item) {
-                is DateSeparator -> emptyList() // remove separator
-                is ImagesGroupChatItem -> item.imagesUiState // expand images
+                is DateSeparator -> emptyList()
+                is ImagesGroupChatItem -> item.imagesUiState
                 else -> listOf(item)
             }
         }
@@ -1221,7 +1223,7 @@ class ChatViewModelTest {
             }
         }
 
-        return messages.sortedBy { it.sendAt }
+        return messages
     }
 
     private fun createViewModel(): ChatViewModel {
