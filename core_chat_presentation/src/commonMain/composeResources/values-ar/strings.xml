@@ -61,12 +61,12 @@
     <string name="just_now">الآن</string>
     <string name="minute_ago">منذ دقيقة</string>
     <string name="two_minutes_ago">منذ دقيقتين</string>
-    <string name="minutes_ago">منذ %1$d دقائق</string> <!-- From 3 to 10 minutes -->
-    <string name="more_minutes_ago">منذ %1$d دقيقة</string> <!-- From 11 to 59 minutes -->
+    <string name="minutes_ago">منذ %1$d دقائق</string>
+    <string name="more_minutes_ago">منذ %1$d دقيقة</string>
     <string name="hour_ago">منذ ساعة</string>
     <string name="two_hours_ago">منذ ساعتين</string>
-    <string name="hours_ago">منذ %1$d ساعات</string> <!-- From 3 to 10 hours -->
-    <string name="more_hours_ago">منذ %1$d ساعة</string> <!-- From 11 to 23 -->
+    <string name="hours_ago">منذ %1$d ساعات</string>
+    <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
 </resources>
