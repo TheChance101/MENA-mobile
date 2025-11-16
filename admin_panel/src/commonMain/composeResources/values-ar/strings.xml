@@ -41,7 +41,7 @@
     <string name="blocked">محظور</string>
     <string name="block">حظر</string>
     <string name="activate">تفعيل</string>
-    <string name="deactivated">نشط</string>
+    <string name="deactivated">غير نشط</string>
 
     <!-- Search -->
     <string name="no_search_result">لا توجد نتائج بحث!</string>
