@@ -195,7 +195,11 @@ fun ProductDetailsSecondaryImages(
             ProductDetailsSecondaryImageItem(
                 imageUrl = imageUrl,
                 isSelected = (imageUrl == selectedImageUrl),
-                onClick = { onImageClick(imageUrl) }
+                onClick = {
+                    if (imageUrl != selectedImageUrl) {
+                        onImageClick(imageUrl)
+                    }
+                }
             )
         }
     }
