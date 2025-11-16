@@ -11,16 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.requests
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DukansCounter(
     count: Int,
-    title: String = stringResource(Res.string.requests),
+    title: String ,
     modifier: Modifier = Modifier
 ) {
     Row(
