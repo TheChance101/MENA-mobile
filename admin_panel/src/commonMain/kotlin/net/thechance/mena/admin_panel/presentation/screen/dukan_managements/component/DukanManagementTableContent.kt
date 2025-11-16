@@ -56,15 +56,16 @@ fun DukanManagementTableContent(
                 modifier = Modifier.weight(1f),
             )
         }
-
-        PagesIndicatorRow(
-            currentPage = state.pageInfo.page,
-            totalPages = state.pageInfo.totalPages,
-            onPageChanged = listener::onPageChanged,
-            modifier = Modifier
-                .padding(top = 8.dp, bottom = 14.dp)
-                .align(Alignment.Start)
-        )
+        if (state.pageInfo.totalPages > 1) {
+            PagesIndicatorRow(
+                currentPage = state.pageInfo.page,
+                totalPages = state.pageInfo.totalPages,
+                onPageChanged = listener::onPageChanged,
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 14.dp)
+                    .align(Alignment.Start)
+            )
+        }
     }
 }
 
@@ -144,7 +145,7 @@ private fun DukanItemRow(
         Spacer(modifier = Modifier.weight(0.02f))
         ActivationStatus(
             isActive = dukan.isActive,
-            modifier = Modifier.weight(0.09f )
+            modifier = Modifier.weight(0.09f)
         )
         Spacer(modifier = Modifier.weight(0.02f))
         TableCellText(text = dukan.addedDate, modifier = Modifier.weight(0.12f))
