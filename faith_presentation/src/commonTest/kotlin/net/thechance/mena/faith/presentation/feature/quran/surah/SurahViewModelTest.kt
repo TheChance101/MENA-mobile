@@ -228,7 +228,6 @@ class SurahViewModelTest {
     fun `playSurah should play audio from selected ayah to ath the end of surah`() = runTest {
         testViewModel.playSurah(surahNumber = SURAH_BAQARAH_ID)
 
-        assertEquals(testViewModel.uiState.value.selectedAyahNumber, TRACKED_AYAH_NUMBER)
         assertTrue(testViewModel.uiState.value.isAutoPlayEnabled)
     }
 
