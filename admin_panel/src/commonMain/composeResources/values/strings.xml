@@ -65,4 +65,19 @@
     <string name="user_activated">User has been activated</string>
     <string name="user_blocked">User has been blocked</string>
     <string name="sort">Sort</string>
+
+    <string name="activate_dukan">Activate Dukan</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="dukan_details">Dukan Details</string>
+    <string name="back_btn">back button</string>
+    <string name="shelves">Shelves</string>
+    <string name="dukan_img">dukan image</string>
+    <string name="dukan_location">dukan location icon</string>
+    <string name="silver_img">silver image</string>
+    <string name="product_img">product image</string>
+    <string name="deactivate_dukan">deactivate</string>
+    <string name="deactivate_dukan_header">Deactivate Dukan?</string>
+    <string name="deactivate_dukan_content">Are you sure you want to continue with deactivating?</string>
+    <string name="deactivate_dukan_reason">Add deactivate reason here</string>
+    <string name="empty_shelf_title">This shelf is empty</string>
 </resources>

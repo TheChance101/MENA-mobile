@@ -22,3 +22,6 @@ data object DukanRequests : AdminPanelRoute
 
 @Serializable
 data object DukanManagement : AdminPanelRoute
+
+@Serializable
+data object DukanDetails : AdminPanelRoute
