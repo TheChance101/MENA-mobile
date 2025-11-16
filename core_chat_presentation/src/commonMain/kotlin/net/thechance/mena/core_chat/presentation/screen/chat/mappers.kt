@@ -8,7 +8,10 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent.*
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Audio
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Image
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Order
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Text
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
@@ -145,6 +148,14 @@ fun Message.toUi(): MessageUiState {
             text = content.text,
             messageDetails = messageDetails
         )
+
+        is Order -> OrderMessageUiState(
+            orderId = content.orderId,
+            numberOfItems = content.numberOfItems,
+            deliverTo = content.deliverTo,
+            totalPrice = content.totalPrice,
+            messageDetails = messageDetails
+        )
     }
 }
 
@@ -172,11 +183,30 @@ fun MessageUiState.toEntity(): Message {
                 reactions = messageDetails.reactions,
             )
         }
+
         is TextMessageUiState -> {
             Message(
                 chatId = messageDetails.chatId,
                 senderId = messageDetails.senderId,
                 content = Text(text = text),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+
+        is OrderMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Order(
+                    orderId = orderId,
+                    numberOfItems = numberOfItems,
+                    deliverTo = deliverTo,
+                    totalPrice = totalPrice
+                ),
                 id = messageDetails.id,
                 sendAt = messageDetails.sendTime,
                 status = messageDetails.status,
