@@ -137,7 +137,7 @@ class ChatViewModel(
         }
     }
 
-    fun List<Message>.toChatItems(): List<ChatListItem> {
+    private fun List<Message>.toChatItems(): List<ChatListItem> {
         if (firstUnReadByMeMessageTime == null) setFirstUnReadByMeMessageTime(this)
         return sortedByDescending { it.sendAt }
             .map { it.toUi() }
@@ -147,7 +147,7 @@ class ChatViewModel(
             .groupImages(firstUnReadByMeMessageTime ?: LocalDateTime.now())
     }
 
-    fun AudioMessageUiState.useCacheWaveform(): AudioMessageUiState {
+    private fun AudioMessageUiState.useCacheWaveform(): AudioMessageUiState {
         return copy(waveformData = waveformCache.getOrPut(messageDetails.id) { waveformData })
     }
 

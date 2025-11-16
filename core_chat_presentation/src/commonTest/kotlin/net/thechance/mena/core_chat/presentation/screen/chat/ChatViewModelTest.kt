@@ -4,9 +4,11 @@ package net.thechance.mena.core_chat.presentation.screen.chat
 
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.doesNotContain
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
+import assertk.assertions.isNotEmpty
 import assertk.assertions.isTrue
 import dev.icerock.moko.permissions.DeniedException
 import dev.icerock.moko.permissions.Permission
@@ -42,6 +44,7 @@ import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
 import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
@@ -204,51 +207,60 @@ class ChatViewModelTest {
             assertThat(viewModel.state.value.isResendMessageDialogVisible).isEqualTo(true)
         }
 
-//    @Test
-//    fun `onDeleteFailedMessageClick should delete the clicked failed message when its call`() =
-//        runTest {
-//            everySuspend { messageRepository.deleteMessageById(any()) } returns Unit
-//            advanceUntilIdle()
-//            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
-//            viewModel.onFailedMessageClicked(msgUi)
-//
-//            viewModel.onDeleteFailedMessageClicked()
-//            advanceUntilIdle()
-//
-//            assertThat(viewModel.state.value.chatListItems.currentUiMessages()).doesNotContain(msgUi)
-//        }
-//
-//    @Test
-//    fun `onResendMessageClick should remove the failed message when resend message success`() =
-//        runTest {
-//            everySuspend { messageRepository.sendMessage(any()) } returns Unit
-//            advanceUntilIdle()
-//            val failedMessage =
-//                messages.first().copy(status = MessageStatus.FAILED).toUi()
-//            viewModel.onFailedMessageClicked(failedMessage)
-//
-//            viewModel.onResendMessageClicked()
-//            advanceUntilIdle()
-//
-//            val finalMessages = viewModel.state.value.chatListItems.currentUiMessages()
-//            assertThat(finalMessages.isEmpty()).isTrue()
-//            verifySuspend { messageRepository.sendMessage(any()) }
-//        }
-//
-//    @Test
-//    fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
-//        runTest {
-//            val messages = listOf(ImageMessageUiState())
-//            val index = 2
-//            advanceUntilIdle()
-//
-//            viewModel.onMessageImageClicked(messages, index)
-//            advanceUntilIdle()
-//
-//            assertThat(viewModel.state.value.isImagePagerVisible).isTrue()
-//            assertThat(viewModel.state.value.selectedImageMessages).isEqualTo(messages)
-//            assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
-//        }
+    @Test
+    fun `onDeleteFailedMessageClick should delete the clicked failed message when its call`() =
+        runTest {
+            everySuspend { messageRepository.deleteMessageById(any()) } returns Unit
+            advanceUntilIdle()
+            val msg = messages.first().copy(status = MessageStatus.FAILED)
+            viewModel.onFailedMessageClicked(msg.toUi())
+
+            viewModel.onDeleteFailedMessageClicked()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.chatListItems.fromChatItems()).doesNotContain(msg)
+        }
+
+    @Test
+    fun `onResendMessageClick should remove the failed message when resend message success`() =
+        runTest {
+            everySuspend { messageRepository.sendMessage(any()) } returns Unit
+            advanceUntilIdle()
+            val failedMessage =
+                messages.first().copy(status = MessageStatus.FAILED).toUi()
+            viewModel.onFailedMessageClicked(failedMessage)
+
+            viewModel.onResendMessageClicked()
+            advanceUntilIdle()
+
+            val finalMessages = viewModel.state.value.chatListItems.fromChatItems()
+            assertThat(finalMessages.isEmpty()).isTrue()
+            verifySuspend { messageRepository.sendMessage(any()) }
+        }
+
+    @Test
+    fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
+        runTest {
+            val imageMessage = Message(
+                id = message1Id,
+                senderId = chatRequesterId,
+                chatId = chatId,
+                sendAt = LocalDateTime.now(),
+                status = MessageStatus.SENT,
+                content = MessageContent.Image(ImageData.ImageUrl(imageUrl)),
+                isMine = true
+            ).toUi() as ImageMessageUiState
+            val messages = listOf(imageMessage, imageMessage, imageMessage)
+            val index = 2
+            advanceUntilIdle()
+
+            viewModel.onMessageImageClicked(messages, index)
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value.isImagePagerVisible).isTrue()
+            assertThat(viewModel.state.value.selectedImageMessages).isEqualTo(messages)
+            assertThat(viewModel.state.value.currentImageIndexForPreview).isEqualTo(index)
+        }
 
     @Test
     fun `onDownloadImageClicked should call imageDownloaderService`() = runTest {
@@ -932,44 +944,45 @@ class ChatViewModelTest {
         assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(otherUserId)
     }
 
-//    @Test
-//    fun `onCollectAddReaction should update selected image messages with reaction`() = runTest {
-//        val reaction = "👍"
-//        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-//        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
-//        val imageMessage = Message(
-//            id = message1Id,
-//            senderId = chatRequesterId,
-//            chatId = chatId,
-//            sendAt = LocalDateTime.now(),
-//            status = MessageStatus.SENT,
-//            content = MessageContent.Image(ImageData.ImageUrl(imageUrl)),
-//            isMine = true
-//        )
-//
-//        everySuspend {
-//            messageRepository.loadMessages(chatId, any(), any())
-//        } returns PagedData(listOf(imageMessage), 0, true)
-//        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
-//
-//        val viewModel = createViewModel()
-//        viewModel.onMessagesScrolled()
-//        advanceUntilIdle()
-//
-//        val chatListItems = viewModel.state.value.chatListItems
-//        val updatedMessages = chatListItems.currentUiMessages()
-//
-//        assertThat(updatedMessages).isNotEmpty()
-//
-//        viewModel.onMessageImageClicked(updatedMessages, 0)
-//        advanceUntilIdle()
-//
-//        val selectedImageMessages = viewModel.state.value.selectedImageMessages
-//        assertThat(selectedImageMessages).isNotEmpty()
-//        assertThat(selectedImageMessages.first().messageDetails.reactions.size).isEqualTo(1)
-//        assertThat(selectedImageMessages.first().messageDetails.reactions.first().emoji).isEqualTo(reaction)
-//        assertThat(selectedImageMessages.first().messageDetails.reactions.first().userId).isEqualTo(otherUserId)
-//    }
+    @Test
+    fun `onCollectAddReaction should update selected image messages with reaction`() = runTest {
+        val reaction = "👍"
+        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+        val imageMessage = Message(
+            id = message1Id,
+            senderId = chatRequesterId,
+            chatId = chatId,
+            sendAt = LocalDateTime.now(),
+            status = MessageStatus.SENT,
+            content = MessageContent.Image(ImageData.ImageUrl(imageUrl)),
+            isMine = true
+        )
+
+        everySuspend {
+            messageRepository.loadMessages(chatId, any(), any())
+        } returns PagedData(listOf(imageMessage), 0, true)
+        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
+
+        val viewModel = createViewModel()
+        viewModel.onMessagesScrolled()
+        advanceUntilIdle()
+
+        val chatListItems = viewModel.state.value.chatListItems
+        val updatedMessages = chatListItems.fromChatItems()
+
+        assertThat(updatedMessages).isNotEmpty()
+        val imageMessages = updatedMessages.map{ it.toUi() as ImageMessageUiState }
+
+        viewModel.onMessageImageClicked(imageMessages, 0)
+        advanceUntilIdle()
+
+        val selectedImageMessages = viewModel.state.value.selectedImageMessages
+        assertThat(selectedImageMessages).isNotEmpty()
+        assertThat(selectedImageMessages.first().messageDetails.reactions.size).isEqualTo(1)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().emoji).isEqualTo(reaction)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().userId).isEqualTo(otherUserId)
+    }
 
     @Test
     fun `onCollectRemoveReaction should remove reaction from message when reaction is removed`() =
@@ -1180,18 +1193,36 @@ class ChatViewModelTest {
         assertThat(actualMessage2?.reactions?.size).isEqualTo(1)
     }
 
-//    private fun List<ChatListItem>.currentUiMessages(): List<net.thechance.mena.core_chat.presentation.screen.chat.Message> =
-//        filterIsInstance<ImageMessageUiState>()
-//            .flatMap { it.messageDetails }
-//            .plus(
-//                filterIsInstance<TextMessageUiState>()
-//                    .map { it.messageDetails }
-//            )
-//            .plus(
-//                filterIsInstance<AudioMessageUiState>()
-//                    .map { it.data }
-//            )
-//            .sortedByDescending { it.sendTime }
+
+    /**
+     * Reverse everything applied by:
+     *
+     * List<Message>.toChatItems()
+     *
+     * Steps reversed:
+     *  1. Remove DateSeparator items
+     *  2. Ungroup ImagesGroupChatItem into ImageMessageUiState items
+     *  3. Convert MessageUiState → Message
+     *  4. Restore original sorting (ascending sendAt)
+     */
+    fun List<ChatListItem>.fromChatItems(): List<Message> {
+        val flattened = this.flatMap { item ->
+            when (item) {
+                is DateSeparator -> emptyList() // remove separator
+                is ImagesGroupChatItem -> item.imagesUiState // expand images
+                else -> listOf(item)
+            }
+        }
+
+        val messages = flattened.mapNotNull { item ->
+            when (item) {
+                is MessageUiState -> item.toEntity()
+                else -> null
+            }
+        }
+
+        return messages.sortedBy { it.sendAt }
+    }
 
     private fun createViewModel(): ChatViewModel {
         return ChatViewModel(
@@ -1276,6 +1307,5 @@ class ChatViewModelTest {
             MessageContent.Audio(AudioData.AudioUrl(audioUrl)),
             true
         )
-
     }
 }
