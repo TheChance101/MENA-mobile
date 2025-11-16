@@ -29,6 +29,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.com
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressShimmerPlaceholders
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.MyAddressesAppBar
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.deleteAddressDialog
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi

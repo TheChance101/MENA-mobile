@@ -1,40 +1,32 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
-import androidx.compose.ui.graphics.ImageBitmap
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isNull
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
-import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class ImageCropperViewModelTest : BaseCoroutineTest() {
     private val imageCacheManager = mockk<ImagesRepository>(relaxed = true)
-    private val imageDecoder = mockk<ImageDecoder>(relaxed = true)
-    private val imageKey = "profile_image"
     private lateinit var imageCropperViewModel: ImageCropperViewModel
-    private val imageBitmap: ImageBitmap = mockk<ImageBitmap>()
+    private val imageKey = "profile_image"
     private val byteArray = ByteArray(0)
 
 
     @BeforeTest
     override fun setUp() {
         super.setUp()
-        every { imageDecoder.decodeImage(any()) } returns imageBitmap
-        coEvery { imageDecoder.encodeImage(any()) } returns byteArray
         coEvery { imageCacheManager.getCachedImage(any()) } returns byteArray
 
         imageCropperViewModel = ImageCropperViewModel(
             imageKey = imageKey,
-            imagesRepository = imageCacheManager,
-            imageDecoder = imageDecoder,
+            imagesRepository = imageCacheManager
         )
     }
 
@@ -43,7 +35,7 @@ internal class ImageCropperViewModelTest : BaseCoroutineTest() {
     fun `onCropImage() should send side effect navigate to edit profile screen with cropped image`() =
         runTest {
             imageCropperViewModel.effect.test {
-                imageCropperViewModel.onCropImage(imageBitmap)
+                imageCropperViewModel.onCropImage(byteArray)
 
                 val effect = awaitItem()
                 assertTrue(effect is ImageCropperScreenEffect.NavigateBackToEditProfileWithImage)
@@ -52,10 +44,9 @@ internal class ImageCropperViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onChangeImage() should update imageBitmap in state`() = runTest {
+        imageCropperViewModel.onChangeImage(byteArray)
 
-        imageCropperViewModel.onChangeImage(imageBitmap)
-
-        assertTrue(imageCropperViewModel.state.value.imageBitmap == imageBitmap)
+        assertTrue(imageCropperViewModel.state.value.imageByteArray.contentEquals(byteArray))
     }
 
     @Test
@@ -63,6 +54,16 @@ internal class ImageCropperViewModelTest : BaseCoroutineTest() {
         imageCropperViewModel.effect.test {
             imageCropperViewModel.onNavigateBack()
             assertTrue(awaitItem() is ImageCropperScreenEffect.NavigateBackToEditProfile)
+        }
+    }
+
+    @Test
+    fun `dismissSnackBar() should make error message null`() = runTest {
+        imageCropperViewModel.state.test {
+            imageCropperViewModel.onDismissSnackBar()
+
+            val errorMessage = awaitItem().errorMessage
+            assertThat(errorMessage).isNull()
         }
     }
 }

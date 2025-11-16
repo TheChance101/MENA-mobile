@@ -166,7 +166,7 @@ class ChatViewModelTest {
             val inputMessage = "hi"
             viewModel.onInputMessageChanged(inputMessage)
 
-            viewModel.onSendMessageClicked()
+            viewModel.onSendTextMessageClicked()
             advanceUntilIdle()
 
             assertThat(viewModel.state.value.inputMessage).isEmpty()
@@ -180,7 +180,7 @@ class ChatViewModelTest {
 
         everySuspend { messageRepository.sendMessage(any()) } throws Exception("Send failed")
 
-        viewModel.onSendMessageClicked()
+        viewModel.onSendTextMessageClicked()
         advanceUntilIdle()
 
         assertThat(viewModel.state.value.inputMessage).isEmpty()
@@ -210,7 +210,7 @@ class ChatViewModelTest {
     @Test
     fun `onDeleteFailedMessageClick should delete the clicked failed message when its call`() =
         runTest {
-            everySuspend { messageRepository.deleteMessage(any()) } returns Unit
+            everySuspend { messageRepository.deleteMessageById(any()) } returns Unit
             advanceUntilIdle()
             val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
             viewModel.onFailedMessageClicked(msgUi)
@@ -1144,7 +1144,7 @@ class ChatViewModelTest {
         assertThat(actualMessage2?.reactions?.size).isEqualTo(1)
     }
 
-    private fun List<ChatListItem>.currentUiMessages(): List<MessageUiState> =
+    private fun List<ChatListItem>.currentUiMessages(): List<net.thechance.mena.core_chat.presentation.screen.chat.Message> =
         filterIsInstance<ChatListItem.ImageMessages>()
             .flatMap { it.data }
             .plus(

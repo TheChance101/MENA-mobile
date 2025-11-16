@@ -23,7 +23,9 @@ import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorsResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanNameResponse
+import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.dukan.TopDiscountedDukanDto
 import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
@@ -179,6 +181,89 @@ fun MockRequestHandleScope.defaultDukanDetailsResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+@OptIn(ExperimentalUuidApi::class)
+fun MockRequestHandleScope.defaultEditorPicksResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PageResponseDto.serializer(DukanResponseDto.serializer()),
+        PageResponseDto(
+            content = listOf(
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+            ),
+            number = 0,
+            size = 2,
+            totalPages = 1,
+            totalElements = 2,
+            first = true,
+            last = true
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+@OptIn(ExperimentalUuidApi::class)
+fun MockRequestHandleScope.defaultBestAroundResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PageResponseDto.serializer(DukanResponseDto.serializer()),
+        PageResponseDto(
+            content = listOf(
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+            ),
+            number = 0,
+            size = 2,
+            totalPages = 1,
+            totalElements = 2,
+            first = true,
+            last = true
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+@OptIn(ExperimentalUuidApi::class)
+fun MockRequestHandleScope.defaultDukansByCategoryResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PageResponseDto.serializer(DukanResponseDto.serializer()),
+        PageResponseDto(
+            content = listOf(
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+            ),
+            number = 0,
+            size = 2,
+            totalPages = 1,
+            totalElements = 2,
+            first = true,
+            last = true
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+@OptIn(ExperimentalUuidApi::class)
+fun MockRequestHandleScope.defaultTopDiscountedResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        PageResponseDto.serializer(TopDiscountedDukanDto.serializer()),
+        PageResponseDto(
+            content = listOf(
+                TopDiscountedDukanDto(id = Uuid.random(), imageUrl = "Discount Dukan 1", discount=30.0),
+                TopDiscountedDukanDto(id = Uuid.random(), imageUrl = "Discount Dukan 2",discount= 50.0)
+            ),
+            number = 0,
+            size = 2,
+            totalPages = 1,
+            totalElements = 2,
+            first = true,
+            last = true
+        )
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+
 
 fun createDukanHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -193,9 +278,15 @@ fun createDukanHttpClient(
     pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     updateShelfResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    dukanByCategoriesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    topDiscountedDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    neastAroundDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    editorPicksDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+
 ): HttpClient {
     val shelfId = "1"
     val dukanId = "dukan123"
+    val categoryId = "20"
 
     return HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
@@ -213,10 +304,13 @@ fun createDukanHttpClient(
                 "PUT" -> updateShelfResponse?.invoke(this) ?: defaultUpdateShelfResponse()
                 else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
             }
-            "/dukan/shelf/$dukanId" ->
-                pagedShelvesResponse?.invoke(this, request) ?: defaultPagedShelvesResponse()
-
+            "/dukan/shelf/$dukanId" -> pagedShelvesResponse?.invoke(this, request) ?: defaultPagedShelvesResponse()
             "/dukan/$dukanId" -> dukanDetailsResponse?.invoke(this) ?: defaultDukanDetailsResponse()
+            "/dukan/editor_picks" -> editorPicksDukansResponse?.invoke(this) ?: defaultEditorPicksResponse()
+            "/dukan/nearby/best" -> neastAroundDukansResponse?.invoke(this) ?: defaultBestAroundResponse()
+            "/dukan/categories/$categoryId" -> dukanByCategoriesResponse?.invoke(this) ?: defaultDukansByCategoryResponse()
+            "/dukan/top/discounts" -> topDiscountedDukansResponse?.invoke(this) ?: defaultTopDiscountedResponse()
+
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
     }) {
@@ -291,14 +385,19 @@ fun createDukanManagementRepository(
 }
 
 fun createDukanDiscoveryRepository(
-    pagedShelvesResponse: (suspend MockRequestHandleScope.(request: HttpRequestData) -> HttpResponseData)? = null,
-    locationService: LocationService = LocationService(FakeAddressesRepository())
+    dukanByCategoriesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    topDiscountedDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    neastAroundDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    editorPicksDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanDiscoveryRepositoryImpl {
     return DukanDiscoveryRepositoryImpl(
         client = createDukanHttpClient(
-            pagedShelvesResponse = pagedShelvesResponse
+            dukanByCategoriesResponse = dukanByCategoriesResponse,
+            topDiscountedDukansResponse = topDiscountedDukansResponse,
+            neastAroundDukansResponse = neastAroundDukansResponse,
+            editorPicksDukansResponse = editorPicksDukansResponse
         ),
-        locationService = locationService
+        locationService = LocationService(FakeAddressesRepository())
     )
 }
 
