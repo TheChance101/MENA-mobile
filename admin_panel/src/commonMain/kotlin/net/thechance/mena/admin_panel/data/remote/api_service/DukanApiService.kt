@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.data.remote.api_service
 
 import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.admin_panel.data.remote.dto.DukanPagedResponse
@@ -33,9 +34,21 @@ interface DukanApiService {
         @Query("size") size: Int? = null
     ): Response<DukanPagedResponse<ProductDto>>
 
+    @POST(DUKAN_ACTIVATION_ENDPOINT)
+    suspend fun activateDukan(
+        @Path("dukanId") dukanId: String
+    ): Response<Unit>
+
+    @POST(DUKAN_DEACTIVATION_ENDPOINT)
+    suspend fun deactivateDukan(
+        @Path("dukanId") dukanId: String
+    ): Response<Unit>
+
     private companion object {
         const val DUKAN_ADMIN_BASE = "dukan/admin"
         const val DUKAN_SHELVES_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{dukanId}"
         const val SHELF_PRODUCTS_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{shelfId}/products"
+        const val DUKAN_ACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/dukan/{dukanId}/activate"
+        const val DUKAN_DEACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/dukan/{dukanId}/deactivate"
     }
 }
