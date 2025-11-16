@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.deposit.component.AmountInputField
+import net.thechance.mena.admin_panel.presentation.screen.deposit.component.DepositLoadingContent
 import net.thechance.mena.admin_panel.presentation.screen.deposit.component.PhoneNumberInputField
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.deposit
@@ -43,64 +44,69 @@ private fun DepositScreenContent(
     state: DepositScreenState,
     interactionListener: DepositInteractionListener
 ) {
-    PanelScaffold(
-        topBar = { DepositTopBar() },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top =118.dp)
+    if (state.isLoadingCountries) {
+        DepositLoadingContent()
+    } else {
+        PanelScaffold(
+            topBar = { DepositTopBar() },
+            snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .width(506.dp)
-                    .padding(32.dp),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.Start
+                    .fillMaxSize()
+                    .padding(top = 118.dp)
             ) {
-                Text(
-                    text = stringResource(Res.string.fill_a_wallet),
-                    style = Theme.typography.title.medium,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier=Modifier.padding(bottom = 4.dp)
-                )
-                Text(
-                    text = stringResource(Res.string.fill_a_wallet_description),
-                    style = Theme.typography.body.medium ,
-                    color = Theme.colorScheme.shadeSecondary,
-                    modifier=Modifier.padding(bottom = 20.dp)
-                )
-                PhoneNumberInputField(
-                    phoneNumber = state.phoneNumber,
-                    onPhoneChange = interactionListener::onPhoneNumberChanged,
-                    selectedCountry = state.country,
-                    availableCountries = state.availableCountries,
-                    onCountrySelected = interactionListener::onCountryCodeChanged,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                AmountInputField(
-                    modifier = Modifier.padding(top = 16.dp),
-                    amount = state.amount,
-                    onAmountChanged = interactionListener::onAmountChanged,
-                )
-
-                PrimaryButton(
+                Column(
                     modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 64.dp),
-                    text = stringResource(Res.string.fill_the_wallet),
-                    onClick = interactionListener::onFillTheWalletButtonClicked,
-                    isEnabled = state.isFillWalletButtonEnabled,
-                    isLoading = state.isDepositProcessLoading,
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
-                )
+                        .align(Alignment.TopCenter)
+                        .width(506.dp)
+                        .padding(32.dp),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = stringResource(Res.string.fill_a_wallet),
+                        style = Theme.typography.title.medium,
+                        color = Theme.colorScheme.shadePrimary,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                    Text(
+                        text = stringResource(Res.string.fill_a_wallet_description),
+                        style = Theme.typography.body.medium,
+                        color = Theme.colorScheme.shadeSecondary,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
+                    PhoneNumberInputField(
+                        phoneNumber = state.phoneNumber,
+                        onPhoneChange = interactionListener::onPhoneNumberChanged,
+                        selectedCountry = state.country,
+                        availableCountries = state.availableCountries,
+                        onCountrySelected = interactionListener::onCountryCodeChanged,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    AmountInputField(
+                        modifier = Modifier.padding(top = 16.dp),
+                        amount = state.amount,
+                        onAmountChanged = interactionListener::onAmountChanged,
+                    )
+
+                    PrimaryButton(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(top = 64.dp),
+                        text = stringResource(Res.string.fill_the_wallet),
+                        onClick = interactionListener::onFillTheWalletButtonClicked,
+                        isEnabled = state.isFillWalletButtonEnabled,
+                        isLoading = state.isDepositProcessLoading,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+                    )
+                }
             }
         }
     }
 }
+
 @Composable
 private fun DepositTopBar() {
     AppBar(
