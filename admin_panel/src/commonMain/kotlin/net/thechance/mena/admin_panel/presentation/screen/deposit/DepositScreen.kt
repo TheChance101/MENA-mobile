@@ -94,6 +94,7 @@ private fun DepositScreenContent(
                     text = stringResource(Res.string.fill_the_wallet),
                     onClick = interactionListener::onFillTheWalletButtonClicked,
                     isEnabled = state.isFillWalletButtonEnabled,
+                    isLoading = state.isDepositProcessLoading,
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
                 )
             }

@@ -49,9 +49,11 @@ class DepositViewModel (
     }
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
+            onStart = { updateState { it.copy(isDepositProcessLoading = true) } },
             callee=::onFillWalletButtonClicked,
             onSuccess = { onDepositSuccess() },
             onError = ::onDepositError,
+            onFinish = { updateState { it.copy(isDepositProcessLoading = false) } },
             dispatcher = dispatcher
         )
     }
