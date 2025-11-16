@@ -62,7 +62,7 @@ fun PhoneNumberInputField(
                         onClick = { expanded = true }
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(bottom=4.dp)
             )
 
             CountryDropdownMenu(
@@ -110,7 +110,7 @@ private fun CountryCodeSelector(
             text = countryFlag,
             style = Theme.typography.body.large,
             modifier = Modifier.padding(end = 1.dp),
-          //  fontFamily = customFontFamily
+            fontFamily = customFontFamily
         )
 
         Text(

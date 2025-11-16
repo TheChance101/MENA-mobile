@@ -62,7 +62,7 @@ internal fun CountryRowItem(
        Text(
            text=selectedCountry.flagEmoji,
            style = Theme.typography.title.large,
-          // fontFamily = customFontFamily
+           fontFamily = customFontFamily
        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(2.dp),

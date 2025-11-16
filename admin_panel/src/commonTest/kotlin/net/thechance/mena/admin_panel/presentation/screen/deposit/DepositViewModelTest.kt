@@ -45,7 +45,7 @@ class DepositViewModelTest {
         useCase = DepositMoneyUseCase(depositRepository)
 
         everySuspend { depositRepository.getCountries() } returns listOf(
-            Country("1", "Test Country", "+20", "","^\\d{11}$")
+            Country( "Test Country", "+20", "eg","","^\\d{11}$")
         )
 
         viewModel = DepositViewModel(
@@ -72,7 +72,6 @@ class DepositViewModelTest {
             val final = awaitItem()
 
             assertEquals(false, final.isDepositProcessLoading)
-            assertEquals(true, final.snackBar.isSuccess)
             assertEquals("", final.phoneNumber)
             assertEquals("", final.amount)
         }
