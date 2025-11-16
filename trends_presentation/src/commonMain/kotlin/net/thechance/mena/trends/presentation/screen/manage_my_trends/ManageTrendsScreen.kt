@@ -86,7 +86,7 @@ internal fun ManageTrendsScreen(
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
                 navController.navigate(
-                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource)
+                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource.name)
                 )
             }
         }

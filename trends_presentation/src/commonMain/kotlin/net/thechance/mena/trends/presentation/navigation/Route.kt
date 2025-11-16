@@ -12,7 +12,7 @@ internal sealed interface Route {
     @Serializable
     data class ReelDetails(
         val reelId: String,
-        val source: ReelSource
+        val source: String
     ) : Route
 
     @Serializable

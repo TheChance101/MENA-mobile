@@ -9,6 +9,7 @@ import org.koin.core.annotation.Factory
 internal class UserReelArgsImpl(
     savedStateHandle: SavedStateHandle
 ) : UserReelArgs {
-    override val realId: String = savedStateHandle.toRoute<Route.ReelDetails>().reelId
-    override val reelSource: Route.ReelSource = savedStateHandle.toRoute<Route.ReelDetails>().source
+    private val route = savedStateHandle.toRoute<Route.ReelDetails>()
+    override val realId: String = route.reelId
+    override val reelSource: Route.ReelSource = Route.ReelSource.valueOf(route.source)
 }
