@@ -6,7 +6,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import org.koin.core.annotation.Factory
 
 @Factory(binds = [UserReelArgs::class])
-class UserReelArgsImpl(
+internal class UserReelArgsImpl(
     savedStateHandle: SavedStateHandle
 ) : UserReelArgs {
     override val realId: String = savedStateHandle.toRoute<Route.ReelDetails>().reelId
