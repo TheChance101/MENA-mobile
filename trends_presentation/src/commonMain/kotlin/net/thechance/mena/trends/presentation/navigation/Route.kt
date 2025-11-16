@@ -2,7 +2,7 @@ package net.thechance.mena.trends.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
-sealed interface Route {
+internal sealed interface Route {
     @Serializable
     data object Categories : Route
 
