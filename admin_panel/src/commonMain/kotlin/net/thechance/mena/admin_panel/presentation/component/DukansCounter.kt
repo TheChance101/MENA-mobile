@@ -46,6 +46,7 @@ private fun CountItem(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.full)
             )
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .wrapContentSize(Alignment.Center)
     )
 }
