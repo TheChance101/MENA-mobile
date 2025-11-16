@@ -25,8 +25,8 @@ import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.core_chat.presentation.designSystem.theme.quran
-import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState // 🎯 التغيير هنا
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState // 🎯 التغيير هنا
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme

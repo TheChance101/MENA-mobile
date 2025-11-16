@@ -43,6 +43,7 @@ internal val viewModelModule = module {
             messageRepository = get(),
             imageDownloaderService = get(),
             audioPlayer = get(),
+            surahNameProvider = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
         )
     }
