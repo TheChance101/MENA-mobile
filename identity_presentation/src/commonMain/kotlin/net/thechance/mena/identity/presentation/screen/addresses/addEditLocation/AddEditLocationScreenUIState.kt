@@ -1,9 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 
-import androidx.compose.ui.unit.DpOffset
-import net.thechance.mena.identity.domain.entity.Address
+import io.github.dellisd.spatialk.geojson.Position
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
@@ -16,13 +15,12 @@ data class AddEditLocationScreenUIState(
     val isSaveEnabled: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: StringResource? = null,
-    val anchorLocation: DpOffset? = null,
-    val cameraPosition: CameraPosition = CameraPosition(),
+    val cameraPosition: CameraPosition = CameraPosition(target = Position(latitude = 29.203231755958047, longitude = 22.39869322710709), zoom = 1.6),
     val animateToCurrentLocation: Boolean = false
 ){
     data class AddEditAddressUIState(
         val addressID: Uuid? = null,
-        val coordinates: CoordinatesUiState = CoordinatesUiState(28.0,29.0),
+        val coordinates: CoordinatesUiState = CoordinatesUiState(),
         val addressDetails: String = "",
         val addressType: AddressType? = null,
         val otherAddressType: String? = null,

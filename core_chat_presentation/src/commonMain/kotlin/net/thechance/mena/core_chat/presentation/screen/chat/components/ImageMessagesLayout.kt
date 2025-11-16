@@ -20,10 +20,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ImageData
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
+import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -34,29 +34,29 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ImageMessagesLayout(
-    messages: List<MessageUiState>,
+    messages: List<ImageMessageUiState>,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
-    onFailClick: (MessageUiState) -> Unit = {},
-    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
+    onFailClick: (ImageMessageUiState) -> Unit = {},
+    onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
 ) {
 
     val messageBackground =
-        if (messages.last().isMine) Theme.colorScheme.background.surfaceLow
+        if (messages.last().messageDetails.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
     val maxRadius = Theme.radius.lg
 
-    val messageShape = if (messages.last().isMine && isMarkedLastInSeries)
+    val messageShape = if (messages.last().messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
             bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
-    else if (!messages.last().isMine && isMarkedLastInSeries)
+    else if (!messages.last().messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
@@ -66,14 +66,15 @@ fun ImageMessagesLayout(
     else
         RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (messages.last().isMine) Alignment.Start else Alignment.End
-    val messageAlignment = if (messages.last().isMine) Alignment.End else Alignment.Start
+    val messageInfoAlignment =
+        if (messages.last().messageDetails.isMine) Alignment.Start else Alignment.End
+    val messageAlignment =
+        if (messages.last().messageDetails.isMine) Alignment.End else Alignment.Start
 
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = if (messages.last().isMine) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = if (messages.last().messageDetails.isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
-
         Column(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
             horizontalAlignment = messageAlignment
@@ -82,7 +83,7 @@ fun ImageMessagesLayout(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
-                if (!messages.last().isMine) {
+                if (!messages.last().messageDetails.isMine) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
@@ -104,19 +105,10 @@ fun ImageMessagesLayout(
                         .background(color = messageBackground, shape = messageShape)
                         .padding(Theme.spacing._4)
                 ) {
-                    val imageDataList = messages.map { imageData ->
-                        when (imageData.content) {
-                            is MessageContent.Image -> {
-                                val images = imageData.content.data
-                                when (images) {
-                                    is ImageData.ImageUrl -> images.url
-                                    is ImageData.ImageByteArray -> images.byteArray
-                                }
-
-                            }
-
-                            is MessageContent.Text -> return@Column
-                            is MessageContent.Audio -> return@Column
+                    val imageDataList = messages.map { message ->
+                        when (message.imageDate) {
+                            is ImageData.ImageUrl -> message.imageDate.url
+                            is ImageData.ImageByteArray -> message.imageDate.byteArray
                         }
                     }
 
@@ -135,9 +127,9 @@ fun ImageMessagesLayout(
                 val lastMessage = messages.last()
 
                 MessageInfo(
-                    messageTime = lastMessage.sendTime,
-                    messageStatus = lastMessage.status,
-                    messageIsMine = lastMessage.isMine,
+                    messageTime = lastMessage.messageDetails.sendTime,
+                    messageStatus = lastMessage.messageDetails.status,
+                    messageIsMine = lastMessage.messageDetails.isMine,
                     onFailClick = { onFailClick(lastMessage) },
                 )
             }
@@ -154,13 +146,15 @@ private fun Preview() {
         ) {
             ImageMessagesLayout(
                 messages = listOf(
-                    MessageUiState(
-                        Uuid.random(),
-                        Uuid.random(),
-                        sendTime = LocalDateTime.now(),
-                        status = MessageStatus.READ,
-                        isMine = false,
-                        content = MessageContent.Image(ImageData.ImageUrl("https://images"))
+                    ImageMessageUiState(
+                        messageDetails = MessageDetailsUiState(
+                            Uuid.random(),
+                            Uuid.random(),
+                            sendTime = LocalDateTime.now(),
+                            status = MessageStatus.READ,
+                            isMine = false,
+                        ),
+                        imageDate = ImageData.ImageUrl("https://images")
                     )
                 ),
                 showMessageInfo = true,
@@ -169,13 +163,15 @@ private fun Preview() {
             )
             ImageMessagesLayout(
                 messages = listOf(
-                    MessageUiState(
-                        Uuid.random(),
-                        Uuid.random(),
-                        sendTime = LocalDateTime.now(),
-                        status = MessageStatus.FAILED,
-                        isMine = true,
-                        content = MessageContent.Image(ImageData.ImageUrl("https://images"))
+                    ImageMessageUiState(
+                        messageDetails = MessageDetailsUiState(
+                            Uuid.random(),
+                            Uuid.random(),
+                            sendTime = LocalDateTime.now(),
+                            status = MessageStatus.FAILED,
+                            isMine = true,
+                        ),
+                        imageDate = ImageData.ImageUrl("https://images")
                     )
                 ),
                 showMessageInfo = true,

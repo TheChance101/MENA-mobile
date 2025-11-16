@@ -3,7 +3,8 @@
 package net.thechance.mena.core_chat.presentation.screen.chat
 
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.AudioData
+import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -28,7 +29,7 @@ data class ChatScreenState(
     val userData: UserData = UserData(),
     val selectedMessage: MessageUiState? = null,
     val isImagePagerVisible: Boolean = false,
-    val selectedImageMessages: List<MessageUiState> = emptyList(),
+    val selectedImageMessages: List<ImageMessageUiState> = emptyList(),
     val isReactionDialogVisible: Boolean = false,
     val messageToReactTo: MessageUiState? = null,
     val isRecordingVoice : Boolean = false
@@ -40,21 +41,19 @@ data class UserData(
     val imageUrl: String = ""
 )
 
-sealed interface ChatListItem {
-    data class DateSeparator(val label: UiText) : ChatListItem
-    data class TextMessage(val data: MessageUiState) : ChatListItem
-    data class ImageMessages(val data: List<MessageUiState>) : ChatListItem
-    data class VoiceMessage(
-        val data: MessageUiState,
-        val isPlaying: Boolean,
-        val isLoading: Boolean,
-        val progress: Float,
-        val duration: Long,
-        val waveformData: List<Float> = emptyList()
-    ) : ChatListItem
+sealed interface ChatListItem
+
+data class DateSeparator(val label: UiText) : ChatListItem
+
+sealed class MessageUiState(open val messageDetails: MessageDetailsUiState) : ChatListItem {
+    fun copyMessage(messageDetails: MessageDetailsUiState): MessageUiState = when (this) {
+        is AudioMessageUiState -> copy(messageDetails = messageDetails)
+        is ImageMessageUiState -> copy(messageDetails = messageDetails)
+        is TextMessageUiState -> copy(messageDetails = messageDetails)
+    }
 }
 
-data class MessageUiState(
+data class MessageDetailsUiState(
     val id: Uuid = Uuid.random(),
     val senderId: Uuid = Uuid.random(),
     val chatId: Uuid = Uuid.random(),
@@ -63,7 +62,28 @@ data class MessageUiState(
     val isMine: Boolean = true,
     val isLastInSeries: Boolean = false,
     val isVisibleMessageInfo: Boolean = false,
-    val content: MessageContent,
     val reactions: List<MessageReaction> = emptyList(),
-    val waveformData: List<Float>? = null
 )
+data class TextMessageUiState(
+    val text: String,
+    override val messageDetails: MessageDetailsUiState,
+) : MessageUiState(messageDetails)
+
+data class ImagesGroupChatItem(
+    val imagesUiState: List<ImageMessageUiState>
+): ChatListItem
+
+data class ImageMessageUiState(
+    val imageDate: ImageData,
+    override val messageDetails: MessageDetailsUiState,
+) : MessageUiState(messageDetails)
+
+data class AudioMessageUiState(
+    val data: AudioData,
+    val isPlaying: Boolean,
+    val isLoading: Boolean,
+    val progress: Float,
+    val duration: Long,
+    val waveformData: List<Float> = emptyList(),
+    override val messageDetails: MessageDetailsUiState
+) : MessageUiState(messageDetails)
