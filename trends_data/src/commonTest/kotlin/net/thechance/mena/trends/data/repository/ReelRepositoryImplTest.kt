@@ -353,7 +353,13 @@ internal class ReelRepositoryImplTest {
         networkClient = createReelsHttpClient {
             getReelsResponse()
         }
-        repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+        repository = ReelsRepositoryImpl(
+            networkClient,
+            uploadClient,
+            videoHandler,
+            userRepository,
+            userEngagementDao
+        )
 
         val result = repository.getFavoriteReels(1)
 
@@ -366,7 +372,13 @@ internal class ReelRepositoryImplTest {
             networkClient = createReelsHttpClient {
                 getReelsResponse()
             }
-            repository = ReelsRepositoryImpl(networkClient, uploadClient, videoHandler)
+        repository = ReelsRepositoryImpl(
+            networkClient,
+            uploadClient,
+            videoHandler,
+            userRepository,
+            userEngagementDao
+        )
 
             val result = repository.getFavoriteReels(1, reelId = REEL_ID)
 
