@@ -18,6 +18,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.OrderMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -32,6 +33,7 @@ fun ChatListItem(
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
+    onViewOrderDetailsClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     modifier: Modifier = Modifier
@@ -55,10 +57,10 @@ fun ChatListItem(
                 message = item,
                 chatAvatarUrl = chatAvatarUrl,
                 showMessageInfo = (
-                    item.messageDetails.isVisibleMessageInfo
-                    || item.messageDetails.isLastInSeries
-                    || item.messageDetails.status == MessageStatus.FAILED
-                ),
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED
+                        ),
                 isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                 onMessageClick = { onMessageClick(item.messageDetails.id) },
                 onMessageLongClick = { onMessageLongClick(item) },
@@ -73,10 +75,10 @@ fun ChatListItem(
                 messages = imageMessages,
                 chatAvatarUrl = chatAvatarUrl,
                 showMessageInfo = (
-                    imageMessages.first().messageDetails.isVisibleMessageInfo
-                    || imageMessages.first().messageDetails.isLastInSeries
-                    || imageMessages.first().messageDetails.status == MessageStatus.FAILED
-                ),
+                        imageMessages.first().messageDetails.isVisibleMessageInfo
+                                || imageMessages.first().messageDetails.isLastInSeries
+                                || imageMessages.first().messageDetails.status == MessageStatus.FAILED
+                        ),
                 isMarkedLastInSeries = imageMessages.first().messageDetails.isLastInSeries,
                 onMessageImageClick = onMessageImageClick,
                 onFailClick = onFailedMessageClick,
@@ -93,10 +95,10 @@ fun ChatListItem(
                     message = item,
                     chatAvatarUrl = chatAvatarUrl,
                     showMessageInfo = (
-                        item.messageDetails.isVisibleMessageInfo
-                        || item.messageDetails.isLastInSeries
-                        || item.messageDetails.status == MessageStatus.FAILED
-                    ),
+                            item.messageDetails.isVisibleMessageInfo
+                                    || item.messageDetails.isLastInSeries
+                                    || item.messageDetails.status == MessageStatus.FAILED
+                            ),
                     isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                     isMessageLoading = item.isLoading || item.isPlaying,
                     progress = item.progress,
@@ -123,6 +125,24 @@ fun ChatListItem(
                 isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                 onMessageImageClick = onMessageImageClick,
                 onFailClick = onFailedMessageClick,
+            )
+        }
+
+        is OrderMessageUiState -> {
+            OrderMessageLayout(
+                message = item,
+                showMessageInfo = (
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED
+                        ),
+                isMarkedLastInSeries = item.messageDetails.isLastInSeries,
+                onViewOrderDetailsClick = { onViewOrderDetailsClick(item.orderId) },
+                modifier = modifier,
+                chatAvatarUrl = chatAvatarUrl,
+                onMessageClick = { onMessageClick },
+                onMessageLongClick = { onMessageLongClick },
+                onFailClick = onFailedMessageClick
             )
         }
     }

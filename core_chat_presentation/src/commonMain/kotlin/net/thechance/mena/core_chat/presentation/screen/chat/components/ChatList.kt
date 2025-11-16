@@ -32,6 +32,7 @@ fun ChatList(
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
+    onViewOrderDetailsClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
@@ -66,6 +67,7 @@ fun ChatList(
                 onMessageClick = onMessageClick,
                 onMessageImageClick = onMessageImageClick,
                 onMessageVoiceClick = onMessageVoiceClick,
+                onViewOrderDetailsClick = onViewOrderDetailsClick,
                 onFailedMessageClick = onFailedMessageClick,
                 onMessageLongClick = onMessageLongClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
