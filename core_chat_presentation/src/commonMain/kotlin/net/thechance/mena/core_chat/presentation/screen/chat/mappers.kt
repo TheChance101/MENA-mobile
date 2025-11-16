@@ -17,7 +17,6 @@ import net.thechance.mena.core_chat.presentation.utils.now
 import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import net.thechance.mena.core_chat.presentation.provider.SurahNameProvider
 
 
 fun LocalDate.toLabel(
@@ -124,7 +123,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
     }
 }
 
-suspend fun Message.toUi(surahNameProvider: SurahNameProvider): MessageUiState {
+ fun Message.toUi(): MessageUiState {
     val messageDetails = MessageDetailsUiState(
         id = id,
         senderId = senderId,
@@ -159,7 +158,7 @@ suspend fun Message.toUi(surahNameProvider: SurahNameProvider): MessageUiState {
             surahId = content.surahId,
             ayahContent = content.ayahContent,
             ayahNumber = content.ayahNumber,
-            surahName = surahNameProvider.getSurahName(content.surahId),
+            surahName = "",
             messageDetails = messageDetails
         )
     }
