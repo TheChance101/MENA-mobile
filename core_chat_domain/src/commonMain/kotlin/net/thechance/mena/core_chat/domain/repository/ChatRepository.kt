@@ -21,7 +21,7 @@ interface ChatRepository {
 
     fun observeChatSummariesSyncState(): Flow<SyncState>
 
-    fun observeChatSummaries(): Flow<List<ChatSummary>>
+    fun observeChatSummaries(maxItems: Int): Flow<List<ChatSummary>>
     suspend fun getChatSummaryById(chatId: Uuid): ChatSummary
 
     @OptIn(ExperimentalTime::class)
