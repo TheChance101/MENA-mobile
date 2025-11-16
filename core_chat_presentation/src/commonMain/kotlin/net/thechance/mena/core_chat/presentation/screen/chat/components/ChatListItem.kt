@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.AudioMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
@@ -125,15 +126,20 @@ fun ChatListItem(
                 onFailClick = onFailedMessageClick,
             )
         }
-        is ChatListItem.AyahMessage -> {
+
+        is AyahMessageUiState -> {
             AyahMessageLayout(
-                message = item.data,
-                showMessageInfo = item.data.isVisibleMessageInfo,
-                isMarkedLastInSeries = item.data.isLastInSeries,
+                message = item,
+                showMessageInfo = (
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED
+                        ),
+                isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                 chatAvatarUrl = chatAvatarUrl,
-                onFailClick = { onFailedMessageClick(item.data) },
-                onMessageLongClick = { onMessageLongClick(item.data) },
-                onMessageClick = { onMessageClick(item.data.id) },
+                onFailClick = { onFailedMessageClick(item) },
+                onMessageLongClick = { onMessageLongClick(item) },
+                onMessageClick = { onMessageClick(item.messageDetails.id) },
                 modifier = modifier
             )
         }

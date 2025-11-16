@@ -21,12 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.core_chat.presentation.designSystem.theme.quran
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState // 🎯 التغيير هنا
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState // 🎯 التغيير هنا
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -40,27 +40,28 @@ fun AyahMessageLayout(
     onFailClick: () -> Unit = {},
     onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
-    message: MessageUiState,
+    message: AyahMessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
     chatAvatarUrl: String? = null,
 ) {
-    val ayahContent = message.content as? MessageContent.Ayah ?: return
-    val surahName = message.surahName ?: "Unknown Surah"
+    val surahName = message.surahName
+    val messageDetails = message.messageDetails
+
     val messageBackground =
-        if (message.isMine) Theme.colorScheme.background.surfaceLow
+        if (messageDetails.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
     val maxRadius = Theme.radius.md
-    val messageShape = if (message.isMine && isMarkedLastInSeries)
+    val messageShape = if (messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
             bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
-    else if (!message.isMine && isMarkedLastInSeries)
+    else if (!messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
@@ -74,23 +75,23 @@ fun AyahMessageLayout(
     val avatarSpacing = Theme.spacing._8
     val myMessageMarginStart = Theme.spacing._24
     val otherMessageMarginEnd = Theme.spacing._8
-    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
+    val messageInfoAlignment = if (messageDetails.isMine) Alignment.Start else Alignment.End
 
-    val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
-    val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+    val messageBubblePaddingStart = if (messageDetails.isMine) myMessageMarginStart else 0.dp
+    val messageBubblePaddingEnd = if (messageDetails.isMine) 0.dp else otherMessageMarginEnd
 
-    val infoRowPaddingStart = if (message.isMine) {
+    val infoRowPaddingStart = if (messageDetails.isMine) {
         myMessageMarginStart
     } else {
         avatarSize + avatarSpacing
     }
-    val infoRowPaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+    val infoRowPaddingEnd = if (messageDetails.isMine) 0.dp else otherMessageMarginEnd
 
-    val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
+    val messageAlignment = if (messageDetails.isMine) Alignment.End else Alignment.Start
 
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = if (message.isMine) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = if (messageDetails.isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
@@ -100,7 +101,7 @@ fun AyahMessageLayout(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
             ) {
-                if (!message.isMine) {
+                if (!messageDetails.isMine) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
@@ -150,14 +151,14 @@ fun AyahMessageLayout(
                                 color = Theme.colorScheme.shadeTertiary
                             )
                             Text(
-                                text = "Aya ${ayahContent.ayahNumber}",
+                                text = "Aya ${message.ayahNumber}",
                                 style = Theme.typography.label.small,
                                 color = Theme.colorScheme.shadePrimary
                             )
                         }
 
                         Text(
-                            text = ayahContent.ayahContent,
+                            text = message.ayahContent,
                             style = Theme.typography.quran.medium,
                             color = Theme.colorScheme.shadeSecondary,
                             modifier = Modifier.fillMaxWidth()
@@ -172,25 +173,25 @@ fun AyahMessageLayout(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!message.isMine && message.reactions.isNotEmpty()) {
+                if (!messageDetails.isMine && messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
-                        reactions = message.reactions,
+                        reactions = messageDetails.reactions,
                         modifier = Modifier.offset(y = (-8).dp)
                     )
                 }
 
                 AnimatedVisibility(visible = showMessageInfo) {
                     MessageInfo(
-                        messageTime = message.sendTime,
-                        messageStatus = message.status,
-                        messageIsMine = message.isMine,
+                        messageTime = messageDetails.sendTime,
+                        messageStatus = messageDetails.status,
+                        messageIsMine = messageDetails.isMine,
                         onFailClick = onFailClick,
                     )
                 }
 
-                if (message.isMine && message.reactions.isNotEmpty()) {
+                if (messageDetails.isMine && messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
-                        reactions = message.reactions,
+                        reactions = messageDetails.reactions,
                         modifier = Modifier.offset(y = (-8).dp)
                     )
                 }
@@ -198,6 +199,7 @@ fun AyahMessageLayout(
         }
     }
 }
+
 @Preview
 @Composable
 private fun AyahMessageLayoutPreview() {
@@ -206,17 +208,19 @@ private fun AyahMessageLayoutPreview() {
             modifier = Modifier.fillMaxWidth()
         ) {
             AyahMessageLayout(
-                message = MessageUiState(
-                    id = Uuid.random(),
-                    chatId = Uuid.random(),
-                    status = MessageStatus.READ,
-                    isMine = false,
-                    content = MessageContent.Ayah(
-                        ayahContent = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًا وَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
-                        surahId = 4,
-                        ayahNumber = 176
-                    ),
-                    reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random()))
+                message = AyahMessageUiState(
+                    surahId = 4,
+                    ayahContent = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ " +
+                            "هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًاوَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
+                    ayahNumber = 176,
+                    surahName = "An-Nisa",
+                    messageDetails = MessageDetailsUiState(
+                        id = Uuid.random(),
+                        chatId = Uuid.random(),
+                        status = MessageStatus.READ,
+                        isMine = false,
+                        reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random()))
+                    )
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true,
