@@ -4,7 +4,6 @@ import org.jetbrains.compose.resources.DrawableResource
 
 data class DownloadedSurUiState(
     val surDetails: List<SurahDetailsUiState> = emptyList(),
-    val downloadedReciters: List<Any> = emptyList(),
     val selectedSurahForDelete: Int? = null,
     val showDeleteConfirmationDialog: Boolean = false,
 ) {

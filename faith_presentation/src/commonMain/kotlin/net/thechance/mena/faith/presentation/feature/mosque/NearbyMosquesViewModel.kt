@@ -15,10 +15,7 @@ import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.domain.usecase.CalculateDistanceUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.utils.extentions.roundTo2Decimals
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
@@ -28,10 +25,8 @@ internal class NearbyMosquesViewModel(
     private val locationService: LocationService,
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    snackbarHandler: SnackbarHandler
 ) : BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
     initialState = NearbyMosquesMapUiState(),
-    snackbarHandler = snackbarHandler,
 ), NearbyMosquesInteractionListener {
     init {
         getUserLocation()
@@ -43,7 +38,7 @@ internal class NearbyMosquesViewModel(
             onSuccess = ::onGetUserLocationSuccess,
             onError = {
                 sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
-                handleErrorBySnackBar(it)
+                handleErrorSnackBar(it)
             }
         )
     }
@@ -82,7 +77,7 @@ internal class NearbyMosquesViewModel(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
-            onError = ::handleErrorBySnackBar,
+            onError = ::handleErrorSnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -143,7 +138,7 @@ internal class NearbyMosquesViewModel(
             onSuccess = ::handleNearbyMosquesSuccess,
             onError = { error ->
                 updateState { it.copy(isLoading = false) }
-                handleErrorBySnackBar(error)
+                handleErrorSnackBar(error)
             },
             dispatcher = dispatcher
         )
@@ -209,19 +204,7 @@ internal class NearbyMosquesViewModel(
     }
 
     override fun showSuccessMessage(message: String) {
-        snackbarHandler.showSnackBar(
-            message = { message },
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
-    }
-
-    private fun handleErrorBySnackBar(error: ErrorState) {
-        snackbarHandler.showSnackBar(
-            message = error.message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope,
-        )
+        handleSuccessSnackBar(message)
     }
 
     override fun onViewOnMapClick(coordinate: Coordinate) {

@@ -20,10 +20,9 @@ import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
+import org.jetbrains.compose.resources.getString
 
 class SurahViewModel(
     private val surahArgs: SurahArgs,
@@ -32,10 +31,8 @@ class SurahViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
     private val quranPlayer: QuranPlayer,
-    snackbarHandler: SnackbarHandler
 ) : BaseViewModel<SurahUiState, SurahScreenEffect>(
     initialState = SurahUiState(surahId = surahArgs.surahId),
-    snackbarHandler = snackbarHandler
 ), SurahInteractionListener {
 
     init {
@@ -49,7 +46,6 @@ class SurahViewModel(
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { ayat -> handleLoadSurahSuccess(ayat) },
             onFinally = { updateState { it.copy(isLoading = false) } },
-            onError = ::showErrorBookMarkSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -172,7 +168,6 @@ class SurahViewModel(
                 )
             },
             onSuccess = { handleAddBookmarkSuccess() },
-            onError = ::showErrorBookMarkSnackBar,
             dispatcher = dispatcher
         )
         updateState {
@@ -269,6 +264,7 @@ class SurahViewModel(
         }
         updateSurahName(surahArgs.surahId)
     }
+
     private fun updateSurahName(surahId: Int) {
         tryToExecute(
             execute = { quranRepository.getSurahById(surahId) },
@@ -277,7 +273,7 @@ class SurahViewModel(
         )
     }
 
-    private fun handleCopySuccess(ayahContent: String) {
+    private suspend fun handleCopySuccess(ayahContent: String) {
         showCopySuccessSnackBar()
         updateState {
             it.copy(
@@ -288,30 +284,18 @@ class SurahViewModel(
         }
     }
 
-    private fun handleAddBookmarkSuccess() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.bookmark_added_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
+    private suspend fun handleAddBookmarkSuccess() {
+        handleSuccessSnackBar(getString(Res.string.bookmark_added_successfully))
+
     }
 
-    private fun showCopySuccessSnackBar() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.copied_ayah_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
+    private suspend fun showCopySuccessSnackBar() {
+        handleSuccessSnackBar(getString(Res.string.copied_ayah_successfully))
     }
 
     private fun showErrorSnackBar() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.copied_ayah_failed,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope
-        )
+        handleErrorSnackBar(ErrorState(Res.string.copied_ayah_failed))
     }
-
 
     private fun handleBasmalaVisibility(surahId: Int) {
         val isTawbah = surahId == Surah.SurahOrder.AtTawbah.order
@@ -326,11 +310,4 @@ class SurahViewModel(
         }
     }
 
-    private fun showErrorBookMarkSnackBar(error: ErrorState) {
-        snackbarHandler.showSnackBar(
-            message = error.message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope,
-        )
-    }
 }
