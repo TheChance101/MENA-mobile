@@ -39,6 +39,7 @@ fun LocalDateTime.formatAsTime(am: String, pm: String): String {
         amPmHour()
         char(':')
         minute()
+        char(' ')
         amPmMarker(am, pm)
     }
     return this.format(timeFormat)
@@ -65,6 +66,7 @@ fun LocalDateTime.formatAsPastDateTime(
         amPmHour()
         char(':')
         minute()
+        char(' ')
         amPmMarker(am, pm)
         char(' ')
         day()

@@ -43,8 +43,10 @@ fun ChatItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onChatClicked(chat) },
+            .clickable { onChatClicked(chat) }
+            .padding(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CircularAvatar(
             contactImageUri = chat.imageUrl,
@@ -118,8 +120,8 @@ private fun TimeAndStatus(chat: ChatUiState) {
 @Composable
 private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
     val lastMessage = if (chat.lastMessage == null) ""
-        else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
-        else chat.lastMessage.text
+    else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
+    else chat.lastMessage.text
 
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)

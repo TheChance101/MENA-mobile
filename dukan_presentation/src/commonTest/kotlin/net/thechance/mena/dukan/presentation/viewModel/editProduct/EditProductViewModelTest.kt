@@ -215,6 +215,12 @@ class EditProductViewModelTest {
     }
 
     @Test
+    fun `onPriceAfterDiscountChange SHOULD update price after discount`() = scope.runTest {
+        viewModel.onPriceAfterDiscountChange("80.99")
+        assertEquals("80.99", viewModel.state.value.priceAfterDiscount)
+    }
+
+    @Test
     fun `onPriceChange SHOULD filter non-digit characters`() = scope.runTest {
         viewModel.onPriceChange("99.99abc")
         assertEquals("99.99", viewModel.state.value.price)
@@ -1092,6 +1098,7 @@ class EditProductViewModelTest {
         val state = testViewModel.state.value
         assertEquals(fakeProduct().name, state.productName)
         assertEquals("99.99", state.price)
+        assertEquals("99.99", state.priceAfterDiscount)
         assertTrue(state.existingImageUrls.isEmpty())
     }
 
@@ -1479,6 +1486,7 @@ private fun createSelectedShelfUi(shelf: Shelf = fakeShelves().first()): EditPro
 private fun EditProductViewModel.updateStateWithValidProduct(
     productName: String = "Test Product",
     price: String = "50.0",
+    priceAfterDiscount: String = "40.0",
     description: String = "Valid description".padEnd(120, 'x'),
     selectedShelf: EditProductUiState.ShelfUiState? = null,
     existingImageUrls: List<String> = listOf("existing-url"),
@@ -1493,6 +1501,7 @@ private fun EditProductViewModel.updateStateWithValidProduct(
                 if (it.id == shelf.id) shelf else it
             },
             price = price,
+            priceAfterDiscount = priceAfterDiscount,
             description = description,
             existingImageUrls = existingImageUrls,
             images = images

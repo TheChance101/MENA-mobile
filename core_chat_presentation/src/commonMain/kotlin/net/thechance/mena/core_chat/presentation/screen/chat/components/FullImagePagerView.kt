@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,9 +43,8 @@ import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
 import mena.core_chat_presentation.generated.resources.pm
 import net.thechance.mena.core_chat.domain.entity.ImageData
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.utils.formatAsPastDateTime
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
@@ -56,15 +56,15 @@ import org.jetbrains.compose.resources.stringResource
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FullImagePagerView(
-    messages: List<MessageUiState>,
+    messages: List<ImageMessageUiState>,
     senderName: String,
     senderImageUrl: String,
     initialPage: Int,
     onCloseClick: () -> Unit,
-    onImageLongClick: (message: MessageUiState) -> Unit,
+    onImageLongClick: (message: ImageMessageUiState) -> Unit,
     onDownloadClick: (String) -> Unit,
 ) {
-    if (messages.isEmpty() || messages.first().content !is MessageContent.Image) return onCloseClick()
+    if (messages.isEmpty()) return onCloseClick()
 
     val pagerState = rememberPagerState(
         initialPage = initialPage,
@@ -75,12 +75,13 @@ fun FullImagePagerView(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
             .combinedClickable(
                 onClick = {},
-                onLongClick = { onImageLongClick(message) }
+                onLongClick = { onImageLongClick(message) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
             )
     ) {
-        if (messages[pagerState.currentPage].content !is MessageContent.Image) return onCloseClick()
 
-        val images = messages.map { (it.content as MessageContent.Image).data }
+        val images = messages.map { it.imageDate }
         HorizontalImagePager(state = pagerState, images = images)
         FabButton(
             painter = painterResource(Res.drawable.ic_cancel),
@@ -96,16 +97,15 @@ fun FullImagePagerView(
             ).statusBarsPadding(),
         )
         val message = messages[pagerState.currentPage]
-        val isUrlImage =
-            message.content is MessageContent.Image && message.content.data is ImageData.ImageUrl
+        val isUrlImage = message.imageDate is ImageData.ImageUrl
 
         PagerOverlay(
             senderName = senderName,
             senderImageUrl = senderImageUrl,
-            time = message.sendTime,
+            time = message.messageDetails.sendTime,
             isDownloadButtonVisible = isUrlImage,
             message = message,
-            onDownloadClicked = { if (isUrlImage) onDownloadClick((message.content.data as ImageData.ImageUrl).url) },
+            onDownloadClicked = { if (isUrlImage) onDownloadClick((message.imageDate).url) },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
@@ -165,7 +165,7 @@ private fun PagerOverlay(
     senderName: String,
     senderImageUrl: String,
     time: LocalDateTime,
-    message: MessageUiState,
+    message: ImageMessageUiState,
     onDownloadClicked: () -> Unit,
     modifier: Modifier = Modifier,
     isDownloadButtonVisible: Boolean,
@@ -222,8 +222,8 @@ private fun PagerOverlay(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8, Alignment.CenterHorizontally)
         ) {
-            if (message.reactions.isNotEmpty()) {
-                ReactionBubble(reactions = message.reactions)
+            if (message.messageDetails.reactions.isNotEmpty()) {
+                ReactionBubble(reactions = message.messageDetails.reactions)
             }
             if (isDownloadButtonVisible) {
                 FabButton(

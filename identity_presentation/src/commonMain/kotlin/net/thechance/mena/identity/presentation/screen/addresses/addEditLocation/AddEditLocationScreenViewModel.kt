@@ -14,19 +14,19 @@ import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
-import net.thechance.mena.identity.presentation.base.error.handleLocationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.createNavigateToMapEffect
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toAddressInput
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState.AddEditAddressUIState
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.util.isSaveEnabled
 import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
@@ -232,7 +232,7 @@ class AddEditLocationScreenViewModel(
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
             is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+            is AuthenticationException -> mapAuthenticationErrorToMessage(handleLocationAuthenticationException(throwable))
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }

@@ -83,6 +83,14 @@ class CreateProductViewModelTest {
             assertEquals("12.50", awaitItem().price)
         }
     }
+    @Test
+    fun `onPriceAfterDiscountChange should update price after discount`() = scope.runTest {
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onPriceAfterDiscountChange("10.50")
+            assertEquals("10.50", awaitItem().priceAfterDiscount)
+        }
+    }
 
     @Test
     fun `onDescriptionChange should update description`() = scope.runTest {

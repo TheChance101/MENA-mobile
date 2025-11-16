@@ -23,8 +23,8 @@ import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpV
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryViewModel
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageViewModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ForgetPasswordOtpScreenViewModel
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ForgetPasswordPhoneEntryScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ResetPasswordOtpScreenViewModel
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreenViewModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
@@ -51,8 +51,8 @@ val identityScreensModule = module {
     factoryOf(::NotImplementedScreenViewModel)
     factoryOf(::CreatePasswordViewModel)
     factoryOf(::AccountCreatedViewModel)
-    factoryOf(::ForgetPasswordPhoneEntryScreenViewModel)
-    factoryOf(::ForgetPasswordOtpScreenViewModel)
+    factoryOf(::ResetPasswordPhoneEntryScreenViewModel)
+    factoryOf(::ResetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
     factoryOf(::SetNewPasswordScreenViewModel)
     factoryOf(::AddressesScreenViewModel)
