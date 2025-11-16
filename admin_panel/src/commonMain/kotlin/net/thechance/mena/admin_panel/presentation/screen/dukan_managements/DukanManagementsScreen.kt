@@ -111,7 +111,7 @@ private fun onDukanManagementEffect(
 ) {
     when (effect) {
         is DukanManagementEffect.NavigateToDukanDetails -> {
-            navController.navigate(DukanDetails(effect.dukanId.toString()))
+            navController.navigate(DukanDetails)
         }
     }
 }
