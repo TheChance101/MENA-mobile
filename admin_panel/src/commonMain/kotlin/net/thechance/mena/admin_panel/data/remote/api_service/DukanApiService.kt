@@ -1,11 +1,13 @@
 package net.thechance.mena.admin_panel.data.remote.api_service
 
 import de.jensklingenberg.ktorfit.Response
+import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
 import de.jensklingenberg.ktorfit.http.POST
 import de.jensklingenberg.ktorfit.http.Path
 import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.admin_panel.data.remote.dto.DukanPagedResponse
+import net.thechance.mena.admin_panel.data.remote.dto.dukan.DeactivateDukanDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.DukanDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ProductDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ShelfDto
@@ -41,7 +43,8 @@ interface DukanApiService {
 
     @POST(DUKAN_DEACTIVATION_ENDPOINT)
     suspend fun deactivateDukan(
-        @Path("dukanId") dukanId: String
+        @Path("dukanId") dukanId: String,
+        @Body deactivateReason: DeactivateDukanDto
     ): Response<Unit>
 
     private companion object {

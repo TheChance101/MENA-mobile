@@ -19,5 +19,5 @@ interface DukanRepository {
 
     suspend fun activateDukan(dukanId: Uuid)
 
-    suspend fun deactivateDukan(dukanId: Uuid)
+    suspend fun deactivateDukan(dukanId: Uuid, deactivateReason: String)
 }

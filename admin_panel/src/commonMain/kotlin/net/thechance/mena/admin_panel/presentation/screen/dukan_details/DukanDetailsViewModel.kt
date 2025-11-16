@@ -110,7 +110,12 @@ class DukanDetailsViewModel(
 
     override fun onConfirmDukanDeactivationButtonClicked() {
         tryToExecute(
-            callee = { dukanRepository.deactivateDukan(currentState.dukan.id) },
+            callee = {
+                dukanRepository.deactivateDukan(
+                    dukanId = currentState.dukan.id,
+                    deactivateReason = currentState.deactivateReason
+                )
+            },
             onSuccess = { onDeactivationDukanSuccess() },
             onError = ::onDeactivationDukanError,
             onStart = { updateState { it.copy(isDeactivateBtnLoading = true) } },
@@ -131,7 +136,7 @@ class DukanDetailsViewModel(
         getDukanDetails()
     }
 
-    private suspend fun onActivationDukanSuccess(){
+    private suspend fun onActivationDukanSuccess() {
         updateState {
             it.copy(
                 dukan = currentState.dukan.copy(
@@ -147,7 +152,7 @@ class DukanDetailsViewModel(
         )
     }
 
-    private suspend fun onActivationDukanError(error: ErrorState){
+    private suspend fun onActivationDukanError(error: ErrorState) {
         updateState {
             it.copy(
                 errorState = error,
@@ -161,7 +166,7 @@ class DukanDetailsViewModel(
         )
     }
 
-    private suspend fun onDeactivationDukanSuccess(){
+    private suspend fun onDeactivationDukanSuccess() {
         onDeactivateDukanDialogDismissed()
         updateState {
             it.copy(
@@ -178,7 +183,7 @@ class DukanDetailsViewModel(
         )
     }
 
-    private suspend fun onDeactivationDukanError(error: ErrorState){
+    private suspend fun onDeactivationDukanError(error: ErrorState) {
         onDeactivateDukanDialogDismissed()
         updateState { it.copy(errorState = error, isDeactivateBtnLoading = false) }
         showSnackBar(
