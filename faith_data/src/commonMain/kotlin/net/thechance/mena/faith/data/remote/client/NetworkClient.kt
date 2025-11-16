@@ -2,6 +2,7 @@ package net.thechance.mena.faith.data.remote.client
 
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -11,6 +12,7 @@ import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -18,15 +20,16 @@ import net.thechance.mena.identity.domain.service.AuthorizationService
 
 class NetworkClient(
     private val authorizationService: AuthorizationService,
-    private val baseUrl: String
+    private val baseUrl: String,
+    private val engine: HttpClientEngine,
 ) {
     fun provideHttpClient(): HttpClient = configureBaseSettings()
 
     private fun configureBaseSettings(): HttpClient {
-        return HttpClient {
+        return HttpClient(engine = engine) {
             defaultRequest {
                 url(baseUrl)
-                contentType(io.ktor.http.ContentType.Application.Json)
+                contentType(ContentType.Application.Json)
             }
             install(ContentNegotiation) {
                 json(

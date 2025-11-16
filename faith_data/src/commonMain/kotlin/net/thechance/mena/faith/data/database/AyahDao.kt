@@ -21,6 +21,7 @@ interface AyahDao {
     SELECT 
         sura_no,
         sura_name_en,
+        sura_name_ar,
         CAST(COUNT(*) AS INTEGER) AS ayahCount
     FROM ayat 
     GROUP BY sura_no, sura_name_en

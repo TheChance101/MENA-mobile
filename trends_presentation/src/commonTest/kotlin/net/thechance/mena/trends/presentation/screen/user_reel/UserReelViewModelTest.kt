@@ -24,7 +24,9 @@ import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import kotlin.test.AfterTest
@@ -52,7 +54,7 @@ class UserReelViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
-        every { userReelArgs.isFromHome } returns true
+        every { userReelArgs.reelSource } returns Route.ReelSource.Home
         viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 
@@ -241,6 +243,15 @@ class UserReelViewModelTest {
     }
 
     @Test
+    fun `should call saveUserEngagementWithReel in repository when saveUserReelEngagement called`() =
+        runTest {
+            viewModel.saveUserReelEngagement(reelWatchSessionState, "1")
+            advanceUntilIdle()
+
+            verifySuspend { mockReelsRepository.saveUserEngagementWithReel(reelWatchSession) }
+        }
+
+    @Test
     fun `onAddReelLike method should add like to Reel when called`() = runTest {
         everySuspend { mockReelsRepository.addReelLike("2") } returns feedReels[0].copy(
             isLiked = true,
@@ -354,6 +365,28 @@ class UserReelViewModelTest {
         }
     }
 
+    @Test
+    fun `onClickRetry should update currentReelId clear error and reload reels`() = runTest {
+        viewModel.onNetworkError()
+        advanceUntilIdle()
+
+        viewModel.onClickRetry("123")
+        advanceUntilIdle()
+
+        verifySuspend { viewModel.onGetRefreshVideoUrl(any()) }
+    }
+
+    @Test
+    fun `onNetworkError should update error state to NoInternet`() = runTest {
+        viewModel.onNetworkError()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.error).isEqualTo(ErrorState.NoInternet)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
@@ -392,5 +425,20 @@ class UserReelViewModelTest {
         val feedReels = listOf(reel2, reel1)
 
         val expectedReelUiStateList = feedReels.map { it.toUserReelUiState() }
+
+        val reelWatchSessionState = ReelWatchSessionState(
+            reelId = "",
+            watchStartTime = LocalDateTime(2024, 12, 10, 15, 30),
+            watchEndTime = LocalDateTime(2024, 12, 10, 15, 31),
+            videoDurationInMilliseconds = 60000,
+            watchedDurationInMilliseconds = 60000
+        )
+        val reelWatchSession = ReelWatchSession(
+            reelId = "1",
+            watchStartTime = LocalDateTime(2024, 12, 10, 15, 30),
+            watchEndTime = LocalDateTime(2024, 12, 10, 15, 31),
+            videoDurationInMilliseconds = 60000,
+            percentageOfVideoWatched = 100.0f
+        )
     }
 }

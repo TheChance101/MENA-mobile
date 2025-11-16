@@ -67,10 +67,11 @@ import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -79,7 +80,6 @@ import net.thechance.mena.trends.presentation.shared.util.gradientShadow
 import net.thechance.mena.trends.presentation.video_player.VideoPlayer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -144,11 +144,11 @@ private fun UserReelScreenContent(
                 )
             }
 
-            dialog(state.isReelDeleted == true && state.error == null) {
+            dialog(state.isReelDeleted == true) {
                 Dialog(
                     title = stringResource(Res.string.success_delete_title),
                     message = stringResource(Res.string.success_delete_message),
-                    isVisible = state.isReelDeleted == true && state.error == null,
+                    isVisible = state.isReelDeleted == true,
                     onDismiss = {
                         listener.onDismissSuccessDialog()
                         listener.onClickBack()
@@ -166,11 +166,11 @@ private fun UserReelScreenContent(
                 )
             }
 
-            dialog(state.error != null) {
+            dialog(state.isReelDeleted == false) {
                 Dialog(
                     title = stringResource(Res.string.fail_delete_title),
                     message = stringResource(Res.string.fail_delete_message),
-                    isVisible = state.error != null,
+                    isVisible = state.isReelDeleted == false,
                     onDismiss = { listener.onDismissErrorDialog() },
                     dismissOnBackPress = true,
                     dismissOnClickOutside = true,
@@ -191,7 +191,7 @@ private fun UserReelScreenContent(
         )
 
         LaunchedEffect(pagerState.currentPage) {
-            if(reels.itemCount > 0) {
+            if (reels.itemCount > 0) {
                 reels[pagerState.currentPage]?.let { reel ->
                     listener.onChangeCurrentReel(reel.id)
                 }
@@ -200,24 +200,32 @@ private fun UserReelScreenContent(
 
         TopAppBar(onBackClick = listener::onClickBack, modifier = Modifier.zIndex(5f))
 
+        val hasNetworkError = state.error is ErrorState.NoInternet
+
         VerticalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize().background(Color.Black),
+            modifier = Modifier.fillMaxSize()
+                .background(if (hasNetworkError) Theme.colorScheme.background.surface else Color.Black),
             key = { page -> reels[page]?.id ?: page },
         ) { page ->
 
             reels[page]?.let { reel ->
-                ReelContent(
-                    reel = reel,
-                    shouldRender = (pagerState.currentPage == page),
-                    isDescriptionExpanded = state.isDescriptionExpanded,
-                    onDeleteClick = listener::onClickDelete,
-                    onDescriptionClick = listener::onClickDescription,
-                    onPublisherInfoClick = listener::onClickPublisherInfo,
-                    incrementViewsCount = { listener.increaseReelView(reel.id) },
-                    onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
-                    onGetRefreshUrl = listener::onGetRefreshVideoUrl
-                )
+                if (hasNetworkError) {
+                    NoConnection(onRetry = { listener.onClickRetry(reel.id) })
+                } else
+                    ReelContent(
+                        reel = reel,
+                        shouldRender = (pagerState.currentPage == page),
+                        isDescriptionExpanded = state.isDescriptionExpanded,
+                        onDeleteClick = listener::onClickDelete,
+                        onDescriptionClick = listener::onClickDescription,
+                        onPublisherInfoClick = listener::onClickPublisherInfo,
+                        incrementViewsCount = { listener.increaseReelView(reel.id) },
+                        onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
+                        onGetRefreshUrl = listener::onGetRefreshVideoUrl,
+                        saveReelWatchSession = { listener.saveUserReelEngagement(it, reel.id) },
+                        onNetworkError = listener::onNetworkError
+                    )
             }
         }
     }
@@ -257,6 +265,8 @@ private fun ReelContent(
     incrementViewsCount: () -> Unit,
     onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
+    onNetworkError: () -> Unit
 ) {
     val rememberedUrl = remember(reel.id) { reel.videoUrl }
     VideoPlayer(
@@ -265,7 +275,9 @@ private fun ReelContent(
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount,
         cacheKey = reel.id,
-        onRequestRefresh = { onGetRefreshUrl(reel.id) }
+        onRequestRefresh = { onGetRefreshUrl(reel.id) },
+        saveReelWatchSession = saveReelWatchSession,
+        onNetworkError = onNetworkError
     ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
@@ -290,7 +302,8 @@ private fun ReelContent(
 
             PublisherInfo(
                 userName = reel.username,
-                timeOfPublish = reel.createdAt?.asString() ?: stringResource(resource = Res.string.just_now),
+                timeOfPublish = reel.createdAt?.asString()
+                    ?: stringResource(resource = Res.string.just_now),
                 description = reel.description,
                 avatar = reel.profileImageUrl,
                 modifier = Modifier.align(Alignment.BottomCenter),

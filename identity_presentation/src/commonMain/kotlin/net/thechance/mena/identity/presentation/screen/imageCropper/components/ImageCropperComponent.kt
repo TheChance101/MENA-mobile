@@ -12,17 +12,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentEffect
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentInteractionListener
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperComponentViewModel
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
+import net.thechance.mena.identity.presentation.screen.imageCropper.utils.cropImageToByteArray
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import sv.lib.squircleshape.SquircleShape
@@ -30,8 +31,8 @@ import sv.lib.squircleshape.SquircleShape
 @Composable
 fun ImageCropperComponent(
     image: Painter,
-    onSaveButtonClicked: (imageBitmap: ImageBitmap) -> Unit,
-    onUploadAnotherImageClicked: (ImageBitmap) -> Unit,
+    onSaveButtonClicked: (imageByteArray: ByteArray) -> Unit,
+    onUploadAnotherImageClicked: (ByteArray) -> Unit,
     modifier: Modifier = Modifier,
     minScale: Float = 1f,
     maxScale: Float = 3f,
@@ -44,11 +45,11 @@ fun ImageCropperComponent(
         imagCropperViewModel.effect.collectLatest { effect ->
             when (effect) {
                 is ImageCropperComponentEffect.SaveImage -> {
-                    onSaveButtonClicked(effect.imageBitmap)
+                    onSaveButtonClicked(effect.imageByteArray)
                 }
 
                 is ImageCropperComponentEffect.UploadAnotherImage -> {
-                    onUploadAnotherImageClicked(effect.imageBitmap)
+                    onUploadAnotherImageClicked(effect.imageByteArray)
                 }
             }
         }
@@ -111,11 +112,17 @@ private fun Content(
 
         SaveButton(
             onClick = {
-                interactionListener.cropToBitmap(
+                val clippedImageByteArray = cropImageToByteArray(
                     painter = image,
                     density = density,
-                    layoutDirection = direction
+                    layoutDirection = direction,
+                    componentSize = state.componentSize,
+                    drawingSize = state.imageSize.toSize(),
+                    translation = state.translation,
+                    scale = state.scale
                 )
+
+                interactionListener.saveImageToGallery(clippedImageByteArray)
             },
             modifier = Modifier
                 .padding(top = Theme.spacing._12)

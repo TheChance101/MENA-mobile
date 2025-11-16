@@ -51,9 +51,22 @@
     <string name="react_to_message">التفاعل مع الرسالة</string>
     <string name="delete_chat_confirmation_message">هل أنت متأكد أنك تريد حذف هذه المحادثة؟ ستفقد جميع الرسائل ولن تتمكن من استعادتها؟</string>
     <string name="could_not_delete_chat">لم نتمكن من حذف المحادثة</string>
-    <string name="chat_deleted_successfully">تم حذف المحادثة بنجاح</string>
+    <string name="chat_deleted_successfully">تم حذف المحادثة</string>
+    <string name="could_not_get_balance">فشل جلب الرصيد الحالي</string>
     <string name="no_internet_connected">أنت غير متصل بالإنترنت، تحقق من الاتصال وحاول مرة أخرى.</string>
     <string name="error_recording_failed">فشل بدء التسجيل. يرجى المحاولة مرة أخرى.</string>
     <string name="error_invalid_recording">تسجيل غير صالح. يرجى محاولة التسجيل مرة أخرى.</string>
     <string name="error_failed_to_process_audio">فشل معالجة ملف الصوت. يرجى المحاولة مرة أخرى.</string>
+    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
+    <string name="just_now">الآن</string>
+    <string name="minute_ago">منذ دقيقة</string>
+    <string name="two_minutes_ago">منذ دقيقتين</string>
+    <string name="minutes_ago">منذ %1$d دقائق</string>
+    <string name="more_minutes_ago">منذ %1$d دقيقة</string>
+    <string name="hour_ago">منذ ساعة</string>
+    <string name="two_hours_ago">منذ ساعتين</string>
+    <string name="hours_ago">منذ %1$d ساعات</string>
+    <string name="more_hours_ago">منذ %1$d ساعة</string>
+    <string name="am">صباحًا</string>
+    <string name="pm">مساءً</string>
 </resources>

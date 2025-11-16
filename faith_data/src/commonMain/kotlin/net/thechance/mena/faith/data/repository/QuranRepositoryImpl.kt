@@ -11,8 +11,6 @@ import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toReciter
 import net.thechance.mena.faith.data.mapper.toReciterDto
 import net.thechance.mena.faith.data.mapper.toSurah
-import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
-import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.executeLocalSafely
@@ -22,22 +20,23 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.SYSTEM
 
 class QuranRepositoryImpl(
-    val ayahDao: AyahDao,
-    val surahSoundDao: SurahAudioDao,
-    val recitersDao: RecitersDao,
-    val tilawahApiService: TilawahApiService,
-    val tilawahDataStore: TilawahDataStore
+    private val ayahDao: AyahDao,
+    private val surahSoundDao: SurahAudioDao,
+    private val recitersDao: RecitersDao,
+    private val tilawahApiService: TilawahApiService,
+    private val tilawahDataStore: TilawahDataStore,
+    private val localizationService: LocalizationService,
 ) : QuranRepository {
-
     override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
-            ayahDao.getSur().map { it.toSurah() }
+            ayahDao.getSur().map { it.toSurah(localizationService.getCurrentLanguage()) }
         }
 
     override suspend fun getAyatOfSurah(surahId: Int): List<Ayah> =
@@ -97,7 +96,8 @@ class QuranRepositoryImpl(
         reciterId: Int
     ): String = executeApiSafely {
         tilawahApiService.getSurahSoundUrl(
-            SurahSoundRequest(reciterId, surahId)
+            reciterId = reciterId,
+            surahNumber = surahId,
         )
     }
 
@@ -108,13 +108,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getSurahById(surahId: Int): Surah =
         executeLocalSafely {
-            ayahDao.getSur().map { it.toSurah() }.find { it.id == surahId }
-                ?: Surah(
-                    id = 1,
-                    order = Surah.SurahOrder.AlFatihah,
-                    name = "الفاتحة",
-                    ayahCount = 7
-                )
+            ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
@@ -138,7 +132,9 @@ class QuranRepositoryImpl(
 
         return executeApiSafely<String> {
             tilawahApiService.getAyahSoundUrl(
-                AyahSoundUrlRequest(reciterId, ayahNumber, surahNumber)
+                reciterId = reciterId,
+                ayahNumber = ayahNumber,
+                surahNumber = surahNumber,
             )
         }
     }
