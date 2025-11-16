@@ -13,7 +13,11 @@ data class DepositScreenState(
     val availableCountries : List<CountryUiState> =emptyList()
 ) {
     val isFillWalletButtonEnabled: Boolean
-        get() = phoneNumber.isNotBlank() && (amount.toDoubleOrNull() ?: 0.0) > 0
+        get() {
+            val cleanedAmount = amount.replace(",", "")
+            return phoneNumber.isNotBlank() && (cleanedAmount.toDoubleOrNull() ?: 0.0) > 0
+        }
+
     data class CountryUiState(
         val name: String = "",
         val callingCode: String = "",

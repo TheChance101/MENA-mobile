@@ -3,7 +3,6 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.thechance.mena.admin_panel.domain.exceptions.InvalidAmountException
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
@@ -43,17 +42,15 @@ class DepositViewModel (
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
             is InvalidPhoneNumberException-> DepositErrorState.NoAccount
-            is InvalidAmountException-> DepositErrorState.NoAccount
             else -> ErrorState.UnknownError
         }
     }
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isDepositProcessLoading = true) } },
-            callee=::onFillWalletButtonClicked,
+            callee=::onFillWalletClicked,
             onSuccess = { onDepositSuccess() },
             onError = ::onDepositError,
-            onFinish = { updateState { it.copy(isDepositProcessLoading = false) } },
             dispatcher = dispatcher
         )
     }
@@ -70,10 +67,11 @@ class DepositViewModel (
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
         updateState { it.copy(country = country) }
     }
-    private suspend fun onFillWalletButtonClicked(){
-        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount =currentState.amount.toDouble() , currentState.country.toEntity())
+    private suspend fun onFillWalletClicked(){
+        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount = currentState.amount.replace(",", "").toDouble() , currentState.country.toEntity())
     }
     private suspend fun onDepositSuccess(){
+        updateState { it.copy(isDepositProcessLoading = false) }
         showSnackBar(
             title = stringProvider.getString(Res.string.success_deposit_title),
             message = stringProvider.getString(Res.string.success_deposit_description),
@@ -105,7 +103,6 @@ class DepositViewModel (
         }
 
         delay(durationMillis)
-
         hideSnackBar()
     }
     private fun hideSnackBar() {
@@ -114,6 +111,7 @@ class DepositViewModel (
         }
     }
     private suspend fun onDepositError(errorState: ErrorState) {
+        updateState { it.copy(isDepositProcessLoading = false) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),

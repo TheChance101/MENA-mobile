@@ -16,7 +16,6 @@ class DepositMoneyRepositoryImpl(
     private val publicApiService: PublicApiService
 ) : DepositMoneyRepository {
     override suspend fun depositMoney(phoneNumber: String, amount: Double) {
-        println("repo")
         executeApiSafely<Unit> {
             depositMoneyApiService.depositMoney(DepositRequestDto(
                 phoneNumber,

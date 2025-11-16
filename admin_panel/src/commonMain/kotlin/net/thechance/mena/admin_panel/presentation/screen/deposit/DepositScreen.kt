@@ -94,7 +94,8 @@ private fun DepositScreenContent(
                     PrimaryButton(
                         modifier = Modifier
                             .align(Alignment.End)
-                            .padding(top = 64.dp),
+                            .padding(top = 64.dp)
+                            .width(123.dp),
                         text = stringResource(Res.string.fill_the_wallet),
                         onClick = interactionListener::onFillTheWalletButtonClicked,
                         isEnabled = state.isFillWalletButtonEnabled,
