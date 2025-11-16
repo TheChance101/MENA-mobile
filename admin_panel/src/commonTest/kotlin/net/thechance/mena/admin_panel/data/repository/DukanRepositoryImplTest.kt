@@ -132,8 +132,8 @@ class DukanRepositoryImplTest {
 
         assertEquals(1, result.items.size)
         assertEquals("Product 1", result.items.first().name)
-        assertEquals(100.0, result.items.first().price)
-        assertEquals(80.0, result.items.first().discountedPrice)
+        assertEquals(100.0, result.items.first().finalPrice)
+        assertEquals(80.0, result.items.first().basePrice)
     }
 
     @Test

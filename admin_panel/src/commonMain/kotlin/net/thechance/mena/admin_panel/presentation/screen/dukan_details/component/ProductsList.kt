@@ -129,24 +129,24 @@ private fun ProductCard(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.weight(1f))
-            ProductPrice(discountedPrice = product.discountedPrice, price = product.price)
+            ProductPrice(basePrice = product.basePrice, finalPrice = product.finalPrice)
         }
     }
 }
 
 @Composable
 private fun ProductPrice(
-    discountedPrice: Double?,
-    price: Double,
+    basePrice: Double,
+    finalPrice: Double,
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Start
     ) {
-        discountedPrice?.let {
+        if (basePrice != finalPrice){
             Text(
                 modifier = Modifier.alignByBaseline(),
-                text = formatAmount(it),
+                text = formatAmount(basePrice),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
                 textDecoration = TextDecoration.LineThrough
@@ -156,7 +156,7 @@ private fun ProductPrice(
             modifier = Modifier
                 .padding(start = 2.dp)
                 .alignByBaseline(),
-            text = formatAmount(price),
+            text = formatAmount(finalPrice),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
