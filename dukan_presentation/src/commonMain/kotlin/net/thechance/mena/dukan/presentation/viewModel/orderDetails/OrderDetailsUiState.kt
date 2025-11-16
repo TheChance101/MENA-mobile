@@ -2,12 +2,21 @@
 
 package net.thechance.mena.dukan.presentation.viewModel.orderDetails
 
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class OrderDetailsUiState(
+    val orderDetailsScreenState: OrderDetailsScreenState = OrderDetailsScreenState.Loading,
+    val snackBarUiState: SnackBarUiState?= null,
     val orderUiState: OrderUiState = OrderUiState(),
 ) {
+    enum class OrderDetailsScreenState() {
+        Loading,
+        Success,
+        Error,
+    }
+
     data class OrderUiState(
         val orderId: Uuid = Uuid.random(),
         val orderNumber: Int = 0,

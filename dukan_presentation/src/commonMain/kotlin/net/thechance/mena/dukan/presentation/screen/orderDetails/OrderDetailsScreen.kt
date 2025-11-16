@@ -2,6 +2,7 @@
 
 package net.thechance.mena.dukan.presentation.screen.orderDetails
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,11 +21,15 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.CustomerInformationSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.DeliveryAddressSection
 import net.thechance.mena.dukan.presentation.screen.orderDetails.component.OrderSummary
 import net.thechance.mena.dukan.presentation.util.MapsNavigator
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsEffect
@@ -62,11 +67,13 @@ fun OrderDetailsScreen(
         }
     }
 
-    LaunchedEffect(key1 = state.orderUiState) {
+    LaunchedEffect(key1 = orderId) {
+        println("flzdfjlskfdj OrderDetailsScreen LaunchedEffect: $orderId")
         viewModel.loadOrderDetails(orderId)
     }
 
     OrderDetailsContent(
+        orderId = orderId,
         state = state,
         interactionListener = viewModel
     )
@@ -75,6 +82,7 @@ fun OrderDetailsScreen(
 
 @Composable
 private fun OrderDetailsContent(
+    orderId: Uuid,
     state: OrderDetailsUiState,
     interactionListener: OrderDetailsInteractionListener
 ) {
@@ -82,10 +90,11 @@ private fun OrderDetailsContent(
     Scaffold(
         topBar = {
             AppBar(
-                title = stringResource(
-                    Res.string.order_title,
-                    state.orderUiState.orderNumber
-                ),
+                title =
+                    if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Success)
+                        stringResource(Res.string.order_title, state.orderUiState.orderNumber)
+                    else
+                        stringResource(Res.string.order_title, ""),
                 titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16,
@@ -100,37 +109,67 @@ private fun OrderDetailsContent(
                 },
                 onLeadingClick = interactionListener::onBackClicked,
             )
+        },
+        snakeBar = {
+            state.snackBarUiState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = interactionListener::onSnackBarDismissed
+                )
+            }
         }
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                horizontal = Theme.spacing._16,
-                vertical = Theme.spacing._12
-            )
-        ) {
-            item {
-                OrderSummary(
-                    orderDate = state.orderUiState.orderDate,
-                    productsInOrder = state.orderUiState.productInOrder,
-                    discountAmount = state.orderUiState.discount,
-                    platformFeesAmount = state.orderUiState.platformFees,
-                    totalAmount = state.orderUiState.totalAmount,
+        AnimatedContent(
+            targetState = state.orderDetailsScreenState,
+            label = "Order Details Screen State Animation",
+            transitionSpec = { fadeTransitionSpec() },
+            modifier = Modifier.fillMaxSize()
+        ) { orderDetailsState ->
+            println("flzdfjlskfdj OrderDetailsScreen: $orderDetailsState")
+            when (orderDetailsState) {
+                OrderDetailsUiState.OrderDetailsScreenState.Loading -> LoadingDots(Modifier.fillMaxSize())
+                OrderDetailsUiState.OrderDetailsScreenState.Error -> NoInternetContent(
+                    onRetry = { interactionListener.onRetryLoadingOrderDetailsClicked(orderId) },
+                    modifier = Modifier.fillMaxSize()
                 )
-            }
-            item {
-                DeliveryAddressSection(
-                    address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
-                    onClick = interactionListener::onAddressDeliveryClicked,
-                    modifier = Modifier.padding(top = Theme.spacing._24)
-                )
-            }
-            item {
-                CustomerInformationSection(
-                    userName = state.orderUiState.customerName,
-                    userPhoneNumber = state.orderUiState.customerPhone,
-                    modifier = Modifier.padding(top = Theme.spacing._12)
-                )
+
+                OrderDetailsUiState.OrderDetailsScreenState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            horizontal = Theme.spacing._16,
+                            vertical = Theme.spacing._12
+                        )
+                    ) {
+                        item {
+                            OrderSummary(
+                                orderDate = state.orderUiState.orderDate,
+                                productsInOrder = state.orderUiState.productInOrder,
+                                discountAmount = state.orderUiState.discount,
+                                platformFeesAmount = state.orderUiState.platformFees,
+                                totalAmount = state.orderUiState.totalAmount,
+                            )
+                        }
+                        item {
+                            DeliveryAddressSection(
+                                address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
+                                onClick = {
+                                    interactionListener.onAddressDeliveryClicked(
+                                        address = state.orderUiState.addressDeliveryUiState
+                                    )
+                                },
+                                modifier = Modifier.padding(top = Theme.spacing._24)
+                            )
+                        }
+                        item {
+                            CustomerInformationSection(
+                                userName = state.orderUiState.customerName,
+                                userPhoneNumber = state.orderUiState.customerPhone,
+                                modifier = Modifier.padding(top = Theme.spacing._12)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -144,7 +183,8 @@ private fun OrderDetailsScreenPreview() {
     MenaTheme {
         OrderDetailsContent(
             state = PreviewOrderDetailsUiState.orderDetailsUiState,
-            interactionListener = PreviewOrderDetailsInteractionListener
+            interactionListener = PreviewOrderDetailsInteractionListener,
+            orderId = Uuid.random()
         )
     }
 }

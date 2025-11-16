@@ -44,7 +44,7 @@ fun DeliveryAddressSection(
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(bottom = Theme.spacing._8),
-            )
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,6 +73,7 @@ fun DeliveryAddressSection(
         }
     }
 }
+
 @Composable
 private fun OrderAddressIcon() {
     Box(
