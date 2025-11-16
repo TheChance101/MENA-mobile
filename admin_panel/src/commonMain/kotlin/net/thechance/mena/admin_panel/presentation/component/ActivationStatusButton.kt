@@ -24,7 +24,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ActivationStatus(
+fun ActivationStatusButton(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
