@@ -25,6 +25,7 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import kotlin.test.AfterTest
@@ -52,7 +53,7 @@ class UserReelViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
-        every { userReelArgs.isFromHome } returns true
+        every { userReelArgs.reelSource } returns Route.ReelSource.Home
         viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
     }
 

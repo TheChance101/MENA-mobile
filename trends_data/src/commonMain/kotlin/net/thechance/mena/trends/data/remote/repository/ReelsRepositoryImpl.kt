@@ -28,6 +28,7 @@ import net.thechance.mena.trends.data.remote.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 import net.thechance.mena.trends.data.remote.mapper.toReelUrls
+import net.thechance.mena.trends.data.util.NetworkEndpoint.FAVORITE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
@@ -169,6 +170,21 @@ internal class ReelsRepositoryImpl(
         return safeApiCall<ReelPathUrlsDto> {
             networkClient.get(urlString = "$TRENDS_PATH/$reelId/$REFRESH_REEL_ENDPOINT")
         }.toReelUrls()
+    }
+
+    override suspend fun getFavoriteReels(
+        pageNumber: Int,
+        reelId: String?
+    ): List<Reel> {
+        val endpoint = reelId?.let {
+            "$FAVORITE_REEL_ENDPOINT/$it"
+        } ?: FAVORITE_REEL_ENDPOINT
+
+        return safeApiCall<RemotePaginationResponse<ReelDto>> {
+            networkClient.get(endpoint) {
+                parameter(PAGE_PARAMETER, pageNumber)
+            }
+        }.results.orEmpty().map { it.toEntity() }
     }
 
     private fun createRequestBody(

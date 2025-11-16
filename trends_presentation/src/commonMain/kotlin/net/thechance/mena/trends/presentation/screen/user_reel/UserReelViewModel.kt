@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
@@ -48,8 +49,7 @@ internal class UserReelViewModel(
             scope = viewModelScope,
             loadPage = { page ->
                 getReelsBasedOnSource(
-                    isFromHome = userReelArgs.isFromHome,
-                    isFromManageTrends = userReelArgs.isFromManageTrends,
+                    reelSource = userReelArgs.reelSource,
                     page = page
                 )
             }
@@ -57,14 +57,13 @@ internal class UserReelViewModel(
     }
 
     private suspend fun getReelsBasedOnSource(
-        isFromHome: Boolean,
-        isFromManageTrends: Boolean,
+        reelSource: Route.ReelSource,
         page: Int
     ): List<Reel> {
-        return when {
-            isFromHome -> reelsRepository.getFeedReels(page, userReelArgs.realId)
-            isFromManageTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
-            else -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+        return when (reelSource) {
+            Route.ReelSource.Home -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+            Route.ReelSource.MyTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
+            Route.ReelSource.Favorites -> reelsRepository.getFavoriteReels(page, userReelArgs.realId)
         }
     }
 
