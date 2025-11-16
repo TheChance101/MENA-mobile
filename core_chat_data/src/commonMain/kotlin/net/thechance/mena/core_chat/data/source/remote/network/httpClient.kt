@@ -91,3 +91,13 @@ fun createMediaHttpClient(
         }
     }
 }
+
+fun createChatCoilClient(): HttpClient {
+    return HttpClient(httpClientEngineFactory) {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 30_000L
+            connectTimeoutMillis = 30_000L
+            socketTimeoutMillis = 30_000L
+        }
+    }
+}
