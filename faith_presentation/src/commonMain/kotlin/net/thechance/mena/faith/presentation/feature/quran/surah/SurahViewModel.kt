@@ -70,6 +70,15 @@ class SurahViewModel(
     private fun updateReciterState(reciter: Reciter) =
         updateState { it.copy(currentReciter = reciter.toUiState()) }
 
+    override fun onConfigrationChange() {
+        updateState {
+            it.copy(
+                initialAyahToScroll = uiState.value.lastVisibleAyahNumber,
+                selectedAyahNumber = null
+            )
+        }
+    }
+
     override fun highlightAyah(ayahNumber: Int) {
         updateState {
             it.copy(
@@ -89,7 +98,14 @@ class SurahViewModel(
                 quranRepository.saveLastAyahForTilawah(lastAyah)
                 lastAyah
             },
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            onSuccess = {
+                updateState {
+                    it.copy(
+                        lastVisibleAyahNumber = ayahNumber,
+                    )
+                }
+            }
         )
     }
 

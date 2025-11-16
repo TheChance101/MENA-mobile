@@ -16,16 +16,18 @@ import mena.dukan_presentation.generated.resources.error_price_not_positive
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.price_after_discount_bigger_than_base_price
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.InvalidImageFormatException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.UploadingFailedException
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
-import net.thechance.mena.dukan.presentation.component.product.productImage.ProductImageState
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
+import net.thechance.mena.dukan.presentation.util.filterPriceInput
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
 import net.thechance.mena.dukan.presentation.util.toFileName
@@ -84,7 +86,15 @@ class CreateProductViewModel(
     override fun onPriceChange(price: String) {
         updateState {
             copy(
-                price = price.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR },
+                price = filterPriceInput(price)
+            ).updateButtonState()
+        }
+    }
+
+    override fun onPriceAfterDiscountChange(price: String) {
+        updateState {
+            copy(
+                priceAfterDiscount = filterPriceInput(price)
             ).updateButtonState()
         }
     }
@@ -129,6 +139,7 @@ class CreateProductViewModel(
                 imageBitmap = imageBitmap,
                 imageSizeInMegabyte = imageSizeInMegabyte
             )
+
             else -> true
         }
     }
@@ -228,7 +239,7 @@ class CreateProductViewModel(
         uploadProductImages()
     }
 
-    private suspend fun uploadProductImages(){
+    private suspend fun uploadProductImages() {
         val productId = productRepository.createProduct(
             params = state.value.toCreateProductParam(state.value.selectedShelf!!.id)
         )
@@ -340,6 +351,7 @@ class CreateProductViewModel(
             productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
             productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
             productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH -> Res.string.error_description_length
+            productUiState.priceAfterDiscount > productUiState.price -> Res.string.price_after_discount_bigger_than_base_price
             else -> null
         }
     }
@@ -352,7 +364,6 @@ class CreateProductViewModel(
         const val MIN_DESCRIPTION_LENGTH = 100
         const val MAX_DESCRIPTION_LENGTH = 3000
         const val PRICE_EXCLUSIVE_LOWER_BOUND = 0.0
-        const val PRICE_DECIMAL_SEPARATOR = '.'
     }
 }
 

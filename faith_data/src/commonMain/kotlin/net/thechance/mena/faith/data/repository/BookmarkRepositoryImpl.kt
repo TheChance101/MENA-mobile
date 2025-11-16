@@ -35,8 +35,9 @@ class BookmarkRepositoryImpl(
                 )
             )
         }
+
         val surah = executeLocalSafely { ayahDao.getSurah(surahId) }
-        val ayah = executeLocalSafely { ayahDao.getAyah(surahId, ayahNumber) }
+        val ayah = executeLocalSafely { ayahDao.getAyah(ayahId = ayahNumber, surahId = surahId) }
 
         return AyahBookmark(
             id = bookmarkDto.id.toInt(),

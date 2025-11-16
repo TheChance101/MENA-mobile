@@ -14,9 +14,6 @@ import net.thechance.mena.identity.data.utils.getJsonWithBody
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
-import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OtpExpiredException
-import net.thechance.mena.identity.domain.exception.PhoneNumberAlreadyExistsException
 import net.thechance.mena.identity.domain.exception.UsernameAlreadyExistsException
 import net.thechance.mena.identity.domain.model.RegisterRequest
 import net.thechance.mena.identity.domain.repository.RegisterRepository
@@ -27,7 +24,7 @@ class RegisterRepositoryImpl(
     private var sessionId = ""
 
     override suspend fun requestOTP(phoneNumber: PhoneNumber, countryCodeName: String) {
-        registerSafeWrapper {
+        safeWrapper {
             val response: OtpResponse = client.postJson(
                 OtpRequestDto(
                     phoneNumber.getFormattedPhoneNumber(), countryCodeName
@@ -38,7 +35,7 @@ class RegisterRepositoryImpl(
     }
 
     override suspend fun verifyOTPCode(otpCode: String) {
-        registerSafeWrapper {
+        safeWrapper {
             client.postJson<VerifyOtpRequestDto, Unit>(
                 VerifyOtpRequestDto(otpCode, sessionId), VERIFY_OTP
             )
@@ -72,7 +69,7 @@ class RegisterRepositoryImpl(
     }
 
     override suspend fun register(request: RegisterRequest): net.thechance.mena.identity.domain.model.AuthenticationTokens {
-        return registerSafeWrapper {
+        return safeWrapper {
             val response: AuthenticationResponse = performRegisterRequest(request)
             response.toDomain()
         }
@@ -87,25 +84,6 @@ class RegisterRepositoryImpl(
     private fun handleUsernameCheckException(e: ClientRequestException): Nothing {
         when (e.response.status) {
             HttpStatusCode.Conflict -> throw UsernameAlreadyExistsException()
-            else -> throw e
-        }
-    }
-
-    private suspend fun <T> registerSafeWrapper(block: suspend () -> T): T {
-        return safeWrapper {
-            try {
-                return@safeWrapper block()
-            } catch (e: ClientRequestException) {
-                handleRegisterException(e)
-            }
-        }
-    }
-
-    private fun handleRegisterException(e: ClientRequestException): Nothing {
-        when (e.response.status) {
-            HttpStatusCode.Unauthorized -> throw InvalidOTPException()
-            HttpStatusCode.Conflict -> throw PhoneNumberAlreadyExistsException()
-            HttpStatusCode.BadRequest -> throw OtpExpiredException()
             else -> throw e
         }
     }

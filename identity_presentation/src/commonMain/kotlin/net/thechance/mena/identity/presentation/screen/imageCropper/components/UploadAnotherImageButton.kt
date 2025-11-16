@@ -8,9 +8,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
+import io.github.alexzhirkevich.qrose.ImageFormat
+import io.github.alexzhirkevich.qrose.toByteArray
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
@@ -26,7 +27,7 @@ import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun UploadAnotherImageButton(
-    onClick: (imageSrc: ImageBitmap) -> Unit,
+    onClick: (imageSrc: ByteArray) -> Unit,
     isEnabled: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
@@ -35,7 +36,9 @@ fun UploadAnotherImageButton(
     val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
         file?.let { image ->
             scope.launch {
-                onClick(image.toImageBitmap())
+                image.toImageBitmap()
+                    .toByteArray(format = ImageFormat.PNG)
+                    .also(onClick)
             }
         }
     }

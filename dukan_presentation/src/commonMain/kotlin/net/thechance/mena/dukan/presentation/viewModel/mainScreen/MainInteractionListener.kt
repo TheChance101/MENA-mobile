@@ -1,4 +1,9 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.viewModel.mainScreen
+
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 interface MainInteractionListener {
     fun onDukanButtonClicked()
@@ -10,6 +15,7 @@ interface MainInteractionListener {
     fun onNearestDukanClicked(dukanId: String)
 
     fun onEditorPickDukanClicked(dukanId: String)
+    fun onShopNowClicked(dukanId: Uuid)
     fun onFavoriteDukanClicked(dukanId: String)
     fun onSearchButtonClicked()
 }

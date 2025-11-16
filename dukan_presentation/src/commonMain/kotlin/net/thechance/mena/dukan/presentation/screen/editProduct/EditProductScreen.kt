@@ -13,6 +13,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.manage_product
+import mena.dukan_presentation.generated.resources.price
+import mena.dukan_presentation.generated.resources.price_after_discount
 import mena.dukan_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -27,8 +29,8 @@ import net.thechance.mena.dukan.presentation.screen.createProduct.component.Pric
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductImageCropScreen
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ProductNameSection
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.ShelfSection
-import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
 import net.thechance.mena.dukan.presentation.screen.editProduct.component.StockStatusSection
+import net.thechance.mena.dukan.presentation.screen.editProduct.component.editProductDialog
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductEffect
 import net.thechance.mena.dukan.presentation.viewModel.editProduct.EditProductInteractionListener
@@ -130,9 +132,19 @@ private fun EditProductContent(
 
             item {
                 PriceSection(
+                    title = stringResource(Res.string.price),
                     price = state.price,
                     isTextFieldEnabled = state.isTextFieldEnabled,
                     onPriceChange = interactionListener::onPriceChange
+                )
+            }
+
+            item {
+                PriceSection(
+                    title = stringResource(Res.string.price_after_discount),
+                    price = state.priceAfterDiscount,
+                    isTextFieldEnabled = state.isTextFieldEnabled,
+                    onPriceChange = interactionListener::onPriceAfterDiscountChange
                 )
             }
 
