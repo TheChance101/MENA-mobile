@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +46,10 @@ internal fun ProductsList(
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
+
+    LaunchedEffect(products.isEmpty()) {
+        listState.scrollToItem(0)
+    }
 
     PaginationTrigger(
         list = products,
