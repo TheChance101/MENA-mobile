@@ -30,6 +30,8 @@ import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -124,9 +126,9 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         FaithException.InvalidCoordinates -> Res.string.error_coordinates
     }
 
-    protected fun handleSuccessSnackBar(message: String) {
+    protected fun handleSuccessSnackBar(message: StringResource) {
         snackbarHandler.showSnackBar(
-            message = { message },
+            message = { getString(message) },
             status = SnackBarState.Status.Success,
             scope = viewModelScope
         )

@@ -19,7 +19,6 @@ import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import org.jetbrains.compose.resources.getString
 
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
@@ -88,14 +87,10 @@ class BookmarkViewModel(
         }
     }
 
-    private suspend fun onDeleteBookmarkSuccess() {
-        onDeleteBookmarkSuccessSnackbar()
+    private fun onDeleteBookmarkSuccess() {
+        handleSuccessSnackBar(Res.string.bookmark_removed_successfully)
         onDismissDeleteConfirmationDialog()
         pendingDeleteBookmarkId = null
-    }
-
-    private suspend fun onDeleteBookmarkSuccessSnackbar() {
-        handleSuccessSnackBar(getString(Res.string.bookmark_removed_successfully))
     }
 
     private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> =

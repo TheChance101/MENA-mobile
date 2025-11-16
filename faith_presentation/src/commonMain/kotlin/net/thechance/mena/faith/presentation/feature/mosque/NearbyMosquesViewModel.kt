@@ -19,6 +19,7 @@ import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
 import net.thechance.mena.faith.presentation.utils.extentions.roundTo2Decimals
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
+import org.jetbrains.compose.resources.StringResource
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
@@ -77,7 +78,6 @@ internal class NearbyMosquesViewModel(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
-            onError = ::handleErrorSnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -203,7 +203,7 @@ internal class NearbyMosquesViewModel(
         updateState { it.copy(canMove = canMove) }
     }
 
-    override fun showSuccessMessage(message: String) {
+    override fun showSuccessMessage(message: StringResource) {
         handleSuccessSnackBar(message)
     }
 

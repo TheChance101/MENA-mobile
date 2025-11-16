@@ -22,7 +22,6 @@ import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
-import org.jetbrains.compose.resources.getString
 
 class SurahViewModel(
     private val surahArgs: SurahArgs,
@@ -167,7 +166,7 @@ class SurahViewModel(
                     ayahNumber = ayahNumber
                 )
             },
-            onSuccess = { handleAddBookmarkSuccess() },
+            onSuccess = { handleSuccessSnackBar(Res.string.bookmark_added_successfully) },
             dispatcher = dispatcher
         )
         updateState {
@@ -273,7 +272,7 @@ class SurahViewModel(
         )
     }
 
-    private suspend fun handleCopySuccess(ayahContent: String) {
+    private fun handleCopySuccess(ayahContent: String) {
         showCopySuccessSnackBar()
         updateState {
             it.copy(
@@ -284,13 +283,8 @@ class SurahViewModel(
         }
     }
 
-    private suspend fun handleAddBookmarkSuccess() {
-        handleSuccessSnackBar(getString(Res.string.bookmark_added_successfully))
-
-    }
-
-    private suspend fun showCopySuccessSnackBar() {
-        handleSuccessSnackBar(getString(Res.string.copied_ayah_successfully))
+    private fun showCopySuccessSnackBar() {
+        handleSuccessSnackBar(Res.string.copied_ayah_successfully)
     }
 
     private fun showErrorSnackBar() {

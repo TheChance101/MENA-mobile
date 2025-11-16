@@ -4,7 +4,6 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.surah_deleted_successfully
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import org.jetbrains.compose.resources.getString
 
 class DownloadedSurViewModel(
     private val quranRepository: QuranRepository,
@@ -66,7 +65,7 @@ class DownloadedSurViewModel(
         )
     }
 
-    private suspend fun onDeleteSurahSuccess() {
+    private fun onDeleteSurahSuccess() {
         updateState { state ->
             val newSurDetails =
                 state.surDetails - state.surDetails.first { it.id == state.selectedSurahForDelete }
@@ -78,7 +77,7 @@ class DownloadedSurViewModel(
             )
         }
 
-        handleSuccessSnackBar(getString(Res.string.surah_deleted_successfully))
+        handleSuccessSnackBar(Res.string.surah_deleted_successfully)
     }
 
 }

@@ -48,7 +48,6 @@ class ReciterSearchViewModel(
         searchJob = tryToExecute(
             execute = { searchForReciter(query) },
             onSuccess = ::onSearchResultSuccess,
-            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }
