@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.component.DukansCounter
 import net.thechance.mena.admin_panel.presentation.component.SearchBar
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.dukans_management
+import net.thechance.mena.admin_panel.resources.dukans
 import net.thechance.mena.admin_panel.resources.search_hint
 import org.jetbrains.compose.resources.stringResource
 
@@ -32,7 +32,7 @@ fun DukanManagementHeader(
     ) {
         DukansCounter(
             count = dukansNumbers,
-            title = stringResource(Res.string.dukans_management),
+            title = stringResource(Res.string.dukans),
             modifier = Modifier.align(Alignment.CenterStart)
         )
         SearchBar(
