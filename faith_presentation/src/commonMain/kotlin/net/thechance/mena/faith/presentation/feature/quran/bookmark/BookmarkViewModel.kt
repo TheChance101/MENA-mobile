@@ -62,7 +62,6 @@ class BookmarkViewModel(
                 removeDeletedBookmarkId(bookmarkId)
                 handleErrorSnackBar(it)
                 onDismissDeleteConfirmationDialog()
-                pendingDeleteBookmarkId = null
             },
         )
     }
@@ -89,7 +88,7 @@ class BookmarkViewModel(
 
     private fun onDeleteBookmarkSuccess() {
         handleSuccessSnackBar(Res.string.bookmark_removed_successfully)
-        onDismissDeleteConfirmationDialog()
+        updateState { it.copy(isDeleteConfirmationDialogVisible = false) }
         pendingDeleteBookmarkId = null
     }
 
