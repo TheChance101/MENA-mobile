@@ -14,6 +14,7 @@ import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toEntity
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUi
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
+import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
 import net.thechance.mena.admin_panel.resources.Res
@@ -32,7 +33,7 @@ class DepositViewModel (
     @Provided
     private val depositMoneyRepository: DepositMoneyRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-): BaseViewModel<DepositScreenState, DepositEffect>(DepositScreenState()), DepositInteractionListener
+): BaseViewModel<DepositScreenState, Unit>(DepositScreenState()), DepositInteractionListener
 {
     init {
         getAvailableCountries()
@@ -60,7 +61,7 @@ class DepositViewModel (
     }
 
     override fun onAmountChanged(amount : String) {
-        updateState { it.copy(amount = amount) }
+        updateState { it.copy(amount = formatAmount( amount)) }
     }
 
 

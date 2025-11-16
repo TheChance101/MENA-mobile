@@ -102,7 +102,7 @@ private fun CountryCodeSelector(
             .clickable(onClick = onClick)
             .height(48.dp)
             .background(Theme.colorScheme.background.surfaceLow)
-            .padding(vertical = 14.dp, horizontal = 8.dp),
+            .padding(vertical = 13.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -115,7 +115,8 @@ private fun CountryCodeSelector(
         Text(
             text = countryCode,
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(end = 2.dp),
         )
 
         Icon(

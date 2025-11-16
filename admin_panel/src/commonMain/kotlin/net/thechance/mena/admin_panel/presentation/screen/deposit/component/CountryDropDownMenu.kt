@@ -10,7 +10,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
 import net.thechance.mena.admin_panel.resources.Res
