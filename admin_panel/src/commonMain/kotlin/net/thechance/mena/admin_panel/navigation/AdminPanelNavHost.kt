@@ -47,7 +47,7 @@ fun AdminPanelNavHost(
             composable<DukanManagement> {
                 DukanManagementsScreen()
             }
-            composable<DukanDetails> { backStackEntry ->
+            composable<DukanDetails> {
                 DukanDetailsScreen()
             }
         }
