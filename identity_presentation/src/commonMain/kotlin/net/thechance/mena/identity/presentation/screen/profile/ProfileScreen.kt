@@ -34,11 +34,10 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
@@ -212,7 +211,7 @@ class ProfileScreen : BaseScreen<
             }
 
             ProfileScreenUIEffect.NavigateToLocationPickerScreen -> {
-                navigator.push(AddressesScreen())
+                navigator.push(MyAddressesScreen())
             }
 
             ProfileScreenUIEffect.NavigateContactUsScreen -> {

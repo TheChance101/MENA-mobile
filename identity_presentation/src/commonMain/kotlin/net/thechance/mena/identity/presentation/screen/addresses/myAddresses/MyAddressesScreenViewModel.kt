@@ -15,29 +15,29 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class AddressesScreenViewModel(
+class MyAddressesScreenViewModel(
     private val addressesRepository: AddressesRepository,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
-    AddressesScreenInteractionListener {
+) : BaseScreenModel<MyAddressesScreenUIState, MyAddressesScreenUIEffect>(MyAddressesScreenUIState()),
+    MyAddressesScreenInteractionListener {
 
     init {
         getUserAddresses()
     }
 
-    override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
+    override fun onBackButtonClicked() = sendNewEffect(MyAddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() {
         navigateToAddressDetails(null, isAdding = true)
@@ -51,7 +51,7 @@ class AddressesScreenViewModel(
 
     private fun navigateToAddressDetails(addressUIState: AddressUIState?, isAdding: Boolean) {
         sendNewEffect(
-            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+            MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy(
                 addressUIState = addressUIState,
                 onSuccess = { snackBar -> onAddEditSuccess(snackBar, isAdding, addressUIState?.id) }
             )

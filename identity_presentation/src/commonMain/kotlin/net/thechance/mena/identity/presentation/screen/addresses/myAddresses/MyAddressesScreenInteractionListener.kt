@@ -6,7 +6,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-interface AddressesScreenInteractionListener : BaseInteractionListener {
+interface MyAddressesScreenInteractionListener : BaseInteractionListener {
     fun onBackButtonClicked()
     fun onAddButtonClicked()
     fun onEditAddressClicked(addressUIState: AddressUIState)

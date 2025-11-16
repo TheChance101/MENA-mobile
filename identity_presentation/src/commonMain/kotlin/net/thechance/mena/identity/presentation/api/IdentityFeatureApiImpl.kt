@@ -12,7 +12,7 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
@@ -119,6 +119,6 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
 
     @Composable
     override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
+        Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
     }
 }

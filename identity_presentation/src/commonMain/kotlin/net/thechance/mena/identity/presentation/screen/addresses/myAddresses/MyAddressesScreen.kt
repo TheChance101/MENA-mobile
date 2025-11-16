@@ -35,13 +35,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class AddressesScreen(
+class MyAddressesScreen(
     private val onNavigateBack: (() -> Unit)? = null
 ) : BaseScreen<
-        AddressesScreenViewModel,
-        AddressesScreenUIState,
-        AddressesScreenUIEffect,
-        AddressesScreenInteractionListener>() {
+        MyAddressesScreenViewModel,
+        MyAddressesScreenUIState,
+        MyAddressesScreenUIEffect,
+        MyAddressesScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -50,7 +50,7 @@ class AddressesScreen(
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun OnRender(
-        state: AddressesScreenUIState, listener: AddressesScreenInteractionListener
+        state: MyAddressesScreenUIState, listener: MyAddressesScreenInteractionListener
     ) {
         Scaffold(
             overlays = {
@@ -113,14 +113,15 @@ class AddressesScreen(
     }
 
     override fun onEffect(
-        effect: AddressesScreenUIEffect,
+        effect: MyAddressesScreenUIEffect,
         navigator: Navigator
     ) {
         when (effect) {
-            AddressesScreenUIEffect.NavigateBack -> {
+            MyAddressesScreenUIEffect.NavigateBack -> {
                 onNavigateBack?.invoke() ?: navigator.pop()
             }
-            is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
+
+            is MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy -> {
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
@@ -180,6 +181,6 @@ private fun AddressesSection(
 @Composable
 fun PreviewRegisterScreen() {
     MenaTheme {
-        AddressesScreen().Content()
+        MyAddressesScreen().Content()
     }
 }

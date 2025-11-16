@@ -14,9 +14,9 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.mapper.toEntity
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import kotlin.test.AfterTest
@@ -29,16 +29,16 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
-class AddressesScreenViewModelTest {
+class MyAddressesScreenViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val addressRepository: AddressesRepository = mockk(relaxed = true)
-    private lateinit var viewModel: AddressesScreenViewModel
+    private lateinit var viewModel: MyAddressesScreenViewModel
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
     }
 
     @AfterTest
@@ -52,7 +52,7 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getUserAddresses() } returns fakeAddresses.map { it.toEntity() }
         coEvery { addressRepository.getActiveAddress() } returns null
 
-        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
 
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -66,7 +66,7 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getActiveAddress() } returns null
         viewModel.effect.test {
             viewModel.onBackButtonClicked()
-            assertTrue(awaitItem() is AddressesScreenUIEffect.NavigateBack)
+            assertTrue(awaitItem() is MyAddressesScreenUIEffect.NavigateBack)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -79,7 +79,8 @@ class AddressesScreenViewModelTest {
 
             viewModel.effect.test {
                 viewModel.onAddButtonClicked()
-                val effect = awaitItem() as AddressesScreenUIEffect.NavigateToAddressDetailsScreen
+                val effect =
+                    awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy
                 assertEquals(null, effect.addressUIState)
                 cancelAndConsumeRemainingEvents()
             }
@@ -104,7 +105,7 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
 
-        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
         advanceUntilIdle()
         viewModel.onDeleteAddressClicked(address.id!!)
         advanceUntilIdle()
@@ -121,8 +122,8 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getUserAddresses() } returns listOf(address.toEntity())
         coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
-        
-        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+
+        viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
         advanceUntilIdle()
         viewModel.onDeleteAddressClicked(address.id!!)
         testDispatcher.scheduler.advanceUntilIdle()
@@ -177,7 +178,7 @@ class AddressesScreenViewModelTest {
 
         viewModel.effect.test {
             viewModel.onEditAddressClicked(fakeAddressUIState)
-            val effect = awaitItem() as AddressesScreenUIEffect.NavigateToAddressDetailsScreen
+            val effect = awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy
             assertEquals(fakeAddressUIState, effect.addressUIState)
             cancelAndConsumeRemainingEvents()
         }
@@ -189,7 +190,7 @@ class AddressesScreenViewModelTest {
         coEvery { addressRepository.getActiveAddress() } returns null
         coEvery { addressRepository.deleteAddress(any()) } returns Unit
 
-        viewModel = AddressesScreenViewModel(addressRepository, testDispatcher)
+        viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
         advanceUntilIdle()
 
         viewModel.onDeleteAddressClicked(address.id!!)
