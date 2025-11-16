@@ -195,7 +195,7 @@ private fun Preview() {
                     override fun highlightAyah(ayahNumber: Int) {}
                     override fun updateContinueTilawah(ayahNumber: Int) {}
                     override fun onConfigrationChange() {}
-                    override fun playSurah(surahNumber: Int, ayahNumber: Int, reciterId: Int) {}
+                    override fun playSurah(surahNumber: Int) {}
                 },
                 snackBarState = SnackBarState()
             )

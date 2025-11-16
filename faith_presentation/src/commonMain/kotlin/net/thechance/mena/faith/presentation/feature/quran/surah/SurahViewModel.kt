@@ -109,14 +109,14 @@ class SurahViewModel(
         )
     }
 
-    override fun playSurah(surahNumber: Int, ayahNumber: Int, reciterId: Int) {
+    override fun playSurah(surahNumber: Int) {
         updateState {
             it.copy(
-                selectedAyahNumber = ayahNumber,
+                selectedAyahNumber = uiState.value.selectedAyahNumber,
                 isAutoPlayEnabled = true
             )
         }
-        loadAndPlaySurah(surahNumber = surahNumber, ayahNumber = ayahNumber, reciterId = reciterId)
+        loadAndPlaySurah(surahNumber = surahNumber)
     }
 
     override fun onInitialAyahScrolled() {
@@ -269,21 +269,21 @@ class SurahViewModel(
         )
     }
 
-    private fun loadAndPlaySurah(surahNumber: Int, ayahNumber: Int, reciterId: Int) {
+    private fun loadAndPlaySurah(surahNumber: Int) {
         tryToExecute(
             execute = {
                 quranRepository.getAyahSoundUrl(
                     surahNumber = surahNumber,
-                    ayahNumber = ayahNumber,
-                    reciterId = reciterId
+                    ayahNumber = uiState.value.selectedAyahNumber ?: 1,
+                    reciterId = uiState.value.currentReciter.id
                 )
             },
             onSuccess = ::onLoadSurahSoundSuccess,
             onFinally = {
                 updateState {
                     it.copy(
-                        selectedAyahNumber = ayahNumber,
-                        initialAyahToScroll = ayahNumber
+                        selectedAyahNumber = uiState.value.selectedAyahNumber,
+                        initialAyahToScroll = uiState.value.selectedAyahNumber
                     )
                 }
             },
@@ -426,11 +426,7 @@ class SurahViewModel(
         if (currentAyahNumber < totalAyat) {
             val nextAyahNumber = currentAyahNumber + 1
             updateState { it.copy(selectedAyahNumber = nextAyahNumber) }
-            loadAndPlaySurah(
-                surahNumber = surahArgs.surahId,
-                ayahNumber = nextAyahNumber,
-                reciterId = uiState.value.currentReciter.id
-            )
+            loadAndPlaySurah(surahNumber = surahArgs.surahId)
         } else resetPlayerState()
     }
 
