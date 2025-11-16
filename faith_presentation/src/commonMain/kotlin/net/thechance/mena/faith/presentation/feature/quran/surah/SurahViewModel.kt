@@ -109,8 +109,15 @@ class SurahViewModel(
         )
     }
 
-    // TODO("Not yet implemented")
-    override fun playSurah(surahId: Int) {}
+    override fun playSurah(surahNumber: Int) {
+        updateState {
+            it.copy(
+                selectedAyahNumber = uiState.value.selectedAyahNumber,
+                isAutoPlayEnabled = true
+            )
+        }
+        loadAndPlaySurah(surahNumber = surahNumber)
+    }
 
     override fun onInitialAyahScrolled() {
         if (uiState.value.isAyahSoundPlaying || uiState.value.isPlayerVisible) return
@@ -135,7 +142,10 @@ class SurahViewModel(
         sendEffect(SurahScreenEffect.NavigateToSearchScreen(surahArgs.surahId))
     }
 
-    override fun onListenClick() = playAyah(uiState.value.selectedAyahNumber ?: 1)
+    override fun onListenClick() {
+        updateState { it.copy(isAutoPlayEnabled = false) }
+        playAyah(uiState.value.selectedAyahNumber ?: 1)
+    }
 
     override fun onReciterClick(surahId: Int) =
         sendEffect(SurahScreenEffect.NavigateToDownloadedRecitersScreen(surahArgs.surahId))
@@ -153,6 +163,7 @@ class SurahViewModel(
 
     override fun onClosePlayerClick() {
         quranPlayer.pauseAyah()
+        updateState { it.copy(isAutoPlayEnabled = false) }
         onDismissActionButtons()
     }
 
@@ -258,6 +269,28 @@ class SurahViewModel(
         )
     }
 
+    private fun loadAndPlaySurah(surahNumber: Int) {
+        tryToExecute(
+            execute = {
+                quranRepository.getAyahSoundUrl(
+                    surahNumber = surahNumber,
+                    ayahNumber = uiState.value.selectedAyahNumber ?: 1,
+                    reciterId = uiState.value.currentReciter.id
+                )
+            },
+            onSuccess = ::onLoadSurahSoundSuccess,
+            onFinally = {
+                updateState {
+                    it.copy(
+                        selectedAyahNumber = uiState.value.selectedAyahNumber,
+                        initialAyahToScroll = uiState.value.selectedAyahNumber
+                    )
+                }
+            },
+            dispatcher = Main,
+        )
+    }
+
     private fun onLoadAyahSoundSuccess(ayahSoundUrl: String) {
         updateState {
             it.copy(
@@ -270,6 +303,23 @@ class SurahViewModel(
         }
         quranPlayer.playAyah(ayahSoundUrl)
         updatePlayPause()
+    }
+
+    private fun onLoadSurahSoundSuccess(ayahSoundUrl: String) {
+        tryToExecute(
+            execute = {
+                updateState {
+                    it.copy(
+                        isAyahSoundPlaying = true,
+                        isAyahActionButtonsVisible = false,
+                        isPlayerVisible = true,
+                        currentPlayingAyahUrl = ayahSoundUrl,
+                        currentPlayingAyahNumber = it.selectedAyahNumber
+                    )
+                }
+                quranPlayer.playAyah(ayahSoundUrl)
+            },
+            onSuccess = { updateSurahPlayback() })
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
@@ -343,9 +393,52 @@ class SurahViewModel(
         updateState { it.copy(isBasmalaVisible = shouldShowBasmala) }
     }
 
-    private fun updatePlayPause(){
+    private fun updatePlayPause() {
         quranPlayer.onAyahCompleted {
             updateState { it.copy(isAyahSoundPlaying = false) }
+            if (uiState.value.isAutoPlayEnabled) playNextAyahAutomatically()
+        }
+    }
+
+    private fun updateSurahPlayback() {
+        quranPlayer.onAyahCompleted {
+            updateState { it.copy(isAyahSoundPlaying = false) }
+            playNextAyahInSurah()
+        }
+    }
+
+    private fun playNextAyahAutomatically() {
+        val currentAyahNumber = uiState.value.currentPlayingAyahNumber ?: return
+        val totalAyat = uiState.value.ayatOfSurah.size
+
+        if (currentAyahNumber < totalAyat) {
+            val nextAyahNumber = currentAyahNumber + 1
+            viewModelScope.launch(Main) {
+                playAyah(nextAyahNumber)
+            }
+        } else resetPlayerState()
+    }
+
+    private fun playNextAyahInSurah() {
+        val currentAyahNumber = uiState.value.currentPlayingAyahNumber ?: return
+        val totalAyat = uiState.value.ayatOfSurah.size
+
+        if (currentAyahNumber < totalAyat) {
+            val nextAyahNumber = currentAyahNumber + 1
+            updateState { it.copy(selectedAyahNumber = nextAyahNumber) }
+            loadAndPlaySurah(surahNumber = surahArgs.surahId)
+        } else resetPlayerState()
+    }
+
+    private fun resetPlayerState() {
+        updateState {
+            it.copy(
+                isPlayerVisible = false,
+                selectedAyahNumber = null,
+                currentPlayingAyahNumber = null,
+                isAyahSoundPlaying = false,
+                isAutoPlayEnabled = false
+            )
         }
     }
 }

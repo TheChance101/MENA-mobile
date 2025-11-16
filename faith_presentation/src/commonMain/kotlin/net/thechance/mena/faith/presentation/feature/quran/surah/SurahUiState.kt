@@ -18,7 +18,8 @@ data class SurahUiState(
     val initialAyahToScroll: Int? = null,
     val lastVisibleAyahNumber: Int = 0,
     val isLoading: Boolean = false,
-    val isBasmalaVisible: Boolean = false
+    val isBasmalaVisible: Boolean = false,
+    val isAutoPlayEnabled: Boolean = false
 )
 
 data class ReciterUiState(

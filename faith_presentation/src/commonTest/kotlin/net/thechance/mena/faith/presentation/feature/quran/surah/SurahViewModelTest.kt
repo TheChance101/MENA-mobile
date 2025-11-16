@@ -200,12 +200,35 @@ class SurahViewModelTest {
         assertFalse(viewModel.uiState.value.isLoading)
     }
 
-    // Ayah Selection Tests
     @Test
     fun `onAyahLongPress should show action buttons when it called`() = runTest {
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
         assertTrue(testViewModel.uiState.value.isAyahActionButtonsVisible)
+    }
+
+    @Test
+    fun `onInitialAyahScrolled should make selectedAyahNumber and initialAyahToScroll null when it called`() =
+        runTest {
+            testViewModel.onInitialAyahScrolled()
+
+            assertNull(testViewModel.uiState.value.selectedAyahNumber)
+            assertNull(testViewModel.uiState.value.initialAyahToScroll)
+        }
+
+    @Test
+    fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber `() = runTest {
+        testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+
+        assertEquals(testViewModel.uiState.value.initialAyahToScroll, TRACKED_AYAH_NUMBER)
+        assertEquals(testViewModel.uiState.value.selectedAyahNumber, TRACKED_AYAH_NUMBER)
+    }
+
+    @Test
+    fun `playSurah should play audio from selected ayah to ath the end of surah`() = runTest {
+        testViewModel.playSurah(surahNumber = SURAH_BAQARAH_ID)
+
+        assertTrue(testViewModel.uiState.value.isAutoPlayEnabled)
     }
 
     @Test
@@ -433,6 +456,7 @@ class SurahViewModelTest {
                 ), effect
             )
         }
+        @Test
         fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
             testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
 
@@ -492,7 +516,6 @@ class SurahViewModelTest {
         const val AYAH_CONTENT = "Test ayah content"
         const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH_ID = 2
-
 
         private val dummyAyat = listOf(
             Ayah(
