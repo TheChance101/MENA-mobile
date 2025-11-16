@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
@@ -20,9 +21,9 @@ import kotlinx.coroutines.flow.filter
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.identity.presentation.components.util.MapStyle
-import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
-import net.thechance.mena.identity.presentation.screen.addresses.toCoordinatesUiState
-import net.thechance.mena.identity.presentation.screen.addresses.toPosition
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toCoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toPosition
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
@@ -88,6 +89,7 @@ fun PickLocationMap(
             Image(
                 painter = painterResource(Res.drawable.ic_anchor),
                 contentDescription = null,
+                contentScale = ContentScale.FillHeight,
                 modifier = Modifier.padding(bottom = 58.dp).height(58.dp)
             )
         }

@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
@@ -178,6 +179,7 @@ private fun MyAddressesMap(
         Image(
             painter = painterResource(Res.drawable.ic_anchor),
             contentDescription = null,
+            contentScale = ContentScale.FillHeight,
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(bottom = 28.dp)

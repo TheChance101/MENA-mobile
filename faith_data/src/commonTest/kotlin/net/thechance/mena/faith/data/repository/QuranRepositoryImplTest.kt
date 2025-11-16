@@ -3,6 +3,7 @@ package net.thechance.mena.faith.data.repository
 import de.jensklingenberg.ktorfit.Response
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -24,32 +25,41 @@ import net.thechance.mena.faith.data.remote.service.TilawahApiService
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
+import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.identity.domain.repository.SettingsRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
+import net.thechance.mena.identity.domain.util.AppLanguage
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class QuranRepositoryImplTest {
-
     private val mockDao: AyahDao = mock(MockMode.autofill)
     private val tilawahDataStore: TilawahDataStore = mock(MockMode.autofill)
     private val surahSoundDao: SurahAudioDao = mock(MockMode.autofill)
     private val recitersDao: RecitersDao = mock(MockMode.autofill)
-
     private val tilawahApiService = mock<TilawahApiService>(MockMode.autofill)
-    private val repository =
-        QuranRepositoryImpl(
+    private val settingsRepository: SettingsRepository = mock(MockMode.autofill)
+    private lateinit var repository: QuranRepository
+
+    @BeforeTest
+    fun setup() {
+        repository = QuranRepositoryImpl(
             ayahDao = mockDao,
             tilawahDataStore = tilawahDataStore,
             surahSoundDao = surahSoundDao,
             recitersDao = recitersDao,
-            tilawahApiService = tilawahApiService
+            tilawahApiService = tilawahApiService,
+            localizationService = LocalizationService(settingsRepository)
         )
-
+    }
 
     @Test
     fun `getSur Should return list of sur when called`() = runTest {
         everySuspend { mockDao.getSur() } returns SURAH_DTOS
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.getSur()
 
@@ -392,7 +402,12 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             mockDao.getSurah(SURAH_ID_1)
-        } returns SurahDto(number = SURAH_ID_1, name = "Al-Fatihah", ayahCount = 7)
+        } returns SurahDto(
+            number = SURAH_ID_1,
+            nameEn = AL_FATIHAH_NAME_EN,
+            nameAr = AL_FATIHAH_NAME_AR,
+            ayahCount = 7
+        )
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
@@ -471,7 +486,12 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             mockDao.getSurah(SURAH_ID_1)
-        } returns SurahDto(number = SURAH_ID_1, name = AL_FATIHAH_NAME, ayahCount = null)
+        } returns SurahDto(
+            number = SURAH_ID_1,
+            nameEn = AL_FATIHAH_NAME_EN,
+            nameAr = AL_FATIHAH_NAME_AR,
+            ayahCount = null
+        )
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
@@ -498,7 +518,7 @@ class QuranRepositoryImplTest {
             mockDao.getSurah(SURAH_ID_1)
         } returns SurahDto(
             number = SURAH_ID_1,
-            name = AL_FATIHAH_NAME,
+            nameEn = AL_FATIHAH_NAME_EN, nameAr = AL_FATIHAH_NAME_AR,
             ayahCount = AYAH_COUNT_AL_FATIHAH
         )
 
@@ -573,8 +593,6 @@ class QuranRepositoryImplTest {
         everySuspend {
             surahSoundDao.getCachedAudioPath(SURAH_ID_1, RECITER_ID_1)
         } returns LOCAL_PATH_SURAH_1
-
-        val cachePath = repository.getSurahAudioCachePath(SURAH_ID_1, RECITER_ID_1)
 
         val result = repository.isSurahAudioCached(SURAH_ID_1, RECITER_ID_1)
 
@@ -729,8 +747,8 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `saveLastAyahForTilawah should save progress for different surahs`() = runTest {
-        val progress1 = LastAyahForTilawah( SURAH_ID_1, AYAH_NUMBER_5)
-        val progress2 = LastAyahForTilawah( SURAH_ID_2, AYAH_NUMBER_100)
+        val progress1 = LastAyahForTilawah(SURAH_ID_1, AYAH_NUMBER_5)
+        val progress2 = LastAyahForTilawah(SURAH_ID_2, AYAH_NUMBER_100)
 
         repository.saveLastAyahForTilawah(progress1)
         repository.saveLastAyahForTilawah(progress2)
@@ -759,8 +777,10 @@ class QuranRepositoryImplTest {
 
     private companion object {
 
-        const val AL_FATIHAH_NAME = "Al-Fatihah"
-        const val AL_BAQARAH_NAME = "Al-Baqarah"
+        const val AL_FATIHAH_NAME_EN = "Al-Fatihah"
+        const val AL_FATIHAH_NAME_AR = "الفاتحة"
+        const val AL_BAQARAH_NAME_EN = "Al-Baqarah"
+        const val AL_BAQARAH_NAME_AR = "Al-Baqarah"
         const val FIST_RECITER_NAME = "Abdelbasit"
         const val SECOND_RECITER_NAME = "Mishary"
         const val FIST_RECITER_ARABIC_NAME = "عبدالباسط"
@@ -816,8 +836,18 @@ class QuranRepositoryImplTest {
         )
 
         val SURAH_DTOS: List<SurahDto> = listOf(
-            SurahDto(number = 1, name = AL_FATIHAH_NAME, ayahCount = 7),
-            SurahDto(number = 2, name = AL_BAQARAH_NAME, ayahCount = 286)
+            SurahDto(
+                number = 1,
+                nameEn = AL_FATIHAH_NAME_EN,
+                nameAr = AL_FATIHAH_NAME_AR,
+                ayahCount = 7
+            ),
+            SurahDto(
+                number = 2,
+                nameEn = AL_BAQARAH_NAME_EN,
+                nameAr = AL_BAQARAH_NAME_AR,
+                ayahCount = 286
+            )
         )
 
         val RECITER_DTOS: List<ReciterDto> = listOf(
@@ -839,13 +869,13 @@ class QuranRepositoryImplTest {
             Surah(
                 id = 1,
                 order = Surah.SurahOrder.AlFatihah,
-                name = AL_FATIHAH_NAME,
+                name = AL_FATIHAH_NAME_EN,
                 ayahCount = 7,
             ),
             Surah(
                 id = 2,
                 order = Surah.SurahOrder.AlBaqarah,
-                name = AL_BAQARAH_NAME,
+                name = AL_BAQARAH_NAME_EN,
                 ayahCount = 286,
             )
         )

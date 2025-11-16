@@ -23,9 +23,9 @@ import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf

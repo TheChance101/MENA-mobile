@@ -16,7 +16,7 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.toEntity
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition

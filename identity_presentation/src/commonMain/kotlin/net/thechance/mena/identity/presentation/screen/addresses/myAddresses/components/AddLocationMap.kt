@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_anchor
@@ -68,9 +69,8 @@ fun AddLocationMap(
             Image(
                 painter = painterResource(Res.drawable.ic_anchor),
                 contentDescription = null,
-                modifier = Modifier
-                    .padding(bottom = 58.dp)
-                    .height(58.dp)
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier.padding(bottom = 58.dp).height(58.dp)
             )
         }
 

@@ -17,7 +17,10 @@ fun CreateProductUiState.toCreateProductParam(shelfId: String): CreateProductPar
     return CreateProductParams(
         name = productName,
         description = description,
-        price = Price(base = price.toDouble()),
+        price = Price(
+            base = price.toDouble(),
+            final = priceAfterDiscount.toDoubleOrNull()
+        ),
         shelfId = shelfId
     )
 }

@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.PagingData
@@ -109,7 +108,7 @@ private fun Content(
                 enter = fadeIn(tween()),
                 exit = fadeOut(tween()),
             ) {
-                EmptyBookmarkState(listener::onBackClick)
+                EmptyBookmarksView(listener::onBackClick)
             }
 
             AnimatedVisibility(
@@ -136,7 +135,7 @@ private fun Content(
 }
 
 @Composable
-private fun EmptyBookmarkState(onStartTilawahClick: () -> Unit) {
+private fun EmptyBookmarksView(onStartTilawahClick: () -> Unit) {
     EmptyBookmarkState(
         title = stringResource(Res.string.empty_state_bookmark_title),
         icon = painterResource(Res.drawable.ic_not_saved_book_mark),
@@ -144,7 +143,6 @@ private fun EmptyBookmarkState(onStartTilawahClick: () -> Unit) {
         subTitle = stringResource(Res.string.empty_state_bookmark_description),
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp)
             .verticalScroll(rememberScrollState())
             .padding(bottom = Theme.spacing._16),
         onClickButton = onStartTilawahClick

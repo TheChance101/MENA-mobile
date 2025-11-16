@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.addEditLocatio
 
 import io.github.dellisd.spatialk.geojson.Position
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.screen.addresses.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import org.jetbrains.compose.resources.StringResource
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
@@ -20,7 +20,7 @@ data class AddEditLocationScreenUIState(
 ){
     data class AddEditAddressUIState(
         val addressID: Uuid? = null,
-        val coordinates: CoordinatesUiState = CoordinatesUiState(29.203231755958047, 22.39869322710709),
+        val coordinates: CoordinatesUiState = CoordinatesUiState(),
         val addressDetails: String = "",
         val addressType: AddressType? = null,
         val otherAddressType: String? = null,
