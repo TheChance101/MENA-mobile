@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,7 +73,9 @@ fun FullImagePagerView(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
             .combinedClickable(
                 onClick = {},
-                onLongClick = { onImageLongClick(message) }
+                onLongClick = { onImageLongClick(message) },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
             )
     ) {
         if (messages[pagerState.currentPage].content !is MessageContent.Image) return onCloseClick()
