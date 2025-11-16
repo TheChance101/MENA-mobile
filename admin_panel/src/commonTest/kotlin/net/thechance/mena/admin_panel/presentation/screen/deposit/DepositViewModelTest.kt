@@ -108,7 +108,7 @@ class DepositViewModelTest {
             val s = awaitItem()
             assertEquals("0123", s.phoneNumber)
             assertEquals("150", s.amount)
-            assertEquals(countryUi, s.country)
+            assertEquals(countryUi, s.selectedCountry)
         }
     }
 }

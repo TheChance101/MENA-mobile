@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -79,7 +78,7 @@ private fun DepositScreenContent(
                     PhoneNumberInputField(
                         phoneNumber = state.phoneNumber,
                         onPhoneChange = interactionListener::onPhoneNumberChanged,
-                        selectedCountry = state.country,
+                        selectedCountry = state.selectedCountry,
                         availableCountries = state.availableCountries,
                         onCountrySelected = interactionListener::onCountryCodeChanged,
                         modifier = Modifier.fillMaxWidth()

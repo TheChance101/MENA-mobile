@@ -3,7 +3,6 @@ package net.thechance.mena.admin_panel.presentation.screen.deposit.component
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +25,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.Font
 
 @Composable
-internal fun CountryRowItem(
+fun CountryRowItem(
     selectedCountry: DepositScreenState.CountryUiState,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
@@ -48,15 +46,14 @@ internal fun CountryRowItem(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
             .background(
                 color = animatedCountryItemColor,
-                shape = RoundedCornerShape(16.dp)
+                shape = RoundedCornerShape(Theme.radius.lg)
             )
             .clickable(
                 onClick = { onClick(selectedCountry) }
             )
-            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12)
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
 
        Text(
@@ -69,7 +66,7 @@ internal fun CountryRowItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .weight(1f)
-                .padding(end = Theme.spacing._8)
+                .padding(end = 8.dp)
         ) {
             Text(
                 text = selectedCountry.name,

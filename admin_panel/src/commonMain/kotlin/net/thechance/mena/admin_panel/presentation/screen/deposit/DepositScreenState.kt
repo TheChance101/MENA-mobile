@@ -5,7 +5,7 @@ import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 
 data class DepositScreenState(
     val phoneNumber: String = "",
-    val country: CountryUiState = CountryUiState(),
+    val selectedCountry: CountryUiState = CountryUiState(),
     val amount: String = "",
     val snackBar: SnackBarState = SnackBarState(),
     val isLoadingCountries: Boolean = false,

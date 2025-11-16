@@ -11,7 +11,6 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.amount
 import net.thechance.mena.admin_panel.resources.ic_add_money
 import net.thechance.mena.admin_panel.resources.ic_coin
-import net.thechance.mena.admin_panel.resources.ic_silver_icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.BasicTextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -19,7 +18,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun AmountInputField(
+fun AmountInputField(
     amount: String,
     onAmountChanged: (String) -> Unit,
     modifier: Modifier = Modifier,

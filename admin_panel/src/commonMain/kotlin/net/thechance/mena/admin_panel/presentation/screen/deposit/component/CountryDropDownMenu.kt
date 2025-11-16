@@ -36,7 +36,7 @@ fun CountryDropdownMenu(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = onDismiss,
-            modifier = modifier.padding(0.dp)
+            modifier = modifier
         ) {
             Column(
                 modifier = Modifier

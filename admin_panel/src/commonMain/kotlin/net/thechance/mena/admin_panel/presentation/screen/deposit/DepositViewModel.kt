@@ -11,7 +11,7 @@ import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toEntity
-import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUi
+import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUiState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
@@ -45,6 +45,7 @@ class DepositViewModel (
             else -> ErrorState.UnknownError
         }
     }
+
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isDepositProcessLoading = true) } },
@@ -55,6 +56,7 @@ class DepositViewModel (
         )
     }
 
+
     override fun onPhoneNumberChanged(phoneNumber : String) {
         updateState { it.copy(phoneNumber = phoneNumber) }
     }
@@ -63,13 +65,14 @@ class DepositViewModel (
         updateState { it.copy(amount = formatAmount( amount)) }
     }
 
-
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
-        updateState { it.copy(country = country) }
+        updateState { it.copy(selectedCountry = country) }
     }
+
     private suspend fun onFillWalletClicked(){
-        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount = currentState.amount.replace(",", "").toDouble() , currentState.country.toEntity())
+        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount = currentState.amount.replace(",", "").toDouble() , currentState.selectedCountry.toEntity())
     }
+
     private suspend fun onDepositSuccess(){
         updateState { it.copy(isDepositProcessLoading = false) }
         showSnackBar(
@@ -85,6 +88,7 @@ class DepositViewModel (
         }
 
     }
+
     private suspend fun showSnackBar(
         title: String,
         message: String,
@@ -105,11 +109,13 @@ class DepositViewModel (
         delay(durationMillis)
         hideSnackBar()
     }
+
     private fun hideSnackBar() {
         updateState { oldState ->
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
     }
+
     private suspend fun onDepositError(errorState: ErrorState) {
         updateState { it.copy(isDepositProcessLoading = false) }
         showSnackBar(
@@ -118,6 +124,7 @@ class DepositViewModel (
             isSuccess = false
         )
     }
+
     private fun getAvailableCountries() {
         tryToExecute(
             onStart = { updateState { it.copy(isLoadingCountries = true) } },
@@ -129,15 +136,16 @@ class DepositViewModel (
         )
     }
 
+
     private suspend fun getCountries(): List<DepositScreenState.CountryUiState> {
-        return depositMoneyRepository.getCountries().map { it.toUi() }
+        return depositMoneyRepository.getCountries().map { it.toUiState() }
     }
 
     private fun onGetCountriesSuccess(availableCountries: List<DepositScreenState.CountryUiState>) {
         updateState {
             it.copy(
                 availableCountries = availableCountries,
-                country = availableCountries.firstOrNull() ?: it.country
+                selectedCountry = availableCountries.firstOrNull() ?: it.selectedCountry
             )
         }
     }

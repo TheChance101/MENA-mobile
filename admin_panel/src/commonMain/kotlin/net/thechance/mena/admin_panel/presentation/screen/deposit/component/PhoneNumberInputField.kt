@@ -45,7 +45,7 @@ fun PhoneNumberInputField(
             color = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = Theme.spacing._4)
+                .padding(bottom = 4.dp)
         )
         Box(modifier = modifier) {
             MobileNumberTextField(
@@ -73,7 +73,7 @@ fun PhoneNumberInputField(
                     .heightIn(max = 220.dp)
                     .background(
                         Theme.colorScheme.background.surfaceLow,
-                        shape = RoundedCornerShape(16.dp)
+                        shape = RoundedCornerShape(Theme.radius.lg)
                     ),
                 selectedCountry = selectedCountry,
                 availableCountries = availableCountries,
