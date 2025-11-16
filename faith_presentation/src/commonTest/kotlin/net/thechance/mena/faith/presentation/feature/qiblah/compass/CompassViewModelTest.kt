@@ -17,11 +17,15 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.faith.domain.usecase.QiblahBearingCalculatorUseCase
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.utils.AzimuthProvider
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -41,6 +45,9 @@ class CompassViewModelTests {
 
     @BeforeTest
     fun setUp() {
+        startKoin {
+            modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+        }
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
@@ -54,6 +61,7 @@ class CompassViewModelTests {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+        stopKoin()
     }
 
     @Test

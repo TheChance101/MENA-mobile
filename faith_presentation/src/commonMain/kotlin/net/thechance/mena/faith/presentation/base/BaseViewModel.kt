@@ -28,13 +28,21 @@ import mena.faith_presentation.generated.resources.error_unknown
 import mena.faith_presentation.generated.resources.surah_download_failed
 import net.thechance.mena.faith.domain.annotation.KoverIgnore
 import net.thechance.mena.faith.domain.exception.FaithException
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 @KoverIgnore
 abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     initialState: UI_STATE,
-    protected val snackbarHandler: SnackbarHandler = SnackbarHandler.Empty,
-) : ViewModel(), SnackbarHandler by snackbarHandler {
+) : ViewModel(), KoinComponent {
+
+    private val snackbarHandler: SnackbarHandler by inject()
+
+    val snackBarState = snackbarHandler.snackBarState
 
     private val _uiState = MutableStateFlow(initialState)
     val uiState = _uiState.asStateFlow()
@@ -55,7 +63,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: (suspend (T) -> Unit)? = null,
-        onError: (ErrorState) -> Unit = {},
+        onError: (ErrorState) -> Unit = ::handleErrorSnackBar,
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -64,7 +72,6 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     ): Job {
         val handler = CoroutineExceptionHandler { _, throwable ->
             onError(mapExceptionToErrorState(throwable))
-
         }
 
         return inScope.launch(dispatcher + handler) {
@@ -88,16 +95,12 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
             try {
                 block()
                     .catch {
-                        onError(
-                            mapExceptionToErrorState(it)
-                        )
+                        onError(mapExceptionToErrorState(it))
                     }.collect {
                         onEmitNewValue(it)
                     }
             } catch (e: Throwable) {
-                onError(
-                    mapExceptionToErrorState(e)
-                )
+                onError(mapExceptionToErrorState(e))
             }
         }
     }
@@ -122,4 +125,21 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
         FaithException.UrlCreationException -> Res.string.surah_download_failed
         FaithException.InvalidCoordinates -> Res.string.error_coordinates
     }
+
+    protected fun handleSuccessSnackBar(message: StringResource) {
+        snackbarHandler.showSnackBar(
+            message = { getString(message) },
+            status = SnackBarState.Status.Success,
+            scope = viewModelScope
+        )
+    }
+
+    protected fun handleErrorSnackBar(error: ErrorState) {
+        snackbarHandler.showSnackBar(
+            message = error.message,
+            status = SnackBarState.Status.Error,
+            scope = viewModelScope,
+        )
+    }
+
 }

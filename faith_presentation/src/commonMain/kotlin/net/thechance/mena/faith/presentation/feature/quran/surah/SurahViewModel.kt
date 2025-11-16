@@ -20,8 +20,6 @@ import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
 
@@ -32,10 +30,8 @@ class SurahViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
     private val quranPlayer: QuranPlayer,
-    snackbarHandler: SnackbarHandler
 ) : BaseViewModel<SurahUiState, SurahScreenEffect>(
     initialState = SurahUiState(surahId = surahArgs.surahId),
-    snackbarHandler = snackbarHandler
 ), SurahInteractionListener {
 
     init {
@@ -197,8 +193,7 @@ class SurahViewModel(
                     ayahNumber = ayahNumber
                 )
             },
-            onSuccess = { handleAddBookmarkSuccess() },
-            onError = { showErrorBookMarkSnackBar(it) },
+            onSuccess = { handleSuccessSnackBar(Res.string.bookmark_added_successfully) },
             dispatcher = dispatcher
         )
         updateState {
@@ -344,7 +339,7 @@ class SurahViewModel(
     }
 
     private fun handleCopySuccess(ayahContent: String) {
-        showCopySuccessSnackBar()
+        handleSuccessSnackBar(Res.string.copied_ayah_successfully)
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
@@ -354,36 +349,8 @@ class SurahViewModel(
         }
     }
 
-    private fun handleAddBookmarkSuccess() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.bookmark_added_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
-    }
-
-    private fun showCopySuccessSnackBar() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.copied_ayah_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
-    }
-
     private fun showErrorSnackBar() {
-        snackbarHandler.showSnackBar(
-            message = Res.string.copied_ayah_failed,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope
-        )
-    }
-
-    private fun showErrorBookMarkSnackBar(state: ErrorState) {
-        snackbarHandler.showSnackBar(
-            message = state.message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope
-        )
+        handleErrorSnackBar(ErrorState(Res.string.copied_ayah_failed))
     }
 
     private fun handleBasmalaVisibility(surahId: Int) {
