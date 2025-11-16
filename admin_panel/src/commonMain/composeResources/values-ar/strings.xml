@@ -18,6 +18,7 @@
     <!-- Users Management -->
     <string name="users_management">إدارة المستخدمين</string>
     <string name="search_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
+    <string name="dukan_management">إدارة الدكان</string>
 
     <!-- Table Headers -->
     <string name="user_name">اسم المستخدم</string>
@@ -40,11 +41,19 @@
     <string name="blocked">محظور</string>
     <string name="block">حظر</string>
     <string name="activate">تفعيل</string>
+    <string name="deactivated">غير نشط</string>
 
     <!-- Search -->
     <string name="no_search_result">لا توجد نتائج بحث!</string>
     <string name="no_search_result_description">يرجى المحاولة بكلمة بحث أخرى.</string>
 
+    <!-- Dukan Management -->
+    <string name="no_dukan_results">لا يوجد دكاكين الأن!</string>
+    <string name="no_dukan_results_description">ستظهر الدكاكين هنا فور إضافتها.</string>
+    <string name="no_dukan_results_description_for_requests">ستظهر هنا الدكاكين التي تحتاج للمراجعة</string>
+    <string name="dukans">الدكاكين</string>
+    <string name="dukan_search_hint">ابحث باسم الدكان، الموقع،...</string>
+    <string name="added_date">تاريخ الإضافة</string>
     <!-- Dialogs -->
     <string name="block_user">حظر المستخدم</string>
     <string name="block_user_confirmation_message">هل أنت متأكد من أنك تريد المتابعة بالحظر؟</string>
@@ -64,4 +73,19 @@
     <string name="user_activated">تم تفعيل المستخدم</string>
     <string name="user_blocked">تم حظر المستخدم</string>
     <string name="sort">ترتيب</string>
+
+    <string name="activate_dukan">تفعيل دكان</string>
+    <string name="deactivate">إلغاء التنشيط</string>
+    <string name="dukan_details">تفاصيل دكان</string>
+    <string name="back_btn">زر العودة</string>
+    <string name="shelves">رفوف</string>
+    <string name="dukan_img">صورة دكان</string>
+    <string name="dukan_location">رمز موقع دكان</string>
+    <string name="silver_img">صورة سيلفر</string>
+    <string name="product_img">صورة منتج</string>
+    <string name="deactivate_dukan">إلغاء تنشيط</string>
+    <string name="deactivate_dukan_header">إلغاء تنشيط دكان؟</string>
+    <string name="deactivate_dukan_content">هل أنت متأكد أنك تريد الاستمرار في إلغاء التنشيط؟</string>
+    <string name="deactivate_dukan_reason">أضف سبب الإلغاء التنشيط هنا</string>
+    <string name="empty_shelf_title">هذا الرف فارغ</string>
 </resources>

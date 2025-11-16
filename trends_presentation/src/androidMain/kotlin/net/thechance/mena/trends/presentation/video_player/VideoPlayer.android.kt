@@ -44,11 +44,11 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.SeekParameters
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.ui.PlayerView
-import androidx.media3.ui.R
 import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
+import net.thechance.mena.trends.presentation.screen.user_reel.ReelWatchSessionState
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -56,6 +56,7 @@ import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MAX_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.MIN_BUFFER_MS
 import net.thechance.mena.trends.presentation.video_player.util.Constants.SEEK_BAR_DURATION_MS
+import net.thechance.mena.trends.presentation.video_player.utils.getCurrentTime
 import java.net.UnknownHostException
 
 private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
@@ -70,6 +71,7 @@ actual fun VideoPlayer(
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
     onNetworkError: () -> Unit,
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -117,6 +119,9 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
+    val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val isWatchedToEnd = remember { mutableStateOf(false) }
+
     val exoPlayer = remember {
         ExoPlayer.Builder(context)
             .setLoadControl(loadControl)
@@ -159,10 +164,16 @@ actual fun VideoPlayer(
                                 true
                             }
 
+                            Player.STATE_ENDED -> {
+                                if (!isWatchedToEnd.value) isWatchedToEnd.value = true
+                                false
+                            }
+
                             else -> false
                         }
                     }
                 })
+
                 seekTo(lastPosition)
             }
     }
@@ -185,9 +196,11 @@ actual fun VideoPlayer(
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true
             exoPlayer.play()
+            reelWatchSessionState.watchStartTime = getCurrentTime()
         } else {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
+            reelWatchSessionState.watchEndTime = getCurrentTime()
         }
 
         onVideoPlaying()
@@ -196,6 +209,7 @@ actual fun VideoPlayer(
     LaunchedEffect(exoPlayer.isPlaying) {
         while (true) {
             duration = exoPlayer.duration.coerceAtLeast(1L)
+            reelWatchSessionState.videoDurationInMilliseconds = duration
             val position = exoPlayer.currentPosition
             currentProgress = position.toFloat() / duration.toFloat()
             delay(SEEK_BAR_DURATION_MS)
@@ -281,7 +295,7 @@ actual fun VideoPlayer(
                 Lifecycle.Event.ON_RESUME -> {
                     if (isReelVisible) {
                         if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
-                        exoPlayer.play()
+                        if (!isPause) exoPlayer.play()
                     }
                 }
 
@@ -294,6 +308,10 @@ actual fun VideoPlayer(
         onDispose {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
+            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+                lastPosition
+            reelWatchSessionState.watchEndTime = getCurrentTime()
+            saveReelWatchSession(reelWatchSessionState)
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
