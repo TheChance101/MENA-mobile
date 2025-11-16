@@ -20,22 +20,23 @@ import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.identity.domain.service.LocalizationService
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
 import okio.SYSTEM
 
 class QuranRepositoryImpl(
-    val ayahDao: AyahDao,
-    val surahSoundDao: SurahAudioDao,
-    val recitersDao: RecitersDao,
-    val tilawahApiService: TilawahApiService,
-    val tilawahDataStore: TilawahDataStore
+    private val ayahDao: AyahDao,
+    private val surahSoundDao: SurahAudioDao,
+    private val recitersDao: RecitersDao,
+    private val tilawahApiService: TilawahApiService,
+    private val tilawahDataStore: TilawahDataStore,
+    private val localizationService: LocalizationService,
 ) : QuranRepository {
-
     override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
-            ayahDao.getSur().map { it.toSurah() }
+            ayahDao.getSur().map { it.toSurah(localizationService.getCurrentLanguage()) }
         }
 
     override suspend fun getAyatOfSurah(surahId: Int): List<Ayah> =
@@ -107,13 +108,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getSurahById(surahId: Int): Surah =
         executeLocalSafely {
-            ayahDao.getSur().map { it.toSurah() }.find { it.id == surahId }
-                ?: Surah(
-                    id = 1,
-                    order = Surah.SurahOrder.AlFatihah,
-                    name = "الفاتحة",
-                    ayahCount = 7
-                )
+            ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =

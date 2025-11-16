@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -60,7 +64,7 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
-    BindEffect(controller)
+    BindEffect(viewModel.permissionsController)
 
     BackHandler(enabled = true) {
         viewModel.onBackClicked()
@@ -71,6 +75,7 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     val chatLazyListState = rememberLazyListState()
 
+    AudioLifecycleObserver(viewModel)
 
     EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
 
@@ -217,6 +222,24 @@ fun ChatScreenContent(
         onDismiss = interactions::onReactionDialogDismissed,
         onReactionClicked = interactions::onReactionSelected
     )
+}
+
+@Composable
+fun AudioLifecycleObserver(viewModel: ChatViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                viewModel.onStopAudioPlayback()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            viewModel.onStopAudioPlayback()
+        }
+    }
 }
 
 @Composable

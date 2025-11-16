@@ -21,7 +21,7 @@ import org.jetbrains.compose.resources.StringResource
 
 class SyncContactsViewModel(
     private val contactsRepository: ContactsRepository,
-    private val permissionsController: PermissionsController,
+    val permissionsController: PermissionsController,
     private val syncContactsScreenArgs: SyncContactsScreenArgs,
     private val settingsOpener: SettingsOpener,
     dispatcher: CoroutineDispatcher = Dispatchers.IO,

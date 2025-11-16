@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.domain.repository
 
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview
 import net.thechance.mena.dukan.domain.util.PagedResult
 
 interface DukanDiscoveryRepository {
@@ -11,4 +12,5 @@ interface DukanDiscoveryRepository {
         page: Int,
         size: Int
     ): PagedResult<Dukan>
+    suspend fun getTopDiscountedDukans(page: Int, size: Int): PagedResult<TopDiscountedDukanPreview>
 }

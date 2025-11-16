@@ -68,7 +68,7 @@ class ChatViewModel(
     private val audioRecordRepository: AudioRecordRepository,
     private val userRepository: UserRepository,
     private val imageDownloaderService: ImageDownloaderService,
-    private val permissionsController: PermissionsController,
+    val permissionsController: PermissionsController,
     private val audioPlayer: AudioPlayer,
     chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -326,8 +326,18 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-
-        sendMessage(message)
+        tryToExecute(
+            execute = {
+                safeUpdateMessages { messages ->
+                messages.map {
+                    if (it.id == message.id)
+                        it.copy(status = MessageStatus.LOADING)
+                    else
+                        it
+                }}
+            },
+            onSuccess = { sendMessage(message) }
+        )
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -446,13 +456,19 @@ class ChatViewModel(
             it.copy(
                 isImagePagerVisible = true,
                 selectedImageMessages = messages,
-                currentImageIndexForPreview = initialImageIndex
+                currentImageIndexForPreview = initialImageIndex,
+                isAttachmentsOverlayVisible = false
             )
         }
     }
 
     override fun onChatActionsMenuClicked() {
-        updateState { it.copy(isChatActionsDialogVisible = true, isAttachmentsOverlayVisible = false) }
+        updateState {
+            it.copy(
+                isChatActionsDialogVisible = true,
+                isAttachmentsOverlayVisible = false
+            )
+        }
     }
 
     override fun onChatActionsMenuDialogDismissed() {
@@ -670,7 +686,8 @@ class ChatViewModel(
 
                 val currentPosition = audioPlayer.getCurrentPosition()
 
-                val completed = isPlaybackCompleted(totalDuration = totalDuration, currentPosition = currentPosition, lastPosition = lastPositionMilliSeconds)
+                val completed =
+                    isPlaybackCompleted(totalDuration = totalDuration, currentPosition = currentPosition, lastPosition = lastPositionMilliSeconds)
 
                 if (completed) {
                     updateVoiceMessageState(messageId, isPlaying = false, progress = 0f)
@@ -939,6 +956,21 @@ class ChatViewModel(
 
     private suspend fun handleChatHistorySuccess(result: PagedData<Message>) {
         onGetChatHistorySuccess(result)
+    }
+
+    override fun onStopAudioPlayback() {
+        audioPlayer.pause()
+        if (audioRecordRepository.isRecording()) audioRecordRepository.stopRecording()
+
+        updateState { currentState ->
+            val updatedItems = currentState.chatListItems.map { item ->
+                if (item is ChatListItem.VoiceMessage && item.isPlaying) item.copy(isPlaying = false) else item
+            }
+            currentState.copy(
+                chatListItems = updatedItems,
+                isRecordingVoice = false
+            )
+        }
     }
 
     companion object {

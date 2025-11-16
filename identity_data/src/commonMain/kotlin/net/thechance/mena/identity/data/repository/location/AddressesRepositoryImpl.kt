@@ -18,7 +18,6 @@ import net.thechance.mena.identity.data.utils.putJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
-import net.thechance.mena.identity.domain.exception.NoActiveAddressException
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.model.AddressInput
 import net.thechance.mena.identity.domain.repository.AddressesRepository
@@ -61,13 +60,13 @@ class AddressesRepositoryImpl(
     }
 
     override suspend fun getUserAddresses(): List<Address> {
-        return locationSafeWrapper<List<AddressResponseDto>> {
+        return safeWrapper<List<AddressResponseDto>> {
             client.getJson(ADDRESS_ENDPOINT)
         }.map { it.toEntity() }
     }
 
     override suspend fun getActiveAddress(): Address? {
-        return locationSafeWrapper<AddressResponseDto> {
+        return safeWrapper<AddressResponseDto> {
             client.getJson(ACTIVE_ADDRESS_ENDPOINT)
         }.toEntity()
     }
@@ -113,19 +112,6 @@ class AddressesRepositoryImpl(
             listOfNotNull(it.subAdministrativeArea, it.administrativeArea, it.country)
                 .joinToString(", ")
         }?: throw AddressNotFoundException()
-    }
-
-    private suspend fun <T> locationSafeWrapper(block: suspend () -> T): T {
-        return safeWrapper {
-            try {
-                return@safeWrapper block()
-            } catch (e: ClientRequestException) {
-                when (e.response.status) {
-                    HttpStatusCode.NotFound -> throw NoActiveAddressException()
-                    else -> throw e
-                }
-            }
-        }
     }
 
     companion object {

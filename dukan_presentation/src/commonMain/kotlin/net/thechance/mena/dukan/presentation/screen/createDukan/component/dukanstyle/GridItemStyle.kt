@@ -46,7 +46,7 @@ fun GridItemStyle(
         ShoppingCartPlaceholder(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(top = 18.dp)
+                .padding(top = 22.dp)
                 .clip(CircleShape)
                 .background(cartBackgroundColor)
         )
