@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
@@ -123,7 +124,9 @@ private fun ProductCard(
                 modifier = Modifier.padding(top = 2.dp),
                 text = product.description,
                 style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadeTertiary
+                color = Theme.colorScheme.shadeTertiary,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.weight(1f))
             ProductPrice(discountedPrice = product.discountedPrice, price = product.price)
