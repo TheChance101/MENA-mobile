@@ -54,6 +54,7 @@ fun PhoneNumberInputField(
                 hint = "",
                 leadingIcon = painterResource(Res.drawable.ic_phone),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                visualTransformation = LengthBasedPhoneVisualTransformation(masks = phoneMasks),
                 leadingContent = {
                     CountryCodeSelector(
                         countryFlag = selectedCountry.flagEmoji,
@@ -127,3 +128,9 @@ private fun CountryCodeSelector(
         )
     }
 }
+private val phoneMasks = mapOf(
+    8 to "##\u00A0###\u00A0###",
+    9 to "###\u00A0###\u00A0###",
+    10 to "###\u00A0###\u00A0####",
+    11 to "####\u00A0####\u00A0###",
+)
