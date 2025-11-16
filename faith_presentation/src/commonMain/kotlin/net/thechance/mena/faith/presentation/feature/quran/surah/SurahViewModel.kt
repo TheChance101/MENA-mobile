@@ -273,7 +273,7 @@ class SurahViewModel(
     }
 
     private fun handleCopySuccess(ayahContent: String) {
-        showCopySuccessSnackBar()
+        handleSuccessSnackBar(Res.string.copied_ayah_successfully)
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
@@ -281,10 +281,6 @@ class SurahViewModel(
                 selectedAyah = ayahContent
             )
         }
-    }
-
-    private fun showCopySuccessSnackBar() {
-        handleSuccessSnackBar(Res.string.copied_ayah_successfully)
     }
 
     private fun showErrorSnackBar() {
