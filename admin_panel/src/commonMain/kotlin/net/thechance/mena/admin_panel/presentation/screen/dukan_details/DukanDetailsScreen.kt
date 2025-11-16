@@ -56,7 +56,8 @@ private fun DukanDetailsScreenContent(
                 onBackBtnClicked = interactionListener::onBackButtonClicked,
                 dukanStatus = state.dukan.dukanStatus,
                 onChangeDukanStatusBtnClicked =
-                    interactionListener::onChangeDukanStatusButtonClicked
+                    interactionListener::onChangeDukanStatusButtonClicked,
+                isActiveDukanButtonLoading = state.isActiveDukanLoading
             )
         },
         overlays = {

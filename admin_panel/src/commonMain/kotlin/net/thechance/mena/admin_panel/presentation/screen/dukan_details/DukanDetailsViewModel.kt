@@ -18,6 +18,11 @@ import net.thechance.mena.admin_panel.presentation.utils.Paginator
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.activate
+import net.thechance.mena.admin_panel.resources.deactivate
+import net.thechance.mena.admin_panel.resources.dukan_activated
+import net.thechance.mena.admin_panel.resources.dukan_deactivated
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -47,10 +52,24 @@ class DukanDetailsViewModel(
     }
 
     override fun onChangeDukanStatusButtonClicked() {
-        updateState { it.copy(isMapVisible = false) }
-        viewModelScope.launch {
-            delay(500)
-            updateState { it.copy(isDeactivateDukanDialogShown = true) }
+        when (currentState.dukan.dukanStatus) {
+            DukanDetailsScreenState.DukanStatus.DEACTIVE -> {
+                tryToExecute(
+                    callee = { dukanRepository.activateDukan(currentState.dukan.id) },
+                    onSuccess = { onActivationDukanSuccess() },
+                    onError = ::onActivationDukanError,
+                    onStart = { updateState { it.copy(isActiveDukanLoading = true) } },
+                    dispatcher = dispatcher
+                )
+            }
+
+            DukanDetailsScreenState.DukanStatus.ACTIVE -> {
+                updateState { it.copy(isMapVisible = false) }
+                viewModelScope.launch {
+                    delay(500)
+                    updateState { it.copy(isDeactivateDukanDialogShown = true) }
+                }
+            }
         }
     }
 
@@ -90,7 +109,13 @@ class DukanDetailsViewModel(
     }
 
     override fun onConfirmDukanDeactivationButtonClicked() {
-        //call endpoint
+        tryToExecute(
+            callee = { dukanRepository.deactivateDukan(currentState.dukan.id) },
+            onSuccess = { onDeactivationDukanSuccess() },
+            onError = ::onDeactivationDukanError,
+            onStart = { updateState { it.copy(isDeactivateBtnLoading = true) } },
+            dispatcher = dispatcher
+        )
     }
 
     override fun onDeactivateReasonChanged(reason: String) {
@@ -104,6 +129,63 @@ class DukanDetailsViewModel(
     override fun onRetry() {
         updateState { it.copy(errorState = null) }
         getDukanDetails()
+    }
+
+    private suspend fun onActivationDukanSuccess(){
+        updateState {
+            it.copy(
+                dukan = currentState.dukan.copy(
+                    dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE
+                ),
+                isActiveDukanLoading = false
+            )
+        }
+        showSnackBar(
+            title = stringProvider.getString(Res.string.activate),
+            message = stringProvider.getString(Res.string.dukan_activated),
+            isSuccess = true
+        )
+    }
+
+    private suspend fun onActivationDukanError(error: ErrorState){
+        updateState {
+            it.copy(
+                errorState = error,
+                isActiveDukanLoading = false,
+            )
+        }
+        showSnackBar(
+            title = stringProvider.getString(error.getErrorSnackBarTitle()),
+            message = stringProvider.getString(error.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
+    }
+
+    private suspend fun onDeactivationDukanSuccess(){
+        onDeactivateDukanDialogDismissed()
+        updateState {
+            it.copy(
+                dukan = currentState.dukan.copy(
+                    dukanStatus = DukanDetailsScreenState.DukanStatus.DEACTIVE
+                ),
+                isDeactivateBtnLoading = false
+            )
+        }
+        showSnackBar(
+            title = stringProvider.getString(Res.string.deactivate),
+            message = stringProvider.getString(Res.string.dukan_deactivated),
+            isSuccess = true
+        )
+    }
+
+    private suspend fun onDeactivationDukanError(error: ErrorState){
+        onDeactivateDukanDialogDismissed()
+        updateState { it.copy(errorState = error, isDeactivateBtnLoading = false) }
+        showSnackBar(
+            title = stringProvider.getString(error.getErrorSnackBarTitle()),
+            message = stringProvider.getString(error.getErrorSnackBarMsg()),
+            isSuccess = false
+        )
     }
 
     private fun getDukanDetails() {
