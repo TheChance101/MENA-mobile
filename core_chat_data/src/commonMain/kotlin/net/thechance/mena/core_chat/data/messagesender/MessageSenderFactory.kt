@@ -11,6 +11,7 @@ class MessageSenderFactory(
         is MessageContent.Text -> textMessageSender
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
+        is MessageContent.Ayah -> throw IllegalArgumentException("Ayah message sender is not implemented yet")
         is MessageContent.Order -> TODO("Not yet implemented")
     }
 }

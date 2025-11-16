@@ -323,12 +323,12 @@ class ChatViewModel(
         tryToExecute(
             execute = {
                 safeUpdateMessages { messages ->
-                messages.map {
-                    if (it.id == message.messageDetails.id)
-                        it.copy(status = MessageStatus.LOADING)
-                    else
-                        it
-                }}
+                    messages.map {
+                        if (it.id == message.messageDetails.id)
+                            it.copy(status = MessageStatus.LOADING)
+                        else
+                            it
+                    }}
             },
             onSuccess = { sendMessage(message) }
         )

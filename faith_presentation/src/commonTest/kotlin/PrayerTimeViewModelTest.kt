@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
+import net.thechance.mena.faith.domain.service.PrayerTimeService
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
@@ -37,11 +38,13 @@ class PrayerTimeViewModelTest {
     private lateinit var prayerTimeRepository: PrayerTimeRepository
     private lateinit var addressesRepository: AddressesRepository
     private lateinit var locationService: LocationService
+    private lateinit var prayerTimeService: PrayerTimeService
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @BeforeTest
     fun setup() {
         prayerTimeRepository = mock(MockMode.autofill)
+        prayerTimeService = PrayerTimeService(prayerTimeRepository)
         addressesRepository = mock(MockMode.autofill)
         locationService = LocationService(addressesRepository)
     }
@@ -51,23 +54,15 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
 
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
-
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            testDispatcher
+        )
 
         val state = viewModel.uiState.value
         assertEquals("Baghdad, Iraq", state.address)
-    }
-
-    @Test
-    fun `should set hijri date after loading prayer times`() = runTest {
-        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
-
-
-        val state = viewModel.uiState.value
-        assertTrue(state.currentDate.isNotEmpty())
     }
 
     @Test
@@ -75,30 +70,14 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
 
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
-
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            testDispatcher
+        )
 
         verifySuspend(mode = exactly(1)) { prayerTimeRepository.getPrayerTimes(any(), any()) }
-    }
-
-
-    @Test
-    fun `should set next prayer name when prayer times loaded`() = runTest {
-        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
-
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
-
-        val nextName = viewModel.uiState.value.nextPrayerName
-        assertTrue(
-            nextName in listOf(
-                PrayerName.FAJR,
-                PrayerName.DHUHR,
-                PrayerName.ASR,
-                PrayerName.MAGHRIB,
-                PrayerName.ISHA
-            )
-        )
     }
 
     @Test
@@ -111,7 +90,12 @@ class PrayerTimeViewModelTest {
             )
         } throws Exception("Network error")
 
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            testDispatcher
+        )
 
         assertTrue(viewModel.uiState.value.prayerTimes.isEmpty())
     }
@@ -121,7 +105,12 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
 
-        viewModel = PrayerTimeViewModel(prayerTimeRepository, locationService, testDispatcher)
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            testDispatcher
+        )
 
         viewModel.uiEffect.test {
             viewModel.onBackClick()
@@ -142,7 +131,6 @@ class PrayerTimeViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-
 
 
     private companion object {

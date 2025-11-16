@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component
+package net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
@@ -16,15 +16,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreenState
+import net.thechance.mena.admin_panel.domain.model.DukansSortType
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementScreenState
 import net.thechance.mena.admin_panel.presentation.utils.noRippleClickable
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.date
+import net.thechance.mena.admin_panel.resources.added_date
 import net.thechance.mena.admin_panel.resources.dukan_name
 import net.thechance.mena.admin_panel.resources.ic_sort
 import net.thechance.mena.admin_panel.resources.image
 import net.thechance.mena.admin_panel.resources.location
 import net.thechance.mena.admin_panel.resources.sort
+import net.thechance.mena.admin_panel.resources.status
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -33,8 +35,8 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DukanTableHeaderRow(
-    sortState: DukanRequestsScreenState.SortState,
-    onSortClicked: (DukanRequestsScreenState.SortType) -> Unit,
+    sortState: DukanManagementScreenState.SortState,
+    onSortClicked: (DukansSortType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -55,7 +57,7 @@ fun DukanTableHeaderRow(
             text = "#",
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.weight(0.3f)
+            modifier = Modifier.weight(0.069f)
         )
         Text(
             text = stringResource(Res.string.image),
@@ -64,38 +66,51 @@ fun DukanTableHeaderRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             softWrap = false,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.099f)
         )
         SortableHeaderCell(
             text = stringResource(Res.string.dukan_name),
-            sortType = DukanRequestsScreenState.SortType.DUKAN_NAME,
+            sortType = DukansSortType.NAME,
             currentSort = sortState,
             onSortClicked = onSortClicked,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(0.15f)
         )
         Text(
             text = stringResource(Res.string.location),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.weight(1.5f)
+            modifier = Modifier.weight(0.15f)
         )
+        Spacer(modifier = Modifier.weight(0.02f))
         SortableHeaderCell(
-            text = stringResource(Res.string.date),
-            sortType = DukanRequestsScreenState.SortType.DATE,
+            text = stringResource(Res.string.status),
+            sortType = DukansSortType.ACTIVATION_STATUS,
             currentSort = sortState,
             onSortClicked = onSortClicked,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(0.09f)
         )
-        Spacer(modifier = Modifier.weight(0.8f))
+        Spacer(modifier = Modifier.weight(0.02f))
+        SortableHeaderCell(
+            text = stringResource(Res.string.added_date),
+            sortType = DukansSortType.CREATED_AT,
+            currentSort = sortState,
+            onSortClicked = onSortClicked,
+            modifier = Modifier.weight(0.12f)
+        )
+        Text(
+            text = "",
+            style = Theme.typography.label.large,
+            modifier = Modifier.weight(0.13f)
+        )
     }
 }
 
 @Composable
 private fun SortableHeaderCell(
     text: String,
-    sortType: DukanRequestsScreenState.SortType,
-    currentSort: DukanRequestsScreenState.SortState,
-    onSortClicked: (DukanRequestsScreenState.SortType) -> Unit,
+    sortType: DukansSortType,
+    currentSort: DukanManagementScreenState.SortState,
+    onSortClicked: (DukansSortType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isSortActive = currentSort.type == sortType
