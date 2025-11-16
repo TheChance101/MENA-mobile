@@ -40,7 +40,6 @@ class DukanDetailsViewModel(
 
     init {
         getDukanDetails()
-        initializeShelvesPaginator()
     }
 
     override fun onBackButtonClicked() {
@@ -61,7 +60,12 @@ class DukanDetailsViewModel(
 
     override fun onShelfSelected(shelfId: Uuid) {
         if (currentState.selectedShelfId != shelfId.toString()) {
-            updateState { it.copy(selectedShelfId = shelfId.toString()) }
+            updateState {
+                it.copy(
+                    products = listOf(),
+                    selectedShelfId = shelfId.toString()
+                )
+            }
             initializeProductsPaginator()
             loadNextProducts()
         }
@@ -100,8 +104,6 @@ class DukanDetailsViewModel(
     override fun onRetry() {
         updateState { it.copy(errorState = null) }
         getDukanDetails()
-        initializeShelvesPaginator()
-        loadNextShelves()
     }
 
     private fun getDukanDetails() {
@@ -117,6 +119,7 @@ class DukanDetailsViewModel(
 
     private fun onGetDukanDetailsSuccess(dukan: Dukan) {
         updateState { it.copy(dukan = dukan.toUiState()) }
+        initializeShelvesPaginator()
         loadNextShelves()
     }
 
@@ -129,6 +132,7 @@ class DukanDetailsViewModel(
     }
 
     private fun initializeShelvesPaginator() {
+        updateState { it.copy(shelves = listOf(), selectedShelfId = "") }
         shelvesPaginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onShelvesPaginationLoading,
@@ -175,6 +179,7 @@ class DukanDetailsViewModel(
     }
 
     private fun initializeProductsPaginator() {
+        updateState { it.copy(products = listOf()) }
         productsPaginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onProductsPaginationLoading,

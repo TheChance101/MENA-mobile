@@ -54,7 +54,7 @@ private fun DukanDetailsScreenContent(
         topBar = {
             DukanDetailsAppBar(
                 onBackBtnClicked = interactionListener::onBackButtonClicked,
-                dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE,
+                dukanStatus = state.dukan.dukanStatus,
                 onChangeDukanStatusBtnClicked =
                     interactionListener::onChangeDukanStatusButtonClicked
             )
