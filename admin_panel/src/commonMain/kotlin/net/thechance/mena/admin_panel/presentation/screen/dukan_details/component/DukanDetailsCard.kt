@@ -145,7 +145,7 @@ private fun DukanLocationMap(
                     longitude = longitude,
                     markerWidth = 60,
                     markerHeight = 80,
-                    initialZoom = 100
+                    initialZoom = 80
                 )
             } else {
                 Image(
