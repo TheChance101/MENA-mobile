@@ -21,6 +21,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.OrderMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -57,6 +58,7 @@ fun ChatList(
                     is ImagesGroupChatItem -> item.imagesUiState.first().messageDetails.id.toString()
                     is ImageMessageUiState -> item.messageDetails.id.toString()
                     is AudioMessageUiState -> item.messageDetails.id.toString()
+                    is OrderMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
                 }
             }
