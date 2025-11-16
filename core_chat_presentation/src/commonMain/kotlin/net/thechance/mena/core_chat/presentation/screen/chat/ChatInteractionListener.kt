@@ -36,6 +36,7 @@ interface MessageListInteractionListener {
     fun onResendMessageDialogDismissed()
 
     fun onMessagesScrolled()
+    fun onViewOrderDetailsClicked(orderId: Uuid)
 }
 
 interface AttachmentsInteractionListener {
