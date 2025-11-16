@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.User
-import net.thechance.mena.admin_panel.presentation.component.ActivationStatus
+import net.thechance.mena.admin_panel.presentation.component.ActivationStatusButton
 import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableCellText
@@ -143,7 +143,7 @@ private fun UserItemRow(
             modifier = Modifier.weight(0.8f),
             contentAlignment = Alignment.CenterStart
         ) {
-            ActivationStatus(isActive = user.status == User.Status.ACTIVE)
+            ActivationStatusButton(isActive = user.status == User.Status.ACTIVE)
         }
 
         Box(

@@ -22,7 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.component.ActivationStatus
+import net.thechance.mena.admin_panel.presentation.component.ActivationStatusButton
 import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.DukanImage
 import net.thechance.mena.admin_panel.presentation.component.DukanLocation
@@ -143,7 +143,7 @@ private fun DukanItemRow(
             modifier = Modifier.weight(0.15f)
         )
         Spacer(modifier = Modifier.weight(0.02f))
-        ActivationStatus(
+        ActivationStatusButton(
             isActive = dukan.isActive,
             modifier = Modifier.weight(0.09f)
         )
