@@ -54,7 +54,7 @@ fun ProductDetailsImagesSection(
     selectedImageUrl: String,
     isLoading: Boolean,
     modifier: Modifier = Modifier,
-    onSecondaryImageClick: (String) -> Unit
+    onSecondaryImageClick: (String, String) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -118,7 +118,7 @@ private fun ProductDetailsImageShimmer(modifier: Modifier = Modifier) {
 private fun ProductDetailsImageContent(
     allImages: List<String>,
     selectedImageUrl: String,
-    onSecondaryImageClick: (String) -> Unit,
+    onSecondaryImageClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -179,7 +179,7 @@ fun ProductDetailsMainImage(
 fun ProductDetailsSecondaryImages(
     images: List<String>,
     selectedImageUrl: String,
-    onImageClick: (String) -> Unit,
+    onImageClick: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyRow(
@@ -196,9 +196,7 @@ fun ProductDetailsSecondaryImages(
                 imageUrl = imageUrl,
                 isSelected = (imageUrl == selectedImageUrl),
                 onClick = {
-                    if (imageUrl != selectedImageUrl) {
-                        onImageClick(imageUrl)
-                    }
+                    onImageClick(imageUrl, selectedImageUrl)
                 }
             )
         }
@@ -267,7 +265,7 @@ private fun ProductDetailsImagesSectionPreview() {
         ProductDetailsImagesSection(
             allImages = images,
             selectedImageUrl = images[1],
-            onSecondaryImageClick = {},
+            onSecondaryImageClick = { imageUrl, selectedImageUrl -> },
             isLoading = true
         )
     }
