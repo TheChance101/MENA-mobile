@@ -2,8 +2,6 @@
 
 package net.thechance.mena.dukan.domain.entity
 
-import net.thechance.mena.dukan.domain.model.OrderAddress
-import net.thechance.mena.dukan.domain.model.ProductOrder
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -13,9 +11,24 @@ data class Order(
     val orderDate: String,
     val products: List<ProductOrder>,
     val discount: Double,
-    val platformFee: Double,
+    val platformFees: Double,
     val totalAmount: Double,
     val orderAddress: OrderAddress,
     val customerName: String,
     val customerPhone: String,
-)
+){
+    data class OrderAddress(
+        val addressDeliveryTitle: String,
+        val startLatitude: Double,
+        val startLongitude: Double,
+        val endLatitude: Double,
+        val endLongitude: Double
+    )
+    data class ProductOrder(
+        val id: Uuid,
+        val quantity: Int,
+        val imageUrl:String,
+        val name: String,
+        val price: Double
+    )
+}
