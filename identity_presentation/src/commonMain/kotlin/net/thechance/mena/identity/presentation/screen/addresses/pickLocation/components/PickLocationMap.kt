@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -80,21 +81,26 @@ fun PickLocationMap(
             },
         )
 
-        AnimatedVisibility(
-            visible = showAnchor,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.Center)
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.ic_anchor),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.padding(bottom = 58.dp).height(58.dp)
-            )
-        }
+        MapAnchor(showAnchor)
 
         content()
+    }
+}
+
+@Composable
+private fun BoxScope.MapAnchor(showAnchor: Boolean) {
+    AnimatedVisibility(
+        visible = showAnchor,
+        enter = fadeIn(),
+        exit = fadeOut(),
+        modifier = Modifier.align(Alignment.Center)
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.ic_anchor),
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.padding(bottom = 58.dp).height(58.dp)
+        )
     }
 }
 
