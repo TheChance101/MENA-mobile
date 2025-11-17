@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -36,6 +36,7 @@ import net.thechance.mena.dukan.presentation.screen.orderDetails.component.Order
 import net.thechance.mena.dukan.presentation.util.MapsNavigator
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
+import net.thechance.mena.dukan.presentation.util.getScreenWidth
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsEffect
@@ -98,10 +99,7 @@ private fun OrderDetailsContent(
         topBar = {
             AppBar(
                 title = if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Success)
-                    stringResource(
-                        Res.string.order_title,
-                        state.orderUiState.orderNumber
-                    )
+                    stringResource(Res.string.order_title, state.orderUiState.orderNumber)
                 else
                     stringResource(Res.string.order_title, ""),
                 titleColor = Theme.colorScheme.shadePrimary,
@@ -142,19 +140,22 @@ private fun OrderDetailsContent(
                 )
 
                 OrderDetailsUiState.OrderDetailsScreenState.Success -> {
-                    val lazyVerticalState = rememberLazyGridState()
+                    val staggeredGridCellsType = derivedStateOf {
+                        if ( getScreenWidth() < 600.dp) {
+                            StaggeredGridCells.Adaptive(305.dp)
+                        } else {
+                            StaggeredGridCells.Fixed(2)
+                        }
+                    }
+                    val lazyVerticalState = rememberLazyStaggeredGridState()
                     val isFirstItemVisibleInSecondColumn = derivedStateOf {
                         lazyVerticalState.layoutInfo.visibleItemsInfo.any {
-                            it.index == 1 && it.column == 1
+                            it.index == 1 && it.lane == 1
                         }
                     }
-                    val isFirstItemVisibleInThirdColumn = derivedStateOf {
-                        lazyVerticalState.layoutInfo.visibleItemsInfo.any {
-                            it.index == 2 && it.column == 2
-                        }
-                    }
-                    LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 305.dp),
+
+                    LazyVerticalStaggeredGrid(
+                        columns = staggeredGridCellsType.value,
                         state = lazyVerticalState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
@@ -162,7 +163,6 @@ private fun OrderDetailsContent(
                             vertical = Theme.spacing._12
                         ),
                         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-                        verticalArrangement = Arrangement.Center
                     ) {
                         item(
                             key = "dukan_order_summary_section",
@@ -187,11 +187,7 @@ private fun OrderDetailsContent(
                             DeliveryAddressSection(
                                 address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
                                 isUserOwnerToEnableAddressClick = state.orderUiState.isUserOwner,
-                                onClick = {
-                                    interactionListener.onAddressDeliveryClicked(
-                                        address = state.orderUiState.addressDeliveryUiState
-                                    )
-                                },
+                                onClick = { interactionListener.onAddressDeliveryClicked(address = state.orderUiState.addressDeliveryUiState ) },
                                 modifier = Modifier.padding(top = topPaddingValue),
                             )
                         }
@@ -199,13 +195,10 @@ private fun OrderDetailsContent(
                             key = "dukan_customer_information_section",
                             contentType = { "customer_information_section" },
                         ) {
-                            val topPaddingValue =
-                                if (isFirstItemVisibleInThirdColumn.value) 0.dp
-                                else Theme.spacing._12
                             CustomerInformationSection(
                                 userName = state.orderUiState.customerName,
                                 userPhoneNumber = state.orderUiState.customerPhone,
-                                modifier = Modifier.padding(top = topPaddingValue)
+                                modifier = Modifier.padding(top = Theme.spacing._12)
                             )
                         }
                     }

@@ -5,6 +5,7 @@ package net.thechance.mena.dukan.data.mapper
 import net.thechance.mena.dukan.data.dto.order.OrderDto
 import net.thechance.mena.dukan.data.dto.order.OrderItemDto
 import net.thechance.mena.dukan.domain.entity.Order
+import net.thechance.mena.dukan.domain.entity.Price
 import kotlin.uuid.ExperimentalUuidApi
 
 fun OrderDto.toDomain(): Order {
@@ -34,6 +35,13 @@ private fun OrderItemDto.toDomain(): Order.ProductOrder {
         quantity = quantity,
         imageUrl = imageUrl.orEmpty(),
         name = productName,
-        totalPrice = price.finalPrice
+        totalPrice = this.price.toDomain()
+    )
+}
+
+private fun net.thechance.mena.dukan.data.dto.order.PriceDto.toDomain(): Price {
+    return Price(
+        base = this.original,
+        final = this.finalPrice
     )
 }
