@@ -116,8 +116,10 @@ class ProductDetailsViewModel(
         loadProductDetails()
     }
 
-    override fun onSecondaryImageClicked(imageUrl: String) {
-        updateState { copy(selectedImageUrl = imageUrl) }
+    override fun onSecondaryImageClicked(imageUrl: String, selectedImageUrl: String) {
+        if (imageUrl != selectedImageUrl) {
+            updateState { copy(selectedImageUrl = imageUrl) }
+        }
     }
 
     override fun onBackClicked() {
