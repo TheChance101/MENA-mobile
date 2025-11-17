@@ -98,7 +98,6 @@ fun OrderMessageLayout(
     ) {
         Row(
             verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
             if (!message.messageDetails.isMine) {
                 Box(
