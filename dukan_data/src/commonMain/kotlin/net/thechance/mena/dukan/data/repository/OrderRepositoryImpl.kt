@@ -3,6 +3,7 @@
 package net.thechance.mena.dukan.data.repository
 
 import net.thechance.mena.dukan.domain.entity.Order
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.repository.OrderRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -23,43 +24,43 @@ fun createFakeOrder(id: Uuid): Order {
                 id = Uuid.random(),
                 quantity = 2,
                 imageUrl = "https://example.com/product1.jpg",
-                name = "Product 1",
-                price = 25.0
+                name = "Product 1kfjgklgkljglkjgkjlglkjglkjglkjgkljgkljgkljglkjglkjglgjk",
+                totalPrice = Price(20.0,30.0)
             ),
             Order.ProductOrder(
                 id = Uuid.random(),
                 quantity = 1,
                 imageUrl = "https://example.com/product2.jpg",
                 name = "Product 2",
-                price = 50.0
+                totalPrice = Price(20.0,30.0)
             ),
             Order.ProductOrder(
                 id = Uuid.random(),
                 quantity = 3,
                 imageUrl = "https://example.com/product3.jpg",
                 name = "Product 3",
-                price = 10.0
+                totalPrice = Price(20.0,30.0)
             ),
             Order.ProductOrder(
                 id = Uuid.random(),
                 quantity = 1,
                 imageUrl = "https://example.com/product4.jpg",
                 name = "Product 4",
-                price = 15.0
+                totalPrice = Price(20.0,30.0)
             ),
             Order.ProductOrder(
                 id = Uuid.random(),
                 quantity = 4,
                 imageUrl = "https://example.com/product5.jpg",
                 name = "Product 5",
-                price = 5.0
+                totalPrice = Price(20.0,30.0)
             ),
             Order.ProductOrder(
                 id = Uuid.random(),
                 quantity = 2,
                 imageUrl = "https://example.com/product6.jpg",
                 name = "Product 6",
-                price = 30.0
+                totalPrice = Price(20.0,30.0)
             )
         ),
         discount = 10.0,
@@ -73,6 +74,7 @@ fun createFakeOrder(id: Uuid): Order {
             endLongitude = -122.4094
         ),
         customerName = "John Doe",
-        customerPhone = "1234567890"
+        customerPhone = "1234567890",
+        isUserOwner = true
     )
 }
