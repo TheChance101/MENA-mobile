@@ -121,7 +121,7 @@ class DukanRequestsViewModel(
                     message = currentState.rejectReason
                 )
             },
-            onSuccess = { onSuccessDukanApproved() },
+            onSuccess = { onDukanApprovedSuccess() },
             onError = ::onError,
             dispatcher = dispatcher
         )
