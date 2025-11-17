@@ -14,12 +14,15 @@ import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanListContent
 import net.thechance.mena.admin_panel.presentation.component.DukansCounter
+import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanDetailsDrawerView
+import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.RejectionDukanDialog
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_requests
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DukanRequestsScreen(viewModel: DukanRequestsViewModel = koinViewModel()) {
@@ -28,6 +31,7 @@ fun DukanRequestsScreen(viewModel: DukanRequestsViewModel = koinViewModel()) {
     DukanRequestsScreenContent(state = state, listener = viewModel)
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun DukanRequestsScreenContent(
     state: DukanRequestsScreenState,
@@ -35,6 +39,19 @@ private fun DukanRequestsScreenContent(
 ) {
     PanelScaffold(
         topBar = { DukanRequestsTopBar() },
+        overlays = {
+            dialog(state.isRejectDialogShown){
+                RejectionDukanDialog(
+                    isVisible = it,
+                    onDismiss = listener::onRejectDukanDialogDismissed,
+                    onRejectionConfirmed = listener::onRejectDukanConfirmed,
+                    rejectionReason = state.rejectReason,
+                    onReasonChanged = listener::onRejectionMessageChanged,
+                    isRejectButtonEnabled = state.isRejectBtnEnabled,
+                    isRejectButtonLoading = state.isRejectBtnLoading,
+                )
+            }
+        },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
         onRetry = listener::onRetryClicked
@@ -50,6 +67,20 @@ private fun DukanRequestsScreenContent(
                 modifier = Modifier.fillMaxSize()
             )
         }
+    }
+
+    val selectedDukan = state.selectedDukanId?.let { id ->
+        state.dukans.find { it.id == id }
+    }
+
+    if (selectedDukan != null) {
+        DukanDetailsDrawerView(
+            isOpen = state.isDukanDetailsShown,
+            onDismiss = listener::onDismissDukanDetails,
+            selectedDukanItem = selectedDukan,
+            onRejectDukanClicked = listener::onRejectDukanClicked,
+            onApproveDukanClicked = listener::onApproveDukanClicked,
+        )
     }
 }
 
