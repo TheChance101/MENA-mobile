@@ -61,9 +61,12 @@ internal fun ProductsList(
 
     when {
         isProductLoading && products.isEmpty() -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.BottomCenter
+            Column (
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(600.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 AdminPanelContentLoading()
             }
