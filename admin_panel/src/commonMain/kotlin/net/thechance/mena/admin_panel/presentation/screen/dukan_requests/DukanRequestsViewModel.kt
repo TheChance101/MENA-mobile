@@ -117,7 +117,7 @@ class DukanRequestsViewModel(
         tryToExecute(
             callee = {
                 dukanRepository.updateDukanStatus(
-                    dukanId = currentState.selectedDukanId!!,
+                    dukanId = currentState.selectedDukanId?:return,
                     status = Dukan.Status.APPROVED,
                     message = currentState.rejectReason
                 )
