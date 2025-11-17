@@ -29,7 +29,10 @@ import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.TableHeaderRow
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.blocked
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -53,7 +56,10 @@ fun UsersListContent(
             UsersListTable(
                 users = state.users,
                 onToggleUserStatusClicked = listener::onToggleUserStatusClicked,
-                modifier = Modifier.weight(1f),
+                horizontalScrollState = horizontalScrollState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         }
 
@@ -83,6 +89,9 @@ private fun UsersListTable(
         itemsIndexed(users) { index, user ->
             val isLastItem = index == users.lastIndex
             UserItemRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(horizontalScrollState),
                 index = user.index,
                 user = user,
                 isLastItem = isLastItem,
@@ -125,11 +134,10 @@ private fun UserItemRow(
                 ) else RectangleShape
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        TableCellText(text = index.toString(), modifier = Modifier.weight(0.3f))
+        TableCellText(text = index.toString(), modifier = Modifier.widthIn(min = 78.dp))
 
         TableCellText(text = user.fullName, modifier = Modifier.weight(2f))
 
@@ -143,7 +151,10 @@ private fun UserItemRow(
             modifier = Modifier.weight(0.8f),
             contentAlignment = Alignment.CenterStart
         ) {
-            ActivationStatusButton(isActive = user.status == User.Status.ACTIVE)
+            ActivationStatusButton(
+                isActive = user.status == User.Status.ACTIVE,
+                deactivationText = stringResource(resource = Res.string.blocked)
+            )
         }
 
         Box(

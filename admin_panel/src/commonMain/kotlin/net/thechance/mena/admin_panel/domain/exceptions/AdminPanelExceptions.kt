@@ -9,9 +9,12 @@ class UnknownNetworkException(message: String = "Unknown error") : AdminPanelExc
 class InvalidPasswordException(message: String = "password doesn't match validations") :
     AdminPanelException(message)
 
-class InvalidPhoneNumberException(message: String="Invalid phone number format for selected country") : AdminPanelException(message)
+class InvalidPhoneNumberException(
+    message: String = "Invalid phone number format for selected country"
+) : AdminPanelException(message)
 
-class InvalidAmountException(message: String="Amount must be greater than zero") : AdminPanelException(message)
+class InvalidAmountException(message: String = "Amount must be greater than zero") :
+    AdminPanelException(message)
 
 class UnauthorizedException(message: String = "Invalid user name or password") :
     AdminPanelException(message)
