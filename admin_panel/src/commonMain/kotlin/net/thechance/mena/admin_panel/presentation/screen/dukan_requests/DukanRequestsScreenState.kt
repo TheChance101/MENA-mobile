@@ -17,11 +17,11 @@ data class DukanRequestsScreenState(
     val snackBar: SnackBarState = SnackBarState(),
     val isRejectDialogShown: Boolean = false,
     val rejectReason: String = "",
-    val isRejectBtnLoading: Boolean = false,
+    val isRejectButtonLoading: Boolean = false,
     val isDukanDetailsShown: Boolean = false,
     val selectedDukan: DukanItem? = null
 ) {
-    val isRejectBtnEnabled: Boolean
+    val isRejectButtonEnabled: Boolean
         get() = rejectReason.length > 1
 
     data class DukanPageInfo(
