@@ -87,7 +87,8 @@ internal fun mapErrorResponseToException(errorResponse: ErrorResponse): Exceptio
         DukanErrorCodes.CART_NOT_FOUND -> NoSuchItemException("Cart not found: ${errorResponse.message}")
         DukanErrorCodes.PRODUCT_NOT_IN_CART -> NoSuchItemException("Product not in cart: ${errorResponse.message}")
         DukanErrorCodes.PRODUCT_ALREADY_IN_CART -> NoSuchItemException("Product already in cart: ${errorResponse.message}")
-
+        DukanErrorCodes.FORBIDDEN_ORDER_ACCESS -> UnAuthorizedException("Forbidden order access: ${errorResponse.message}")
+        DukanErrorCodes.ORDER_NOT_FOUND -> NoSuchItemException("Order not found: ${errorResponse.message}")
         else -> DukanException(errorResponse.message)
     }
 }
