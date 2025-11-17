@@ -16,6 +16,7 @@ data class Order(
     val orderAddress: OrderAddress,
     val customerName: String,
     val customerPhone: String,
+    val isUserOwner: Boolean
 ){
     data class OrderAddress(
         val addressDeliveryTitle: String,
@@ -29,6 +30,6 @@ data class Order(
         val quantity: Int,
         val imageUrl:String,
         val name: String,
-        val price: Double
+        val totalPrice: Price
     )
 }
