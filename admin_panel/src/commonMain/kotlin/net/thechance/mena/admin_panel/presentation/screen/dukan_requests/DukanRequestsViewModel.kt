@@ -113,10 +113,11 @@ class DukanRequestsViewModel(
     }
 
     override fun onApproveDukanClicked() {
+        val selectedDukanId = currentState.selectedDukan?.id ?: return
         tryToExecute(
             callee = {
                 dukanRepository.updateDukanStatus(
-                    dukanId = currentState.selectedDukan!!.id,
+                    dukanId = selectedDukanId,
                     status = Dukan.Status.APPROVED,
                     message = currentState.rejectReason
                 )
@@ -127,7 +128,7 @@ class DukanRequestsViewModel(
         )
     }
 
-    private fun onSuccessDukanApproved(){
+    private fun onDukanApprovedSuccess(){
         onDukanDetailsDismissed()
         getRequestedDukans()
         viewModelScope.launch {
@@ -156,16 +157,17 @@ class DukanRequestsViewModel(
     }
 
     override fun onRejectDukanConfirmed() {
+        val selectedDukanId = currentState.selectedDukan?.id ?: return
         tryToExecute(
             callee = {
                 dukanRepository.updateDukanStatus(
-                    dukanId = currentState.selectedDukan!!.id,
+                    dukanId = selectedDukanId,
                     status = Dukan.Status.REJECTED,
-                    message = currentState.rejectReason,
+                    message = currentState.rejectReason
                 )
             },
-            onStart = { updateState { it.copy(isRejectBtnLoading = true) } },
-            onFinish = { updateState { it.copy(isRejectBtnLoading = false) } },
+            onStart = { updateState { it.copy(isRejectButtonLoading = true) } },
+            onFinish = { updateState { it.copy(isRejectButtonLoading = false) } },
             onSuccess = { onSuccessDukanRejected() },
             onError = ::onError,
             dispatcher = dispatcher

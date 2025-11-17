@@ -106,7 +106,7 @@ fun DukanDetailsDrawerView(
                             ) {
                                 DrawerTitle()
 
-                                DukanDetailsContent(
+                                PendingDukanDetailsContent(
                                     selectedDukanItem = selectedDukanItem,
                                     modifier = Modifier.weight(1f).fillMaxWidth()
                                 )

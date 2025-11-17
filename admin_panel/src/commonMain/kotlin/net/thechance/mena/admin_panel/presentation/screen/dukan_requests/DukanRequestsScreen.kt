@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanListContent
@@ -50,8 +52,8 @@ private fun DukanRequestsScreenContent(
                     onRejectionConfirmed = listener::onRejectDukanConfirmed,
                     rejectionReason = state.rejectReason,
                     onReasonChanged = listener::onRejectionMessageChanged,
-                    isRejectButtonEnabled = state.isRejectBtnEnabled,
-                    isRejectButtonLoading = state.isRejectBtnLoading,
+                    isRejectButtonEnabled = state.isRejectButtonEnabled,
+                    isRejectButtonLoading = state.isRejectButtonLoading,
                 )
             }
         },
@@ -66,8 +68,11 @@ private fun DukanRequestsScreenContent(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
             when {
-                state.dukans.isEmpty() && !state.isLoading -> EmptyDukanState(
-                    description = stringResource(Res.string.no_dukan_results_description_for_requests)
+                state.isLoading -> AdminPanelContentLoading()
+
+                state.dukans.isEmpty() -> EmptyDukanState(
+                    description = stringResource(Res.string.no_dukan_results_description_for_requests),
+                    modifier = Modifier.offset(y=-(76.dp))
                 )
 
                 else -> DukanListContent(
