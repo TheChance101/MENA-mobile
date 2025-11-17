@@ -24,6 +24,7 @@ import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
 import mena.core_chat_presentation.generated.resources.pm
 import mena.core_chat_presentation.generated.resources.you
+import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
@@ -120,8 +121,8 @@ private fun TimeAndStatus(chat: ChatUiState) {
 @Composable
 private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
     val lastMessage = if (chat.lastMessage == null) ""
-    else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
-    else chat.lastMessage.text
+    else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text.asString()}"
+    else chat.lastMessage.text.asString()
 
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)

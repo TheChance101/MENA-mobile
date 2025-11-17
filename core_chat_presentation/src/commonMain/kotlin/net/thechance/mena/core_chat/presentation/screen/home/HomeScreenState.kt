@@ -23,7 +23,7 @@ data class HomeScreenState(
         val status: Status,
     ) {
         data class MessageUiState(
-            val text: String,
+            val text: UiText,
             val isMine: Boolean,
             val time: LocalDateTime
         )

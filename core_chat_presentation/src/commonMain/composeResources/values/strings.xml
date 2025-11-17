@@ -69,4 +69,7 @@
     <string name="more_hours_ago">%1$d hours ago</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
+    <string name="message_type_audio">Audio</string>
+    <string name="message_type_photo">Photo</string>
+    <string name="message_type_ayah">Ayah</string>
 </resources>

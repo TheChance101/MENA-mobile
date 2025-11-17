@@ -18,6 +18,8 @@ fun ChatSummary.toCached(): CachedChatSummaryDto {
         id = this.id.toString(),
         name = this.name,
         imageUrl = this.imageUrl,
+        lastMessageId = this.lastMessage?.id?.toString(),
+        lastMessageSenderId = this.lastMessage?.senderId?.toString(),
         lastMessageContent = (this.lastMessage?.content as? MessageContent.Text)?.text,
         lastMessageSentAt = this.lastMessage?.sendAt.toString(),
         lastMessageIsMine = this.lastMessage?.isMine,
@@ -33,8 +35,8 @@ fun CachedChatSummaryDto.toDomain(): ChatSummary {
         imageUrl = imageUrl,
         lastMessage = this.lastMessageContent?.let {
             Message(
-                id = Uuid.random(),
-                senderId = Uuid.random(),
+                id = lastMessageId?.let { Uuid.parse(it) } ?: Uuid.random(),
+                senderId = lastMessageSenderId?.let { Uuid.parse(it) } ?: Uuid.random(),
                 chatId = Uuid.parse(id),
                 sendAt = lastMessageSentAt?.let { LocalDateTime.parse(it) }
                     ?: Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()),

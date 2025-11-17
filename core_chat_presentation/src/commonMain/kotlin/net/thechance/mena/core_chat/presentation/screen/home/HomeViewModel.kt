@@ -8,16 +8,13 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.am
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
-import mena.core_chat_presentation.generated.resources.pm
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -30,10 +27,8 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -165,7 +160,7 @@ class HomeViewModel(
 
         val updatedChatSummary = chatSummary.copy(
             lastMessage = ChatUiState.MessageUiState(
-                text = (message.content as MessageContent.Text).text,
+                text = message.content.toPreviewText(),
                 isMine = message.isMine,
                 time = message.sendAt,
             ),

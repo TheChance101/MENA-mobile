@@ -116,12 +116,21 @@ fun createMessageDto(
 )
 
 fun createLastMessageDto(
+    id: String = Uuid.random().toString(),
+    senderId: String = Uuid.random().toString(),
+    chatId: String = Uuid.random().toString(),
     content: String = "Hello there",
     sentAt: String = "2025-10-01T12:00:00Z",
-    isMine: Boolean = false
-) = ChatSummaryDto.LastMessageDto(
-    content = content,
-    sentAt = sentAt,
+    isMine: Boolean = false,
+    isRead: Boolean = false
+) = MessageDto(
+    id = id,
+    senderId = senderId,
+    chatId = chatId,
+    content = MessageContentDto.Text(content),
+    reactions = emptyList(),
+    sendAt = sentAt,
+    isRead = isRead,
     isMine = isMine
 )
 
@@ -129,7 +138,7 @@ fun createChatSummaryDto(
     id: String = Uuid.random().toString(),
     imageUrl: String? = "http://example.com/image.jpg",
     name: String = "Test Chat",
-    lastMessage: ChatSummaryDto.LastMessageDto = createLastMessageDto(),
+    lastMessage: MessageDto = createLastMessageDto(chatId = id),
     unReadMessagesCount: Int = 1
 ) = ChatSummaryDto(
     id = id,
@@ -143,11 +152,15 @@ fun createCachedChatSummaryDto(
     id: String = Uuid.random().toString(),
     imageUrl: String? = "http://example.com/image.jpg",
     name: String = "Test Chat",
+    lastMessageId: String? = Uuid.random().toString(),
+    lastMessageSenderId: String? = Uuid.random().toString(),
     unReadMessagesCount: Int = 1
 ) = CachedChatSummaryDto(
     id = id,
     imageUrl = imageUrl ?: "",
     name = name,
+    lastMessageId = lastMessageId,
+    lastMessageSenderId = lastMessageSenderId,
     unReadMessagesCount = unReadMessagesCount,
     lastMessageContent = "hello",
     lastMessageSentAt = "2025-10-01T12:00:00",

@@ -40,6 +40,7 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -652,7 +653,7 @@ class HomeViewModelTest {
                 name = chatName,
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
-                    text = "Hello",
+                    text = UiText.DynamicString("Hello"),
                     isMine = true,
                     time = LocalDateTime(2024, 1, 1, 12, 0)
                 ),

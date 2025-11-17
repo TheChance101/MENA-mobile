@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.mutablePreferencesOf
 import androidx.datastore.preferences.core.stringPreferencesKey
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isTrue
@@ -358,11 +359,9 @@ class ChatRepositoryImplTest {
 
         val emittedState = deferredState.await() as SyncState.ChatsSummariesSynced
 
-        emittedState.chatSummaries.let { summaries ->
-            assertThat(summaries.size).isEqualTo(2)
-            assertThat(summaries[0].id.toString()).isEqualTo(chatId1)
-            assertThat(summaries[1].id.toString()).isEqualTo(chatId2)
-        }
+        assertThat(emittedState.chatSummaries).hasSize(2)
+        assertThat(emittedState.chatSummaries[0].id.toString()).isEqualTo(chatId1)
+        assertThat(emittedState.chatSummaries[1].id.toString()).isEqualTo(chatId2)
     }
 
     @Test

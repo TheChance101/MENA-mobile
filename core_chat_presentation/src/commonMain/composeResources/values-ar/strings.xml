@@ -69,4 +69,7 @@
     <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
+    <string name="message_type_audio">تسجيل صوتي</string>
+    <string name="message_type_photo">صورة</string>
+    <string name="message_type_ayah">آية</string>
 </resources>
