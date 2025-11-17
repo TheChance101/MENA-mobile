@@ -4,13 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import net.thechance.mena.admin_panel.presentation.utils.OS
-import net.thechance.mena.admin_panel.presentation.utils.PlatformDetector
-import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.twemoji_mozilla
-import org.jetbrains.compose.resources.Font
+
+@Composable
+expect fun getEmojiFontFamily(): FontFamily?
 
 data class EmojiTypography(
     val large: TextStyle,
@@ -18,24 +15,6 @@ data class EmojiTypography(
     val small: TextStyle
 ) {
     companion object {
-        @Composable
-        fun getFontFamily(): FontFamily? {
-            return when (PlatformDetector.currentOS) {
-                OS.WINDOWS, OS.LINUX -> {
-                    FontFamily(
-                        Font(
-                            resource = Res.font.twemoji_mozilla,
-                            weight = FontWeight.Normal
-                        )
-                    )
-                }
-                OS.MACOS, OS.IOS, OS.ANDROID -> {
-                    null
-                }
-                OS.UNKNOWN -> null
-            }
-        }
-
         fun create(fontFamily: FontFamily?): EmojiTypography {
             return EmojiTypography(
                 large = TextStyle(
