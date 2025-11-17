@@ -68,7 +68,11 @@ class DepositViewModel (
     }
 
     private suspend fun onFillWalletClicked(){
-        depositMoneyUseCase.deposit(phoneNumber = currentState.phoneNumber ,amount = currentState.amount.replace(",", "").toDouble() , currentState.selectedCountry.toEntity())
+        depositMoneyUseCase.deposit(
+            phoneNumber = currentState.phoneNumber,
+            amount = currentState.amount.replace(",", "").toDouble(),
+            currentState.selectedCountry.toEntity()
+        )
     }
 
     private suspend fun onDepositSuccess(){

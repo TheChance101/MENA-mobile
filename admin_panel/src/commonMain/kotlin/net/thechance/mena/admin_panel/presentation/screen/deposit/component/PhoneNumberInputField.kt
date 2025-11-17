@@ -101,7 +101,7 @@ private fun CountryCodeSelector(
         Text(
             text = countryFlag,
             style = Theme.typography.emoji.medium,
-            modifier = Modifier.padding(end = 1.dp),
+            modifier = Modifier.padding(end = 4.dp),
         )
 
         Text(

@@ -28,9 +28,11 @@ fun CountryRowItem(
     onClick: (DepositScreenState.CountryUiState) -> Unit = {}
 ) {
 
+    val countryItemColor = if (isSelected) Theme.colorScheme.background.surfaceHigh
+    else Theme.colorScheme.background.surfaceLow
+
     val animatedCountryItemColor by animateColorAsState(
-        targetValue = if (isSelected) Theme.colorScheme.background.surfaceHigh
-        else Theme.colorScheme.background.surfaceLow
+        targetValue = countryItemColor
     )
 
     Row(
@@ -49,10 +51,10 @@ fun CountryRowItem(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
 
-       Text(
-           text=selectedCountry.flagEmoji,
-           style = Theme.typography.emoji.medium
-       )
+        Text(
+            text = selectedCountry.flagEmoji,
+            style = Theme.typography.emoji.medium
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -72,7 +74,7 @@ fun CountryRowItem(
                 style = Theme.typography.label.small,
             )
         }
-        if(isSelected) {
+        if (isSelected) {
             RadioButton(
                 isSelected = isSelected,
                 onClick = null
