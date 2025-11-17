@@ -4,6 +4,7 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management.comp
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,11 +47,15 @@ fun UsersListContent(
     listener: UsersManagementInteractionListener,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
+
+        val horizontalScrollState = rememberScrollState()
+
         TableHeaderRow(
             sortState = state.sort,
-            onSortClicked = listener::onSortClicked
+            onSortClicked = listener::onSortClicked,
+            horizontalScrollState = horizontalScrollState,
+            modifier = Modifier.fillMaxWidth()
         )
 
         if (state.isLoading) {
@@ -80,13 +86,14 @@ fun UsersListContent(
 private fun UsersListTable(
     users: List<UsersManagementScreenState.UserItem>,
     onToggleUserStatusClicked: (userId: Uuid, userStatus: User.Status) -> Unit,
-    modifier: Modifier = Modifier
+    horizontalScrollState: ScrollState = rememberScrollState(),
+    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         itemsIndexed(users) { index, user ->
             val isLastItem = index == users.lastIndex
@@ -127,7 +134,6 @@ private fun UserItemRow(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .background(
                 animatedBackgroundColor,
                 shape = if (isLastItem) RoundedCornerShape(
@@ -141,16 +147,16 @@ private fun UserItemRow(
     ) {
         TableCellText(text = index.toString(), modifier = Modifier.widthIn(min = 78.dp))
 
-        TableCellText(text = user.fullName, modifier = Modifier.weight(2f))
+        TableCellText(text = user.fullName, modifier = Modifier.widthIn(min = 268.dp))
 
-        TableCellText(text = user.phoneNumber, modifier = Modifier.weight(1.5f))
+        TableCellText(text = user.phoneNumber, modifier = Modifier.widthIn(min = 171.dp))
 
-        TableCellText(text = user.lastLoginAt, modifier = Modifier.weight(1.5f))
+        TableCellText(text = user.lastLoginAt, modifier = Modifier.widthIn(min = 175.dp))
 
-        TableCellText(text = user.lastVisitAt, modifier = Modifier.weight(1.5f))
+        TableCellText(text = user.lastVisitAt, modifier = Modifier.widthIn(min = 167.dp))
 
         Box(
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.widthIn(min = 126.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             ActivationStatusButton(
@@ -160,7 +166,7 @@ private fun UserItemRow(
         }
 
         Box(
-            modifier = Modifier.weight(0.8f),
+            modifier = Modifier.widthIn(min = 151.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             UserStatusToggleButton(
