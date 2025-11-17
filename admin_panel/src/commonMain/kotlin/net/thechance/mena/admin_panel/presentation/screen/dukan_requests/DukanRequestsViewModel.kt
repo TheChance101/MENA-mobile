@@ -150,9 +150,7 @@ class DukanRequestsViewModel(
     override fun onRejectDukanDialogDismissed() {
         updateState {
             it.copy(
-                isRejectDialogShown = false,
-                rejectReason = "",
-                isRejectBtnLoading = false,
+                isRejectDialogShown = false
             )
         }
     }
