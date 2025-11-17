@@ -192,4 +192,7 @@
     <string name="platform_fees">رسوم المنصة</string>
     <string name="customer_information">معلومات العميل</string>
     <string name="profile_icon">ايقونة البروفايل</string>
+    <string name="order_error_unauthorized_access">لا يحق لك عرض تفاصيل هذا الطلب.</string>
+    <string name="order_error_not_found">هذاالطلب غير موجود.</string>
+    <string name="order_error_general">حدث خطأ أثناء جلب تفاصيل الطلب. يرجي المحاولة لاحقا</string>
 </resources>

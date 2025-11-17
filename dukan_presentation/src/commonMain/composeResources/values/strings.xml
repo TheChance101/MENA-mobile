@@ -191,4 +191,7 @@
     <string name="platform_fees">Platform fees</string>
     <string name="customer_information">Customer Information</string>
     <string name="profile_icon">Profile Icon</string>
+    <string name="order_error_unauthorized_access">You are not authorized to display this order details.</string>
+    <string name="order_error_not_found">Order not found.</string>
+    <string name="order_error_general">Failed to load order details. Please try again.</string>
 </resources>
