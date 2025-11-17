@@ -266,7 +266,7 @@ private fun ReelContent(
 ) {
     val rememberedUrl = remember(reel.id) { reel.videoUrl }
     VideoPlayer(
-        modifier = Modifier.background(Theme.colorScheme.primary.primary),
+        modifier = Modifier.background(Color.Black),
         url = rememberedUrl,
         isReelVisible = shouldRender,
         onVideoPlaying = incrementViewsCount,
@@ -347,7 +347,7 @@ private fun PublisherInfo(
             Column(Modifier.padding(bottom = Theme.spacing._16)) {
                 Text(
                     text = userName,
-                    color = Theme.colorScheme.primary.onPrimary,
+                    color = Color.White,
                     style = Theme.typography.label.medium,
                     modifier = Modifier.padding(vertical = Theme.spacing._2)
                         .clickable { onPublisherInfoClick() },
@@ -367,7 +367,7 @@ private fun PublisherInfo(
                 modifier = Modifier
                     .animateContentSize()
                     .clickable { onDescriptionClick(isDescriptionExpanded) },
-                color = Theme.colorScheme.primary.onPrimary,
+                color = Color.White,
                 style = Theme.typography.label.medium,
                 maxLines = if (isDescriptionExpanded) Int.MAX_VALUE else 1
             )
