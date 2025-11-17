@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,7 +40,8 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
-import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
@@ -258,7 +260,8 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
+                contentDescription = stringResource(Res.string.back_arrow),
+                tint = Color.White
             )
         }
     )
@@ -266,13 +269,23 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
 
 @Composable
 private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
-    AsyncImage(
-        model = profileImageUrl,
-        contentDescription = stringResource(Res.string.profile_image_desc),
-        error = painterResource(Res.drawable.ic_placeholder_profile),
-        modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop
-    )
+    val painter = rememberAsyncImagePainter(profileImageUrl)
+
+    if (painter.state.value is AsyncImagePainter.State.Success) {
+        Image(
+            painter = painter,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            modifier = modifier.size(100.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        Icon(
+            painter = painterResource(Res.drawable.ic_placeholder_profile),
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            modifier = modifier.size(100.dp).clip(CircleShape),
+            tint = Theme.colorScheme.shadePrimary,
+        )
+    }
 }
 
 @Composable
