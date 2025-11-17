@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,7 +11,6 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
-import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.AddToCartSection
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsAppBar
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.ProductDetailsImagesSection
@@ -40,14 +38,14 @@ fun ProductDetailsContent(
         },
         bottomBar = {
             AddToCartSection(
-                onAddToCartClick = {listener.onAddToCartClicked(productId = state.product.id)},
-                onPlusClick = {listener.onPlusClicked(state.product.id)},
-                onMinusClick = {listener.onMinusClicked(productId = state.product.id)},
+                onAddToCartClick = { listener.onAddToCartClicked(productId = state.product.id) },
+                onPlusClick = { listener.onPlusClicked(state.product.id) },
+                onMinusClick = { listener.onMinusClicked(productId = state.product.id) },
                 state = state
             )
         },
         snakeBar = {
-            state.snackBarState?.let {snackBarUiState ->
+            state.snackBarState?.let { snackBarUiState ->
                 SnackBar(
                     snackBarUiState = snackBarUiState,
                     onDismiss = listener::onDismissSnackBar
@@ -55,34 +53,23 @@ fun ProductDetailsContent(
             }
         }
     ) {
-        if (state.errorState != null) {
-            NoInternetContent(
-                onRetry = listener::onRetryClicked,
-                isLoading = state.isLoading,
-                modifier = Modifier
-                    .fillMaxSize()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = Theme.spacing._16),
+        ) {
+            ProductDetailsImagesSection(
+                allImages = state.product.images,
+                selectedImageUrl = state.selectedImageUrl,
+                onSecondaryImageClick = listener::onSecondaryImageClicked,
+                isLoading = state.isLoading
             )
-        } else {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = Theme.spacing._16),
-                ) {
-                    ProductDetailsImagesSection(
-                        allImages = state.product.images,
-                        selectedImageUrl = state.selectedImageUrl,
-                        onSecondaryImageClick = listener::onSecondaryImageClicked,
-                        isLoading = state.isLoading
-                    )
 
-                    ProductDetailsInfoSection(
-                        state = state.product,
-                        isLoading = state.isLoading
-                    )
-                }
-            }
+            ProductDetailsInfoSection(
+                state = state.product,
+                isLoading = state.isLoading
+            )
         }
     }
 }

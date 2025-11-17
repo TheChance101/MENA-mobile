@@ -101,7 +101,9 @@ fun BasicTextField(
                 readOnly = readOnly,
                 minLines = minLines,
                 maxLines = if (singleLine) 1 else maxLines,
-                textStyle = Theme.typography.body.small,
+                textStyle = Theme.typography.body.small.copy(
+                    color = Theme.colorScheme.shadePrimary
+                ),
                 keyboardOptions = keyboardOptions,
                 keyboardActions = keyboardActions,
                 singleLine = singleLine,
