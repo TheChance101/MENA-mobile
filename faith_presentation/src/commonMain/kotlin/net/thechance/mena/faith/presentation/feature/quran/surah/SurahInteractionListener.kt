@@ -10,7 +10,7 @@ interface SurahInteractionListener {
     fun onClosePlayerClick()
     fun onPreviousAyahClick()
     fun onDismissActionButtons()
-    fun onShareClick(ayahContent: String)
+    fun onShareClick()
     fun onBookmarkClick(ayahNumber: Int)
     fun onAyahLongPress(ayahContent: String, ayahIndex: Int)
     fun onSearchClick()

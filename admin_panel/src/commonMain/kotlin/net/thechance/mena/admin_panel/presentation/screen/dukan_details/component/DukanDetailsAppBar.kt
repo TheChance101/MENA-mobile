@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_details.compone
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,6 +25,7 @@ internal fun DukanDetailsAppBar(
     onBackBtnClicked: () -> Unit,
     dukanStatus: DukanDetailsScreenState.DukanStatus,
     onChangeDukanStatusBtnClicked: () -> Unit,
+    isActiveDukanButtonLoading: Boolean,
 ) {
     AppBar(
         modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),
@@ -41,10 +43,11 @@ internal fun DukanDetailsAppBar(
             when (dukanStatus) {
                 DukanDetailsScreenState.DukanStatus.DEACTIVE -> {
                     PrimaryButton(
-                        modifier = Modifier.widthIn(min = 168.dp),
+                        modifier = Modifier.width(168.dp),
                         text = stringResource(dukanStatus.text),
                         onClick = onChangeDukanStatusBtnClicked,
-                        trailingIcon = painterResource(dukanStatus.icon)
+                        trailingIcon = painterResource(dukanStatus.icon),
+                        isLoading = isActiveDukanButtonLoading
                     )
                 }
 

@@ -277,6 +277,7 @@ class DukanDetailsViewModel(
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
         tryToExecuteWithDebounce(
             block = { dukanCartRepository.updateProductQuantity(domainRequest) },
+            onError = ::onErrorUpdateProductQuantity
         )
     }
 
@@ -284,13 +285,13 @@ class DukanDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
-        if (productQuantity < 0) return
         updateProductQuantityInCart(productId, productQuantity)
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
         tryToExecuteWithDebounce(
             block = { onMinusClickedBlock(domainRequest, productQuantity, productId) },
+            onError = ::onErrorUpdateProductQuantity
         )
     }
 

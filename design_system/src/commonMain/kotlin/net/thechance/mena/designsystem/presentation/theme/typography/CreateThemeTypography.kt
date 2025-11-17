@@ -7,9 +7,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.madimi_one_regular
-import mena.design_system.generated.resources.noto_sans_arabic_medium
-import mena.design_system.generated.resources.noto_sans_arabic_regular
-import mena.design_system.generated.resources.noto_sans_arabic_semi_bold
+import mena.design_system.generated.resources.ibm_plex_sans_arabic_medium
+import mena.design_system.generated.resources.ibm_plex_sans_arabic_regular
+import mena.design_system.generated.resources.ibm_plex_sans_arabic_semi_bold
 import mena.design_system.generated.resources.poppins_medium
 import mena.design_system.generated.resources.poppins_regular
 import mena.design_system.generated.resources.poppins_semi_bold
@@ -25,9 +25,9 @@ fun createThemeTypography(appLanguage: String): Typography {
         Font(resource = Res.font.poppins_semi_bold, FontWeight.SemiBold),
     )
     val notoFontFamily = FontFamily(
-        Font(resource = Res.font.noto_sans_arabic_regular, FontWeight.Normal),
-        Font(resource = Res.font.noto_sans_arabic_medium, FontWeight.Medium),
-        Font(resource = Res.font.noto_sans_arabic_semi_bold, FontWeight.SemiBold),
+        Font(resource = Res.font.ibm_plex_sans_arabic_regular, FontWeight.Normal),
+        Font(resource = Res.font.ibm_plex_sans_arabic_medium, FontWeight.Medium),
+        Font(resource = Res.font.ibm_plex_sans_arabic_semi_bold, FontWeight.SemiBold),
     )
     val fontFamily = when (appLanguage) {
         AppLanguage.English.iso -> poppinsFontFamily

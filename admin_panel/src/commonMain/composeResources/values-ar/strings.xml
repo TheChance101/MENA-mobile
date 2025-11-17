@@ -73,7 +73,6 @@
     <string name="user_blocked">تم حظر المستخدم</string>
     <string name="sort">ترتيب</string>
 
-
     <string name="activate_dukan">تفعيل دكان</string>
     <string name="deactivate">إلغاء التنشيط</string>
     <string name="dukan_details">تفاصيل دكان</string>
@@ -100,4 +99,6 @@
     <string name="success_deposit_title">نجاح</string>
     <string name="success_deposit_description">تم إيداع المبلغ بنجاح</string>
     <string name="selected_country">الدولة المحددة</string>
+    <string name="dukan_activated">تم تفعيل الدكان</string>
+    <string name="dukan_deactivated">تم إلغاء تنشيط الدكان</string>
 </resources>

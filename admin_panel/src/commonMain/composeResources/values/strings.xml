@@ -72,6 +72,7 @@
     <string name="user_activated">User has been activated</string>
     <string name="user_blocked">User has been blocked</string>
     <string name="sort">Sort</string>
+
     <string name="activate_dukan">Activate Dukan</string>
     <string name="deactivate">Deactivate</string>
     <string name="dukan_details">Dukan Details</string>
@@ -99,5 +100,6 @@
     <string name="success_deposit_title">Success</string>
     <string name="success_deposit_description">Deposit Completed Successfully</string>
     <string name="selected_country">Selected Country</string>
-
+    <string name="dukan_activated">Dukan has been activated</string>
+    <string name="dukan_deactivated">Dukan has been deactivated</string>
 </resources>

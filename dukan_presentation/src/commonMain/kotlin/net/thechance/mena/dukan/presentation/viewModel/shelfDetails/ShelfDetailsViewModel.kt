@@ -3,11 +3,12 @@ package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import androidx.paging.PagingData
+import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
@@ -35,6 +36,9 @@ class ShelfDetailsViewModel(
     defaultDispatcher = defaultDispatcher
 ), ShelfDetailsInteractionListener {
     private val args = savedStateHandle.toRoute<DukanRoute.ShelfDetails>()
+
+    private val shelfProductsMutableStateFlow =
+        MutableStateFlow<PagingData<ShelfDetailsUiState.ProductUiState>>(PagingData.empty())
 
     init {
         updateState { copy(shelfName = args.shelfName) }
@@ -95,8 +99,13 @@ class ShelfDetailsViewModel(
     }
 
     private fun onProductsLoaded(products: PagingData<ShelfDetailsUiState.ProductUiState>) {
+        shelfProductsMutableStateFlow.value = products
+        shelfProductsMutableStateFlow.value = shelfProductsMutableStateFlow.value.map {
+            updateProductQuantityInCart(productId = it.id, newQuantity = it.inCartQuantity)
+            it
+        }
         updateState {
-            copy(productsShelf = flowOf(products))
+            copy(productsShelf = shelfProductsMutableStateFlow)
         }
     }
 
@@ -108,6 +117,8 @@ class ShelfDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
+        updateProductQuantityInCart(productId, productQuantity)
+        updateState { copy(hasProductInCart = true) }
 
         val uiRequest =
             ShelfDetailsUiState.ProductUiState(id = productId, inCartQuantity = productQuantity)
@@ -123,6 +134,7 @@ class ShelfDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
+        updateProductQuantityInCart(productId, productQuantity)
         updateState { copy(hasProductInCart = true) }
 
         val uiRequest =
@@ -131,6 +143,7 @@ class ShelfDetailsViewModel(
 
         tryToExecuteWithDebounce(
             block = { dukanCartRepository.updateProductQuantity(domainRequest) },
+            onError = ::onErrorUpdateProductQuantity
         )
     }
 
@@ -138,6 +151,7 @@ class ShelfDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
+        updateProductQuantityInCart(productId, productQuantity)
 
         val uiRequest =
             ShelfDetailsUiState.ProductUiState(id = productId, inCartQuantity = productQuantity)
@@ -151,6 +165,7 @@ class ShelfDetailsViewModel(
                     domainRequest = domainRequest
                 )
             },
+            onError = ::onErrorUpdateProductQuantity
         )
     }
 
@@ -200,6 +215,14 @@ class ShelfDetailsViewModel(
         updateState {
             copy(
                 snackBarState = null
+            )
+        }
+    }
+
+    private fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
+        updateState {
+            copy(
+                productQuantity = productQuantity + (productId to newQuantity)
             )
         }
     }
