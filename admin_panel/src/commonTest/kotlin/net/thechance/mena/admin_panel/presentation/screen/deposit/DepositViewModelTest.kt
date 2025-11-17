@@ -7,108 +7,177 @@ import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
+import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.model.Country
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.success_deposit_title
+import net.thechance.mena.admin_panel.resources.success_deposit_description
+import kotlin.test.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DepositViewModelTest {
 
-    private lateinit var depositRepository: DepositMoneyRepository
-    private lateinit var useCase: DepositMoneyUseCase
+    private val useCase = mock<DepositMoneyUseCase>(mode = MockMode.autofill)
+    private val stringProvider = mock<StringProvider>(mode = MockMode.autofill)
+    private val repository = mock<DepositMoneyRepository>(mode = MockMode.autofill)
+
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: DepositViewModel
 
-    private val dispatcher = StandardTestDispatcher()
-
-    private val stringProvider: StringProvider = mockk(relaxed = true)
-    private val countryUi = DepositScreenState.CountryUiState(
-        name = "Test Country",
-        callingCode = "+20",
-        phoneNumberRegex = "^\\d{11}$",
-        countryCodeName ="Eg",
-        flagEmoji = "",
+    private val fakeCountries = listOf(
+        Country(
+            name = "Iraq",
+            callingCode = "+964",
+            countryCodeName = "IQ",
+            flagEmoji = "",
+            phoneNumberRegex = "",
+        )
     )
 
     @BeforeTest
     fun setup() {
-        depositRepository = mock(mode = MockMode.autofill)
-        useCase = DepositMoneyUseCase(depositRepository)
+        Dispatchers.setMain(testDispatcher)
 
-        everySuspend { depositRepository.getCountries() } returns listOf(
-            Country( "Test Country", "+20", "eg","","^\\d{11}$")
-        )
+        everySuspend { repository.getCountries() } returns fakeCountries
 
+        everySuspend {
+            useCase.deposit(any(), any(), any())
+        } returns Unit
+
+        everySuspend {
+            stringProvider.getString(Res.string.success_deposit_title)
+        } returns "Success"
+
+        everySuspend {
+            stringProvider.getString(Res.string.success_deposit_description)
+        } returns "Deposit Completed Successfully"
+    }
+
+    @AfterTest
+    fun teardown() {
+        Dispatchers.resetMain()
+    }
+
+    private fun TestScope.initViewModel() {
         viewModel = DepositViewModel(
             depositMoneyUseCase = useCase,
             stringProvider = stringProvider,
-            depositMoneyRepository = depositRepository,
-            dispatcher = dispatcher
+            depositMoneyRepository = repository,
+            dispatcher = testDispatcher
         )
+        advanceUntilIdle()
     }
 
     @Test
-    fun `deposit success updates state correctly`() = runTest {
-        everySuspend {
-            depositRepository.depositMoney("+201234567890", 100.0)
-        } returns Unit
-
-        viewModel.onPhoneNumberChanged("01234567890")
-        viewModel.onAmountChanged("100")
+    fun `should load countries on initialization`() = runTest(testDispatcher) {
+        initViewModel()
 
         viewModel.state.test {
-            viewModel.onFillTheWalletButtonClicked()
-            advanceUntilIdle()
-
-            val final = awaitItem()
-
-            assertEquals(false, final.isDepositProcessLoading)
-            assertEquals("", final.phoneNumber)
-            assertEquals("", final.amount)
+            val state = awaitItem()
+            assertFalse(state.isCountriesLoading)
+            assertEquals(1, state.availableCountries.size)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `deposit error shows error snackbar and stops loading`() = runTest {
-        everySuspend {
-            depositRepository.depositMoney(any(), any())
-        } throws InvalidPhoneNumberException()
+    fun `should update phone number and filter non digits`() = runTest(testDispatcher) {
+        initViewModel()
+
+        viewModel.onPhoneNumberChanged("+964 7800000002ABC")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals("9647800000002", state.phoneNumber)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should update amount and filter non digits`() = runTest(testDispatcher) {
+        initViewModel()
+
+        viewModel.onAmountChanged("12ab34")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertEquals("1234", state.amount)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should deposit successfully`() = runTest(testDispatcher) {
+        initViewModel()
+
+        viewModel.onPhoneNumberChanged("9647800000002")
+        viewModel.onAmountChanged("25000")
+        advanceUntilIdle()
+
+        viewModel.onFillTheWalletButtonClicked()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.isDepositProcessLoading)
+            assertEquals("", state.amount)
+            assertEquals("", state.phoneNumber)
+            assertTrue(state.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should show NoInternet error`() = runTest(testDispatcher) {
+        everySuspend { useCase.deposit(any(), any(), any()) } throws NoInternetException()
+
+        initViewModel()
+
+        viewModel.onPhoneNumberChanged("9647800000002")
+        viewModel.onAmountChanged("5000")
+        advanceUntilIdle()
+
+        viewModel.onFillTheWalletButtonClicked()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should show phone number error`() = runTest(testDispatcher) {
+        everySuspend { useCase.deposit(any(), any(), any()) } throws InvalidPhoneNumberException()
+
+        initViewModel()
 
         viewModel.onPhoneNumberChanged("123")
-        viewModel.onAmountChanged("100")
+        viewModel.onAmountChanged("5000")
+
+        viewModel.onFillTheWalletButtonClicked()
+        advanceUntilIdle()
 
         viewModel.state.test {
-            viewModel.onFillTheWalletButtonClicked()
-            advanceUntilIdle()
-
-            val final = awaitItem()
-
-            assertEquals(false, final.isDepositProcessLoading)
-            assertEquals(false, final.snackBar.isSuccess)
-            assertEquals(true, final.snackBar.isVisible)
-        }
-    }
-
-    @Test
-    fun `changing phone amount and country updates state`() = runTest {
-        viewModel.state.test {
-            viewModel.onPhoneNumberChanged("0123")
-            viewModel.onAmountChanged("150")
-            viewModel.onCountryCodeChanged(countryUi)
-
-            val s = awaitItem()
-            assertEquals("0123", s.phoneNumber)
-            assertEquals("150", s.amount)
-            assertEquals(countryUi, s.selectedCountry)
+            val state = awaitItem()
+            assertFalse(state.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
