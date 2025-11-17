@@ -56,11 +56,19 @@ class DepositViewModel (
 
 
     override fun onPhoneNumberChanged(phoneNumber : String) {
-        updateState { it.copy(phoneNumber = phoneNumber) }
+        phoneNumber
+            .filter { char -> char.isDigit()}
+            .let { newPhoneNumber ->
+                updateState { it.copy(phoneNumber = newPhoneNumber) }
+            }
     }
 
     override fun onAmountChanged(amount : String) {
-        updateState { it.copy(amount = formatAmount( amount)) }
+        amount
+            .filter { char -> char.isDigit()}
+            .let { newAmount->
+                updateState { it.copy(amount = formatAmount( newAmount)) }
+            }
     }
 
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
