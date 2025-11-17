@@ -26,7 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.User
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.ActivationStatusButton
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.TableHeaderRow
@@ -55,7 +56,7 @@ fun UsersListContent(
         )
 
         if (state.isLoading) {
-            LoadingIndicator()
+            AdminPanelContentLoading()
         } else {
             UsersListTable(
                 users = state.users,
@@ -152,7 +153,7 @@ private fun UserItemRow(
             modifier = Modifier.widthIn(min = 126.dp),
             contentAlignment = Alignment.CenterStart
         ) {
-            UserStatusButton(isActive = user.status == User.Status.ACTIVE)
+            ActivationStatusButton(isActive = user.status == User.Status.ACTIVE)
         }
 
         Box(

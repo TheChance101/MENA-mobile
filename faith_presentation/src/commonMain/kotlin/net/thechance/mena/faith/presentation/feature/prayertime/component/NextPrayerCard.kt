@@ -18,6 +18,7 @@ import mena.faith_presentation.generated.resources.ic_prayer_man
 import mena.faith_presentation.generated.resources.next_prayer_in
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.getPrayerDisplayNameResource
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
@@ -58,7 +59,7 @@ internal fun NextPrayerCard(uiState: PrayerTimeUiState) {
             Text(
                 text = stringResource(
                     Res.string.next_prayer_in,
-                    stringResource(getPrayerDisplayNameResource(uiState.nextPrayerName))
+                    stringResource(getPrayerDisplayNameResource(uiState.nextPrayerName ?: PrayerName.FAJR))
                 ),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeSecondary
