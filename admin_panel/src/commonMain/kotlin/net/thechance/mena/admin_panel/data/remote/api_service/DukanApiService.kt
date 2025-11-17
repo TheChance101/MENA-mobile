@@ -37,6 +37,17 @@ interface DukanApiService {
         @Query("size") size: Int? = null
     ): Response<DukanPagedResponse<ProductDto>>
 
+    @PATCH(DUKAN_ACTIVATION_ENDPOINT)
+    suspend fun activateDukan(
+        @Path("dukanId") dukanId: String
+    ): Response<Unit>
+
+    @PATCH(DUKAN_DEACTIVATION_ENDPOINT)
+    suspend fun deactivateDukan(
+        @Path("dukanId") dukanId: String,
+        @Body deactivateReason: DukanDeactivationDto
+    ): Response<Unit>
+
     @PATCH(UPDATE_DUKAN_STATUS_ENDPOINT)
     suspend fun updateDukanStatus(
         @Path("dukanId") dukanId: String,
@@ -58,6 +69,8 @@ interface DukanApiService {
         const val DUKAN_ADMIN_BASE = "dukan/admin"
         const val DUKAN_SHELVES_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{dukanId}"
         const val SHELF_PRODUCTS_ENDPOINT = "$DUKAN_ADMIN_BASE/shelf/{shelfId}/products"
+        const val DUKAN_ACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}/activate"
+        const val DUKAN_DEACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}/deactivate"
         const val UPDATE_DUKAN_STATUS_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}/status"
         const val DUKAN_ACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}/activate"
         const val DUKAN_DEACTIVATION_ENDPOINT = "$DUKAN_ADMIN_BASE/{dukanId}/deactivate"

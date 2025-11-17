@@ -16,8 +16,11 @@ import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.compone
 import net.thechance.mena.admin_panel.presentation.component.DukansCounter
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanDetailsDrawerView
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.RejectionDukanDialog
+import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_requests
+import net.thechance.mena.admin_panel.resources.no_dukan_results_description_for_requests
+import net.thechance.mena.admin_panel.resources.requests
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -58,14 +61,21 @@ private fun DukanRequestsScreenContent(
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             DukansCounter(
+                title = stringResource(Res.string.requests),
                 count = state.totalDukanRequests,
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
-            DukanListContent(
-                state = state,
-                listener = listener,
-                modifier = Modifier.fillMaxSize()
-            )
+            when {
+                state.dukans.isEmpty() && !state.isLoading -> EmptyDukanState(
+                    description = stringResource(Res.string.no_dukan_results_description_for_requests)
+                )
+
+                else -> DukanListContent(
+                    state = state,
+                    listener = listener,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 

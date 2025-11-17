@@ -18,6 +18,6 @@ interface SurahInteractionListener {
     fun onInitialAyahScrolled()
     fun highlightAyah(ayahNumber: Int)
     fun updateContinueTilawah(ayahNumber: Int)
+    fun playSurah(surahNumber: Int)
     fun onConfigrationChange()
-    fun playSurah(surahId: Int)
 }

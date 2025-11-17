@@ -38,8 +38,10 @@ import coil3.compose.AsyncImagePainter
 import com.preat.peekaboo.image.picker.toImageBitmap
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.am
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_download
+import mena.core_chat_presentation.generated.resources.pm
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
@@ -49,6 +51,7 @@ import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -174,6 +177,14 @@ private fun PagerOverlay(
         )
     )
 
+    val am = stringResource(Res.string.am)
+    val pm = stringResource(Res.string.pm)
+
+    val timeFormat = time.formatAsPastDateTime(
+        am = am,
+        pm = pm
+    )
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -202,7 +213,7 @@ private fun PagerOverlay(
                 color = Theme.colorScheme.primary.onPrimary
             )
             Text(
-                text = time.formatAsPastDateTime(),
+                text = timeFormat,
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.primary.onPrimaryBody
             )

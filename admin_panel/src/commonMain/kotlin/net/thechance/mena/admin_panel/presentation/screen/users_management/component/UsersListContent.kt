@@ -4,20 +4,16 @@ package net.thechance.mena.admin_panel.presentation.screen.users_management.comp
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,7 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.user.User
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.ActivationStatusButton
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.TableHeaderRow
@@ -43,25 +40,20 @@ fun UsersListContent(
     listener: UsersManagementInteractionListener,
     modifier: Modifier = Modifier
 ) {
+
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
-
-        val horizontalScrollState = rememberScrollState()
-
         TableHeaderRow(
             sortState = state.sort,
-            onSortClicked = listener::onSortClicked,
-            horizontalScrollState = horizontalScrollState,
-            modifier = Modifier.fillMaxWidth()
+            onSortClicked = listener::onSortClicked
         )
 
         if (state.isLoading) {
-            LoadingIndicator()
+            AdminPanelContentLoading()
         } else {
             UsersListTable(
                 users = state.users,
                 onToggleUserStatusClicked = listener::onToggleUserStatusClicked,
-                horizontalScrollState = horizontalScrollState,
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier.weight(1f),
             )
         }
 
@@ -80,19 +72,17 @@ fun UsersListContent(
 private fun UsersListTable(
     users: List<UsersManagementScreenState.UserItem>,
     onToggleUserStatusClicked: (userId: Uuid, userStatus: User.Status) -> Unit,
-    horizontalScrollState: ScrollState = rememberScrollState(),
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
-        modifier = modifier
+        modifier = modifier.fillMaxWidth()
     ) {
         itemsIndexed(users) { index, user ->
             val isLastItem = index == users.lastIndex
             UserItemRow(
-                modifier = Modifier.fillMaxWidth().horizontalScroll(horizontalScrollState),
                 index = user.index,
                 user = user,
                 isLastItem = isLastItem,
@@ -126,6 +116,7 @@ private fun UserItemRow(
 
     Row(
         modifier = modifier
+            .fillMaxWidth()
             .background(
                 animatedBackgroundColor,
                 shape = if (isLastItem) RoundedCornerShape(
@@ -138,25 +129,25 @@ private fun UserItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        TableCellText(text = index.toString(), modifier = Modifier.widthIn(min = 78.dp))
+        TableCellText(text = index.toString(), modifier = Modifier.weight(0.3f))
 
-        TableCellText(text = user.fullName, modifier = Modifier.widthIn(min = 268.dp))
+        TableCellText(text = user.fullName, modifier = Modifier.weight(2f))
 
-        TableCellText(text = user.phoneNumber, modifier = Modifier.widthIn(min = 171.dp))
+        TableCellText(text = user.phoneNumber, modifier = Modifier.weight(1.5f))
 
-        TableCellText(text = user.lastLoginAt, modifier = Modifier.widthIn(min = 175.dp))
+        TableCellText(text = user.lastLoginAt, modifier = Modifier.weight(1.5f))
 
-        TableCellText(text = user.lastVisitAt, modifier = Modifier.widthIn(min = 167.dp))
+        TableCellText(text = user.lastVisitAt, modifier = Modifier.weight(1.5f))
 
         Box(
-            modifier = Modifier.widthIn(min = 126.dp),
+            modifier = Modifier.weight(0.8f),
             contentAlignment = Alignment.CenterStart
         ) {
-            UserStatusButton(isActive = user.status == User.Status.ACTIVE)
+            ActivationStatusButton(isActive = user.status == User.Status.ACTIVE)
         }
 
         Box(
-            modifier = Modifier.widthIn(min = 151.dp),
+            modifier = Modifier.weight(0.8f),
             contentAlignment = Alignment.CenterStart
         ) {
             UserStatusToggleButton(

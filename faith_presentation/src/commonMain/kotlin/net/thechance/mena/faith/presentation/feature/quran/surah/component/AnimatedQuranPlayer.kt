@@ -33,7 +33,7 @@ fun AnimatedQuranPlayer(
             isPlaying = state.isAyahSoundPlaying,
             reciterName = state.currentReciter.name,
             onCancelClick = listener::onClosePlayerClick,
-            onTilawahClick = { listener.playSurah(surahId) }
+            onTilawahClick = { listener.playSurah(surahNumber = surahId) }
         )
     }
 }

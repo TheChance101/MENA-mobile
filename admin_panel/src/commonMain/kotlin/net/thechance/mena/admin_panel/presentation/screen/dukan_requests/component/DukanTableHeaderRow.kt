@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -85,11 +86,7 @@ fun DukanTableHeaderRow(
             onSortClicked = onSortClicked,
             modifier = Modifier.weight(0.5f)
         )
-        Text(
-            text = "",
-            style = Theme.typography.label.large,
-            modifier = Modifier.weight(0.8f)
-        )
+        Spacer(modifier = Modifier.weight(0.8f))
     }
 }
 
