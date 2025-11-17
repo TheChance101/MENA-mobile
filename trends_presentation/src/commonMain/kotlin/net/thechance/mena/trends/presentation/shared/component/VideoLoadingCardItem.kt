@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +57,7 @@ fun VideoLoadingCardItem(
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
 ) {
+    val iconColor = remember { Color(0xFF141B34) }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -79,7 +81,7 @@ fun VideoLoadingCardItem(
                 .padding(Theme.spacing._8),
             painter = painterResource(Res.drawable.ic_video),
             contentDescription = stringResource(Res.string.thumbnail),
-            tint = Color(0xFF141B34)
+            tint = iconColor
         )
 
         Column(
