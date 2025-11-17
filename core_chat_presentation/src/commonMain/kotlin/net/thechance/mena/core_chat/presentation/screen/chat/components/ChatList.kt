@@ -16,7 +16,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
+import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,7 +31,7 @@ fun ChatList(
     chatAvatarUrl: String,
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
-    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
+    onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
@@ -50,9 +53,9 @@ fun ChatList(
             val isLastItem = items.indexOf(item) == 0
             val paddingBottom = if (isLastItem)
                 0.dp
-            else if (item is ChatListItem.TextMessage && item.data.isLastInSeries)
+            else if (item is TextMessageUiState && item.messageDetails.isLastInSeries)
                 Theme.spacing._16
-            else if (item is ChatListItem.ImageMessages && item.data.last().isLastInSeries)
+            else if (item is ImagesGroupChatItem && item.imagesUiState.last().messageDetails.isLastInSeries)
                 Theme.spacing._16
             else
                 Theme.spacing._2

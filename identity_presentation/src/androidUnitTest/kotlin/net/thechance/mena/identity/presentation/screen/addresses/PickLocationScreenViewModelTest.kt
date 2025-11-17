@@ -1,7 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -14,9 +12,10 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.toEntity
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toCoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.maplibre.compose.camera.CameraPosition
@@ -34,7 +33,12 @@ class PickLocationScreenViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = PickLocationScreenViewModel(mobileLocationRepository, testDispatcher,locationPermissionHandler, null )
+        viewModel = PickLocationScreenViewModel(
+            mobileLocationRepository,
+            testDispatcher,
+            locationPermissionHandler,
+            null
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,44 +49,40 @@ class PickLocationScreenViewModelTest {
 
     @Test
     fun `onClickMap should update state with coordinates and location name`() = runTest {
-        val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
-        val pointerLocation = DpOffset(10.0.dp, 20.0.dp)
+        val coordinates = CoordinatesUiState(28.0, 29.0)
         val address = "Test Address"
         coEvery { mobileLocationRepository.getLocationName(coordinates.toEntity()) } returns address
 
-        viewModel.onClickMap(coordinates, pointerLocation)
+        viewModel.onClickMap(coordinates)
         testDispatcher.scheduler.advanceUntilIdle()
 
 
         assert(viewModel.state.value.currentLocation == coordinates)
-        assert(viewModel.state.value.pointerLocation == pointerLocation)
         assert(viewModel.state.value.address == address)
-        assert(viewModel.state.value.isMapLocked)
     }
 
     @Test
     fun `onClickGps should update state with current location`() = runTest {
-        val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
+        val coordinates = CoordinatesUiState(28.0, 29.0)
         coEvery { mobileLocationRepository.getCurrentLocation() } returns coordinates.toEntity()
 
         viewModel.onClickGps()
         testDispatcher.scheduler.advanceUntilIdle()
 
         assert(viewModel.state.value.currentLocation == coordinates)
-        assert(viewModel.state.value.isMapLocked)
         assert(viewModel.state.value.animateToCurrentLocation)
         assert(!viewModel.state.value.isGpsButtonLoading)
     }
 
     @Test
     fun `onClickConfirm should send NavigateToAddLocation effect`() = runTest {
-        val coordinates = PickLocationScreenUIState.CoordinatesUiState(28.0, 29.0)
+        val coordinates = CoordinatesUiState(28.0, 29.0)
         val address = "Test Address"
         coEvery { mobileLocationRepository.getLocationName(coordinates.toEntity()) } returns address
 
 
         viewModel.effect.test {
-            viewModel.onClickMap(coordinates, DpOffset(10.0.dp, 20.0.dp))
+            viewModel.onClickMap(coordinates)
             viewModel.onClickConfirm()
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -95,10 +95,10 @@ class PickLocationScreenViewModelTest {
     @Test
     fun `onCameraMoved should update state with camera position`() = runTest {
         val cameraPosition = CameraPosition()
-        viewModel.onMoveCamera(cameraPosition)
+        viewModel.onMoveCamera(cameraPosition.target.toCoordinatesUiState())
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assert(viewModel.state.value.cameraPosition == cameraPosition)
+        assert(viewModel.state.value.currentLocation == cameraPosition.target.toCoordinatesUiState())
         assert(!viewModel.state.value.animateToCurrentLocation)
     }
 
@@ -113,8 +113,8 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should update state with error message when locationPermissionHandler throws`(){
-        coEvery { mobileLocationRepository.getCurrentLocation() } throws  Exception()
+    fun `onClickGps should update state with error message when locationPermissionHandler throws`() {
+        coEvery { mobileLocationRepository.getCurrentLocation() } throws Exception()
         coEvery { locationPermissionHandler.checkPermission() } throws Exception()
 
         viewModel.onClickGps()
@@ -138,16 +138,4 @@ class PickLocationScreenViewModelTest {
                 cancelAndConsumeRemainingEvents()
             }
         }
-
-    @Test
-    fun `onClickEdit should update state with default values`(){
-        viewModel.onClickEdit()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assert(viewModel.state.value.currentLocation == PickLocationScreenUIState.CoordinatesUiState())
-        assert(viewModel.state.value.pointerLocation == null)
-        assert(!viewModel.state.value.isMapLocked)
-        assert(!viewModel.state.value.animateToCurrentLocation)
-        assert(!viewModel.state.value.isConfirmEnabled)
-    }
 }

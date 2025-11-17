@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.screen.main
 
 import androidx.compose.animation.AnimatedContent
@@ -56,6 +58,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.fakeCategories
+import net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection.DukansDiscountSection
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
@@ -69,6 +72,7 @@ import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainViewModel
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
 
 @Composable
@@ -221,6 +225,19 @@ fun MainScreenSections(
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16)
     ) {
+
+        if (state.dukanTopDiscount.isNotEmpty()) {
+            item(
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                DukansDiscountSection(
+                    state = state.dukanTopDiscount,
+                    onClick = listener::onShopNowClicked,
+                    modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._24)
+                )
+            }
+        }
+
         if (state.categories.isNotEmpty()) {
             item(
                 span = { GridItemSpan(maxLineSpan) }

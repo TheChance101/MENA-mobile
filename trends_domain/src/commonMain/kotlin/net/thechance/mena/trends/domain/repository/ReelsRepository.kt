@@ -19,4 +19,5 @@ interface ReelsRepository {
     suspend fun removeReelLike(reelId: String)
     suspend fun addReelView(reelId: String)
     suspend fun getReelUrls(reelId: String): ReelUrls
+    suspend fun getFavoriteReels(pageNumber: Int, reelId: String? = null): List<Reel>
 }

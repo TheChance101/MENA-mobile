@@ -100,24 +100,22 @@ private fun ContactsContent(
     ) {
 
         AnimatedContent(
-            targetState = contacts.loadState.refresh,
+            targetState = contacts.loadState.refresh to (contacts.itemCount == 0),
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) { loadState ->
-            when (loadState) {
-                is LoadState.Loading -> {
-                    LoadingView()
-                }
+        ) { (loadState, isEmptyList) ->
+            if (loadState is LoadState.Loading && isEmptyList) {
+                LoadingView()
 
-                is LoadState.Error -> {
-                    ErrorView(
-                        title = stringResource(Res.string.something_went_wrong),
-                        message = stringResource(Res.string.could_not_load_contacts),
-                        onRetry = interactionListener::onRefreshContactsClicked
-                    )
-                }
+            } else if (loadState is LoadState.Error && isEmptyList) {
+                ErrorView(
+                    title = stringResource(Res.string.something_went_wrong),
+                    message = stringResource(Res.string.could_not_load_contacts),
+                    onRetry = interactionListener::onRefreshContactsClicked
+                )
 
-                else -> ContactsList(
+            } else {
+                ContactsList(
                     contacts = contacts,
                     onContactClick = interactionListener::onContactClicked
                 )

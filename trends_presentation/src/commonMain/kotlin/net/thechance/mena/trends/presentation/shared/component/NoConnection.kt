@@ -7,6 +7,7 @@ import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_no_connection
 import mena.trends_presentation.generated.resources.no_connection_description
 import mena.trends_presentation.generated.resources.no_connection_title
+import mena.trends_presentation.generated.resources.re_try
 import mena.trends_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -25,7 +26,7 @@ fun NoConnection(
         description = stringResource(Res.string.no_connection_description),
         bottomContent = {
             PrimaryButton(
-                text = stringResource(Res.string.retry),
+                text = stringResource(Res.string.re_try),
                 onClick = onRetry,
                 modifier = Modifier.fillMaxWidth()
             )

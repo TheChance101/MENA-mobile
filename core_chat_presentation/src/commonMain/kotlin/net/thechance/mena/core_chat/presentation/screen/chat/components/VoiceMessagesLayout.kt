@@ -29,10 +29,10 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.ic_play
 import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
 import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.components.CustomInfiniteCircularLoader
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.AudioMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -46,7 +46,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun VoiceMessageLayout(
-    message: MessageUiState,
+    message: AudioMessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
@@ -57,26 +57,26 @@ fun VoiceMessageLayout(
     chatAvatarUrl: String? = null,
     onMessageClick: () -> Unit = {},
     onMessageLongClick: () -> Unit = {},
-    onPlayClick: (MessageUiState) -> Unit = {},
-    onFailClick: (MessageUiState) -> Unit = {},
+    onPlayClick: (AudioMessageUiState) -> Unit = {},
+    onFailClick: (AudioMessageUiState) -> Unit = {},
 ) {
     val messageBackground =
-        if (message.isMine) Theme.colorScheme.background.surfaceLow
+        if (message.messageDetails.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
 
-    val messagePaddingEnd = if (message.isMine) 0.dp else Theme.spacing._8
+    val messagePaddingEnd = if (message.messageDetails.isMine) 0.dp else Theme.spacing._8
 
     val maxRadius = Theme.radius.md
 
-    val messageShape = if (message.isMine && isMarkedLastInSeries)
+    val messageShape = if (message.messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
             bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
-    else if (!message.isMine && isMarkedLastInSeries)
+    else if (!message.messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
@@ -85,8 +85,8 @@ fun VoiceMessageLayout(
         )
     else RoundedCornerShape(size = maxRadius)
 
-    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
-    val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
+    val messageInfoAlignment = if (message.messageDetails.isMine) Alignment.Start else Alignment.End
+    val messageAlignment = if (message.messageDetails.isMine) Alignment.End else Alignment.Start
 
 
     Column(
@@ -98,7 +98,7 @@ fun VoiceMessageLayout(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
-            if (!message.isMine) {
+            if (!message.messageDetails.isMine) {
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
@@ -161,25 +161,25 @@ fun VoiceMessageLayout(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!message.isMine && message.reactions.isNotEmpty()) {
+            if (!message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                 ReactionBubble(
-                    reactions = message.reactions,
+                    reactions = message.messageDetails.reactions,
                     modifier= Modifier.offset(y = (-8).dp)
                 )
             }
 
             AnimatedVisibility(visible = showMessageInfo) {
                 MessageInfo(
-                    messageTime = message.sendTime,
-                    messageStatus = message.status,
-                    messageIsMine = message.isMine,
+                    messageTime = message.messageDetails.sendTime,
+                    messageStatus = message.messageDetails.status,
+                    messageIsMine = message.messageDetails.isMine,
                     onFailClick = { onFailClick(message) }
                 )
             }
 
-            if (message.isMine && message.reactions.isNotEmpty()) {
+            if (message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                 ReactionBubble(
-                    reactions = message.reactions,
+                    reactions = message.messageDetails.reactions,
                     modifier= Modifier.offset(y = (-8).dp)
                 )
             }
@@ -226,21 +226,23 @@ fun PLayButton(
 fun VoiceMessagesLayoutPreview() {
     MenaTheme {
         VoiceMessageLayout(
-            message = MessageUiState(
-                sendTime = LocalDateTime.now(),
-                status = MessageStatus.SENT,
-                isMine = true,
-                content = MessageContent.Audio(AudioData.AudioUrl("")),
-                isVisibleMessageInfo = true,
-                isLastInSeries = true
+            message = AudioMessageUiState(
+                messageDetails = MessageDetailsUiState(
+                    sendTime = LocalDateTime.now(),
+                    status = MessageStatus.SENT,
+                    isMine = true,
+                    isVisibleMessageInfo = true,
+                    isLastInSeries = true
+                ),
+                data = AudioData.AudioUrl(""),
+                isPlaying = false,
+                isLoading = false,
+                progress = 0.5f,
+                duration = 5,
+                waveformData = generateRandomWaveformData(),
             ),
-            showMessageInfo = true,
-            isMarkedLastInSeries = true,
-            progress = 0.5f,
-            totalSeconds = 5,
-            waveformData = generateRandomWaveformData(),
-            onPlayClick = {},
-            onFailClick = {}
+            showMessageInfo = false,
+            isMarkedLastInSeries = false
         )
     }
 }
