@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.am
@@ -40,20 +40,19 @@ fun WeatherAndNextPrayerCard(
 ) {
     Box(
         modifier = modifier
-            .height(92.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(Theme.radius.lg))
             .background(Theme.colorScheme.primary.primary)
-            .padding(start = Theme.spacing._12)
     ) {
         Image(
             painter = painterResource(Res.drawable.prayer_weather_pattern_shape),
             contentDescription = null,
+            contentScale = ContentScale.Fit,
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-            modifier = Modifier.padding(top = Theme.spacing._12)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12, Alignment.CenterVertically),
+            modifier = Modifier.padding(Theme.spacing._12).align(Alignment.Center)
         ) {
             if (weatherUiState != null) {
                 RowInfoCard(
@@ -67,7 +66,7 @@ fun WeatherAndNextPrayerCard(
                     leadingIcon = painterResource(Res.drawable.ic_prayer),
                     leadingText = stringResource(
                         Res.string.next_prayer_in,
-                        prayerUiState.displayName
+                        stringResource(prayerUiState.displayName)
                     ),
                     trailingText = prayerUiState.time.formatAsTime(
                         stringResource(Res.string.am),
@@ -88,7 +87,8 @@ private fun RowInfoCard(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
         Box(
             modifier = Modifier.size(28.dp).clip(RoundedCornerShape(Theme.radius.sm))
@@ -105,14 +105,13 @@ private fun RowInfoCard(
             text = leadingText,
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.onPrimaryBody,
-            modifier = Modifier.weight(1f).padding(start = Theme.spacing._4)
+            modifier = Modifier.weight(1f)
         )
 
         Text(
             text = trailingText,
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.primary.onPrimary,
-            modifier = Modifier.padding(end = Theme.spacing._12)
         )
     }
 }
