@@ -15,8 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.core_chat.presentation.screen.chat.AudioMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
+import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
+import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import kotlin.uuid.ExperimentalUuidApi
@@ -28,7 +34,7 @@ fun ChatList(
     chatAvatarUrl: String,
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
-    onMessageImageClick: (List<MessageUiState>, Int) -> Unit,
+    onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
@@ -45,14 +51,23 @@ fun ChatList(
     ) {
         itemsIndexed(
             items = items,
-            key = { index,_ -> index }
+            key = { _, item ->
+                when (item) {
+                    is TextMessageUiState -> item.messageDetails.id.toString()
+                    is ImagesGroupChatItem -> item.imagesUiState.first().messageDetails.id.toString()
+                    is ImageMessageUiState -> item.messageDetails.id.toString()
+                    is AudioMessageUiState -> item.messageDetails.id.toString()
+                    is AyahMessageUiState -> item.messageDetails.id.toString()
+                    is DateSeparator -> item.label.toString()
+                }
+            }
         ) { _ , item ->
             val isLastItem = items.indexOf(item) == 0
             val paddingBottom = if (isLastItem)
                 0.dp
-            else if (item is ChatListItem.TextMessage && item.data.isLastInSeries)
+            else if (item is TextMessageUiState && item.messageDetails.isLastInSeries)
                 Theme.spacing._16
-            else if (item is ChatListItem.ImageMessages && item.data.last().isLastInSeries)
+            else if (item is ImagesGroupChatItem && item.imagesUiState.last().messageDetails.isLastInSeries)
                 Theme.spacing._16
             else
                 Theme.spacing._2
