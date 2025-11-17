@@ -158,7 +158,6 @@ class DukanRequestsViewModel(
     }
 
     override fun onRejectDukanConfirmed() {
-        updateState { it.copy(isRejectBtnLoading = true) }
         tryToExecute(
             callee = {
                 dukanRepository.updateDukanStatus(
@@ -167,11 +166,10 @@ class DukanRequestsViewModel(
                     message = currentState.rejectReason,
                 )
             },
+            onStart = { updateState { it.copy(isRejectBtnLoading = true) } },
+            onFinish = { updateState { it.copy(isRejectBtnLoading = false) } },
             onSuccess = { onSuccessDukanRejected() },
-            onError = { error ->
-                updateState { it.copy(isRejectBtnLoading = false) }
-                onError(error)
-            },
+            onError = ::onError,
             dispatcher = dispatcher
         )
     }
