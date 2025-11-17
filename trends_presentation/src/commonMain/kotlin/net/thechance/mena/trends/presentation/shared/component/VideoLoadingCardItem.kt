@@ -85,7 +85,6 @@ fun VideoLoadingCardItem(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .height(IntrinsicSize.Max)
                 .padding(start = Theme.spacing._8),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
@@ -133,7 +132,7 @@ private fun VideoInfoSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         Text(
             text = title,

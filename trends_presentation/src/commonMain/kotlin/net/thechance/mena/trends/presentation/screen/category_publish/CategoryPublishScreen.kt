@@ -77,7 +77,11 @@ private fun CategoryPublishContent(
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16),
+                        .padding(
+                            start = Theme.spacing._16,
+                            end = Theme.spacing._16,
+                            bottom = Theme.spacing._24
+                        ),
                     text = stringResource(resource = Res.string.upload_video),
                     onClick = listener::onClickPublish,
                     isEnabled = state.isPublishButtonEnabled,
@@ -155,7 +159,7 @@ private fun CategoryPublishScreenBody(
         }
     }
 
-   TrendsAnimatedVisibility(visible = state.isLoading) {
+    TrendsAnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }
