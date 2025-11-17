@@ -191,7 +191,7 @@ private fun UserReelScreenContent(
         )
 
         LaunchedEffect(pagerState.currentPage) {
-            if(reels.itemCount > 0) {
+            if (reels.itemCount > 0) {
                 reels[pagerState.currentPage]?.let { reel ->
                     listener.onChangeCurrentReel(reel.id)
                 }
@@ -223,6 +223,7 @@ private fun UserReelScreenContent(
                         incrementViewsCount = { listener.increaseReelView(reel.id) },
                         onLikeClick = { listener.onClickLike(reel.id, reel.isLiked) },
                         onGetRefreshUrl = listener::onGetRefreshVideoUrl,
+                        saveReelWatchSession = { listener.saveUserReelEngagement(it, reel.id) },
                         onNetworkError = listener::onNetworkError
                     )
             }
@@ -264,6 +265,7 @@ private fun ReelContent(
     incrementViewsCount: () -> Unit,
     onGetRefreshUrl: (reelId: String) -> Unit,
     onLikeClick: () -> Unit,
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
     onNetworkError: () -> Unit
 ) {
     val rememberedUrl = remember(reel.id) { reel.videoUrl }
@@ -274,6 +276,7 @@ private fun ReelContent(
         onVideoPlaying = incrementViewsCount,
         cacheKey = reel.id,
         onRequestRefresh = { onGetRefreshUrl(reel.id) },
+        saveReelWatchSession = saveReelWatchSession,
         onNetworkError = onNetworkError
     ) {
         BoxWithConstraints(

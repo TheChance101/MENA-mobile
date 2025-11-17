@@ -6,6 +6,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.data.dataSource.local.setting.APP_LANGUAGE
 import net.thechance.mena.identity.domain.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppTheme
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -42,6 +43,21 @@ class SettingsRepositoryImplTest {
         val expected = AppLanguage.ENGLISH
         settingsRepository.applyLanguage(AppLanguage.ENGLISH)
         val result = settingsRepository.observeAppLanguage()
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun `observeAppTheme() should return default theme when no theme is set`() = runTest {
+        val expected = AppTheme.DEFAULT
+        val result = settingsRepository.observeAppTheme()
+        assertEquals(expected, result.value)
+    }
+
+    @Test
+    fun `observeAppTheme() should return latest theme when it changes`() = runTest {
+        val expected = AppTheme.DARK
+        settingsRepository.applyAppTheme(AppTheme.DARK)
+        val result = settingsRepository.observeAppTheme()
         assertEquals(expected, result.value)
     }
 }

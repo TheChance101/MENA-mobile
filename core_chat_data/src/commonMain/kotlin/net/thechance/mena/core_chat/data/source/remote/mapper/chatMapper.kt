@@ -13,6 +13,8 @@ import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.data.utils.toUuid
 import net.thechance.mena.core_chat.domain.entity.*
+import net.thechance.mena.core_chat.domain.entity.AudioData.*
+import net.thechance.mena.core_chat.domain.entity.ImageData.*
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -38,8 +40,9 @@ fun MessageDto.toDomain(): Message {
 fun MessageContentDto.toDomain(): MessageContent {
     return when(this) {
         is MessageContentDto.Text -> MessageContent.Text(text)
-        is MessageContentDto.Image -> MessageContent.Image(ImageData.ImageUrl(url))
-        is MessageContentDto.Audio -> MessageContent.Audio(AudioData.AudioUrl(url), duration)
+        is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
+        is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
+        is MessageContentDto.Money -> MessageContent.Text(amount.toString())
     }
 }
 

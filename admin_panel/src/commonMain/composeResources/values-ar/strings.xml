@@ -12,12 +12,15 @@
     <!-- Navigation -->
     <string name="dukans_management">إدارة الدكان</string>
     <string name="dukan_requests">طلبات الدكان</string>
-    <string name="deposit">الإيداع</string>
     <string name="log_out">تسجيل الخروج</string>
 
     <!-- Users Management -->
     <string name="users_management">إدارة المستخدمين</string>
     <string name="search_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
+    <string name="dukan_management">إدارة الدكان</string>
+    <string name="no_users_yet">لا يوجد مستخدمون بعد.</string>
+    <string name="users_will_appear">سيتم عرض جميع المستخدمين هنا بعد إضافتهم.</string>
+
 
     <!-- Table Headers -->
     <string name="user_name">اسم المستخدم</string>
@@ -40,11 +43,19 @@
     <string name="blocked">محظور</string>
     <string name="block">حظر</string>
     <string name="activate">تفعيل</string>
+    <string name="deactivated">غير نشط</string>
 
     <!-- Search -->
     <string name="no_search_result">لا توجد نتائج بحث!</string>
     <string name="no_search_result_description">يرجى المحاولة بكلمة بحث أخرى.</string>
 
+    <!-- Dukan Management -->
+    <string name="no_dukan_results">لا يوجد دكاكين الأن!</string>
+    <string name="no_dukan_results_description">ستظهر الدكاكين هنا فور إضافتها.</string>
+    <string name="no_dukan_results_description_for_requests">ستظهر هنا الدكاكين التي تحتاج للمراجعة</string>
+    <string name="dukans">الدكاكين</string>
+    <string name="dukan_search_hint">ابحث باسم الدكان، الموقع،...</string>
+    <string name="added_date">تاريخ الإضافة</string>
     <!-- Dialogs -->
     <string name="block_user">حظر المستخدم</string>
     <string name="block_user_confirmation_message">هل أنت متأكد من أنك تريد المتابعة بالحظر؟</string>
@@ -79,4 +90,27 @@
     <string name="deactivate_dukan_content">هل أنت متأكد أنك تريد الاستمرار في إلغاء التنشيط؟</string>
     <string name="deactivate_dukan_reason">أضف سبب الإلغاء التنشيط هنا</string>
     <string name="empty_shelf_title">هذا الرف فارغ</string>
+    <!-- Deposit -->
+    <string name="deposit">إيداع</string>
+    <string name="fill_a_wallet">شحن المحفظة</string>
+    <string name="pick_country">اختار دولة</string>
+    <string name="fill_a_wallet_description">أدخل رقم الهاتف والمبلغ لإعادة شحن المحفظة</string>
+    <string name="amount">المبلغ</string>
+    <string name="fill_the_wallet">اشحن المحفظة</string>
+    <string name="no_account_error_description">لا يوجد حساب مرتبط بهذا الرقم</string>
+    <string name="no_account_error_title">خطأ</string>
+    <string name="success_deposit_title">نجاح</string>
+    <string name="success_deposit_description">تم إيداع المبلغ بنجاح</string>
+    <string name="selected_country">الدولة المحددة</string>
+    <string name="dukan_activated">تم تفعيل الدكان</string>
+    <string name="dukan_deactivated">تم إلغاء تنشيط الدكان</string>
+
+    <string name="dukan_approved_successfully">تمت الموافقة على الدكان بنجاح</string>
+    <string name="dukan_rejected_successfully">تم رفض الدكان بنجاح</string>
+    <string name="approve">موافقة</string>
+    <string name="reject">رفض</string>
+    <string name="reject_dukan_header">هل تريد رفض طلب الدكان؟</string>
+    <string name="reject_dukan_content">هل أنت متأكد أنك تريد الاستمرار في الرفض؟</string>
+    <string name="reject_dukan_reason">أضف سبب الرفض هنا</string>
+
 </resources>

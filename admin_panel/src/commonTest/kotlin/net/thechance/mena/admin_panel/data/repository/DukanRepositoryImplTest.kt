@@ -132,8 +132,8 @@ class DukanRepositoryImplTest {
 
         assertEquals(1, result.items.size)
         assertEquals("Product 1", result.items.first().name)
-        assertEquals(100.0, result.items.first().price)
-        assertEquals(80.0, result.items.first().discountedPrice)
+        assertEquals(100.0, result.items.first().finalPrice)
+        assertEquals(80.0, result.items.first().basePrice)
     }
 
     @Test
@@ -226,6 +226,80 @@ class DukanRepositoryImplTest {
         assertNotNull(dukanRepository.getDukanDetails())
     }
 
+    @Test
+    fun `activateDukan should successfully activate dukan`() = runTest {
+        everySuspend {
+            dukanApiService.activateDukan(any())
+        } returns successfulResponse(Unit)
+
+        dukanRepository.activateDukan(FAKE_UUID)
+    }
+
+    @Test
+    fun `activateDukan should throw UnauthorizedException on 401 Unauthorized`() = runTest {
+        everySuspend {
+            dukanApiService.activateDukan(any())
+        } returns unauthorizedResponse()
+
+        val exception = assertFailsWith<UnauthorizedException> {
+            dukanRepository.activateDukan(FAKE_UUID)
+        }
+
+        assertTrue(exception.message?.contains("Unauthorized") == true)
+    }
+
+    @Test
+    fun `deactivateDukan should successfully deactivate dukan with reason`() = runTest {
+        everySuspend {
+            dukanApiService.deactivateDukan(any(), any())
+        } returns successfulResponse(Unit)
+
+        dukanRepository.deactivateDukan(FAKE_UUID, "Violates policy")
+    }
+
+    @Test
+    fun `deactivateDukan should throw UnauthorizedException on 401 Unauthorized`() = runTest {
+        everySuspend {
+            dukanApiService.deactivateDukan(any(), any())
+        } returns unauthorizedResponse()
+
+        val exception = assertFailsWith<UnauthorizedException> {
+            dukanRepository.deactivateDukan(FAKE_UUID, "Test reason")
+        }
+
+        assertTrue(exception.message?.contains("Unauthorized") == true)
+    }
+
+    @Test
+    fun `updateDukanStatus should successfully update dukan status`() = runTest {
+        everySuspend {
+            dukanApiService.updateDukanStatus(any(), any())
+        } returns successfulResponse(Unit)
+
+        dukanRepository.updateDukanStatus(
+            dukanId = FAKE_UUID,
+            status = Dukan.Status.APPROVED,
+            message = "Status updated"
+        )
+    }
+
+    @Test
+    fun `updateDukanStatus should throw UnauthorizedException on 401 Unauthorized`() = runTest {
+        everySuspend {
+            dukanApiService.updateDukanStatus(any(), any())
+        } returns unauthorizedResponse()
+
+        val exception = assertFailsWith<UnauthorizedException> {
+            dukanRepository.updateDukanStatus(
+                dukanId = FAKE_UUID,
+                status = Dukan.Status.REJECTED,
+                message = "Does not meet requirements"
+            )
+        }
+
+        assertTrue(exception.message?.contains("Unauthorized") == true)
+    }
+
     companion object {
         @OptIn(ExperimentalUuidApi::class)
         val FAKE_UUID: Uuid = Uuid.random()
@@ -267,8 +341,8 @@ class DukanRepositoryImplTest {
         val PRODUCT_DTO = ProductDto(
             id = FAKE_UUID.toString(),
             name = "Product 1",
-            price = 100.0,
-            discountedPrice = 80.0,
+            finalPrice = 100.0,
+            basePrice = 80.0,
             description = "Good",
             imageUrls = listOf("https://img"),
             createdAt = "2025-10-31T00:00:00"
@@ -330,8 +404,8 @@ class DukanRepositoryImplTest {
         val PRODUCT2 = ProductDto(
             id = Uuid.random().toString(),
             name = "Product 2",
-            price = 200.0,
-            discountedPrice = 150.0,
+            finalPrice = 200.0,
+            basePrice = 150.0,
             description = "Better",
             imageUrls = listOf("https://img2"),
             createdAt = "2025-11-01T00:00:00"

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 
 @Composable
-fun LoadingIndicator() {
+fun AdminPanelContentLoading() {
     Box(modifier = Modifier.fillMaxSize()) {
         DotsProgressIndicator(
             modifier = Modifier

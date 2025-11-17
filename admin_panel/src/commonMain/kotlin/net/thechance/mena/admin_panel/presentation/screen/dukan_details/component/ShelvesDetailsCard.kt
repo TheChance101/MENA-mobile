@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.domain.entity.dukan.Shelf
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.shelves
@@ -55,7 +55,7 @@ internal fun ShelvesDetailsCard(
 
         when{
             isShelvesLoading && shelves.isEmpty() -> {
-                LoadingIndicator()
+                AdminPanelContentLoading()
             }
             else -> {
                 ShelfHeader(
@@ -97,22 +97,24 @@ private fun ShelfHeader(
             style = Theme.typography.title.large,
             color = Theme.colorScheme.shadePrimary
         )
-        Box(
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .widthIn(min = 32.dp)
-                .heightIn(min = 32.dp)
-                .background(
-                    color = Theme.colorScheme.background.surface,
-                    shape = CircleShape
+        if (totalShelves.isNotEmpty()){
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .widthIn(min = 32.dp)
+                    .heightIn(min = 32.dp)
+                    .background(
+                        color = Theme.colorScheme.background.surface,
+                        shape = CircleShape
+                    )
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = totalShelves,
+                    style = Theme.typography.label.medium,
+                    color = Theme.colorScheme.shadePrimary
                 )
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = totalShelves,
-                style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary
-            )
+            }
         }
     }
 }

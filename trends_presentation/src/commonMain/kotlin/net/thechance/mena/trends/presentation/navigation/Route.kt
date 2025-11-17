@@ -12,9 +12,11 @@ internal sealed interface Route {
     @Serializable
     data class ReelDetails(
         val reelId: String,
-        val isFromHome: Boolean = false,
-        val isFromManageTrends: Boolean = false
+        val source: String
     ) : Route
+
+    @Serializable
+    enum class ReelSource { Home, MyTrends, Favorites }
 
     @Serializable
     data object ManageReels : Route
