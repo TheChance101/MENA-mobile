@@ -51,6 +51,6 @@ internal val viewModelModule = module {
         ChatEntryViewModel(get())
     }
     viewModel {
-        ShareMessageViewModel(get(), get())
+        ShareMessageViewModel(get(), get(), get())
     }
 }

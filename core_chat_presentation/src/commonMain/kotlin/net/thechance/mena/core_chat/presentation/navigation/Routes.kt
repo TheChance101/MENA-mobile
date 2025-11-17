@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.presentation.navigation
 
 import kotlinx.serialization.Serializable
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 
 interface ChatRoute
 
@@ -20,4 +21,4 @@ data class SyncContactsRoute(val forceSync: Boolean) : ChatRoute
 data class ChatDetailsRoute(val chatId: String, val chatName: String) : ChatRoute
 
 @Serializable
-data object ShareMessageRoute : ChatRoute
+data class ShareMessageRoute(val messageArgs: AyahMessageArgs) : ChatRoute
