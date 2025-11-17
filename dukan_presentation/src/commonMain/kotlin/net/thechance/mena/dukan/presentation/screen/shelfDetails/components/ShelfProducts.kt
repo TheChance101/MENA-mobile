@@ -8,11 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
@@ -87,7 +82,8 @@ private fun ProductCardLoaded(
                         CartProductAction(
                             state = state,
                             listener = listener,
-                            product = product
+                            product = product,
+                            quantity = state.productQuantity[product.id] ?: 0
                         )
                     },
                     onProductClick = { listener.onProductClicked(product.id) },
@@ -101,7 +97,8 @@ private fun ProductCardLoaded(
 private fun CartProductAction(
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
-    product: ShelfDetailsUiState.ProductUiState
+    product: ShelfDetailsUiState.ProductUiState,
+    quantity: Int
 ) {
 
     AnimatedContent(
@@ -113,7 +110,8 @@ private fun CartProductAction(
             style = currentStyle,
             state = state,
             listener = listener,
-            product = product
+            product = product,
+            productQuantityInCart = quantity
         )
     }
 }
@@ -123,39 +121,32 @@ private fun ProductIconAction(
     style: Style,
     state: ShelfDetailsUiState,
     listener: ShelfDetailsInteractionListener,
-    product: ShelfDetailsUiState.ProductUiState
+    product: ShelfDetailsUiState.ProductUiState,
+    productQuantityInCart: Int
 ) {
-    var toggleCartToQuantity by rememberSaveable { mutableStateOf(product.inCartQuantity > 0) }
-    var productQuantity by rememberSaveable { mutableIntStateOf(product.inCartQuantity) }
-
     when (style) {
         Style.SMALL_IMAGE -> {
             SmallAndWideImageDukanProductAction(
-                showProductQuantity = toggleCartToQuantity,
-                inCartQuantity = productQuantity,
+                showProductQuantity = productQuantityInCart > 0,
+                inCartQuantity = productQuantityInCart,
                 dukanColor = Color(state.dukancolor),
                 cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
                 onAddToCartClick = {
-                    productQuantity += 1
-                    toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart + 1
                     )
                 },
                 onPlusClick = {
-                    productQuantity += 1
                     listener.onPlusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart + 1
                     )
                 },
                 onMinusClick = {
-                    if (productQuantity == 1) toggleCartToQuantity = false
-                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart - 1
                     )
                 }
             )
@@ -163,30 +154,25 @@ private fun ProductIconAction(
 
         else -> {
             NoImageDukanProductAction(
-                showProductQuantity = toggleCartToQuantity,
-                inCartQuantity = productQuantity,
+                showProductQuantity = productQuantityInCart > 0,
+                inCartQuantity = productQuantityInCart,
                 dukanColor = Color(state.dukancolor),
                 onAddToCartClick = {
-                    productQuantity += 1
-                    toggleCartToQuantity = true
                     listener.onAddToCartClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart + 1
                     )
                 },
                 onPlusClick = {
-                    productQuantity += 1
                     listener.onPlusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart + 1
                     )
                 },
                 onMinusClick = {
-                    if (productQuantity == 1) toggleCartToQuantity = false
-                    productQuantity -= 1
                     listener.onMinusClicked(
                         productId = product.id,
-                        productQuantity = productQuantity
+                        productQuantity = productQuantityInCart - 1
                     )
                 }
             )
