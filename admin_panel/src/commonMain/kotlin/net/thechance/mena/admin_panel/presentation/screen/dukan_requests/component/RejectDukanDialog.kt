@@ -165,7 +165,9 @@ private fun DialogButtons(
         )
 
         PrimaryButton(
-            modifier = Modifier.heightIn(min = 48.dp),
+            modifier = Modifier
+                .heightIn(min = 48.dp)
+                .width(76.dp),
             text = stringResource(Res.string.reject),
             onClick = onConfirmRejection,
             isLoading = isRejectBtnLoading,

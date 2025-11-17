@@ -242,6 +242,5 @@ class DukanRequestsViewModel(
     private companion object {
         const val PAGE_SIZE = 8
         const val DURATION_MILLIS = 3000L
-
     }
 }

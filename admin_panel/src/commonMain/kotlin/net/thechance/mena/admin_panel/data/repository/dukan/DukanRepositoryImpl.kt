@@ -95,21 +95,6 @@ class DukanRepositoryImpl(
         }
     }
 
-    override suspend fun activateDukan(dukanId: Uuid) {
-        executeApiSafely<Unit> {
-            dukanApiService.activateDukan(dukanId = dukanId.toString())
-        }
-    }
-
-    override suspend fun deactivateDukan(dukanId: Uuid, deactivationReason: String) {
-        executeApiSafely<Unit> {
-            dukanApiService.deactivateDukan(
-                dukanId = dukanId.toString(),
-                deactivateReason = DukanDeactivationDto(deactivationReason = deactivationReason)
-            )
-        }
-    }
-
     override suspend fun updateDukanStatus(
         dukanId: Uuid,
         status: Dukan.Status,

@@ -90,4 +90,13 @@
     <string name="empty_shelf_title">هذا الرف فارغ</string>
     <string name="dukan_activated">تم تفعيل الدكان</string>
     <string name="dukan_deactivated">تم إلغاء تنشيط الدكان</string>
+
+    <string name="dukan_approved_successfully">تمت الموافقة على الدكان بنجاح</string>
+    <string name="dukan_rejected_successfully">تم رفض الدكان بنجاح</string>
+    <string name="approve">موافقة</string>
+    <string name="reject">رفض</string>
+    <string name="reject_dukan_header">هل تريد رفض طلب الدكان؟</string>
+    <string name="reject_dukan_content">هل أنت متأكد أنك تريد الاستمرار في الرفض؟</string>
+    <string name="reject_dukan_reason">أضف سبب الرفض هنا</string>
+
 </resources>
