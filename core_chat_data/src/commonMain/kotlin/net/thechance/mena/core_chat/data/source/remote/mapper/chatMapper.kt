@@ -128,8 +128,6 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val deliverTo = if (content is MessageContent.Order) content.deliverTo else null
     val totalPrice = if (content is MessageContent.Order) content.totalPrice else null
 
-    println("order Message.toCachedMessageLocalDto $deliverTo")
-
     return CachedMessageLocalDto(
         id = this.id.toString(),
         senderId = this.senderId.toString(),
@@ -180,7 +178,6 @@ fun CachedMessageLocalDto.toDomain(): Message {
         imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
         orderId.isNotEmpty() -> {
-            println("order CachedMessageLocalDto.toDomain")
             MessageContent.Order(
                 orderId = orderId.toUuid(),
                 numberOfItems = numberOfItems,
