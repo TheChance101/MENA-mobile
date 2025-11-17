@@ -14,7 +14,11 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +60,8 @@ fun UploadImageContainer(
     val radius = Theme.radius.xl
     val scope = rememberCoroutineScope()
 
+    var isPickerOpen by remember { mutableStateOf(false) }
+
     val filePicker = rememberFilePickerLauncher(type = FileKitType.Image) { file ->
         file?.let { image ->
             scope.launch {
@@ -64,10 +70,18 @@ fun UploadImageContainer(
                 }
             }
         }
+        isPickerOpen = false
     }
+
+    val handleClick: () -> Unit = {
+        if (!isPickerOpen) {
+            isPickerOpen = true
+            filePicker.launch()
+        }
+    }
+
     Box(
         modifier = modifier
-
     ) {
         Box(
             modifier = Modifier
@@ -83,7 +97,7 @@ fun UploadImageContainer(
                         cornerRadius = CornerRadius(radius.toPx())
                     )
                 }
-                .clickable { filePicker.launch() },
+                .clickable(enabled = !isPickerOpen) { handleClick() },
             contentAlignment = Alignment.Center
         ) {
 
@@ -110,7 +124,8 @@ fun UploadImageContainer(
         }
         if (image != null) {
             Box(
-                modifier = editButtonModifier().clickable { filePicker.launch() },
+                modifier = editButtonModifier()
+                    .clickable(enabled = !isPickerOpen) { handleClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
