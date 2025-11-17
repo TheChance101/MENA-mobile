@@ -11,6 +11,7 @@ data class ShelfDetailsUiState(
     val dukancolor: Long = 0L,
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val snackBarState: SnackBarUiState? = null,
+    val productQuantity: Map<String, Int> = emptyMap(),
     val hasProductInCart: Boolean = false
 ) {
     data class ProductUiState(

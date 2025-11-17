@@ -16,6 +16,8 @@ import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchHeader
@@ -31,6 +33,7 @@ fun ReciterSearchScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
@@ -39,6 +42,7 @@ fun ReciterSearchScreen(
     }
     Content(
         state = state,
+        snackBar = snackBarState,
         listener = viewModel
     )
 }
@@ -46,6 +50,7 @@ fun ReciterSearchScreen(
 @Composable
 private fun Content(
     state: ReciterSearchUiState,
+    snackBar: SnackBarState,
     listener: ReciterSearchInteractionListener
 ) {
     Scaffold(
@@ -60,9 +65,14 @@ private fun Content(
                     .fillMaxWidth()
                     .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._4)
             )
-        })
-    {
-
+        }, snakeBar = {
+            FaithSnackBar(
+                message = snackBar.message,
+                isVisible = snackBar.isVisible,
+                status = snackBar.status,
+            )
+        }
+    ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,10 +129,12 @@ private fun SearchScreenPreview() {
     QuranTheme {
         Content(
             state = ReciterSearchUiState(),
+            snackBar = SnackBarState(),
             listener = object : ReciterSearchInteractionListener {
                 override fun onBackClick() {}
                 override fun onClearQueryClick() {}
                 override fun onQueryChange(query: String) {}
-            })
+            }
+        )
     }
 }

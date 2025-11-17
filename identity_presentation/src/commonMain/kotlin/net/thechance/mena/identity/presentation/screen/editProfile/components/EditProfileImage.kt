@@ -84,7 +84,8 @@ fun EditProfileImage(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.pencil_edit),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Theme.colorScheme.primary.onPrimary
                 )
             }
         }

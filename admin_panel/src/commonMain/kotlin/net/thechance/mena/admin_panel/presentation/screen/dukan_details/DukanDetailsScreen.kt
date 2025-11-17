@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import net.thechance.mena.admin_panel.navigation.DukanManagement
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
@@ -54,9 +55,10 @@ private fun DukanDetailsScreenContent(
         topBar = {
             DukanDetailsAppBar(
                 onBackBtnClicked = interactionListener::onBackButtonClicked,
-                dukanStatus = DukanDetailsScreenState.DukanStatus.ACTIVE,
+                dukanStatus = state.dukan.dukanStatus,
                 onChangeDukanStatusBtnClicked =
-                    interactionListener::onChangeDukanStatusButtonClicked
+                    interactionListener::onChangeDukanStatusButtonClicked,
+                isActiveDukanButtonLoading = state.isActiveDukanLoading
             )
         },
         overlays = {
@@ -65,7 +67,7 @@ private fun DukanDetailsScreenContent(
                     isVisible = it,
                     onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
                     onDeactivationConfirmed =
-                        interactionListener::onConfirmDukanDeactivationButtonClicked,
+                        interactionListener::onDukanDeactivationButtonClicked,
                     deactivationReason = state.deactivateReason,
                     onReasonChanged = interactionListener::onDeactivateReasonChanged,
                     isDeactivateButtonEnabled = state.isDeactivateBtnEnabled,
@@ -109,6 +111,6 @@ private fun onDukanDetailsEffect(
     navController: NavController
 ) {
     when (effect) {
-        DukanDetailEffect.NavigateBack -> navController.popBackStack()
+        DukanDetailEffect.NavigateBack -> navController.navigate(DukanManagement)
     }
 }

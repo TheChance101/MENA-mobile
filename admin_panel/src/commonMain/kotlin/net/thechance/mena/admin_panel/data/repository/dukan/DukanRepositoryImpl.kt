@@ -6,6 +6,7 @@ import net.thechance.mena.admin_panel.data.mapper.dukan.toEntity
 import net.thechance.mena.admin_panel.data.mapper.toEntityPagedResult
 import net.thechance.mena.admin_panel.data.remote.api_service.DukanApiService
 import net.thechance.mena.admin_panel.data.remote.dto.DukanPagedResponse
+import net.thechance.mena.admin_panel.data.remote.dto.dukan.DukanDeactivationDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.DukanDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ProductDto
 import net.thechance.mena.admin_panel.data.remote.dto.dukan.ShelfDto
@@ -76,5 +77,20 @@ class DukanRepositoryImpl(
                 size = size
             )
         }.toEntityPagedResult(ProductDto::toEntity)
+    }
+
+    override suspend fun activateDukan(dukanId: Uuid) {
+        executeApiSafely<Unit> {
+            dukanApiService.activateDukan(dukanId = dukanId.toString())
+        }
+    }
+
+    override suspend fun deactivateDukan(dukanId: Uuid, deactivationReason: String) {
+        executeApiSafely<Unit> {
+            dukanApiService.deactivateDukan(
+                dukanId = dukanId.toString(),
+                deactivateReason = DukanDeactivationDto(deactivationReason = deactivationReason)
+            )
+        }
     }
 }
