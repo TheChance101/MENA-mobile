@@ -31,12 +31,16 @@ class ProfileScreenViewModel(
     }
 
     private fun getAppSettings() {
+        val currentAppTheme=settingsRepository.observeAppTheme().value
         updateState {
             state.value.copy(
                 languageDialogUiState = LanguageDialogUiState(
                     selectedAppLanguage = settingsRepository.getCurrentAppLanguage(),
                 ),
-                currentTheme = settingsRepository.observeAppTheme().value
+                themeDialogUiState = ThemeDialogUiState(
+                    selectedAppTheme =currentAppTheme,
+                ),
+                currentTheme = currentAppTheme
             )
         }
     }
