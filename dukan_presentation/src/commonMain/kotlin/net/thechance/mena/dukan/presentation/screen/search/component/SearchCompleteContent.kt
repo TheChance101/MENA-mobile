@@ -237,8 +237,10 @@ private fun ProductsList(
                     state = gridState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        horizontal = Theme.spacing._16,
-                        vertical = Theme.spacing._8
+                        start = Theme.spacing._16,
+                        end = Theme.spacing._16,
+                        bottom = Theme.spacing._8,
+                        top = Theme.spacing._4
                     ),
                     horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
                     verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
@@ -252,7 +254,7 @@ private fun ProductsList(
                             ProductCard(
                                 productName = product.name,
                                 productImageUrl = product.imageUrl,
-                                productDescription = product.dukanName,
+                                productDescription = "from (${product.dukanName})",
                                 productPrice = product.price,
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,

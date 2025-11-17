@@ -216,15 +216,18 @@ private fun DisplayExistingProductImage(
     onCancelClick: (String) -> Unit,
     isCancelButtonEnabled: Boolean
 ) {
-    SuccessContentImageUrl(
-        imageUrl = imageUrl,
-        modifier = Modifier.size(size = 88.dp)
-    )
-    CancelImageIconButton(
-        productImageState = ProductImageState.SUCCESS,
-        onCancelClick = { onCancelClick(imageUrl) },
-        isCancelButtonEnabled = isCancelButtonEnabled
-    )
+    Box {
+        SuccessContentImageUrl(
+            imageUrl = imageUrl,
+            modifier = Modifier.size(size = 88.dp)
+        )
+        CancelImageIconButton(
+            productImageState = ProductImageState.SUCCESS,
+            onCancelClick = { onCancelClick(imageUrl) },
+            isCancelButtonEnabled = isCancelButtonEnabled,
+            modifier = Modifier.align(Alignment.TopEnd)
+        )
+    }
 }
 
 @Composable

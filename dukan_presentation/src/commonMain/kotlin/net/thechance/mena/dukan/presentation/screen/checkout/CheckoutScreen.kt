@@ -111,7 +111,7 @@ private fun CheckoutContent(
             CheckoutSummaryCard(
                 products = products,
                 totalPrice = state.totalAmount,
-                modifier = Modifier.padding(top = Theme.spacing._16)
+                modifier = Modifier.padding(top = Theme.spacing._12)
             )
         }
     }
