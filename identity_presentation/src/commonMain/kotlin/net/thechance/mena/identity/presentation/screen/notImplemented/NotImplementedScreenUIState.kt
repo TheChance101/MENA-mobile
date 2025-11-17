@@ -1,3 +1,0 @@
-package net.thechance.mena.identity.presentation.screen.notImplemented
-
-class NotImplementedScreenUIState

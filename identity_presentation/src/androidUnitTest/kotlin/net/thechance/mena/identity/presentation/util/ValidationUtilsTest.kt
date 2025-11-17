@@ -1,8 +1,13 @@
 package net.thechance.mena.identity.presentation.util
 
 import net.thechance.mena.identity.domain.entity.AddressType
-import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.core.util.hasAddressChanged
+import net.thechance.mena.identity.presentation.core.util.isAddressInputValid
+import net.thechance.mena.identity.presentation.core.util.isPasswordMatch
+import net.thechance.mena.identity.presentation.core.util.isSaveEnabled
+import net.thechance.mena.identity.presentation.core.util.validatePasswordConfirmation
+import net.thechance.mena.identity.presentation.feature.locationFlow.addEditLocation.AddEditLocationScreenUIState
+import net.thechance.mena.identity.presentation.feature.locationFlow.shared.CoordinatesUiState
 import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

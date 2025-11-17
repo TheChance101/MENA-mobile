@@ -1,0 +1,3 @@
+package net.thechance.mena.identity.presentation.feature.authenticationFlow.register.accountCreated
+
+sealed interface AccountCreatedUIEffect

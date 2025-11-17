@@ -12,11 +12,11 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
-import net.thechance.mena.identity.presentation.screen.login.LoginScreen
-import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
-import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
-import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
+import net.thechance.mena.identity.presentation.feature.authenticationFlow.login.LoginScreen
+import net.thechance.mena.identity.presentation.feature.authenticationFlow.register.accountCreated.AccountCreatedScreen
+import net.thechance.mena.identity.presentation.feature.authenticationFlow.register.uploadProfileImage.UploadProfileImageScreen
+import net.thechance.mena.identity.presentation.feature.locationFlow.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.feature.profileFlow.profile.ProfileScreen
 import org.koin.compose.koinInject
 
 class IdentityFeatureApiImpl : IdentityFeatureApi {

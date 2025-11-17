@@ -3,11 +3,11 @@ package net.thechance.mena.identity.presentation.di
 import android.content.Context
 import android.location.LocationManager
 import net.thechance.mena.identity.domain.service.LocalizationService
-import net.thechance.mena.identity.presentation.util.AppLocalizer
-import net.thechance.mena.identity.presentation.util.GalleryPermission
-import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
-import net.thechance.mena.identity.presentation.util.PermissionManager
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
+import net.thechance.mena.identity.presentation.core.util.AppLocalizer
+import net.thechance.mena.identity.presentation.core.util.GalleryPermission
+import net.thechance.mena.identity.presentation.core.util.LocationForegroundPermission
+import net.thechance.mena.identity.presentation.core.util.PermissionManager
+import net.thechance.mena.identity.presentation.core.util.permissionHandler.PermissionController
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

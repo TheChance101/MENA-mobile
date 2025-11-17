@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.util
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.profile_language_arabic
 import mena.identity_presentation.generated.resources.profile_language_english
+import net.thechance.mena.identity.presentation.core.util.mapLanguage
 import org.junit.Test
 import kotlin.test.assertEquals
 
