@@ -15,14 +15,14 @@ class PrivacyAndPolicyRepositoryImplTest {
 
     lateinit var client: HttpClient
     private val localizationService = mockk<LocalizationService>()
-    lateinit var privacyAndPolicyRepositoryImpl: PrivacyAndPolicyRepositoryImpl
+    lateinit var privacyAndPolicyRepositoryImpl: ApplicationInfoRepositoryImpl
 
     @Test
     fun `getPrivacyAndPolicy() should not throw exception when server returns 200`() = runTest {
         coEvery { localizationService.getCurrentLanguage() } returns AppLanguage.ENGLISH
         client = mockHttpClient(fakePrivacyAndPolicyResponseDto)
 
-        privacyAndPolicyRepositoryImpl = PrivacyAndPolicyRepositoryImpl(client, localizationService)
+        privacyAndPolicyRepositoryImpl = ApplicationInfoRepositoryImpl(client, localizationService)
 
         privacyAndPolicyRepositoryImpl.getPrivacyAndPolicy()
 
