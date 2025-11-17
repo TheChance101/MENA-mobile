@@ -21,7 +21,6 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -43,8 +42,8 @@ import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.Pe
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
-import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.model.SyncState
@@ -318,9 +317,11 @@ class ChatRepositoryImplTest {
     fun `should sync chat data successfully and emit ChatsSummariesSynced`() = runTest {
         val pageNumber = 0
         val pageSize = 20
+        val chatId1 = Uuid.random().toString()
+        val chatId2 = Uuid.random().toString()
         val chatSummaries = listOf(
-            createChatSummaryDto(id = Uuid.random().toString(), name = "Chat 1"),
-            createChatSummaryDto(id = Uuid.random().toString(), name = "Chat 2")
+            createChatSummaryDto(id = chatId1, name = "Chat 1"),
+            createChatSummaryDto(id = chatId2, name = "Chat 2")
         )
         val pagedData = PagedDataDto(
             data = chatSummaries,
@@ -354,9 +355,28 @@ class ChatRepositoryImplTest {
 
         repository.getChatsSummary(pageNumber, pageSize)
 
-        val emittedState = deferredState.await()
+        val emittedState = deferredState.await() as SyncState.ChatsSummariesSynced
 
-        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain() }))
+        // Verify the emitted state contains the correct chat summaries
+        assertThat(emittedState.chatSummaries.size).isEqualTo(2)
+
+        // Verify first chat summary
+        val firstChat = emittedState.chatSummaries[0]
+        assertThat(firstChat.id.toString()).isEqualTo(chatId1)
+        assertThat(firstChat.name).isEqualTo("Chat 1")
+        assertThat(firstChat.imageUrl).isEqualTo("http://example.com/image.jpg")
+        assertThat(firstChat.unReadMessagesCount).isEqualTo(1)
+        assertThat(firstChat.lastMessage?.content).isEqualTo(MessageContent.Text("Hello there"))
+        assertThat(firstChat.lastMessage?.isMine).isEqualTo(false)
+
+        // Verify second chat summary
+        val secondChat = emittedState.chatSummaries[1]
+        assertThat(secondChat.id.toString()).isEqualTo(chatId2)
+        assertThat(secondChat.name).isEqualTo("Chat 2")
+        assertThat(secondChat.imageUrl).isEqualTo("http://example.com/image.jpg")
+        assertThat(secondChat.unReadMessagesCount).isEqualTo(1)
+        assertThat(secondChat.lastMessage?.content).isEqualTo(MessageContent.Text("Hello there"))
+        assertThat(secondChat.lastMessage?.isMine).isEqualTo(false)
     }
 
     @Test
