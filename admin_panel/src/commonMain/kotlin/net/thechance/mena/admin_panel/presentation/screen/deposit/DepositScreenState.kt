@@ -14,8 +14,7 @@ data class DepositScreenState(
 ) {
     val isFillWalletButtonEnabled: Boolean
         get() {
-            val cleanedAmount = amount.replace(",", "")
-            return phoneNumber.isNotBlank() && (cleanedAmount.toDoubleOrNull() ?: 0.0) > 0
+            return phoneNumber.isNotBlank() && (amount.toDoubleOrNull() ?: 0.0) > 0
         }
 
     data class CountryUiState(

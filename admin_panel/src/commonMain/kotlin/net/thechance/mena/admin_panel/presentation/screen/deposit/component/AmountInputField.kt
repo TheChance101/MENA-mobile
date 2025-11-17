@@ -33,7 +33,7 @@ fun AmountInputField(
                 .padding(bottom = Theme.spacing._4)
         )
         BasicTextField(
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             value = amount,
             onValueChanged = { newText ->
                 onAmountChanged(newText)
@@ -42,6 +42,7 @@ fun AmountInputField(
             leadingIcon = painterResource(Res.drawable.ic_add_money),
             showTrailingDivider = true,
             trailingIcon = painterResource(Res.drawable.ic_coin),
+            visualTransformation = AmountVisualTransformation()
             )
     }
 }

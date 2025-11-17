@@ -68,7 +68,7 @@ class DepositViewModel (
         amount
             .filter { char -> char.isDigit()}
             .let { newAmount->
-                updateState { it.copy(amount = formatAmount( newAmount)) }
+                updateState { it.copy(amount =  newAmount) }
             }
     }
 
