@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DeactivateDukanDto(
+data class DukanDeactivationDto(
     @SerialName("reason")
-    val deactivateReason: String
+    val deactivationReason: String
 )

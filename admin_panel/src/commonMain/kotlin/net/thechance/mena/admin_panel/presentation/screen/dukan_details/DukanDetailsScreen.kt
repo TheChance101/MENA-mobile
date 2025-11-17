@@ -66,7 +66,7 @@ private fun DukanDetailsScreenContent(
                     isVisible = it,
                     onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
                     onDeactivationConfirmed =
-                        interactionListener::onConfirmDukanDeactivationButtonClicked,
+                        interactionListener::onDukanDeactivationButtonClicked,
                     deactivationReason = state.deactivateReason,
                     onReasonChanged = interactionListener::onDeactivateReasonChanged,
                     isDeactivateButtonEnabled = state.isDeactivateBtnEnabled,

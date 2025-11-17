@@ -108,12 +108,12 @@ class DukanDetailsViewModel(
         }
     }
 
-    override fun onConfirmDukanDeactivationButtonClicked() {
+    override fun onDukanDeactivationButtonClicked() {
         tryToExecute(
             callee = {
                 dukanRepository.deactivateDukan(
                     dukanId = currentState.dukan.id,
-                    deactivateReason = currentState.deactivateReason
+                    deactivationReason = currentState.deactivateReason
                 )
             },
             onSuccess = { onDeactivationDukanSuccess() },
@@ -219,7 +219,7 @@ class DukanDetailsViewModel(
     }
 
     private fun initializeShelvesPaginator() {
-        updateState { it.copy(shelves = listOf(), selectedShelfId = "") }
+        updateState { it.copy(shelves = emptyList(), selectedShelfId = "") }
         shelvesPaginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onShelvesPaginationLoading,
@@ -266,7 +266,7 @@ class DukanDetailsViewModel(
     }
 
     private fun initializeProductsPaginator() {
-        updateState { it.copy(products = listOf()) }
+        updateState { it.copy(products =  emptyList() ) }
         productsPaginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onProductsPaginationLoading,
