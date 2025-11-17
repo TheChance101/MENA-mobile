@@ -294,8 +294,8 @@ class DukanDetailsViewModelTest {
             Product(
                 id = Uuid.random(),
                 name = "product 1",
-                price = 22.0,
-                discountedPrice = 10.0,
+                finalPrice = 22.0,
+                basePrice = 10.0,
                 description = "description 1",
                 imageUrls = listOf()
             )
