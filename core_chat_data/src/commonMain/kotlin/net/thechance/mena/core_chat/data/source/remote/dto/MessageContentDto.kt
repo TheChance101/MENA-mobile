@@ -27,9 +27,9 @@ sealed class MessageContentDto {
     @SerialName("ORDER")
     data class Order(
         val orderId: String,
-        val numberOfItems: Int,
-        val deliverTo: String,
-        val totalPrice: Double
+        val totalProducts: Int,
+        val totalPrice: String,
+        val deliverToAddress: String
     ) : MessageContentDto()
 
 }

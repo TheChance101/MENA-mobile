@@ -42,12 +42,14 @@ fun MessageContentDto.toDomain(): MessageContent {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
-        is MessageContentDto.Order -> MessageContent.Order(
-            orderId = orderId.toUuid(),
-            numberOfItems = numberOfItems,
-            deliverTo = deliverTo,
-            totalPrice = totalPrice
-        )
+        is MessageContentDto.Order -> {
+            MessageContent.Order(
+                orderId = orderId.toUuid(),
+                numberOfItems = totalProducts.toInt(),
+                deliverTo = deliverToAddress,
+                totalPrice = totalPrice.toDouble()
+            )
+        }
     }
 }
 
@@ -121,8 +123,12 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val audioData = if (content is MessageContent.Audio) content.data else null
     val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
+    val orderId = if(content is MessageContent.Order) content.orderId else null
+    val numberOfItems = if(content is MessageContent.Order) content.numberOfItems else null
+    val deliverTo = if (content is MessageContent.Order) content.deliverTo else null
+    val totalPrice = if (content is MessageContent.Order) content.totalPrice else null
 
-
+    println("order Message.toCachedMessageLocalDto $deliverTo")
 
     return CachedMessageLocalDto(
         id = this.id.toString(),
@@ -135,7 +141,11 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         isMine = this.isMine,
-        status = status
+        status = status,
+        orderId = orderId.toString(),
+        numberOfItems = numberOfItems ?: 0,
+        deliverTo = deliverTo ?: "",
+        totalPrice = totalPrice ?: 0.0
     )
 }
 
@@ -169,6 +179,15 @@ fun CachedMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
+        orderId.isNotEmpty() -> {
+            println("order CachedMessageLocalDto.toDomain")
+            MessageContent.Order(
+                orderId = orderId.toUuid(),
+                numberOfItems = numberOfItems,
+                deliverTo = deliverTo,
+                totalPrice = totalPrice
+            )
+        }
         else -> error("Invalid message content")
     }
 
