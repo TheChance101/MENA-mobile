@@ -10,8 +10,6 @@ import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCas
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
 import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
-import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toEntity
-import net.thechance.mena.admin_panel.presentation.screen.deposit.mapper.toUiState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg

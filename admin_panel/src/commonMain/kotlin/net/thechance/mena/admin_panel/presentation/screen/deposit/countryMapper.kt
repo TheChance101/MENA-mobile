@@ -1,7 +1,6 @@
-package net.thechance.mena.admin_panel.presentation.screen.deposit.mapper
+package net.thechance.mena.admin_panel.presentation.screen.deposit
 
 import net.thechance.mena.admin_panel.domain.model.Country
-import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
 
 fun DepositScreenState.CountryUiState.toEntity(): Country {
     return Country(
