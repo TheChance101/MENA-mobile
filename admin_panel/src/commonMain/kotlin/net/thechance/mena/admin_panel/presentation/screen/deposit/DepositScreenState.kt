@@ -8,7 +8,7 @@ data class DepositScreenState(
     val selectedCountry: CountryUiState = CountryUiState(),
     val amount: String = "",
     val snackBar: SnackBarState = SnackBarState(),
-    val isLoadingCountries: Boolean = false,
+    val isCountriesLoading: Boolean = false,
     val isDepositProcessLoading :Boolean = false,
     val availableCountries : List<CountryUiState> =emptyList()
 ) {

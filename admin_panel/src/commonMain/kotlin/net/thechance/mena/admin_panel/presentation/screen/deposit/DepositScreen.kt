@@ -50,7 +50,7 @@ private fun DepositScreenContent(
         topBar = { DepositTopBar() },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
     ) {
-        if (state.isLoadingCountries) {
+        if (state.isCountriesLoading) {
             AdminPanelContentLoading()
         } else {
             Box(

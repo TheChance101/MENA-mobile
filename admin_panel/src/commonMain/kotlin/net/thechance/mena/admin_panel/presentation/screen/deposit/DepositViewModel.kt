@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
+import net.thechance.mena.admin_panel.domain.model.Country
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
 import net.thechance.mena.admin_panel.presentation.base.BaseViewModel
@@ -85,18 +86,14 @@ class DepositViewModel (
 
     private suspend fun onDepositSuccess(){
         updateState { it.copy(isDepositProcessLoading = false) }
+
         showSnackBar(
             title = stringProvider.getString(Res.string.success_deposit_title),
             message = stringProvider.getString(Res.string.success_deposit_description),
             isSuccess = true
         )
-        updateState {
-            it.copy(
-                phoneNumber = "",
-                amount =""
-            )
-        }
 
+        updateState { it.copy(phoneNumber = "", amount ="") }
     }
 
     private suspend fun showSnackBar(
@@ -137,25 +134,20 @@ class DepositViewModel (
 
     private fun getAvailableCountries() {
         tryToExecute(
-            onStart = { updateState { it.copy(isLoadingCountries = true) } },
-            callee = ::getCountries,
+            onStart = { updateState { it.copy(isCountriesLoading = true) } },
+            callee = {depositMoneyRepository.getCountries()},
             onSuccess = ::onGetCountriesSuccess,
             onError = ::onGetCountriesError,
-            onFinish = { updateState { it.copy(isLoadingCountries = false) } },
+            onFinish = { updateState { it.copy(isCountriesLoading = false) } },
             dispatcher = dispatcher
         )
     }
 
-
-    private suspend fun getCountries(): List<DepositScreenState.CountryUiState> {
-        return depositMoneyRepository.getCountries().map { it.toUiState() }
-    }
-
-    private fun onGetCountriesSuccess(availableCountries: List<DepositScreenState.CountryUiState>) {
+    private fun onGetCountriesSuccess(availableCountries: List<Country>) {
         updateState {
             it.copy(
-                availableCountries = availableCountries,
-                selectedCountry = availableCountries.firstOrNull() ?: it.selectedCountry
+                availableCountries = availableCountries.map { it.toUiState() },
+                selectedCountry = availableCountries.map{it.toUiState()}.firstOrNull() ?: it.selectedCountry
             )
         }
     }
