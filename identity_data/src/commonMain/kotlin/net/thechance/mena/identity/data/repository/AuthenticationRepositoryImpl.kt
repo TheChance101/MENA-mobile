@@ -15,6 +15,7 @@ import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.concurrent.Volatile
@@ -50,14 +51,19 @@ class AuthenticationRepositoryImpl(
     }
 
     override suspend fun refreshAccessToken(): String {
-        val response: AuthenticationResponse = safeWrapper {
-            client.postJson(
-                RefreshRequestDto(settings.refreshToken),
-                REFRESH_ENDPOINT
-            )
+        return try {
+            val response: AuthenticationResponse = safeWrapper {
+                client.postJson(
+                    RefreshRequestDto(settings.refreshToken),
+                    REFRESH_ENDPOINT
+                )
+            }
+            saveTokens(response.toDomain(), shouldEmit = !isTemporaryTokenMode)
+            settings.accessToken
+        } catch (e: UnAuthorizedException) {
+            saveTokens(createEmptyTokens(), shouldEmit = true)
+            throw e
         }
-        saveTokens(response.toDomain(), shouldEmit = !isTemporaryTokenMode)
-        return settings.accessToken
     }
 
     override suspend fun getAccessToken(): String = settings.accessToken
@@ -84,8 +90,8 @@ class AuthenticationRepositoryImpl(
     }
 
     override suspend fun clearAuthTokens() {
-        saveTokensToSettings(createEmptyTokens())
         isTemporaryTokenMode = false
+        saveTokens(createEmptyTokens(), shouldEmit = true)
     }
 
     override fun observeTokenChange(): StateFlow<String> = observableToken
