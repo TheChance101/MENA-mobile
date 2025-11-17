@@ -35,11 +35,12 @@ fun ChatList(
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val isConnectedToNetwork by rememberNetworkStatus()
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._12),
         state = chatListState,
