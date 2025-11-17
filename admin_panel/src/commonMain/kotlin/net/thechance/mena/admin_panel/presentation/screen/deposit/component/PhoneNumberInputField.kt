@@ -9,22 +9,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
+import net.thechance.mena.admin_panel.presentation.designSystem.theme.emoji
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.amount
 import net.thechance.mena.admin_panel.resources.ic_arrow_down
 import net.thechance.mena.admin_panel.resources.ic_phone
 import net.thechance.mena.admin_panel.resources.phone_number
-import net.thechance.mena.admin_panel.resources.twemoji_mozilla
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberTextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -93,10 +89,6 @@ private fun CountryCodeSelector(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val customFontFamily = FontFamily(
-        Font(Res.font.twemoji_mozilla, FontWeight.Normal),
-    )
-
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(Theme.radius.md))
@@ -108,9 +100,8 @@ private fun CountryCodeSelector(
     ) {
         Text(
             text = countryFlag,
-            style = Theme.typography.body.large,
+            style = Theme.typography.emoji.medium,
             modifier = Modifier.padding(end = 1.dp),
-            fontFamily = customFontFamily
         )
 
         Text(

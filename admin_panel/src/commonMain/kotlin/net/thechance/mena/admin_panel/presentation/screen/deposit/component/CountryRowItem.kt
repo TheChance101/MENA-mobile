@@ -13,16 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.deposit.DepositScreenState
-import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.twemoji_mozilla
+import net.thechance.mena.admin_panel.presentation.designSystem.theme.emoji
 import net.thechance.mena.designsystem.presentation.component.button.radioButton.RadioButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.Font
 
 @Composable
 fun CountryRowItem(
@@ -37,15 +33,12 @@ fun CountryRowItem(
         else Theme.colorScheme.background.surfaceLow
     )
 
-    val customFontFamily = FontFamily(
-        Font(Res.font.twemoji_mozilla, FontWeight.Normal),
-    )
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
             .background(
                 color = animatedCountryItemColor,
                 shape = RoundedCornerShape(Theme.radius.lg)
@@ -58,8 +51,7 @@ fun CountryRowItem(
 
        Text(
            text=selectedCountry.flagEmoji,
-           style = Theme.typography.title.large,
-           fontFamily = customFontFamily
+           style = Theme.typography.emoji.medium
        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
