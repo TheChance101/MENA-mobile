@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import net.thechance.mena.admin_panel.navigation.DukanManagement
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
@@ -110,6 +111,6 @@ private fun onDukanDetailsEffect(
     navController: NavController
 ) {
     when (effect) {
-        DukanDetailEffect.NavigateBack -> navController.popBackStack()
+        DukanDetailEffect.NavigateBack -> navController.navigate(DukanManagement)
     }
 }
