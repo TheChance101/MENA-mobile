@@ -49,8 +49,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             //coil
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor3)
+            implementation(libs.bundles.coil)
 
             //data time
             implementation(libs.kotlinx.datetime)
@@ -82,6 +81,7 @@ kotlin {
             implementation(libs.bundles.filekit)
         }
         iosMain.dependencies {
+            implementation(libs.bundles.coil)
             implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {

@@ -2,8 +2,8 @@ package net.thechance.mena.identity.presentation.di
 
 import android.content.Context
 import android.location.LocationManager
-import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.presentation.util.AppLocalizer
+import net.thechance.mena.identity.presentation.util.AppThemeChanger
 import net.thechance.mena.identity.presentation.util.GalleryPermission
 import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
 import net.thechance.mena.identity.presentation.util.PermissionManager
@@ -15,13 +15,22 @@ import org.koin.dsl.module
 internal actual fun platformModule(): Module = module {
     single { get<Context>().getSystemService(Context.LOCATION_SERVICE) as LocationManager }
 
-    single<LocalizationService> { LocalizationService(settingsRepository = get()) }
-    single<AppLocalizer> (
+    single<AppLocalizer>(
         createdAtStart = true
-    ){ AppLocalizer(
-        context = get(),
-        settingsRepository = get()
-    ) }
+    ) {
+        AppLocalizer(
+            context = get(),
+            settingsRepository = get()
+        )
+    }
+    single<AppThemeChanger>(
+        createdAtStart = true
+    ) {
+        AppThemeChanger(
+            context = get(),
+            settingsRepository = get()
+        )
+    }
 
     single { PermissionManager() }
 

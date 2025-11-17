@@ -24,6 +24,7 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.Anima
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatOfSurah
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.navigation.Route.DownloadedRecitersRoute
 import net.thechance.mena.faith.presentation.navigation.Route.SearchRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -41,7 +42,15 @@ fun SurahScreen(
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             is SurahScreenEffect.NavigateBack -> onClickBack()
-            is SurahScreenEffect.ShareAyah -> {}
+            is SurahScreenEffect.ShareAyah -> {
+                navController.navigate(
+                    route = Route.ShareAyahToChatRoute(
+                        surahId = effect.surahId,
+                        ayahNumber = effect.ayahNumber,
+                        ayahContent = effect.ayahContent,
+                    ),
+                )
+            }
             is SurahScreenEffect.NavigateToSearchScreen -> {
                 navController.navigate(
                     SearchRoute(effect.surahId)
@@ -51,6 +60,7 @@ fun SurahScreen(
             is SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
                 navController.navigate(DownloadedRecitersRoute(effect.surahId))
             }
+
         }
     }
 
@@ -179,7 +189,7 @@ private fun Preview() {
                 listener = object : SurahInteractionListener {
                     override fun onBackClick() {}
                     override fun onDismissActionButtons() {}
-                    override fun onShareClick(ayahContent: String) {}
+                    override fun onShareClick() {}
                     override fun onBookmarkClick(ayahNumber: Int) {}
                     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                     override fun onSearchClick() {}
