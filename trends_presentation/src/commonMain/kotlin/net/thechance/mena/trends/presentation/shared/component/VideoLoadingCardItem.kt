@@ -8,11 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.error
@@ -59,6 +59,7 @@ fun VideoLoadingCardItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .height(IntrinsicSize.Max)
             .clip(RoundedCornerShape(Theme.radius.md))
             .background(Theme.colorScheme.primary.onPrimary)
             .padding(
@@ -67,7 +68,8 @@ fun VideoLoadingCardItem(
                 end = Theme.spacing._12,
                 bottom = 14.dp
             ),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier
@@ -77,28 +79,27 @@ fun VideoLoadingCardItem(
                 .padding(Theme.spacing._8),
             painter = painterResource(Res.drawable.ic_video),
             contentDescription = stringResource(Res.string.thumbnail),
-            tint = Theme.colorScheme.brand.brand
+            tint = Color(0xFF141B34)
         )
 
-        Column(Modifier.padding(start = Theme.spacing._8)) {
-            Row(Modifier.heightIn(min = 40.dp)) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .height(IntrinsicSize.Max)
+                .padding(start = Theme.spacing._8),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        ) {
             VideoInfoSection(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .padding(end = Theme.spacing._16),
-                    title = title,
-                    sizeUploaded = sizeUploaded,
-                    videoSize = videoSize,
-                    uploadingState = uploadingState
-                )
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .padding(end = Theme.spacing._16),
+                title = title,
+                sizeUploaded = sizeUploaded,
+                videoSize = videoSize,
+                uploadingState = uploadingState
+            )
 
-                VideoActionsSection(
-                    modifier = Modifier.fillMaxHeight(),
-                    uploadingState = uploadingState,
-                    onAction = onAction
-                )
-            }
             AnimatedVisibility(
                 visible = uploadingState.isUploading,
                 enter = fadeIn(),
@@ -113,6 +114,12 @@ fun VideoLoadingCardItem(
                 )
             }
         }
+
+        VideoActionsSection(
+            modifier = Modifier.fillMaxHeight(),
+            uploadingState = uploadingState,
+            onAction = onAction
+        )
     }
 }
 
@@ -126,7 +133,7 @@ private fun VideoInfoSection(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
         Text(
             text = title,
@@ -166,7 +173,7 @@ private fun VideoActionsSection(
     onAction: (VideoAction) -> Unit
 ) {
     Box(modifier = modifier) {
-        AnimatedVisibility (
+        AnimatedVisibility(
             visible = uploadingState.isUploading,
             enter = fadeIn(),
             exit = fadeOut()
@@ -186,7 +193,7 @@ private fun VideoActionsSection(
             modifier = Modifier.align(Alignment.CenterEnd),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16),
         ) {
-            AnimatedVisibility (
+            AnimatedVisibility(
                 visible = uploadingState.isFailed || uploadingState.isSuccess,
                 enter = fadeIn(),
                 exit = fadeOut()
@@ -200,7 +207,7 @@ private fun VideoActionsSection(
                     tint = Theme.colorScheme.shadeSecondary
                 )
             }
-            AnimatedVisibility (
+            AnimatedVisibility(
                 visible = uploadingState.isFailed,
                 enter = fadeIn(),
                 exit = fadeOut()
