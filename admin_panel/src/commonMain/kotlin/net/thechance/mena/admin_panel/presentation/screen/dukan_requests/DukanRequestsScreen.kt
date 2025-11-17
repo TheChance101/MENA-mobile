@@ -82,7 +82,7 @@ private fun DukanRequestsScreenContent(
     if (state.selectedDukan != null) {
         DukanDetailsDrawerView(
             isOpen = state.isDukanDetailsShown,
-            onDismiss = listener::onDismissDukanDetails,
+            onDismiss = listener::onDukanDetailsDismissed,
             selectedDukanItem = state.selectedDukan,
             onRejectDukanClicked = listener::onRejectDukanClicked,
             onApproveDukanClicked = listener::onApproveDukanClicked,

@@ -128,7 +128,7 @@ class DukanRequestsViewModel(
     }
 
     private fun onSuccessDukanApproved(){
-        onDismissDukanDetails()
+        onDukanDetailsDismissed()
         getRequestedDukans()
         viewModelScope.launch {
             showSnackBar(
@@ -140,7 +140,7 @@ class DukanRequestsViewModel(
     }
 
     override fun onRejectDukanClicked() {
-        onDismissDukanDetails()
+        onDukanDetailsDismissed()
         viewModelScope.launch {
             delay(100)
             updateState { it.copy(isRejectDialogShown = true) }
@@ -192,7 +192,7 @@ class DukanRequestsViewModel(
         }
     }
 
-    override fun onDismissDukanDetails() {
+    override fun onDukanDetailsDismissed() {
         updateState { it.copy(isDukanDetailsShown = false) }
     }
 
