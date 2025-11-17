@@ -19,6 +19,9 @@
     <!-- Users Management -->
     <string name="users_management">Users management</string>
     <string name="search_hint">Search by user name, phone number,...</string>
+    <string name="no_users_yet">There are no users yet.</string>
+    <string name="users_will_appear">All users will be displayed here after added.</string>
+
 
     <!-- Table Headers -->
     <string name="user_name">User name</string>

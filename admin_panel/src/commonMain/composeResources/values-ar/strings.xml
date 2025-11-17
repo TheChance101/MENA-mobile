@@ -19,6 +19,9 @@
     <string name="users_management">إدارة المستخدمين</string>
     <string name="search_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
     <string name="dukan_management">إدارة الدكان</string>
+    <string name="no_users_yet">لا يوجد مستخدمون بعد.</string>
+    <string name="users_will_appear">سيتم عرض جميع المستخدمين هنا بعد إضافتهم.</string>
+
 
     <!-- Table Headers -->
     <string name="user_name">اسم المستخدم</string>
