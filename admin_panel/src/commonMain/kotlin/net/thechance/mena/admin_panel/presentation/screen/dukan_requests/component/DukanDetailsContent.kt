@@ -32,7 +32,6 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width

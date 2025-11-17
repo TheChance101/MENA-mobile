@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component
 
 import androidx.compose.animation.animateColorAsState
@@ -35,10 +33,7 @@ import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsBut
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreenState
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun DukanListContent(
     state: DukanRequestsScreenState,
@@ -83,7 +78,7 @@ fun DukanListContent(
 @Composable
 private fun DukanListTable(
     dukan: List<DukanRequestsScreenState.DukanItem>,
-    onViewDetailsClicked: (dukanId: Uuid) -> Unit,
+    onViewDetailsClicked: (selectedDukan: DukanRequestsScreenState.DukanItem) -> Unit,
     horizontalScrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
@@ -104,7 +99,7 @@ private fun DukanListTable(
                 isLastItem = isLastItem,
                 hasBackground = index % 2 != 0,
                 onViewDetailsClicked = {
-                    onViewDetailsClicked(dukanItem.id)
+                    onViewDetailsClicked(dukanItem)
                 }
             )
         }

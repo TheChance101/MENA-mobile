@@ -135,7 +135,7 @@ private fun DrawerTitle() {
 }
 
 @Composable
-fun CloseButton(
+private fun CloseButton(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {

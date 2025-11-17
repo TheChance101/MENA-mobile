@@ -79,15 +79,11 @@ private fun DukanRequestsScreenContent(
         }
     }
 
-    val selectedDukan = state.selectedDukanId?.let { id ->
-        state.dukans.find { it.id == id }
-    }
-
-    if (selectedDukan != null) {
+    if (state.selectedDukan != null) {
         DukanDetailsDrawerView(
             isOpen = state.isDukanDetailsShown,
             onDismiss = listener::onDismissDukanDetails,
-            selectedDukanItem = selectedDukan,
+            selectedDukanItem = state.selectedDukan,
             onRejectDukanClicked = listener::onRejectDukanClicked,
             onApproveDukanClicked = listener::onApproveDukanClicked,
         )
