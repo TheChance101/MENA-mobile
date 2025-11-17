@@ -58,6 +58,7 @@ fun ScaffoldScope.LanguageDialog(
     BasicDialog(
         isVisible = isVisible,
         onDismiss = onDismissRequest,
+        hasDismissButton = true
     ) {
         Box(
             contentAlignment = Alignment.TopCenter,
@@ -65,7 +66,7 @@ fun ScaffoldScope.LanguageDialog(
             LazyColumn(
                 modifier = Modifier.padding(vertical = Theme.spacing._12),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
             ) {
                 item {
                     Text(
@@ -90,16 +91,6 @@ fun ScaffoldScope.LanguageDialog(
                     )
                 }
             }
-            Icon(
-                painter = painterResource(Res.drawable.ic_close_dialog),
-                contentDescription = stringResource(Res.string.close_dialog_icon),
-                modifier = Modifier.size(Theme.spacing._32)
-                    .clip(CircleShape).background(Theme.colorScheme.background.surface, CircleShape)
-                    .clickable(
-                        onClick = { onDismissRequest() },
-                        indication = rippleIndication(),
-                        interactionSource = remember { MutableInteractionSource() })
-                    .padding(Theme.spacing._8).align(Alignment.TopStart))
         }
     }
 }
