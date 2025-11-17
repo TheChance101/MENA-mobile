@@ -57,7 +57,6 @@
     <string name="error_recording_failed">فشل بدء التسجيل. يرجى المحاولة مرة أخرى.</string>
     <string name="error_invalid_recording">تسجيل غير صالح. يرجى محاولة التسجيل مرة أخرى.</string>
     <string name="error_failed_to_process_audio">فشل معالجة ملف الصوت. يرجى المحاولة مرة أخرى.</string>
-    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="just_now">الآن</string>
     <string name="minute_ago">منذ دقيقة</string>
     <string name="two_minutes_ago">منذ دقيقتين</string>
@@ -69,4 +68,12 @@
     <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
+
+    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
+    <string name="fajr">الفجر</string>
+    <string name="dhuhr">الظهر</string>
+    <string name="asr">العصر</string>
+    <string name="maghrib">المغرب</string>
+    <string name="isha">العشاء</string>
+    <string name="sunrise">الشروق</string>
 </resources>

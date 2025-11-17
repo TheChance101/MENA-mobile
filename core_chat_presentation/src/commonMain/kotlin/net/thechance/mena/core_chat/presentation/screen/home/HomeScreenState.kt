@@ -1,7 +1,7 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.presentation.utils.UiText
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -37,9 +37,10 @@ data class HomeScreenState(
     }
 
     data class PrayerUiState(
-        val nextPrayerName: String,
-        val nextPrayerTime: String,
+        val displayName: StringResource,
+        val time: LocalDateTime,
     )
+
     data class WeatherUiState(
         val currentTemperature: String,
         val weatherCondition: String,

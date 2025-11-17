@@ -8,12 +8,10 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.am
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
 import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
-import mena.core_chat_presentation.generated.resources.pm
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -30,10 +28,12 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
-import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
+import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.service.PrayerTimeService
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -42,6 +42,8 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
+    private val prayerTimeService: PrayerTimeService,
+    private val locationService: LocationService,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
@@ -65,6 +67,7 @@ class HomeViewModel(
         listenToMarkAsReadEvent()
         observeDeleteChat()
         observeChatSummariesSyncState()
+        getCurrentAddressInfo()
     }
 
     private fun observeChatSummariesSyncState() {
@@ -96,7 +99,6 @@ class HomeViewModel(
                     .let { chatSummaries -> chatSummaries + state.chats }
                     .distinctBy { it.id }
                     .sortedByDescending { chatSummary -> chatSummary.lastMessage?.time }
-
             )
         }
     }
@@ -260,6 +262,25 @@ class HomeViewModel(
                     .sortedByDescending { it.lastMessage?.time }
             )
         }
+    }
+
+    private fun getCurrentAddressInfo(){
+        tryToExecute(
+            execute = { locationService.getActiveAddress() },
+            onSuccess = ::observeNextPrayer
+        )
+    }
+    private fun observeNextPrayer(address: Address?){
+        if (address == null) return
+
+        tryToCollect(
+            collect = { prayerTimeService.getNextPrayer(address) },
+            onCollect = ::onObserveNextPrayerSuccess,
+        )
+    }
+
+    private fun onObserveNextPrayerSuccess(prayerTime: PrayerTime?) {
+        updateState { it.copy(prayerUiState = prayerTime?.toUi()) }
     }
 
     override fun onNewChatClicked() {

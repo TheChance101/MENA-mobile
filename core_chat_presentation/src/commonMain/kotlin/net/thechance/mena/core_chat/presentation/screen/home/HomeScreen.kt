@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +37,7 @@ import net.thechance.mena.core_chat.presentation.screen.home.components.BalanceS
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatSummaryListSkeleton
 import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
+import net.thechance.mena.core_chat.presentation.screen.home.components.WeatherAndNextPrayerCard
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
@@ -86,18 +86,30 @@ private fun HomeContent(
         }
     ) {
         Box(modifier = modifier.fillMaxSize()) {
-
-            when {
-                state.chats.isEmpty() && state.isLoading -> {
-                    ChatSummaryListSkeleton()
+            Column(
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+                modifier = Modifier.padding(top = Theme.spacing._8)
+            ) {
+                if (state.prayerUiState != null || state.weatherUiState != null) {
+                    WeatherAndNextPrayerCard(
+                        prayerUiState = state.prayerUiState,
+                        weatherUiState = state.weatherUiState,
+                        modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                    )
                 }
 
-                state.chats.isEmpty() && !state.isLoading -> {
-                    EmptyView()
-                }
+                when {
+                    state.chats.isEmpty() && state.isLoading -> {
+                        ChatSummaryListSkeleton()
+                    }
 
-                else -> {
-                    ChatSummaryList(listState, state.chats, interactionListener::onChatClicked)
+                    state.chats.isEmpty() && !state.isLoading -> {
+                        EmptyView()
+                    }
+
+                    else -> {
+                        ChatSummaryList(listState, state.chats, interactionListener::onChatClicked)
+                    }
                 }
             }
 
