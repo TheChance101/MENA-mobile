@@ -1,8 +1,10 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_requests
 
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.thechance.mena.admin_panel.domain.entity.dukan.Dukan
 import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.model.DukanQueryParams
@@ -14,6 +16,10 @@ import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.presentation.utils.StringProvider
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarMsg
 import net.thechance.mena.admin_panel.presentation.utils.getErrorSnackBarTitle
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.dukan_approved_successfully
+import net.thechance.mena.admin_panel.resources.dukan_rejected_successfully
+import net.thechance.mena.admin_panel.resources.status_updated_title
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
@@ -94,7 +100,9 @@ class DukanRequestsViewModel(
         getRequestedDukans()
     }
 
-    override fun onViewDetailsClicked(dukanId: Uuid) {}
+    override fun onViewDetailsClicked(dukanId: Uuid) {
+        updateState { it.copy(isDukanDetailsShown = true, selectedDukanId = dukanId) }
+    }
 
     override fun onRetryClicked() {
         getRequestedDukans()
@@ -105,14 +113,87 @@ class DukanRequestsViewModel(
         getRequestedDukans()
     }
 
-    override fun onApproveDukanClicked(dukanId: Uuid) {}
+    override fun onApproveDukanClicked() {
+        tryToExecute(
+            callee = {
+                dukanRepository.updateDukanStatus(
+                    dukanId = currentState.selectedDukanId!!,
+                    status = Dukan.Status.APPROVED,
+                    message = currentState.rejectReason
+                )
+            },
+            onSuccess = {
+                onDismissDukanDetails()
+                getRequestedDukans()
+                viewModelScope.launch {
+                    showSnackBar(
+                        title = stringProvider.getString(Res.string.status_updated_title),
+                        message = stringProvider.getString(Res.string.dukan_approved_successfully),
+                        isSuccess = true
+                    )
+                }
+            },
+            onError = ::onError,
+            dispatcher = dispatcher
+        )
+    }
 
-    override fun onRejectDukanDialogClicked(dukanId: Uuid) {}
+    override fun onRejectDukanClicked() {
+        onDismissDukanDetails()
+        viewModelScope.launch {
+            delay(100)
+            updateState { it.copy(isRejectDialogShown = true) }
+        }
+    }
 
-    override fun onRejectDukanDialogCanceled() {}
+    override fun onRejectDukanDialogDismissed() {
+        updateState {
+            it.copy(
+                isRejectDialogShown = false,
+                rejectReason = "",
+                isRejectBtnLoading = false,
+            )
+        }
+    }
 
-    override fun onRejectDukanConfirmed() {}
-    override fun onRejectionMessageChanged() {}
+    override fun onRejectDukanConfirmed() {
+        updateState { it.copy(isRejectBtnLoading = true) }
+        tryToExecute(
+            callee = {
+                dukanRepository.updateDukanStatus(
+                    dukanId = currentState.selectedDukanId!!,
+                    status = Dukan.Status.REJECTED,
+                    message = currentState.rejectReason,
+                )
+            },
+            onSuccess = {
+                onRejectDukanDialogDismissed()
+                getRequestedDukans()
+                viewModelScope.launch {
+                    showSnackBar(
+                        title = stringProvider.getString(Res.string.status_updated_title),
+                        message = stringProvider.getString(Res.string.dukan_rejected_successfully),
+                        isSuccess = true
+                    )
+                }
+            },
+            onError = { error ->
+                updateState { it.copy(isRejectBtnLoading = false) }
+                onError(error)
+            },
+            dispatcher = dispatcher
+        )
+    }
+
+    override fun onRejectionMessageChanged(reason: String) {
+        reason.takeIf { it.length < 200 }?.let { reason ->
+            updateState { it.copy(rejectReason = reason) }
+        }
+    }
+
+    override fun onDismissDukanDetails() {
+        updateState { it.copy(isDukanDetailsShown = false) }
+    }
 
     override fun mapError(throwable: Throwable): ErrorState {
         return when (throwable) {
@@ -157,7 +238,6 @@ class DukanRequestsViewModel(
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
     }
-
 
     private companion object {
         const val PAGE_SIZE = 8

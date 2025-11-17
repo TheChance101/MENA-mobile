@@ -20,6 +20,7 @@ fun Dukan.toUIState(currentPage: Int, indexInList: Int): DukanRequestsScreenStat
             longitude = longitude
         ),
         date = createdAt.format("dd-MM-yyyy"),
+        categories = categories.map { it.title }
     )
 }
 

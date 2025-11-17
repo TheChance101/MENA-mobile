@@ -16,8 +16,14 @@ data class DukanRequestsScreenState(
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isRejectDialogShown: Boolean = false,
+    val rejectReason: String = "",
+    val isRejectBtnLoading: Boolean = false,
+    val isDukanDetailsShown: Boolean = false,
     val selectedDukanId: Uuid? = null
 ) {
+    val isRejectBtnEnabled: Boolean
+        get() = rejectReason.length > 1
+
     data class DukanPageInfo(
         val page: Int = 0,
         val totalPages: Int = 1
@@ -30,6 +36,7 @@ data class DukanRequestsScreenState(
         val imageUrl: String,
         val address: String,
         val date: String,
+        val categories: List<String> = listOf(),
         val coordinates: CoordinatesUiState = CoordinatesUiState()
     ) {
         data class CoordinatesUiState(
