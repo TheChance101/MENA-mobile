@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,8 +42,7 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
-import coil3.compose.AsyncImagePainter
-import coil3.compose.rememberAsyncImagePainter
+import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
@@ -269,23 +270,29 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
 
 @Composable
 private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
-    val painter = rememberAsyncImagePainter(profileImageUrl)
+    val errorPainter = painterResource(Res.drawable.ic_placeholder_profile)
+    val tintColor = Theme.colorScheme.shadePrimary
+    val tintedErrorPainter = remember(errorPainter) {
+        object : Painter() {
+            override val intrinsicSize = errorPainter.intrinsicSize
 
-    if (painter.state.value is AsyncImagePainter.State.Success) {
-        Image(
-            painter = painter,
-            contentDescription = stringResource(Res.string.profile_image_desc),
-            modifier = modifier.size(100.dp).clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-    } else {
-        Icon(
-            painter = painterResource(Res.drawable.ic_placeholder_profile),
-            contentDescription = stringResource(Res.string.profile_image_desc),
-            modifier = modifier.size(100.dp).clip(CircleShape),
-            tint = Theme.colorScheme.shadePrimary,
-        )
+            override fun DrawScope.onDraw() {
+                with(errorPainter) {
+                    draw(
+                        size = size,
+                        colorFilter = ColorFilter.tint(tintColor)
+                    )
+                }
+            }
+        }
     }
+    AsyncImage(
+        model = profileImageUrl,
+        contentDescription = stringResource(Res.string.profile_image_desc),
+        error = tintedErrorPainter,
+        modifier = modifier.size(100.dp).clip(CircleShape),
+        contentScale = ContentScale.Crop
+    )
 }
 
 @Composable
