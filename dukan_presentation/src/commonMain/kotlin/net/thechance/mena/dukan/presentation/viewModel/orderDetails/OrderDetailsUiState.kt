@@ -8,8 +8,8 @@ import kotlin.uuid.Uuid
 
 data class OrderDetailsUiState(
     val orderDetailsScreenState: OrderDetailsScreenState = OrderDetailsScreenState.Loading,
-    val snackBarUiState: SnackBarUiState?= null,
     val orderUiState: OrderUiState = OrderUiState(),
+    val snackBarUiState: SnackBarUiState?= null,
 ) {
     enum class OrderDetailsScreenState() {
         Loading,
@@ -28,6 +28,7 @@ data class OrderDetailsUiState(
         val addressDeliveryUiState: AddressDeliveryUiState = AddressDeliveryUiState(),
         val customerName: String = "",
         val customerPhone: String = "",
+        val isUserOwner: Boolean = false
     )
 
     data class ProductInOrderUiState(
@@ -35,7 +36,7 @@ data class OrderDetailsUiState(
         val quantity: Int,
         val imageUrl: String,
         val name: String,
-        val price: Double,
+        val totalPrice: Double,
     )
 
     data class AddressDeliveryUiState(

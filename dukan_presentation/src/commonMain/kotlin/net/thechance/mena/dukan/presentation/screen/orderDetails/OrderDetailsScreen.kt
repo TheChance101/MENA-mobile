@@ -100,7 +100,7 @@ private fun OrderDetailsContent(
                 title = if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Success)
                     stringResource(
                         Res.string.order_title,
-                        state.orderUiState.orderId.toString().takeLast(8)
+                        state.orderUiState.orderNumber
                     )
                 else
                     stringResource(Res.string.order_title, ""),
@@ -165,7 +165,7 @@ private fun OrderDetailsContent(
                         verticalArrangement = Arrangement.Center
                     ) {
                         item(
-                            key = "order_summary_section",
+                            key = "dukan_order_summary_section",
                             contentType = { "order_summary_section" },
                         ) {
                             OrderSummary(
@@ -177,7 +177,7 @@ private fun OrderDetailsContent(
                             )
                         }
                         item(
-                            key = "delivery_address_section",
+                            key = "dukan_delivery_address_section",
                             contentType = { "delivery_address_section" },
                         ) {
                             val topPaddingValue =
@@ -196,7 +196,7 @@ private fun OrderDetailsContent(
                             )
                         }
                         item(
-                            key = "customer_information_section",
+                            key = "dukan_customer_information_section",
                             contentType = { "customer_information_section" },
                         ) {
                             val topPaddingValue =

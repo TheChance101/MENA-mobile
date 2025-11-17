@@ -10,7 +10,6 @@ object PreviewOrderDetailsUiState {
     val orderDetailsUiState = OrderDetailsUiState(
         orderUiState = OrderDetailsUiState.OrderUiState(
             orderId = Uuid.random(),
-            orderNumber = 123456,
             orderDate = "2024-06-15",
             productInOrder = listOf(
                 OrderDetailsUiState.ProductInOrderUiState(
@@ -18,14 +17,14 @@ object PreviewOrderDetailsUiState {
                     quantity = 2,
                     imageUrl = "https://via.placeholder.com/150",
                     name = "Product 1",
-                    price = 29.99
+                    totalPrice = 29.99
                 ),
                 OrderDetailsUiState.ProductInOrderUiState(
                     id = Uuid.random(),
                     quantity = 1,
                     imageUrl = "https://via.placeholder.com/150",
                     name = "Product 2",
-                    price = 49.99
+                    totalPrice = 49.99
                 )
             ),
             discount = 10.0,

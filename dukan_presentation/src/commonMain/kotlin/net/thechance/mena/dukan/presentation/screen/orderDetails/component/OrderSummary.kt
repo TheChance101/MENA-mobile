@@ -196,7 +196,7 @@ private fun ProductsInOrderList(
             productsInOrder[index].let { product ->
                 ProductInOrderItem(
                     name = product.name,
-                    price = product.price,
+                    totalPrice = product.totalPrice,
                     quantity = product.quantity,
                     imageUrl = product.imageUrl,
                 )
@@ -251,7 +251,7 @@ fun PlatformFeesSection(
 @Composable
 private fun ProductInOrderItem(
     name: String,
-    price: Double,
+    totalPrice: Double,
     quantity: Int,
     imageUrl: String,
     modifier: Modifier = Modifier,
@@ -285,7 +285,7 @@ private fun ProductInOrderItem(
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
         ) {
             Text(
-                text = price.toString(),
+                text = totalPrice.toString(),
                 style = Theme.typography.label.large,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = 1

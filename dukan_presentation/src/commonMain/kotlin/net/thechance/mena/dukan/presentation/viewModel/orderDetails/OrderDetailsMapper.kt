@@ -16,7 +16,8 @@ fun Order.toUiState(): OrderDetailsUiState.OrderUiState {
         totalAmount = this.totalAmount,
         addressDeliveryUiState = this.orderAddress.toUiState(),
         customerName = this.customerName,
-        customerPhone = this.customerPhone
+        customerPhone = this.customerPhone,
+        isUserOwner = this.isUserOwner
     )
 }
 
@@ -26,7 +27,7 @@ private fun Order.ProductOrder.toUiState(): OrderDetailsUiState.ProductInOrderUi
         quantity = this.quantity,
         imageUrl = this.imageUrl,
         name = this.name,
-        price = this.price
+        totalPrice = this.totalPrice.final?:0.0
     )
 }
 

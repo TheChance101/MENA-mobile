@@ -2,10 +2,17 @@
 
 package net.thechance.mena.dukan.presentation.viewModel.orderDetails
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.order_error_general
+import mena.dukan_presentation.generated.resources.order_error_not_found
+import mena.dukan_presentation.generated.resources.order_error_unauthorized_access
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.exceptions.UnAuthorizedException
 import net.thechance.mena.dukan.domain.repository.OrderRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -15,10 +22,12 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class OrderDetailsViewModel(
-    private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository,
+    defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : OrderDetailsInteractionListener,
     BaseViewModel<OrderDetailsUiState, OrderDetailsEffect>(
-        initialState = OrderDetailsUiState()
+        initialState = OrderDetailsUiState(),
+        defaultDispatcher = defaultDispatcher
     ) {
 
     fun loadOrderDetails(orderId: Uuid) {
@@ -76,7 +85,9 @@ class OrderDetailsViewModel(
         updateState { copy(orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.Error) }
         when (exception) {
             is NoInternetException -> showErrorSnackbar(resErrorMessage = Res.string.no_internet_connection)
-            else -> showErrorSnackbar(resErrorMessage = Res.string.error_general)
+            is UnAuthorizedException -> showErrorSnackbar(resErrorMessage = Res.string.order_error_unauthorized_access)
+            is NoSuchItemException -> showErrorSnackbar(resErrorMessage = Res.string.order_error_not_found)
+            else -> showErrorSnackbar(resErrorMessage = Res.string.order_error_general)
         }
     }
 
