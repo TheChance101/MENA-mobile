@@ -30,6 +30,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
@@ -37,7 +40,6 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
-import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -620,9 +622,13 @@ class HomeViewModelTest {
             id = id,
             name = name,
             imageUrl = imageUrl,
-            lastMessage = ChatSummary.Message(
-                content = content,
+            lastMessage = Message(
+                id = Uuid.random(),
+                senderId = Uuid.random(),
+                chatId = id,
                 sendAt = sendAt,
+                status = MessageStatus.SENT,
+                content = MessageContent.Text(content),
                 isMine = isMine
             ),
             unReadMessagesCount = unReadCount
