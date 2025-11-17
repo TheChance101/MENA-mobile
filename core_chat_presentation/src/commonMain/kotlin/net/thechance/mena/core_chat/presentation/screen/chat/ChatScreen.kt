@@ -11,20 +11,28 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -102,6 +110,12 @@ fun ChatScreenContent(
         }
     }
 
+    val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
+    val maxKeyboardHeight = rememberKeyboardMaxHeight()
+    val shouldAddOffset = keyboardHeight > maxKeyboardHeight * 0.53
+
+    val chatInputBarOffset = if (shouldAddOffset) Constants.NAVIGATION_BAR_HEIGHT else 0
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -145,7 +159,8 @@ fun ChatScreenContent(
                             onTextChange = interactions::onInputMessageChanged,
                             onSendButtonClick = interactions::onSendTextMessageClicked,
                             onAttachButtonClick = interactions::onAttachmentClicked,
-                            onVoiceRecordClick = interactions::onRecordClicked
+                            onVoiceRecordClick = interactions::onRecordClicked,
+                            modifier = Modifier.imePadding().offset(y = chatInputBarOffset.dp)
                         )
                     }
                 }
@@ -268,4 +283,21 @@ private fun EffectsHandler(
             }
         }
     }
+}
+
+private object Constants{
+    const val NAVIGATION_BAR_HEIGHT = 74
+}
+@Composable
+private fun rememberKeyboardMaxHeight(): Int {
+    val density = LocalDensity.current
+    val imeBottom = WindowInsets.ime.getBottom(density)
+
+    var maxHeight by remember { mutableStateOf(0) }
+
+    if (imeBottom > maxHeight) {
+        maxHeight = imeBottom
+    }
+
+    return maxHeight
 }
