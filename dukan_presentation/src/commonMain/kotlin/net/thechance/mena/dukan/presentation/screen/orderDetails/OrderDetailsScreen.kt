@@ -3,15 +3,21 @@
 package net.thechance.mena.dukan.presentation.screen.orderDetails
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.LocalPlatformContext
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -50,6 +56,7 @@ fun OrderDetailsScreen(
     viewModel: OrderDetailsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val localContext = LocalPlatformContext.current
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             OrderDetailsEffect.NavigateBack -> {
@@ -62,13 +69,13 @@ fun OrderDetailsScreen(
                     startLng = effect.startLongitude,
                     endLat = effect.endLatitude,
                     endLng = effect.endLongitude,
+                    context = localContext
                 )
             }
         }
     }
 
     LaunchedEffect(key1 = orderId) {
-        println("flzdfjlskfdj OrderDetailsScreen LaunchedEffect: $orderId")
         viewModel.loadOrderDetails(orderId)
     }
 
@@ -90,11 +97,13 @@ private fun OrderDetailsContent(
     Scaffold(
         topBar = {
             AppBar(
-                title =
-                    if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Success)
-                        stringResource(Res.string.order_title, state.orderUiState.orderNumber)
-                    else
-                        stringResource(Res.string.order_title, ""),
+                title = if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Success)
+                    stringResource(
+                        Res.string.order_title,
+                        state.orderUiState.orderId.toString().takeLast(8)
+                    )
+                else
+                    stringResource(Res.string.order_title, ""),
                 titleColor = Theme.colorScheme.shadePrimary,
                 contentPadding = PaddingValues(
                     horizontal = Theme.spacing._16,
@@ -125,7 +134,6 @@ private fun OrderDetailsContent(
             transitionSpec = { fadeTransitionSpec() },
             modifier = Modifier.fillMaxSize()
         ) { orderDetailsState ->
-            println("flzdfjlskfdj OrderDetailsScreen: $orderDetailsState")
             when (orderDetailsState) {
                 OrderDetailsUiState.OrderDetailsScreenState.Loading -> LoadingDots(Modifier.fillMaxSize())
                 OrderDetailsUiState.OrderDetailsScreenState.Error -> NoInternetContent(
@@ -134,14 +142,32 @@ private fun OrderDetailsContent(
                 )
 
                 OrderDetailsUiState.OrderDetailsScreenState.Success -> {
-                    LazyColumn(
+                    val lazyVerticalState = rememberLazyGridState()
+                    val isFirstItemVisibleInSecondColumn = derivedStateOf {
+                        lazyVerticalState.layoutInfo.visibleItemsInfo.any {
+                            it.index == 1 && it.column == 1
+                        }
+                    }
+                    val isFirstItemVisibleInThirdColumn = derivedStateOf {
+                        lazyVerticalState.layoutInfo.visibleItemsInfo.any {
+                            it.index == 2 && it.column == 2
+                        }
+                    }
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 305.dp),
+                        state = lazyVerticalState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             horizontal = Theme.spacing._16,
                             vertical = Theme.spacing._12
-                        )
+                        ),
+                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        item {
+                        item(
+                            key = "order_summary_section",
+                            contentType = { "order_summary_section" },
+                        ) {
                             OrderSummary(
                                 orderDate = state.orderUiState.orderDate,
                                 productsInOrder = state.orderUiState.productInOrder,
@@ -150,22 +176,36 @@ private fun OrderDetailsContent(
                                 totalAmount = state.orderUiState.totalAmount,
                             )
                         }
-                        item {
+                        item(
+                            key = "delivery_address_section",
+                            contentType = { "delivery_address_section" },
+                        ) {
+                            val topPaddingValue =
+                                if (isFirstItemVisibleInSecondColumn.value) 0.dp
+                                else Theme.spacing._24
+
                             DeliveryAddressSection(
                                 address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
+                                isUserOwnerToEnableAddressClick = state.orderUiState.isUserOwner,
                                 onClick = {
                                     interactionListener.onAddressDeliveryClicked(
                                         address = state.orderUiState.addressDeliveryUiState
                                     )
                                 },
-                                modifier = Modifier.padding(top = Theme.spacing._24)
+                                modifier = Modifier.padding(top = topPaddingValue),
                             )
                         }
-                        item {
+                        item(
+                            key = "customer_information_section",
+                            contentType = { "customer_information_section" },
+                        ) {
+                            val topPaddingValue =
+                                if (isFirstItemVisibleInThirdColumn.value) 0.dp
+                                else Theme.spacing._12
                             CustomerInformationSection(
                                 userName = state.orderUiState.customerName,
                                 userPhoneNumber = state.orderUiState.customerPhone,
-                                modifier = Modifier.padding(top = Theme.spacing._12)
+                                modifier = Modifier.padding(top = topPaddingValue)
                             )
                         }
                     }
@@ -177,7 +217,6 @@ private fun OrderDetailsContent(
 
 @Preview(locale = "en")
 @Preview(locale = "ar")
-
 @Composable
 private fun OrderDetailsScreenPreview() {
     MenaTheme {

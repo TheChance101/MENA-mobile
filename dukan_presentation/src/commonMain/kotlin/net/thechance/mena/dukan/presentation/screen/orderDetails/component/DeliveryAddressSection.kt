@@ -33,6 +33,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun DeliveryAddressSection(
     address: String,
+    isUserOwnerToEnableAddressClick: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -51,7 +52,7 @@ fun DeliveryAddressSection(
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(Theme.spacing._12))
                 .background(Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onClick)
+                .clickable(onClick = onClick, enabled = isUserOwnerToEnableAddressClick)
                 .padding(Theme.spacing._8),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -64,12 +65,14 @@ fun DeliveryAddressSection(
                     .padding(start = Theme.spacing._8)
                     .weight(1f)
             )
-            Icon(
-                modifier = Modifier.padding(start = Theme.spacing._8),
-                painter = painterResource(Res.drawable.ic_arrow_right),
-                contentDescription = stringResource(Res.string.arrow_right_icon),
-                tint = Theme.colorScheme.primary.primary
-            )
+            if (isUserOwnerToEnableAddressClick) {
+                Icon(
+                    modifier = Modifier.padding(start = Theme.spacing._8),
+                    painter = painterResource(Res.drawable.ic_arrow_right),
+                    contentDescription = stringResource(Res.string.arrow_right_icon),
+                    tint = Theme.colorScheme.primary.primary
+                )
+            }
         }
     }
 }
@@ -97,7 +100,8 @@ private fun DeliveryAddressSectionPreview() {
     MenaTheme {
         DeliveryAddressSection(
             address = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
-            onClick = {}
+            isUserOwnerToEnableAddressClick = true,
+            onClick = {},
         )
     }
 }

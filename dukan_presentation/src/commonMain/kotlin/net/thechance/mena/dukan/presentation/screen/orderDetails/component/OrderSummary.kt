@@ -152,7 +152,8 @@ private fun OrderDateTime(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_clock_time),
