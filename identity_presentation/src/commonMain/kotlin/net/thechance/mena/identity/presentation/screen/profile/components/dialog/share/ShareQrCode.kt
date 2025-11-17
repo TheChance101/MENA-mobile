@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -143,13 +146,15 @@ private fun ScaffoldScope.ShareQrCodeContent(
         hasDismissButton = true,
         isVisible = isVisible,
         dialogCornerShape = SquircleShape(Theme.radius.xl),
-        modifier = modifier,
+        modifier = modifier.safeDrawingPadding(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(top = 12.dp)
                 .align(Alignment.Center)
+                .verticalScroll(rememberScrollState())
+
         ) {
             Text(
                 text = stringResource(Res.string.share_profile_title),
