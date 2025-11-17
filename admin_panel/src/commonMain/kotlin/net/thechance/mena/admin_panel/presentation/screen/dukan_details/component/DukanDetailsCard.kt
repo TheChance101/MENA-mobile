@@ -143,9 +143,8 @@ private fun DukanLocationMap(
                         .clip(RoundedCornerShape(Theme.radius.md)),
                     latitude = latitude,
                     longitude = longitude,
-                    markerWidth = 60,
-                    markerHeight = 80,
-                    initialZoom = 100
+                    markerWidth = 45,
+                    markerHeight = 58
                 )
             } else {
                 Image(
