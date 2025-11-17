@@ -4,8 +4,6 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.delete_address_description
 import mena.identity_presentation.generated.resources.delete_address_title
 import mena.identity_presentation.generated.resources.error
-import net.thechance.mena.identity.domain.entity.Address
-import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -30,11 +28,6 @@ data class DeleteDialogUIState(
     val description: StringResource = Res.string.delete_address_description,
     val addressId: Uuid? = null,
     val isVisible: Boolean = false
-)
-
-data class CoordinatesUiState(
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
 )
 
 data class SnackBarUiState(

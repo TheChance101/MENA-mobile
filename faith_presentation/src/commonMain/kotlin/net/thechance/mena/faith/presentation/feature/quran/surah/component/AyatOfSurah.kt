@@ -30,7 +30,6 @@ fun AyatOfSurah(
     state: SurahUiState,
     modifier: Modifier = Modifier
 ) {
-
     val lazyListState = rememberLazyListState()
     val ayahChunks = remember(state.ayatOfSurah) { state.ayatOfSurah.chunked(AYAT_PER_PAGE) }
     val preRenderedChunks = rememberPreRenderedChunks(ayahChunks)
@@ -174,8 +173,8 @@ private fun Preview() {
                 override fun onShareClick(ayahContent: String) {}
                 override fun highlightAyah(ayahNumber: Int) {}
                 override fun updateContinueTilawah(ayahNumber: Int) {}
+                override fun playSurah(surahNumber: Int) {}
                 override fun onConfigrationChange() {}
-                override fun playSurah(surahId: Int) {}
                 override fun onInitialAyahScrolled() {}
             }
 

@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import androidx.compose.animation.AnimatedVisibility
 import app.cash.paging.compose.itemKey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
-import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -65,7 +63,7 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId, isFromHome = true))
+                navController.navigate(Route.ReelDetails(effect.trendId, source = Route.ReelSource.Home.name))
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)

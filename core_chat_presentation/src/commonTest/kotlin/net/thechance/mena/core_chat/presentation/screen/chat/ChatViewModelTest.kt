@@ -212,13 +212,13 @@ class ChatViewModelTest {
         runTest {
             everySuspend { messageRepository.deleteMessageById(any()) } returns Unit
             advanceUntilIdle()
-            val msgUi = messages.first().copy(status = MessageStatus.FAILED).toUi()
-            viewModel.onFailedMessageClicked(msgUi)
+            val msg = messages.first().copy(status = MessageStatus.FAILED)
+            viewModel.onFailedMessageClicked(msg.toUi())
 
             viewModel.onDeleteFailedMessageClicked()
             advanceUntilIdle()
 
-            assertThat(viewModel.state.value.chatListItems.currentUiMessages()).doesNotContain(msgUi)
+            assertThat(viewModel.state.value.chatListItems.fromChatItems()).doesNotContain(msg)
         }
 
     @Test
@@ -233,7 +233,7 @@ class ChatViewModelTest {
             viewModel.onResendMessageClicked()
             advanceUntilIdle()
 
-            val finalMessages = viewModel.state.value.chatListItems.currentUiMessages()
+            val finalMessages = viewModel.state.value.chatListItems.fromChatItems()
             assertThat(finalMessages.isEmpty()).isTrue()
             verifySuspend { messageRepository.sendMessage(any()) }
         }
@@ -241,7 +241,16 @@ class ChatViewModelTest {
     @Test
     fun `onMessageImageClicked should update state to show image pager with correct message and index`() =
         runTest {
-            val messages = messages.map(Message::toUi)
+            val imageMessage = Message(
+                id = message1Id,
+                senderId = chatRequesterId,
+                chatId = chatId,
+                sendAt = LocalDateTime.now(),
+                status = MessageStatus.SENT,
+                content = MessageContent.Image(ImageData.ImageUrl(imageUrl)),
+                isMine = true
+            ).toUi() as ImageMessageUiState
+            val messages = listOf(imageMessage, imageMessage, imageMessage)
             val index = 2
             advanceUntilIdle()
 
@@ -265,26 +274,27 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() = runTest {
-        everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
-        advanceUntilIdle()
-
-        viewModel.effect.test {
-            viewModel.onDownloadImageClicked(imageUrl)
+    fun `onDownloadImageClicked should emit error snackBar effect when downloadImageToGallery fails and return false`() =
+        runTest {
+            everySuspend { imageDownloaderService.downloadImageToGallery(imageUrl) } returns false
             advanceUntilIdle()
 
-            assertEquals(
-                ChatScreenEffect.ShowSnackBar(
-                    SnackBarData(
-                        title = UiText.StringRes(Res.string.error),
-                        message = UiText.StringRes(Res.string.error_failed_to_download_image),
-                        isError = true
-                    )
-                ), awaitItem()
-            )
-            cancelAndIgnoreRemainingEvents()
+            viewModel.effect.test {
+                viewModel.onDownloadImageClicked(imageUrl)
+                advanceUntilIdle()
+
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.error_failed_to_download_image),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
     fun `onDownloadImageClicked should emit success snackBar effect on success`() = runTest {
@@ -406,27 +416,29 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onMessageLongClicked should open reaction dialog and set messageToReactTo value when called`() = runTest {
-        val message = messages.first().toUi()
-        advanceUntilIdle()
+    fun `onMessageLongClicked should open reaction dialog and set messageToReactTo value when called`() =
+        runTest {
+            val message = messages.first().toUi()
+            advanceUntilIdle()
 
-        viewModel.onMessageLongClicked(message)
-        advanceUntilIdle()
+            viewModel.onMessageLongClicked(message)
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value.isReactionDialogVisible).isTrue()
-        assertThat(viewModel.state.value.messageToReactTo).isEqualTo(message)
-    }
+            assertThat(viewModel.state.value.isReactionDialogVisible).isTrue()
+            assertThat(viewModel.state.value.messageToReactTo).isEqualTo(message)
+        }
 
     @Test
-    fun `onReactionDialogDismissed should close reaction dialog and set messageToReactTo to null when called`() = runTest {
-        advanceUntilIdle()
+    fun `onReactionDialogDismissed should close reaction dialog and set messageToReactTo to null when called`() =
+        runTest {
+            advanceUntilIdle()
 
-        viewModel.onReactionDialogDismissed()
-        advanceUntilIdle()
+            viewModel.onReactionDialogDismissed()
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value.isReactionDialogVisible).isFalse()
-        assertThat(viewModel.state.value.messageToReactTo).isEqualTo(null)
-    }
+            assertThat(viewModel.state.value.isReactionDialogVisible).isFalse()
+            assertThat(viewModel.state.value.messageToReactTo).isEqualTo(null)
+        }
 
     @Test
     fun `onMessageClicked should toggle message info when called`() = runTest {
@@ -436,7 +448,11 @@ class ChatViewModelTest {
         viewModel.onMessageClicked(message1Id)
         advanceUntilIdle()
 
-        assertThat(viewModel.state.value.chatListItems).isEqualTo(oldChatListItems.toggleMessageInfo(message1Id))
+        assertThat(viewModel.state.value.chatListItems).isEqualTo(
+            oldChatListItems.toggleMessageInfo(
+                message1Id
+            )
+        )
     }
 
     @Test
@@ -586,31 +602,32 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onVoiceClicked should show error snackbar when recording permission is denied`() = runTest {
-        every { audioRecordRepository.isRecording() } returns false
-        everySuspend { permissionsController.providePermission(Permission.RECORD_AUDIO) } throws DeniedException(
-            Permission.RECORD_AUDIO
-        )
-        advanceUntilIdle()
-
-        viewModel.effect.test {
-            viewModel.onRecordClicked()
+    fun `onVoiceClicked should show error snackbar when recording permission is denied`() =
+        runTest {
+            every { audioRecordRepository.isRecording() } returns false
+            everySuspend { permissionsController.providePermission(Permission.RECORD_AUDIO) } throws DeniedException(
+                Permission.RECORD_AUDIO
+            )
             advanceUntilIdle()
 
-            assertEquals(
-                ChatScreenEffect.ShowSnackBar(
-                    SnackBarData(
-                        title = UiText.StringRes(Res.string.error),
-                        message = UiText.StringRes(Res.string.permission_denied_title),
-                        isError = true
-                    )
-                ), awaitItem()
-            )
-            cancelAndIgnoreRemainingEvents()
-        }
+            viewModel.effect.test {
+                viewModel.onRecordClicked()
+                advanceUntilIdle()
 
-        assertThat(viewModel.state.value.isRecordingVoice).isFalse()
-    }
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.permission_denied_title),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+
+            assertThat(viewModel.state.value.isRecordingVoice).isFalse()
+        }
 
     @Test
     fun `onVoiceClicked should show error snackbar when recording start fails`() = runTest {
@@ -639,17 +656,20 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onVoiceClicked should not update recording state when permission request fails`() = runTest {
-        every { audioRecordRepository.isRecording() } returns false
-        everySuspend { permissionsController.providePermission(Permission.RECORD_AUDIO) } throws Exception("Permission error")
-        advanceUntilIdle()
+    fun `onVoiceClicked should not update recording state when permission request fails`() =
+        runTest {
+            every { audioRecordRepository.isRecording() } returns false
+            everySuspend { permissionsController.providePermission(Permission.RECORD_AUDIO) } throws Exception(
+                "Permission error"
+            )
+            advanceUntilIdle()
 
-        viewModel.onRecordClicked()
-        advanceUntilIdle()
+            viewModel.onRecordClicked()
+            advanceUntilIdle()
 
-        verify(exactly(0)) { audioRecordRepository.startRecording() }
-        assertThat(viewModel.state.value.isRecordingVoice).isFalse()
-    }
+            verify(exactly(0)) { audioRecordRepository.startRecording() }
+            assertThat(viewModel.state.value.isRecordingVoice).isFalse()
+        }
 
     @Test
     fun `onCancelVoiceRecordClicked should stop recording and update state`() = runTest {
@@ -776,39 +796,42 @@ class ChatViewModelTest {
 
         verify { audioPlayer.play("filePath") }
         val updatedItem =
-            viewModel.state.value.chatListItems.first() as ChatListItem.VoiceMessage
+            viewModel.state.value.chatListItems.first() as AudioMessageUiState
         assertThat(updatedItem.isPlaying).isFalse()
     }
 
     @Test
-    fun `onMessageVoiceClicked should stop other playing messages and play the new one`() = runTest {
-        val voiceMessage1 = voiceMessage(voiceMessageId)
-        val voiceMessage2 = voiceMessage(Uuid.random())
-        everySuspend { messageRepository.loadMessages(any(), any(), any()) } returns PagedData(
-            listOf(voiceMessage1, voiceMessage2), 1, true
-        )
-        setAudioPlayerPlaybackMocks()
+    fun `onMessageVoiceClicked should stop other playing messages and play the new one`() =
+        runTest {
+            val voiceMessage1 = voiceMessage(voiceMessageId)
+            val voiceMessage2 = voiceMessage(Uuid.random())
+            everySuspend { messageRepository.loadMessages(any(), any(), any()) } returns PagedData(
+                listOf(voiceMessage1, voiceMessage2), 1, true
+            )
+            setAudioPlayerPlaybackMocks()
 
-        val viewModel = createViewModel()
-        viewModel.onMessagesScrolled()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            viewModel.onMessagesScrolled()
+            advanceUntilIdle()
 
-        viewModel.onMessageVoiceClicked(voiceMessage1.id)
-        advanceUntilIdle()
-        viewModel.onMessageVoiceClicked(voiceMessage2.id)
-        advanceUntilIdle()
+            viewModel.onMessageVoiceClicked(voiceMessage1.id)
+            advanceUntilIdle()
+            viewModel.onMessageVoiceClicked(voiceMessage2.id)
+            advanceUntilIdle()
 
-        val items = viewModel.state.value.chatListItems
-        val vm1 = items.find { it is ChatListItem.VoiceMessage && it.data.id == voiceMessage1.id } as ChatListItem.VoiceMessage?
-        val vm2 = items.find { it is ChatListItem.VoiceMessage && it.data.id == voiceMessage2.id } as ChatListItem.VoiceMessage?
-        assertThat(vm1?.isPlaying ?: true).isFalse()
-        assertThat(vm2?.isPlaying ?: true).isFalse()
-    }
+            val items = viewModel.state.value.chatListItems
+            val vm1 =
+                items.find { it is AudioMessageUiState && it.messageDetails.id == voiceMessage1.id } as AudioMessageUiState?
+            val vm2 =
+                items.find { it is AudioMessageUiState && it.messageDetails.id == voiceMessage2.id } as AudioMessageUiState?
+            assertThat(vm1?.isPlaying != false).isFalse()
+            assertThat(vm2?.isPlaying != false).isFalse()
+        }
 
     @Test
     fun `onReactionSelected should add reaction if user has not reacted`() = runTest {
         val reaction = "👍"
-        val message = messages.first().copy(reactions = emptyList())
+        val message = messages.first().copy(id = message1Id, reactions = emptyList())
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
         } returns PagedData(listOf(message), 0, true)
@@ -825,7 +848,8 @@ class ChatViewModelTest {
     @Test
     fun `onReactionSelected should remove reaction if user already reacted`() = runTest {
         val reaction = "👍"
-        val message = messages.first().copy(reactions = listOf(MessageReaction(reaction, chatRequesterId, message1Id)))
+        val message = messages.first()
+            .copy(reactions = listOf(MessageReaction(reaction, chatRequesterId, message1Id)))
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
         } returns PagedData(listOf(message), 0, true)
@@ -840,42 +864,45 @@ class ChatViewModelTest {
     }
 
     @Test
-    fun `onCollectAddReaction should add reaction to message when reaction is received`() = runTest {
-        val reaction = "👍"
-        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
-        val message = messages.first().copy(reactions = emptyList())
+    fun `onCollectAddReaction should add reaction to message when reaction is received`() =
+        runTest {
+            val reaction = "👍"
+            val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+            val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+            val message = messages.first().copy(id = message1Id, reactions = emptyList())
 
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(listOf(message), 0, true)
-        every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
+            everySuspend {
+                messageRepository.loadMessages(chatId, any(), any())
+            } returns PagedData(listOf(message), 1, true)
+            every { messageRepository.observeMessageReactions() } returns flowOf(messageReaction)
 
-        val viewModel = createViewModel()
-        viewModel.onMessagesScrolled()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            viewModel.onMessagesScrolled()
+            advanceUntilIdle()
 
-        val chatListItems = viewModel.state.value.chatListItems
-        val updatedMessage = chatListItems.find { item ->
-            when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+            val chatListItems = viewModel.state.value.chatListItems
+            val updatedMessage = chatListItems.find { item ->
+                when (item) {
+                    is TextMessageUiState -> item.messageDetails.id == message1Id
+                    is ImageMessageUiState -> item.messageDetails.id == message1Id
+                    is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
+                    else -> false
+                }
             }
-        }
 
-        val actualMessage = when (updatedMessage) {
-            is ChatListItem.TextMessage -> updatedMessage.data
-            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage.data
-            else -> null
-        }
+            val actualMessage = when (updatedMessage) {
+                is TextMessageUiState -> updatedMessage.messageDetails
+                is ImageMessageUiState -> updatedMessage.messageDetails
+                is AudioMessageUiState -> updatedMessage.messageDetails
+                is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
+                else -> null
+            }
 
-        assertThat(actualMessage?.reactions?.size).isEqualTo(1)
-        assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reaction)
-        assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(otherUserId)
-    }
+            assertThat(actualMessage?.reactions?.size).isEqualTo(1)
+            assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reaction)
+            assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(otherUserId)
+        }
 
     @Test
     fun `onCollectAddReaction should replace existing reaction from same user`() = runTest {
@@ -884,7 +911,7 @@ class ChatViewModelTest {
         val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
         val existingReaction = MessageReaction(oldReaction, otherUserId, message1Id)
         val newMessageReaction = MessageReaction(newReaction, otherUserId, message1Id)
-        val message = messages.first().copy(reactions = listOf(existingReaction))
+        val message = messages.first().copy(id = message1Id, reactions = listOf(existingReaction))
 
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
@@ -898,17 +925,17 @@ class ChatViewModelTest {
         val chatListItems = viewModel.state.value.chatListItems
         val updatedMessage = chatListItems.find { item ->
             when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+                is TextMessageUiState -> item.messageDetails.id == message1Id
+                is ImageMessageUiState -> item.messageDetails.id == message1Id
+                is AudioMessageUiState -> item.messageDetails.id == message1Id
+                else -> false
             }
         }
 
         val actualMessage = when (updatedMessage) {
-            is ChatListItem.TextMessage -> updatedMessage.data
-            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage.data
+            is TextMessageUiState -> updatedMessage.messageDetails
+            is ImageMessageUiState -> updatedMessage.messageDetails
+            is AudioMessageUiState -> updatedMessage.messageDetails
             else -> null
         }
 
@@ -942,96 +969,109 @@ class ChatViewModelTest {
         advanceUntilIdle()
 
         val chatListItems = viewModel.state.value.chatListItems
-        val updatedMessages = chatListItems.currentUiMessages()
+        val updatedMessages = chatListItems.fromChatItems()
 
         assertThat(updatedMessages).isNotEmpty()
+        val imageMessages = updatedMessages.map { it.toUi() as ImageMessageUiState }
 
-        viewModel.onMessageImageClicked(updatedMessages, 0)
+        viewModel.onMessageImageClicked(imageMessages, 0)
         advanceUntilIdle()
 
         val selectedImageMessages = viewModel.state.value.selectedImageMessages
         assertThat(selectedImageMessages).isNotEmpty()
-        assertThat(selectedImageMessages.first().reactions.size).isEqualTo(1)
-        assertThat(selectedImageMessages.first().reactions.first().emoji).isEqualTo(reaction)
-        assertThat(selectedImageMessages.first().reactions.first().userId).isEqualTo(otherUserId)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.size).isEqualTo(1)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().emoji)
+            .isEqualTo(reaction)
+        assertThat(selectedImageMessages.first().messageDetails.reactions.first().userId)
+            .isEqualTo(otherUserId)
     }
 
     @Test
-    fun `onCollectRemoveReaction should remove reaction from message when reaction is removed`() = runTest {
-        val reaction = "👍"
-        val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-        val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
-        val message = messages.first().copy(reactions = listOf(messageReaction))
+    fun `onCollectRemoveReaction should remove reaction from message when reaction is removed`() =
+        runTest {
+            val reaction = "👍"
+            val otherUserId = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+            val messageReaction = MessageReaction(reaction, otherUserId, message1Id)
+            val message =
+                messages.first().copy(id = message1Id, reactions = listOf(messageReaction))
 
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(listOf(message), 0, true)
-        every { messageRepository.observeRemovedMessageReactions() } returns flowOf(messageReaction)
+            everySuspend {
+                messageRepository.loadMessages(chatId, any(), any())
+            } returns PagedData(listOf(message), 0, true)
+            every { messageRepository.observeRemovedMessageReactions() } returns flowOf(
+                messageReaction
+            )
 
-        val viewModel = createViewModel()
-        viewModel.onMessagesScrolled()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            viewModel.onMessagesScrolled()
+            advanceUntilIdle()
 
-        val chatListItems = viewModel.state.value.chatListItems
-        val updatedMessage = chatListItems.find { item ->
-            when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+            val chatListItems = viewModel.state.value.chatListItems
+            val updatedMessage = chatListItems.find { item ->
+                when (item) {
+                    is TextMessageUiState -> item.messageDetails.id == message1Id
+                    is ImageMessageUiState -> item.messageDetails.id == message1Id
+                    is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
+                    else -> false
+                }
             }
-        }
 
-        val actualMessage = when (updatedMessage) {
-            is ChatListItem.TextMessage -> updatedMessage.data
-            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage.data
-            else -> null
-        }
+            val actualMessage = when (updatedMessage) {
+                is TextMessageUiState -> updatedMessage.messageDetails
+                is ImageMessageUiState -> updatedMessage.messageDetails
+                is AudioMessageUiState -> updatedMessage.messageDetails
+                is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
+                else -> null
+            }
 
-        assertThat(actualMessage?.reactions?.size).isEqualTo(0)
-    }
+            assertThat(actualMessage?.reactions?.size).isEqualTo(0)
+        }
 
     @Test
-    fun `onCollectRemoveReaction should only remove matching reaction by user and emoji`() = runTest {
-        val reactionToRemove = "👍"
-        val reactionToKeep = "❤️"
-        val userId1 = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
-        val userId2 = Uuid.parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
-        val reaction1 = MessageReaction(reactionToRemove, userId1, message1Id)
-        val reaction2 = MessageReaction(reactionToKeep, userId2, message1Id)
-        val message = messages.first().copy(reactions = listOf(reaction1, reaction2))
+    fun `onCollectRemoveReaction should only remove matching reaction by user and emoji`() =
+        runTest {
+            val reactionToRemove = "👍"
+            val reactionToKeep = "❤️"
+            val userId1 = Uuid.parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
+            val userId2 = Uuid.parse("cccccccc-cccc-cccc-cccc-cccccccccccc")
+            val reaction1 = MessageReaction(reactionToRemove, userId1, message1Id)
+            val reaction2 = MessageReaction(reactionToKeep, userId2, message1Id)
+            val message =
+                messages.first().copy(id = message1Id, reactions = listOf(reaction1, reaction2))
 
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(listOf(message), 0, true)
-        every { messageRepository.observeRemovedMessageReactions() } returns flowOf(reaction1)
+            everySuspend {
+                messageRepository.loadMessages(chatId, any(), any())
+            } returns PagedData(listOf(message), 0, true)
+            every { messageRepository.observeRemovedMessageReactions() } returns flowOf(reaction1)
 
-        val viewModel = createViewModel()
-        viewModel.onMessagesScrolled()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
+            viewModel.onMessagesScrolled()
+            advanceUntilIdle()
 
-        val chatListItems = viewModel.state.value.chatListItems
-        val updatedMessage = chatListItems.find { item ->
-            when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+            val chatListItems = viewModel.state.value.chatListItems
+            val updatedMessage = chatListItems.find { item ->
+                when (item) {
+                    is TextMessageUiState -> item.messageDetails.id == message1Id
+                    is ImageMessageUiState -> item.messageDetails.id == message1Id
+                    is AudioMessageUiState -> item.messageDetails.id == message1Id
+                    is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
+                    else -> false
+                }
             }
-        }
 
-        val actualMessage = when (updatedMessage) {
-            is ChatListItem.TextMessage -> updatedMessage.data
-            is ChatListItem.ImageMessages -> updatedMessage.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage.data
-            else -> null
-        }
+            val actualMessage = when (updatedMessage) {
+                is TextMessageUiState -> updatedMessage.messageDetails
+                is ImageMessageUiState -> updatedMessage.messageDetails
+                is AudioMessageUiState -> updatedMessage.messageDetails
+                is ImagesGroupChatItem -> updatedMessage.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
+                else -> null
+            }
 
-        assertThat(actualMessage?.reactions?.size).isEqualTo(1)
-        assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reactionToKeep)
-        assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(userId2)
-    }
+            assertThat(actualMessage?.reactions?.size).isEqualTo(1)
+            assertThat(actualMessage?.reactions?.first()?.emoji).isEqualTo(reactionToKeep)
+            assertThat(actualMessage?.reactions?.first()?.userId).isEqualTo(userId2)
+        }
 
     @Test
     fun `onCollectAddReaction should not update non-matching messages`() = runTest {
@@ -1054,33 +1094,39 @@ class ChatViewModelTest {
 
         val updatedMessage1 = chatListItems.find { item ->
             when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+                is TextMessageUiState -> item.messageDetails.id == message1Id
+                is ImageMessageUiState -> item.messageDetails.id == message1Id
+                is AudioMessageUiState -> item.messageDetails.id == message1Id
+                is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
+                else -> false
             }
         }
 
+
         val updatedMessage2 = chatListItems.find { item ->
             when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message2Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message2Id
-                is ChatListItem.DateSeparator -> false
+                is TextMessageUiState -> item.messageDetails.id == message2Id
+                is ImageMessageUiState -> item.messageDetails.id == message2Id
+                is AudioMessageUiState -> item.messageDetails.id == message2Id
+                is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message2Id }
+                else -> false
             }
         }
 
         val actualMessage1 = when (updatedMessage1) {
-            is ChatListItem.TextMessage -> updatedMessage1.data
-            is ChatListItem.ImageMessages -> updatedMessage1.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage1.data
+            is TextMessageUiState -> updatedMessage1.messageDetails
+            is ImageMessageUiState -> updatedMessage1.messageDetails
+            is AudioMessageUiState -> updatedMessage1.messageDetails
+            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
             else -> null
         }
 
         val actualMessage2 = when (updatedMessage2) {
-            is ChatListItem.TextMessage -> updatedMessage2.data
-            is ChatListItem.ImageMessages -> updatedMessage2.data.firstOrNull { it.id == message2Id }
-            is ChatListItem.VoiceMessage -> updatedMessage2.data
+            is TextMessageUiState -> updatedMessage2.messageDetails
+            is ImageMessageUiState -> updatedMessage2.messageDetails
+            is AudioMessageUiState -> updatedMessage2.messageDetails
+            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
+
             else -> null
         }
 
@@ -1110,33 +1156,39 @@ class ChatViewModelTest {
 
         val updatedMessage1 = chatListItems.find { item ->
             when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message1Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message1Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message1Id
-                is ChatListItem.DateSeparator -> false
+                is TextMessageUiState -> item.messageDetails.id == message1Id
+                is ImageMessageUiState -> item.messageDetails.id == message1Id
+                is AudioMessageUiState -> item.messageDetails.id == message1Id
+                is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message1Id }
+                else -> false
             }
         }
 
         val updatedMessage2 = chatListItems.find { item ->
             when (item) {
-                is ChatListItem.TextMessage -> item.data.id == message2Id
-                is ChatListItem.ImageMessages -> item.data.any { it.id == message2Id }
-                is ChatListItem.VoiceMessage -> item.data.id == message2Id
-                is ChatListItem.DateSeparator -> false
+                is TextMessageUiState -> item.messageDetails.id == message2Id
+                is ImageMessageUiState -> item.messageDetails.id == message2Id
+                is AudioMessageUiState -> item.messageDetails.id == message2Id
+                is ImagesGroupChatItem -> item.imagesUiState.any { it.messageDetails.id == message2Id }
+                else -> false
             }
         }
 
         val actualMessage1 = when (updatedMessage1) {
-            is ChatListItem.TextMessage -> updatedMessage1.data
-            is ChatListItem.ImageMessages -> updatedMessage1.data.firstOrNull { it.id == message1Id }
-            is ChatListItem.VoiceMessage -> updatedMessage1.data
+            is TextMessageUiState -> updatedMessage1.messageDetails
+            is ImageMessageUiState -> updatedMessage1.messageDetails
+            is AudioMessageUiState -> updatedMessage1.messageDetails
+            is ImagesGroupChatItem -> updatedMessage1.imagesUiState.firstOrNull { it.messageDetails.id == message1Id }?.messageDetails
+
             else -> null
         }
 
         val actualMessage2 = when (updatedMessage2) {
-            is ChatListItem.TextMessage -> updatedMessage2.data
-            is ChatListItem.ImageMessages -> updatedMessage2.data.firstOrNull { it.id == message2Id }
-            is ChatListItem.VoiceMessage -> updatedMessage2.data
+            is TextMessageUiState -> updatedMessage2.messageDetails
+            is ImageMessageUiState -> updatedMessage2.messageDetails
+            is AudioMessageUiState -> updatedMessage2.messageDetails
+            is ImagesGroupChatItem -> updatedMessage2.imagesUiState.firstOrNull { it.messageDetails.id == message2Id }?.messageDetails
+
             else -> null
         }
 
@@ -1144,18 +1196,35 @@ class ChatViewModelTest {
         assertThat(actualMessage2?.reactions?.size).isEqualTo(1)
     }
 
-    private fun List<ChatListItem>.currentUiMessages(): List<net.thechance.mena.core_chat.presentation.screen.chat.Message> =
-        filterIsInstance<ChatListItem.ImageMessages>()
-            .flatMap { it.data }
-            .plus(
-                filterIsInstance<ChatListItem.TextMessage>()
-                    .map { it.data }
-            )
-            .plus(
-                filterIsInstance<ChatListItem.VoiceMessage>()
-                    .map { it.data }
-            )
-            .sortedByDescending { it.sendTime }
+
+    /**
+     * Reverse everything applied by:
+     *
+     * List<Message>.toChatItems()
+     *
+     * Steps reversed:
+     *  1. Remove DateSeparator items
+     *  2. Ungroup ImagesGroupChatItem into ImageMessageUiState items
+     *  3. Convert MessageUiState → Message
+     */
+    fun List<ChatListItem>.fromChatItems(): List<Message> {
+        val flattened = this.flatMap { item ->
+            when (item) {
+                is DateSeparator -> emptyList()
+                is ImagesGroupChatItem -> item.imagesUiState
+                else -> listOf(item)
+            }
+        }
+
+        val messages = flattened.mapNotNull { item ->
+            when (item) {
+                is MessageUiState -> item.toEntity()
+                else -> null
+            }
+        }
+
+        return messages
+    }
 
     private fun createViewModel(): ChatViewModel {
         return ChatViewModel(
@@ -1240,6 +1309,5 @@ class ChatViewModelTest {
             MessageContent.Audio(AudioData.AudioUrl(audioUrl)),
             true
         )
-
     }
 }

@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.resources.Res
@@ -65,7 +65,7 @@ internal fun ProductsList(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                LoadingIndicator()
+                AdminPanelContentLoading()
             }
         }
 
@@ -88,7 +88,7 @@ internal fun ProductsList(
                 }
                 if (isProductLoading) {
                     item {
-                        LoadingIndicator()
+                        AdminPanelContentLoading()
                     }
                 }
             }

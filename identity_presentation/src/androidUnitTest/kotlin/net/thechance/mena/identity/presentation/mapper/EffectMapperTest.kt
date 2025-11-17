@@ -2,8 +2,8 @@ package net.thechance.mena.identity.presentation.mapper
 
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenUIEffect
 import org.junit.Test
@@ -23,8 +23,7 @@ class EffectMapperTest {
             addressDetails = "Test Street",
             coordinates = CoordinatesUiState(33.3152, 44.3661)
         )
-        var capturedAddress: AddressUIState? = null
-        val onSuccess: (AddressUIState) -> Unit = { capturedAddress = it }
+        val onSuccess: (AddressUIState) -> Unit = { }
 
         val result = createNavigateToMapEffect(addressUIState, onSuccess)
 
@@ -33,8 +32,7 @@ class EffectMapperTest {
 
     @Test
     fun `createNavigateToMapEffect should create NavigateToMap effect with null addressModel`() {
-        var capturedAddress: AddressUIState? = null
-        val onSuccess: (AddressUIState) -> Unit = { capturedAddress = it }
+        val onSuccess: (AddressUIState) -> Unit = { }
 
         val result = createNavigateToMapEffect(null, onSuccess)
 
