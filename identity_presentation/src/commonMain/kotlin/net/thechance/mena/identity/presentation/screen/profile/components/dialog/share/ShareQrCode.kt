@@ -57,7 +57,6 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIState
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.utils.createQrCodeByteArray
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -127,15 +126,17 @@ private fun ScaffoldScope.ShareQrCodeContent(
     val screenSize = LocalWindowInfo.current.containerSize
 
     state.snackBarTitle?.let { title ->
-        CopyToClipboardSnackBar(
+        SnackBar(
+            title = stringResource(title),
+            message = stringResource(state.snackBarMessage ?: Res.string.error_unknown),
+            leadingIcon = painterResource(Res.drawable.ic_check_circle),
+            modifier = modifier.fillMaxWidth().safeDrawingPadding()
+                .padding(horizontal = Theme.spacing._16),
+            onDismiss = listener::onDismissSnackBar,
             isVisible = state.showSnackBar && !state.isLoading,
-            title = title,
-            message = state.snackBarMessage ?: Res.string.error_unknown,
-            onDismissSnackBar = listener::onDismissSnackBar,
-            modifier = Modifier.safeDrawingPadding()
-        )
-    }
 
+            )
+    }
     BasicDialog(
         onDismiss = onDismissShareDialog,
         onCancelClick = onDismissShareDialog,
@@ -244,25 +245,6 @@ private fun ShareProfileButton(
             contentDescription = contentDescription
         )
     }
-}
-
-@Composable
-private fun CopyToClipboardSnackBar(
-    isVisible: Boolean,
-    title: StringResource,
-    message: StringResource,
-    modifier: Modifier = Modifier,
-    onDismissSnackBar: () -> Unit
-) {
-    SnackBar(
-        title = stringResource(title),
-        message = stringResource(message),
-        leadingIcon = painterResource(Res.drawable.ic_check_circle),
-        modifier = modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-            .padding(horizontal = Theme.spacing._16),
-        onDismiss = onDismissSnackBar,
-        isVisible = isVisible
-    )
 }
 
 @Preview(showBackground = true)
