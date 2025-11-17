@@ -79,12 +79,7 @@ class DukanDetailsViewModel(
 
     override fun onShelfSelected(shelfId: Uuid) {
         if (currentState.selectedShelfId != shelfId.toString()) {
-            updateState {
-                it.copy(
-                    products = listOf(),
-                    selectedShelfId = shelfId.toString()
-                )
-            }
+            updateState { it.copy(selectedShelfId = shelfId.toString()) }
             initializeProductsPaginator()
             loadNextProducts()
         }
