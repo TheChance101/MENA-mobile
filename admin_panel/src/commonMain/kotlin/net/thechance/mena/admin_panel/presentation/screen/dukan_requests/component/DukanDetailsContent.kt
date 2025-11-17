@@ -39,7 +39,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 
 @Composable
-fun DukanDetailsContent(
+fun PendingDukanDetailsContent(
     modifier: Modifier = Modifier,
     selectedDukanItem: DukanRequestsScreenState.DukanItem,
 ) {
