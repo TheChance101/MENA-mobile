@@ -123,6 +123,9 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
         item is AyahMessageUiState && item.messageDetails.id == messageId ->
             item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
 
+        item is OrderMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
         else -> item
     }
 }
@@ -166,13 +169,15 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
             messageDetails = messageDetails
         )
 
-        is Order -> OrderMessageUiState(
-            orderId = content.orderId,
-            numberOfItems = content.numberOfItems,
-            deliverTo = content.deliverTo,
-            totalPrice = content.totalPrice,
-            messageDetails = messageDetails
-        )
+        is Order -> {
+            OrderMessageUiState(
+                orderId = content.orderId,
+                numberOfItems = content.numberOfItems,
+                deliverTo = content.deliverTo,
+                totalPrice = content.totalPrice,
+                messageDetails = messageDetails
+            )
+        }
     }
 }
 

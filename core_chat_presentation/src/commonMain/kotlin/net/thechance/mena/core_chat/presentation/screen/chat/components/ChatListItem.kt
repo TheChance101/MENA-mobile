@@ -158,8 +158,8 @@ fun ChatListItem(
                 onViewOrderDetailsClick = { onViewOrderDetailsClick(item.orderId) },
                 modifier = modifier,
                 chatAvatarUrl = chatAvatarUrl,
-                onMessageClick = { onMessageClick },
-                onMessageLongClick = { onMessageLongClick },
+                onMessageClick = { onMessageClick(item.messageDetails.id) },
+                onMessageLongClick = { onMessageLongClick(item) },
                 onFailClick = onFailedMessageClick
             )
         }
