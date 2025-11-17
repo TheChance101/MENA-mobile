@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
 import kotlinx.coroutines.flow.MutableSharedFlow
+import org.jetbrains.compose.resources.StringResource
 
 data class ContactUsUIState(
     val isLoading: Boolean = true,
@@ -9,4 +10,5 @@ data class ContactUsUIState(
     val email: String = "",
     val phoneNumber: String = "",
     val facebookUrl: String = "",
+    val errorMessage : StringResource? = null
 )

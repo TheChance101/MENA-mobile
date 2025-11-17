@@ -1,9 +1,15 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
 import kotlinx.coroutines.CoroutineDispatcher
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.model.ContactInfo
 import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.handlePrivacyAndPolicyException
+import org.jetbrains.compose.resources.StringResource
 
 class ContactUsViewModel(
     private val applicationInfoRepository: ApplicationInfoRepository,
@@ -24,7 +30,7 @@ class ContactUsViewModel(
                 applicationInfoRepository.getContactInfo()
             },
             onSuccess = ::onGetContactInfoSuccess,
-            onError = ::onError,
+            onError = ::onGetContactInfoError,
             dispatcher = dispatcher
         )
     }
@@ -40,9 +46,6 @@ class ContactUsViewModel(
         }
     }
 
-    private fun onError(throwable: Throwable) {
-        updateState { copy(isLoading = false) }
-    }
 
     override fun onClickEmailAddress() {
         val emailUrl = "$EMAIL_URL_PREFIX${state.value.email}"
@@ -59,6 +62,30 @@ class ContactUsViewModel(
         sendNewEffect(ContactUsUIEffect.OpenUrl(facebookUrl))
     }
 
+    override fun onClearErrorMessage() {
+        updateState {
+            copy(errorMessage = null)
+        }
+    }
+
+    private fun onGetContactInfoError(throwable: Throwable) {
+        updateState {
+            copy(
+                errorMessage = mapErrorMessage(throwable),
+                isLoading = false,
+            )
+        }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handlePrivacyAndPolicyException(throwable)
+            )
+
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
+    }
     companion object {
         private const val EMAIL_URL_PREFIX = "mailto:"
         private const val PHONE_URL_PREFIX = "tel:"
