@@ -44,9 +44,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_empty_trends
 import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
@@ -67,6 +65,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
@@ -259,11 +258,7 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
         onLeadingClick = onBackClick,
         title = stringResource(Res.string.manage_trends_title),
         leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow),
-                tint = Color.White
-            )
+            BackIcon()
         }
     )
 }

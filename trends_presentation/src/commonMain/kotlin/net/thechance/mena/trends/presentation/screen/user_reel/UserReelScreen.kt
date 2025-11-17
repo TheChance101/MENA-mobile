@@ -48,13 +48,11 @@ import coil3.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.avatar_image
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.confirmation_message
 import mena.trends_presentation.generated.resources.delete
 import mena.trends_presentation.generated.resources.delete_reel
 import mena.trends_presentation.generated.resources.fail_delete_message
 import mena.trends_presentation.generated.resources.fail_delete_title
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_delete
 import mena.trends_presentation.generated.resources.ic_eye
 import mena.trends_presentation.generated.resources.ic_like
@@ -71,6 +69,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
@@ -245,10 +244,7 @@ private fun TopAppBar(
             .padding(top = Theme.spacing._8),
         contentPadding = PaddingValues(0.dp),
         leadingContent = {
-            Icon(
-                painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(resource = Res.string.back_arrow),
-            )
+            BackIcon()
         },
         onLeadingClick = { onBackClick() }
     )
