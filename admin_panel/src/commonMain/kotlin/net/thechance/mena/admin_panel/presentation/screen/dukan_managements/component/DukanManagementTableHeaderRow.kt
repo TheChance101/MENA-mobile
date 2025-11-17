@@ -2,13 +2,16 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_managements.com
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,27 +40,28 @@ import org.jetbrains.compose.resources.stringResource
 fun DukanTableHeaderRow(
     sortState: DukanManagementScreenState.SortState,
     onSortClicked: (DukansSortType) -> Unit,
+    horizontalScrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .background(
-                Theme.colorScheme.background.surfaceLow,
+                color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(
                     topStart = Theme.radius.lg,
                     topEnd = Theme.radius.lg
                 )
             )
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .horizontalScroll(horizontalScrollState),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "#",
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.weight(0.069f)
+            modifier = Modifier.widthIn(min = 78.dp)
         )
         Text(
             text = stringResource(Res.string.image),
@@ -66,41 +70,39 @@ fun DukanTableHeaderRow(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             softWrap = false,
-            modifier = Modifier.weight(0.099f)
+            modifier = Modifier.widthIn(min = 112.dp)
         )
         SortableHeaderCell(
             text = stringResource(Res.string.dukan_name),
             sortType = DukansSortType.NAME,
             currentSort = sortState,
             onSortClicked = onSortClicked,
-            modifier = Modifier.weight(0.15f)
+            modifier = Modifier.widthIn(min = 200.dp)
         )
         Text(
             text = stringResource(Res.string.location),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.weight(0.15f)
+            modifier = Modifier.widthIn(min = 244.dp)
         )
-        Spacer(modifier = Modifier.weight(0.02f))
         SortableHeaderCell(
             text = stringResource(Res.string.status),
             sortType = DukansSortType.ACTIVATION_STATUS,
             currentSort = sortState,
             onSortClicked = onSortClicked,
-            modifier = Modifier.weight(0.09f)
+            modifier = Modifier.widthIn(min = 157.dp)
         )
-        Spacer(modifier = Modifier.weight(0.02f))
         SortableHeaderCell(
             text = stringResource(Res.string.added_date),
             sortType = DukansSortType.CREATED_AT,
             currentSort = sortState,
             onSortClicked = onSortClicked,
-            modifier = Modifier.weight(0.12f)
+            modifier = Modifier.widthIn(min = 168.dp)
         )
         Text(
             text = "",
             style = Theme.typography.label.large,
-            modifier = Modifier.weight(0.13f)
+            modifier = Modifier.widthIn(min = 177.dp)
         )
     }
 }
