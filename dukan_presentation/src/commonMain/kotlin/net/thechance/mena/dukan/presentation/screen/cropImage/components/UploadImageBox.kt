@@ -23,10 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.attafitamim.krop.core.images.ImageSrc
 import com.attafitamim.krop.filekit.toImageSrc
@@ -46,7 +51,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.CornerSmoothing
 import sv.lib.squircleshape.SquircleShape
+import sv.lib.squircleshape.drawSquircle
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -102,10 +109,18 @@ fun UploadImageContainer(
                 .clip(SquircleShape(radius))
                 .drawWithContent {
                     drawContent()
-                    drawRoundRect(
+                    drawSquircle(
                         color = borderColor,
-                        style = Stroke(width = 2.dp.toPx(), pathEffect = dashEffect),
-                        cornerRadius = CornerRadius(radius.toPx())
+                        size = size,
+                        topLeftCorner = radius.toPx(),
+                        topRightCorner = radius.toPx(),
+                        bottomLeftCorner = radius.toPx(),
+                        bottomRightCorner = radius.toPx(),
+                        smoothing = CornerSmoothing.Medium,
+                        style = Stroke(
+                            width = 2.dp.toPx(),
+                            pathEffect = dashEffect
+                        )
                     )
                 }
                 .clickable { safeLaunch() },

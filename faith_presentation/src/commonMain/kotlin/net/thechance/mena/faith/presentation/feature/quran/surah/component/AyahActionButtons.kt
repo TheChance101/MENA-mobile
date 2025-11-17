@@ -66,7 +66,7 @@ internal fun AnimatedAyahActionButtons(
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
-                onShareClick = { listener.onShareClick(state.selectedAyah) },
+                onShareClick = { listener.onShareClick() },
                 onListenClick = { listener.onListenClick() }
             )
         }

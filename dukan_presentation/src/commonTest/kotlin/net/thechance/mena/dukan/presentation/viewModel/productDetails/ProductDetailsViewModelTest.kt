@@ -206,8 +206,12 @@ class ProductDetailsViewModelTest {
     @Test
     fun `onSecondaryImageClicked SHOULD update selectedImageUrl`() = runTest {
         val newImageUrl = "http://example.com/image2.jpg"
+        val currentSelected = productDetailsViewModel.state.value.selectedImageUrl
 
-        productDetailsViewModel.onSecondaryImageClicked(newImageUrl)
+        productDetailsViewModel.onSecondaryImageClicked(
+            imageUrl = newImageUrl,
+            selectedImageUrl = currentSelected
+        )
 
         val state = productDetailsViewModel.state.value
         assertEquals(newImageUrl, state.selectedImageUrl)
