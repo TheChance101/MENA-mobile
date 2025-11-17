@@ -97,7 +97,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return chat when getChatByContactUserId is successful`() = runTest {
+    fun `should return chat when getChatByOtherUserId is successful`() = runTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })
         repository = createChatRepository(
             httpClient = httpClient,
@@ -107,13 +107,13 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val result = repository.getChatByContactUserId(userId)
+        val result = repository.getChatByOtherUserId(userId)
 
         assertThat(result.name).isEqualTo("Test Chat")
     }
 
     @Test
-    fun `should throw ChatNotFoundException when getChatByContactUserId fails`() = runTest {
+    fun `should throw ChatNotFoundException when getChatByOtherUserId fails`() = runTest {
         httpClient = createHttpClient(
             chatResponse = { respond("", HttpStatusCode.NotFound, jsonHeaders) }
         )
@@ -126,7 +126,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatByContactUserId(userId)
+            repository.getChatByOtherUserId(userId)
         }
     }
 

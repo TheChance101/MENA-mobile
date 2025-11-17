@@ -1,11 +1,13 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah.component
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,26 +36,33 @@ fun AyatOfSurah(
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
     var currentChunkAyat by remember { mutableStateOf(listOf<Ayah>()) }
 
-    SetupScrollTracking(
-        lazyListState = lazyListState,
-        ayahChunks = ayahChunks,
-        state = state,
-        listener = listener,
-        textLayoutResult = textLayoutResult,
-        currentChunkAyat = currentChunkAyat
-    )
+    BoxWithConstraints(modifier) {
+        LaunchedEffect(maxWidth) {
+            listener.onConfigrationChange()
 
-    AyahList(
-        modifier = modifier,
-        lazyListState = lazyListState,
-        state = state,
-        ayahChunks = ayahChunks,
-        preRenderedChunks = preRenderedChunks,
-        listener = listener,
-        textLayoutResult = textLayoutResult,
-        onTextLayoutResultChange = { textLayoutResult = it },
-        onChunkChanged = { currentChunkAyat = it }
-    )
+        }
+
+        SetupScrollTracking(
+            lazyListState = lazyListState,
+            ayahChunks = ayahChunks,
+            state = state,
+            listener = listener,
+            textLayoutResult = textLayoutResult,
+            currentChunkAyat = currentChunkAyat
+        )
+
+        AyahList(
+            modifier = Modifier.fillMaxWidth(),
+            lazyListState = lazyListState,
+            state = state,
+            ayahChunks = ayahChunks,
+            preRenderedChunks = preRenderedChunks,
+            listener = listener,
+            textLayoutResult = textLayoutResult,
+            onTextLayoutResultChange = { textLayoutResult = it },
+            onChunkChanged = { currentChunkAyat = it }
+        )
+    }
 }
 
 @Composable
@@ -164,7 +173,8 @@ private fun Preview() {
                 override fun onShareClick(ayahContent: String) {}
                 override fun highlightAyah(ayahNumber: Int) {}
                 override fun updateContinueTilawah(ayahNumber: Int) {}
-                override fun playSurah(surahId: Int) {}
+                override fun playSurah(surahNumber: Int) {}
+                override fun onConfigrationChange() {}
                 override fun onInitialAyahScrolled() {}
             }
 
