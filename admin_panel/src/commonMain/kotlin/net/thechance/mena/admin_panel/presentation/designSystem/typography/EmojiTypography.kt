@@ -29,10 +29,12 @@ data class EmojiTypography(
                         )
                     )
                 }
-                OS.MACOS, OS.UNKNOWN -> null
+                OS.MACOS, OS.IOS, OS.ANDROID -> {
+                    null
+                }
+                OS.UNKNOWN -> null
             }
         }
-
 
         fun create(fontFamily: FontFamily?): EmojiTypography {
             return EmojiTypography(
