@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.data.di
 
+import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.AudioMessageSender
 import net.thechance.mena.core_chat.data.messagesender.AyahMessageSender
@@ -9,6 +10,7 @@ import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
+import net.thechance.mena.core_chat.data.source.remote.network.createChatCoilClient
 import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.createMediaHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
@@ -60,6 +62,10 @@ internal val networkModule = module {
             ayahMessageSender = get(named(AYAH_MESSAGE_SENDER)),
         )
     }
+
+    single<HttpClient>(named(CHAT_COIL_CLIENT)) {
+        createChatCoilClient()
+    }
 }
 
 private const val BASE_URL = "baseUrl"
@@ -70,3 +76,4 @@ const val IMAGE_MESSAGE_SENDER = "image_message_sender"
 const val TEXT_MESSAGE_SENDER = "text_message_sender"
 const val AUDIO_MESSAGE_SENDER = "audio_message_sender"
 const val AYAH_MESSAGE_SENDER = "ayah_message_sender"
+const val CHAT_COIL_CLIENT = "chat_coil_client"

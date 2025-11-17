@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.active
-import net.thechance.mena.admin_panel.resources.deactivated
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -26,6 +25,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ActivationStatusButton(
     isActive: Boolean,
+    deactivationText: String,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor =
@@ -48,9 +48,7 @@ fun ActivationStatusButton(
 
     val statusText = if (isActive) {
         stringResource(Res.string.active)
-    } else {
-        stringResource(Res.string.deactivated)
-    }
+    } else { deactivationText }
 
     Row(
         modifier = modifier

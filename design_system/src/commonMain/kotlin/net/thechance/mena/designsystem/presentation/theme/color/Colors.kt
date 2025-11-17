@@ -40,7 +40,7 @@ val colorPalette = ColorPalette(
         shade600 = Color(0xFF3E4252),
         shade700 = Color(0xFF12141C),
         shade800 = Color(0xFF0E1017),
-        shade900 = Color(0xFF0A0C12),
+        shade900 = Color(0xFF000000),
     ),
     red = ColorScale(
         shade50 = Color(0xFFFEE4E2),

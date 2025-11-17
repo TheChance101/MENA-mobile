@@ -9,10 +9,10 @@ data class ProductDto(
     val id: String,
     @SerialName("name")
     val name: String? = null,
-    @SerialName("price")
-    val price: Double? = null,
-    @SerialName("discountedPrice")
-    val discountedPrice: Double? = null,
+    @SerialName("finalPrice")
+    val finalPrice: Double? = null,
+    @SerialName("basePrice")
+    val basePrice: Double? = null,
     @SerialName("description")
     val description: String? = null,
     @SerialName("imageUrls")

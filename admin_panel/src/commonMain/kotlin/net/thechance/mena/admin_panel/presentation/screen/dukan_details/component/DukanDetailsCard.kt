@@ -145,7 +145,6 @@ private fun DukanLocationMap(
                     longitude = longitude,
                     markerWidth = 60,
                     markerHeight = 80,
-                    initialZoom = 100
                 )
             } else {
                 Image(
@@ -166,6 +165,7 @@ private fun DukanLocation(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier

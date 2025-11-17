@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.ic_view_more
 import mena.dukan_presentation.generated.resources.menu_circle
 import mena.dukan_presentation.generated.resources.view_more
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -51,7 +52,7 @@ fun CategorySection(
             item {
                 MoreCategoryCard(
                     title = stringResource(Res.string.view_more),
-                    image = painterResource(Res.drawable.menu_circle),
+                    image = painterResource(Res.drawable.ic_view_more),
                     onClick = onViewMoreClick
                 )
             }

@@ -9,6 +9,7 @@ fun buildSortQueries(property: SortType?, direction: SortDirection?): List<Strin
         SortType.USERNAME -> listOf("firstName,$directionStr", "lastName,$directionStr")
         SortType.LAST_LOGIN_DATE -> listOf("lastLoginAt,$directionStr")
         SortType.LAST_VISIT_DATE -> listOf("lastVisitAt,$directionStr")
+        SortType.ACTIVATION_STATUS -> listOf("status,$directionStr")
         else -> listOf("firstName,$directionStr", "lastName,$directionStr")
     }
 }
