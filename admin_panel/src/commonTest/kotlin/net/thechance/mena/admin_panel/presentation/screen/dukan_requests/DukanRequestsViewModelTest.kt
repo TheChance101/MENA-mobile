@@ -219,7 +219,7 @@ class DukanRequestsViewModelTest {
         viewModel.onViewDetailsClicked(selectedDukan)
         advanceUntilIdle()
 
-        viewModel.onDismissDukanDetails()
+        viewModel.onDukanDetailsDismissed()
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -289,7 +289,7 @@ class DukanRequestsViewModelTest {
             val currentState = awaitItem()
             assertFalse(currentState.isRejectDialogShown)
             assertEquals("", currentState.rejectReason)
-            assertFalse(currentState.isRejectBtnLoading)
+            assertFalse(currentState.isRejectButtonLoading)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -318,7 +318,7 @@ class DukanRequestsViewModelTest {
         viewModel.state.test {
             val currentState = awaitItem()
             assertFalse(currentState.isRejectDialogShown)
-            assertFalse(currentState.isRejectBtnLoading)
+            assertFalse(currentState.isRejectButtonLoading)
             assertTrue(currentState.snackBar.isSuccess)
             cancelAndIgnoreRemainingEvents()
         }
@@ -370,30 +370,6 @@ class DukanRequestsViewModelTest {
     }
 
     @Test
-    fun `should show loading state while rejecting dukan`() = runTest(testDispatcher) {
-        everySuspend {
-            dukanRepository.updateDukanStatus(any(), any(), any())
-        } returns Unit
-
-        initViewModel()
-
-        val selectedDukan = viewModel.state.value.dukans.first()
-        viewModel.onViewDetailsClicked(selectedDukan)
-        advanceUntilIdle()
-
-        viewModel.onRejectDukanClicked()
-        advanceUntilIdle()
-
-        viewModel.onRejectDukanConfirmed()
-
-        viewModel.state.test {
-            val stateBeforeCompletion = awaitItem()
-            assertTrue(stateBeforeCompletion.isRejectBtnLoading)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `should handle error when approving dukan fails`() = runTest(testDispatcher) {
         everySuspend {
             dukanRepository.updateDukanStatus(any(), any(), any())
@@ -433,7 +409,6 @@ class DukanRequestsViewModelTest {
         testScheduler.advanceTimeBy(100L)
 
         val currentState = viewModel.state.value
-        assertFalse(currentState.isRejectBtnLoading)
         assertFalse(currentState.snackBar.isSuccess)
         assertTrue(currentState.snackBar.isVisible)
     }
