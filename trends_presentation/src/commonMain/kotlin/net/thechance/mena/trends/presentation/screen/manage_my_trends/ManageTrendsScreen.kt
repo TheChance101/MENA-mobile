@@ -179,6 +179,7 @@ private fun ManageTrendsScreenBody(
             Text(
                 text = state.profile.userName,
                 style = Theme.typography.label.medium,
+                color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Theme.spacing._32)
