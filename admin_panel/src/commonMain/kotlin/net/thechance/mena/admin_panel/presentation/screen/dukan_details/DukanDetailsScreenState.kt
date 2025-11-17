@@ -31,6 +31,7 @@ data class DukanDetailsScreenState(
     val isMapVisible: Boolean = true,
     val deactivateReason: String = "",
     val isDeactivateBtnLoading: Boolean = false,
+    val isActiveDukanLoading: Boolean = false,
 ) {
     val isDeactivateBtnEnabled: Boolean
         get() = deactivateReason.length > 1

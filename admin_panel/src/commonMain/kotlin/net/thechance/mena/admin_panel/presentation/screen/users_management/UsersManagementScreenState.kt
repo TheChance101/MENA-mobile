@@ -46,6 +46,8 @@ data class UsersManagementScreenState(
     }
 
     enum class SortType {
-        USERNAME, LAST_LOGIN_DATE, LAST_VISIT_DATE
+        USERNAME,
+        LAST_LOGIN_DATE, LAST_VISIT_DATE,
+        ACTIVATION_STATUS
     }
 }

@@ -109,7 +109,9 @@ private fun onDukanManagementEffect(
 ) {
     when (effect) {
         is DukanManagementEffect.NavigateToDukanDetails -> {
-            navController.navigate(DukanDetails)
+            navController.navigate(DukanDetails){
+                popUpTo(DukanDetails)
+            }
         }
     }
 }

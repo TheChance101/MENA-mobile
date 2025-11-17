@@ -132,8 +132,8 @@ class DukanRepositoryImplTest {
 
         assertEquals(1, result.items.size)
         assertEquals("Product 1", result.items.first().name)
-        assertEquals(100.0, result.items.first().price)
-        assertEquals(80.0, result.items.first().discountedPrice)
+        assertEquals(100.0, result.items.first().finalPrice)
+        assertEquals(80.0, result.items.first().basePrice)
     }
 
     @Test
@@ -267,8 +267,8 @@ class DukanRepositoryImplTest {
         val PRODUCT_DTO = ProductDto(
             id = FAKE_UUID.toString(),
             name = "Product 1",
-            price = 100.0,
-            discountedPrice = 80.0,
+            finalPrice = 100.0,
+            basePrice = 80.0,
             description = "Good",
             imageUrls = listOf("https://img"),
             createdAt = "2025-10-31T00:00:00"
@@ -330,8 +330,8 @@ class DukanRepositoryImplTest {
         val PRODUCT2 = ProductDto(
             id = Uuid.random().toString(),
             name = "Product 2",
-            price = 200.0,
-            discountedPrice = 150.0,
+            finalPrice = 200.0,
+            basePrice = 150.0,
             description = "Better",
             imageUrls = listOf("https://img2"),
             createdAt = "2025-11-01T00:00:00"
