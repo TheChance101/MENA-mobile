@@ -5,23 +5,42 @@ import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_al_baqarah
 import mena.faith_presentation.generated.resources.ic_al_fatihah
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class SurViewModelTest {
+    private lateinit var quranRepository: QuranRepository
+    private lateinit var testDispatcher: TestDispatcher
+    private lateinit var viewModel: SurViewModel
 
-    private val quranRepository: QuranRepository = mock(MockMode.autofill)
-    private val testDispatcher = StandardTestDispatcher()
-    private var viewModel = SurViewModel(quranRepository, testDispatcher)
+    @BeforeTest
+    fun setUp() {
+        startKoin {
+            modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+        }
+        quranRepository = mock(MockMode.autofill)
+        testDispatcher = StandardTestDispatcher()
+        viewModel = SurViewModel(quranRepository, testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
+    }
 
     @Test
     fun `initialize view model should set empty state when getSur returns no data`() = runTest {

@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
@@ -103,7 +104,7 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        if(state.value.isReelDeleted == null) {
+        if (state.value.isReelDeleted == null) {
             tryToExecute(
                 block = { reelsRepository.addReelView(reelId) },
                 dispatcher = defaultDispatcher
@@ -126,6 +127,33 @@ internal class UserReelViewModel(
                 onGetRefreshVideoUrl(refreshedUrl, reelId)
             },
         )
+    }
+
+    override fun saveUserReelEngagement(
+        reelWatchSessionState: ReelWatchSessionState,
+        reelId: String
+    ) {
+        tryToExecute(
+            block = {
+                reelsRepository.saveUserEngagementWithReel(
+                    prepareReelData(
+                        reelWatchSessionState,
+                        reelId
+                    )
+                )
+            },
+            dispatcher = defaultDispatcher,
+        )
+    }
+
+    private fun prepareReelData(
+        reelWatchSessionState: ReelWatchSessionState,
+        reelId: String
+    ): ReelWatchSession {
+        val percentageOfVideoWatched =
+            reelWatchSessionState.watchedDurationInMilliseconds.toFloat() / reelWatchSessionState.videoDurationInMilliseconds * 100
+        reelWatchSessionState.reelId = reelId
+        return reelWatchSessionState.toEntity(percentageOfVideoWatched)
     }
 
     override fun onClickRetry(reelId: String) {
@@ -193,7 +221,14 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
-            onError = { errorState -> updateState { copy(error = errorState, isReelDeleted = false) } },
+            onError = { errorState ->
+                updateState {
+                    copy(
+                        error = errorState,
+                        isReelDeleted = false
+                    )
+                }
+            },
             dispatcher = defaultDispatcher
         )
     }
