@@ -1,4 +1,3 @@
-// In commonMain - presentation/designSystem/theme/EmojiTheme.kt
 package net.thechance.mena.admin_panel.presentation.designSystem.theme
 
 import androidx.compose.runtime.Composable
