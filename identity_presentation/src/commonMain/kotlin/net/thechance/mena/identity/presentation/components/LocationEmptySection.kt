@@ -15,12 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.add_location_button
+import mena.identity_presentation.generated.resources.ic_location_saved_empty
+import mena.identity_presentation.generated.resources.location_saved_empty_desc
+import mena.identity_presentation.generated.resources.no_saved_locations_message
+import mena.identity_presentation.generated.resources.no_saved_locations_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LocationEmptySection(
@@ -65,12 +74,27 @@ fun LocationEmptySection(
         )
 
         PrimaryButton(
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._12),
+            modifier = Modifier.fillMaxWidth(),
             text = stringResource(buttonTextResource),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._24),
             onClick = onButtonClicked,
             isEnabled = !isLoading,
             isLoading = isLoading
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LocationEmptySectionPreview() {
+    MenaTheme {
+        LocationEmptySection(
+            iconPainter = painterResource(Res.drawable.ic_location_saved_empty),
+            iconContentDescriptionResource = Res.string.location_saved_empty_desc,
+            titleResource = Res.string.no_saved_locations_title,
+            messageResource = Res.string.no_saved_locations_message,
+            buttonTextResource = Res.string.add_location_button,
+            onButtonClicked = {},
+            isLoading = false
         )
     }
 }
