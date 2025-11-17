@@ -4,9 +4,9 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,60 +28,55 @@ fun CountryDropdownMenu(
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberScrollState()
-    MaterialTheme(
-        shapes = MaterialTheme.shapes.copy(
-            extraSmall = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
-        )
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
     ) {
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = onDismiss,
-            modifier = modifier
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
+            Text(
+                text = stringResource(Res.string.pick_country),
+                style = Theme.typography.title.small,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical=12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .height(300.dp)
             ) {
-                Text(
-                    text = stringResource(Res.string.pick_country),
-                    style = Theme.typography.title.small,
-                    modifier= Modifier.padding(horizontal = 12.dp)
-                )
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height( 300.dp)
+                        .verticalScroll(scrollState)
+                        .padding(horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(scrollState)
-                            .padding(horizontal = 12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        availableCountries.forEach { country ->
-                            CountryRowItem(
-                                selectedCountry = country,
-                                isSelected = country.callingCode == selectedCountry.callingCode,
-                                onClick = {
-                                    onCountrySelected(country)
-                                    onDismiss()
-                                }
-                            )
-                        }
+                    availableCountries.forEach { country ->
+                        CountryRowItem(
+                            selectedCountry = country,
+                            isSelected = country.callingCode == selectedCountry.callingCode,
+                            onClick = {
+                                onCountrySelected(country)
+                                onDismiss()
+                            }
+                        )
                     }
-
-                    VerticalScrollbar(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .width(5.dp)
-                            .fillMaxHeight()
-                        .padding(end = 2.dp),
-                        adapter = rememberScrollbarAdapter(scrollState)
-                    )
                 }
+
+                VerticalScrollbar(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(5.dp)
+                        .fillMaxHeight()
+                        .padding(end = 2.dp),
+                    adapter = rememberScrollbarAdapter(scrollState)
+                )
             }
         }
     }
