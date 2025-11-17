@@ -128,7 +128,7 @@ class ShareMessageViewModel(
             onContactClickError()
         else
             tryToExecute(
-                execute = { chatRepository.getChatByContactUserId(userId = contactId) },
+                execute = { chatRepository.getChatByOtherUserId(userId = contactId) },
                 onSuccess = { chat ->
                     onContactClickSuccess(
                         chatId = chat.id,
