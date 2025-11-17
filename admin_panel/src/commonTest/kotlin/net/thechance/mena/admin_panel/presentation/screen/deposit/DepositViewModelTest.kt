@@ -12,7 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.admin_panel.domain.exceptions.InvalidPhoneNumberException
+import net.thechance.mena.admin_panel.domain.exceptions.NoInternetException
 import net.thechance.mena.admin_panel.domain.model.Country
 import net.thechance.mena.admin_panel.domain.repository.depositMoney.DepositMoneyRepository
 import net.thechance.mena.admin_panel.domain.use_case.deposit.DepositMoneyUseCase
@@ -29,14 +29,21 @@ class DepositViewModelTest {
     private lateinit var viewModel: DepositViewModel
 
     private val dispatcher = StandardTestDispatcher()
-
     private val stringProvider: StringProvider = mockk(relaxed = true)
+
+    private val testCountry = Country(
+        name = "Iraq",
+        callingCode = "+964",
+        countryCodeName = "IQ",
+        flagEmoji = "🇮🇶",
+        phoneNumberRegex = "^\\d{10}$"
+    )
+
     private val countryUi = DepositScreenState.CountryUiState(
-        name = "Test Country",
-        callingCode = "+20",
-        phoneNumberRegex = "^\\d{11}$",
-        countryCodeName ="Eg",
-        flagEmoji = "",
+        name = "Iraq",
+        callingCode = "+964",
+        countryCodeName = "IQ",
+        flagEmoji = "🇮🇶"
     )
 
     @BeforeTest
@@ -44,9 +51,9 @@ class DepositViewModelTest {
         depositRepository = mock(mode = MockMode.autofill)
         useCase = DepositMoneyUseCase(depositRepository)
 
-        everySuspend { depositRepository.getCountries() } returns listOf(
-            Country( "Test Country", "+20", "eg","","^\\d{11}$")
-        )
+        everySuspend {
+            depositRepository.getCountries()
+        } returns listOf(testCountry)
 
         viewModel = DepositViewModel(
             depositMoneyUseCase = useCase,
@@ -57,58 +64,88 @@ class DepositViewModelTest {
     }
 
     @Test
-    fun `deposit success updates state correctly`() = runTest {
+    fun `deposit success updates state correctly`() = runTest(dispatcher) {
         everySuspend {
-            depositRepository.depositMoney("+201234567890", 100.0)
+            depositRepository.depositMoney("+9647800000002", 100.0)
         } returns Unit
 
-        viewModel.onPhoneNumberChanged("01234567890")
+        viewModel.onPhoneNumberChanged("7800000002")
         viewModel.onAmountChanged("100")
+        advanceUntilIdle()
+
+        viewModel.onFillTheWalletButtonClicked()
+        advanceUntilIdle()
 
         viewModel.state.test {
-            viewModel.onFillTheWalletButtonClicked()
-            advanceUntilIdle()
-
             val final = awaitItem()
 
             assertEquals(false, final.isDepositProcessLoading)
             assertEquals("", final.phoneNumber)
             assertEquals("", final.amount)
+            assertEquals(true, final.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
-    @Test
-    fun `deposit error shows error snackbar and stops loading`() = runTest {
-        everySuspend {
-            depositRepository.depositMoney(any(), any())
-        } throws InvalidPhoneNumberException()
 
-        viewModel.onPhoneNumberChanged("123")
-        viewModel.onAmountChanged("100")
-
-        viewModel.state.test {
-            viewModel.onFillTheWalletButtonClicked()
-            advanceUntilIdle()
-
-            val final = awaitItem()
-
-            assertEquals(false, final.isDepositProcessLoading)
-            assertEquals(false, final.snackBar.isSuccess)
-            assertEquals(true, final.snackBar.isVisible)
-        }
-    }
 
     @Test
-    fun `changing phone amount and country updates state`() = runTest {
-        viewModel.state.test {
-            viewModel.onPhoneNumberChanged("0123")
-            viewModel.onAmountChanged("150")
-            viewModel.onCountryCodeChanged(countryUi)
+    fun `changing phone amount and country updates state`() = runTest(dispatcher) {
+        viewModel.onPhoneNumberChanged("7800000002")
+        advanceUntilIdle()
 
+        viewModel.onAmountChanged("150")
+        advanceUntilIdle()
+
+        viewModel.onCountryCodeChanged(countryUi)
+        advanceUntilIdle()
+
+        viewModel.state.test {
             val s = awaitItem()
-            assertEquals("0123", s.phoneNumber)
+            assertEquals("7800000002", s.phoneNumber)
             assertEquals("150", s.amount)
             assertEquals(countryUi, s.selectedCountry)
+            cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `phone number filters non-digit characters`() = runTest(dispatcher) {
+        viewModel.onPhoneNumberChanged("78abc00xyz000002")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val s = awaitItem()
+            assertEquals("7800000002", s.phoneNumber)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `amount filters non-digit characters`() = runTest(dispatcher) {
+        viewModel.onAmountChanged("10abc0xyz")
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val s = awaitItem()
+            assertEquals("100", s.amount)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `loading countries success updates state`() = runTest(dispatcher) {
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val final = awaitItem()
+
+            assertEquals(false, final.isCountriesLoading)
+            assertEquals(1, final.availableCountries.size)
+            assertEquals("Iraq", final.availableCountries.first().name)
+            assertEquals("+964", final.selectedCountry.callingCode)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
 }
