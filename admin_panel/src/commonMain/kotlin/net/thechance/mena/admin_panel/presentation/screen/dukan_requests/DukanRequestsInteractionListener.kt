@@ -10,5 +10,5 @@ interface DukanRequestsInteractionListener {
     fun onRejectDukanDialogDismissed()
     fun onRejectDukanConfirmed()
     fun onRejectionMessageChanged(reason: String)
-    fun onDismissDukanDetails()
+    fun onDukanDetailsDismissed()
 }
