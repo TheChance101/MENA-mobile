@@ -17,6 +17,7 @@ import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_arrow_down
 import net.thechance.mena.admin_panel.resources.ic_phone
 import net.thechance.mena.admin_panel.resources.phone_number
+import net.thechance.mena.admin_panel.resources.selected_country
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.MobileNumberTextField
@@ -58,7 +59,7 @@ fun PhoneNumberInputField(
                         onClick = { expanded = true }
                     )
                 },
-                modifier = Modifier.fillMaxWidth().padding(bottom=4.dp)
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
             )
 
             CountryDropdownMenu(
@@ -113,12 +114,13 @@ private fun CountryCodeSelector(
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_down),
-            contentDescription = "Select country",
+            contentDescription = stringResource(Res.string.selected_country),
             tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier.size(16.dp)
         )
     }
 }
+
 private val phoneMasks = mapOf(
     8 to "##\u00A0###\u00A0###",
     9 to "###\u00A0###\u00A0###",

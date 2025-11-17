@@ -98,5 +98,6 @@
     <string name="no_account_error_title">Error</string>
     <string name="success_deposit_title">Success</string>
     <string name="success_deposit_description">Deposit Completed Successfully</string>
+    <string name="selected_country">Selected Country</string>
 
 </resources>

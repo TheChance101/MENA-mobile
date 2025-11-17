@@ -99,4 +99,5 @@
     <string name="no_account_error_title">خطأ</string>
     <string name="success_deposit_title">نجاح</string>
     <string name="success_deposit_description">تم إيداع المبلغ بنجاح</string>
+    <string name="selected_country">الدولة المحددة</string>
 </resources>
