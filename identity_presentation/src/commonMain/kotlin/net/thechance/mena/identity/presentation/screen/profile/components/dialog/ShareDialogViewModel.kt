@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,10 +97,15 @@ class ShareDialogViewModel(
                     snackBarMessage = message
                 )
             }
-            delay(2000L)
-            updateState { copy(showSnackBar = false, snackBarTitle = null, snackBarMessage = null) }
         }
+    }
 
+    override fun onDismissSnackBar() {
+        updateState {
+            copy (
+                showSnackBar = false,
+            )
+        }
     }
 
     private fun onDownloadSuccess() {

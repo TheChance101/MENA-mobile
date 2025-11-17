@@ -1,21 +1,15 @@
 package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -77,7 +71,7 @@ fun ScaffoldScope.ShareQrCode(
     fullName: String,
     onClickShare: () -> Unit,
     onDismissShareDialog: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val shareState by viewModel.state.collectAsStateWithLifecycle()
@@ -110,8 +104,8 @@ fun ScaffoldScope.ShareQrCode(
         isVisible = isVisible,
         fullName = fullName,
         qrCodePainter = rememberQrCodePainter(data = shareState.shareLinkUrl),
-        onDismissShareDialog = onDismissShareDialog,
         onClickShare = onClickShare,
+        onDismissShareDialog = onDismissShareDialog,
         modifier = modifier
     )
 }
@@ -125,7 +119,7 @@ private fun ScaffoldScope.ShareQrCodeContent(
     qrCodePainter: Painter,
     onClickShare: () -> Unit = {},
     onDismissShareDialog: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val clipboard = LocalClipboard.current
     val density = LocalDensity.current
@@ -137,6 +131,8 @@ private fun ScaffoldScope.ShareQrCodeContent(
             isVisible = state.showSnackBar && !state.isLoading,
             title = title,
             message = state.snackBarMessage ?: Res.string.error_unknown,
+            onDismissSnackBar = listener::onDismissSnackBar,
+            modifier = Modifier.safeDrawingPadding()
         )
     }
 
@@ -255,25 +251,18 @@ private fun CopyToClipboardSnackBar(
     isVisible: Boolean,
     title: StringResource,
     message: StringResource,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDismissSnackBar: () -> Unit
 ) {
-
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInHorizontally(initialOffsetX = { it }),
-        exit = slideOutHorizontally(targetOffsetX = { it }),
-        modifier = modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.statusBars)
-    ) {
-        SnackBar(
-            title = stringResource(title),
-            message = stringResource(message),
-            leadingIcon = painterResource(Res.drawable.ic_check_circle),
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-                .padding(horizontal = Theme.spacing._16)
-        )
-    }
+    SnackBar(
+        title = stringResource(title),
+        message = stringResource(message),
+        leadingIcon = painterResource(Res.drawable.ic_check_circle),
+        modifier = modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
+            .padding(horizontal = Theme.spacing._16),
+        onDismiss = onDismissSnackBar,
+        isVisible = isVisible
+    )
 }
 
 @Preview(showBackground = true)
@@ -285,8 +274,8 @@ private fun ShareProfileQrCodePreview() {
                 dialog(true) {
                     ShareQrCode(
                         isVisible = true,
-                        onClickShare = {},
                         fullName = "Hassan Ali",
+                        onClickShare = {},
                         onDismissShareDialog = {},
                     )
                 }
