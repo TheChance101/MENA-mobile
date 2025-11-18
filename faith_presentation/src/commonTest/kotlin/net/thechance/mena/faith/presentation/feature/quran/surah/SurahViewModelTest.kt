@@ -347,7 +347,7 @@ class SurahViewModelTest {
         everySuspend { quranRepository.getAyatOfSurah(DEFAULT_SURAH_ID) } returns dummyAyat
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        testViewModel.onShareClick()
+        testViewModel.onShareClick(testViewModel.uiState.value.selectedAyah)
         advanceUntilIdle()
 
         assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
@@ -355,7 +355,7 @@ class SurahViewModelTest {
 
     @Test
     fun `onShareClick should update selectedAyah with ayah content when called`() = runTest {
-        testViewModel.onShareClick()
+        testViewModel.onShareClick(testViewModel.uiState.value.selectedAyah)
         assertEquals("", testViewModel.uiState.value.selectedAyah)
     }
 
@@ -365,7 +365,7 @@ class SurahViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         testViewModel.uiEffect.test {
-            testViewModel.onShareClick()
+            testViewModel.onShareClick(testViewModel.uiState.value.selectedAyah)
 
             assertEquals(
                 SurahScreenEffect.ShareAyah(
