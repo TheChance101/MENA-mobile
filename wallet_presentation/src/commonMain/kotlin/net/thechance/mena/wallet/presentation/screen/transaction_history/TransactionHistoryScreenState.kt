@@ -68,6 +68,7 @@ data class TransactionHistoryScreenState(
             iconContentDescriptionRes = Res.string.deposit_icon
         )
     }
+
     enum class TransactionStatusUiState(
         val contentRes: StringResource,
         val iconRes: DrawableResource,
