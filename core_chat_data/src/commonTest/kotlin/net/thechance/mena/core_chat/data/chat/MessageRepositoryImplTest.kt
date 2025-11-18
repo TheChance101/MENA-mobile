@@ -31,6 +31,7 @@ import net.thechance.mena.core_chat.data.defaultChatHistoryResponse
 import net.thechance.mena.core_chat.data.defaultUploadImagesResponse
 import net.thechance.mena.core_chat.data.jsonSerialization
 import net.thechance.mena.core_chat.data.messagesender.AudioMessageSender
+import net.thechance.mena.core_chat.data.messagesender.AyahMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
@@ -71,6 +72,8 @@ class MessageRepositoryImplTest {
     private lateinit var chatSyncTimeDao: ChatSyncTimeDao
     private lateinit var audioMessageSender: AudioMessageSender
 
+    private lateinit var ayahMessageSender: AyahMessageSender
+
     @BeforeTest
     fun setUp() {
         httpClient = createHttpClient()
@@ -85,9 +88,15 @@ class MessageRepositoryImplTest {
         )
         imageMessageSender = ImageMessageSender(client = httpClient)
         audioMessageSender = AudioMessageSender(client = httpClient)
-
+        ayahMessageSender =
+            AyahMessageSender(webSocketManager = webSocketManager, json = jsonSerialization)
         messageSenderFactory =
-            MessageSenderFactory(textMessageSender, imageMessageSender, audioMessageSender)
+            MessageSenderFactory(
+                textMessageSender,
+                imageMessageSender,
+                audioMessageSender,
+                ayahMessageSender
+            )
 
         repository = createMessageRepository(
             webSocketManager = webSocketManager,

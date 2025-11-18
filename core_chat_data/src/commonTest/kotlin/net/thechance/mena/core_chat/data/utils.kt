@@ -231,6 +231,7 @@ fun createMessageRepository(
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
     cachedMessageDao: CachedMessageDao,
+    quranService: QuranService,
     chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
@@ -240,6 +241,7 @@ fun createMessageRepository(
         client = httpClient,
         messageSenderFactory = messageSenderFactory,
         cachedMessageDao = cachedMessageDao,
+        quranService = quranService,
         json = jsonSerialization
     )
 }
