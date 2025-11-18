@@ -20,7 +20,7 @@ import org.jetbrains.compose.resources.StringResource
 data class MainContainerScreenState(
     val authenticationStatus: Boolean = false,
     val isLogOutDialogShown: Boolean = false,
-    val selectedSidebarTab: SelectedSidebarTab = SelectedSidebarTab.USERS_MANAGEMENT,
+    val selectedSidebarTab: SelectedSidebarTab = SelectedSidebarTab.DUKAN_MANAGEMENT,
     val snackBar: SnackBarState = SnackBarState()
 ) {
     enum class SelectedSidebarTab(

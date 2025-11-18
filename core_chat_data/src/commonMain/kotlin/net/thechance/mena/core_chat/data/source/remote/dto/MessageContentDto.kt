@@ -24,6 +24,10 @@ sealed class MessageContentDto {
     data class Audio(val url: String, val duration: Long? = null) : MessageContentDto()
 
     @Serializable
+    @SerialName("MONEY")
+    data class Money(val amount: Double) : MessageContentDto()
+
+    @Serializable
     @SerialName("ORDER")
     data class Order(
         val orderId: String,

@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.sur.SurUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -161,7 +162,7 @@ private fun Int.twoDigitsMinimum(): String = this.toString().padStart(2, '0')
 
 @Preview
 @Composable
-private fun SurahItemPreview() {
+private fun Preview() {
 
     val mockSurah = SurUiState.SurahUiState(
         id = 1,
@@ -173,9 +174,11 @@ private fun SurahItemPreview() {
     )
 
     MenaTheme {
-        SurahItem(
-            surah = mockSurah,
-            onClick = {}
-        )
+        QuranTheme {
+            SurahItem(
+                surah = mockSurah,
+                onClick = {}
+            )
+        }
     }
 }

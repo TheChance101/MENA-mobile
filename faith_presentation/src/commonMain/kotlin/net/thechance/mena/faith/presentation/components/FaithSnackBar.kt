@@ -20,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -80,12 +81,14 @@ private fun getSnackBarIcon(status: SnackBarState.Status): Painter {
 
 @Preview
 @Composable
-private fun FaithSnackBarPreview() {
+private fun Preview() {
     MenaTheme {
-        FaithSnackBar(
-            message = "This is a success message",
-            isVisible = true,
-            status = SnackBarState.Status.Success
-        )
+        QuranTheme {
+            FaithSnackBar(
+                message = "This is a success message",
+                isVisible = true,
+                status = SnackBarState.Status.Success
+            )
+        }
     }
 }

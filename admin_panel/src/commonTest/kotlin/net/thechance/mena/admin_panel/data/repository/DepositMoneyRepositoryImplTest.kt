@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.admin_panel.data.remote.api_service.DepositMoneyApiService
+import net.thechance.mena.admin_panel.data.remote.api_service.PublicApiService
 import net.thechance.mena.admin_panel.data.remote.dto.deposit.DepositRequestDto
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -17,12 +18,14 @@ import kotlin.test.Test
 class DepositMoneyRepositoryImplTest {
 
     private lateinit var depositMoneyApiService: DepositMoneyApiService
+    private lateinit var publicApiService: PublicApiService
     private lateinit var depositRepository: DepositMoneyRepositoryImpl
 
     @BeforeTest
     fun setup() {
         depositMoneyApiService = mock<DepositMoneyApiService>(mode = MockMode.autofill)
-        depositRepository = DepositMoneyRepositoryImpl(depositMoneyApiService)
+        publicApiService = mock<PublicApiService>(mode = MockMode.autofill)
+        depositRepository = DepositMoneyRepositoryImpl(depositMoneyApiService, publicApiService)
     }
 
     @Test
@@ -36,7 +39,7 @@ class DepositMoneyRepositoryImplTest {
             depositMoneyApiService.depositMoney(fakeParams)
         } returns successfulEmptyResponse()
 
-        depositRepository.depositMoney("01012345678" , 100.0)
+        depositRepository.depositMoney("01012345678", 100.0)
     }
 
     private companion object Companion {

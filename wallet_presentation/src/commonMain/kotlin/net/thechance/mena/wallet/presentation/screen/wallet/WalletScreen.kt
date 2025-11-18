@@ -30,6 +30,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.ConfirmPaymentScreenRoute
@@ -81,12 +82,7 @@ private fun WalletContent(
             AppBar(
                 title = stringResource(Res.string.my_wallet),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
+                leadingContent = { BackIcon() },
                 onLeadingClick = interactionListener::onBackClicked,
             )
         },
