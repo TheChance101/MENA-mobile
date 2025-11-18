@@ -51,7 +51,7 @@ internal val networkModule = module {
     single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT))) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
     single(named(AUDIO_MESSAGE_SENDER)) { AudioMessageSender(get(named(CHAT_CLIENT))) }
-    single(named(AYAH_MESSAGE_SENDER)) { AyahMessageSender(get(),get(named(CHAT_CLIENT))) }
+    single(named(AYAH_MESSAGE_SENDER)) { AyahMessageSender(get(), get(named(CHAT_JSON))) }
 
 
     single {
