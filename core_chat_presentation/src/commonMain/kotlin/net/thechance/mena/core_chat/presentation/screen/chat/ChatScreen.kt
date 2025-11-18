@@ -181,7 +181,8 @@ fun ChatScreenContent(
             visible = state.isImagePagerVisible,
             modifier = Modifier.fillMaxSize(),
         ) {
-            val isMine = state.selectedMessage?.messageDetails?.isMine == true
+            val isMine =
+                state.selectedImageMessages.isNotEmpty() && state.selectedImageMessages[0].messageDetails.isMine
             val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
             val senderImageUrl = if (isMine) state.userData.imageUrl else state.chatAvatarUrl
 
