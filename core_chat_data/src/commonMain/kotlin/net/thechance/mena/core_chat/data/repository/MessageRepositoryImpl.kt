@@ -261,7 +261,7 @@ class MessageRepositoryImpl(
 
             PRIVATE_MESSAGES -> {
                 val message = json.decodeFromString<MessageDto>(body).toDomain()
-                message?.let {
+                message.let {
                     updateLocalMessages(listOf(message))
                     messagesFlow.emit(it)
                 }

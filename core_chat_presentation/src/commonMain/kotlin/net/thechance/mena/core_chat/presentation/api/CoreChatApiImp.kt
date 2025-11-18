@@ -1,6 +1,8 @@
 package net.thechance.mena.core_chat.presentation.api
 
 import androidx.compose.runtime.Composable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.api.CoreChatApi
 import net.thechance.mena.core_chat.presentation.navigation.AyahMessageArgs
 import net.thechance.mena.core_chat.presentation.navigation.ChatNavHost
@@ -28,10 +30,11 @@ class CoreChatApiImp() : CoreChatApi {
         ayahContent: String,
         onNavigateBack: () -> Unit
     ) {
-        // TODO :(" 1- ShareMessageScreen 2- send ayah to ShareMessageScreen 3- add pending message 4- navigate to chat screen")
         ChatNavHost(
             startDestination = ShareMessageRoute(
-                AyahMessageArgs(surahId.toInt(), ayahNumber, ayahContent)
+                Json.encodeToString<AyahMessageArgs>(
+                    AyahMessageArgs(surahId.toInt(), ayahNumber, ayahContent)
+                )
             )
         )
     }

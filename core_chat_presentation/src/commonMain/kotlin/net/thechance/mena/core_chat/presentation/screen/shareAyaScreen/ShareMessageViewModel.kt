@@ -176,7 +176,7 @@ class ShareMessageViewModel(
             ayahContent = messageArgs.ayahContent,
             ayahNumber = messageArgs.ayahNumber,
             surahName = "",
-            messageDetails = MessageDetailsUiState()
+            messageDetails = MessageDetailsUiState(chatId = chatId)
         )
         sendMessage(message)
 

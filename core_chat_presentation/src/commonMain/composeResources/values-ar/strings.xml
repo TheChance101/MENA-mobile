@@ -79,4 +79,5 @@
     <string name="maghrib">المغرب</string>
     <string name="isha">العشاء</string>
     <string name="sunrise">الشروق</string>
+    <string name="aya">%1$d آية</string>
 </resources>
