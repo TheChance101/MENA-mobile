@@ -218,7 +218,7 @@ class HomeViewModel(
     }
 
     private fun changeLoadingState(isLoading: Boolean) {
-        updateState { it.copy(isLoading = isLoading) }
+        updateState { it.copy(isChatsLoading = isLoading) }
     }
 
     private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
@@ -274,13 +274,18 @@ class HomeViewModel(
         if (address == null) return
 
         tryToCollect(
+            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
             collect = { prayerTimeService.getNextPrayer(address) },
             onCollect = ::onObserveNextPrayerSuccess,
+            onError = { onObserveNextPrayerError() }
         )
     }
 
     private fun onObserveNextPrayerSuccess(prayerTime: PrayerTime?) {
-        updateState { it.copy(prayerUiState = prayerTime?.toUi()) }
+        updateState { it.copy(prayerUiState = prayerTime?.toUi(), isPrayerTimeLoading = false) }
+    }
+    private fun onObserveNextPrayerError() {
+        updateState { it.copy(prayerUiState = null, isPrayerTimeLoading = false) }
     }
 
     override fun onNewChatClicked() {
@@ -292,7 +297,6 @@ class HomeViewModel(
     }
 
     private fun onGetSyncStatusSuccess(isSynced: Boolean) {
-        updateState { it.copy(isSynced = isSynced) }
         if (isSynced) {
             emitEffect(HomeScreenEffect.NavigateToContacts)
         } else {

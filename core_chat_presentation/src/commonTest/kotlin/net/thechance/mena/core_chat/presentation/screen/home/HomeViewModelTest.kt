@@ -123,7 +123,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.isLoading).isFalse()
+            assertThat(state.isChatsLoading).isFalse()
         }
     }
 
@@ -210,7 +210,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.isLoading).isFalse()
+            assertThat(state.isChatsLoading).isFalse()
         }
     }
 

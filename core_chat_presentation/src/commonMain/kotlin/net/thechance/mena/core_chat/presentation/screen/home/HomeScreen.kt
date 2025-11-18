@@ -92,6 +92,7 @@ private fun HomeContent(
             ) {
                 if (state.prayerUiState != null || state.weatherUiState != null) {
                     WeatherAndNextPrayerCard(
+                        isLoading = state.isPrayerTimeLoading || state.isWeatherLoading,
                         prayerUiState = state.prayerUiState,
                         weatherUiState = state.weatherUiState,
                         modifier = Modifier.padding(horizontal = Theme.spacing._16)
@@ -99,11 +100,11 @@ private fun HomeContent(
                 }
 
                 when {
-                    state.chats.isEmpty() && state.isLoading -> {
+                    state.chats.isEmpty() && state.isChatsLoading -> {
                         ChatSummaryListSkeleton()
                     }
 
-                    state.chats.isEmpty() && !state.isLoading -> {
+                    state.chats.isEmpty() && !state.isChatsLoading -> {
                         EmptyView()
                     }
 

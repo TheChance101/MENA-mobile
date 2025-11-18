@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.home.components
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +35,31 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun WeatherAndNextPrayerCard(
+    isLoading: Boolean = false,
     prayerUiState: HomeScreenState.PrayerUiState? = null,
     weatherUiState: HomeScreenState.WeatherUiState? = null,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedContent(
+        targetState = isLoading,
+        modifier = modifier
+    ) {
+        if (isLoading) {
+            WeatherAndNextPrayerCardSkeleton()
+        } else {
+            WeatherAndPrayerContent(
+                prayerUiState = prayerUiState,
+                weatherUiState = weatherUiState,
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeatherAndPrayerContent(
+    prayerUiState: HomeScreenState.PrayerUiState?,
+    weatherUiState: HomeScreenState.WeatherUiState?,
     modifier: Modifier = Modifier,
 ) {
     Box(

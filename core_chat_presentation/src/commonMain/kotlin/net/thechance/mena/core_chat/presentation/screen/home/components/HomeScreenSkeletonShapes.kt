@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,16 @@ fun BalanceSkeleton(modifier: Modifier = Modifier) {
                 .clip(CircleShape)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WeatherAndNextPrayerCardSkeleton() {
+    SkeletonShape(
+        modifier = Modifier.fillMaxWidth()
+            .height(92.dp)
+            .clip(RoundedCornerShape(Theme.radius.lg))
+    )
 }
 
 @Preview(showBackground = true)
