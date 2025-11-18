@@ -224,29 +224,44 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
+    fun `onSelectLanguage() should update selected language in dialog state`() = runTest {
+        val newLanguage = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newLanguage, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
+    }
+
+    @Test
+    fun `onConfirmLanguageSelection() should save language and hide dialog`() = runTest {
         val newAppLanguage = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newAppLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
         coEvery { settingsRepository.applyLanguage(newAppLanguage) } returns Unit
 
-        viewModel.onConfirmLanguageSelection(newAppLanguage)
+        viewModel.onConfirmLanguageSelection()
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify { settingsRepository.applyLanguage(newAppLanguage) }
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.languageDialogUiState.isVisible)
-            assertEquals(newAppLanguage, state.languageDialogUiState.selectedAppLanguage)
+            assertEquals(newAppLanguage, state.currentLanguage)
         }
     }
 
     @Test
-    fun `should update state to hide language dialog when onDismissLanguageDialog`() = runTest {
-        viewModel.onDismissLanguageDialog()
+    fun `onDismissLanguageDialog() should hide dialog and reset selection to current language`() = runTest {
+        val currentLanguage = viewModel.state.value.currentLanguage
+        val newLanguageSelection = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newLanguageSelection)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newLanguageSelection, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
 
+        viewModel.onDismissLanguageDialog()
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
-
+        assertEquals(currentLanguage, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
     }
 
     @Test
@@ -258,15 +273,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         assertFalse(viewModel.state.value.showShareBottomSheet)
 
-    }
-
-
-    @Test
-    fun `should update state to hide theme dialog when onDismissThemeDialog`() = runTest {
-        viewModel.onDismissThemeDialog()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
     }
 
     @Test

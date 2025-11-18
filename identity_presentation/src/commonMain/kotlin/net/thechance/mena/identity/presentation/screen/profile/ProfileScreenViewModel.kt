@@ -32,15 +32,17 @@ class ProfileScreenViewModel(
 
     private fun getAppSettings() {
         val currentAppTheme=settingsRepository.observeAppTheme().value
+        val currentAppLanguage=settingsRepository.getCurrentAppLanguage()
         updateState {
             state.value.copy(
                 languageDialogUiState = LanguageDialogUiState(
-                    selectedAppLanguage = settingsRepository.getCurrentAppLanguage(),
+                    selectedAppLanguage = currentAppLanguage,
                 ),
                 themeDialogUiState = ThemeDialogUiState(
                     selectedAppTheme =currentAppTheme,
                 ),
-                currentTheme = currentAppTheme
+                currentTheme = currentAppTheme,
+                currentLanguage = currentAppLanguage
             )
         }
     }
@@ -113,21 +115,28 @@ class ProfileScreenViewModel(
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
 
-    override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
+    override fun onConfirmLanguageSelection() {
         tryToExecute(
-            function = { settingsRepository.applyLanguage(appLanguage) },
-            onSuccess = {
-                updateState {
-                    copy(
-                        languageDialogUiState = languageDialogUiState.copy(
-                            isVisible = false
-                        )
-                    )
-                }
-            },
+            function = { settingsRepository.applyLanguage(state.value.languageDialogUiState.selectedAppLanguage) },
+            onSuccess = { onLanguageConfirmationSuccess() },
             onError = ::onUserInfoError,
+            dispatcher = dispatcher
         )
+    }
+
+    private fun onLanguageConfirmationSuccess() {
+        updateState {
+            copy(
+                languageDialogUiState = languageDialogUiState.copy(
+                    isVisible = false,
+                ),
+                currentLanguage = state.value.languageDialogUiState.selectedAppLanguage
+            )
+        }
+    }
+
+    override fun onSelectLanguage(appLanguage: AppLanguage) {
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
     }
 
     override fun onConfirmThemeSelection() {
@@ -164,8 +173,16 @@ class ProfileScreenViewModel(
         }
     }
 
-    override fun onDismissLanguageDialog() =
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = false)) }
+    override fun onDismissLanguageDialog() {
+        updateState {
+            copy(
+                languageDialogUiState = languageDialogUiState.copy(
+                    isVisible = false,
+                    selectedAppLanguage = state.value.currentLanguage
+                )
+            )
+        }
+    }
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
