@@ -86,19 +86,7 @@ fun TransactionHistoryContent(
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     if (state.history.isNotEmpty() || state.filterState.activeFilterCount > 0) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_share),
-                            contentDescription = stringResource(Res.string.share),
-                            tint = Theme.colorScheme.shadePrimary,
-                            modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    Theme.colorScheme.background.surfaceLow,
-                                    RoundedCornerShape(Theme.radius.md)
-                                )
-                                .clip(RoundedCornerShape(Theme.radius.md))
-                                .clickable { interactionListener.onExportClicked() },
-                        )
+                        ExportIcon(interactionListener = interactionListener)
                     }
                 }
             )
@@ -181,6 +169,26 @@ private fun onTransactionHistoryEffect(
             navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
         }
     }
+}
+
+@Composable
+private fun ExportIcon(
+    interactionListener: TransactionHistoryInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_share),
+        contentDescription = stringResource(Res.string.share),
+        tint = Theme.colorScheme.shadePrimary,
+        modifier = modifier
+            .size(40.dp)
+            .background(
+                Theme.colorScheme.background.surfaceLow,
+                RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .clickable { interactionListener.onExportClicked() },
+    )
 }
 
 @Preview(showBackground = true)
