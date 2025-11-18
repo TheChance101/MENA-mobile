@@ -23,7 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -77,21 +79,15 @@ fun OrderSummary(
                 )
             )
             .drawBehind {
-                val spacePerCircle = circleWidthPx + gapPx
-                val circleCount = (size.width / spacePerCircle).toInt().coerceAtLeast(0)
-                if (circleCount == 0) return@drawBehind
-                val totalWidthNeeded = circleCount * circleWidthPx + (circleCount - 1) * gapPx
-                val circlesStartX = (size.width - totalWidthNeeded) / 2f
-                val circleYPosition = size.height - circleHeightPx / 2f
-                repeat(circleCount) { index ->
-                    val x = circlesStartX + index * (circleWidthPx + gapPx)
-                    drawOval(
-                        color = circleColor,
-                        topLeft = Offset(x, circleYPosition),
-                        size = Size(circleWidthPx, circleHeightPx)
-                    )
-                }
-            },
+               drawBottomEdgeCutouts(
+                   circleColor = circleColor,
+                   circleWidthPx = circleWidthPx,
+                   circleHeightPx = circleHeightPx,
+                   gapPx = gapPx,
+                   canvasWidth = size.width,
+                   canvasHeight = size.height
+               )
+            }
     ) {
         OrderDateTime(
             orderDate  = orderDate,
@@ -141,6 +137,30 @@ fun OrderSummary(
                     top = Theme.spacing._24,
                     bottom = Theme.spacing._32
                 ).padding(horizontal = Theme.spacing._12)
+        )
+    }
+}
+
+private fun DrawScope.drawBottomEdgeCutouts(
+    circleColor: Color,
+    circleWidthPx: Float,
+    circleHeightPx: Float,
+    gapPx: Float,
+    canvasWidth: Float,
+    canvasHeight: Float
+) {
+    val spacePerCircle = circleWidthPx + gapPx
+    val circleCount = (canvasWidth / spacePerCircle).toInt().coerceAtLeast(0)
+    if (circleCount == 0) return
+    val totalWidthNeeded = circleCount * circleWidthPx + (circleCount - 1) * gapPx
+    val circlesStartX = (canvasWidth - totalWidthNeeded) / 2f
+    val circleYPosition = canvasHeight - circleHeightPx / 2f
+    repeat(circleCount) { index ->
+        val circleXPosition = circlesStartX + index * (circleWidthPx + gapPx)
+        drawOval(
+            color = circleColor,
+            topLeft = Offset(circleXPosition, circleYPosition),
+            size = Size(circleWidthPx, circleHeightPx)
         )
     }
 }
@@ -205,7 +225,7 @@ private fun ProductsInOrderList(
     }
 }
 @Composable
-fun DiscountSection(
+private fun DiscountSection(
     discountAmount: Double,
     modifier: Modifier = Modifier
 ) {
@@ -227,7 +247,7 @@ fun DiscountSection(
     }
 }
 @Composable
-fun PlatformFeesSection(
+private fun PlatformFeesSection(
     platformFeesAmount: Double,
     modifier: Modifier
 ) {
@@ -248,6 +268,7 @@ fun PlatformFeesSection(
         )
     }
 }
+
 @Composable
 private fun ProductInOrderItem(
     name: String,
@@ -298,6 +319,7 @@ private fun ProductInOrderItem(
         }
     }
 }
+
 @Composable
 private fun QuantityCircleIcon(
     quantity: Int,
@@ -317,6 +339,7 @@ private fun QuantityCircleIcon(
         )
     }
 }
+
 @Composable
 private fun TicketDivider(
     modifier: Modifier = Modifier
@@ -363,7 +386,7 @@ private fun TicketDivider(
 }
 
 @Composable
-fun TotalAmountInOrder(
+private fun TotalAmountInOrder(
     totalAmount: Double,
     modifier: Modifier = Modifier
 ) {
