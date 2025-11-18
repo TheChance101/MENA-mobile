@@ -8,6 +8,7 @@ import kotlin.uuid.Uuid
 
 object PreviewOrderDetailsUiState {
     val orderDetailsUiState = OrderDetailsUiState(
+        orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.Success,
         orderUiState = OrderDetailsUiState.OrderUiState(
             orderId = Uuid.random(),
             orderDate = "2024-06-15",
