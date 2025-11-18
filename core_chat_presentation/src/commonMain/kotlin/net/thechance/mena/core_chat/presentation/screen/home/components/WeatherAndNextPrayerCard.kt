@@ -50,7 +50,6 @@ fun WeatherAndNextPrayerCard(
             WeatherAndPrayerContent(
                 prayerUiState = prayerUiState,
                 weatherUiState = weatherUiState,
-                modifier = modifier
             )
         }
     }
@@ -60,10 +59,11 @@ fun WeatherAndNextPrayerCard(
 private fun WeatherAndPrayerContent(
     prayerUiState: HomeScreenState.PrayerUiState?,
     weatherUiState: HomeScreenState.WeatherUiState?,
-    modifier: Modifier = Modifier,
 ) {
+    if (prayerUiState == null && weatherUiState == null) return
+
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(Theme.radius.lg))
             .background(Theme.colorScheme.primary.primary)
@@ -75,7 +75,10 @@ private fun WeatherAndPrayerContent(
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
         )
         Column(
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(
+                Theme.spacing._12,
+                Alignment.CenterVertically
+            ),
             modifier = Modifier.padding(Theme.spacing._12).align(Alignment.Center)
         ) {
             if (weatherUiState != null) {

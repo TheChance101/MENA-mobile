@@ -266,6 +266,7 @@ class HomeViewModel(
 
     private fun getCurrentAddressInfo(){
         tryToExecute(
+            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
             execute = { locationService.getActiveAddress() },
             onSuccess = ::observeNextPrayer
         )
@@ -274,7 +275,6 @@ class HomeViewModel(
         if (address == null) return
 
         tryToCollect(
-            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
             collect = { prayerTimeService.getNextPrayer(address) },
             onCollect = ::onObserveNextPrayerSuccess,
             onError = { onObserveNextPrayerError() }
