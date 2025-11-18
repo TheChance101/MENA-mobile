@@ -11,6 +11,7 @@ object PreviewOrderDetailsUiState {
         orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.Success,
         orderUiState = OrderDetailsUiState.OrderUiState(
             orderId = Uuid.random(),
+            orderNumber = 54123453,
             orderDate = "2024-06-15",
             productInOrder = listOf(
                 OrderDetailsUiState.ProductInOrderUiState(
