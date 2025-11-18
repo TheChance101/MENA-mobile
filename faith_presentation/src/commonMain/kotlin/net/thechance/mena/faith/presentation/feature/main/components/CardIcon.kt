@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_quran
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -38,10 +39,12 @@ fun CardIcon(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        CardIcon(
-            icon = painterResource(Res.drawable.ic_quran),
-            contentDescription = "Quran Kareem"
-        )
+    MenaTheme {
+        QuranTheme {
+            CardIcon(
+                icon = painterResource(Res.drawable.ic_quran),
+                contentDescription = "Quran Kareem"
+            )
+        }
     }
 }

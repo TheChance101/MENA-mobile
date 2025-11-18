@@ -6,7 +6,6 @@ import net.thechance.mena.core_chat.presentation.api.ChatEntryViewModel
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatViewModel
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsViewModel
 import net.thechance.mena.core_chat.presentation.screen.home.HomeViewModel
-import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMessageViewModel
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -19,7 +18,10 @@ internal val viewModelModule = module {
             contactsRepository = get(),
             chatRepository = get(),
             balanceRepository = get(),
-            messageRepository = get()
+            messageRepository = get(),
+            prayerTimeService = get(),
+            locationService = get(),
+            dispatcher = get(named(CHAT_IO_DISPATCHER))
         )
     }
     viewModel {
@@ -51,6 +53,6 @@ internal val viewModelModule = module {
         ChatEntryViewModel(get())
     }
     viewModel {
-        ShareMessageViewModel(get(), get(), get())
+        ShareMessageViewModel(get(), get(), get(), get())
     }
 }

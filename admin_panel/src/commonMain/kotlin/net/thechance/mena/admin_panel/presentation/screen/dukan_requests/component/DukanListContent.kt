@@ -1,19 +1,22 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,10 +33,7 @@ import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsBut
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.DukanRequestsScreenState
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun DukanListContent(
     state: DukanRequestsScreenState,
@@ -41,9 +41,14 @@ fun DukanListContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
+
+        val horizontalScrollState = rememberScrollState()
+
         DukanTableHeaderRow(
             sortState = state.sort,
-            onSortClicked = listener::onSortClicked
+            onSortClicked = listener::onSortClicked,
+            horizontalScrollState = horizontalScrollState,
+            modifier = Modifier.fillMaxWidth()
         )
         if (state.isLoading) {
             AdminPanelContentLoading()
@@ -51,7 +56,10 @@ fun DukanListContent(
             DukanListTable(
                 dukan = state.dukans,
                 onViewDetailsClicked = listener::onViewDetailsClicked,
-                modifier = Modifier.weight(1f),
+                horizontalScrollState = horizontalScrollState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
             if (state.pageInfo.totalPages > 1) {
                 PagesIndicatorRow(
@@ -70,24 +78,28 @@ fun DukanListContent(
 @Composable
 private fun DukanListTable(
     dukan: List<DukanRequestsScreenState.DukanItem>,
-    onViewDetailsClicked: (dukanId: Uuid) -> Unit,
+    onViewDetailsClicked: (selectedDukan: DukanRequestsScreenState.DukanItem) -> Unit,
+    horizontalScrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         itemsIndexed(items = dukan) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(horizontalScrollState),
                 index = dukanItem.index,
                 dukan = dukanItem,
                 isLastItem = isLastItem,
                 hasBackground = index % 2 != 0,
                 onViewDetailsClicked = {
-                    onViewDetailsClicked(dukanItem.id)
+                    onViewDetailsClicked(dukanItem)
                 }
             )
         }
@@ -114,7 +126,6 @@ private fun DukanItemRow(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .background(
                 animatedBackgroundColor,
                 shape = if (isLastItem) RoundedCornerShape(
@@ -123,33 +134,28 @@ private fun DukanItemRow(
                 ) else RectangleShape
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        TableCellText(text = index.toString(), modifier = Modifier.weight(0.3f))
+        TableCellText(text = index.toString(), modifier = Modifier.widthIn(min = 78.dp))
 
         Box(
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier.widthIn(min = 112.dp),
             contentAlignment = Alignment.CenterStart
-        ) {
-            DukanImage(imageUrl = dukan.imageUrl)
-        }
+        ) { DukanImage(imageUrl = dukan.imageUrl) }
 
-        TableCellText(text = dukan.name, modifier = Modifier.weight(1f))
+        TableCellText(text = dukan.name, modifier = Modifier.widthIn(min = 315.dp, max = 315.dp))
 
         DukanLocation(
             location = dukan.address,
-            modifier = Modifier.weight(1.5f)
+            modifier = Modifier.width(315.dp)
         )
 
-        TableCellText(text = dukan.date, modifier = Modifier.weight(0.5f))
+        TableCellText(text = dukan.date, modifier = Modifier.widthIn(min = 139.dp))
 
         ViewDukanDetailsButton(
             onClick = onViewDetailsClicked,
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .weight(0.8f)
+            modifier = Modifier.widthIn(min = 177.dp)
         )
     }
 }

@@ -60,7 +60,6 @@
     <string name="send_to">ارسال الى</string>
     <string name="search_by_name">ابحث بالأسم</string>
     <string name="cannot_get_chat_for_that_contact">تعذر ايجاد المحاداثة لهذاالشخص</string>
-    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="just_now">الآن</string>
     <string name="minute_ago">منذ دقيقة</string>
     <string name="two_minutes_ago">منذ دقيقتين</string>
@@ -72,4 +71,12 @@
     <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
+
+    <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
+    <string name="fajr">الفجر</string>
+    <string name="dhuhr">الظهر</string>
+    <string name="asr">العصر</string>
+    <string name="maghrib">المغرب</string>
+    <string name="isha">العشاء</string>
+    <string name="sunrise">الشروق</string>
 </resources>

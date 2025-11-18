@@ -46,6 +46,8 @@ import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -59,6 +61,7 @@ class MessageRepositoryImpl(
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
+    private val quranService: QuranService,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -324,6 +327,11 @@ class MessageRepositoryImpl(
         }
 
         webSocketManager.sendTextFrame(destination, payload)
+    }
+
+    override suspend fun getSurahName(surahId: Int): String {
+        val surah: Surah = quranService.getSurahDetails(surahId)
+        return surah.name
     }
 
     private companion object {

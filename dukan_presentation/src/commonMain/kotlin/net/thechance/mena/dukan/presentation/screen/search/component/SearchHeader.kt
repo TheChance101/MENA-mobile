@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_to_main_screen_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -33,7 +32,7 @@ fun SearchHeader(
     onBackClick: () -> Unit,
     onClearClick: () -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(horizontal = Theme.spacing._16, vertical = 8.dp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = Theme.spacing._16),
 ) {
 
     Row(
@@ -61,7 +60,7 @@ fun SearchHeader(
             onValueChanged = onQueryChange,
             hint = stringResource(resource = Res.string.search_in_dukans),
             leadingIcon = painterResource(resource = Res.drawable.ic_search),
-            onTrailingIconClick = onClearClick ,
+            onTrailingIconClick = onClearClick,
             showTrailingDivider = false,
             trailingIcon = if (query.isNotEmpty())
                 painterResource(resource = Res.drawable.ic_delete_search)
@@ -70,6 +69,7 @@ fun SearchHeader(
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 private fun SearchScreenPreview() {

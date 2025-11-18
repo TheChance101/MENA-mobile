@@ -5,7 +5,6 @@
     <string name="logout_disc">Are you sure you want to logout your account? you can login again using yours credential.</string>
     <string name="dukans_management">Dukans Management</string>
     <string name="dukan_requests">Dukan Requests</string>
-    <string name="deposit">Deposit</string>
     <string name="mena">MENA</string>
 
     <!-- Error Messages -->
@@ -19,6 +18,9 @@
     <!-- Users Management -->
     <string name="users_management">Users management</string>
     <string name="search_hint">Search by user name, phone number,...</string>
+    <string name="no_users_yet">There are no users yet.</string>
+    <string name="users_will_appear">All users will be displayed here after added.</string>
+
 
     <!-- Table Headers -->
     <string name="user_name">User name</string>
@@ -88,6 +90,28 @@
     <string name="deactivate_dukan_content">Are you sure you want to continue with deactivating?</string>
     <string name="deactivate_dukan_reason">Add deactivate reason here</string>
     <string name="empty_shelf_title">This shelf is empty</string>
+
+    <!-- Deposit -->
+    <string name="deposit">Deposit</string>
+    <string name="fill_a_wallet">Fill a wallet</string>
+    <string name="fill_a_wallet_description">Enter phone number and amount to recharge wallet</string>
+    <string name="amount">Amount</string>
+    <string name="pick_country">Pick country</string>
+    <string name="fill_the_wallet">Fill the wallet</string>
+    <string name="no_account_error_description">There is no account related to this phone number</string>
+    <string name="no_account_error_title">Error</string>
+    <string name="success_deposit_title">Success</string>
+    <string name="success_deposit_description">Deposit Completed Successfully</string>
+    <string name="selected_country">Selected Country</string>
     <string name="dukan_activated">Dukan has been activated</string>
     <string name="dukan_deactivated">Dukan has been deactivated</string>
+
+    <string name="dukan_approved_successfully">Dukan approved successfully</string>
+    <string name="dukan_rejected_successfully">Dukan rejected successfully</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="reject_dukan_header">Reject Dukan request?</string>
+    <string name="reject_dukan_content">Are you sure you want to continue with rejecting?</string>
+    <string name="reject_dukan_reason">Add reject reason here</string>
+
 </resources>

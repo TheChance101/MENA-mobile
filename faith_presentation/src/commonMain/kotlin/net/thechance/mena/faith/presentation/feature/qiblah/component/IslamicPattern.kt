@@ -7,9 +7,12 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_islamic_pattern
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun IslamicPattern(
@@ -23,4 +26,14 @@ fun IslamicPattern(
         contentScale = ContentScale.Fit,
         colorFilter = colorFilter
     )
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            IslamicPattern()
+        }
+    }
 }

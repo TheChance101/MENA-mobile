@@ -10,6 +10,7 @@ import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent.*
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
@@ -123,7 +124,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
     }
 }
 
- fun Message.toUi(): MessageUiState {
+suspend fun Message.toUi(messageRepository: MessageRepository): MessageUiState {
     val messageDetails = MessageDetailsUiState(
         id = id,
         senderId = senderId,
@@ -158,7 +159,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
             surahId = content.surahId,
             ayahContent = content.ayahContent,
             ayahNumber = content.ayahNumber,
-            surahName = "",
+            surahName = messageRepository.getSurahName(content.surahId),
             messageDetails = messageDetails
         )
     }

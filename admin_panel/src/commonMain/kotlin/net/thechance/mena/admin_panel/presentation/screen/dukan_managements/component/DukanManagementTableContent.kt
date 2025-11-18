@@ -4,17 +4,21 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_managements.com
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,7 +35,10 @@ import net.thechance.mena.admin_panel.presentation.component.TableCellText
 import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsButton
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementScreenState
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.deactivated
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -43,9 +50,14 @@ fun DukanManagementTableContent(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
+
+        val horizontalScrollState = rememberScrollState()
+
         DukanTableHeaderRow(
             sortState = state.sort,
-            onSortClicked = listener::onSortClicked
+            onSortClicked = listener::onSortClicked,
+            horizontalScrollState = horizontalScrollState,
+            modifier = Modifier.fillMaxWidth()
         )
         if (state.isLoading) {
             AdminPanelContentLoading()
@@ -53,7 +65,10 @@ fun DukanManagementTableContent(
             DukanListTable(
                 dukan = state.dukans,
                 onViewDetailsClicked = listener::onViewDetailsClicked,
-                modifier = Modifier.weight(1f),
+                horizontalScrollState = horizontalScrollState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
         }
         if (state.pageInfo.totalPages > 1) {
@@ -73,17 +88,21 @@ fun DukanManagementTableContent(
 private fun DukanListTable(
     dukan: List<DukanManagementScreenState.Dukan>,
     onViewDetailsClicked: (Uuid) -> Unit,
+    horizontalScrollState: ScrollState = rememberScrollState(),
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
 
     LazyColumn(
         state = listState,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         itemsIndexed(items = dukan) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(horizontalScrollState),
                 dukan = dukanItem,
                 isLastItem = isLastItem,
                 hasBackground = index % 2 != 0,
@@ -114,7 +133,6 @@ private fun DukanItemRow(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .background(
                 animatedBackgroundColor,
                 shape = if (isLastItem) RoundedCornerShape(
@@ -123,38 +141,39 @@ private fun DukanItemRow(
                 ) else RectangleShape
             )
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-
-        TableCellText(text = dukan.index.toString(), modifier = Modifier.weight(0.069f))
+        TableCellText(text = dukan.index.toString(), modifier = Modifier.widthIn(min = 78.dp))
 
         Box(
-            modifier = Modifier.weight(0.099f),
+            modifier = Modifier.widthIn(min = 112.dp),
             contentAlignment = Alignment.CenterStart
-        ) {
-            DukanImage(imageUrl = dukan.imageUrl)
-        }
+        ) { DukanImage(imageUrl = dukan.imageUrl) }
 
-        TableCellText(text = dukan.name, modifier = Modifier.weight(0.15f))
+        TableCellText(text = dukan.name, modifier = Modifier.width(200.dp))
 
         DukanLocation(
             location = dukan.location,
-            modifier = Modifier.weight(0.15f)
+            modifier = Modifier.widthIn(min = 244.dp, max = 244.dp)
         )
-        Spacer(modifier = Modifier.weight(0.02f))
-        ActivationStatusButton(
-            isActive = dukan.isActive,
-            modifier = Modifier.weight(0.09f)
-        )
-        Spacer(modifier = Modifier.weight(0.02f))
-        TableCellText(text = dukan.addedDate, modifier = Modifier.weight(0.12f))
 
-        ViewDukanDetailsButton(
-            onClick = onViewDetailsClicked,
+        Box(
+            modifier = Modifier.widthIn(min = 157.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            ActivationStatusButton(
+                isActive = dukan.isActive,
+                deactivationText = stringResource(resource = Res.string.deactivated)
+            )
+        }
+
+        TableCellText(text = dukan.addedDate, modifier = Modifier.widthIn(min = 168.dp))
+
+        Box(
             modifier = Modifier
-                .padding(start = 16.dp)
-                .weight(0.13f)
-        )
+                .widthIn(min = 177.dp),
+            contentAlignment = Alignment.CenterStart
+        ) { ViewDukanDetailsButton(onClick = onViewDetailsClicked) }
     }
 }

@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.domain.di
 
+import net.thechance.mena.identity.domain.service.AppThemeService
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.identity.domain.service.LocalizationService
 import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
@@ -16,4 +18,6 @@ val domainModule = module {
     singleOf(::LocationService)
     singleOf(::PasswordValidator)
     singleOf(::AgeValidator)
+    singleOf(::LocalizationService)
+    singleOf(::AppThemeService)
 }

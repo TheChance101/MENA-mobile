@@ -30,6 +30,7 @@ import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.PlayButton
 import net.thechance.mena.faith.presentation.components.SwappableCard
@@ -171,16 +172,18 @@ private fun RecitersDetails(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        ReciterItem(
-            reciterId = 1,
-            reciter = "Muhammad Siddiq Al-Minshawi",
-            recitingType = "Teacher - Tajweed",
-            isDownloaded = true,
-            onSelect = {},
-            onDownloadClick = {},
-            isSelectReciter = false,
-            isSwipeable = true,
-        )
+    MenaTheme {
+        QuranTheme {
+            ReciterItem(
+                reciterId = 1,
+                reciter = "Muhammad Siddiq Al-Minshawi",
+                recitingType = "Teacher - Tajweed",
+                isDownloaded = true,
+                onSelect = {},
+                onDownloadClick = {},
+                isSelectReciter = false,
+                isSwipeable = true,
+            )
+        }
     }
 }

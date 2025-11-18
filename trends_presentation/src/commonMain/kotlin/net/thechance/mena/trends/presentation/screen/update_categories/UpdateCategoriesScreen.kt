@@ -14,17 +14,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.change_tags
 import mena.trends_presentation.generated.resources.choose_interests
 import mena.trends_presentation.generated.resources.help_text
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.save_change
 import mena.trends_presentation.generated.resources.tags_updated_failure
 import mena.trends_presentation.generated.resources.tags_updated_success
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -32,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
@@ -41,7 +39,6 @@ import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarData
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -185,10 +182,7 @@ private fun ChangeTagsAppBar(onBackClick: () -> Unit) {
     AppBar(
         onLeadingClick = onBackClick,
         leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
+            BackIcon()
         },
         title = stringResource(Res.string.change_tags),
     )

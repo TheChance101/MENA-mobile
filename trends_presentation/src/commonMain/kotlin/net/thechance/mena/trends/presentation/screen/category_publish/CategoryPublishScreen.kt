@@ -17,9 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_categories_to_video
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.choose_categories
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.ic_hint
 import mena.trends_presentation.generated.resources.new_trend
 import mena.trends_presentation.generated.resources.publish_hint
@@ -33,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
@@ -78,7 +77,11 @@ private fun CategoryPublishContent(
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = Theme.spacing._16),
+                        .padding(
+                            start = Theme.spacing._16,
+                            end = Theme.spacing._16,
+                            bottom = Theme.spacing._24
+                        ),
                     text = stringResource(resource = Res.string.upload_video),
                     onClick = listener::onClickPublish,
                     isEnabled = state.isPublishButtonEnabled,
@@ -156,7 +159,7 @@ private fun CategoryPublishScreenBody(
         }
     }
 
-   TrendsAnimatedVisibility(visible = state.isLoading) {
+    TrendsAnimatedVisibility(visible = state.isLoading) {
         LoadingProgressBar()
     }
 }
@@ -168,10 +171,7 @@ private fun CategoryPublishAppBar(
     AppBar(
         onLeadingClick = onBackClick,
         leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
+            BackIcon()
         },
         title = stringResource(Res.string.new_trend),
         trailingContent = { UploadPageNumber(page = 3) }

@@ -15,6 +15,7 @@ import mena.faith_presentation.generated.resources.ic_add
 import mena.faith_presentation.generated.resources.ic_remove
 import mena.faith_presentation.generated.resources.reset
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -67,11 +68,13 @@ internal fun ZoomControls(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        ZoomControls(
-            onZoomInClicked = {},
-            onZoomOutClicked = {},
-            onResetClicked = {}
-        )
+    MenaTheme {
+        QuranTheme {
+            ZoomControls(
+                onZoomInClicked = {},
+                onZoomOutClicked = {},
+                onResetClicked = {}
+            )
+        }
     }
 }
