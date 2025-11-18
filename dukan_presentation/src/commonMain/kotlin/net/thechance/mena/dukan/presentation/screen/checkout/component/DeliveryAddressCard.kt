@@ -30,6 +30,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DeliveryAddressCard(
@@ -114,6 +115,7 @@ private fun EditAddressIcon() {
     )
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
 private fun DeliveryAddressCardPreview() {
