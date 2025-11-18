@@ -58,6 +58,6 @@ private fun Transaction.getTransactionStatus(): TransactionHistoryScreenState.Tr
 private fun Transaction.getUserName(): String? = when (type) {
     TransactionType.SENT -> receiverName
     TransactionType.RECEIVED -> senderName
-    TransactionType.DEPOSIT -> receiverName
+    TransactionType.DEPOSIT ->senderName
     else -> null
 }
