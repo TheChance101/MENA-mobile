@@ -20,7 +20,8 @@ data class Transaction(
 enum class TransactionType {
     SENT,
     RECEIVED,
-    ONLINE_PURCHASE;
+    ONLINE_PURCHASE,
+    DEPOSIT;
 
     companion object {
         fun valueOfOrDefault(value: String?): TransactionType {

@@ -1,7 +1,9 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.deposit_icon
 import mena.wallet_presentation.generated.resources.failed
+import mena.wallet_presentation.generated.resources.ic_deposit
 import mena.wallet_presentation.generated.resources.ic_failed
 import mena.wallet_presentation.generated.resources.ic_receive
 import mena.wallet_presentation.generated.resources.ic_reload
@@ -59,6 +61,11 @@ data class TransactionHistoryScreenState(
             titleRes = Res.string.transaction_receive,
             iconRes = Res.drawable.ic_receive,
             iconContentDescriptionRes = Res.string.received
+        ),
+        DEPOSIT(
+            titleRes = Res.string.transaction_receive,
+            iconRes = Res.drawable.ic_deposit,
+            iconContentDescriptionRes = Res.string.deposit_icon
         )
     }
 
