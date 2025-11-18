@@ -16,6 +16,5 @@ data class CartDto(
     @SerialName("totalPriceAfterDiscount")
     val totalPriceAfterDiscount: Double,
     @SerialName("discount")
-    val discount: Double,
-
-    )
+    val discount: Double
+)
