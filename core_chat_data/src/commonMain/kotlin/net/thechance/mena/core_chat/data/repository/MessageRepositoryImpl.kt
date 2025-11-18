@@ -273,7 +273,7 @@ class MessageRepositoryImpl(
                 val dto = json.decodeFromString<MarkAsReadDto>(body)
                 cachedMessageDao.markMessagesAsReadByReader(dto.chatId, dto.readByUserId)
                 markMessagesAsRead.emit(dto.toDomain())
-                //updateReadInCachedChatSummaryBasedOnEvent(dto)
+                updateReadInCachedChatSummaryBasedOnEvent(dto)
             }
 
             DELETE_CHAT -> {
@@ -290,7 +290,6 @@ class MessageRepositoryImpl(
     }
 
     private suspend fun updateReadInCachedChatSummaryBasedOnEvent(readDto : MarkAsReadDto ){
-        // need further thinking
         if (readDto.readByMe) {
             cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
                 chatId = readDto.chatId,
@@ -308,6 +307,7 @@ class MessageRepositoryImpl(
                 is MessageContent.Audio -> "Audio"
                 is MessageContent.Image -> "Photo"
                 is MessageContent.Text -> (message.content as MessageContent.Text).text
+                is MessageContent.Ayah -> "Ayah"
             }
             cachedChatSummaryDao.insertChatSummary(
                 chatSummary.copy(
@@ -335,15 +335,8 @@ class MessageRepositoryImpl(
             destination = MARK_AS_READ_DESTINATION,
             payload = json.encodeToString<MarkAsReadRequest>(MarkAsReadRequest(chatId = chatId.toString()))
         )
-        resetReadCountForChat(chatId)
     }
 
-    private suspend fun resetReadCountForChat(chatId: Uuid){
-        cachedChatSummaryDao.updateUnReadMessagesCountByChatId(
-            chatId = chatId.toString(),
-            readCount = 0
-        )
-    }
 
     override fun observeConnectionStatus(chatId: Uuid): Flow<Boolean> {
         return webSocketManager.connectionStatus.onEach { isConnected ->
