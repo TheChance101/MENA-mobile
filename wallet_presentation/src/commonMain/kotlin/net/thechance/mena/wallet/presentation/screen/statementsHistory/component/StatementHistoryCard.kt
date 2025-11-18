@@ -83,6 +83,7 @@ private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(Res.drawable.ic_clock),
         contentDescription = stringResource(Res.string.transaction_history),
+        tint = Theme.colorScheme.shadeSecondary,
         modifier = modifier
             .size(48.dp)
             .clip(CircleShape)
