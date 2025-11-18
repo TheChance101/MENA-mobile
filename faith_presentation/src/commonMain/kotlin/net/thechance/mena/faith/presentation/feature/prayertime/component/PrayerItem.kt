@@ -17,7 +17,9 @@ import mena.faith_presentation.generated.resources.ic_next_prayer_arrow
 import mena.faith_presentation.generated.resources.next_prayer_time_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -82,9 +84,13 @@ internal fun PrayerItem(
 @Preview
 @Composable
 private fun Preview() {
-    PrayerItem(
-        prayerNameResource = Res.string.fajr,
-        prayerTime = "1:20 AM",
-        isNextPrayer = true,
-    )
+    MenaTheme {
+        QuranTheme {
+            PrayerItem(
+                prayerNameResource = Res.string.fajr,
+                prayerTime = "1:20 AM",
+                isNextPrayer = true,
+            )
+        }
+    }
 }

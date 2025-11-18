@@ -5,12 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -94,7 +96,7 @@ private fun ProductQuantityButton(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     inCartQuantity: Int,
-    modifier : Modifier = Modifier,
+    modifier: Modifier = Modifier,
     dukanColor: Color,
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)) {
@@ -113,17 +115,20 @@ private fun ProductQuantityButton(
                 .padding(Theme.spacing._4 + Theme.spacing._2)
         )
 
-        Text(
-            text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
-            style = Theme.typography.label.small,
-            color = Theme.colorScheme.primary.onPrimary,
-            textAlign = TextAlign.Center,
-            modifier = modifier.size(24.dp)
+        Box(
+            modifier = modifier
+                .size(24.dp)
                 .clip(CircleShape)
-                .background(dukanColor)
-                .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._2)
-        )
-
+                .background(dukanColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = if (inCartQuantity < 10) "0$inCartQuantity" else "$inCartQuantity",
+                style = Theme.typography.label.small,
+                color = Theme.colorScheme.primary.onPrimary,
+                textAlign = TextAlign.Center
+            )
+        }
         Icon(
             painter = painterResource(Res.drawable.add_icon),
             tint = dukanColor,

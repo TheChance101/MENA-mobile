@@ -389,9 +389,9 @@ class DukanDetailsViewModel(
 
 
     fun refreshProducts() {
+        loadCartInfo()
         if (!state.value.isConfigurationChanges) {
             loadShelvesPaging()
-            loadCartInfo()
             updateState { copy(isConfigurationChanges = true) }
         }
     }

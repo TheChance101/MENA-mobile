@@ -290,7 +290,7 @@ fun MainScreenSections(
                     color = Theme.colorScheme.shadePrimary,
                     modifier = Modifier.padding(
                         top = Theme.spacing._16,
-                        bottom = Theme.spacing._12
+                        bottom = Theme.spacing._4
                     )
                 )
             }

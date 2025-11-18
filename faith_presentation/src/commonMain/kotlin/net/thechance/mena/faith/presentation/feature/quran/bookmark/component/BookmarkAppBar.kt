@@ -8,9 +8,12 @@ import mena.faith_presentation.generated.resources.bookmarks
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun BookmarkAppBar(onBackClick: () -> Unit) {
@@ -28,4 +31,16 @@ fun BookmarkAppBar(onBackClick: () -> Unit) {
         },
         onLeadingClick = onBackClick,
     )
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            BookmarkAppBar(
+                onBackClick = {}
+            )
+        }
+    }
 }

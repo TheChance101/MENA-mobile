@@ -20,12 +20,12 @@ import mena.dukan_presentation.generated.resources.ic_add_dukan
 import mena.dukan_presentation.generated.resources.ic_dukan
 import mena.dukan_presentation.generated.resources.ic_search
 import mena.dukan_presentation.generated.resources.search_icon
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.DukanAppBar
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.viewModel.mainScreen.MainScreenUiState
 import org.jetbrains.compose.resources.painterResource
@@ -40,7 +40,7 @@ fun TopAppBar(
     onSearchIconClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AppBar(
+    DukanAppBar(
         title = stringResource(resource = Res.string.dukan),
         modifier = modifier,
         titleColor = Theme.colorScheme.shadePrimary,

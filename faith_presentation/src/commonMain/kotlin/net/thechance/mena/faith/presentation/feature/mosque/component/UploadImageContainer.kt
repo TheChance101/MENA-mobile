@@ -40,10 +40,10 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 @Composable
 fun UploadImageContainer(
@@ -124,7 +124,6 @@ fun UploadImageContainer(
     }
 }
 
-
 @Composable
 private fun BoxScope.editButtonModifier(): Modifier = Modifier
     .size(40.dp)
@@ -138,11 +137,12 @@ private fun BoxScope.editButtonModifier(): Modifier = Modifier
         shape = RoundedCornerShape(Theme.radius.full)
     )
 
-
 @Preview
 @Composable
-private fun UploadImageContainerPreview() {
+private fun Preview() {
     MenaTheme {
-        UploadImageContainer(onClick = {}, null)
+        QuranTheme {
+            UploadImageContainer(onClick = {}, null)
+        }
     }
 }

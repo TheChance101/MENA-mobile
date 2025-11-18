@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.edit_button_description
@@ -48,7 +47,7 @@ internal fun EditButton(
             painter = painterResource(resource = Res.drawable.ic_edit),
             contentDescription = stringResource(resource = Res.string.edit_button_description),
             modifier = Modifier.size(size = 20.dp),
-            tint = Color.Unspecified
+            tint = Theme.colorScheme.primary.onPrimary,
         )
     }
 }

@@ -28,6 +28,7 @@ import mena.faith_presentation.generated.resources.isha
 import mena.faith_presentation.generated.resources.sunrise_time_label
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -183,68 +184,69 @@ private fun onContinueTilawahClick(
 @Composable
 @Preview
 private fun Preview() {
-    QuranTheme {
-        Content(
-            uiState = MainUiState(
-                prayerTimesUiState = PrayerTimesUiState(
-                    prayers = listOf(
-                        PrayerUiModel(
-                            name = PrayerName.FAJR,
-                            displayName = Res.string.fajr,
-                            time = "06:00",
-                            isAM = true
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = MainUiState(
+                    prayerTimesUiState = PrayerTimesUiState(
+                        prayers = listOf(
+                            PrayerUiModel(
+                                name = PrayerName.FAJR,
+                                displayName = Res.string.fajr,
+                                time = "06:00",
+                                isAM = true
+                            ),
+                            PrayerUiModel(
+                                name = PrayerName.DHUHR,
+                                displayName = Res.string.dhuhr,
+                                time = "12:00",
+                                isAM = false
+                            ),
+                            PrayerUiModel(
+                                name = PrayerName.ASR,
+                                displayName = Res.string.asr,
+                                time = "04:00",
+                                isAM = false
+                            ),
+                            PrayerUiModel(
+                                name = PrayerName.MAGHRIB,
+                                displayName = Res.string.fajr,
+                                time = "06:00",
+                                isAM = false
+                            ),
+                            PrayerUiModel(
+                                name = PrayerName.ISHA,
+                                displayName = Res.string.isha,
+                                time = "08:00",
+                                isAM = false
+                            )
                         ),
-                        PrayerUiModel(
-                            name = PrayerName.DHUHR,
-                            displayName = Res.string.dhuhr,
-                            time = "12:00",
-                            isAM = false
-                        ),
-                        PrayerUiModel(
-                            name = PrayerName.ASR,
-                            displayName = Res.string.asr,
-                            time = "04:00",
-                            isAM = false
-                        ),
-                        PrayerUiModel(
-                            name = PrayerName.MAGHRIB,
-                            displayName = Res.string.fajr,
-                            time = "06:00",
-                            isAM = false
-                        ),
-                        PrayerUiModel(
-                            name = PrayerName.ISHA,
-                            displayName = Res.string.isha,
-                            time = "08:00",
-                            isAM = false
-                        )
+                        nextPrayerIndex = 0
                     ),
-                    nextPrayerIndex = 0
+                    hijriDate = "15 Ramadan 1446",
+                    sunriseTime = "06:00 AM",
+                    tilawahUiState = TilawahUiState(
+                        surahId = 1,
+                        surahName = "Al-Fatihah",
+                        ayahNumber = 3,
+                    ),
+                    address = "street 23 abo ahmed, Baghdad, Iraq"
                 ),
-                hijriDate = "15 Ramadan 1446",
-                sunriseTime = "06:00 AM",
-                tilawahUiState = TilawahUiState(
-                    surahId = 1,
-                    surahName = "Al-Fatihah",
-                    ayahNumber = 3,
-                ),
-                address = "street 23 abo ahmed, Baghdad, Iraq"
-            ),
-            listener = object : MainInteractionListener {
-                override fun onQuranClick() {}
-                override fun onQiblahClick() {}
-                override fun onMosquesClick() {}
-                override fun onPrayerTimeClick() {}
-                override fun onTilawahClick() {}
-                override fun onLocationClick() {}
-                override fun onContinueTilawahClick(
-                    surahId: Int,
-                    surahName: String,
-                    ayahNumber: Int
-                ) {
+                listener = object : MainInteractionListener {
+                    override fun onQuranClick() {}
+                    override fun onQiblahClick() {}
+                    override fun onMosquesClick() {}
+                    override fun onPrayerTimeClick() {}
+                    override fun onTilawahClick() {}
+                    override fun onLocationClick() {}
+                    override fun onContinueTilawahClick(
+                        surahId: Int,
+                        surahName: String,
+                        ayahNumber: Int
+                    ) {
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
-

@@ -43,6 +43,7 @@ fun AnimatedLeadingIcon(isEditMode: Boolean) {
                 painter = painterResource(
                     if (editMode) Res.drawable.ic_cancel else Res.drawable.ic_arrow_left
                 ),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.back_button),
                 modifier = Modifier.size(20.dp)
             )

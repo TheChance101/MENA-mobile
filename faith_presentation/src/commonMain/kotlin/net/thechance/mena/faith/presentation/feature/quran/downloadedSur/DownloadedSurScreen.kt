@@ -17,6 +17,7 @@ import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
 import mena.faith_presentation.generated.resources.ic_ash_shams
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -125,48 +126,50 @@ private fun Content(
 
 @Preview
 @Composable
-private fun PreviewDownloadedSurScreen() {
-    QuranTheme {
-        Content(
-            uiState = DownloadedSurUiState(
-                showDeleteConfirmationDialog = true,
-                surDetails = listOf(
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ad_duha,
-                        "Al-Duha",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_an_nas,
-                        "An-Nas",
-                        listOf("Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_al_kahf,
-                        "Al-Kahf",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ash_shams,
-                        "Ash-Shams",
-                        listOf("Al Minshawi", "Sudais"),
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = DownloadedSurUiState(
+                    showDeleteConfirmationDialog = true,
+                    surDetails = listOf(
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_ad_duha,
+                            "Al-Duha",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_an_nas,
+                            "An-Nas",
+                            listOf("Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_al_kahf,
+                            "Al-Kahf",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_ash_shams,
+                            "Ash-Shams",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
                     ),
                 ),
-            ),
-            snackBar = SnackBarState(),
-            listener =
-                object : DownloadedSurInteractionListener {
-                    override fun onReciterSettingsClick() {}
-                    override fun onDownloadedSurahClick(surahId: Int) {}
-                    override fun onBackClick() {}
-                    override fun onDeleteSurahClick(surahId: Int) {}
-                    override fun onDismissDeleteConfirmationDialog() {}
-                    override fun onConfirmDeleteDownloadedSurahClick() {}
-                },
-        )
+                snackBar = SnackBarState(),
+                listener =
+                    object : DownloadedSurInteractionListener {
+                        override fun onReciterSettingsClick() {}
+                        override fun onDownloadedSurahClick(surahId: Int) {}
+                        override fun onBackClick() {}
+                        override fun onDeleteSurahClick(surahId: Int) {}
+                        override fun onDismissDeleteConfirmationDialog() {}
+                        override fun onConfirmDeleteDownloadedSurahClick() {}
+                    },
+            )
+        }
     }
 }

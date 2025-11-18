@@ -24,14 +24,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_video_description_subtitle
 import mena.trends_presentation.generated.resources.add_video_description_title
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.characters
 import mena.trends_presentation.generated.resources.characters_color_animation_label
 import mena.trends_presentation.generated.resources.hint
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.MultiLineTextField
@@ -39,10 +36,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -136,10 +133,7 @@ private fun DescriptionAppBar(onBackClick: () -> Unit) {
     AppBar(
         title = stringResource(Res.string.new_trend),
         leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
+            BackIcon()
         },
         trailingContent = { UploadPageNumber(page = 2) },
         onLeadingClick = onBackClick

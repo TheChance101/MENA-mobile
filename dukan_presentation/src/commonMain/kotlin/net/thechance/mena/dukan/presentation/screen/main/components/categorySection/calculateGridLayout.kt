@@ -9,20 +9,19 @@ fun calculateGridLayout(
     categories: List<DukanCategoryUiState>,
     rows: Int,
     itemWidth: Dp = 80.dp,
+    itemHeight: Dp = 80.dp,
 ): GridCalculation {
-    val columnsCount = (screenWidth / itemWidth)
-        .toInt()
-        .coerceAtLeast(2)
-
+    val columnsCount = (screenWidth / itemWidth).toInt().coerceAtLeast(2)
     val maxVisibleItems = columnsCount * rows
     val hasMoreItems = categories.size > maxVisibleItems - 1
+    val visibleItems = if (hasMoreItems) categories.take(maxVisibleItems - 1) else categories
 
-    val itemsToShow = if (hasMoreItems) categories.take(maxVisibleItems - 1) else categories
+    val rowHeight = itemHeight * rows
 
     return GridCalculation(
         columnsCount = columnsCount,
-        maxVisibleItems = maxVisibleItems,
+        visibleItems = visibleItems,
         hasMoreItems = hasMoreItems,
-        itemsToShow = itemsToShow
+        rowHeight = rowHeight
     )
 }

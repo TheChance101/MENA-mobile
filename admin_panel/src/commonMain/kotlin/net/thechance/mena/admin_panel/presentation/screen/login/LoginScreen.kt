@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import net.thechance.mena.admin_panel.navigation.DukanManagement
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.navigation.Login
-import net.thechance.mena.admin_panel.navigation.UsersManagement
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginHeader
 import net.thechance.mena.admin_panel.presentation.screen.login.component.LoginScaffold
 import net.thechance.mena.admin_panel.presentation.screen.login.component.PasswordInputField
@@ -79,7 +79,7 @@ private fun onLoginEffect(
 ) {
     when (effect) {
         LoginEffect.NavigateToAdminPanel -> {
-            navController.navigate(UsersManagement) {
+            navController.navigate(DukanManagement) {
                 popUpTo(Login) { inclusive = true }
             }
         }

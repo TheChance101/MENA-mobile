@@ -29,6 +29,7 @@ import mena.faith_presentation.generated.resources.remove_aya
 import mena.faith_presentation.generated.resources.remove_aya_message
 import net.thechance.mena.designsystem.presentation.component.indicator.DotsProgressIndicator
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -161,48 +162,50 @@ private fun LoadingView(modifier: Modifier = Modifier) {
 
 @Composable
 @Preview
-private fun BookmarkScreenPreview() {
-    QuranTheme {
-        Content(
-            uiState = BookMarkUiState(
-                bookmarks = flowOf(
-                    PagingData.from(
-                        listOf(
-                            BookMarkUiState.BookmarkCardUiState(
-                                bookmarkId = 1,
-                                surahName = "Al-Fatihah",
-                                ayaNumber = 3,
-                                ayaText = "الرَّحْمَٰنِ الرَّحِيمِ",
-                                createdAt = TimeAgo(amount = 2, unit = TimeUnit.HOURS)
-                            ),
-                            BookMarkUiState.BookmarkCardUiState(
-                                bookmarkId = 2,
-                                surahName = "Al-Baqarah",
-                                ayaNumber = 255,
-                                ayaText = "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
-                                createdAt = TimeAgo(amount = 1, unit = TimeUnit.DAYS)
-                            ),
-                            BookMarkUiState.BookmarkCardUiState(
-                                bookmarkId = 3,
-                                surahName = "Al-Ikhlas",
-                                ayaNumber = 1,
-                                ayaText = "قُلْ هُوَ اللَّهُ أَحَدٌ",
-                                createdAt = TimeAgo(amount = 3, unit = TimeUnit.DAYS)
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = BookMarkUiState(
+                    bookmarks = flowOf(
+                        PagingData.from(
+                            listOf(
+                                BookMarkUiState.BookmarkCardUiState(
+                                    bookmarkId = 1,
+                                    surahName = "Al-Fatihah",
+                                    ayaNumber = 3,
+                                    ayaText = "الرَّحْمَٰنِ الرَّحِيمِ",
+                                    createdAt = TimeAgo(amount = 2, unit = TimeUnit.HOURS)
+                                ),
+                                BookMarkUiState.BookmarkCardUiState(
+                                    bookmarkId = 2,
+                                    surahName = "Al-Baqarah",
+                                    ayaNumber = 255,
+                                    ayaText = "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ",
+                                    createdAt = TimeAgo(amount = 1, unit = TimeUnit.DAYS)
+                                ),
+                                BookMarkUiState.BookmarkCardUiState(
+                                    bookmarkId = 3,
+                                    surahName = "Al-Ikhlas",
+                                    ayaNumber = 1,
+                                    ayaText = "قُلْ هُوَ اللَّهُ أَحَدٌ",
+                                    createdAt = TimeAgo(amount = 3, unit = TimeUnit.DAYS)
+                                )
                             )
                         )
-                    )
+                    ),
+                    isLoading = false,
+                    error = null
                 ),
-                isLoading = false,
-                error = null
-            ),
-            listener = object : BookmarkInteractionListener {
-                override fun onBackClick() {}
-                override fun onDeleteBookmarkClick(bookmarkId: Int) {}
-                override fun onStartTilawahClick() {}
-                override fun onConfirmDeleteBookmarkClick() {}
-                override fun onDismissDeleteConfirmationDialog() {}
-            },
-            snackBarState = SnackBarState()
-        )
+                listener = object : BookmarkInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onDeleteBookmarkClick(bookmarkId: Int) {}
+                    override fun onStartTilawahClick() {}
+                    override fun onConfirmDeleteBookmarkClick() {}
+                    override fun onDismissDeleteConfirmationDialog() {}
+                },
+                snackBarState = SnackBarState()
+            )
+        }
     }
 }
