@@ -52,6 +52,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
@@ -71,7 +72,7 @@ class MessageRepositoryImplTest {
     private lateinit var cachedMessageDao: CachedMessageDao
     private lateinit var chatSyncTimeDao: ChatSyncTimeDao
     private lateinit var audioMessageSender: AudioMessageSender
-
+    private lateinit var quranService: QuranService
     private lateinit var ayahMessageSender: AyahMessageSender
 
     @BeforeTest
@@ -81,7 +82,7 @@ class MessageRepositoryImplTest {
         pendingMessageDao = mock<PendingMessageDao>()
         chatSyncTimeDao = mock<ChatSyncTimeDao>()
         cachedMessageDao = mock<CachedMessageDao>()
-
+        quranService = mock<QuranService>()
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
             json = jsonSerialization
@@ -104,7 +105,8 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
-            httpClient = httpClient
+            httpClient = httpClient,
+            quranService = quranService
         )
     }
 
@@ -131,6 +133,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         val result = repository.loadMessages(chatId, 1, 40)
@@ -173,6 +176,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
@@ -312,6 +316,7 @@ class MessageRepositoryImplTest {
                 pendingMessageDao = pendingMessageDao,
                 cachedMessageDao = cachedMessageDao,
                 chatSyncTimeDao = chatSyncTimeDao,
+                quranService = quranService
             )
 
             val byteArray = ByteArray(10)
@@ -344,6 +349,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         val byteArray = ByteArray(10)
@@ -383,6 +389,7 @@ class MessageRepositoryImplTest {
                 pendingMessageDao = pendingMessageDao,
                 cachedMessageDao = cachedMessageDao,
                 chatSyncTimeDao = chatSyncTimeDao,
+                quranService = quranService
             )
 
             val audioBytes = ByteArray(1024) { it.toByte() }
@@ -415,6 +422,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         val audioBytes = ByteArray(1024) { it.toByte() }
@@ -449,7 +457,8 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao
+            chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         everySuspend {
@@ -492,7 +501,8 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao
+            chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
         repository.loadMessages(chatId, 0, 10)
         verifySuspend { cachedMessageDao.insertAllMessages(any()) }
@@ -514,7 +524,8 @@ class MessageRepositoryImplTest {
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao
+            chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
         repository.syncAfterLastUpdate(chatId)
         verifySuspend { cachedMessageDao.insertAllMessages(any()) }
@@ -545,6 +556,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
         val result = repository.loadMessages(chatId, 0, 20)
 
@@ -593,6 +605,7 @@ class MessageRepositoryImplTest {
             pendingMessageDao = pendingMessageDao,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
