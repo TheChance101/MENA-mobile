@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.bismillah
 import mena.faith_presentation.generated.resources.ic_bismillah
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -40,10 +41,12 @@ internal fun BasmalaHeader(
     )
 }
 
-@Preview()
+@Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        BasmalaHeader(selectedAyahIndex = 1, onDismissActionButtons = {})
+    MenaTheme {
+        QuranTheme {
+            BasmalaHeader(selectedAyahIndex = 1, onDismissActionButtons = {})
+        }
     }
 }

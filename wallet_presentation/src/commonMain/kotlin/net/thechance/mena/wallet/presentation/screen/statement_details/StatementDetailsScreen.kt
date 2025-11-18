@@ -23,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
 import net.thechance.mena.wallet.presentation.navigation.LocalNavController
 import net.thechance.mena.wallet.presentation.screen.statement_details.components.PdfViewer
@@ -79,12 +80,7 @@ private fun StatementDetailsContent(
             AppBar(
                 title = stringResource(Res.string.statement),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
+                leadingContent = { BackIcon() },
                 onLeadingClick = listener::onNavigateBackClicked,
             )
         },

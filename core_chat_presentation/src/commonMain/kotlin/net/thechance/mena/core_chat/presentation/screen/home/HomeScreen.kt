@@ -1,5 +1,6 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +38,7 @@ import net.thechance.mena.core_chat.presentation.screen.home.components.BalanceS
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatItem
 import net.thechance.mena.core_chat.presentation.screen.home.components.ChatSummaryListSkeleton
 import net.thechance.mena.core_chat.presentation.screen.home.components.NoChatsHistoryView
+import net.thechance.mena.core_chat.presentation.screen.home.components.WeatherAndNextPrayerCard
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
@@ -86,19 +87,23 @@ private fun HomeContent(
         }
     ) {
         Box(modifier = modifier.fillMaxSize()) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
+                modifier = Modifier.padding(top = Theme.spacing._8)
+            ) {
+                WeatherAndNextPrayerCard(
+                    isLoading = state.isPrayerTimeLoading || state.isWeatherLoading,
+                    prayerUiState = state.prayerUiState,
+                    weatherUiState = state.weatherUiState,
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16)
+                )
 
-            when {
-                state.chats.isEmpty() && state.isLoading -> {
-                    ChatSummaryListSkeleton()
-                }
-
-                state.chats.isEmpty() && !state.isLoading -> {
-                    EmptyView()
-                }
-
-                else -> {
-                    ChatSummaryList(listState, state.chats, interactionListener::onChatClicked)
-                }
+                ChatSummaryList(
+                    isLoading = state.isChatsLoading,
+                    listState = listState,
+                    chats = state.chats,
+                    onChatClicked = interactionListener::onChatClicked
+                )
             }
 
             FabButton(
@@ -155,18 +160,38 @@ private fun HomeScreenAppBar(
 }
 
 @Composable
-private fun EmptyView() {
-    Box(
+@OptIn(ExperimentalUuidApi::class)
+private fun ChatSummaryList(
+    isLoading: Boolean,
+    listState: LazyListState,
+    chats: List<ChatUiState>,
+    onChatClicked: (ChatUiState) -> Unit
+) {
+    AnimatedContent(
+        targetState = chats.isEmpty() to isLoading,
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
-    ) {
-        NoChatsHistoryView(modifier = Modifier.padding(Theme.spacing._24))
+    ) { (isEmpty, isLoading) ->
+
+        when {
+            isEmpty && isLoading -> {
+                ChatSummaryListSkeleton()
+            }
+
+            isEmpty && !isLoading -> {
+                NoChatsHistoryView(modifier = Modifier.padding(Theme.spacing._24))
+            }
+
+            else -> {
+                ChatSummaryListContent(listState, chats, onChatClicked)
+            }
+        }
     }
 }
 
 @Composable
 @OptIn(ExperimentalUuidApi::class)
-private fun ChatSummaryList(
+private fun ChatSummaryListContent(
     listState: LazyListState,
     chats: List<ChatUiState>,
     onChatClicked: (ChatUiState) -> Unit

@@ -26,6 +26,7 @@ import mena.faith_presentation.generated.resources.reciter_list
 import mena.faith_presentation.generated.resources.surah_arabic_name_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.PlayButton
 import net.thechance.mena.faith.presentation.components.SwappableCard
@@ -51,10 +52,10 @@ fun DownloadedSurahCard(
             CardContent(
                 surahDetailsUiState = suraDetails,
                 modifier = contentModifier
-                        .background(
-                            color = Theme.colorScheme.background.surfaceLow,
-                            shape = RoundedCornerShape(Theme.radius.md),
-                        )
+                    .background(
+                        color = Theme.colorScheme.background.surfaceLow,
+                        shape = RoundedCornerShape(Theme.radius.md),
+                    )
                     .clip(
                         shape = RoundedCornerShape(Theme.radius.md),
                     )
@@ -73,11 +74,11 @@ private fun CardContent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-                .fillMaxWidth()
-                .padding(
-                    horizontal = Theme.spacing._12,
-                    vertical = Theme.spacing._8,
-                ),
+            .fillMaxWidth()
+            .padding(
+                horizontal = Theme.spacing._12,
+                vertical = Theme.spacing._8,
+            ),
     ) {
         PlayButton(
             painterIcon = painterResource(Res.drawable.ic_play_circle),
@@ -134,17 +135,19 @@ private fun SurahDetails(
 
 @Preview
 @Composable
-private fun PreviewDownloadedSuraItem() {
-    QuranTheme {
-        DownloadedSurahCard(
-            DownloadedSurUiState.SurahDetailsUiState(
-                1,
-                Res.drawable.ic_ad_duha,
-                "Al-Duha",
-                listOf("Al Minshawi", "Sudais"),
-            ),
-            {},
-            {},
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            DownloadedSurahCard(
+                DownloadedSurUiState.SurahDetailsUiState(
+                    1,
+                    Res.drawable.ic_ad_duha,
+                    "Al-Duha",
+                    listOf("Al Minshawi", "Sudais"),
+                ),
+                {},
+                {},
+            )
+        }
     }
 }

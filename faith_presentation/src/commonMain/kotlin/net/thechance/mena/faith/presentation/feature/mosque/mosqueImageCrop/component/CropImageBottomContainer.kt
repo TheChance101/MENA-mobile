@@ -12,6 +12,7 @@ import com.attafitamim.krop.core.images.ImageSrc
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.save
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.stringResource
@@ -45,10 +46,12 @@ internal fun CropImageBottomContainer(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        CropImageBottomContainer(
-            onUploadAnotherImageClicked = {},
-            onSaveClicked = {}
-        )
+    MenaTheme {
+        QuranTheme {
+            CropImageBottomContainer(
+                onUploadAnotherImageClicked = {},
+                onSaveClicked = {}
+            )
+        }
     }
 }

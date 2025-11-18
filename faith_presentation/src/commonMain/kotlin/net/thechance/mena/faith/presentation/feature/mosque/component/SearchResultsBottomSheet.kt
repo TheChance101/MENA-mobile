@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.flow.Flow
-import androidx.paging.PagingData
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_arrow_right
 import mena.faith_presentation.generated.resources.ic_mosque
@@ -36,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import org.jetbrains.compose.resources.painterResource
@@ -155,19 +156,21 @@ private fun SearchResultItem(
 @OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
-private fun SearchResultsBottomSheetPreview() {
+private fun Preview() {
     MenaTheme {
-        Column(modifier = Modifier.padding(16.dp)) {
-            repeat(3) {
-                SearchResultItem(
-                    mosque = MosqueUiState(
-                        id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
-                        name = "Al Eman Mosque",
-                        imageUrl = "",
-                        distance = 12.4,
-                        coordinate = Coordinate(0.0, 0.0)
+        QuranTheme {
+            Column(modifier = Modifier.padding(16.dp)) {
+                repeat(3) {
+                    SearchResultItem(
+                        mosque = MosqueUiState(
+                            id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
+                            name = "Al Eman Mosque",
+                            imageUrl = "",
+                            distance = 12.4,
+                            coordinate = Coordinate(0.0, 0.0)
+                        )
                     )
-                )
+                }
             }
         }
     }

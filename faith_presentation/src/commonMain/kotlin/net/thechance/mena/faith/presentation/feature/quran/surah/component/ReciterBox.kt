@@ -16,6 +16,7 @@ import mena.faith_presentation.generated.resources.cancel_icon
 import mena.faith_presentation.generated.resources.icon_cancel
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -57,11 +58,13 @@ fun ReciterBox(
 
 @Preview
 @Composable
-private fun ReciterPreview() {
-    QuranTheme {
-        ReciterBox(
-            reciterName = "Maytham Al-Tammar",
-            onCancelClick = {}
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            ReciterBox(
+                reciterName = "Maytham Al-Tammar",
+                onCancelClick = {}
+            )
+        }
     }
 }

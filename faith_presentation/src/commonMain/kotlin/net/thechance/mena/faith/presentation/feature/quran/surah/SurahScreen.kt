@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
@@ -128,87 +129,89 @@ private fun Content(
     }
 }
 
-@Composable
 @Preview
+@Composable
 private fun Preview() {
-    QuranTheme {
-        CompositionLocalProvider(LocalNavController provides rememberNavController()) {
-            Content(
-                state = SurahUiState(
-                    surahId = 1,
-                    surahName = "Al-Fatiha",
-                    ayatOfSurah = listOf(
-                        Ayah(
-                            number = 1,
-                            surahId = 1,
-                            content = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-                            plainContent = "بسم الله الرحمن الرحيم"
+    MenaTheme {
+        QuranTheme {
+            CompositionLocalProvider(LocalNavController provides rememberNavController()) {
+                Content(
+                    state = SurahUiState(
+                        surahId = 1,
+                        surahName = "Al-Fatiha",
+                        ayatOfSurah = listOf(
+                            Ayah(
+                                number = 1,
+                                surahId = 1,
+                                content = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+                                plainContent = "بسم الله الرحمن الرحيم"
+                            ),
+                            Ayah(
+                                number = 2,
+                                surahId = 1,
+                                content = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+                                plainContent = "الحمد لله رب العالمين"
+                            ),
+                            Ayah(
+                                number = 3,
+                                surahId = 1,
+                                content = "الرَّحْمَٰنِ الرَّحِيمِ",
+                                plainContent = "الرحمن الرحيم"
+                            ),
+                            Ayah(
+                                number = 4,
+                                surahId = 1,
+                                content = "مَالِكِ يَوْمِ الدِّينِ",
+                                plainContent = "مالك يوم الدين"
+                            ),
+                            Ayah(
+                                number = 5,
+                                surahId = 1,
+                                content = "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+                                plainContent = "إياك نعبد وإياك نستعين"
+                            ),
+                            Ayah(
+                                number = 6,
+                                surahId = 1,
+                                content = "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+                                plainContent = "اهدنا الصراط المستقيم"
+                            ),
+                            Ayah(
+                                number = 7,
+                                surahId = 1,
+                                content = "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+                                plainContent = "صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"
+                            )
                         ),
-                        Ayah(
-                            number = 2,
-                            surahId = 1,
-                            content = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
-                            plainContent = "الحمد لله رب العالمين"
-                        ),
-                        Ayah(
-                            number = 3,
-                            surahId = 1,
-                            content = "الرَّحْمَٰنِ الرَّحِيمِ",
-                            plainContent = "الرحمن الرحيم"
-                        ),
-                        Ayah(
-                            number = 4,
-                            surahId = 1,
-                            content = "مَالِكِ يَوْمِ الدِّينِ",
-                            plainContent = "مالك يوم الدين"
-                        ),
-                        Ayah(
-                            number = 5,
-                            surahId = 1,
-                            content = "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
-                            plainContent = "إياك نعبد وإياك نستعين"
-                        ),
-                        Ayah(
-                            number = 6,
-                            surahId = 1,
-                            content = "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
-                            plainContent = "اهدنا الصراط المستقيم"
-                        ),
-                        Ayah(
-                            number = 7,
-                            surahId = 1,
-                            content = "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
-                            plainContent = "صراط الذين أنعمت عليهم غير المغضوب عليهم ولا الضالين"
-                        )
+                        isBasmalaVisible = true,
+                        selectedAyahNumber = null,
+                        isAyahActionButtonsVisible = false,
+                        initialAyahToScroll = null
                     ),
-                    isBasmalaVisible = true,
-                    selectedAyahNumber = null,
-                    isAyahActionButtonsVisible = false,
-                    initialAyahToScroll = null
-                ),
-                listener = object : SurahInteractionListener {
-                    override fun onBackClick() {}
-                    override fun onDismissActionButtons() {}
-                    override fun onShareClick() {}
-                    override fun onBookmarkClick(ayahNumber: Int) {}
-                    override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
-                    override fun onSearchClick() {}
-                    override fun onListenClick() {}
-                    override fun onReciterClick(surahId: Int) {}
-                    override fun onNextAyahClick() {}
-                    override fun onPlayPauseClick() {}
-                    override fun onRepeatAyahClick() {}
-                    override fun onClosePlayerClick() {}
-                    override fun onPreviousAyahClick() {}
-                    override fun onCopyClick(ayahContent: String) {}
-                    override fun onInitialAyahScrolled() {}
-                    override fun highlightAyah(ayahNumber: Int) {}
-                    override fun updateContinueTilawah(ayahNumber: Int) {}
-                    override fun onConfigrationChange() {}
-                    override fun playSurah(surahNumber: Int) {}
-                },
-                snackBarState = SnackBarState()
-            )
+                    listener = object : SurahInteractionListener {
+                        override fun onBackClick() {}
+                        override fun onDismissActionButtons() {}
+                        override fun onShareClick() {}
+                        override fun onBookmarkClick(ayahNumber: Int) {}
+                        override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
+                        override fun onSearchClick() {}
+                        override fun onListenClick() {}
+                        override fun onReciterClick(surahId: Int) {}
+                        override fun onNextAyahClick() {}
+                        override fun onPlayPauseClick() {}
+                        override fun onRepeatAyahClick() {}
+                        override fun onClosePlayerClick() {}
+                        override fun onPreviousAyahClick() {}
+                        override fun onCopyClick(ayahContent: String) {}
+                        override fun onInitialAyahScrolled() {}
+                        override fun highlightAyah(ayahNumber: Int) {}
+                        override fun updateContinueTilawah(ayahNumber: Int) {}
+                        override fun onConfigrationChange() {}
+                        override fun playSurah(surahNumber: Int) {}
+                    },
+                    snackBarState = SnackBarState()
+                )
+            }
         }
     }
 }

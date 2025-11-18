@@ -28,7 +28,7 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-    LaunchedEffect(!state.isConfigurationChanges) {
+    LaunchedEffect(Unit) {
         viewModel.refreshProducts()
     }
 

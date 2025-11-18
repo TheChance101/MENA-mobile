@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.upload_another_image
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.stringResource
@@ -47,11 +48,13 @@ internal fun UploadAnotherImageButton(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
-            UploadAnotherImageButton(onClick = {})
+    MenaTheme {
+        QuranTheme {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                UploadAnotherImageButton(onClick = {})
+            }
         }
     }
 }

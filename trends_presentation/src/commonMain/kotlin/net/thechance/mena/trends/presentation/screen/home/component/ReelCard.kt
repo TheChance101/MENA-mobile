@@ -94,7 +94,7 @@ private fun ReelHeaderSection(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._8),
+                .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._12),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(

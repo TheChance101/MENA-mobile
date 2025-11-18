@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.aya
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.components.DotSeparator
 import net.thechance.mena.faith.presentation.components.getAyahTextStyle
@@ -69,12 +70,14 @@ private fun SurahAndAyaInfo(
 
 @Preview
 @Composable
-private fun SearchResultCardPreview() {
-    QuranTheme {
-        SearchResultCard(
-            surahName = "Al-Fatiha",
-            ayaNumber = 5,
-            ayaText = "اهدِنَــــا الصِّرَاطَ المُستَقِيمَ",
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            SearchResultCard(
+                surahName = "Al-Fatiha",
+                ayaNumber = 5,
+                ayaText = "اهدِنَــــا الصِّرَاطَ المُستَقِيمَ",
+            )
+        }
     }
 }

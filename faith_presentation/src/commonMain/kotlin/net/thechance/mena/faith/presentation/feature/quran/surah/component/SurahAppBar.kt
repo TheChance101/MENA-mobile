@@ -9,6 +9,7 @@ import mena.faith_presentation.generated.resources.ic_search
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -47,10 +48,12 @@ internal fun SurahAppBar(
     )
 }
 
-@Preview()
+@Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        SurahAppBar(surahName = "الفاتحة", onSearchClick = {}, onBackClick = {})
+    MenaTheme {
+        QuranTheme {
+            SurahAppBar(surahName = "الفاتحة", onSearchClick = {}, onBackClick = {})
+        }
     }
 }
