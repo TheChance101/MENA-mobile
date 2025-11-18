@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -148,11 +149,13 @@ private fun FlowItem(
                 stringResource(Res.string.silvers)
             ),
             style = Theme.typography.label.extraSmall,
+            softWrap = false,
             color = color,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = label,
+            softWrap = false,
             style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeSecondary
         )
