@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.model.PrivacyAndPolicy
 import net.thechance.mena.identity.domain.model.Section
-import net.thechance.mena.identity.domain.repository.PrivacyAndPolicyRepository
+import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
 class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val privacyRepository = mockk<PrivacyAndPolicyRepository>()
+    private val applicationInfoRepository = mockk<ApplicationInfoRepository>()
     private lateinit var viewModel: PrivacyAndPolicyScreenViewModel
 
 
@@ -27,7 +27,7 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
     override fun setUp() {
         super.setUp()
         viewModel = PrivacyAndPolicyScreenViewModel(
-            policyRepository = privacyRepository,
+            applicationInfoRepository = applicationInfoRepository,
             dispatcher = testDispatcher
         )
     }
@@ -50,7 +50,7 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
     @Test
     fun `getPrivacyAndPolicy() should update state when get privacy and policy successfully`() =
         runTest {
-            coEvery { privacyRepository.getPrivacyAndPolicy() } returns fakePrivacyAndPolicy
+            coEvery { applicationInfoRepository.getPrivacyAndPolicy() } returns fakePrivacyAndPolicy
             testDispatcher.scheduler.advanceUntilIdle()
             assert(viewModel.state.value.privacyAndPolicySections.isNotEmpty())
         }
@@ -58,7 +58,7 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
     @Test
     fun `getPrivacyAndPolicy() should update error message when get privacy and policy throws exception`() =
         runTest {
-            coEvery { privacyRepository.getPrivacyAndPolicy() } throws UnAuthorizedException()
+            coEvery { applicationInfoRepository.getPrivacyAndPolicy() } throws UnAuthorizedException()
             testDispatcher.scheduler.advanceUntilIdle()
             val state = viewModel.state.value
             assertTrue { state.errorMessage != null }

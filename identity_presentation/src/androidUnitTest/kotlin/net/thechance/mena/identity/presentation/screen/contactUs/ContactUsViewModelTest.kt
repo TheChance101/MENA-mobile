@@ -1,25 +1,78 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
 import app.cash.turbine.test
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.exception.NoNetworkException
+import net.thechance.mena.identity.domain.model.ContactInfo
+import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
 import org.junit.Before
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-
 class ContactUsViewModelTest {
-    private val viewModel = ContactUsViewModel()
+
+    private val applicationInfoRepository: ApplicationInfoRepository = mockk(relaxed = true)
+    private lateinit var viewModel: ContactUsViewModel
     private val testDispatcher: TestDispatcher = StandardTestDispatcher()
+    private val fakeContactInfo = ContactInfo(
+        email = "test@email.com",
+        phoneNumber = "123456789",
+        facebookAccount = "https://www.facebook.com/test"
+    )
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        coEvery { applicationInfoRepository.getContactInfo() } returns fakeContactInfo
+        viewModel = ContactUsViewModel(applicationInfoRepository, testDispatcher)
+    }
+
+    @Test
+    fun `getContactInfo should update state with contact details on success`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val currentState = viewModel.state.value
+        assertFalse(currentState.isLoading)
+        assertEquals(fakeContactInfo.email, currentState.email)
+        assertEquals(fakeContactInfo.phoneNumber, currentState.phoneNumber)
+        assertEquals(fakeContactInfo.facebookAccount, currentState.facebookUrl)
+    }
+
+    @Test
+    fun `getContactInfo should update error message on failure`() = runTest {
+        val error = NoNetworkException()
+        coEvery { applicationInfoRepository.getContactInfo() } throws error
+        viewModel = ContactUsViewModel(applicationInfoRepository, testDispatcher)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val currentState = viewModel.state.value
+        assertFalse(currentState.isLoading)
+        assertNotNull(currentState.errorMessage)
+    }
+
+    @Test
+    fun `onClearErrorMessage should set errorMessage to null`() = runTest {
+        val error = NoNetworkException()
+        coEvery { applicationInfoRepository.getContactInfo() } throws error
+        viewModel = ContactUsViewModel(applicationInfoRepository, testDispatcher)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertNotNull(viewModel.state.value.errorMessage)
+
+        viewModel.onClearErrorMessage()
+        assertNull(viewModel.state.value.errorMessage)
     }
 
     @Test
@@ -35,6 +88,7 @@ class ContactUsViewModelTest {
 
     @Test
     fun `should open mail app when click on email address`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
         viewModel.effect.test {
             viewModel.onClickEmailAddress()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -46,6 +100,7 @@ class ContactUsViewModelTest {
 
     @Test
     fun `should open dialer app when click on mobile number`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
         viewModel.effect.test {
             viewModel.onClickPhoneNumber()
             testDispatcher.scheduler.advanceUntilIdle()
@@ -57,12 +112,16 @@ class ContactUsViewModelTest {
 
     @Test
     fun `should open browser app when click on facebook account`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
         viewModel.effect.test {
             viewModel.onClickFacebookAccount()
             testDispatcher.scheduler.advanceUntilIdle()
+
             val effect = awaitItem()
-            assertTrue { effect is ContactUsUIEffect.OpenUrl && isValidFacebookUrl(effect.url) }
-            cancelAndConsumeRemainingEvents()
+            assertTrue {
+                effect is ContactUsUIEffect.OpenUrl &&
+                        isValidFacebookUrl(effect.url)
+            }
         }
     }
 
@@ -70,5 +129,6 @@ class ContactUsViewModelTest {
 
     private fun isValidPhoneUrl(url: String): Boolean = url.startsWith("tel:")
 
-    private fun isValidFacebookUrl(url: String): Boolean = url.startsWith("https://www.facebook.com")
+    private fun isValidFacebookUrl(url: String): Boolean =
+        url.startsWith("https://www.facebook.com")
 }

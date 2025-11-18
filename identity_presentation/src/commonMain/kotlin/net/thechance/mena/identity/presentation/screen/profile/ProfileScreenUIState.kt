@@ -18,6 +18,7 @@ data class ProfileScreenUIState(
     val isSuccess: Boolean = false,
     val errorMessage: StringResource? = null,
     val snackBarUiState: SnackBarUiState = SnackBarUiState(),
+    val currentLanguage: AppLanguage = AppLanguage.DEFAULT,
     val currentTheme: AppTheme = AppTheme.DEFAULT,
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState(),
     val themeDialogUiState: ThemeDialogUiState = ThemeDialogUiState()
@@ -25,7 +26,7 @@ data class ProfileScreenUIState(
 
 data class LanguageDialogUiState(
     val isVisible: Boolean = false,
-    val selectedAppLanguage: AppLanguage = AppLanguage.ENGLISH,
+    val selectedAppLanguage: AppLanguage = AppLanguage.DEFAULT,
     val options: List<AppLanguage> = AppLanguage.entries.filterNot { it == AppLanguage.DEFAULT },
 )
 

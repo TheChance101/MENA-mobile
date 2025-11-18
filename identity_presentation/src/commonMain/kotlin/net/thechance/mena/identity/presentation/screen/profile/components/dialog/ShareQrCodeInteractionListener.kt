@@ -7,4 +7,5 @@ interface ShareQrCodeInteractionListener {
     fun onClickDownload(byteArray: ByteArray)
     fun onClickCopyToClipboard(clipboard: Clipboard)
     fun onShowSnackBar(title: StringResource, message: StringResource)
+    fun onDismissSnackBar()
 }
