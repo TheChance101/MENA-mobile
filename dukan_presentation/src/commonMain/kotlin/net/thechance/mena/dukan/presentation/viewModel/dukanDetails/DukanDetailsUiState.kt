@@ -14,15 +14,17 @@ data class DukanDetailsUiState(
     val shelfIdSelected: String? = null,
     val dukanDetailsState: DukanDetailsState = DukanDetailsState.LOADING,
     val snackBarState: SnackBarUiState? = null,
-    val error: Throwable? =null,
+    val error: Throwable? = null,
     val hasProductInCart: Boolean = false,
+    val shelfProductsLimited: Map<String, List<ProductUiState>> = emptyMap(),
+    val productQuantity: Map<String, Int> = emptyMap(),
+    val isConfigurationChanges: Boolean = true
 ) {
     data class DukanInfo(
         val dukanId: String = "",
         val name: String = "",
         val imageUrl: String = "",
         val isFavorite: Boolean = false,
-
         val style: Style = Style.NO_IMAGE,
         val color: Long = 0L,
         val coordinates: Coordinates = Coordinates(),
@@ -41,9 +43,7 @@ data class DukanDetailsUiState(
 
     data class ShelfUiState(
         val id: String = "",
-        val name: String = "",
-        val products: List<ProductUiState> = emptyList(),
-        val isProductsLoaded: Boolean = false
+        val name: String = ""
     )
 
 

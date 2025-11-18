@@ -15,9 +15,14 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchEffect
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.SearchViewModel
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.args.SearchArgs
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,6 +38,9 @@ class SearchViewModelTest {
 
     @BeforeTest
     fun setup() {
+        startKoin {
+            modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+        }
         testDispatcher = StandardTestDispatcher()
         everySuspend { searchArgs.surahId } returns null
         everySuspend { searchArgs.surahName } returns null
@@ -43,6 +51,11 @@ class SearchViewModelTest {
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test
@@ -216,9 +229,8 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun `state should initialize with correct surahId and surahName from args`() = runTest {
+    fun `state should initialize with correct surahId from args`() = runTest {
         everySuspend { searchArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { searchArgs.surahName } returns TEST_SURAH_NAME
         testViewModel = SearchViewModel(
             searchArgs = searchArgs,
             repository = quranRepository,
@@ -227,7 +239,6 @@ class SearchViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
-        assertEquals(TEST_SURAH_NAME, testViewModel.uiState.value.surahName)
     }
 
     @Test

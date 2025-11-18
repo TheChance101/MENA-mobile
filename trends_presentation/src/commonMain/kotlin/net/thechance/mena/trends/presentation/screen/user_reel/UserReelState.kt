@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 
@@ -29,4 +30,12 @@ internal data class UserReelUiState(
     val createdAt: TimeAgoValue? = null,
     val isCurrentUserOwner: Boolean = false,
     val isLiked: Boolean = false
+)
+
+data class ReelWatchSessionState(
+    var reelId: String = "",
+    var watchStartTime: LocalDateTime? = null,
+    var watchEndTime: LocalDateTime? = null,
+    var videoDurationInMilliseconds: Long = 0L,
+    var watchedDurationInMilliseconds: Long = 0L
 )

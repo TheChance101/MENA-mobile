@@ -75,8 +75,8 @@ private fun ProductDetailsInfoContent(
         text = state.name,
         style = Theme.typography.title.medium,
         color = Theme.colorScheme.shadePrimary,
-        textAlign = TextAlign.Center,
-        modifier = Modifier
+        textAlign = TextAlign.Start,
+        maxLines = 2,
     )
     ProductDetailsPriceRow(
         price = state.price.toString(),

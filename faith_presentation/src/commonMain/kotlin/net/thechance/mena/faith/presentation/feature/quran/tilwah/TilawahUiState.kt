@@ -6,6 +6,7 @@ data class TilawahUiState(
     val surahId: Int? = null,
     val reciters: List<ReciterUi> = emptyList(),
     val selectedReciterId: Int? = null,
+    val isSwipeable: Boolean = false,
     )
 
 data class ReciterUi(

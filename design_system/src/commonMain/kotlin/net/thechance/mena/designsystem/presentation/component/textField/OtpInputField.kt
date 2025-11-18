@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -102,16 +103,25 @@ fun OtpInputField(
 }
 
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 private fun OtpInputFieldPreview() {
     MenaTheme {
-        OtpInputField(
-            number = null,
-            onFocusChanged = {},
-            onPressDeleteWhenEmpty = {},
-            onNumberChanged = {},
-            focusRequester = FocusRequester()
-        )
+        PreviewComponent(
+            title = "OTP"
+        ) {
+            OtpInputField(
+                number = null,
+                onNumberChanged = { },
+            )
+            OtpInputField(
+                number = 1,
+                onNumberChanged = { },
+            )
+            OtpInputField(
+                number = 2,
+                onNumberChanged = { },
+            )
+        }
     }
 }

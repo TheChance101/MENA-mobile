@@ -24,8 +24,7 @@ import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.domain.util.getCurrentDate
 import net.thechance.mena.identity.domain.util.orCurrent
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
@@ -300,7 +299,7 @@ class EditUserProfileViewModel(
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
             is AuthenticationException -> {
-                mapAuthenticationErrorToMessage(handleAuthenticationException(throwable))
+                mapAuthenticationErrorToMessage(handleEditUserProfileException(throwable))
             }
 
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))

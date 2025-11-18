@@ -16,13 +16,10 @@ interface QuranRepository {
     suspend fun searchForReciter(query: String): List<Reciter>
     suspend fun getAyahSoundUrl(ayahNumber: Int, surahNumber: Int, reciterId: Int): String
     suspend fun isSurahAudioCached(surahId: Int, reciterId: Int): Boolean
-
+    suspend fun getSurahById(surahId: Int): Surah
     suspend fun getSurahAudioCachePath(surahId: Int, reciterId: Int): String?
-
     suspend fun saveSurahAudioToCache(surahId: Int, reciterId: Int, localPath: String)
-
     suspend fun deleteSurahWithSpecificReciter(surahId: Int)
-
     suspend fun getRemoteSurahSoundUrl(surahId: Int, reciterId: Int): String
     suspend fun getReciters(): List<Reciter>
     suspend fun getReciterById(reciterId: Int): Reciter

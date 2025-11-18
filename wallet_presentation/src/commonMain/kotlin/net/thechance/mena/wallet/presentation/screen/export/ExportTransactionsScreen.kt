@@ -19,6 +19,7 @@ import mena.wallet_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
@@ -62,12 +63,7 @@ private fun ExportTransactionScreenContent(
             AppBar(
                 title = stringResource(Res.string.export_transactions),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
+                leadingContent = { BackIcon() },
                 onLeadingClick = interactionListener::onBackClicked,
             )
         },

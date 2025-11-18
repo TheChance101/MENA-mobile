@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.mapper
 
-import net.thechance.mena.identity.presentation.base.error.ProfileErrorState
+import net.thechance.mena.identity.presentation.base.errorState.ProfileErrorState
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_camera_permission_required
 import mena.identity_presentation.generated.resources.error_first_name_required

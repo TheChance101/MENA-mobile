@@ -1,13 +1,9 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
 import app.cash.turbine.test
-import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -16,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ImageCropperComponentViewModelTest {
 
     private val minScale = 1.0f
@@ -91,11 +88,9 @@ class ImageCropperComponentViewModelTest {
     fun `zoomBy should add pan to translation`() {
         val initialTranslation = viewModel.state.translation
         val pan = Offset(5f, 10f)
-        val expectedTranslation = initialTranslation + pan
 
         viewModel.zoomBy(1.0f, pan)
 
-        // Translation may be constrained, so check it's updated
         assertTrue(viewModel.state.translation.x != initialTranslation.x || viewModel.state.translation.y != initialTranslation.y)
     }
 
@@ -186,28 +181,25 @@ class ImageCropperComponentViewModelTest {
 
     @Test
     fun `onUploadAnotherImageClicked should emit UploadAnotherImage effect`() = runTest {
-        val imageBitmap = mockk<ImageBitmap>()
+        val byteArray = byteArrayOf(0)
 
         viewModel.effect.test {
-            viewModel.onUploadAnotherImageClicked(imageBitmap)
+            viewModel.onUploadAnotherImageClicked(byteArray)
 
             val effect = awaitItem()
             assertTrue(effect is ImageCropperComponentEffect.UploadAnotherImage)
-            assertEquals(imageBitmap, (effect as ImageCropperComponentEffect.UploadAnotherImage).imageBitmap)
+            assertEquals(byteArray, effect.imageByteArray)
         }
     }
 
     @Test
-    @org.junit.Ignore("Requires Android runtime for ImageBitmap creation")
     fun `cropToBitmap should emit SaveImage effect`() = runTest {
-        val painter = mockk<Painter>(relaxed = true)
-        val density = mockk<Density>(relaxed = true)
-        val layoutDirection = LayoutDirection.Ltr
+        val byteArray = byteArrayOf(0)
         viewModel.updateComponentSize(IntSize(200, 200))
         viewModel.state = viewModel.state.copy(imageSize = IntSize(100, 100))
 
         viewModel.effect.test {
-            viewModel.cropToBitmap(painter, density, layoutDirection)
+            viewModel.saveImageToGallery(byteArray)
             advanceUntilIdle()
 
             val effect = awaitItem()

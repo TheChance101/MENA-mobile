@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
@@ -40,7 +40,6 @@ fun AddToCartSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
-            .height(120.dp)
             .background(Theme.colorScheme.background.surface)
             .padding(
                 top = Theme.spacing._8,
@@ -54,6 +53,7 @@ fun AddToCartSection(
         ProductQuantityButton(
             onPlusClick = onPlusClick,
             onMinusClick = onMinusClick,
+            dukanColor = Color(state.dukanColor),
             inCartQuantity = state.product.inCartQuantity,
             backgroundColor = Theme.colorScheme.background.surfaceHigh,
             iconPadding = PaddingValues(Theme.spacing._8 + Theme.spacing._2)
@@ -71,7 +71,7 @@ fun AddToCartSection(
                 Theme.colorScheme.primary.primary
             ),
             shape = SquircleShape(Theme.radius.md),
-            containerColor = Theme.colorScheme.primary.primary,
+            containerColor = Color(state.dukanColor),
             disabledContainerColor = Theme.colorScheme.disabled,
             disabledContentColor = Theme.colorScheme.textDisabled ,
         ) {
@@ -95,12 +95,12 @@ fun AddToCartSection(
                 )
                 Column {
                     Text(
-                        text = "$${state.product.price}",
+                        text = "${state.product.price}$",
                         style = Theme.typography.label.small,
                         color = Theme.colorScheme.primary.onPrimary,
                     )
                     Text(
-                        text = "$${state.product.price}",
+                        text = "${state.product.price}$",
                         style = Theme.typography.label.small.copy(
                             textDecoration = TextDecoration.LineThrough
                         ),

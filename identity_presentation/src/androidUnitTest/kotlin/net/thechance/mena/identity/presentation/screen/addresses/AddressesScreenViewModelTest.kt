@@ -14,11 +14,11 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.mapper.toEntity
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test

@@ -25,7 +25,7 @@ object PreviewProductDetailsInteractionListener : ProductDetailsInteractionListe
     override fun onViewCartClicked() {
     }
 
-    override fun onSecondaryImageClicked(imageUrl: String) {
+    override fun onSecondaryImageClicked(imageUrl: String, selectedImageUrl: String) {
     }
 
     override fun onRetryClicked() {

@@ -15,6 +15,7 @@ import io.ktor.http.contentType
 internal suspend inline fun <reified R> HttpClient.getJson(
     path: String,
     queryParams: Map<String, String> = emptyMap(),
+    headerParams: Map<String, String> = emptyMap(),
 ): R {
     val response = this.get {
         url(path)
@@ -23,7 +24,12 @@ internal suspend inline fun <reified R> HttpClient.getJson(
             url.parameters.append(query.key, query.value)
         }
 
+        headerParams.forEach { header ->
+            headers.append(header.key, header.value)
+        }
+
         contentType(ContentType.Application.Json)
+
     }
 
     if (response.status != HttpStatusCode.OK) {

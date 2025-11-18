@@ -3,6 +3,7 @@ package net.thechance.mena.trends.domain.repository
 import kotlinx.coroutines.flow.SharedFlow
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 
 interface ReelsRepository {
@@ -19,4 +20,6 @@ interface ReelsRepository {
     suspend fun removeReelLike(reelId: String)
     suspend fun addReelView(reelId: String)
     suspend fun getReelUrls(reelId: String): ReelUrls
+    suspend fun saveUserEngagementWithReel(reelWatchSession: ReelWatchSession)
+    suspend fun getFavoriteReels(pageNumber: Int, reelId: String? = null): List<Reel>
 }

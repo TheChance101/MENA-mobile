@@ -119,7 +119,7 @@ private fun TimeInfo(createdAt: String) {
 
 @Preview
 @Composable
-private fun AyahBookmarkCardPreview() {
+private fun Preview() {
     MenaTheme {
         QuranTheme {
             AyaBookmarkCard(

@@ -19,6 +19,7 @@ import mena.faith_presentation.generated.resources.location
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -58,7 +59,8 @@ fun MainTopBar(
                 Text(
                     text = locationName,
                     color = Theme.colorScheme.shadePrimary,
-                    style = Theme.typography.label.small
+                    style = Theme.typography.label.small,
+                    maxLines = 1
                 )
             }
         }
@@ -68,10 +70,12 @@ fun MainTopBar(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        MainTopBar(
-            locationName = "Palestine, Gaza",
-            onLocationChange = {}
-        )
+    MenaTheme {
+        QuranTheme {
+            MainTopBar(
+                locationName = "Palestine, Gaza",
+                onLocationChange = {}
+            )
+        }
     }
 }

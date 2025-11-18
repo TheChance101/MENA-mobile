@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import org.jetbrains.compose.resources.painterResource
@@ -119,19 +120,21 @@ private fun MosqueDetailsContent(
 @OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
-private fun MosqueDetailsBottomSheetPreview() {
+private fun Preview() {
     MenaTheme {
-        MosqueDetailsContent(
-            mosque = MosqueUiState(
-                id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
-                name = "Al Eman Mosque",
-                imageUrl = "",
-                distance = 12.4,
-                coordinate = Coordinate(
-                    latitude = 0.0,
-                    longitude = 0.0
+        QuranTheme {
+            MosqueDetailsContent(
+                mosque = MosqueUiState(
+                    id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
+                    name = "Al Eman Mosque",
+                    imageUrl = "",
+                    distance = 12.4,
+                    coordinate = Coordinate(
+                        latitude = 0.0,
+                        longitude = 0.0
+                    )
                 )
             )
-        )
+        }
     }
 }

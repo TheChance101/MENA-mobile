@@ -8,7 +8,6 @@ import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.feature.quran.tilwah.component.args.TilawahSurahArgs
 
 class TilawahViewModel(
@@ -16,8 +15,12 @@ class TilawahViewModel(
     private val surahArgs: TilawahSurahArgs,
     private val downloadManager: DownloadSurahManager,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseViewModel<TilawahUiState, TilawahEffect>(TilawahUiState(surahId = surahArgs.surahId)),
-    TilawahInteractionListener {
+) : BaseViewModel<TilawahUiState, TilawahEffect>(
+    initialState = TilawahUiState(
+        surahId = surahArgs.surahId,
+        isSwipeable = surahArgs.isSwipeToDeleteEnabled,
+    ),
+), TilawahInteractionListener {
 
     init {
         getAllReciters()
@@ -28,7 +31,6 @@ class TilawahViewModel(
         tryToExecute(
             execute = { quranRepository.getDefaultReciter() },
             onSuccess = { reciterId -> updateSelectedReciter(reciterId.first()) },
-            onError = ::handleError
         )
     }
 
@@ -45,7 +47,6 @@ class TilawahViewModel(
                 }
             },
             onSuccess = { onDownloadComplete(reciterId) },
-            onError = ::handleError,
             dispatcher = dispatcher
         )
     }
@@ -73,7 +74,6 @@ class TilawahViewModel(
         tryToExecute(
             execute = { quranRepository.saveDefaultReciter(reciterId) },
             onSuccess = { updateSelectedReciter(reciterId) },
-            onError = ::handleError
         )
     }
 
@@ -89,10 +89,6 @@ class TilawahViewModel(
         updateState { state ->
             state.copy(selectedReciterId = reciterId)
         }
-    }
-
-    private fun handleError(errorState: ErrorState) {
-        println("Error: $errorState")
     }
 
     private suspend fun getAllRecitersSuccessfully(reciters: List<Reciter>) {

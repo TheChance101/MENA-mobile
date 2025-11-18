@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.data.repository
 
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.http.HttpStatusCode
 import net.thechance.mena.identity.data.dto.resetPassword.request.OtpRequestDto
 import net.thechance.mena.identity.data.dto.resetPassword.response.OtpResponse
 import net.thechance.mena.identity.data.dto.resetPassword.request.ResetPasswordRequestDto
@@ -10,9 +8,6 @@ import net.thechance.mena.identity.data.dto.resetPassword.request.VerifyOtpReque
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
-import net.thechance.mena.identity.domain.exception.InvalidMobileNumberException
-import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OtpExpiredException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 
 class ResetPasswordRepositoryImpl(
@@ -21,7 +16,7 @@ class ResetPasswordRepositoryImpl(
     private var sessionId = ""
 
     override suspend fun requestOTP(phoneNumber: PhoneNumber, countryCodeName: String) {
-        forgetPasswordSafeWrapper {
+        safeWrapper {
             val response: OtpResponse =
                 client.postJson(
                     OtpRequestDto(
@@ -34,7 +29,7 @@ class ResetPasswordRepositoryImpl(
     }
 
     override suspend fun verifyOTPCode(otpCode: String) {
-        forgetPasswordSafeWrapper<String> {
+        safeWrapper<String> {
             client.postJson(
                 VerifyOtpRequestDto(
                     otpCode,
@@ -45,26 +40,11 @@ class ResetPasswordRepositoryImpl(
     }
 
     override suspend fun resetPassword(newPassword: String, confirmPassword: String) {
-        forgetPasswordSafeWrapper<String> {
+        safeWrapper<String> {
             client.postJson(
                 ResetPasswordRequestDto(newPassword, confirmPassword, sessionId),
                 RESET_PASSWORD
             )
-        }
-    }
-
-    private suspend fun <T> forgetPasswordSafeWrapper(block: suspend () -> T): T {
-        return safeWrapper {
-            try {
-                return@safeWrapper block()
-            } catch (e: ClientRequestException) {
-                when (e.response.status) {
-                    HttpStatusCode.Unauthorized -> throw InvalidOTPException()
-                    HttpStatusCode.NotFound -> throw InvalidMobileNumberException("")
-                    HttpStatusCode.BadRequest -> throw OtpExpiredException()
-                    else -> throw e
-                }
-            }
         }
     }
 

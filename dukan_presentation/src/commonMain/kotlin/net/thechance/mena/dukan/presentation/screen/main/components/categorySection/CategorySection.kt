@@ -7,11 +7,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.menu_circle
+import mena.dukan_presentation.generated.resources.ic_view_more
 import mena.dukan_presentation.generated.resources.view_more
-import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.CategoryCard
 import net.thechance.mena.dukan.presentation.util.getScreenWidth
@@ -26,32 +26,35 @@ fun CategorySection(
     rows: Int = 2,
     onCategoryClick: (categoryID: String, categoryName: String) -> Unit,
     onViewMoreClick: () -> Unit,
+    itemWidth: Dp = 80.dp,
     modifier: Modifier = Modifier
 ) {
     val gridLayout = calculateGridLayout(
         screenWidth = getScreenWidth(),
         categories = categories,
         rows = rows,
+        itemHeight = itemWidth + 50.dp
     )
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(gridLayout.columnsCount),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        modifier = modifier.heightIn(max = 200.dp),
+        modifier = modifier.heightIn(max = gridLayout.rowHeight)
     ) {
-        items(gridLayout.itemsToShow) { category ->
+        items(gridLayout.visibleItems) { category ->
             CategoryCard(
                 title = category.name,
                 imageUrl = category.imageUrl,
                 onClick = { onCategoryClick(category.id, category.name) }
             )
         }
+
         if (gridLayout.hasMoreItems) {
             item {
                 MoreCategoryCard(
                     title = stringResource(Res.string.view_more),
-                    image = painterResource(Res.drawable.menu_circle),
+                    image = painterResource(Res.drawable.ic_view_more),
                     onClick = onViewMoreClick
                 )
             }
@@ -62,15 +65,12 @@ fun CategorySection(
 @Preview
 @Composable
 private fun CategorySectionPreview() {
-    MenaTheme {
-        CategorySection(
-            fakeCategories(),
-            onCategoryClick = { _, _ -> },
-            onViewMoreClick = {},
-        )
-    }
+    CategorySection(
+        categories = fakeCategories(),
+        onCategoryClick = { _, _ -> },
+        onViewMoreClick = {}
+    )
 }
-
 
 fun fakeCategories() = listOf(
     DukanCategoryUiState(

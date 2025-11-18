@@ -27,7 +27,7 @@ fun ManageDukanProductsList(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = Theme.spacing._8),
+            .padding(top = Theme.spacing._4),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {

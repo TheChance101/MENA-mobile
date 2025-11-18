@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import net.thechance.mena.designsystem.presentation.theme.color.scheme.ColorScheme
+import net.thechance.mena.designsystem.presentation.theme.color.scheme.DarkColorScheme
 import net.thechance.mena.designsystem.presentation.theme.color.scheme.LightColorScheme
 import net.thechance.mena.designsystem.presentation.theme.color.scheme.LocalColorScheme
 import net.thechance.mena.designsystem.presentation.theme.radius.LocalRadius
@@ -19,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.theme.typography.LocalTypogr
 import net.thechance.mena.designsystem.presentation.theme.typography.Typography
 import net.thechance.mena.designsystem.presentation.theme.typography.createThemeTypography
 import net.thechance.mena.designsystem.presentation.util.AppLanguage
+import net.thechance.mena.designsystem.presentation.util.AppTheme
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.InternalResourceApi
 
@@ -26,9 +28,10 @@ import org.jetbrains.compose.resources.InternalResourceApi
 @Composable
 fun MenaTheme(
     language: String = AppLanguage.English.iso,
+    appTheme: String = AppTheme.DARK.name,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = LightColorScheme
+    val colorScheme = remember(appTheme) { if (appTheme== AppTheme.DARK.name) DarkColorScheme else LightColorScheme }
     val typography = createThemeTypography(language)
     val layoutDirection = remember(language) {
         if (language == AppLanguage.Arabic.iso) LayoutDirection.Rtl else LayoutDirection.Ltr

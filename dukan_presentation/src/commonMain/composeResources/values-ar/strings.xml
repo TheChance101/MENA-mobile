@@ -91,6 +91,7 @@
     <string name="product_name">اسم المنتج</string>
     <string name="shelf">الرف</string>
     <string name="price">السعر</string>
+    <string name="price_after_discount">السعر بعد التخفيض</string>
     <string name="description">الوصف</string>
     <string name="image_1_1">صورة (1:1)</string>
     <string name="one_selection_for_each_product">اختيار واحد لكل منتج</string>
@@ -179,4 +180,8 @@
     <string name="checkout_dialog_description">هذه الميزة لم يتم تنفيذها بعد.</string>
     <string name="back_to_dukan_screen_icon">أيقونة العودة للشاشة الدكان</string>
     <string name="product_is_out_of_stock">المنتج غير متوفر</string>
+    <string name="price_after_discount_bigger_than_base_price">السعر بعد الخصم أكبر من السعر الأساسي</string>
+    <string name="shop_now">تسوق الآن</string>
+    <string name="dukan_discount_details">احصل على خصم لكل طلب، صالح اليوم فقط.</string>
+    <string name="dukan_discount_title">%1$s% خصم\nعرض اليوم</string>
 </resources>

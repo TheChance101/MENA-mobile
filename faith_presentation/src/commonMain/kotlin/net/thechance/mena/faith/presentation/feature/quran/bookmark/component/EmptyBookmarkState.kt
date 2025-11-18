@@ -22,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.component.image.Image
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -77,13 +78,15 @@ fun EmptyBookmarkState(
 
 @Preview()
 @Composable
-private fun EmptyBookMarkPreview() {
+private fun Preview() {
     MenaTheme {
-        EmptyBookmarkState(
-            icon = painterResource(Res.drawable.ic_not_saved_book_mark),
-            contentDescription = "Empty Bookmark",
-            title = "No Bookmarks Yet",
-            subTitle = "You haven't added any bookmarks. Start exploring and add your favorite items to your bookmarks."
-        )
+        QuranTheme {
+            EmptyBookmarkState(
+                icon = painterResource(Res.drawable.ic_not_saved_book_mark),
+                contentDescription = "Empty Bookmark",
+                title = "No Bookmarks Yet",
+                subTitle = "You haven't added any bookmarks. Start exploring and add your favorite items to your bookmarks."
+            )
+        }
     }
 }

@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanDetails
 
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import kotlin.test.Test
@@ -30,12 +31,12 @@ class DukanDetailsMapperTest {
 
         val uiState = dukan.toUiState()
 
-         assertEquals("Test Dukan", uiState.name)
-         assertEquals("dukan.jpg", uiState.imageUrl)
-         assertEquals(30.05, uiState.coordinates.latitude, 0.0)
-         assertEquals(31.2, uiState.coordinates.longitude, 0.0)
-         assertEquals(0xFFFF5733, uiState.color)
-         assertEquals(DukanDetailsUiState.Style.SMALL_IMAGE, uiState.style)
+        assertEquals("Test Dukan", uiState.name)
+        assertEquals("dukan.jpg", uiState.imageUrl)
+        assertEquals(30.05, uiState.coordinates.latitude, 0.0)
+        assertEquals(31.2, uiState.coordinates.longitude, 0.0)
+        assertEquals(0xFFFF5733, uiState.color)
+        assertEquals(DukanDetailsUiState.Style.SMALL_IMAGE, uiState.style)
     }
 
     @Test
@@ -47,8 +48,8 @@ class DukanDetailsMapperTest {
 
         val uiState = shelf.toUiState()
 
-         assertEquals(shelf.id.toString(), uiState.id)
-         assertEquals("Shoes", uiState.name)
+        assertEquals(shelf.id.toString(), uiState.id)
+        assertEquals("Shoes", uiState.name)
     }
 
     @Test
@@ -57,7 +58,10 @@ class DukanDetailsMapperTest {
             id = Uuid.random(),
             name = "Phone",
             description = "Android device",
-            price = 15000.0,
+            price = Price(
+                base = 15000.0,
+                final = 15000.0
+            ),
             imageUrls = listOf("img.png"),
             quantityInCart = 0,
             createdAt = "2023-01-01",
@@ -67,11 +71,11 @@ class DukanDetailsMapperTest {
 
         val uiState = product.toUiState()
 
-         assertEquals("Phone", uiState.name)
-         assertEquals("Android device", uiState.description)
-         assertEquals(15000.0, uiState.price, 0.0)
-         assertEquals("img.png", uiState.imageUrl)
-         assertEquals(0, uiState.inCartQuantity)
+        assertEquals("Phone", uiState.name)
+        assertEquals("Android device", uiState.description)
+        assertEquals(15000.0, uiState.price, 0.0)
+        assertEquals("img.png", uiState.imageUrl)
+        assertEquals(0, uiState.inCartQuantity)
     }
 
     @Test
@@ -80,7 +84,10 @@ class DukanDetailsMapperTest {
             id = Uuid.random(),
             name = "Laptop",
             description = "Gaming",
-            price = 20000.0,
+            price = Price(
+                base = 20000.0,
+                final = 20000.0
+            ),
             imageUrls = listOf("laptop.png"),
             quantityInCart = 3,
             createdAt = "2023-01-01",
@@ -90,7 +97,7 @@ class DukanDetailsMapperTest {
 
         val uiState = product.toUiState()
 
-         assertEquals(3, uiState.inCartQuantity)
+        assertEquals(3, uiState.inCartQuantity)
     }
 
     @Test
@@ -106,8 +113,8 @@ class DukanDetailsMapperTest {
 
         val result = uiProduct.toDomainParams("dukanId_1")
 
-         assertEquals("10", result.productId)
-         assertEquals(5, result.quantity)
-         assertEquals("dukanId_1", result.dukanId)
+        assertEquals("10", result.productId)
+        assertEquals(5, result.quantity)
+        assertEquals("dukanId_1", result.dukanId)
     }
 }

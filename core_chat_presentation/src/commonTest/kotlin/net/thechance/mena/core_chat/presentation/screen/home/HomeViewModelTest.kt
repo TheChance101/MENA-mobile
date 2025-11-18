@@ -34,7 +34,10 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
-import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
+import net.thechance.mena.faith.domain.service.PrayerTimeService
+import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -49,12 +52,22 @@ class HomeViewModelTest {
     private val chatRepository = mock<ChatRepository>(MockMode.autofill)
     private val balanceRepository = mock<BalanceRepository>(MockMode.autofill)
 
+    private lateinit var addressesRepository: AddressesRepository
+    private lateinit var locationService: LocationService
+    private lateinit var prayerTimeRepository: PrayerTimeRepository
+    private lateinit var prayerTimeService: PrayerTimeService
+
+
     private val messageRepository = mock<MessageRepository>(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
 
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        prayerTimeRepository = mock(MockMode.autofill)
+        prayerTimeService = PrayerTimeService(prayerTimeRepository)
+        addressesRepository = mock(MockMode.autofill)
+        locationService = LocationService(addressesRepository)
     }
 
     @AfterTest
@@ -136,6 +149,7 @@ class HomeViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.chats.size).isEqualTo(1)
+            assertThat(state.isChatsLoading).isFalse()
         }
     }
 
@@ -317,7 +331,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.isLoading).isFalse()
+            assertThat(state.isChatsLoading).isFalse()
         }
     }
 
@@ -485,6 +499,9 @@ class HomeViewModelTest {
             balanceRepository = balanceRepository,
             messageRepository = messageRepository,
 
+            balanceRepository = balanceRepository,
+            prayerTimeService = prayerTimeService,
+            locationService = locationService,
             dispatcher = testDispatcher
         )
     }
@@ -529,7 +546,6 @@ class HomeViewModelTest {
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
                     text = "Hello",
-                    uiTime = UiText.DynamicString("12:00"),
                     isMine = true,
                     time = LocalDateTime(2024, 1, 1, 12, 0)
                 ),

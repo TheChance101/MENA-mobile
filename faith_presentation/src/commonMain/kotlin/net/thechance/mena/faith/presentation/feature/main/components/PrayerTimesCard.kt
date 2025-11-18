@@ -36,6 +36,7 @@ import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.pm_label
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
@@ -203,17 +204,18 @@ private fun PrayerTimesCardPreview() {
     }
 }
 
-
 @Preview
 @Composable
-private fun PrayerItemPreview() {
+private fun Preview() {
     val samplePrayer = PrayerUiModel(
         name = PrayerName.FAJR,
         displayName = Res.string.fajr,
         time = "06:00",
         isAM = true
     )
-    QuranTheme {
-        PrayerItem(prayer = samplePrayer, isNextPrayer = true)
+    MenaTheme {
+        QuranTheme {
+            PrayerItem(prayer = samplePrayer, isNextPrayer = true)
+        }
     }
 }

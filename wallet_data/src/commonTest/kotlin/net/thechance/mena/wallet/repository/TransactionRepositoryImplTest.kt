@@ -19,7 +19,6 @@ import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.entity.TransactionStatus
 import net.thechance.mena.wallet.domain.entity.TransactionType
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
-import net.thechance.mena.wallet.domain.model.TransactionReceiver
 import net.thechance.mena.wallet.repository.utils.createNetworkClient
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -111,29 +110,6 @@ class TransactionRepositoryImplTest {
         }
     }
 
-    @Test
-    fun `getTransactionReceiver returns user when API call is successful`() = runTest()
-    {
-        networkClient = createNetworkClient(userResponse)
-        transactionRepository = TransactionRepositoryImpl(networkClient)
-
-        val result = transactionRepository.getTransactionReceiver(transaction1Id)
-
-        assertEquals(transactionReceiver, result)
-    }
-
-    @Test
-    fun `getTransactionReceiver returns throw exception when API call is fails`() = runTest()
-    {
-        networkClient = createNetworkClient(userErrorResponse)
-        transactionRepository = TransactionRepositoryImpl(networkClient)
-
-        assertFailsWith<Exception> {
-            transactionRepository.getTransactionReceiver(transaction1Id)
-        }
-    }
-
-
     private companion object {
         const val PAGE_SIZE = 20
         const val PAGE = 1
@@ -187,11 +163,14 @@ class TransactionRepositoryImplTest {
         val transaction1Id = Uuid.random()
         val transaction1 = Transaction(
             id = transaction1Id,
-            createdAt = Instant.parse("2025-08-20T12:00:00Z").toLocalDateTime(TimeZone.currentSystemDefault()),
+            createdAt = Instant.parse("2025-08-20T12:00:00Z")
+                .toLocalDateTime(TimeZone.currentSystemDefault()),
             amount = 5000.0,
             status = TransactionStatus.SUCCESS,
             senderName = "Nour Elhoda",
             receiverName = "Nour Elhoda",
+            senderImageUrl = "",
+            receiverImageUrl = "",
             type = TransactionType.RECEIVED
         )
 
@@ -200,15 +179,21 @@ class TransactionRepositoryImplTest {
                 respond(
                     content = """
                     {
-                        "id": "$transaction1Id",
-                        "senderName": "${transaction1.senderName}",
-                        "receiverName": "${transaction1.receiverName}",
-                        "status": "SUCCESS",
-                        "type": "RECEIVED",
-                        "createdAt": "2025-08-20T12:00:00",
-                        "amount": ${transaction1.amount}
+                     "id": "$transaction1Id",
+                     "sender": {
+                         "name": "${transaction1.senderName}",
+                         "imageUrl": ""
+                     },
+                     "receiver": {
+                         "name": "${transaction1.receiverName}",
+                         "imageUrl": ""
+                     },
+                     "status": "SUCCESS",
+                     "type": "RECEIVED",
+                     "createdAt": "2025-08-20T12:00:00",
+                     "amount": ${transaction1.amount}
                     }
-                    """,
+                    """.trimIndent(),
                     status = HttpStatusCode.OK,
                     headers = headersOf(
                         HttpHeaders.ContentType,
@@ -253,47 +238,6 @@ class TransactionRepositoryImplTest {
                     "message": "Server error occurred"
                     }
                     """.trimMargin(),
-                    status = HttpStatusCode.InternalServerError,
-                    headers = headersOf(
-                        HttpHeaders.ContentType,
-                        ContentType.Application.Json.toString()
-                    )
-                )
-            }
-
-        const val receiverName = "username1"
-        const val receiverImg = "userimg1.png"
-        val transactionReceiver = TransactionReceiver(
-            name = receiverName,
-            imgUrl = receiverImg
-        )
-
-        val userResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
-            {
-                respond(
-                    content = """
-                    {
-                        "imageUrl": "$receiverImg",
-                        "name": "$receiverName"
-                    }
-                    """,
-                    status = HttpStatusCode.OK,
-                    headers = headersOf(
-                        HttpHeaders.ContentType,
-                        ContentType.Application.Json.toString()
-                    )
-                )
-            }
-
-        val userErrorResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData =
-            {
-                respond(
-                    content = """
-                    {
-                        "status": 500,
-                        "message": "Server error occurred"
-                    }
-                    """.trimIndent(),
                     status = HttpStatusCode.InternalServerError,
                     headers = headersOf(
                         HttpHeaders.ContentType,

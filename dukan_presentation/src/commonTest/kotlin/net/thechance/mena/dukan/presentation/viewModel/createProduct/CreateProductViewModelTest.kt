@@ -20,6 +20,7 @@ import mena.dukan_presentation.generated.resources.error_image_max_limit
 import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_price_invalid
 import mena.dukan_presentation.generated.resources.error_upload_failed
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.repository.ProductRepository
@@ -80,6 +81,14 @@ class CreateProductViewModelTest {
             skipItems(1)
             viewModel.onPriceChange("12.50")
             assertEquals("12.50", awaitItem().price)
+        }
+    }
+    @Test
+    fun `onPriceAfterDiscountChange should update price after discount`() = scope.runTest {
+        viewModel.state.test {
+            skipItems(1)
+            viewModel.onPriceAfterDiscountChange("10.50")
+            assertEquals("10.50", awaitItem().priceAfterDiscount)
         }
     }
 
@@ -347,7 +356,10 @@ private fun fakeProducts(): List<Product> = listOf(
         id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
         name = "Laptop",
         description = "A cool laptop",
-        price = 1200.0,
+        price = Price(
+            base = 1200.0,
+            final = 1200.0
+        ),
         shelfId = Uuid.parse("123e4567-e89b-12d3-a456-000000000123"),
         imageUrls = emptyList(),
         createdAt = "2025-10-10T12:00:00Z",

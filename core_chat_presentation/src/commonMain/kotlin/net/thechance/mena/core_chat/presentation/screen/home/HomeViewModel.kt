@@ -7,10 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.could_not_get_balance
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
 import mena.core_chat_presentation.generated.resources.could_not_sync_contacts_message
-import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.no_internet
 import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
@@ -25,6 +23,10 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.service.PrayerTimeService
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -35,6 +37,8 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
+    private val prayerTimeService: PrayerTimeService,
+    private val locationService: LocationService,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
@@ -56,6 +60,7 @@ class HomeViewModel(
         observeChatSummariesList()
         observeChatSummariesSyncState()
         messageRepository.initializeWebsocketConnection()
+        getCurrentAddressInfo()
     }
     private fun observeChatSummariesList() {
         tryToCollect(collect = {
@@ -111,25 +116,26 @@ class HomeViewModel(
         tryToCollect(
             onStart = { updateState { it.copy(isBalanceLoading = true) } },
             collect = { balanceRepository.observeBalance() },
-            onCollect =  ::onObserveBalanceAmountSuccess ,
-            onError = { onGetBalanceAmountError() }
+            onCollect = ::onObserveBalanceAmountSuccess,
+            onError = { onObserveBalanceAmountError() }
         )
     }
 
     private fun onObserveBalanceAmountSuccess(balanceAmount: Double?) {
-        if (balanceAmount == null) return
-        updateState { it.copy(
-            balanceAmount = balanceAmount.toInt().toString(),
-            isBalanceLoading = false) }
+        if (balanceAmount == null) {
+            onObserveBalanceAmountError()
+            return
+        }
+        updateState {
+            it.copy(
+                balanceAmount = balanceAmount.toInt().toString(),
+                isBalanceLoading = false
+            )
+        }
     }
 
-    private fun onGetBalanceAmountError() {
+    private fun onObserveBalanceAmountError() {
         updateState { it.copy(isBalanceLoading = false, balanceAmount = "") }
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.could_not_get_balance,
-            isError = true
-        )
     }
 
     override fun onChatsListScrolled() {
@@ -139,7 +145,7 @@ class HomeViewModel(
     }
 
     private fun changeLoadingState(isLoading: Boolean) {
-        updateState { it.copy(isLoading = isLoading) }
+        updateState { it.copy(isChatsLoading = isLoading) }
     }
 
     private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
@@ -173,6 +179,30 @@ class HomeViewModel(
     }
 
 
+    private fun getCurrentAddressInfo(){
+        tryToExecute(
+            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
+            execute = { locationService.getActiveAddress() },
+            onSuccess = ::observeNextPrayer
+        )
+    }
+    private fun observeNextPrayer(address: Address?){
+        if (address == null) return
+
+        tryToCollect(
+            collect = { prayerTimeService.getNextPrayer(address) },
+            onCollect = ::onObserveNextPrayerSuccess,
+            onError = { onObserveNextPrayerError() }
+        )
+    }
+
+    private fun onObserveNextPrayerSuccess(prayerTime: PrayerTime?) {
+        updateState { it.copy(prayerUiState = prayerTime?.toUi(), isPrayerTimeLoading = false) }
+    }
+    private fun onObserveNextPrayerError() {
+        updateState { it.copy(prayerUiState = null, isPrayerTimeLoading = false) }
+    }
+
     override fun onNewChatClicked() {
         tryToExecute(
             execute = { contactsRepository.getHasUserSyncedContactsStatus() },
@@ -181,7 +211,6 @@ class HomeViewModel(
     }
 
     private fun onGetSyncStatusSuccess(isSynced: Boolean) {
-        updateState { it.copy(isSynced = isSynced) }
         if (isSynced) {
             emitEffect(HomeScreenEffect.NavigateToContacts)
         } else {

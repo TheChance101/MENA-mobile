@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,8 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_invite_friends
@@ -40,12 +37,7 @@ fun InviteFriendsCard(onClick: () -> Unit) {
             .fillMaxWidth()
             .clip(SquircleShape(radius = Theme.radius.lg))
             .background(
-                brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xff051F43),
-                        Theme.colorScheme.brand.brand,
-                    )
-                )
+                Theme.colorScheme.background.surfaceHigh
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -59,27 +51,27 @@ fun InviteFriendsCard(onClick: () -> Unit) {
         Icon(
             modifier = Modifier
                 .clip(SquircleShape(Theme.radius.md))
-                .background(Theme.colorScheme.background.surfaceLow.copy(alpha = .12f))
+                .background(Theme.colorScheme.background.surface)
                 .padding(Theme.spacing._12)
                 .size(Theme.spacing._24),
             painter = painterResource(Res.drawable.ic_invite_friends),
+            tint = Theme.colorScheme.shadePrimary,
             contentDescription = stringResource(Res.string.profile_invite_friends_icon_content_description),
         )
 
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._2)
         ) {
             Text(
                 text = stringResource(Res.string.profile_invite_friends_title),
                 style = Theme.typography.label.medium,
-                color = Theme.colorScheme.primary.onPrimary,
+                color = Theme.colorScheme.shadePrimary,
                 textAlign = TextAlign.Center,
             )
             Text(
                 text = stringResource(Res.string.profile_invite_friends_subtitle),
                 style = Theme.typography.label.small,
-                color = Theme.colorScheme.primary.onPrimaryBody,
+                color = Theme.colorScheme.shadeSecondary,
                 textAlign = TextAlign.Center,
             )
         }

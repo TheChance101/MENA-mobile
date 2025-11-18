@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,6 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -40,7 +44,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
-import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -60,7 +64,7 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     val viewModel: ChatViewModel = koinViewModel(parameters = { parametersOf(controller) })
 
-    BindEffect(controller)
+    BindEffect(viewModel.permissionsController)
 
     BackHandler(enabled = true) {
         viewModel.onBackClicked()
@@ -71,6 +75,7 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     val chatLazyListState = rememberLazyListState()
 
+    AudioLifecycleObserver(viewModel)
 
     EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
 
@@ -138,7 +143,7 @@ fun ChatScreenContent(
                         ChatInputBar(
                             userInput = state.inputMessage,
                             onTextChange = interactions::onInputMessageChanged,
-                            onSendButtonClick = interactions::onSendMessageClicked,
+                            onSendButtonClick = interactions::onSendTextMessageClicked,
                             onAttachButtonClick = interactions::onAttachmentClicked,
                             onVoiceRecordClick = interactions::onRecordClicked
                         )
@@ -176,7 +181,7 @@ fun ChatScreenContent(
             visible = state.isImagePagerVisible,
             modifier = Modifier.fillMaxSize(),
         ) {
-            val isMine = state.selectedMessage?.isMine == true
+            val isMine = state.selectedMessage?.messageDetails?.isMine == true
             val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
             val senderImageUrl = if (isMine) state.userData.imageUrl else state.chatAvatarUrl
 
@@ -210,13 +215,31 @@ fun ChatScreenContent(
         loadNextItems = interactions::onMessagesScrolled
     )
 
-    messageReactionDialog(
+    MessageReactionDialog(
         isVisible = state.isReactionDialogVisible,
         message = state.messageToReactTo,
         currentUserId = state.chatRequesterId,
         onDismiss = interactions::onReactionDialogDismissed,
         onReactionClicked = interactions::onReactionSelected
     )
+}
+
+@Composable
+fun AudioLifecycleObserver(viewModel: ChatViewModel) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE || event == Lifecycle.Event.ON_STOP) {
+                viewModel.onStopAudioPlayback()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            viewModel.onStopAudioPlayback()
+        }
+    }
 }
 
 @Composable

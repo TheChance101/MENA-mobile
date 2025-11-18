@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -46,7 +45,7 @@ import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun WideImageDukanAppBar(
-    isBadgeVisible : Boolean,
+    isBadgeVisible: Boolean,
     onBackClicked: () -> Unit,
     onCartClicked: () -> Unit
 ) {
@@ -101,24 +100,27 @@ private fun DukanActionButtons(
     onFavoriteClicked: (dukanId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     Column(modifier = modifier.padding(top = Theme.spacing._8)) {
-        Crossfade(
-            targetState = state.isFavorite,
-            label = "favoriteCrossfade"
-        ) { isFavorite ->
-            val favoriteIcon = if (isFavorite) Res.drawable.ic_favorite_filled
-            else Res.drawable.ic_favorite
-
-            DukanIconButton(
-                icon = painterResource(favoriteIcon),
-                iconColor = Color(state.color),
-                onIconClick = { onFavoriteClicked(state.dukanId) }
-            )
+        DukanIconButton(
+            iconColor = Color(state.color),
+            onIconClick = { onFavoriteClicked(state.dukanId) }
+        ) {
+            Crossfade(
+                targetState = state.isFavorite,
+                label = "favoriteCrossfade"
+            ) { isFavorite ->
+                Icon(
+                    painter = painterResource(
+                        if (isFavorite) Res.drawable.ic_favorite_filled
+                        else Res.drawable.ic_favorite
+                    ),
+                    contentDescription = stringResource(Res.string.favorite_icon),
+                    tint = Color(state.color)
+                )
+            }
         }
     }
 }
-
 
 @Composable
 private fun DukanImageAndTitle(
@@ -138,6 +140,7 @@ private fun DukanImageAndTitle(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -151,6 +154,7 @@ private fun DukanImageAndTitle(
                     )
                 )
         )
+
         Text(
             text = state.name,
             style = Theme.typography.title.medium,
@@ -165,22 +169,19 @@ private fun DukanImageAndTitle(
 
 @Composable
 private fun DukanIconButton(
-    icon: Painter,
     iconColor: Color,
     onIconClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
 ) {
-    Icon(
-        painter = icon,
-        contentDescription = stringResource(Res.string.favorite_icon),
-        tint = iconColor,
+    Box(
         modifier = modifier
             .size(40.dp)
             .clip(CircleShape)
             .clickable(
                 onClick = onIconClick,
                 indication = null,
-                interactionSource =null
+                interactionSource = null
             )
             .background(color = Theme.colorScheme.background.surfaceLow)
             .border(
@@ -188,8 +189,11 @@ private fun DukanIconButton(
                 color = Theme.colorScheme.background.surface,
                 shape = CircleShape
             )
-            .padding(Theme.spacing._8 + Theme.spacing._2)
-    )
+            .padding(Theme.spacing._8 + Theme.spacing._2),
+        contentAlignment = Alignment.Center
+    ) {
+        content()
+    }
 }
 
 @Preview(showBackground = true, name = "Action Buttons")

@@ -168,8 +168,8 @@ class MessageRepositoryImpl(
         }
     }
 
-    override suspend fun deleteMessage(message: Message) {
-        pendingMessageDao.deleteMessageById(message.id.toString())
+    override suspend fun deleteMessageById(messageId: Uuid) {
+        pendingMessageDao.deleteMessageById(messageId.toString())
     }
 
     override fun observePendingMessagesByChatId(chatId: Uuid): Flow<List<Message>> {

@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.repository.mockEngine.product
 
 
 import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.product.PriceDto
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.entity.Product
@@ -21,7 +22,10 @@ val productDto1 = ProductDto(
     id = Uuid.random(),
     name = "Demo Product 1",
     shelfId = demoShelfID,
-    price = 9.99,
+    price = PriceDto(
+        base = 9.99,
+        final = 9.99
+    ),
     description = "This is a demo product",
     imageUrls = listOf(
         "https://picsum.photos/200/200?random=1",
@@ -38,7 +42,10 @@ val productDto2 = ProductDto(
     id = Uuid.random(),
     name = "Demo Product 2",
     shelfId = demoShelfID,
-    price = 19.99,
+    price = PriceDto(
+        base = 19.99,
+        final = 19.99
+    ),
     description = "Another demo product",
     imageUrls = listOf(
         "https://picsum.photos/200/200?random=1",

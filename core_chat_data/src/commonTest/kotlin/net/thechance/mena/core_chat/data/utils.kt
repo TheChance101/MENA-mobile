@@ -266,6 +266,9 @@ fun createHttpClient(
             path == CONTACTS_ENDPOINT -> contactsResponse?.invoke(this)
                 ?: defaultContactsResponse()
 
+            path == SEARCH_CONTACTS_ENDPOINT -> contactsResponse?.invoke(this)
+                ?: defaultContactsResponse()
+
             path == SYNC_CONTACTS_ENDPOINT -> syncContactsResponse?.invoke(this)
                 ?: defaultSyncContactsResponse()
 
@@ -328,3 +331,4 @@ private const val CHATS_SUMMARIES_ENDPOINT = "/chat/chatsSummary"
 private const val IMAGES_ENDPOINT = "/chat/image"
 private const val AUDIO_ENDPOINT = "/chat/audio"
 private const val DELETE_CHAT_ENDPOINT = "/chat/delete"
+private const val SEARCH_CONTACTS_ENDPOINT = "/chat/contacts/search"

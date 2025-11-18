@@ -1,43 +1,43 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
-import androidx.compose.ui.graphics.ImageBitmap
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.image_crop_failed
-import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.domain.repository.ImagesRepository
-import net.thechance.mena.identity.presentation.utils.ImageDecoder
+import net.thechance.mena.identity.presentation.base.BaseScreenModel
 
 class ImageCropperViewModel(
     private val imageKey: String,
-    private val imagesRepository: ImagesRepository,
-    private val imageDecoder: ImageDecoder
+    private val imagesRepository: ImagesRepository
 ) : BaseScreenModel<ImageCropperScreenState, ImageCropperScreenEffect>(
     initialState = ImageCropperScreenState()
 ), ImageCropperInteractionListener {
 
     init {
         val imageByteArray = imagesRepository.getCachedImage(imageKey)
-        updateState { copy(imageBitmap = imageByteArray?.let { imageDecoder.decodeImage(it) }) }
+        updateState { copy(imageByteArray = imageByteArray) }
     }
 
-    override fun onCropImage(imageBitmap: ImageBitmap) {
+    override fun onCropImage(imageByteArray: ByteArray) {
         tryToExecute(
-            function = { encodeAndCacheImage(imageBitmap) },
+            function = { encodeAndCacheImage(imageByteArray) },
             onSuccess = ::onCropImageSuccess,
             onError = ::handleCropImageException
         )
     }
 
-    override fun onChangeImage(imageBitmap: ImageBitmap) {
-        updateState { copy(imageBitmap = imageBitmap) }
+    override fun onChangeImage(imageByteArray: ByteArray) {
+        updateState { copy(imageByteArray = imageByteArray) }
     }
 
     override fun onNavigateBack() {
         sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfile)
     }
 
-    private suspend fun encodeAndCacheImage(imageBitmap: ImageBitmap) {
-        val imageByteArray = imageDecoder.encodeImage(imageBitmap)
+    override fun onDismissSnackBar() {
+        updateState { copy(errorMessage = null) }
+    }
+
+    private fun encodeAndCacheImage(imageByteArray: ByteArray) {
         imagesRepository.cacheImage(imageKey, imageByteArray)
     }
 

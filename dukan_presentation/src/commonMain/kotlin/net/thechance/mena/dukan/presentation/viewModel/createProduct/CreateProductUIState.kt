@@ -15,6 +15,7 @@ data class CreateProductUiState(
     val selectedShelf: ShelfUiState? = null,
     val productName: String = "",
     val price: String = "",
+    val priceAfterDiscount: String = "",
     val description: String = "",
     val images: List<ProductImageUi> = emptyList(),
     val selectedImage: ImageSrc? = null,

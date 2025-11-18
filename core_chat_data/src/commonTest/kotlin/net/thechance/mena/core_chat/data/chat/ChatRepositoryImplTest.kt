@@ -20,6 +20,7 @@ import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
@@ -95,7 +96,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return chat when getChatByContactUserId is successful`() = runTest {
+    fun `should return chat when getChatByOtherUserId is successful`() = runTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })
         repository = createChatRepository(
             httpClient = httpClient,
@@ -105,13 +106,13 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val result = repository.getChatByContactUserId(userId)
+        val result = repository.getChatByOtherUserId(userId)
 
         assertThat(result.name).isEqualTo("Test Chat")
     }
 
     @Test
-    fun `should throw ChatNotFoundException when getChatByContactUserId fails`() = runTest {
+    fun `should throw ChatNotFoundException when getChatByOtherUserId fails`() = runTest {
         httpClient = createHttpClient(
             chatResponse = { respond("", HttpStatusCode.NotFound, jsonHeaders) }
         )
@@ -124,7 +125,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatByContactUserId(userId)
+            repository.getChatByOtherUserId(userId)
         }
     }
 
@@ -332,6 +333,11 @@ class ChatRepositoryImplTest {
                 mockSuccessPagedResponse(pagedData)
             }
         )
+
+        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
+        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
+        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+
         repository = createChatRepository(
             httpClient = httpClient,
             webSocketManager = webSocketManager,
@@ -340,17 +346,15 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
-        everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
-        everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
+        val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
 
         repository.getChatsSummary(pageNumber, pageSize)
 
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.ChatsSummariesSyncedSuccess
-        }
+        val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.ChatsSummariesSynced }
 
         assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSyncedSuccess)
+        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
+        job.cancel()
     }
 
     @Test
@@ -405,12 +409,12 @@ class ChatRepositoryImplTest {
         )
         repository.getChatsSummary(pageNumber, pageSize)
 
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.Error
-        }
+        val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
 
+        val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.Error }
 
         assertThat(emittedState is SyncState.Error).isTrue()
+        job.cancel()
     }
 
     @Test
@@ -422,11 +426,13 @@ class ChatRepositoryImplTest {
         val preferences = mutablePreferencesOf(
             stringPreferencesKey("lastTimeChatSummariesSynced") to Clock.System.now().toString()
         )
+
         everySuspend { dataStore.data } returns flowOf(preferences)
         everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
         everySuspend { cachedChatSummaryDao.insertMultipleChatSummaries(any()) } returns Unit
         everySuspend { cachedChatSummaryDao.deleteMultipleChatSummaries(any()) } returns Unit
+
         httpClient = createHttpClient(
             deleteChatResponse = {
                 respond(
@@ -439,7 +445,7 @@ class ChatRepositoryImplTest {
                 )
             },
             chatsSummariesResponse = {
-                mockSuccessPagedResponse<ChatSummaryDto>(
+                mockSuccessPagedResponse<PagedDataDto<ChatSummaryDto>>(
                     PagedDataDto(
                         data = emptyList(),
                         totalItems = 0,

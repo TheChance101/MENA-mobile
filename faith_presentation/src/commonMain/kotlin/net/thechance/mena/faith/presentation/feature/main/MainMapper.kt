@@ -99,5 +99,3 @@ private val PRAYER_ORDER = listOf(
     PrayerName.MAGHRIB,
     PrayerName.ISHA
 )
-
-

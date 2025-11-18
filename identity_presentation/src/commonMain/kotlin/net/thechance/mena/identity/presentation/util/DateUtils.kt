@@ -1,6 +1,10 @@
 package net.thechance.mena.identity.presentation.util
 
 import androidx.compose.runtime.Composable
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format
+import kotlinx.datetime.format.Padding
+import kotlinx.datetime.format.char
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.month_april
 import mena.identity_presentation.generated.resources.month_august
@@ -33,3 +37,16 @@ fun getDefaultMonthNames(): List<String> {
         stringResource(Res.string.month_december)
     )
 }
+
+fun LocalDate.toFormattedDate(): String {
+    return this.format(
+        LocalDate.Format {
+            day(padding = Padding.ZERO)
+            char('/')
+            monthNumber()
+            char('/')
+            year()
+        }
+    )
+}
+
