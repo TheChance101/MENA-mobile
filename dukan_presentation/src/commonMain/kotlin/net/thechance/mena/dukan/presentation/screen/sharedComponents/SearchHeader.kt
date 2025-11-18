@@ -1,4 +1,4 @@
-package net.thechance.mena.dukan.presentation.screen.search.component
+package net.thechance.mena.dukan.presentation.screen.sharedComponents
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
