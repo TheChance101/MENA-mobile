@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.failed
@@ -41,7 +42,7 @@ fun TransactionStatusIcon(
             Icon(
                 painter = painterResource(transactionTypeIcon),
                 contentDescription = stringResource(transactionStatus.iconContentDescriptionRes),
-                tint = Theme.colorScheme.shadeSecondary,
+                tint = Color.Unspecified,
                 modifier = Modifier.size(24.dp)
             )
         }
