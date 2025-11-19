@@ -88,7 +88,7 @@ class QuranRepositoryImpl(
     }
 
     override suspend fun deleteSurahWithSpecificReciter(surahId: Int) {
-        recitersDao.deleteSurahWithSpecificReciter(surahId)
+        recitersDao.deleteSurahAudioByReciter(surahId)
     }
 
     override suspend fun getRemoteSurahSoundUrl(
@@ -171,6 +171,12 @@ class QuranRepositoryImpl(
                 INDEX_OFFSET,
                 files.size - ayatCount
             ) else files
+    }
+
+    override suspend fun deleteSurahAudioByReciter(surahId: Int, reciterId: Int) {
+        executeLocalSafely {
+            recitersDao.deleteSpecificDownloadedAudio(surahId = surahId,reciterId = reciterId)
+        }
     }
 
     private fun calculateFileIndex(ayahNumber: Int, surahNumber: Int): Int {

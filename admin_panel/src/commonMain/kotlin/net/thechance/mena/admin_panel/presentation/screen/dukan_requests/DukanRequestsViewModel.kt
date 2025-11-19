@@ -38,49 +38,6 @@ class DukanRequestsViewModel(
         getRequestedDukans()
     }
 
-    private fun getRequestedDukans() {
-        val queryParams = getDukanQueryParams()
-        tryToExecute(
-            callee = { dukanRepository.getDukans(queryParams) },
-            onSuccess = ::onGetRequestedDukansSuccess,
-            onError = ::onError,
-            onStart = { updateState { it.copy(isLoading = true) } },
-            onFinish = { updateState { it.copy(isLoading = false) } },
-            dispatcher = dispatcher
-        )
-    }
-
-    private fun onGetRequestedDukansSuccess(result: PagedResult<Dukan>) {
-        updateState {
-            it.copy(
-                dukans = result.items.mapIndexed { index, dukan ->
-                    dukan.toUIState(
-                        currentPage = result.currentPage,
-                        indexInList = index
-                    )
-                },
-                totalDukanRequests = result.totalElements,
-                pageInfo = DukanRequestsScreenState.DukanPageInfo(
-                    page = result.currentPage,
-                    totalPages = result.totalPages
-                ),
-                errorState = null
-            )
-        }
-    }
-
-    private fun getDukanQueryParams(): DukanQueryParams {
-        return DukanQueryParams(
-            sortType = currentState.sort.type.toEntity(),
-            sortDirection = currentState.sort.direction.toEntity(),
-            status = Dukan.Status.PENDING,
-            page = currentState.pageInfo.page,
-            size = PAGE_SIZE,
-            searchInput = null,
-            activationStatus = null
-        )
-    }
-
     override fun onSortClicked(type: DukanRequestsScreenState.SortType) {
         val newDirection = if (currentState.sort.type == type) {
             currentState.sort.direction.toggle()
@@ -128,18 +85,6 @@ class DukanRequestsViewModel(
         )
     }
 
-    private fun onDukanApprovedSuccess(){
-        onDukanDetailsDismissed()
-        getRequestedDukans()
-        viewModelScope.launch {
-            showSnackBar(
-                title = stringProvider.getString(Res.string.status_updated_title),
-                message = stringProvider.getString(Res.string.dukan_approved_successfully),
-                isSuccess = true
-            )
-        }
-    }
-
     override fun onRejectDukanClicked() {
         onDukanDetailsDismissed()
         viewModelScope.launch {
@@ -174,18 +119,6 @@ class DukanRequestsViewModel(
         )
     }
 
-    private fun onSuccessDukanRejected(){
-        onRejectDukanDialogDismissed()
-        getRequestedDukans()
-        viewModelScope.launch {
-            showSnackBar(
-                title = stringProvider.getString(Res.string.status_updated_title),
-                message = stringProvider.getString(Res.string.dukan_rejected_successfully),
-                isSuccess = true
-            )
-        }
-    }
-
     override fun onRejectionMessageChanged(reason: String) {
         reason.takeIf { it.length < 200 }?.let { reason ->
             updateState { it.copy(rejectReason = reason) }
@@ -200,6 +133,30 @@ class DukanRequestsViewModel(
         return when (throwable) {
             is NoInternetException -> ErrorState.NoInternet
             else -> ErrorState.UnknownError
+        }
+    }
+
+    private fun onDukanApprovedSuccess() {
+        onDukanDetailsDismissed()
+        getRequestedDukans()
+        viewModelScope.launch {
+            showSnackBar(
+                title = stringProvider.getString(Res.string.status_updated_title),
+                message = stringProvider.getString(Res.string.dukan_approved_successfully),
+                isSuccess = true
+            )
+        }
+    }
+
+    private fun onSuccessDukanRejected() {
+        onRejectDukanDialogDismissed()
+        getRequestedDukans()
+        viewModelScope.launch {
+            showSnackBar(
+                title = stringProvider.getString(Res.string.status_updated_title),
+                message = stringProvider.getString(Res.string.dukan_rejected_successfully),
+                isSuccess = true
+            )
         }
     }
 
@@ -238,6 +195,58 @@ class DukanRequestsViewModel(
         updateState { oldState ->
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
         }
+    }
+
+    private fun getRequestedDukans() {
+        val queryParams = getDukanQueryParams()
+        tryToExecute(
+            callee = { dukanRepository.getDukans(queryParams) },
+            onSuccess = ::onGetRequestedDukansSuccess,
+            onError = ::onError,
+            onStart = ::onGetRequestedDukansStart,
+            onFinish = ::onGetRequestedDukansFinish,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onGetRequestedDukansStart() {
+        updateState { it.copy(isLoading = true) }
+    }
+
+    private fun onGetRequestedDukansFinish() {
+        updateState { it.copy(isLoading = false, isInitialLoading = false) }
+    }
+
+
+    private fun onGetRequestedDukansSuccess(result: PagedResult<Dukan>) {
+        updateState {
+            it.copy(
+                dukans = result.items.mapIndexed { index, dukan ->
+                    dukan.toUIState(
+                        currentPage = result.currentPage,
+                        indexInList = index
+                    )
+                },
+                totalDukanRequests = result.totalElements,
+                pageInfo = DukanRequestsScreenState.DukanPageInfo(
+                    page = result.currentPage,
+                    totalPages = result.totalPages
+                ),
+                errorState = null
+            )
+        }
+    }
+
+    private fun getDukanQueryParams(): DukanQueryParams {
+        return DukanQueryParams(
+            sortType = currentState.sort.type.toEntity(),
+            sortDirection = currentState.sort.direction.toEntity(),
+            status = Dukan.Status.PENDING,
+            page = currentState.pageInfo.page,
+            size = PAGE_SIZE,
+            searchInput = null,
+            activationStatus = null
+        )
     }
 
     private companion object {
