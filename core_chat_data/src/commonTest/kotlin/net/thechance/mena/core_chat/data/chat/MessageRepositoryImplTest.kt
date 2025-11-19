@@ -52,6 +52,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
+import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -72,6 +73,7 @@ class MessageRepositoryImplTest {
     private lateinit var cachedMessageDao: CachedMessageDao
     private lateinit var chatSyncTimeDao: ChatSyncTimeDao
     private lateinit var audioMessageSender: AudioMessageSender
+    private lateinit var quranRepository: QuranRepository
     private lateinit var quranService: QuranService
     private lateinit var ayahMessageSender: AyahMessageSender
 
@@ -82,7 +84,8 @@ class MessageRepositoryImplTest {
         pendingMessageDao = mock<PendingMessageDao>()
         chatSyncTimeDao = mock<ChatSyncTimeDao>()
         cachedMessageDao = mock<CachedMessageDao>()
-        quranService = mock<QuranService>()
+        quranRepository =mock<QuranRepository>()
+        quranService = QuranService(repository = quranRepository)
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
             json = jsonSerialization
