@@ -46,6 +46,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(projects.identityDomain)
+            implementation(projects.identityData)
             implementation(projects.trendsDomain)
             implementation(projects.trendsApi)
             implementation(projects.designSystem)
