@@ -18,7 +18,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.arrow_right_icon
 import mena.dukan_presentation.generated.resources.deliver_to
 import mena.dukan_presentation.generated.resources.ic_arrow_right
-import mena.dukan_presentation.generated.resources.ic_location
+import mena.dukan_presentation.generated.resources.ic_order_location
 import mena.dukan_presentation.generated.resources.location
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -87,7 +87,7 @@ private fun OrderAddressIcon() {
     ) {
         Icon(
             modifier = Modifier.align(Alignment.Center),
-            painter = painterResource(Res.drawable.ic_location),
+            painter = painterResource(Res.drawable.ic_order_location),
             contentDescription = stringResource(Res.string.location),
             tint = Theme.colorScheme.primary.primary
         )
