@@ -346,15 +346,13 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
-
         repository.getChatsSummary(pageNumber, pageSize)
 
-        val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.ChatsSummariesSynced }
+        val emittedState = repository.observeChatSummariesSyncState().first {
+            it is SyncState.ChatsSummariesSyncedSuccess
+        }
 
         assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSyncedSuccess)
-        assertThat(emittedState).isEqualTo(SyncState.ChatsSummariesSynced(chatSummaries.map { it.toDomain()!! }))
-        job.cancel()
     }
 
     @Test
@@ -410,7 +408,6 @@ class ChatRepositoryImplTest {
         repository.getChatsSummary(pageNumber, pageSize)
 
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
-
         val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.Error }
 
         assertThat(emittedState is SyncState.Error).isTrue()

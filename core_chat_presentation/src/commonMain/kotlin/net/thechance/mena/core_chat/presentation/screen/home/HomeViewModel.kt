@@ -43,14 +43,20 @@ class HomeViewModel(
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
 
+    var maxItems = 20
     private val paginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::changeLoadingState,
             onRequest = ::getChatsSummary,
-            getNextKey = { currentPage, _ -> currentPage + 1 },
+            getNextKey = { currentPage, _ ->
+                maxItems += PAGE_SIZE
+                currentPage + 1
+            },
             onError = { onLoadChatsSummaryError() },
-            onSuccess = { result, _ -> Unit },
+            onSuccess = { result, _ ->
+                onGetChatSummarySuccess(result.data)
+            },
             endReached = { _, result -> result.isLastPage })
     }
 
@@ -62,10 +68,12 @@ class HomeViewModel(
         messageRepository.initializeWebsocketConnection()
         getCurrentAddressInfo()
     }
+
     private fun observeChatSummariesList() {
         tryToCollect(collect = {
-            chatRepository.observeChatSummaries()
+            chatRepository.observeChatSummaries(maxItems)
         }, onCollect = { chatSummaries ->
+            println("home view model: collected chat summaries: ${chatSummaries?.size}")
             val updatedChatsSummaries =
                 chatSummaries?.sortedByDescending { it.lastMessage?.sendAt }?.map { it.toUi() }
                     ?.distinctBy { it.id } ?: return@tryToCollect
@@ -155,6 +163,24 @@ class HomeViewModel(
         )
     }
 
+    private fun onGetChatSummarySuccess(chats: List<ChatSummary>) {
+        updateState {
+            it.copy(
+                chats = mergePages(
+                    oldChats = it.chats,
+                    newChats = chats.map { chatItem -> chatItem.toUi() })
+            )
+        }
+
+    }
+
+    private fun mergePages(
+        oldChats: List<ChatUiState>,
+        newChats: List<ChatUiState>
+    ): List<ChatUiState> {
+        return (oldChats + newChats).distinctBy { it.id }
+    }
+
     private fun onLoadChatsSummaryError() {
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
@@ -170,7 +196,8 @@ class HomeViewModel(
             isError = true
         )
     }
-    private fun showErrorLoadingChatsSnackBar(){
+
+    private fun showErrorLoadingChatsSnackBar() {
         showSnackBar(
             titleStringResource = Res.string.something_went_wrong,
             messageStringResource = Res.string.could_not_load_chats,

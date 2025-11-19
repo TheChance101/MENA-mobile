@@ -61,8 +61,8 @@ class ChatRepositoryImpl(
 
 
 
-    override fun observeChatSummaries(): Flow<List<ChatSummary>> {
-        return cachedChatSummaryDao.getChatSummariesFlow().map { chatSummaryList ->
+    override fun observeChatSummaries(maxItems: Int): Flow<List<ChatSummary>> {
+        return cachedChatSummaryDao.getChatSummariesFlow(maxItems).map { chatSummaryList ->
             chatSummaryList.map { it.toDomain() }
         }
     }
