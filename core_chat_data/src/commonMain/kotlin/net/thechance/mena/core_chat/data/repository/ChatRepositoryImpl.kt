@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toCached
@@ -53,6 +55,7 @@ class ChatRepositoryImpl(
     private val dataStore: DataStore<Preferences>
 ) : ChatRepository {
 
+    private val syncMutex = Mutex()
     private val _syncState = MutableSharedFlow<SyncState>()
     val scope = CoroutineScope(Dispatchers.IO)
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
@@ -60,13 +63,11 @@ class ChatRepositoryImpl(
     }
 
 
-
     override fun observeChatSummaries(maxItems: Int): Flow<List<ChatSummary>> {
         return cachedChatSummaryDao.getChatSummariesFlow(maxItems).map { chatSummaryList ->
             chatSummaryList.map { it.toDomain() }
         }
     }
-
 
 
     @OptIn(ExperimentalTime::class)
@@ -82,11 +83,13 @@ class ChatRepositoryImpl(
         val isLastPage = (offset + localData.size) >= totalItemsCount
 
         scope.launch {
-            val lastTimeSynced = getLastTimeSynced()
-            if (lastTimeSynced != null) syncDeletedChats(lastTimeSynced)
-            syncChatSummaries(
-                pageNumber = pageNumber, pageSize = pageSize
-            )
+            syncMutex.withLock {
+                val lastTimeSynced = getLastTimeSynced()
+                syncDeletedChats(lastTimeSynced)
+                syncChatSummaries(
+                    pageNumber = pageNumber, pageSize = pageSize
+                )
+            }
         }
         return PagedData(
             data = localData, totalItems = totalItemsCount.toInt(), isLastPage = isLastPage
@@ -94,31 +97,30 @@ class ChatRepositoryImpl(
     }
 
 
-    @OptIn(ExperimentalTime::class)
-    private suspend fun updateSyncedTime() {
-        dataStore.edit { preferences ->
-            preferences[LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY] = Clock.System.now().toString()
-        }
-    }
 
-    private suspend fun getTotalItemsCount() : Int?{
+    private suspend fun getTotalItemsCount(): Int? {
         return dataStore.data.map {
             it[TOTAL_ITEMS_COUNT_KEY]
         }.firstOrNull()
     }
 
-    private suspend fun updateTotalItemCount(totalCount: Int) {
+    @OptIn(ExperimentalTime::class)
+    private suspend fun updateSyncMetaData(totalCount: Int) {
         dataStore.edit {
             it[TOTAL_ITEMS_COUNT_KEY] = totalCount
+            it[LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY] = Clock.System.now().toString()
+
         }
     }
 
     @OptIn(ExperimentalTime::class)
-    private suspend fun getLastTimeSynced(): Instant? {
+    private suspend fun getLastTimeSynced(): Instant {
         val lastTimeSynced: String? = dataStore.data.map {
             it[LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY]
         }.firstOrNull()
-        return if (lastTimeSynced.isNullOrEmpty()) null else Instant.parse(lastTimeSynced)
+        return if (lastTimeSynced.isNullOrEmpty()) Instant.fromEpochMilliseconds(0) else Instant.parse(
+            lastTimeSynced
+        )
     }
 
     @OptIn(ExperimentalTime::class)
@@ -147,8 +149,7 @@ class ChatRepositoryImpl(
                     it.toCached()
                 })
             }
-            updateTotalItemCount(remoteChatSummariesData.size)
-            updateSyncedTime()
+            updateSyncMetaData(remoteChatSummaries.totalItems)
             _syncState.emit(SyncState.ChatsSummariesSyncedSuccess)
         }
     }

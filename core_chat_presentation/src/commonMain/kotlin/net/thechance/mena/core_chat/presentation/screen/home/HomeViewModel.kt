@@ -4,7 +4,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.could_not_load_chats
@@ -43,14 +49,15 @@ class HomeViewModel(
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
 
-    var maxItems = 20
+    private val _maxItemsState = MutableStateFlow(0)
+    private val maxItemsState = _maxItemsState.asStateFlow()
+
     private val paginator by lazy {
         Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::changeLoadingState,
             onRequest = ::getChatsSummary,
             getNextKey = { currentPage, _ ->
-                maxItems += PAGE_SIZE
                 currentPage + 1
             },
             onError = { onLoadChatsSummaryError() },
@@ -69,11 +76,13 @@ class HomeViewModel(
         getCurrentAddressInfo()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeChatSummariesList() {
         tryToCollect(collect = {
-            chatRepository.observeChatSummaries(maxItems)
+            maxItemsState.flatMapLatest {
+                chatRepository.observeChatSummaries(it)
+            }
         }, onCollect = { chatSummaries ->
-            println("home view model: collected chat summaries: ${chatSummaries?.size}")
             val updatedChatsSummaries =
                 chatSummaries?.sortedByDescending { it.lastMessage?.sendAt }?.map { it.toUi() }
                     ?.distinctBy { it.id } ?: return@tryToCollect
@@ -148,6 +157,7 @@ class HomeViewModel(
 
     override fun onChatsListScrolled() {
         viewModelScope.launch {
+            _maxItemsState.update { it + PAGE_SIZE }
             paginator.loadNextItems()
         }
     }
