@@ -33,6 +33,18 @@ suspend inline fun <reified T, reified R> HttpClient.postJson(
     return response.body()
 }
 
+suspend fun HttpClient.postEmpty(
+    path: String,
+) {
+    val response = this.post {
+        url(path)
+    }
+
+    if (response.status != HttpStatusCode.OK) {
+        throw ClientRequestException(response, response.body())
+    }
+}
+
 suspend fun HttpClient.postFileWithData(
     path: String,
     fileKey: String,
