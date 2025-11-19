@@ -19,12 +19,7 @@ class OrderRepositoryImpl(
 ): OrderRepository {
     override suspend fun getOrderDetails(orderId: Uuid): Order {
         return safeApiCall <OrderDto> {
-            client.get(ORDER_DETAILS_ENDPOINT){
-                parameter("orderId", orderId)
-            }
+            client.get("${DUKAN_BASE_PATH}/orders/$orderId")
         }.toDomain()
-    }
-    companion object {
-        const val ORDER_DETAILS_ENDPOINT = "${DUKAN_BASE_PATH}/orders"
     }
 }
