@@ -5,12 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.ic_no_connection
+import mena.trends_presentation.generated.resources.ic_no_connection_dark
 import mena.trends_presentation.generated.resources.no_connection_description
 import mena.trends_presentation.generated.resources.no_connection_title
 import mena.trends_presentation.generated.resources.re_try
-import mena.trends_presentation.generated.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -18,10 +19,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun NoConnection(
     modifier: Modifier = Modifier,
+    currentTheme: AppTheme = AppTheme.LIGHT,
     onRetry: () -> Unit
 ) {
+    val icon =
+        if (currentTheme == AppTheme.DARK) Res.drawable.ic_no_connection_dark else Res.drawable.ic_no_connection
+
     StatePlaceholder(
-        icon = painterResource(Res.drawable.ic_no_connection),
+        icon = painterResource(icon),
         title = stringResource(Res.string.no_connection_title),
         description = stringResource(Res.string.no_connection_description),
         bottomContent = {
@@ -39,7 +44,6 @@ fun NoConnection(
 @Composable
 fun PreviewNoConnection() {
     MenaTheme {
-        NoConnection {
-        }
+        NoConnection {}
     }
 }
