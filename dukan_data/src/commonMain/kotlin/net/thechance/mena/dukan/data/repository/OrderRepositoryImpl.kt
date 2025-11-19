@@ -4,7 +4,6 @@ package net.thechance.mena.dukan.data.repository
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import net.thechance.mena.dukan.data.dto.order.OrderDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
