@@ -58,7 +58,12 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId, source = Route.ReelSource.Home.name))
+                navController.navigate(
+                    Route.ReelDetails(
+                        effect.trendId,
+                        source = Route.ReelSource.Home.name
+                    )
+                )
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
@@ -71,7 +76,10 @@ internal fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.getFeedReels() }
+    LaunchedEffect(Unit) {
+        viewModel.getFeedReels()
+        viewModel.getCurrentTheme()
+    }
 
     HomeScreenContent(
         state = state,
@@ -112,12 +120,12 @@ private fun HomeScreenContent(
 
             TrendsAnimatedVisibility(
                 visible = hasNetworkError,
-                content = { NoConnection { listener.onClickRetry() } }
+                content = { NoConnection(currentTheme = state.currentTheme) { listener.onClickRetry() } }
             )
 
             TrendsAnimatedVisibility(
                 visible = shouldShowEmptyState,
-                content = { EmptyTrends() }
+                content = { EmptyTrends(currentTheme = state.currentTheme) }
             )
 
             TrendsAnimatedVisibility(
@@ -169,7 +177,7 @@ private fun ReelsListSection(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8,horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8, horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(
