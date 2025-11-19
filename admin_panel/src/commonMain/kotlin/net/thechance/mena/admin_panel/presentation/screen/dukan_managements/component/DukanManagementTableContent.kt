@@ -10,11 +10,13 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,12 +34,15 @@ import net.thechance.mena.admin_panel.presentation.component.DukanImage
 import net.thechance.mena.admin_panel.presentation.component.DukanLocation
 import net.thechance.mena.admin_panel.presentation.component.PagesIndicatorRow
 import net.thechance.mena.admin_panel.presentation.component.TableCellText
-import net.thechance.mena.admin_panel.presentation.component.ViewDukanDetailsButton
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.DukanManagementScreenState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.deactivated
+import net.thechance.mena.admin_panel.resources.ic_view_details
+import net.thechance.mena.admin_panel.resources.view_details
+import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -174,6 +179,14 @@ private fun DukanItemRow(
             modifier = Modifier
                 .widthIn(min = 177.dp),
             contentAlignment = Alignment.CenterStart
-        ) { ViewDukanDetailsButton(onClick = onViewDetailsClicked) }
+        ) {
+            OutlinedButton(
+                text = stringResource(Res.string.view_details),
+                trailingIcon = painterResource(Res.drawable.ic_view_details),
+                onClick = onViewDetailsClicked,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp),
+                modifier = Modifier.wrapContentWidth(),
+            )
+        }
     }
 }

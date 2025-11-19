@@ -265,4 +265,15 @@
     <string name="last_update">آخر تحديث: %1$s</string>
     <string name="privacy_and_policy">سياسة الخصوصية</string>
 
+    <string name="logout">تسجيل الخروج</string>
+    <string name="delete_account">حذف الحساب</string>
+
+    <string name="logout_title">تسجيل الخروج</string>
+    <string name="logout_description">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+
+    <string name="delete_account_title">حذف الحساب؟</string>
+    <string name="delete_account_description">هل أنت متأكد أنك تريد متابعة حذف حسابك؟</string>
+
+    <string name="profile_settings">إعدادات الملف الشخصي</string>
+
 </resources>

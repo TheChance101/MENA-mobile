@@ -43,13 +43,11 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
             is DownloadedSurEffect.NavigateToRecitersScreen ->
-                navController.navigate(Route.DownloadedRecitersRoute(surahId = effect.surahId))
-
+                navController.navigate(Route.ReciterSelectionRoute)
             is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
                 navController.navigate(
                     Route.DownloadedRecitersRoute(
                         surahId = effect.surahId,
-                        isCardsSwipable = true,
                     )
                 )
             }

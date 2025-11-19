@@ -26,9 +26,10 @@ internal fun DukanDetailsAppBar(
     dukanStatus: DukanDetailsScreenState.DukanStatus,
     onChangeDukanStatusBtnClicked: () -> Unit,
     isActiveDukanButtonLoading: Boolean,
+    modifier: Modifier = Modifier
 ) {
     AppBar(
-        modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),
+        modifier = modifier.background(Theme.colorScheme.background.surfaceLow),
         title = stringResource(Res.string.dukan_details),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
         onLeadingClick = onBackBtnClicked,
