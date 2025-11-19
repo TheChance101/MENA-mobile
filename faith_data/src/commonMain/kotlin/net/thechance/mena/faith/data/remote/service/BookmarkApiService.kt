@@ -14,7 +14,7 @@ import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 interface BookmarkApiService {
 
     @POST("faith/ayah/bookmarks")
-    suspend fun addBookmark(@Body request: AddBookmarkRequest): Response<AyahBookmarkDto>
+    suspend fun addBookmark(@Body request: AddBookmarkRequest): Response<Unit>
 
     @GET("faith/ayah/bookmarks")
     suspend fun getBookmarks(

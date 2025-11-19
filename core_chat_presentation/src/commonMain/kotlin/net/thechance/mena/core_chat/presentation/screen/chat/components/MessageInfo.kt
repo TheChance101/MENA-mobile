@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.am
 import mena.core_chat_presentation.generated.resources.ic_close_circle
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
+import mena.core_chat_presentation.generated.resources.pm
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.formatAsTime
 import net.thechance.mena.core_chat.presentation.utils.noHoverClickable
@@ -27,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 
@@ -53,7 +56,10 @@ fun MessageInfo(
         ),
     ) {
         Text(
-            text = messageTime.formatAsTime(),
+            text = messageTime.formatAsTime(
+                am = stringResource(Res.string.am),
+                pm = stringResource(Res.string.pm),
+            ),
             style = Theme.typography.label.extraSmall,
             color = messageInfoColor
         )

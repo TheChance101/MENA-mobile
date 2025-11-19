@@ -41,6 +41,7 @@ fun TransactionStatusIcon(
             Icon(
                 painter = painterResource(transactionTypeIcon),
                 contentDescription = stringResource(transactionStatus.iconContentDescriptionRes),
+                tint = Theme.colorScheme.shadeSecondary,
                 modifier = Modifier.size(24.dp)
             )
         }

@@ -34,4 +34,5 @@ class SurViewModel(
 
     private fun handleSuccessState(sur: List<Surah>) =
         updateState { it.copy(sur = sur.map { surah -> surah.toUi() }) }
+
 }

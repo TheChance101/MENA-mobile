@@ -2,14 +2,20 @@
 
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -23,8 +29,11 @@ import mena.wallet_presentation.generated.resources.pick_start_date
 import mena.wallet_presentation.generated.resources.share
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
 import net.thechance.mena.wallet.presentation.component.SnackBarContainer
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
@@ -73,22 +82,11 @@ fun TransactionHistoryContent(
             AppBar(
                 title = stringResource(Res.string.transactions_history),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_arrow_left),
-                        contentDescription = stringResource(Res.string.back_button)
-                    )
-                },
+                leadingContent = { BackIcon() },
                 onLeadingClick = interactionListener::onBackClicked,
                 trailingContent = {
                     if (state.history.isNotEmpty() || state.filterState.activeFilterCount > 0) {
-                        Icon(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(16.dp))
-                                .clickable { interactionListener.onExportClicked() },
-                            painter = painterResource(Res.drawable.ic_share),
-                            contentDescription = stringResource(Res.string.share)
-                        )
+                        ExportIcon(interactionListener = interactionListener)
                     }
                 }
             )
@@ -138,7 +136,11 @@ fun TransactionHistoryContent(
     {
         when {
             state.history.isEmpty() && state.filterState.activeFilterCount == 0 -> {
-                TransactionHistoryEmpty(modifier = Modifier.fillMaxSize())
+                TransactionHistoryEmpty(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                )
             }
 
             else -> {
@@ -167,6 +169,26 @@ private fun onTransactionHistoryEffect(
             navController.navigate(TransactionDetailsScreenRoute(effect.id.toString()))
         }
     }
+}
+
+@Composable
+private fun ExportIcon(
+    interactionListener: TransactionHistoryInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    Icon(
+        painter = painterResource(Res.drawable.ic_share),
+        contentDescription = stringResource(Res.string.share),
+        tint = Theme.colorScheme.shadePrimary,
+        modifier = modifier
+            .size(40.dp)
+            .background(
+                Theme.colorScheme.background.surfaceLow,
+                RoundedCornerShape(Theme.radius.md)
+            )
+            .clip(RoundedCornerShape(Theme.radius.md))
+            .clickable { interactionListener.onExportClicked() },
+    )
 }
 
 @Preview(showBackground = true)

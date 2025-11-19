@@ -62,4 +62,11 @@ internal sealed interface Route {
 
     @Serializable
     data object UploadImageRoute : Route
+
+    @Serializable
+    data class ShareAyahToChatRoute(
+        val surahId: String,
+        val ayahNumber: Int,
+        val ayahContent: String,
+    ) : Route
 }

@@ -24,7 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.OSMMapView
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreenState
 import net.thechance.mena.admin_panel.resources.Res
@@ -57,7 +57,7 @@ internal fun DukanDetailsCard(
                 Box(
                     modifier = modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
-                ) { LoadingIndicator() }
+                ) { AdminPanelContentLoading() }
             }
 
             else -> {
@@ -143,9 +143,8 @@ private fun DukanLocationMap(
                         .clip(RoundedCornerShape(Theme.radius.md)),
                     latitude = latitude,
                     longitude = longitude,
-                    markerWidth = 60,
-                    markerHeight = 80,
-                    initialZoom = 100
+                    markerWidth = 45,
+                    markerHeight = 58
                 )
             } else {
                 Image(
@@ -166,6 +165,7 @@ private fun DukanLocation(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             modifier = Modifier

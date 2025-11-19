@@ -18,6 +18,7 @@ import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+
 fun LocalDate.toLabel(
     today: LocalDate,
     yesterday: LocalDate,
@@ -108,14 +109,21 @@ fun generateWaveformData(): List<Float> {
 }
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
-    if (item is TextMessageUiState && item.messageDetails.id == messageId)
-        item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
-    else if (item is AudioMessageUiState && item.messageDetails.id == messageId)
-        item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
-    else item
+    when {
+        item is TextMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        item is AudioMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        item is AyahMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        else -> item
+    }
 }
 
-fun Message.toUi(): MessageUiState {
+ fun Message.toUi(): MessageUiState {
     val messageDetails = MessageDetailsUiState(
         id = id,
         senderId = senderId,
@@ -145,6 +153,14 @@ fun Message.toUi(): MessageUiState {
             text = content.text,
             messageDetails = messageDetails
         )
+
+        is Ayah -> AyahMessageUiState(
+            surahId = content.surahId,
+            ayahContent = content.ayahContent,
+            ayahNumber = content.ayahNumber,
+            surahName = "",
+            messageDetails = messageDetails
+        )
     }
 }
 
@@ -158,6 +174,7 @@ fun MessageUiState.toEntity(): Message {
             sendAt = messageDetails.sendTime,
             status = messageDetails.status,
             isMine = messageDetails.isMine,
+            reactions = messageDetails.reactions
         )
 
         is ImageMessageUiState -> {
@@ -177,6 +194,22 @@ fun MessageUiState.toEntity(): Message {
                 chatId = messageDetails.chatId,
                 senderId = messageDetails.senderId,
                 content = Text(text = text),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+        is AyahMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Ayah(
+                    surahId = surahId,
+                    ayahContent = ayahContent,
+                    ayahNumber = ayahNumber
+                ),
                 id = messageDetails.id,
                 sendAt = messageDetails.sendTime,
                 status = messageDetails.status,

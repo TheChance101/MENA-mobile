@@ -38,6 +38,7 @@ fun MyAddressesAppBar(
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = "Back",
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = onBackClicked,
@@ -63,6 +64,7 @@ fun AddIcon(
             .padding(10.dp)
             .size(20.dp),
         painter = painterResource(Res.drawable.ic_add),
+        tint = Theme.colorScheme.primary.primary,
         contentDescription = stringResource(Res.string.profile_share_icon_content_description),
     )
 }

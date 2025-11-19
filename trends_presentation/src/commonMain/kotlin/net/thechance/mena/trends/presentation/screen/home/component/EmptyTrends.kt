@@ -13,11 +13,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun EmptyTrends(modifier: Modifier = Modifier) {
+fun EmptyTrends(modifier: Modifier = Modifier, isScrollable: Boolean = true) {
     StatePlaceholder(
         icon = painterResource(Res.drawable.ic_empty_trends),
         title = stringResource(Res.string.empty_trends_title),
         description = stringResource(Res.string.empty_trends_description),
+        isScrollable = isScrollable,
         modifier = modifier
     )
 }

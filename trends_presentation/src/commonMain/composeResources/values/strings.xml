@@ -41,7 +41,7 @@
     <!-- Video Description Screen  -->
     <string name="new_trend">New Trend</string>
     <string name="add_video_description_title">Add Video Description</string>
-    <string name="add_video_description_subtitle">Write a short description to tell viewers what your video is about..</string>
+    <string name="add_video_description_subtitle">Write a short description to tell viewers what your video is about.</string>
     <string name="hint">Tell viewers about your video...</string>
     <string name="characters"> %1$d / %2$d characters</string>
     <string name="page_number">%1$d/%2$d</string>
@@ -99,8 +99,7 @@
 
     <string name="empty_trends_icon">Empty Trends Icon</string>
     <string name="empty_trends_title">No trends yet!</string>
-    <string name="empty_trends_description">
-        Start adding your tagged products to the shelf by clicking the Add button above.</string>
+    <string name="empty_trends_description">Start sharing your favorite moments to appear here. Add your first video by clicking the Upload button.</string>
 
     <string name="no_connection_icon">No Connection Icon</string>
     <string name="no_connection_title">Oops! It looks like you’re offline.</string>
@@ -109,8 +108,9 @@
     <string name="something_went_wrong_description">We couldn't load the content... Please try again</string>
     <string name="re_try">Re-try</string>
 
-    <string name="no_favorites_yet">No favorites yet</string>
-
     <string name="show_more">show more</string>
     <string name="show_less">show less</string>
+
+    <string name="no_favorites_title">No favorites yet!</string>
+    <string name="no_favorites_description">Start by adding your favorite trends to see here. Click the heart icon to add trends to your favorites list.</string>
 </resources>

@@ -20,19 +20,17 @@ import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.back_arrow
-import mena.trends_presentation.generated.resources.ic_arrow_left
 import mena.trends_presentation.generated.resources.new_trend
 import mena.trends_presentation.generated.resources.upload_video
 import mena.trends_presentation.generated.resources.upload_video_description
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.toStringResource
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.NextButton
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
@@ -46,7 +44,6 @@ import net.thechance.mena.trends.presentation.shared.util.isIdle
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarData
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -176,10 +173,7 @@ private fun UploadReelScreenTopBar(
     AppBar(
         onLeadingClick = onBackClick,
         leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
+            BackIcon()
         },
         title = stringResource(Res.string.new_trend),
         trailingContent = { UploadPageNumber(page = 1) }

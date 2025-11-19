@@ -30,11 +30,6 @@ data class DeleteDialogUIState(
     val isVisible: Boolean = false
 )
 
-data class CoordinatesUiState(
-    val latitude: Double = 0.0,
-    val longitude: Double = 0.0,
-)
-
 data class SnackBarUiState(
     val isVisible: Boolean = false,
     val snackBarType: SnackBarType = SnackBarType.ERROR,

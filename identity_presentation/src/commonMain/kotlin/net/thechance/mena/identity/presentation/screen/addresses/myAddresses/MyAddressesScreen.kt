@@ -168,7 +168,7 @@ private fun AddressesSection(
                 isActivating = it.isActivating || it.isRefreshing
             )
         }
-        
+
         if (isAddingNewAddress) {
             item {
                 AddressCardShimmer()

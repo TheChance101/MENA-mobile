@@ -8,12 +8,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,16 +25,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import io.github.dellisd.spatialk.geojson.Position
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.ic_anchor_my_locations
+import mena.identity_presentation.generated.resources.ic_anchor
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.components.util.MapStyle
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.SetAnchorInCenter
 import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -165,18 +164,7 @@ private fun MyAddressesMap(
         }
     }
 
-    BoxWithConstraints(modifier = modifier) {
-        if (targetPosition != null) {
-            SetAnchorInCenter(
-                animateToCurrentLocation = animateToCurrentLocation,
-                longitude = longitude,
-                latitude = latitude,
-                camera = camera,
-                maxWidth = maxWidth,
-                maxHeight = maxHeight,
-            )
-        }
-
+    Box(modifier = modifier) {
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
@@ -189,12 +177,13 @@ private fun MyAddressesMap(
         )
 
         Image(
-            painter = painterResource(Res.drawable.ic_anchor_my_locations),
+            painter = painterResource(Res.drawable.ic_anchor),
             contentDescription = null,
+            contentScale = ContentScale.FillHeight,
             modifier = Modifier
-                .align(Alignment.TopCenter)
-                .size(22.dp, 28.38.dp)
-                .offset(y = Theme.spacing._16)
+                .align(Alignment.Center)
+                .padding(bottom = 28.dp)
+                .size(28.dp)
         )
     }
 }

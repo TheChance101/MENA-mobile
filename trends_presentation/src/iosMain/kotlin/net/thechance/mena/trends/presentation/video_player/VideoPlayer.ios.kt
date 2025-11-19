@@ -35,7 +35,9 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
+import net.thechance.mena.trends.presentation.screen.user_reel.ReelWatchSessionState
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
+import net.thechance.mena.trends.presentation.video_player.utils.getCurrentTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import platform.AVFoundation.AVPlayer
@@ -65,6 +67,8 @@ import platform.Foundation.NSURLErrorBadServerResponse
 private const val PREFERRED_TIME_SCALE = 600
 private const val NSURLErrorNotConnectedToInternet = -1009
 
+private const val DELAY_TIME = 250L
+
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun VideoPlayer(
@@ -75,7 +79,8 @@ actual fun VideoPlayer(
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
     onNetworkError: () -> Unit,
-    content: @Composable () -> Unit
+    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
+    content: @Composable (() -> Unit)
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
     var isPaused by remember { mutableStateOf(false) }
@@ -97,6 +102,8 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
+    val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val isWatchedToEnd = remember { mutableStateOf(false) }
 
     val headers = mapOf("X-ACCESS-KEY" to trendStorageAccessSecret)
 
@@ -133,7 +140,6 @@ actual fun VideoPlayer(
         if (wasPlaying) {
             player.play()
         }
-
     }
 
     LaunchedEffect(player) {
@@ -156,12 +162,12 @@ actual fun VideoPlayer(
                     }
                 }
             }
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 
     LaunchedEffect(url, isReelVisible) {
-        replayReelWhenFinishedAutomatic(player)
+        replayReelWhenFinishedAutomatic(player) { isWatchedToEnd.value = true }
 
         if (isReelVisible) {
             if (lastPosition > 0.0) {
@@ -170,10 +176,12 @@ actual fun VideoPlayer(
             }
             player.play()
             isPaused = false
+            reelWatchSessionState.watchStartTime = getCurrentTime()
         } else {
             lastPosition = CMTimeGetSeconds(player.currentTime())
             player.pause()
             isPaused = true
+            reelWatchSessionState.watchEndTime = getCurrentTime()
         }
 
         onVideoPlaying()
@@ -200,7 +208,7 @@ actual fun VideoPlayer(
 
             if (waiting) isInitialBuffering = !isStartPlaying
 
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 
@@ -209,6 +217,7 @@ actual fun VideoPlayer(
             val currentItem = player.currentItem
             if (currentItem != null) {
                 val totalSeconds = CMTimeGetSeconds(currentItem.duration)
+                reelWatchSessionState.videoDurationInMilliseconds = duration.toLong()
                 if (!totalSeconds.isNaN() && totalSeconds > 0.0) {
                     duration = totalSeconds
                     val currentSeconds = CMTimeGetSeconds(player.currentTime())
@@ -219,7 +228,7 @@ actual fun VideoPlayer(
                     }
                 }
             }
-            delay(250)
+            delay(DELAY_TIME)
         }
     }
 
@@ -279,7 +288,8 @@ actual fun VideoPlayer(
                                 if (duration > 0.0 && barWidth > 0f) {
                                     val newProgress = (offset.x / barWidth).coerceIn(0f, 1f)
                                     val seekSeconds = newProgress * duration
-                                    val seekTime = CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
+                                    val seekTime =
+                                        CMTimeMakeWithSeconds(seekSeconds, PREFERRED_TIME_SCALE)
                                     player.seekToTime(seekTime)
                                 }
                             }
@@ -294,18 +304,23 @@ actual fun VideoPlayer(
     DisposableEffect(Unit) {
         onDispose {
             lastPosition = CMTimeGetSeconds(player.currentTime())
+            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+                lastPosition.toLong()
+            reelWatchSessionState.watchEndTime = getCurrentTime()
+            saveReelWatchSession(reelWatchSessionState)
             player.pause()
         }
     }
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun replayReelWhenFinishedAutomatic(player: AVPlayer) {
+private fun replayReelWhenFinishedAutomatic(player: AVPlayer, onVideoEnded: () -> Unit) {
     NSNotificationCenter.defaultCenter.addObserverForName(
         name = AVPlayerItemDidPlayToEndTimeNotification,
         `object` = player.currentItem,
         queue = null
     ) { _ ->
+        onVideoEnded()
         player.seekToTime(CMTimeMakeWithSeconds(0.0, PREFERRED_TIME_SCALE))
         player.play()
     }

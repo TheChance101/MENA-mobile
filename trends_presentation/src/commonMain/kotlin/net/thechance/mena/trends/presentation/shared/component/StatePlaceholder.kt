@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -27,14 +29,25 @@ fun StatePlaceholder(
     title: String,
     description: String,
     modifier: Modifier = Modifier,
+    isScrollable: Boolean = true,
     bottomContent: (@Composable () -> Unit)? = null
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._24)
+            .padding(bottom = 8.dp)
+            .then(
+                if (isScrollable) {
+                    Modifier.verticalScroll(scrollState)
+                } else {
+                    Modifier
+                }
+            )
     ) {
         Image(
             painter = icon,
@@ -56,7 +69,8 @@ fun StatePlaceholder(
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = Theme.spacing._2, bottom = Theme.spacing._12)
         )
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -30,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,14 +44,14 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.back_arrow
 import mena.trends_presentation.generated.resources.favorite
-import mena.trends_presentation.generated.resources.ic_arrow_left
+import mena.trends_presentation.generated.resources.ic_empty_trends
 import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
 import mena.trends_presentation.generated.resources.my_trends
-import mena.trends_presentation.generated.resources.no_favorites_yet
+import mena.trends_presentation.generated.resources.no_favorites_description
+import mena.trends_presentation.generated.resources.no_favorites_title
 import mena.trends_presentation.generated.resources.play_now
 import mena.trends_presentation.generated.resources.profile_image_desc
 import mena.trends_presentation.generated.resources.trend_image_desc
@@ -61,9 +65,11 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
+import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.BaseAsyncImage
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
+import net.thechance.mena.trends.presentation.shared.component.StatePlaceholder
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
@@ -81,13 +87,15 @@ internal fun ManageTrendsScreen(
         when (effect) {
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
-                navController.navigate(Route.ReelDetails(effect.reelId, isFromManageTrends = true))
+                navController.navigate(
+                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource.name)
+                )
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getReels()
+    LaunchedEffect(state.selectedTab) {
+        viewModel.loadSelectedTabData(state.selectedTab)
     }
 
     ManageTrendsScreenContent(
@@ -109,10 +117,13 @@ private fun ManageTrendsScreenContent(
             )
         },
         content = {
-            val reels = state.reels.collectAsLazyPagingItems()
+            val trends = when (state.selectedTab) {
+                SelectTab.MyTrends -> state.reels
+                SelectTab.Favorites -> state.favoriteReels
+            }.collectAsLazyPagingItems()
 
             TrendsAnimatedVisibility(
-                visible = reels.loadState.refresh is LoadState.Loading,
+                visible = trends.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
@@ -123,7 +134,7 @@ private fun ManageTrendsScreenContent(
 
             TrendsAnimatedVisibility(
                 visible = state.error == null && state.isLoading.not(),
-                content = { ManageTrendsScreenBody(listener, state, reels) }
+                content = { ManageTrendsScreenBody(listener, state, trends) }
             )
         }
     )
@@ -133,14 +144,16 @@ private fun ManageTrendsScreenContent(
 private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
     state: ManageTrendsScreenState,
-    reels: LazyPagingItems<ReelUiState>
+    trends: LazyPagingItems<ReelUiState>
 ) {
     val cardWidth = 106.dp
-    val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
-            reels.loadState.refresh is LoadState.NotLoading &&
-            reels.loadState.refresh.toErrorState() == null
+    val gridState = rememberLazyGridState()
+    val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
+            trends.loadState.refresh is LoadState.NotLoading &&
+            trends.loadState.refresh.toErrorState() == null
 
     LazyVerticalGrid(
+        state = gridState,
         columns = GridCells.Adaptive(minSize = cardWidth),
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(space = Theme.spacing._4),
@@ -168,6 +181,7 @@ private fun ManageTrendsScreenBody(
             Text(
                 text = state.profile.userName,
                 style = Theme.typography.label.medium,
+                color = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = Theme.spacing._32)
@@ -185,76 +199,94 @@ private fun ManageTrendsScreenBody(
             ) {
                 SegmentButton(
                     title = stringResource(Res.string.my_trends),
-                    isSelected = state.selectTab == SelectTab.MyTrends,
+                    isSelected = state.selectedTab == SelectTab.MyTrends,
                     onSelectChange = { listener.onSelectTab(SelectTab.MyTrends) },
                     modifier = Modifier.weight(1f)
                 )
 
                 SegmentButton(
                     title = stringResource(Res.string.favorite),
-                    isSelected = state.selectTab == SelectTab.Favorites,
+                    isSelected = state.selectedTab == SelectTab.Favorites,
                     onSelectChange = { listener.onSelectTab(SelectTab.Favorites) },
                     modifier = Modifier.weight(1f)
                 )
             }
         }
 
-        if (state.selectTab == SelectTab.Favorites) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Text(
-                    text = stringResource(Res.string.no_favorites_yet),
-                    style = Theme.typography.label.medium,
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    textAlign = TextAlign.Center
-                )
-            }
-            return@LazyVerticalGrid
-        }//temporary until we make implementation for it
+        if (trends.itemSnapshotList.isNotEmpty()) {
+            items(key = trends.itemKey(), count = trends.itemCount) { index ->
 
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            TrendsAnimatedVisibility(
-                visible = shouldShowEmptyState,
-                content = { EmptyTrends(modifier = Modifier.padding(top = 74.dp)) }
-            )
-        }
-
-        if (reels.itemSnapshotList.isNotEmpty()) {
-            items(key = reels.itemKey(), count = reels.itemCount) { index ->
-                reels[index]?.let { reel ->
+                trends[index]?.let { trend ->
                     TrendItem(
-                        item = reel,
+                        item = trend,
                         onTrendClick = listener::onClickReel,
                         onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
+            }
+        } else if (shouldShowEmptyState) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                EmptyStateForTab(tab = state.selectedTab)
             }
         }
     }
 }
 
 @Composable
+private fun EmptyStateForTab(tab: SelectTab) {
+    if (tab == SelectTab.Favorites) {
+        EmptyFavorites(modifier = Modifier.padding(top = 74.dp))
+    } else {
+        EmptyTrends(isScrollable = false, modifier = Modifier.padding(top = 74.dp))
+    }
+}
+
+@Composable
+private fun EmptyFavorites(modifier: Modifier = Modifier) {
+    StatePlaceholder(
+        icon = painterResource(Res.drawable.ic_empty_trends),
+        title = stringResource(Res.string.no_favorites_title),
+        description = stringResource(Res.string.no_favorites_description),
+        isScrollable = false,
+        modifier = modifier
+    )
+}
+
+@Composable
 private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
     AppBar(
         onLeadingClick = onBackClick,
-        leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
-            )
-        },
         title = stringResource(Res.string.manage_trends_title),
+        leadingContent = {
+            BackIcon()
+        }
     )
 }
 
 @Composable
 private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
+    val errorPainter = painterResource(Res.drawable.ic_placeholder_profile)
+    val tintColor = Theme.colorScheme.shadePrimary
+    val tintedErrorPainter = remember(errorPainter) {
+        object : Painter() {
+            override val intrinsicSize = errorPainter.intrinsicSize
+
+            override fun DrawScope.onDraw() {
+                with(errorPainter) {
+                    draw(
+                        size = size,
+                        colorFilter = ColorFilter.tint(tintColor)
+                    )
+                }
+            }
+        }
+    }
     AsyncImage(
         model = profileImageUrl,
         contentDescription = stringResource(Res.string.profile_image_desc),
-        error = painterResource(Res.drawable.ic_placeholder_profile),
+        error = tintedErrorPainter,
         modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Crop
     )
 }
 

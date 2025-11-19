@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -49,20 +50,22 @@ internal fun QuranPlayer(
 
 @Preview
 @Composable
-fun ReciterBoxPreview() {
-    QuranTheme {
-        QuranPlayer(
-            reciterName = "Maytham Al-Tammar",
-            surahName = "Surah Name",
-            ayahNumber = 1,
-            isPlaying = true,
-            onReciterClick = {},
-            onPreviousClick = {},
-            onPlayPauseClick = {},
-            onNextClick = {},
-            onRepeatClick = {},
-            onCancelClick = {},
-            onTilawahClick = {}
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            QuranPlayer(
+                reciterName = "Maytham Al-Tammar",
+                surahName = "Surah Name",
+                ayahNumber = 1,
+                isPlaying = true,
+                onReciterClick = {},
+                onPreviousClick = {},
+                onPlayPauseClick = {},
+                onNextClick = {},
+                onRepeatClick = {},
+                onCancelClick = {},
+                onTilawahClick = {}
+            )
+        }
     }
 }

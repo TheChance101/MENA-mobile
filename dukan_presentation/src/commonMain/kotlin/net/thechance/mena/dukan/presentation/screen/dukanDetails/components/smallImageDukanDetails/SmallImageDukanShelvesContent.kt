@@ -71,7 +71,9 @@ private fun ShelfContent(
         modifier = modifier,
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        contentPadding = PaddingValues(vertical = Theme.spacing._16),
+        contentPadding = PaddingValues(
+            bottom = Theme.spacing._16
+        ),
     ) {
         items(
             count = shelves.itemCount,

@@ -145,7 +145,8 @@ private fun DialogContent(
                             Theme.colorScheme.background.surface,
                             cancelBackgroundShape
                         )
-                        .padding(PaddingValues(8.dp))
+                        .padding(PaddingValues(8.dp)),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
             content()

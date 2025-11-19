@@ -11,10 +11,11 @@ internal data class ManageTrendsScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
     val reels: Flow<PagingData<ReelUiState>> = flowOf(),
+    val favoriteReels: Flow<PagingData<ReelUiState>> = flowOf(),
     val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
-    val selectTab: SelectTab = SelectTab.MyTrends,
+    val selectedTab: SelectTab = SelectTab.MyTrends
 )
 internal data class ReelUiState(
     val id: String,
