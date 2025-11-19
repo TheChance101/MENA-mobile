@@ -46,8 +46,10 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
@@ -250,28 +252,32 @@ private fun SearchMosquesButton(onClick: () -> Unit) {
     )
 }
 
-@Composable
 @Preview
-private fun NearbyMosquesScreenPreview() {
-    Content(
-        uiState = NearbyMosquesMapUiState(isSearchButtonVisible = true),
-        listener = object : NearbyMosquesInteractionListener {
-            override fun onBackClick() {}
-            override fun onAddMosqueClick() {}
-            override fun getUserLocation() {}
-            override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-            override fun onViewOnMapClick(coordinate: Coordinate) {}
-            override fun onSearchByCoordinates(coordinate: Coordinate) {}
-            override fun onSearchResultClick(mosque: MosqueUiState) {}
-            override fun changeCenterOfMap(coordinate: Coordinate) {}
-            override fun onQueryChange(query: String) {}
-            override fun onSearchSubmit() {}
-            override fun changeSearchButtonVisibility(isVisible: Boolean) {}
-            override fun onDismissSearchBottomSheet() {}
-            override fun selectMosque(mosque: MosqueUiState) {}
-            override fun unselectMosque() {}
-            override fun changeMapMovement(canMove: Boolean) {}
-            override fun showSuccessMessage(message: StringResource) {}
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = NearbyMosquesMapUiState(isSearchButtonVisible = true),
+                listener = object : NearbyMosquesInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onAddMosqueClick() {}
+                    override fun getUserLocation() {}
+                    override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
+                    override fun onViewOnMapClick(coordinate: Coordinate) {}
+                    override fun onSearchByCoordinates(coordinate: Coordinate) {}
+                    override fun onSearchResultClick(mosque: MosqueUiState) {}
+                    override fun changeCenterOfMap(coordinate: Coordinate) {}
+                    override fun onQueryChange(query: String) {}
+                    override fun onSearchSubmit() {}
+                    override fun changeSearchButtonVisibility(isVisible: Boolean) {}
+                    override fun onDismissSearchBottomSheet() {}
+                    override fun selectMosque(mosque: MosqueUiState) {}
+                    override fun unselectMosque() {}
+                    override fun changeMapMovement(canMove: Boolean) {}
+                    override fun showSuccessMessage(message: StringResource) {}
+                }
+            )
         }
-    )
+    }
 }

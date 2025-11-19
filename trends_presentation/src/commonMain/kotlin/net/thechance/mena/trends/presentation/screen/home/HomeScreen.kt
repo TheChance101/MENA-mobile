@@ -1,28 +1,23 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import app.cash.paging.compose.itemKey
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
+import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -33,6 +28,7 @@ import mena.trends_presentation.generated.resources.manage_trends
 import mena.trends_presentation.generated.resources.trends_title
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
+import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -46,7 +42,6 @@ import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
 import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
-import net.thechance.mena.trends.presentation.shared.component.modifier.noRippleClickable
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -153,15 +148,11 @@ private fun AddTrendFAB(
     modifier: Modifier = Modifier,
     onClickFab: () -> Unit
 ) {
-    Icon(
+    FabButton(
         painter = painterResource(Res.drawable.ic_add_real),
         contentDescription = stringResource(Res.string.add_reel),
+        onClick = onClickFab,
         modifier = modifier
-            .padding(end = Theme.spacing._16, bottom = Theme.spacing._16)
-            .size(56.dp)
-            .clip(RoundedCornerShape(Theme.radius.md))
-            .background(Theme.colorScheme.primary.primary)
-            .noRippleClickable { onClickFab() }
             .padding(Theme.spacing._16),
     )
 }

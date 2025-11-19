@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.screen.productDetails
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -19,6 +20,10 @@ fun ProductDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
+    LaunchedEffect(Unit){
+        viewModel.refreshCartInfo()
+    }
 
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {

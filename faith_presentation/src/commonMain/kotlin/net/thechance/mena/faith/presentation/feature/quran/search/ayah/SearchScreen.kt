@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.start_searching_subtitle_for_ayah
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -150,47 +151,49 @@ private fun ResultList(
 }
 
 
-@Composable
 @Preview
-private fun SearchScreenPreview() {
-    QuranTheme {
-        Content(
-            state = SearchUiState(
-                surahId = null,
-                surahName = null,
-                query = "الرحمن",
-                queryHint = "ابحث في القرآن",
-                searchResults = listOf(
-                    SearchUiState.SearchResult(
-                        surahId = 1,
-                        surahName = "الفاتحة",
-                        number = 3,
-                        content = "الرَّحْمَٰنِ الرَّحِيمِ",
-                        plainContent = "الرحمن الرحيم"
-                    ),
-                    SearchUiState.SearchResult(
-                        surahId = 55,
-                        surahName = "الرحمن",
-                        number = 1,
-                        content = "الرَّحْمَٰنُ",
-                        plainContent = "الرحمن"
-                    ),
-                    SearchUiState.SearchResult(
-                        surahId = 2,
-                        surahName = "البقرة",
-                        number = 163,
-                        content = "وَإِلَٰهُكُمْ إِلَٰهٌ وَاحِدٌ ۖ لَّا إِلَٰهَ إِلَّا هُوَ الرَّحْمَٰنُ الرَّحِيمُ",
-                        plainContent = "والهكم اله واحد لا اله الا هو الرحمن الرحيم"
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                state = SearchUiState(
+                    surahId = null,
+                    surahName = null,
+                    query = "الرحمن",
+                    queryHint = "ابحث في القرآن",
+                    searchResults = listOf(
+                        SearchUiState.SearchResult(
+                            surahId = 1,
+                            surahName = "الفاتحة",
+                            number = 3,
+                            content = "الرَّحْمَٰنِ الرَّحِيمِ",
+                            plainContent = "الرحمن الرحيم"
+                        ),
+                        SearchUiState.SearchResult(
+                            surahId = 55,
+                            surahName = "الرحمن",
+                            number = 1,
+                            content = "الرَّحْمَٰنُ",
+                            plainContent = "الرحمن"
+                        ),
+                        SearchUiState.SearchResult(
+                            surahId = 2,
+                            surahName = "البقرة",
+                            number = 163,
+                            content = "وَإِلَٰهُكُمْ إِلَٰهٌ وَاحِدٌ ۖ لَّا إِلَٰهَ إِلَّا هُوَ الرَّحْمَٰنُ الرَّحِيمُ",
+                            plainContent = "والهكم اله واحد لا اله الا هو الرحمن الرحيم"
+                        )
                     )
-                )
-            ),
-            snackBar = SnackBarState(),
-            listener = object : SearchInteractionListener {
-                override fun onQueryChange(query: String) {}
-                override fun onClearQueryClick() {}
-                override fun onBackClick() {}
-                override fun onSearchResultClick(surahId: Int, ayahId: Int) {}
-            }
-        )
+                ),
+                snackBar = SnackBarState(),
+                listener = object : SearchInteractionListener {
+                    override fun onQueryChange(query: String) {}
+                    override fun onClearQueryClick() {}
+                    override fun onBackClick() {}
+                    override fun onSearchResultClick(surahId: Int, ayahId: Int) {}
+                }
+            )
+        }
     }
 }

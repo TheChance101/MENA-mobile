@@ -70,14 +70,14 @@ private fun onMainContainerEffect(
     when (effect) {
         is MainContainerEffect.NavigateToAdminPanelScreen -> {
 
-            navController.navigate(UsersManagement) {
-                popUpTo(UsersManagement) { inclusive = true }
+            navController.navigate(DukanManagement) {
+                popUpTo(DukanManagement) { inclusive = true }
             }
         }
 
         is MainContainerEffect.NavigateToLogInScreen -> {
             navController.navigate(Login) {
-                popUpTo(UsersManagement) { inclusive = true }
+                popUpTo(DukanManagement) { inclusive = true }
             }
         }
 

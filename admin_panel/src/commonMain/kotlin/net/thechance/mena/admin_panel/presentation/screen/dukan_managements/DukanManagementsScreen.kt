@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.DukanDetails
 import net.thechance.mena.admin_panel.navigation.LocalNavController
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
@@ -80,7 +81,9 @@ fun DukanManagementsContent(
                 query = state.query
             )
             when {
-                state.dukans.isEmpty() && !state.isLoading -> {
+                state.isLoading -> AdminPanelContentLoading()
+
+                state.dukans.isEmpty()  -> {
                     if (state.query.isNotEmpty())
                         EmptySearchState(
                             modifier = Modifier
@@ -89,7 +92,8 @@ fun DukanManagementsContent(
                         )
                     else {
                         EmptyDukanState(
-                            description = stringResource(Res.string.no_dukan_results)
+                            description = stringResource(Res.string.no_dukan_results),
+                            modifier = Modifier.offset(y=-(76.dp))
                         )
                     }
                 }

@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -123,18 +124,20 @@ private fun ResultList(
 }
 
 
-@Composable
 @Preview
-private fun SearchScreenPreview() {
-    QuranTheme {
-        Content(
-            state = ReciterSearchUiState(),
-            snackBar = SnackBarState(),
-            listener = object : ReciterSearchInteractionListener {
-                override fun onBackClick() {}
-                override fun onClearQueryClick() {}
-                override fun onQueryChange(query: String) {}
-            }
-        )
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                state = ReciterSearchUiState(),
+                snackBar = SnackBarState(),
+                listener = object : ReciterSearchInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onClearQueryClick() {}
+                    override fun onQueryChange(query: String) {}
+                }
+            )
+        }
     }
 }

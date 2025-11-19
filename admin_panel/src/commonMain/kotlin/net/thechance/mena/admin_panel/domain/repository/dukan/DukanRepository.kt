@@ -18,4 +18,5 @@ interface DukanRepository {
     suspend fun getShelfProducts(shelfId: Uuid, page: Int, size: Int): PagedResult<Product>
     suspend fun activateDukan(dukanId: Uuid)
     suspend fun deactivateDukan(dukanId: Uuid, deactivationReason: String)
+    suspend fun updateDukanStatus(dukanId: Uuid, status: Dukan.Status, message: String)
 }

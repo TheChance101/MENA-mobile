@@ -3,6 +3,7 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_requests
 import app.cash.turbine.test
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.answering.throws
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -192,6 +193,224 @@ class DukanRequestsViewModelTest {
             assertTrue(currentState.dukans.isNotEmpty())
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `should show dukan details when onViewDetailsClicked is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertTrue(currentState.isDukanDetailsShown)
+            assertEquals(selectedDukan, currentState.selectedDukan)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should hide dukan details when onDismissDukanDetails is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onDukanDetailsDismissed()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isDukanDetailsShown)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should approve dukan successfully when onApproveDukanClicked is called`() = runTest(testDispatcher) {
+        everySuspend {
+            dukanRepository.updateDukanStatus(any(), any(), any())
+        } returns Unit
+
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onApproveDukanClicked()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isDukanDetailsShown)
+            assertTrue(currentState.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should show reject dialog when onRejectDukanClicked is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanClicked()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertTrue(currentState.isRejectDialogShown)
+            assertFalse(currentState.isDukanDetailsShown)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should hide reject dialog when onRejectDukanDialogDismissed is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanClicked()
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanDialogDismissed()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isRejectDialogShown)
+            assertEquals("", currentState.rejectReason)
+            assertFalse(currentState.isRejectButtonLoading)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should reject dukan successfully when onRejectDukanConfirmed is called`() = runTest(testDispatcher) {
+        everySuspend {
+            dukanRepository.updateDukanStatus(any(), any(), any())
+        } returns Unit
+
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanClicked()
+        advanceUntilIdle()
+
+        viewModel.onRejectionMessageChanged("Does not meet requirements")
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanConfirmed()
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isRejectDialogShown)
+            assertFalse(currentState.isRejectButtonLoading)
+            assertTrue(currentState.snackBar.isSuccess)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should update rejection message when onRejectionMessageChanged is called`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val testMessage = "Invalid documentation"
+        viewModel.onRejectionMessageChanged(testMessage)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertEquals(testMessage, currentState.rejectReason)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should not update rejection message when it exceeds 200 characters`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val longMessage = "a".repeat(201)
+        viewModel.onRejectionMessageChanged(longMessage)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertEquals("", currentState.rejectReason)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should update rejection message when it is exactly 199 characters`() = runTest(testDispatcher) {
+        initViewModel()
+
+        val validMessage = "a".repeat(199)
+        viewModel.onRejectionMessageChanged(validMessage)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val currentState = awaitItem()
+            assertEquals(validMessage, currentState.rejectReason)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `should handle error when approving dukan fails`() = runTest(testDispatcher) {
+        everySuspend {
+            dukanRepository.updateDukanStatus(any(), any(), any())
+        } throws Exception("Network error")
+
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onApproveDukanClicked()
+        testScheduler.advanceTimeBy(100L)
+
+        val currentState = viewModel.state.value
+        assertFalse(currentState.snackBar.isSuccess)
+        assertTrue(currentState.snackBar.isVisible)
+        assertTrue(currentState.isDukanDetailsShown)
+    }
+
+    @Test
+    fun `should handle error when rejecting dukan fails`() = runTest(testDispatcher) {
+        everySuspend {
+            dukanRepository.updateDukanStatus(any(), any(), any())
+        } throws Exception("Network error")
+
+        initViewModel()
+
+        val selectedDukan = viewModel.state.value.dukans.first()
+        viewModel.onViewDetailsClicked(selectedDukan)
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanClicked()
+        advanceUntilIdle()
+
+        viewModel.onRejectDukanConfirmed()
+        testScheduler.advanceTimeBy(100L)
+
+        val currentState = viewModel.state.value
+        assertFalse(currentState.snackBar.isSuccess)
+        assertTrue(currentState.snackBar.isVisible)
     }
 
     private fun TestScope.initViewModel() {
