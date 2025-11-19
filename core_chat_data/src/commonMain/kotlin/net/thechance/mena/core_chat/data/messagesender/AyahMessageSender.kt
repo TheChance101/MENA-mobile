@@ -28,8 +28,8 @@ class AyahMessageSender(
             messageId = message.id.toString(),
             chatId = message.chatId.toString(),
             ayahNumber = content.ayahNumber,
-            suraNumber = content.surahId,
-            ayahText = content.ayahContent
+            surahNumber = content.surahId,
+            ayahContent = content.ayahContent
         )
 
         val messageJson = json.encodeToString(AyahMessageDto.serializer(), dto)

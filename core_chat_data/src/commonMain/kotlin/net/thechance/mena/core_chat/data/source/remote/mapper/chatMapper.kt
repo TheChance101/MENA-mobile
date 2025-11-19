@@ -44,9 +44,9 @@ fun MessageContentDto.toDomain(): MessageContent {
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
         is MessageContentDto.Money -> MessageContent.Text(amount.toString())
         is MessageContentDto.Ayah -> MessageContent.Ayah(
-            surahId = this.suraNumber,
-            ayahContent = this.ayahText,
-            ayahNumber = this.ayahNumber
+            surahId = surahNumber,
+            ayahContent = ayahContent,
+            ayahNumber = ayahNumber
         )
     }
 }
