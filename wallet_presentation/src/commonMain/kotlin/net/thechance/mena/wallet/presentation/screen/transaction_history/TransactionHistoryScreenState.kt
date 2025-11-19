@@ -1,7 +1,11 @@
 package net.thechance.mena.wallet.presentation.screen.transaction_history
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.deposit_icon
 import mena.wallet_presentation.generated.resources.failed
+import mena.wallet_presentation.generated.resources.ic_deposit
 import mena.wallet_presentation.generated.resources.ic_failed
 import mena.wallet_presentation.generated.resources.ic_receive
 import mena.wallet_presentation.generated.resources.ic_reload
@@ -13,6 +17,7 @@ import mena.wallet_presentation.generated.resources.sent
 import mena.wallet_presentation.generated.resources.success
 import mena.wallet_presentation.generated.resources.transaction_receive
 import mena.wallet_presentation.generated.resources.transaction_send
+import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.base.ErrorState
 import net.thechance.mena.wallet.presentation.model.SnackBarState
 import org.jetbrains.compose.resources.DrawableResource
@@ -43,22 +48,32 @@ data class TransactionHistoryScreenState(
     enum class TransactionTypeUiState(
         val titleRes: StringResource,
         val iconRes: DrawableResource,
-        val iconContentDescriptionRes: StringResource
+        val iconContentDescriptionRes: StringResource,
+        val iconTint: @Composable () -> Color
     ) {
         ONLINE_SHOPPING(
             titleRes = Res.string.online_shopping,
             iconRes = Res.drawable.ic_shopping_bag,
-            iconContentDescriptionRes = Res.string.online_shopping
+            iconContentDescriptionRes = Res.string.online_shopping,
+            iconTint = { Theme.colorScheme.shadeSecondary },
         ),
         SENT(
             titleRes = Res.string.transaction_send,
             iconRes = Res.drawable.ic_send,
-            iconContentDescriptionRes = Res.string.sent
+            iconContentDescriptionRes = Res.string.sent,
+            iconTint = { Theme.colorScheme.shadeSecondary },
         ),
         RECEIVED(
             titleRes = Res.string.transaction_receive,
             iconRes = Res.drawable.ic_receive,
-            iconContentDescriptionRes = Res.string.received
+            iconContentDescriptionRes = Res.string.received,
+            iconTint = { Theme.colorScheme.shadeSecondary },
+        ),
+        DEPOSIT(
+            titleRes = Res.string.transaction_receive,
+            iconRes = Res.drawable.ic_deposit,
+            iconContentDescriptionRes = Res.string.deposit_icon,
+            iconTint = { Color.Unspecified }
         )
     }
 

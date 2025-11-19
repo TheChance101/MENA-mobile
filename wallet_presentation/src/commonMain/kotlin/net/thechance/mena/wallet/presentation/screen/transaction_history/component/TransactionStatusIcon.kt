@@ -26,7 +26,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionStatusIcon(
-    transactionTypeIcon: DrawableResource,
+    transactionType: TransactionHistoryScreenState.TransactionTypeUiState,
     transactionStatus: TransactionHistoryScreenState.TransactionStatusUiState,
 ) {
     Box(
@@ -39,9 +39,9 @@ fun TransactionStatusIcon(
                 .align(Alignment.Center)
         ) {
             Icon(
-                painter = painterResource(transactionTypeIcon),
+                painter = painterResource(transactionType.iconRes),
                 contentDescription = stringResource(transactionStatus.iconContentDescriptionRes),
-                tint = Theme.colorScheme.shadeSecondary,
+                tint = transactionType.iconTint(),
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -55,16 +55,15 @@ fun TransactionStatusIcon(
             )
         }
     }
-
 }
-
 @Preview(showBackground = true)
 @Composable
 private fun TransactionStatusIconSuccessPreview() {
     MenaTheme {
         TransactionStatusIcon(
-            transactionTypeIcon = Res.drawable.ic_send,
+            transactionType = TransactionHistoryScreenState.TransactionTypeUiState.SENT,
             transactionStatus = TransactionHistoryScreenState.TransactionStatusUiState.SUCCESS
         )
     }
 }
+

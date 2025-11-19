@@ -39,6 +39,7 @@ import net.thechance.mena.wallet.presentation.navigation.StatementsHistoryScreen
 import net.thechance.mena.wallet.presentation.navigation.TransactionsHistoryScreenRoute
 import net.thechance.mena.wallet.presentation.screen.wallet.component.BalanceCard
 import net.thechance.mena.wallet.presentation.screen.wallet.component.LabeledButtonWithCircularIcon
+import net.thechance.mena.wallet.presentation.screen.wallet.component.RefreshIcon
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -83,6 +84,7 @@ private fun WalletContent(
                 title = stringResource(Res.string.my_wallet),
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                 leadingContent = { BackIcon() },
+                trailingContent = { RefreshIcon(interactionListener) },
                 onLeadingClick = interactionListener::onBackClicked,
             )
         },
