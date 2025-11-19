@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.main_container
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -37,6 +38,8 @@ internal fun MainContainerScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getCurrentTheme() }
+
     MainContainerScreenContent(state = state, listener = viewModel)
 }
 
@@ -53,11 +56,11 @@ private fun MainContainerScreenContent(
         }
 
         TrendsAnimatedVisibility(state.error is ErrorState.RequestFailed) {
-            SomethingWentWrong(onRetry = listener::onClickRetry)
+            SomethingWentWrong(onRetry = listener::onClickRetry, currentTheme = state.currentTheme)
         }
 
         TrendsAnimatedVisibility(state.error is ErrorState.NoInternet) {
-            NoConnection(onRetry = listener::onClickRetry)
+            NoConnection(onRetry = listener::onClickRetry, currentTheme = state.currentTheme)
         }
     }
 }
