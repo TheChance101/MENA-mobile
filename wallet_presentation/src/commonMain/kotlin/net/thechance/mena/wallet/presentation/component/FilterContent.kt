@@ -203,19 +203,6 @@ private fun DatePickerField(
                 modifier = Modifier.padding(start = 8.dp).size(20.dp)
             )
         }
-//        TextField(
-//            value = value,
-//            hint = stringResource(Res.string.select_date),
-//            onValueChanged = {},
-//            readOnly = true,
-//            showTrailingDivider = false,
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 8.dp)
-//                .clip(shape = RoundedCornerShape(Theme.radius.md))
-//                .pointerClick(key = value) { onClick() },
-//            trailingIcon = painterResource(Res.drawable.ic_calendar)
-//        )
     }
 }
 
