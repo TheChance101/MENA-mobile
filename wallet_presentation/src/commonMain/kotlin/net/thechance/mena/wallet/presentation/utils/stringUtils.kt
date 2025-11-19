@@ -2,7 +2,7 @@ package net.thechance.mena.wallet.presentation.utils
 
 import kotlin.math.abs
 import kotlin.math.absoluteValue
-
+import kotlin.math.round
 fun formatBalance(balance: Double): String {
     val wholePart = balance.toLong()
     val decimalPart = ((abs(balance) % 1) * 100).toLong()
@@ -17,24 +17,23 @@ fun formatBalance(balance: Double): String {
 
     return "$wholeString.$decimalString"
 }
+
 fun formatAmount(number: Double): String {
-    val numberStr = if (number.absoluteValue >= 1e10) {
-        number.toLong().toString() + ".00"
-    } else {
-        number.toString()
-    }
+    val isNegative = number < 0
+    val absNumber = number.absoluteValue
 
-    val parts = numberStr.split(".")
-    val integerPart = parts[0].reversed().chunked(3).joinToString(",").reversed()
-    val decimalPart = if (parts.size > 1) {
-        parts[1].take(2).trimEnd('0')
-    } else {
-        null
-    }
+    val longPart = absNumber.toLong()
+    val decimalPart = round((absNumber - longPart) * 100).toInt()
 
-    return if (!decimalPart.isNullOrEmpty()) {
-        "$integerPart.$decimalPart"
+    val integerStr = longPart.toString()
+    val integerPart = integerStr.reversed().chunked(3).joinToString(",").reversed()
+
+    val signedIntegerPart = if (isNegative) "-$integerPart" else integerPart
+
+    return if (decimalPart > 0) {
+        val decimalStr = decimalPart.toString().padStart(2, '0').trimEnd('0')
+        "$signedIntegerPart.$decimalStr"
     } else {
-        integerPart
+        signedIntegerPart
     }
 }
