@@ -41,6 +41,7 @@ internal val repositoryModule = module {
             client = get(named(CHAT_CLIENT)),
             webSocketManager = get(),
             pendingMessageDao = get(),
+            cachedChatDao = get(),
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON)),
             cachedMessageDao = get(),

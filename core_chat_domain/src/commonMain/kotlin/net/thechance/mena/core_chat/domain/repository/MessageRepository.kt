@@ -12,6 +12,7 @@ import kotlin.uuid.Uuid
 @ExperimentalUuidApi
 interface
 MessageRepository {
+    fun observeMessagesPage(chatId: Uuid, page: Int, pageSize: Int): Flow<List<Message>>
     suspend fun sendMessage(message: Message)
     suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message>
     suspend fun deleteMessageById(messageId: Uuid)

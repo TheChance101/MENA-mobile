@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 
 @Dao
@@ -18,6 +19,10 @@ interface CachedMessageDao {
         limit: Int,
         offset: Int
     ): List<CachedMessageLocalDto>
+
+    @Query("SELECT * FROM cached_messages WHERE chat_id = :chatId ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")
+    fun observeMessagesPage(chatId: String, offset: Int, limit: Int): Flow<List<CachedMessageLocalDto>>
+
 
     @Query("SELECT COUNT(*) FROM cached_messages WHERE chat_id = :chatId")
     suspend fun getTotalMessagesCount(chatId: String): Int

@@ -14,14 +14,16 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
-import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadRequest
@@ -58,6 +60,7 @@ class MessageRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
+    private val cachedChatDao: CachedChatDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
@@ -69,16 +72,44 @@ class MessageRepositoryImpl(
     private val deleteReactionFlow = MutableSharedFlow<MessageReaction>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
+    override fun observeMessagesPage(
+        chatId: Uuid, page: Int, pageSize: Int
+    ): Flow<List<Message>> {
+
+        val offset = page * pageSize
+        val limit = pageSize
+
+        scope.launch(Dispatchers.IO) {
+            val cachedMessage =
+                cachedMessageDao.getMessagesByChatIdWithOffset(
+                    chatId = chatId.toString(),
+                    offset = offset,
+                    limit = limit
+                )
+            if (cachedMessage.size < pageSize) {
+                syncPage(chatId, page, pageSize)
+            }
+        }
+
+        return flow {
+            emitAll(
+                cachedMessageDao.observeMessagesPage(
+                    chatId = chatId.toString(),
+                    offset = offset,
+                    limit = limit
+                ).map { list -> list.map { it.toDomain() } }
+            )
+        }
+    }
+
+
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
 
         val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
-            chatId = chatId.toString(),
-            offset = (page * pageSize),
-            limit = pageSize
+            chatId = chatId.toString(), offset = (page * pageSize), limit = pageSize
         )
-        val messages = cachedMessages.map { it.toDomain() }
 
-        if (messages.isEmpty()) {
+        if (cachedMessages.isEmpty()) {
             return getFromRemote(chatId, page, pageSize)
         }
 
@@ -87,21 +118,19 @@ class MessageRepositoryImpl(
         if (lastSyncTime != null) {
             syncAfterLastUpdate(chatId)
         } else {
-            chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
+            chatSyncTimeDao.upsert(ChatSyncTimeLocalDto(chatId.toString(), now))
         }
 
         val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
         return PagedData(
-            data = messages,
+            data = cachedMessages.map { it.toDomain() },
             totalItems = totalCachedItems,
             isLastPage = false,
         )
     }
 
     private suspend fun getFromRemote(
-        chatId: Uuid,
-        page: Int,
-        pageSize: Int
+        chatId: Uuid, page: Int, pageSize: Int
     ): PagedData<Message> {
         val response = tryNetworkCall<PagedDataDto<MessageDto>>(
             bodyType = typeInfo<PagedDataDto<MessageDto>>()
@@ -114,16 +143,42 @@ class MessageRepositoryImpl(
 
         val page = response.toPagedListOfMessages()
 
-        updateLocalMessages(page.data)
+        updateLocalMessages(chatId, page.data)
 
         return page
     }
 
-    private suspend fun updateLocalMessages(messages: List<Message>){
+    private suspend fun syncPage(chatId: Uuid, page: Int, pageSize: Int) {
+        try {
+            val response = tryNetworkCall<PagedDataDto<MessageDto>>(
+                bodyType = typeInfo<PagedDataDto<MessageDto>>()
+            ) {
+                client.get(getChatMessagesEndpoint(chatId)) {
+                    parameter(PAGE_NUMBER_PARAMETER, page)
+                    parameter(PAGE_SIZE_PARAMETER, pageSize)
+                }
+            }
+
+            val page = response.toPagedListOfMessages()
+
+            updateLocalMessages(chatId, page.data)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun updateLocalMessages(chatId: Uuid, messages: List<Message>) {
         cachedMessageDao.insertAllMessages(messages.toCachedMessageLocalDto())
 
-        val messagesIds = messages.map{ it.id.toString() }
+        val messagesIds = messages.map { it.id.toString() }
         pendingMessageDao.deleteMessagesByIds(messagesIds)
+
+        val now = Clock.System.now().toString()
+        val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
+        if (lastSyncTime == null) {
+            chatSyncTimeDao.upsert(ChatSyncTimeLocalDto(chatId.toString(), now))
+        }
     }
 
     suspend fun syncAfterLastUpdate(chatId: Uuid) {
@@ -147,11 +202,11 @@ class MessageRepositoryImpl(
                 }
 
                 if (response.data.isNotEmpty()) {
-                    chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
+                    chatSyncTimeDao.upsert(ChatSyncTimeLocalDto(chatId.toString(), now.toString()))
 
-                    updateLocalMessages(response.data.toListOfMessages())
+                    updateLocalMessages(chatId, response.data.toListOfMessages())
 
-                    messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
+                    messagesFlow.emitAll(response.data.map(MessageDto::toDomain).asFlow())
                 }
 
                 isLastPage = response.toPagedListOfMessages().isLastPage
@@ -220,11 +275,9 @@ class MessageRepositoryImpl(
         val headers = parts.getOrNull(0).orEmpty()
         val body = parts.getOrNull(1).orEmpty().trimEnd('\u0000')
 
-        val destination = headers
-            .lineSequence()
+        val destination = headers.lineSequence()
             .firstOrNull { it.startsWith("destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX") }
-            ?.substringAfter("destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX")
-            ?.trim()
+            ?.substringAfter("destination:$WEB_SOCKETS_USER_DESTINATION_PREFIX")?.trim()
 
         handleDestinations(body, destination.orEmpty())
     }
@@ -237,12 +290,11 @@ class MessageRepositoryImpl(
                 val message =
                     cachedMessageDao.getMessageById(reaction.messageId.toString()) ?: return
                 val updatedReactions = message.reactions.toMutableList().apply {
-                    removeAll { it.userId == reaction.userId && it.emoji == reaction.emoji }
+                    removeAll { it.userId == reaction.userId }
                     add(reaction.toLocalDto())
                 }
                 cachedMessageDao.updateMessage(message.copy(reactions = updatedReactions))
 
-                addReactionFlow.emit(reaction)
             }
 
             REMOVE_REACTION -> {
@@ -253,25 +305,28 @@ class MessageRepositoryImpl(
                 val updatedReactions = message.reactions.filterNot { it.userId == reaction.userId }
                 cachedMessageDao.updateMessage(message.copy(reactions = updatedReactions))
 
-                deleteReactionFlow.emit(reaction)
             }
 
             PRIVATE_MESSAGES -> {
                 val message = json.decodeFromString<MessageDto>(body).toDomain()
-                message?.let {
-                    updateLocalMessages(listOf(message))
+                message.let {
+                    updateLocalMessages(chatId = message.chatId, messages = listOf(message))
                     messagesFlow.emit(it)
                 }
             }
 
             MARK_AS_READ -> {
                 val dto = json.decodeFromString<MarkAsReadDto>(body)
-                cachedMessageDao.markMessagesAsReadByReader(dto.chatId, dto.readByUserId)
+                cachedMessageDao.markMessagesAsReadByReader(
+                    chatId = dto.chatId,
+                    readerId = dto.readByUserId
+                )
                 markMessagesAsRead.emit(dto.toDomain())
             }
 
             DELETE_CHAT -> {
                 val dto = json.decodeFromString<DeleteChatDto>(body)
+                cachedChatDao.deleteChatById(dto.chatId)
                 markChatAsDeleted.emit(dto.toDomain())
             }
 
