@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 
@@ -16,7 +17,8 @@ internal data class UserReelState(
     val isConfirmationDialogVisible: Boolean = false,
     val isReelDeleted: Boolean? = null,
     val isDescriptionExpanded: Boolean = false,
-    val reelsStateFlow: MutableStateFlow<PagingData<UserReelUiState>> = MutableStateFlow(PagingData.empty())
+    val reelsStateFlow: MutableStateFlow<PagingData<UserReelUiState>> = MutableStateFlow(PagingData.empty()),
+    val currentTheme: AppTheme = AppTheme.LIGHT
 )
 
 internal data class UserReelUiState(

@@ -95,6 +95,8 @@ internal fun UserReelScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getCurrentTheme() }
+
     UserReelScreenContent(
         state = state,
         listener = viewModel
@@ -210,7 +212,10 @@ private fun UserReelScreenContent(
 
             reels[page]?.let { reel ->
                 if (hasNetworkError) {
-                    NoConnection(onRetry = { listener.onClickRetry(reel.id) })
+                    NoConnection(
+                        onRetry = { listener.onClickRetry(reel.id) },
+                        currentTheme = state.currentTheme
+                    )
                 } else
                     ReelContent(
                         reel = reel,

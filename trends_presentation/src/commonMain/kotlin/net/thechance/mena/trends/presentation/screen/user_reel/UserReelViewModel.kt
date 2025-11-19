@@ -7,7 +7,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -23,12 +25,25 @@ import org.koin.core.annotation.Provided
 internal class UserReelViewModel(
     @Provided private val userReelArgs: UserReelArgs,
     @Provided private val reelsRepository: ReelsRepository,
+    @Provided private val settingsRepository: SettingsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UserReelState, UserReelEffect>(UserReelState()), UserReelInteractionListener {
 
     init {
         updateState { copy(currentReelId = userReelArgs.realId) }
         getFeedReels()
+    }
+
+    fun getCurrentTheme() {
+        tryToExecute(
+            block = {
+                settingsRepository.observeAppTheme().collectLatest { theme ->
+                    updateState {
+                        copy(currentTheme = theme)
+                    }
+                }
+            }
+        )
     }
 
     private fun getFeedReels() {
