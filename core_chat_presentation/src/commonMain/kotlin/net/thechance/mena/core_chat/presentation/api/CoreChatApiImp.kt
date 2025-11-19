@@ -7,8 +7,6 @@ import net.thechance.mena.core_chat.api.CoreChatApi
 import net.thechance.mena.core_chat.presentation.navigation.AyahMessageArgs
 import net.thechance.mena.core_chat.presentation.navigation.ChatNavHost
 import net.thechance.mena.core_chat.presentation.navigation.ShareMessageRoute
-import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
