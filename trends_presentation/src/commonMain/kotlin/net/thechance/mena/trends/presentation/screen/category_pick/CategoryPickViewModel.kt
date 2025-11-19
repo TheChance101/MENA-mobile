@@ -3,6 +3,8 @@ package net.thechance.mena.trends.presentation.screen.category_pick
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.collectLatest
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -14,6 +16,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class CategoryPickViewModel(
     @Provided private val repository: CategoryRepository,
+    @Provided private val settingsRepository: SettingsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryPickScreenState, CategoryPickScreenEffect>(
     initialState = CategoryPickScreenState()
@@ -21,6 +24,7 @@ internal class CategoryPickViewModel(
 
     init {
         loadCategories()
+        getCurrentTheme()
     }
 
     private fun loadCategories() {
@@ -31,6 +35,18 @@ internal class CategoryPickViewModel(
             onStart = ::startLoading,
             onEnd = ::endLoading,
             dispatcher = defaultDispatcher
+        )
+    }
+
+    fun getCurrentTheme() {
+        tryToExecute(
+            block = {
+                settingsRepository.observeAppTheme().collectLatest { theme ->
+                    updateState {
+                        copy(currentTheme = theme)
+                    }
+                }
+            }
         )
     }
 

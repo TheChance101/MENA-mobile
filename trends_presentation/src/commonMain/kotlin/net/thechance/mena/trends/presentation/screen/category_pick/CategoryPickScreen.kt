@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,8 @@ internal fun CategoryPickScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getCurrentTheme() }
+
     CategoryPickScreenContent(
         state = state,
         listener = viewModel
@@ -70,7 +73,7 @@ private fun CategoryPickScreenContent(
         ) {
             AnimatedVisibility(
                 visible = state.error is ErrorState.NoInternet,
-                content = { NoConnection { listener.onClickRetry() } }
+                content = { NoConnection(currentTheme = state.currentTheme) { listener.onClickRetry() } }
             )
 
             AnimatedVisibility(
