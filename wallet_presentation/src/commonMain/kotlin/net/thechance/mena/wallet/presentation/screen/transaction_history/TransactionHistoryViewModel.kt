@@ -265,13 +265,11 @@ class TransactionHistoryViewModel(
         )
 
     private fun onPaginationSuccess(items: List<Transaction>, newKey: Int) {
-        if (newKey == INITIAL_PAGE + 1) {
-            updateState { it.copy(history = emptyList()) }
-        }
+        val newItems = items.map { transaction -> transaction.toUi() }
 
         updateState {
             it.copy(
-                history = it.history + items.map { transaction -> transaction.toUi() },
+                history = if (newKey == INITIAL_PAGE + 1) newItems else it.history + newItems,
                 endOfPages = items.isEmpty()
             )
         }
