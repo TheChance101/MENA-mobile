@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
@@ -20,6 +19,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -30,6 +30,8 @@ import kotlin.test.Test
 class HomeViewModelTest {
 
     private val repository: ReelsRepository = mock(MockMode.autofill)
+    private val settingRepository: SettingsRepository = mock()
+
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: HomeViewModel
 
@@ -37,7 +39,7 @@ class HomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { repository.getFeedReels(any()) } returns reels
-        viewModel = HomeViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, settingRepository, testDispatcher)
     }
 
     @Test
@@ -78,7 +80,7 @@ class HomeViewModelTest {
 
     @Test
     fun `getTrends should update state when success`() = runTest {
-        viewModel = HomeViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, settingRepository, testDispatcher)
         advanceUntilIdle()
         val items = viewModel.state.value.reels.asSnapshot()
         assertThat(items.first().id).isEqualTo(reels[0].id)
@@ -91,7 +93,7 @@ class HomeViewModelTest {
             likesCount = reels[0].likesCount + 1
         )
 
-        viewModel = HomeViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, settingRepository, testDispatcher)
         advanceUntilIdle()
 
         val initial = viewModel.state.value.reels.asSnapshot().first()
@@ -160,7 +162,7 @@ class HomeViewModelTest {
     }
     @Test
     fun `onClickExpandDescription should toggle isDescriptionExpanded for specific reel`() = runTest {
-        viewModel = HomeViewModel(repository, testDispatcher)
+        viewModel = HomeViewModel(repository, settingRepository, testDispatcher)
         advanceUntilIdle()
 
         val initial = viewModel.state.value.reels.asSnapshot().first { it.id == "1" }

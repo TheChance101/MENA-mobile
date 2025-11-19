@@ -1,10 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
-import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import dev.mokkery.MockMode
@@ -15,7 +13,6 @@ import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -25,6 +22,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
@@ -39,6 +37,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageTrendsViewModelTest {
     private val repository: ReelsRepository = mock(MockMode.autofill)
+    private val settingRepository: SettingsRepository = mock()
     private val userRepository: UserRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: ManageTrendsViewModel
@@ -46,7 +45,8 @@ class ManageTrendsViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = ManageTrendsViewModel(repository, userRepository, testDispatcher)
+        viewModel =
+            ManageTrendsViewModel(repository, userRepository, settingRepository, testDispatcher)
         everySuspend { userRepository.getUser() } returns flowOf(user)
     }
 

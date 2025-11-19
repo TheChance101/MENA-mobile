@@ -14,6 +14,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -22,6 +23,7 @@ import kotlin.test.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainContainerViewModelTest {
     private val repository: CategoryRepository = mock<CategoryRepository>()
+    private val settingRepository: SettingsRepository = mock()
     private lateinit var viewModel: MainContainerViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -30,7 +32,7 @@ class MainContainerViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         everySuspend { repository.isCategoriesAlreadySelectedByUser() } returns true
-        viewModel = MainContainerViewModel(repository, testDispatcher)
+        viewModel = MainContainerViewModel(repository, settingRepository, testDispatcher)
     }
 
     @AfterTest
@@ -59,7 +61,11 @@ class MainContainerViewModelTest {
     fun `handleGetIsUserCategorySet should navigate to category pick screen when isUserCategorySet is false`() =
         runTest {
             val viewModel =
-                MainContainerViewModel(repository = repository, defaultDispatcher = testDispatcher)
+                MainContainerViewModel(
+                    repository = repository,
+                    defaultDispatcher = testDispatcher,
+                    settingsRepository = settingRepository
+                )
             viewModel.effect.test {
                 viewModel.onUserCategoryStatusReceived(false)
                 assertThat(awaitItem()).isEqualTo(MainContainerEffect.NavigateToCategoryPick)
@@ -71,7 +77,7 @@ class MainContainerViewModelTest {
     fun `loadCategories should update error state when repository throws exception`() = runTest {
         everySuspend { repository.isCategoriesAlreadySelectedByUser() } throws Exception()
 
-        val viewModel = MainContainerViewModel(repository, testDispatcher)
+        val viewModel = MainContainerViewModel(repository, settingRepository, testDispatcher)
 
         viewModel.state.test {
             skipItems(1)

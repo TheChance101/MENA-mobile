@@ -12,6 +12,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.utils.TestExtensions
 import net.thechance.mena.trends.presentation.utils.categories
@@ -23,10 +24,12 @@ import kotlin.test.assertTrue
 
 class CategoryPickViewModelTest : TestExtensions() {
     private val repository: CategoryRepository = mock<CategoryRepository>(mode = MockMode.autofill)
+    private val settingRepository: SettingsRepository = mock()
     private val viewModel by lazy {
         CategoryPickViewModel(
             repository = repository,
-            defaultDispatcher = testDispatcher
+            defaultDispatcher = testDispatcher,
+            settingsRepository = settingRepository
         )
     }
 

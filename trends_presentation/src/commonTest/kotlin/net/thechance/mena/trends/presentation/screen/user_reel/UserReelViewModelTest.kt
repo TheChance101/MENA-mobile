@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDateTime
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
 import net.thechance.mena.trends.domain.model.ReelWatchSession
@@ -43,6 +44,7 @@ class UserReelViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
 
     private val mockReelsRepository: ReelsRepository = mock(MockMode.autofill)
+    private val settingRepository: SettingsRepository = mock()
     private val userReelArgs: UserReelArgs = mock(MockMode.autofill) {
         every { realId } returns "2"
     }
@@ -55,7 +57,8 @@ class UserReelViewModelTest {
         Dispatchers.setMain(testDispatcher)
         everySuspend { mockReelsRepository.getFeedReels(any(), any()) } returns feedReels
         every { userReelArgs.reelSource } returns Route.ReelSource.Home
-        viewModel = UserReelViewModel(userReelArgs, mockReelsRepository, testDispatcher)
+        viewModel =
+            UserReelViewModel(userReelArgs, mockReelsRepository, settingRepository, testDispatcher)
     }
 
     @Test
