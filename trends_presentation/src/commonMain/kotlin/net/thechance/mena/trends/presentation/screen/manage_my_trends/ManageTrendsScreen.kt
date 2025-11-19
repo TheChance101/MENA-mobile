@@ -46,6 +46,7 @@ import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_empty_trends
+import mena.trends_presentation.generated.resources.ic_empty_trends_dark
 import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
@@ -60,6 +61,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
@@ -82,6 +84,8 @@ internal fun ManageTrendsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
+    LaunchedEffect(Unit) { viewModel.getCurrentTheme() }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
@@ -129,7 +133,7 @@ private fun ManageTrendsScreenContent(
 
             TrendsAnimatedVisibility(
                 visible = state.error == ErrorState.NoInternet,
-                content = { NoConnection { listener.onClickRetry() } }
+                content = { NoConnection(currentTheme = state.currentTheme) { listener.onClickRetry() } }
             )
 
             TrendsAnimatedVisibility(
@@ -226,25 +230,32 @@ private fun ManageTrendsScreenBody(
             }
         } else if (shouldShowEmptyState) {
             item(span = { GridItemSpan(maxLineSpan) }) {
-                EmptyStateForTab(tab = state.selectedTab)
+                EmptyStateForTab(tab = state.selectedTab, state.currentTheme)
             }
         }
     }
 }
 
 @Composable
-private fun EmptyStateForTab(tab: SelectTab) {
+private fun EmptyStateForTab(tab: SelectTab, currentTheme: AppTheme) {
     if (tab == SelectTab.Favorites) {
-        EmptyFavorites(modifier = Modifier.padding(top = 74.dp))
+        EmptyFavorites(modifier = Modifier.padding(top = 74.dp), currentTheme)
     } else {
-        EmptyTrends(isScrollable = false, modifier = Modifier.padding(top = 74.dp))
+        EmptyTrends(
+            isScrollable = false,
+            modifier = Modifier.padding(top = 74.dp),
+            currentTheme = currentTheme
+        )
     }
 }
 
 @Composable
-private fun EmptyFavorites(modifier: Modifier = Modifier) {
+private fun EmptyFavorites(modifier: Modifier = Modifier, currentTheme: AppTheme) {
+    val icon =
+        if (currentTheme == AppTheme.DARK) Res.drawable.ic_empty_trends_dark else Res.drawable.ic_empty_trends
+
     StatePlaceholder(
-        icon = painterResource(Res.drawable.ic_empty_trends),
+        icon = painterResource(icon),
         title = stringResource(Res.string.no_favorites_title),
         description = stringResource(Res.string.no_favorites_description),
         isScrollable = false,

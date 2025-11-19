@@ -3,6 +3,7 @@ package net.thechance.mena.trends.presentation.screen.manage_my_trends
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import org.jetbrains.compose.resources.StringResource
 
@@ -15,7 +16,8 @@ internal data class ManageTrendsScreenState(
     val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
-    val selectedTab: SelectTab = SelectTab.MyTrends
+    val selectedTab: SelectTab = SelectTab.MyTrends,
+    val currentTheme: AppTheme = AppTheme.LIGHT
 )
 internal data class ReelUiState(
     val id: String,

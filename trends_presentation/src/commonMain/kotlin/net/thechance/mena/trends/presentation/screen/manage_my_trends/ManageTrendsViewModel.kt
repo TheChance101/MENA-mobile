@@ -7,10 +7,12 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.repository.ReelsRepository
@@ -25,12 +27,14 @@ import org.koin.core.annotation.Provided
 internal class ManageTrendsViewModel(
     @Provided private val reelsRepository: ReelsRepository,
     @Provided private val userRepository: UserRepository,
+    @Provided private val settingsRepository: SettingsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState, ManageTrendsUiEffect>(ManageTrendsScreenState()),
     ManageTrendsInteractionListener {
 
     init {
         getCurrentUserInfo()
+        getCurrentTheme()
     }
 
     fun getReels() {
@@ -72,8 +76,8 @@ internal class ManageTrendsViewModel(
     private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
         val uiReelsFlow = reelsFlow
             .map { pagingData: PagingData<Reel> ->
-            pagingData.map { reel -> reel.toUiState() }
-        }
+                pagingData.map { reel -> reel.toUiState() }
+            }
         updateState { copy(isLoading = false, reels = uiReelsFlow) }
     }
 
@@ -156,5 +160,17 @@ internal class ManageTrendsViewModel(
     private fun onGetFavoriteReelsSuccess(flow: Flow<PagingData<Reel>>) {
         val uiReelsFlow = flow.map { pagingData -> pagingData.map { it.toUiState() } }
         updateState { copy(favoriteReels = uiReelsFlow, isLoading = false) }
+    }
+
+    fun getCurrentTheme() {
+        tryToExecute(
+            block = {
+                settingsRepository.observeAppTheme().collectLatest { theme ->
+                    updateState {
+                        copy(currentTheme = theme)
+                    }
+                }
+            }
+        )
     }
 }
