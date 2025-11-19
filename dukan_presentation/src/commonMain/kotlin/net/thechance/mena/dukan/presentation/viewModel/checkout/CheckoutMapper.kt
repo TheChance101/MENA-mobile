@@ -16,6 +16,12 @@ fun Product.toUiState(): CheckoutUiState.CartItem {
 }
 
 fun Address?.toUiState() = CheckoutUiState.Address(
-    label = this?.addressType?.getAddressType() ?: "Unknown",
+    label = this?.addressType?.getAddressType()?.let {
+        when (it) {
+            "Home" -> CheckoutUiState.AddressLabel.Home
+            "Office" -> CheckoutUiState.AddressLabel.Work
+            else -> CheckoutUiState.AddressLabel.Other
+        }
+    } ?: CheckoutUiState.AddressLabel.Other,
     street = this?.addressLine ?: "Unknown"
 )
