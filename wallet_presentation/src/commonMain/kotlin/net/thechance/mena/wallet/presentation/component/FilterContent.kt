@@ -3,6 +3,7 @@ package net.thechance.mena.wallet.presentation.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.from
@@ -49,13 +49,13 @@ fun FilterContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
     ) {
 
         Text(
             text = stringResource(Res.string.type),
             style = Theme.typography.body.small,
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
 
         TransactionTypesRow(
@@ -66,7 +66,8 @@ fun FilterContent(
             Text(
                 text = stringResource(Res.string.status),
                 style = Theme.typography.body.small,
-                color = Theme.colorScheme.shadePrimary
+                color = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
 
             TransactionStatusRow(
@@ -76,6 +77,7 @@ fun FilterContent(
         }
 
         DateRangePicker(
+            modifier = Modifier.padding(horizontal = 16.dp),
             startDate = startDate,
             endDate = endDate,
             onStartDateClicked = onStartDateClicked,
@@ -92,6 +94,7 @@ private fun TransactionTypesRow(
     LazyRow(
         horizontalArrangement = Arrangement
             .spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
     ) {
         items(FilterType.entries) { type ->
@@ -111,6 +114,7 @@ private fun TransactionStatusRow(
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
     ) {
         items(FilterStatus.entries) { status ->
@@ -131,10 +135,11 @@ private fun DateRangePicker(
     endDate: String,
     onStartDateClicked: () -> Unit,
     onEndDateClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         DatePickerField(
             label = stringResource(Res.string.from),
@@ -192,7 +197,6 @@ private fun DatePickerField(
                 style = Theme.typography.body.small,
                 color = textColor,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
 
