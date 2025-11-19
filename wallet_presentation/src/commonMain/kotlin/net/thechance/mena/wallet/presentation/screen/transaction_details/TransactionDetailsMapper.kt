@@ -60,7 +60,7 @@ private fun Transaction.getTransactionType(): TransactionTypeUiState = when (typ
     TransactionType.SENT -> TransactionTypeUiState.SENT
     TransactionType.RECEIVED -> TransactionTypeUiState.RECEIVED
     TransactionType.ONLINE_PURCHASE -> TransactionTypeUiState.ONLINE_PURCHASE
-    TransactionType.DEPOSIT -> TransactionTypeUiState.RECEIVED
+    TransactionType.DEPOSIT -> TransactionTypeUiState.DEPOSIT
 }
 
 private fun Transaction.getTransactionStatus(): TransactionStatusUiState = when (status) {
@@ -84,7 +84,7 @@ private fun Transaction.getOtherPartyTitle() = when (type) {
     TransactionType.SENT -> Res.string.to
     TransactionType.RECEIVED -> Res.string.from
     TransactionType.ONLINE_PURCHASE -> Res.string.receiver
-    TransactionType.DEPOSIT -> Res.string.receiver
+    TransactionType.DEPOSIT -> Res.string.from
 }
 
 private object Constants {
