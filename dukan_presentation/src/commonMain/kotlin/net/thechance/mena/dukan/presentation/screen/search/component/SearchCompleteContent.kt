@@ -259,6 +259,7 @@ private fun ProductsList(
                                 productCardBackground = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
                                 onProductClick = { onProductClicked(product.id, product.dukanId) },
+                                isOutOfStock = product.isOutOfStock
                             )
                         }
                     }
