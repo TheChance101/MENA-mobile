@@ -19,7 +19,7 @@ data class CheckoutUiState(
         val street: String = ""
     )
     enum class AddressLabel{
-        Home, Work, Other;
+        Home, Office, Other;
     }
 
     data class CartItem(

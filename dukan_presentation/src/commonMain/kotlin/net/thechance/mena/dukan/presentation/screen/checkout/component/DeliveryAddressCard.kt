@@ -96,7 +96,7 @@ private fun DeliveryAddressIcon(
                     )
                 }
 
-                CheckoutUiState.AddressLabel.Work -> {
+                CheckoutUiState.AddressLabel.Office -> {
                     Icon(
                         modifier = Modifier.size(24.dp),
                         painter = painterResource(Res.drawable.ic_office),
@@ -175,7 +175,7 @@ private fun DeliveryAddressCardWorkPreview() {
         DeliveryAddressCard(
             CheckoutUiState(
                 deliveryAddress = CheckoutUiState.Address(
-                    label = CheckoutUiState.AddressLabel.Work,
+                    label = CheckoutUiState.AddressLabel.Office,
                     street = "123 Main St, City, Country"
                 )
             ), {})
