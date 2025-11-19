@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.checkout.component
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -145,10 +144,11 @@ private fun DeliveryAddressDetails(
 
 @Composable
 private fun EditAddressIcon() {
-    Image(
+    Icon(
         modifier = Modifier.padding(end = 6.dp),
         painter = painterResource(Res.drawable.ic_maps_editing),
-        contentDescription = stringResource(Res.string.desc_edit_address_icon)
+        contentDescription = stringResource(Res.string.desc_edit_address_icon),
+        tint = Theme.colorScheme.primary.primary
     )
 }
 
