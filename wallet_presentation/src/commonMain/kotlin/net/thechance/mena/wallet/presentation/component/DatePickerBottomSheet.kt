@@ -43,9 +43,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.ic_arrow_left
@@ -65,7 +63,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.absoluteValue
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 
@@ -77,7 +74,7 @@ fun ScaffoldScope.DatePickerBottomSheet(
     minYear: Int = 2000,
     maxYear: Int = LocalDate.today().year,
     defaultSelectedDate: LocalDate = LocalDate.today().date,
-    onPickClick: (day: Int, month: Int, year: Int) -> Unit,
+    onPickClick: (LocalDate) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -102,11 +99,11 @@ fun ScaffoldScope.DatePickerBottomSheet(
 
 @OptIn(ExperimentalTime::class)
 @Composable
-private fun DatePickerBottomSheetContent(
+fun DatePickerBottomSheetContent(
     title: String = stringResource(Res.string.pick_start_date),
-    minYear: Int = 2000,
+    minYear: Int = 2023,
     maxYear: Int = LocalDate.today().year,
-    onPickClick: (day: Int, month: Int, year: Int) -> Unit,
+    onPickClick: (LocalDate) -> Unit,
     selectedDate: LocalDate,
     onDismiss: () -> Unit,
 ) {
@@ -189,7 +186,7 @@ private fun DatePickerBottomSheetContent(
                 val day = dayPagerState.currentPage + 1
                 val month = monthPagerState.currentPage + 1
                 val year = minYear + yearPagerState.currentPage
-                onPickClick(day, month, year)
+                onPickClick(LocalDate(year, month, day))
             },
             modifier = Modifier
                 .padding(bottom = 8.dp)
@@ -384,7 +381,7 @@ private fun DatePickerBottomSheetContentPreview() {
 
     MenaTheme {
         DatePickerBottomSheetContent(
-            onPickClick = { _, _, _ -> },
+            onPickClick = { },
             onDismiss = {},
             minYear = 2021,
             maxYear = 2025,

@@ -11,6 +11,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.error
+import mena.wallet_presentation.generated.resources.failed_to_apply_filters
 import mena.wallet_presentation.generated.resources.start_date_must_be_before_end_date
 import net.thechance.mena.wallet.domain.entity.Transaction
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
@@ -54,7 +55,7 @@ class TransactionHistoryViewModel(
             onRequest = ::getPagedTransactions,
             getNextKey = { currentKey, _ -> currentKey + 1 },
             onError = ::onPaginationError,
-            onSuccess = { result, _ -> onPaginationSuccess(result) },
+            onSuccess = { result, newKey -> onPaginationSuccess(result, newKey) },
             endReached = { _, result -> result.isEmpty() || result.size < PAGE_SIZE }
         )
     }
@@ -96,6 +97,7 @@ class TransactionHistoryViewModel(
         }
         updateState {
             it.copy(
+                isFilterVisible = false,
                 filterState = it.filterState.copy(
                     isDateBottomSheetVisible = true,
                     datePickerMode = TransactionFilterState.DatePickerMode.START_DATE,
@@ -109,6 +111,7 @@ class TransactionHistoryViewModel(
         val currentEndDate = currentState.filterState.endDate
         updateState {
             it.copy(
+                isFilterVisible = false,
                 filterState = it.filterState.copy(
                     isDateBottomSheetVisible = true,
                     datePickerMode = TransactionFilterState.DatePickerMode.END_DATE,
@@ -122,6 +125,7 @@ class TransactionHistoryViewModel(
     override fun onDismissDatePicker() {
         updateState {
             it.copy(
+                isFilterVisible = true,
                 filterState = it.filterState.copy(
                     isDateBottomSheetVisible = false
                 )
@@ -224,8 +228,6 @@ class TransactionHistoryViewModel(
     }
 
     private fun resetPaginator() {
-        updateState { it.copy(history = emptyList()) }
-
         paginator.reset()
         loadNextTransactions()
     }
@@ -262,7 +264,10 @@ class TransactionHistoryViewModel(
             transactionFilterParams = currentState.filterState.toParams()
         )
 
-    private fun onPaginationSuccess(items: List<Transaction>) {
+    private fun onPaginationSuccess(items: List<Transaction>, newKey: Int) {
+        if (newKey == INITIAL_PAGE + 1) {
+            updateState { it.copy(history = emptyList()) }
+        }
 
         updateState {
             it.copy(
@@ -277,7 +282,8 @@ class TransactionHistoryViewModel(
                     isFilterVisible = false,
                     filterState = it.filterState.copy(
                         isApplyButtonLoading = false,
-                        activeFilterCount = getActiveFilterCount()
+                        activeFilterCount = getActiveFilterCount(),
+                        oldFilterHash = it.filterState.currentFilterHash
                     )
                 )
             }
@@ -285,6 +291,9 @@ class TransactionHistoryViewModel(
     }
 
     private fun onPaginationError(throwable: Throwable?) {
+        if (currentState.isFilterVisible) {
+            showFilterErrorSnackBar()
+        }
         updateState {
             it.copy(
                 errorState = when (throwable) {
@@ -293,6 +302,16 @@ class TransactionHistoryViewModel(
                 },
                 isLoading = false,
                 filterState = it.filterState.copy(isApplyButtonLoading = false)
+            )
+        }
+    }
+
+    private fun showFilterErrorSnackBar() {
+        viewModelScope.launch (Dispatchers.Main){
+            showSnackBar(
+                title = stringProvider.getString(Res.string.error),
+                message = stringProvider.getString(Res.string.failed_to_apply_filters),
+                isSuccess = false
             )
         }
     }
