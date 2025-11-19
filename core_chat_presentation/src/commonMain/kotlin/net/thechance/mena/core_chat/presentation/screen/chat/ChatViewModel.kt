@@ -132,18 +132,17 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    val newChatListItems = messageList.toChatItems(messageRepository)
                     updateState {
-                        it.copy(chatListItems = newChatListItems)
+                        it.copy(chatListItems = messageList.toChatItems())
                     }
                 }
         }
     }
 
-    private suspend fun List<Message>.toChatItems(messageRepository: MessageRepository): List<ChatListItem> {
+    private fun List<Message>.toChatItems(): List<ChatListItem> {
         if (firstUnReadByMeMessageTime == null) setFirstUnReadByMeMessageTime(this)
         return sortedByDescending { it.sendAt }
-            .map { it.toUi(messageRepository) }
+            .map { it.toUi() }
             .map { if (it is AudioMessageUiState) it.useCacheWaveform() else it }
             .markIsLastMessages()
             .addDateSeparators()
@@ -388,7 +387,7 @@ class ChatViewModel(
             hasResentPendingMessages = true
             pendingMessages
                 .filter { it.status == MessageStatus.LOADING }
-                .forEach { sendMessage(it.toUi(messageRepository)) }
+                .forEach { sendMessage(it.toUi()) }
         }
 
         emitEffect(ChatScreenEffect.ScrollToBottom)

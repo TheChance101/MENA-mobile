@@ -25,5 +25,4 @@ MessageRepository {
     suspend fun removeMessageReaction(messageId: Uuid, emoji: String)
     fun observeMessageReactions(): Flow<MessageReaction>
     fun observeRemovedMessageReactions(): Flow<MessageReaction>
-    suspend fun getSurahName(surahId: Int): String
 }
