@@ -33,7 +33,7 @@ import sv.lib.squircleshape.SquircleShape
 @Composable
 fun DeliveryAddressSection(
     address: String,
-    isUserOwnerToEnableAddressClick: Boolean,
+    isUserOwner: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -52,7 +52,7 @@ fun DeliveryAddressSection(
                 .wrapContentHeight()
                 .clip(SquircleShape(Theme.spacing._12))
                 .background(Theme.colorScheme.background.surfaceLow)
-                .clickable(onClick = onClick, enabled = isUserOwnerToEnableAddressClick)
+                .clickable(onClick = onClick, enabled = isUserOwner)
                 .padding(Theme.spacing._8),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -65,7 +65,7 @@ fun DeliveryAddressSection(
                     .padding(start = Theme.spacing._8)
                     .weight(1f)
             )
-            if (isUserOwnerToEnableAddressClick) {
+            if (isUserOwner) {
                 Icon(
                     modifier = Modifier.padding(start = Theme.spacing._8),
                     painter = painterResource(Res.drawable.ic_arrow_right),
@@ -100,7 +100,7 @@ private fun DeliveryAddressSectionPreview() {
     MenaTheme {
         DeliveryAddressSection(
             address = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
-            isUserOwnerToEnableAddressClick = true,
+            isUserOwner = true,
             onClick = {},
         )
     }

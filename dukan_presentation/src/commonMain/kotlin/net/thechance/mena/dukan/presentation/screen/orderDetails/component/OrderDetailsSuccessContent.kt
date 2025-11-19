@@ -67,7 +67,7 @@ fun OrderDetailsSuccessContent(
 
             DeliveryAddressSection(
                 address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
-                isUserOwnerToEnableAddressClick = state.orderUiState.isUserOwner,
+                isUserOwner = state.orderUiState.isUserOwner,
                 onClick = { interactionListener.onAddressDeliveryClicked(address = state.orderUiState.addressDeliveryUiState ) },
                 modifier = Modifier.padding(top = topPaddingValue),
             )
