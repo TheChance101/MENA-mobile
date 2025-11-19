@@ -14,7 +14,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun Transaction.toUi(): TransactionHistoryScreenState.TransactionHistoryUiState =
     TransactionHistoryScreenState.TransactionHistoryUiState(
         id = id,
-        timeAndDate = formatLocalDateTime(date = createdAt, outputFormat = "dd MMM yyyy, h:mm a"),
+        timeAndDate = formatLocalDateTime(date = createdAt, outputFormat = "dd MMM, h:mm a"),
         amount = formatAmount(amount),
         type = getTransactionType(),
         status = getTransactionStatus(),
