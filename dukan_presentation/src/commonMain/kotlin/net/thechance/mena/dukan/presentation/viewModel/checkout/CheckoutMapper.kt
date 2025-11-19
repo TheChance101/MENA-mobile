@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.checkout
 
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.identity.domain.entity.Address
-import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
+import net.thechance.mena.identity.domain.entity.AddressType
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -16,12 +16,13 @@ fun Product.toUiState(): CheckoutUiState.CartItem {
 }
 
 fun Address?.toUiState() = CheckoutUiState.Address(
-    label = this?.addressType?.getAddressType()?.let {
+    label = this?.addressType.let {
         when (it) {
-            "Home" -> CheckoutUiState.AddressLabel.Home
-            "Office" -> CheckoutUiState.AddressLabel.Work
-            else -> CheckoutUiState.AddressLabel.Other
+            AddressType.Home -> CheckoutUiState.AddressLabel.Home
+            AddressType.Office -> CheckoutUiState.AddressLabel.Office
+            is AddressType.Other -> CheckoutUiState.AddressLabel.Other
+            null -> CheckoutUiState.AddressLabel.Other
         }
-    } ?: CheckoutUiState.AddressLabel.Other,
+    },
     street = this?.addressLine ?: "Unknown"
 )
