@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.update_categories
 
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.model.CategoryUiState
 import net.thechance.mena.trends.presentation.shared.model.Selectable
@@ -9,7 +10,8 @@ internal data class UpdateCategoriesScreenState(
     val errorState: ErrorState? = null,
     val initialCategories: List<Selectable<CategoryUiState>> = emptyList(),
     val categories: List<Selectable<CategoryUiState>> = emptyList(),
-    val isSaveButtonLoading: Boolean = false
+    val isSaveButtonLoading: Boolean = false,
+    val currentTheme: AppTheme = AppTheme.LIGHT
 )
 
 internal fun UpdateCategoriesScreenState.saveButtonEnabled() =

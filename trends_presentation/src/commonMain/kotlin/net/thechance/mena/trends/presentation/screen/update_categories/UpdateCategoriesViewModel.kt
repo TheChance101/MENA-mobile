@@ -3,6 +3,8 @@ package net.thechance.mena.trends.presentation.screen.update_categories
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.collectLatest
+import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
@@ -15,6 +17,7 @@ import org.koin.core.annotation.Provided
 @KoinViewModel
 internal class UpdateCategoriesViewModel(
     @Provided private val repository: CategoryRepository,
+    @Provided private val settingsRepository: SettingsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<UpdateCategoriesScreenState, UpdateCategoriesScreenEffect>(
     initialState = UpdateCategoriesScreenState()
@@ -22,6 +25,19 @@ internal class UpdateCategoriesViewModel(
 
     init {
         getCategories()
+        getCurrentTheme()
+    }
+
+    fun getCurrentTheme() {
+        tryToExecute(
+            block = {
+                settingsRepository.observeAppTheme().collectLatest { theme ->
+                    updateState {
+                        copy(currentTheme = theme)
+                    }
+                }
+            }
+        )
     }
 
     private fun getCategories() {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -79,6 +80,8 @@ internal fun UpdateCategoriesScreen(
         }
     }
 
+    LaunchedEffect(Unit) { viewModel.getCurrentTheme() }
+
     UpdateCategoriesScreenContent(
         state = state,
         listener = viewModel
@@ -123,7 +126,7 @@ private fun UpdateCategoriesScreenContent(
 
             TrendsAnimatedVisibility(
                 visible = state.errorState == ErrorState.NoInternet,
-                content = { NoConnection { listener.onClickRetry() } }
+                content = { NoConnection(currentTheme = state.currentTheme) { listener.onClickRetry() } }
             )
         }
     )
