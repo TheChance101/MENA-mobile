@@ -9,17 +9,17 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatLocalDto
-import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
-import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
-import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
-import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
-import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
-import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
+import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeLocalDto
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 
 @Database(
-    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class, CachedChatSummaryDto::class],
+    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTimeLocalDto::class, CachedChatSummaryDto::class],
     version = 1
 )
 @ConstructedBy(ChatDatabaseConstructor::class)

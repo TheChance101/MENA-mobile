@@ -7,9 +7,9 @@ import androidx.room.Query
 
 @Dao
 interface ChatSyncTimeDao {
-    @Query("SELECT lastSyncTime FROM chat_sync_times WHERE chatId = :chatId LIMIT 1")
+    @Query("SELECT last_sync_time FROM chat_sync_times WHERE chat_id = :chatId LIMIT 1")
     suspend fun getLastSyncTime(chatId: String): String?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsert(chatSyncTime: ChatSyncTime)
+    suspend fun upsert(chatSyncTimeLocalDto: ChatSyncTimeLocalDto)
 }

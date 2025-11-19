@@ -2,12 +2,30 @@ package net.thechance.mena.core_chat.data.source.local.database.pendingMessage
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.ForeignKey
+import androidx.room.Index
+import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatLocalDto
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 
-@Entity(tableName = "pending_messages")
+@Entity(
+    tableName = "pending_messages",
+    primaryKeys = ["id", "chat_id"],
+    foreignKeys = [
+        ForeignKey(
+            entity = CachedChatLocalDto::class,
+            parentColumns = ["id"],
+            childColumns = ["chat_id"],
+            onDelete = ForeignKey.CASCADE,
+            onUpdate = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["chat_id"])
+    ]
+)
 data class PendingMessageLocalDto(
-    @PrimaryKey val id: String,
+    @ColumnInfo(name = "id")
+    val id: String,
     @ColumnInfo(name = "sender_id")
     val senderId: String,
     @ColumnInfo(name = "text")
