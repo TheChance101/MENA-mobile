@@ -109,6 +109,7 @@ private fun StickyFooterContent(
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .padding(bottom = 24.dp)
             .padding(
                 bottom = WindowInsets.navigationBars.asPaddingValues()
