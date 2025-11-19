@@ -144,7 +144,8 @@ fun UploadImageContainer(
                     Text(
                         text = stringResource(Res.string.click_to_upload),
                         color = Theme.colorScheme.primary.primary,
-                        style = Theme.typography.label.medium
+                        style = Theme.typography.label.medium,
+                        modifier = Modifier.padding(start = 18.dp)
                     )
                 }
             }
