@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +29,12 @@ import net.thechance.mena.dukan.presentation.util.visualTransformation.LengthBas
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun CustomerInformationSection(
-    userName:String,
-    userPhoneNumber:String,
+    userName: String,
+    userPhoneNumber: String,
     modifier: Modifier = Modifier
 ) {
 
@@ -48,7 +49,7 @@ fun CustomerInformationSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(Theme.spacing._12))
+                .clip(SquircleShape(Theme.spacing._12))
                 .background(Theme.colorScheme.background.surfaceLow)
                 .padding(Theme.spacing._8),
             verticalAlignment = Alignment.CenterVertically
@@ -68,7 +69,7 @@ private fun UserProfileIcon() {
     Box(
         modifier = Modifier
             .size(40.dp)
-            .clip(RoundedCornerShape(Theme.spacing._12))
+            .clip(SquircleShape(Theme.spacing._12))
             .background(Theme.colorScheme.background.surface)
     ) {
         Icon(
@@ -85,8 +86,10 @@ private fun UserInformation(
     phoneNumber: String,
     modifier: Modifier = Modifier
 ) {
-    val phoneVisualTransformation = LengthBasedPhoneVisualTransformation(phoneNumberMasks)
-    val formattedPhoneNumber = phoneVisualTransformation.filter(AnnotatedString(phoneNumber))
+    val formattedPhoneNumber = remember(phoneNumber) {
+        val visualTransformation = LengthBasedPhoneVisualTransformation(LengthBasedPhoneVisualTransformation.phoneNumberMasks)
+        visualTransformation.filter(AnnotatedString(phoneNumber))
+    }
 
     Column(
         modifier = modifier
@@ -119,14 +122,3 @@ private fun CustomerInformationSectionPreview() {
         )
     }
 }
-
-private val phoneNumberMasks = mapOf(
-    8 to "##\u00A0###\u00A0###",
-    9 to "###\u00A0###\u00A0###",
-    10 to "##\u00A0####\u00A0####",
-    11 to "###\u00A0####\u00A0####",
-    12 to "##\u00A0###\u00A0###\u00A0####",
-    13 to "###\u00A0###\u00A0####\u00A0###",
-    14 to "###\u00A0###\u00A0####\u00A0####",
-    15 to "####\u00A0###\u00A0####\u00A0####",
-)

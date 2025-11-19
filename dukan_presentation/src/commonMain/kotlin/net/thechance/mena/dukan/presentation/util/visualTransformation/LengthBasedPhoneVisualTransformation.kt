@@ -59,4 +59,16 @@ class LengthBasedPhoneVisualTransformation(
         }
         return out.toString()
     }
+    companion object {
+         val phoneNumberMasks = mapOf(
+            8 to "##\u00A0###\u00A0###",
+            9 to "###\u00A0###\u00A0###",
+            10 to "##\u00A0####\u00A0####",
+            11 to "###\u00A0####\u00A0####",
+            12 to "##\u00A0###\u00A0###\u00A0####",
+            13 to "###\u00A0###\u00A0####\u00A0###",
+            14 to "###\u00A0###\u00A0####\u00A0####",
+            15 to "####\u00A0###\u00A0####\u00A0####",
+        )
+    }
 }

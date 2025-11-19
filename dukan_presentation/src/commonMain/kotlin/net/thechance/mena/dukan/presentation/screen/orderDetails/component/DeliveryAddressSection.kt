@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +28,7 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewOrderDetai
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun DeliveryAddressSection(
@@ -50,7 +50,7 @@ fun DeliveryAddressSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(Theme.spacing._12))
+                .clip(SquircleShape(Theme.spacing._12))
                 .background(Theme.colorScheme.background.surfaceLow)
                 .clickable(onClick = onClick, enabled = isUserOwnerToEnableAddressClick)
                 .padding(Theme.spacing._8),
@@ -82,7 +82,7 @@ private fun OrderAddressIcon() {
     Box(
         modifier = Modifier
             .size(40.dp)
-            .clip(RoundedCornerShape(Theme.spacing._12))
+            .clip(SquircleShape(Theme.spacing._12))
             .background(Theme.colorScheme.background.surfaceHigh)
     ) {
         Icon(
