@@ -20,12 +20,15 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.deliver_to
 import mena.dukan_presentation.generated.resources.desc_edit_address_icon
 import mena.dukan_presentation.generated.resources.ic_home
+import mena.dukan_presentation.generated.resources.ic_location
 import mena.dukan_presentation.generated.resources.ic_maps_editing
+import mena.dukan_presentation.generated.resources.ic_office
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
+import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -54,10 +57,10 @@ fun DeliveryAddressCard(
                 .padding(Theme.spacing._8),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            DeliveryAddressIcon()
+            DeliveryAddressIcon(state.deliveryAddress.label)
             DeliveryAddressDetails(
                 modifier = Modifier.weight(1f),
-                title = state.deliveryAddress.label,
+                title = state.deliveryAddress.label.name,
                 address = state.deliveryAddress.street
             )
             EditAddressIcon()
@@ -66,17 +69,26 @@ fun DeliveryAddressCard(
 }
 
 @Composable
-private fun DeliveryAddressIcon() {
+private fun DeliveryAddressIcon(
+    label: CheckoutUiState.AddressLabel
+) {
+    val imageRes = when (label) {
+        CheckoutUiState.AddressLabel.Home -> Res.drawable.ic_home
+        CheckoutUiState.AddressLabel.Work -> Res.drawable.ic_office
+        CheckoutUiState.AddressLabel.Other -> Res.drawable.ic_location
+    }
     Box(
         modifier = Modifier
             .size(40.dp)
             .clip(SquircleShape(Theme.radius.md))
-            .background(Theme.colorScheme.background.surface)
+            .background(Theme.colorScheme.background.surface),
+        contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.align(Alignment.Center),
-            painter = painterResource(Res.drawable.ic_home),
-            contentDescription = ""
+            modifier = Modifier.size(24.dp),
+            painter = painterResource(imageRes),
+            contentDescription = "",
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }
@@ -116,8 +128,39 @@ private fun EditAddressIcon() {
 
 @Preview
 @Composable
-private fun DeliveryAddressCardPreview() {
+private fun DeliveryAddressCardHomePreview() {
+    MenaTheme (
+        appTheme = AppTheme.LIGHT.name
+    ){
+        DeliveryAddressCard(CheckoutUiState(
+            deliveryAddress = CheckoutUiState.Address(
+                label = CheckoutUiState.AddressLabel.Home,
+                street = "123 Main St, City, Country"
+            )
+        ), {})
+    }
+}
+@Preview
+@Composable
+private fun DeliveryAddressCardWorkPreview() {
     MenaTheme {
-        DeliveryAddressCard(CheckoutUiState(), {})
+        DeliveryAddressCard(CheckoutUiState(
+            deliveryAddress = CheckoutUiState.Address(
+                label = CheckoutUiState.AddressLabel.Work,
+                street = "123 Main St, City, Country"
+            )
+        ), {})
+    }
+}
+@Preview
+@Composable
+private fun DeliveryAddressCardOtherPreview() {
+    MenaTheme {
+        DeliveryAddressCard(CheckoutUiState(
+            deliveryAddress = CheckoutUiState.Address(
+                label = CheckoutUiState.AddressLabel.Other,
+                street = "123 Main St, City, Country"
+            )
+        ), {})
     }
 }
