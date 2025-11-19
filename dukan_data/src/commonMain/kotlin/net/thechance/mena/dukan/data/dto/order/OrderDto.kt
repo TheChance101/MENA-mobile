@@ -9,7 +9,7 @@ import kotlin.uuid.Uuid
 
 @Serializable
 data class OrderDto(
-    @SerialName("id")
+    @SerialName("orderId")
     val id: Uuid,
     @SerialName("orderNumber")
     val orderNumber: Long,
@@ -19,7 +19,7 @@ data class OrderDto(
     val orderItemResponse: List<OrderItemDto>,
     @SerialName("discount")
     val discount: Double,
-    @SerialName("platformFeesAmount")
+    @SerialName("platformFees")
     val platformFees : Double,
     @SerialName("totalAmount")
     val totalAmount : Double,
@@ -29,9 +29,9 @@ data class OrderDto(
     val customerLatitude: Double,
     @SerialName("customerLongitude")
     val customerLongitude: Double,
-    @SerialName("latitude")
+    @SerialName("dukanLatitude")
     val dukanLatitude: Double,
-    @SerialName("longitude")
+    @SerialName("dukanLongitude")
     val dukanLongitude: Double,
     @SerialName("customerName")
     val customerName: String,

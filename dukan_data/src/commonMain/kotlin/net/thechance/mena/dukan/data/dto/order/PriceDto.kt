@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PriceDto(
-    @SerialName("original")
+    @SerialName("base")
     val original: Double,
     @SerialName("final")
     val finalPrice: Double
