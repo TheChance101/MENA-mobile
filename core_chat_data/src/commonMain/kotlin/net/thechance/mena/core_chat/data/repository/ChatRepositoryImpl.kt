@@ -79,7 +79,6 @@ class ChatRepositoryImpl(
             it.toDomain()
         }
         val totalItemsCount = getTotalItemsCount() ?: localData.size
-        println("====> total item count: ${getTotalItemsCount()}")
         val isLastPage = (offset + localData.size) >= totalItemsCount
 
         scope.launch {

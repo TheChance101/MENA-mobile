@@ -78,7 +78,7 @@ class HomeViewModelTest {
     @Test
     fun `observeChatSummariesList should update state with new chat summaries`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
@@ -101,7 +101,7 @@ class HomeViewModelTest {
     @Test
     fun `observeChatSummariesList should sort chats by last message time descending`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
@@ -131,7 +131,7 @@ class HomeViewModelTest {
     @Test
     fun `observeChatSummariesList should remove duplicates by id`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
@@ -156,7 +156,7 @@ class HomeViewModelTest {
     @Test
     fun `observeChatSummariesList should clear chats when empty list is emitted`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
@@ -181,7 +181,7 @@ class HomeViewModelTest {
     @Test
     fun `mergedChats should preserve existing chats and add new ones`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
 
@@ -209,7 +209,7 @@ class HomeViewModelTest {
     @Test
     fun `mergedChats should update existing chat with newer data`() = runTest {
         val chatFlow = MutableSharedFlow<List<ChatSummary>>(replay = 1)
-        everySuspend { chatRepository.observeChatSummaries() } returns chatFlow
+        everySuspend { chatRepository.observeChatSummaries(any()) } returns chatFlow
         everySuspend { chatRepository.observeChatSummariesSyncState() } returns flowOf()
         everySuspend { balanceRepository.getBalance() } returns 0.0
         everySuspend { chatRepository.getChatsSummary(any(), any()) } returns createEmptyPagedData()
@@ -299,7 +299,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.isLoading).isFalse()
+            assertThat(state.isChatsLoading).isFalse()
         }
     }
 
@@ -497,9 +497,7 @@ class HomeViewModelTest {
         return HomeViewModel(
             contactsRepository = contactsRepository,
             chatRepository = chatRepository,
-            balanceRepository = balanceRepository,
             messageRepository = messageRepository,
-
             balanceRepository = balanceRepository,
             prayerTimeService = prayerTimeService,
             locationService = locationService,

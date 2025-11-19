@@ -3,7 +3,6 @@ package net.thechance.mena.core_chat.domain.repository
 import kotlinx.coroutines.flow.Flow
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
-import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import kotlin.time.ExperimentalTime

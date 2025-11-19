@@ -376,13 +376,14 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it == SyncState.Offline
+        val job = launch {
+            val result = repository.observeChatSummariesSyncState().first {
+                it is SyncState.Offline
+            }
+            assertThat(result).isEqualTo(SyncState.Offline)
         }
-
-        assertThat(emittedState is SyncState.Offline).isTrue()
+        repository.getChatsSummary(pageNumber, pageSize)
+        job.cancel()
     }
 
     @Test
@@ -462,13 +463,14 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        repository.getChatsSummary(pageNumber, pageSize)
-
-        val emittedState = repository.observeChatSummariesSyncState().first {
-            it is SyncState.DeletedChatsSyncedSuccess
+        val job = launch {
+            val result = repository.observeChatSummariesSyncState().first {
+                it is SyncState.DeletedChatsSyncedSuccess
+            }
+            assertThat(result).isEqualTo(SyncState.DeletedChatsSyncedSuccess)
         }
-
-        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSyncedSuccess)
+        repository.getChatsSummary(pageNumber, pageSize)
+        job.cancel()
 
     }
 
