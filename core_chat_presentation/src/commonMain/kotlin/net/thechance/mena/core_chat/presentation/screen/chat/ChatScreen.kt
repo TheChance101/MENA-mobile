@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
@@ -162,6 +163,7 @@ fun ChatScreenContent(
                     onMessageVoiceClick = interactions::onMessageVoiceClicked,
                     onFailedMessageClick = interactions::onFailedMessageClicked,
                     onMessageLongClick = interactions::onMessageLongClicked,
+                    onLinkClick = interactions::onLinkClicked,
                     modifier = Modifier.imePadding()
                         .padding(bottom = if (keyboardHeight > maxKeyboardHeight * 0.53) 0.dp else 80.dp)
                         .clickable(
@@ -181,7 +183,8 @@ fun ChatScreenContent(
             visible = state.isImagePagerVisible,
             modifier = Modifier.fillMaxSize(),
         ) {
-            val isMine = state.selectedMessage?.messageDetails?.isMine == true
+            val isMine =
+                state.selectedImageMessages.isNotEmpty() && state.selectedImageMessages[0].messageDetails.isMine
             val senderName = if (isMine) stringResource(Res.string.you) else state.chatName
             val senderImageUrl = if (isMine) state.userData.imageUrl else state.chatAvatarUrl
 
@@ -288,6 +291,7 @@ private fun EffectsHandler(
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
 
     EffectHandler(effects, key1 = navController.currentBackStackEntry) { effect ->
         when (effect) {
@@ -302,6 +306,10 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.ScrollToBottom -> {
                 scope.launch { chatLazyListState.animateScrollToItem(0) }
+            }
+
+            is ChatScreenEffect.OpenUrl -> {
+                uriHandler.openUri(effect.url)
             }
         }
     }

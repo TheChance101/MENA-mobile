@@ -25,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.designsystem.presentation.util.rippleIndication
+import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -54,6 +55,7 @@ fun SettingItem(
                 .padding(vertical = Theme.spacing._12)
                 .size(Theme.spacing._24),
             painter = leadingIcon,
+            tint = Theme.colorScheme.primary.primary ,
             contentDescription = stringResource(Res.string.profile_edit_profile_icon_content_description),
         )
         Text(
@@ -74,7 +76,7 @@ fun SettingItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun PreviewSettingItem() {
     MenaTheme {

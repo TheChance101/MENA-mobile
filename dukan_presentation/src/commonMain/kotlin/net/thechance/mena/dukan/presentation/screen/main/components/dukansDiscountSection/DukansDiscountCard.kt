@@ -19,10 +19,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +57,7 @@ fun DukansDiscountSection(
     val pagerState = rememberPagerState(pageCount = { state.size })
 
     Box(modifier.fillWidthOfParent(parentPadding = Theme.spacing._16)) {
-        DukanDiscountImagesAndText(
+        BannerItem(
             state = state,
             pagerState = pagerState,
             onClick = onClick,
@@ -78,23 +74,21 @@ fun DukansDiscountSection(
 }
 
 @Composable
-private fun DukanDiscountImagesAndText(
+private fun BannerItem(
     state: List<MainScreenUiState.DukanTopDiscount>,
     pagerState: PagerState,
     onClick: (dukanId: Uuid) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var currentIndex by remember { mutableStateOf(0) }
-
     LaunchedEffect(pagerState) {
-        while (state.size > 1) {
-            if (!pagerState.isScrollInProgress) {
+        while (true) {
+            if (!pagerState.isScrollInProgress && state.size > 1) {
                 delay(1500)
                 val nextPage = (pagerState.currentPage + 1) % state.size
                 pagerState.animateScrollToPage(nextPage)
             } else {
-                delay(500)
+                delay(100)
             }
         }
     }
@@ -106,23 +100,28 @@ private fun DukanDiscountImagesAndText(
     ) {
         HorizontalPager(
             state = pagerState,
+            beyondViewportPageCount = 1,
+            key = { page -> state[page].id },
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            currentIndex = page
 
-            BannerItem(state = state, page = page, modifier = Modifier.fillMaxSize())
+            DukanDiscountImagesAndText(
+                state = state,
+                page = page,
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         ShopNowButton(
             modifier = Modifier.align(Alignment.BottomStart)
                 .padding(start = Theme.spacing._12, bottom = 19.dp),
-            onClick = { onClick(state[currentIndex].id) })
+            onClick = { onClick(state[pagerState.currentPage].id) })
     }
 }
 
 
 @Composable
-private fun BannerItem(
+private fun DukanDiscountImagesAndText(
     modifier: Modifier = Modifier,
     state: List<MainScreenUiState.DukanTopDiscount>,
     page: Int

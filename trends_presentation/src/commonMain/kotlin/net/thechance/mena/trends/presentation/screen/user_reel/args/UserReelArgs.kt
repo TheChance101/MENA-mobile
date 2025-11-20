@@ -1,7 +1,8 @@
 package net.thechance.mena.trends.presentation.screen.user_reel.args
 
-interface UserReelArgs {
+import net.thechance.mena.trends.presentation.navigation.Route
+
+internal interface UserReelArgs {
     val realId: String
-    val isFromHome: Boolean
-    val isFromManageTrends: Boolean
+    val reelSource: Route.ReelSource
 }

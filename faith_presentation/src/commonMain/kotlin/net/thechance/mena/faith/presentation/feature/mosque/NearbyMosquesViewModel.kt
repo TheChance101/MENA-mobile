@@ -16,21 +16,18 @@ import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.domain.usecase.CalculateDistanceUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.utils.extentions.roundTo2Decimals
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
+import org.jetbrains.compose.resources.StringResource
 
 internal class NearbyMosquesViewModel(
     private val mosqueRepository: MosqueRepository,
     private val locationService: LocationService,
     private val calculateDistanceUseCase: CalculateDistanceUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    snackbarHandler: SnackbarHandler
 ) : BaseViewModel<NearbyMosquesMapUiState, NearbyMosquesEffect>(
     initialState = NearbyMosquesMapUiState(),
-    snackbarHandler = snackbarHandler,
 ), NearbyMosquesInteractionListener {
     init {
         getUserLocation()
@@ -40,7 +37,10 @@ internal class NearbyMosquesViewModel(
         tryToExecute(
             execute = { locationService.getActiveAddress()!! },
             onSuccess = ::onGetUserLocationSuccess,
-            onError = { sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen) }
+            onError = {
+                sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
+                handleErrorSnackBar(it)
+            }
         )
     }
 
@@ -77,13 +77,7 @@ internal class NearbyMosquesViewModel(
         tryToExecute(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
-            onSuccess = { mosques ->
-                println(" messi suu : ${mosques.size}")
-                handleSearchSuccess(mosques, uiState.value.query)
-            },
-            onError = {
-                println(" messi err : ${it.exception}")
-            },
+            onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
@@ -142,7 +136,10 @@ internal class NearbyMosquesViewModel(
             },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = ::handleNearbyMosquesSuccess,
-            onError = { updateState { it.copy(isLoading = false) } },
+            onError = { error ->
+                updateState { it.copy(isLoading = false) }
+                handleErrorSnackBar(error)
+            },
             dispatcher = dispatcher
         )
     }
@@ -206,12 +203,8 @@ internal class NearbyMosquesViewModel(
         updateState { it.copy(canMove = canMove) }
     }
 
-    override fun showSuccessMessage(message: String) {
-        snackbarHandler.showSnackBar(
-            message = { message },
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
+    override fun showSuccessMessage(message: StringResource) {
+        handleSuccessSnackBar(message)
     }
 
     override fun onViewOnMapClick(coordinate: Coordinate) {
@@ -219,10 +212,16 @@ internal class NearbyMosquesViewModel(
     }
 
     private fun getDistanceFromUser(coordinates: Mosque.Coordinates) =
-        uiState.value.userLocation?.let { location ->
+        uiState.value.userLocation?.let { userLocation ->
             calculateDistanceUseCase(
-                firstLocation = Mosque.Coordinates(location.latitude, location.longitude),
-                secondLocation = Mosque.Coordinates(coordinates.latitude, coordinates.longitude)
+                firstLocation = Mosque.Coordinates(
+                    latitude = userLocation.latitude,
+                    longitude = userLocation.longitude
+                ),
+                secondLocation = Mosque.Coordinates(
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude
+                )
             )
         }?.roundTo2Decimals() ?: 0.0
 }

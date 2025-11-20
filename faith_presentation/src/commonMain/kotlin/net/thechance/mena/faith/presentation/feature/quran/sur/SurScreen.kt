@@ -18,6 +18,9 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.sur.component.SurTopbar
 import net.thechance.mena.faith.presentation.feature.quran.sur.component.SurahItem
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
@@ -31,6 +34,7 @@ fun SurScreen(
     viewModel: SurViewModel = koinViewModel(),
 ) {
 
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
@@ -40,7 +44,8 @@ fun SurScreen(
             is SurEffect.NavigateToBookmark -> navController.navigate(Route.BookmarksRoute)
             is SurEffect.NavigateToSurahDetails -> {
                 navController.navigate(
-                    Route.SurahDetailsRoute(surahId = effect.surahId))
+                    Route.SurahDetailsRoute(surahId = effect.surahId)
+                )
             }
 
             SurEffect.NavigateToSearch -> {
@@ -52,6 +57,7 @@ fun SurScreen(
 
     Content(
         uiState = state,
+        snackBar = snackBarState,
         listener = viewModel
     )
 }
@@ -59,6 +65,7 @@ fun SurScreen(
 @Composable
 private fun Content(
     uiState: SurUiState,
+    snackBar: SnackBarState,
     listener: SurInteractionListener,
 ) {
     Scaffold(
@@ -68,6 +75,13 @@ private fun Content(
                 onBackClick = { listener.onBackClick() },
                 onBookmarkClick = { listener.onBookmarkClick() },
                 onSearchClick = { listener.onSearchClick() }
+            )
+        },
+        snakeBar = {
+            FaithSnackBar(
+                message = snackBar.message,
+                isVisible = snackBar.isVisible,
+                status = snackBar.status
             )
         }
     ) {
@@ -104,43 +118,46 @@ private fun Content(
 
 @Preview
 @Composable
-private fun SurScreenPreview() {
+private fun Preview() {
     MenaTheme {
-        Content(
-            uiState = SurUiState(
-                sur = listOf(
-                    SurUiState.SurahUiState(
-                        id = 1,
-                        surahOrder = 1,
-                        surahName = "Al Fatihah",
-                        arabicNameImg = Res.drawable.ic_al_fatihah,
-                        ayatCount = 7,
-                        isMakki = true
-                    ),
-                    SurUiState.SurahUiState(
-                        id = 1,
-                        surahOrder = 1,
-                        surahName = "Al Fatihah",
-                        arabicNameImg = Res.drawable.ic_al_fatihah,
-                        ayatCount = 7,
-                        isMakki = true
-                    ),
-                    SurUiState.SurahUiState(
-                        id = 1,
-                        surahOrder = 1,
-                        surahName = "Al Fatihah",
-                        arabicNameImg = Res.drawable.ic_al_fatihah,
-                        ayatCount = 7,
-                        isMakki = true
+        QuranTheme {
+            Content(
+                uiState = SurUiState(
+                    sur = listOf(
+                        SurUiState.SurahUiState(
+                            id = 1,
+                            surahOrder = 1,
+                            surahName = "Al Fatihah",
+                            arabicNameImg = Res.drawable.ic_al_fatihah,
+                            ayatCount = 7,
+                            isMakki = true
+                        ),
+                        SurUiState.SurahUiState(
+                            id = 1,
+                            surahOrder = 1,
+                            surahName = "Al Fatihah",
+                            arabicNameImg = Res.drawable.ic_al_fatihah,
+                            ayatCount = 7,
+                            isMakki = true
+                        ),
+                        SurUiState.SurahUiState(
+                            id = 1,
+                            surahOrder = 1,
+                            surahName = "Al Fatihah",
+                            arabicNameImg = Res.drawable.ic_al_fatihah,
+                            ayatCount = 7,
+                            isMakki = true
+                        )
                     )
-                )
-            ),
-            listener = object : SurInteractionListener {
-                override fun onSurahClick(surahId: Int) = Unit
-                override fun onBackClick() = Unit
-                override fun onBookmarkClick() = Unit
-                override fun onSearchClick() {}
-            }
-        )
+                ),
+                snackBar = SnackBarState(),
+                listener = object : SurInteractionListener {
+                    override fun onSurahClick(surahId: Int) = Unit
+                    override fun onBackClick() = Unit
+                    override fun onBookmarkClick() = Unit
+                    override fun onSearchClick() {}
+                }
+            )
+        }
     }
 }

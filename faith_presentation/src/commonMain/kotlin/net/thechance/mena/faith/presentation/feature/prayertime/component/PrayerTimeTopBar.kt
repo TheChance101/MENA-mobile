@@ -2,7 +2,6 @@ package net.thechance.mena.faith.presentation.feature.prayertime.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -12,13 +11,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.icon_location
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
+import net.thechance.mena.faith.presentation.utils.extentions.noRippleClickable
 import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -33,11 +34,7 @@ internal fun PrayerTimeTopBar(uiState: PrayerTimeUiState, onClick: () -> Unit) {
             color = Theme.colorScheme.background.surfaceLow
         )
             .height(Theme.spacing._24)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = { onClick() }
-                )
-            },
+            .noRippleClickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -60,12 +57,16 @@ internal fun PrayerTimeTopBar(uiState: PrayerTimeUiState, onClick: () -> Unit) {
     }
 }
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Preview
 @Composable
 private fun Preview() {
-    @OptIn(kotlin.time.ExperimentalTime::class)
-    PrayerTimeTopBar(
-        uiState = PrayerTimeUiState(address = "Baghdad, Iraq"),
-        onClick = {}
-    )
+    MenaTheme {
+        QuranTheme {
+            PrayerTimeTopBar(
+                uiState = PrayerTimeUiState(address = "Baghdad, Iraq"),
+                onClick = {}
+            )
+        }
+    }
 }

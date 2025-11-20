@@ -10,8 +10,8 @@ import kotlin.uuid.ExperimentalUuidApi
 fun ProductDto.toEntity() = Product(
     id = id.toUuidOrNull() ?: throw IllegalStateException("Invalid product id"),
     name = name.orEmpty(),
-    price = price.orZero(),
-    discountedPrice = discountedPrice,
+    finalPrice = finalPrice.orZero(),
+    basePrice = basePrice.orZero(),
     description = description.orEmpty(),
     imageUrls = imageUrls.orEmpty(),
 )

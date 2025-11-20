@@ -1,8 +1,12 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
@@ -17,6 +21,10 @@ fun ProductDetailsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
+    LaunchedEffect(Unit){
+        viewModel.refreshCartInfo()
+    }
+
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {
             ProductDetailsEffects.NavigateBack -> navController.popBackStack()
@@ -28,8 +36,17 @@ fun ProductDetailsScreen(
         }
     }
 
-    ProductDetailsContent(
-        state = state,
-        listener = viewModel,
-    )
+    if (state.errorState != null) {
+        NoInternetContent(
+            onRetry = viewModel::onRetryClicked,
+            isLoading = state.isLoading,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    } else {
+        ProductDetailsContent(
+            state = state,
+            listener = viewModel,
+        )
+    }
 }

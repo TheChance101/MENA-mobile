@@ -132,12 +132,14 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    updateState { it.copy(chatListItems = messageList.toChatItems()) }
+                    updateState {
+                        it.copy(chatListItems = messageList.toChatItems())
+                    }
                 }
         }
     }
 
-    fun List<Message>.toChatItems(): List<ChatListItem> {
+    private fun List<Message>.toChatItems(): List<ChatListItem> {
         if (firstUnReadByMeMessageTime == null) setFirstUnReadByMeMessageTime(this)
         return sortedByDescending { it.sendAt }
             .map { it.toUi() }
@@ -147,7 +149,7 @@ class ChatViewModel(
             .groupImages(firstUnReadByMeMessageTime ?: LocalDateTime.now())
     }
 
-    fun AudioMessageUiState.useCacheWaveform(): AudioMessageUiState {
+    private fun AudioMessageUiState.useCacheWaveform(): AudioMessageUiState {
         return copy(waveformData = waveformCache.getOrPut(messageDetails.id) { waveformData })
     }
 
@@ -323,12 +325,12 @@ class ChatViewModel(
         tryToExecute(
             execute = {
                 safeUpdateMessages { messages ->
-                messages.map {
-                    if (it.id == message.messageDetails.id)
-                        it.copy(status = MessageStatus.LOADING)
-                    else
-                        it
-                }}
+                    messages.map {
+                        if (it.id == message.messageDetails.id)
+                            it.copy(status = MessageStatus.LOADING)
+                        else
+                            it
+                    }}
             },
             onSuccess = { sendMessage(message) }
         )
@@ -998,6 +1000,9 @@ class ChatViewModel(
                 isRecordingVoice = false
             )
         }
+    }
+    override fun onLinkClicked(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 
     companion object {

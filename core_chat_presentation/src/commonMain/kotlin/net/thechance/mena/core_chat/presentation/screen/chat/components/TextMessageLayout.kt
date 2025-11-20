@@ -24,9 +24,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
+import net.thechance.mena.core_chat.presentation.utils.containsUrl
+import net.thechance.mena.core_chat.presentation.utils.detectAndStyleUrls
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -46,6 +48,7 @@ fun TextMessageLayout(
     onFailClick: () -> Unit = {},
     onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
+    onLinkClick: (String) -> Unit = {},
 ) {
     val messageBackground =
         if (message.messageDetails.isMine) Theme.colorScheme.background.surfaceLow
@@ -123,7 +126,7 @@ fun TextMessageLayout(
                         .clip(messageShape)
                         .sizeIn(minWidth = 56.dp, minHeight = 30.dp)
                         .combinedClickable(
-                            onClick = onMessageClick,
+                            onClick = { if (!containsUrl(message.text)) onMessageClick() },
                             onLongClick = onMessageLongClick
                         )
                         .background(color = messageBackground, shape = messageShape)
@@ -133,11 +136,23 @@ fun TextMessageLayout(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = message.text,
-                        style = Theme.typography.body.small,
-                        color = Theme.colorScheme.shadeSecondary
-                    )
+
+                    if (containsUrl(message.text)) {
+                        val styledText = detectAndStyleUrls(text = message.text, linkColor = Theme.colorScheme.brand.brand)
+                        ClickableUrlText(
+                            text = styledText,
+                            style = Theme.typography.body.small,
+                            color = Theme.colorScheme.shadeSecondary,
+                            onUrlClick = onLinkClick,
+                            onTextClick = onMessageClick
+                        )
+                    } else {
+                        Text(
+                            text = message.text,
+                            style = Theme.typography.body.small,
+                            color = Theme.colorScheme.shadeSecondary
+                        )
+                    }
                 }
             }
 
@@ -150,7 +165,7 @@ fun TextMessageLayout(
                 if (!message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
                         reactions = message.messageDetails.reactions,
-                        modifier= Modifier.offset(y = (-8).dp)
+                        modifier = Modifier.offset(y = (-8).dp)
                     )
                 }
 
@@ -166,8 +181,9 @@ fun TextMessageLayout(
                 if (message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
                         reactions = message.messageDetails.reactions,
-                        modifier= Modifier.offset(y = (-8).dp)
-                    )                }
+                        modifier = Modifier.offset(y = (-8).dp)
+                    )
+                }
             }
         }
     }

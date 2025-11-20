@@ -1,5 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.mosque
 
+import org.jetbrains.compose.resources.StringResource
+
 internal interface NearbyMosquesInteractionListener {
     fun onBackClick()
     fun onAddMosqueClick()
@@ -16,5 +18,5 @@ internal interface NearbyMosquesInteractionListener {
     fun onDismissSearchBottomSheet()
     fun selectMosque(mosque: MosqueUiState)
     fun unselectMosque()
-    fun showSuccessMessage(message: String)
+    fun showSuccessMessage(message: StringResource)
 }

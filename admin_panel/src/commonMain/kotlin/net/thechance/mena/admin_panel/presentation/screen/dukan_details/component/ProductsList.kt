@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,19 +17,24 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
-import net.thechance.mena.admin_panel.presentation.component.LoadingIndicator
+import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
+import net.thechance.mena.admin_panel.resources.empty_shelf_img
+import net.thechance.mena.admin_panel.resources.empty_shelf_title
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
 import net.thechance.mena.admin_panel.resources.silver_img
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -45,6 +51,10 @@ internal fun ProductsList(
 ) {
     val listState = rememberLazyListState()
 
+    LaunchedEffect(products.isEmpty()) {
+        listState.scrollToItem(0)
+    }
+
     PaginationTrigger(
         list = products,
         listState = listState,
@@ -54,21 +64,24 @@ internal fun ProductsList(
 
     when {
         isProductLoading && products.isEmpty() -> {
-            Box(
-                modifier = modifier.height(600.dp),
-                contentAlignment = Alignment.Center
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(600.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoadingIndicator()
+                AdminPanelContentLoading()
             }
         }
 
-        products.isEmpty() -> {
-            EmptyShelfScreen(modifier = Modifier.fillMaxSize())
-        }
+        products.isEmpty() -> { EmptyProductsState() }
 
         else -> {
             LazyColumn(
-                modifier = modifier.height(600.dp),
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(600.dp),
                 state = listState,
             ) {
                 items(products) { product ->
@@ -79,7 +92,7 @@ internal fun ProductsList(
                 }
                 if (isProductLoading) {
                     item {
-                        LoadingIndicator()
+                        AdminPanelContentLoading()
                     }
                 }
             }
@@ -123,27 +136,29 @@ private fun ProductCard(
                 modifier = Modifier.padding(top = 2.dp),
                 text = product.description,
                 style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadeTertiary
+                color = Theme.colorScheme.shadeTertiary,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.weight(1f))
-            ProductPrice(discountedPrice = product.discountedPrice, price = product.price)
+            ProductPrice(basePrice = product.basePrice, finalPrice = product.finalPrice)
         }
     }
 }
 
 @Composable
 private fun ProductPrice(
-    discountedPrice: Double?,
-    price: Double,
+    basePrice: Double,
+    finalPrice: Double,
 ) {
     Row(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Start
     ) {
-        discountedPrice?.let {
+        if (basePrice != finalPrice) {
             Text(
                 modifier = Modifier.alignByBaseline(),
-                text = formatAmount(it),
+                text = formatAmount(basePrice),
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadeTertiary,
                 textDecoration = TextDecoration.LineThrough
@@ -153,7 +168,7 @@ private fun ProductPrice(
             modifier = Modifier
                 .padding(start = 2.dp)
                 .alignByBaseline(),
-            text = formatAmount(price),
+            text = formatAmount(finalPrice),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
@@ -164,6 +179,23 @@ private fun ProductPrice(
                 .alignByBaseline(),
             painter = painterResource(Res.drawable.silver_img),
             contentDescription = stringResource(Res.string.silver_img)
+        )
+    }
+}
+
+@Composable
+private fun EmptyProductsState(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        StatePlaceholder(
+            image = painterResource(Res.drawable.empty_shelf_img),
+            title = stringResource(Res.string.empty_shelf_title),
+            description = "",
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

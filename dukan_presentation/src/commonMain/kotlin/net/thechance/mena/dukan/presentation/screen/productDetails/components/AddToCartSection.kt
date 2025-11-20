@@ -20,7 +20,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_to_cart
+import mena.dukan_presentation.generated.resources.sold_out
 import net.thechance.mena.designsystem.presentation.component.button.Button
+import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -38,74 +40,90 @@ fun AddToCartSection(
     state: ProductDetailsUiState,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth()
-            .background(Theme.colorScheme.background.surface)
-            .padding(
-                top = Theme.spacing._8,
-                bottom = Theme.spacing._16,
-                start = Theme.spacing._16,
-                end = Theme.spacing._16
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
-    ) {
-        ProductQuantityButton(
-            onPlusClick = onPlusClick,
-            onMinusClick = onMinusClick,
-            dukanColor = Color(state.dukanColor),
-            inCartQuantity = state.product.inCartQuantity,
-            backgroundColor = Theme.colorScheme.background.surfaceHigh,
-            iconPadding = PaddingValues(Theme.spacing._8 + Theme.spacing._2)
-        )
-        Button(
+    if (state.product.isOutOfStock) {
+        PrimaryButton(
+            text = stringResource(Res.string.sold_out),
+            onClick = {},
             modifier = Modifier
-                .heightIn(min=48.dp)
+                .padding(
+                    top = Theme.spacing._8,
+                    bottom = Theme.spacing._16,
+                    start = Theme.spacing._16,
+                    end = Theme.spacing._16
+                )
                 .fillMaxWidth(),
-            onClick = onAddToCartClick,
-            isEnabled = state.isButtonEnable,
-            isLoading = state.isAddToCartLoading,
-            loadingColors = listOf(
-                Theme.colorScheme.stroke,
-                Theme.colorScheme.shadeTertiary,
-                Theme.colorScheme.primary.primary
-            ),
-            shape = SquircleShape(Theme.radius.md),
-            containerColor = Color(state.dukanColor),
-            disabledContainerColor = Theme.colorScheme.disabled,
-            disabledContentColor = Theme.colorScheme.textDisabled ,
+            isEnabled = false,
+        )
+    } else {
+        Column(
+            modifier = modifier.fillMaxWidth()
+                .background(Theme.colorScheme.background.surface)
+                .padding(
+                    top = Theme.spacing._8,
+                    bottom = Theme.spacing._16,
+                    start = Theme.spacing._16,
+                    end = Theme.spacing._16
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._12)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            ProductQuantityButton(
+                onPlusClick = onPlusClick,
+                onMinusClick = onMinusClick,
+                dukanColor = Color(state.dukanColor),
+                inCartQuantity = state.product.inCartQuantity,
+                backgroundColor = Theme.colorScheme.background.surfaceHigh,
+                iconPadding = PaddingValues(Theme.spacing._8 + Theme.spacing._2)
+            )
+            Button(
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .fillMaxWidth(),
+                onClick = onAddToCartClick,
+                isEnabled = state.isButtonEnable,
+                isLoading = state.isAddToCartLoading,
+                loadingColors = listOf(
+                    Theme.colorScheme.stroke,
+                    Theme.colorScheme.shadeTertiary,
+                    Theme.colorScheme.primary.primary
+                ),
+                shape = SquircleShape(Theme.radius.md),
+                containerColor = Color(state.dukanColor),
+                disabledContainerColor = Theme.colorScheme.disabled,
+                disabledContentColor = Theme.colorScheme.textDisabled,
             ) {
-                Text(
-                    text = stringResource(Res.string.add_to_cart),
-                    style = Theme.typography.label.medium,
-                    color = Theme.colorScheme.primary.onPrimary,
-                )
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = Theme.spacing._8)
-                        .size(3.dp)
-                        .clip(CircleShape)
-                        .background(Theme.colorScheme.primary.onPrimaryBody)
-                )
-                Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "${state.product.price}$",
-                        style = Theme.typography.label.small,
+                        text = stringResource(Res.string.add_to_cart),
+                        style = Theme.typography.label.medium,
                         color = Theme.colorScheme.primary.onPrimary,
                     )
-                    Text(
-                        text = "${state.product.price}$",
-                        style = Theme.typography.label.small.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ),
-                        color = Theme.colorScheme.primary.onPrimaryBody,
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = Theme.spacing._8)
+                            .size(3.dp)
+                            .clip(CircleShape)
+                            .background(Theme.colorScheme.primary.onPrimaryBody)
                     )
+                    Column {
+                        Text(
+                            text = "${state.product.price}$",
+                            style = Theme.typography.label.small,
+                            color = Theme.colorScheme.primary.onPrimary,
+                        )
+                        Text(
+                            text = "${state.product.price}$",
+                            style = Theme.typography.label.small.copy(
+                                textDecoration = TextDecoration.LineThrough
+                            ),
+                            color = Theme.colorScheme.primary.onPrimaryBody,
+                        )
+                    }
                 }
             }
         }
@@ -120,7 +138,7 @@ private fun AddToCartSectionPreview() {
             onPlusClick = {},
             onMinusClick = {},
             onAddToCartClick = {},
-            state = ProductDetailsUiState()
+            state = ProductDetailsUiState(),
         )
     }
 }

@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.addresses.pickLocation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreen
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.EditMapButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.PickLocationMap
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
@@ -58,34 +56,22 @@ data class PickLocationScreen(
                 )
             },
         ) {
-
             PickLocationMap(
-                cameraPosition = state.cameraPosition,
-                onCameraMoved = listener::onMoveCamera,
-                onMapClick = listener::onClickMap,
-                anchorLocation = state.pointerLocation,
-                isLocked = state.isMapLocked,
                 currentLocation = state.currentLocation,
                 animateToCurrentLocation = state.animateToCurrentLocation,
-                onSetAnchorLocation = listener::onSetAnchorLocation,
+                showAnchor = state.showAnchor,
+                onClickMap = listener::onClickMap,
+                onMoveCamera = listener::onMoveCamera,
             ) {
                 Column(
                     Modifier.padding(Theme.spacing._16).fillMaxSize(),
                     verticalArrangement = Arrangement.Bottom
                 ) {
-                    Row(
-                        modifier = Modifier.padding(bottom = 12.dp).fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        GpsFabButton(
-                            onClick = listener::onClickGps,
-                            isLoading = state.isGpsButtonLoading,
-                        )
-                        EditMapButton(
-                            isMapLocked = state.isMapLocked,
-                            onEditClick = listener::onClickEdit
-                        )
-                    }
+                    GpsFabButton(
+                        onClick = listener::onClickGps,
+                        isLoading = state.isGpsButtonLoading,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
                     PrimaryButton(
                         text = stringResource(Res.string.confirm),
                         onClick = listener::onClickConfirm,

@@ -50,6 +50,7 @@ sealed class MessageUiState(open val messageDetails: MessageDetailsUiState) : Ch
         is AudioMessageUiState -> copy(messageDetails = messageDetails)
         is ImageMessageUiState -> copy(messageDetails = messageDetails)
         is TextMessageUiState -> copy(messageDetails = messageDetails)
+        is AyahMessageUiState -> copy(messageDetails = messageDetails)
     }
 }
 
@@ -76,6 +77,14 @@ data class ImagesGroupChatItem(
 data class ImageMessageUiState(
     val imageDate: ImageData,
     override val messageDetails: MessageDetailsUiState,
+) : MessageUiState(messageDetails)
+
+data class AyahMessageUiState(
+    val surahId: Int,
+    val ayahContent: String,
+    val ayahNumber: Int,
+    val surahName: String,
+    override val messageDetails: MessageDetailsUiState
 ) : MessageUiState(messageDetails)
 
 data class AudioMessageUiState(

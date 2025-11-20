@@ -5,8 +5,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.mapper.ayahBookmark.toAyahBookmark
-import net.thechance.mena.faith.data.mapper.toAyah
-import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.remote.model.PageResponse
 import net.thechance.mena.faith.data.remote.model.bookmark.AddBookmarkRequest
 import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
@@ -17,7 +15,6 @@ import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.identity.domain.service.LocalizationService
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 class BookmarkRepositoryImpl(
@@ -26,8 +23,8 @@ class BookmarkRepositoryImpl(
     private val localizationService: LocalizationService,
 ) : BookmarkRepository {
 
-    override suspend fun addAyahBookmark(surahId: Int, ayahNumber: Int): AyahBookmark {
-        val bookmarkDto = executeApiSafely<AyahBookmarkDto> {
+    override suspend fun addAyahBookmark(surahId: Int, ayahNumber: Int) {
+        executeApiSafely<Unit> {
             bookmarkApiService.addBookmark(
                 AddBookmarkRequest(
                     surahId = surahId,
@@ -35,16 +32,6 @@ class BookmarkRepositoryImpl(
                 )
             )
         }
-
-        val surah = executeLocalSafely { ayahDao.getSurah(surahId) }
-        val ayah = executeLocalSafely { ayahDao.getAyah(ayahId = ayahNumber, surahId = surahId) }
-
-        return AyahBookmark(
-            id = bookmarkDto.id.toInt(),
-            surah = surah.toSurah(localizationService.getCurrentLanguage()),
-            ayah = ayah.toAyah(),
-            createdAt = Instant.parse(bookmarkDto.createdAt)
-        )
     }
 
     override suspend fun getAyahBookmarks(pageNumber: Int, pageSize: Int): List<AyahBookmark> {

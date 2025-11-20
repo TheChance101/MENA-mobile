@@ -17,10 +17,15 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.service.LocationService
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -44,6 +49,9 @@ class MainViewModelTests {
 
     @BeforeTest
     fun setup() {
+        startKoin {
+            modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+        }
         quranRepository = mock(MockMode.autofill)
         prayerTimeRepository = mock(MockMode.autofill)
         addressesRepository = mock(MockMode.autofill)
@@ -53,6 +61,11 @@ class MainViewModelTests {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
 
         locationService = LocationService(addressesRepository)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        stopKoin()
     }
 
     @Test

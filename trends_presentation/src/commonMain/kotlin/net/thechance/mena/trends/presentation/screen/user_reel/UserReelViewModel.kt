@@ -9,7 +9,9 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_reel.args.UserReelArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
@@ -48,8 +50,7 @@ internal class UserReelViewModel(
             scope = viewModelScope,
             loadPage = { page ->
                 getReelsBasedOnSource(
-                    isFromHome = userReelArgs.isFromHome,
-                    isFromManageTrends = userReelArgs.isFromManageTrends,
+                    reelSource = userReelArgs.reelSource,
                     page = page
                 )
             }
@@ -57,14 +58,13 @@ internal class UserReelViewModel(
     }
 
     private suspend fun getReelsBasedOnSource(
-        isFromHome: Boolean,
-        isFromManageTrends: Boolean,
+        reelSource: Route.ReelSource,
         page: Int
     ): List<Reel> {
-        return when {
-            isFromHome -> reelsRepository.getFeedReels(page, userReelArgs.realId)
-            isFromManageTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
-            else -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+        return when (reelSource) {
+            Route.ReelSource.Home -> reelsRepository.getFeedReels(page, userReelArgs.realId)
+            Route.ReelSource.MyTrends -> reelsRepository.getAllCurrentUserReels(page, userReelArgs.realId)
+            Route.ReelSource.Favorites -> reelsRepository.getFavoriteReels(page, userReelArgs.realId)
         }
     }
 
@@ -104,7 +104,7 @@ internal class UserReelViewModel(
     }
 
     override fun increaseReelView(reelId: String) {
-        if(state.value.isReelDeleted == null) {
+        if (state.value.isReelDeleted == null) {
             tryToExecute(
                 block = { reelsRepository.addReelView(reelId) },
                 dispatcher = defaultDispatcher
@@ -127,6 +127,33 @@ internal class UserReelViewModel(
                 onGetRefreshVideoUrl(refreshedUrl, reelId)
             },
         )
+    }
+
+    override fun saveUserReelEngagement(
+        reelWatchSessionState: ReelWatchSessionState,
+        reelId: String
+    ) {
+        tryToExecute(
+            block = {
+                reelsRepository.saveUserEngagementWithReel(
+                    prepareReelData(
+                        reelWatchSessionState,
+                        reelId
+                    )
+                )
+            },
+            dispatcher = defaultDispatcher,
+        )
+    }
+
+    private fun prepareReelData(
+        reelWatchSessionState: ReelWatchSessionState,
+        reelId: String
+    ): ReelWatchSession {
+        val percentageOfVideoWatched =
+            reelWatchSessionState.watchedDurationInMilliseconds.toFloat() / reelWatchSessionState.videoDurationInMilliseconds * 100
+        reelWatchSessionState.reelId = reelId
+        return reelWatchSessionState.toEntity(percentageOfVideoWatched)
     }
 
     override fun onClickRetry(reelId: String) {
@@ -194,7 +221,14 @@ internal class UserReelViewModel(
         tryToExecute(
             block = { reelsRepository.deleteReelById(state.value.currentReelId) },
             onSuccess = { onDeleteReelSuccess() },
-            onError = { errorState -> updateState { copy(error = errorState, isReelDeleted = false) } },
+            onError = { errorState ->
+                updateState {
+                    copy(
+                        error = errorState,
+                        isReelDeleted = false
+                    )
+                }
+            },
             dispatcher = defaultDispatcher
         )
     }

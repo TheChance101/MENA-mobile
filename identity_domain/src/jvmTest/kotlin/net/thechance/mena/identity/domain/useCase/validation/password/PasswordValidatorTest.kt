@@ -33,4 +33,15 @@ class PasswordValidatorTest {
     fun `should return true for edge case exactly 8 characters with digit and uppercase`() {
         assertTrue(validator.isValid("Passw0rd"))
     }
+
+    @Test
+    fun `should return false when confirm password not match password`() {
+        assertFalse(validator.isPasswordMatch("Password123", "DifferentPass123"))
+    }
+
+    @Test
+    fun `should return true when confirm password matches password`() {
+        assertTrue(validator.isPasswordMatch("Password123", "Password123"))
+    }
+
 }

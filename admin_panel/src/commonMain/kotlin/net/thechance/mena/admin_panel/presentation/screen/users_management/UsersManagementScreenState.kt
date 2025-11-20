@@ -13,7 +13,8 @@ data class UsersManagementScreenState(
     val query: String = "",
     val pageInfo: UserPageInfo = UserPageInfo(),
     val sort: SortState = SortState(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val isInitialLoading: Boolean = true,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isBlockDialogShown: Boolean = false,
@@ -46,6 +47,8 @@ data class UsersManagementScreenState(
     }
 
     enum class SortType {
-        USERNAME, LAST_LOGIN_DATE, LAST_VISIT_DATE
+        USERNAME,
+        LAST_LOGIN_DATE, LAST_VISIT_DATE,
+        ACTIVATION_STATUS
     }
 }

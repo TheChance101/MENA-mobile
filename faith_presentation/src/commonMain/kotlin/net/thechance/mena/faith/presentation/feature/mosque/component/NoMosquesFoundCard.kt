@@ -20,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -62,10 +63,12 @@ fun NoMosquesFoundCard(
 
 @Preview
 @Composable
-private fun NoMosquesFoundCardPreview() {
+private fun Preview() {
     MenaTheme {
-        NoMosquesFoundCard(
-            message = stringResource(Res.string.no_mosques_found_by_keyword)
-        )
+        QuranTheme {
+            NoMosquesFoundCard(
+                message = stringResource(Res.string.no_mosques_found_by_keyword)
+            )
+        }
     }
 }

@@ -38,13 +38,15 @@ internal sealed interface Route {
 
 
     @Serializable
-    data class DownloadedRecitersRoute(
+    data class SurahRecitersRoute(
         val surahId: Int? = null,
-        val isCardsSwipable: Boolean = false,
     ) : Route
 
     @Serializable
-    data class ReciterSearch(
+    data object ReciterSelectionRoute : Route
+
+    @Serializable
+    data class DownloadedRecitersRoute(
         val surahId: Int? = null
     ) : Route
     
@@ -62,4 +64,11 @@ internal sealed interface Route {
 
     @Serializable
     data object UploadImageRoute : Route
+
+    @Serializable
+    data class ShareAyahToChatRoute(
+        val surahId: String,
+        val ayahNumber: Int,
+        val ayahContent: String,
+    ) : Route
 }

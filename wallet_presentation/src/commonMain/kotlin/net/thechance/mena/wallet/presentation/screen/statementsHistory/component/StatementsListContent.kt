@@ -155,8 +155,8 @@ private fun StatementsListContentPreview() {
             id = Uuid.parse("123e4567-e89b-12d3-a456-426614174000"),
             startDate = "01 Oct 2025",
             endDate = "15 Oct 2025",
-            totalInflow = 1500.0,
-            totalOutflow = 750.0,
+            totalInflow = "1500.0",
+            totalOutflow = "750.0",
             fileName = "Statement_Oct_1_15.pdf",
             isDeleting = false
         ),
@@ -164,8 +164,8 @@ private fun StatementsListContentPreview() {
             id = Uuid.parse("223e4567-e89b-12d3-a456-426614174111"),
             startDate = "16 Oct 2025",
             endDate = "20 Oct 2025",
-            totalInflow = 1200.0,
-            totalOutflow = 500.0,
+            totalInflow = "1200.0",
+            totalOutflow = "500.0",
             fileName = "Statement_Oct_16_20.pdf",
             isDeleting = false
         )

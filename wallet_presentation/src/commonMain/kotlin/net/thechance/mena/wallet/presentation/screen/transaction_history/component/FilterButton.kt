@@ -35,7 +35,8 @@ fun FilterButton(
         Icon(
             modifier = Modifier.size(16.dp),
             painter = painterResource(Res.drawable.ic_filter),
-            contentDescription = stringResource(Res.string.filter)
+            contentDescription = stringResource(Res.string.filter),
+            tint = Theme.colorScheme.primary.primary
         )
         Text(
             modifier = Modifier.padding(start = 4.dp),
