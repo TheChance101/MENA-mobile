@@ -29,7 +29,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
@@ -43,10 +42,10 @@ import org.koin.core.parameter.parametersOf
 class EnterNameScreen(
     private val phoneNumber: PhoneNumber
 ) : BaseScreen<
-        EnterNameViewModel,
-        EnterNameUIState,
-        EnterNameUIEffect,
-        EnterNameInteractionListener>() {
+    EnterNameViewModel,
+    EnterNameUIState,
+    EnterNameUIEffect,
+    EnterNameInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -118,10 +117,6 @@ class EnterNameScreen(
                 }
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage
-        )
     }
 
     override fun onEffect(
@@ -132,6 +127,12 @@ class EnterNameScreen(
         when (effect) {
             is EnterNameUIEffect.NavigateToPassword -> {
                 navigator.push(CreatePasswordScreen(registerUIState = effect.registerUIState))
+            }
+
+            is EnterNameUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }
@@ -159,7 +160,6 @@ private fun Preview_Empty() {
                 override fun onLastNameChange(name: String) {}
                 override fun onUsernameChange(username: String) {}
                 override fun onClickNext() {}
-                override fun onClearErrorMessage() {}
             }
         )
     }
@@ -187,7 +187,6 @@ private fun Preview_Filled() {
                 override fun onLastNameChange(name: String) {}
                 override fun onUsernameChange(username: String) {}
                 override fun onClickNext() {}
-                override fun onClearErrorMessage() {}
             }
         )
     }
