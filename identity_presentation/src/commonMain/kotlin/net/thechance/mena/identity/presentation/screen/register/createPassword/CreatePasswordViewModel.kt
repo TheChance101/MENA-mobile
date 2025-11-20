@@ -54,13 +54,11 @@ class CreatePasswordViewModel(
         updateState { copy(isConfirmPasswordVisible = !isConfirmPasswordVisible) }
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     override fun onClickCreatePassword() {
         if (passwordsDoNotMatch()) {
-            updateState { copy(errorMessage = Res.string.error_password_mismatch) }
+            sendNewEffect(
+                CreatePasswordUIEffect.ShowSnackBarError(Res.string.error_password_mismatch)
+            )
             return
         }
         navigateToDatePicker()
@@ -96,7 +94,7 @@ class CreatePasswordViewModel(
         tryToExecute(
             function = {
                 val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
-                    ?: RegistrationDraft()
+                            ?: RegistrationDraft()
                 registrationDraftRepository.saveDraft(
                     registerUIState.phoneNumber,
                     draft.copy(password = password)
