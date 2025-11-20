@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.ic_no_connection
+import mena.trends_presentation.generated.resources.ic_no_connection_dark
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -83,7 +83,7 @@ fun StatePlaceholder(
 fun PreviewBaseStateComponent() {
     MenaTheme {
         StatePlaceholder(
-            icon = painterResource(Res.drawable.ic_no_connection),
+            icon = painterResource(Res.drawable.ic_no_connection_dark),
             title = "No Connection",
             description = "Please check your internet connection and try again."
         )

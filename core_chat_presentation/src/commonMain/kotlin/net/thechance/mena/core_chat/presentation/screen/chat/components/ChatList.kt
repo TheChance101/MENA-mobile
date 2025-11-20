@@ -69,6 +69,8 @@ fun ChatList(
                 Theme.spacing._16
             else if (item is ImagesGroupChatItem && item.imagesUiState.last().messageDetails.isLastInSeries)
                 Theme.spacing._16
+            else if (item is AudioMessageUiState && item.messageDetails.isLastInSeries)
+                Theme.spacing._16
             else
                 Theme.spacing._2
 
