@@ -161,7 +161,7 @@ class MessageRepositoryImpl(
                 }
             }
 
-            val page = response.toPagedListOfMessages()
+            val page = response.toPagedListOfMessages(quranService)
 
             updateLocalMessages(chatId, page.data)
 
@@ -208,7 +208,8 @@ class MessageRepositoryImpl(
 
                     updateLocalMessages(chatId, response.data.toListOfMessages(quranService))
 
-                    messagesFlow.emitAll(response.data.map { it.toDomain(quranService) }.asFlow())                }
+                    messagesFlow.emitAll(response.data.map { it.toDomain(quranService) }.asFlow())
+                }
 
                 isLastPage = response.toPagedListOfMessages(quranService).isLastPage
                 page++
@@ -311,7 +312,7 @@ class MessageRepositoryImpl(
             PRIVATE_MESSAGES -> {
                 val message = json.decodeFromString<MessageDto>(body).toDomain(quranService)
                 message.let {
-                    updateLocalMessages(listOf(message))
+                    updateLocalMessages(chatId = message.chatId, messages = listOf(message))
                     messagesFlow.emit(it)
                 }
             }
