@@ -230,7 +230,7 @@ class ProfileScreen : BaseScreen<
             }
 
             is ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {
-                navigator.push(ChangePasswordScreen(effect.onSuccess))
+                navigator.push(ChangePasswordScreen())
             }
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {
