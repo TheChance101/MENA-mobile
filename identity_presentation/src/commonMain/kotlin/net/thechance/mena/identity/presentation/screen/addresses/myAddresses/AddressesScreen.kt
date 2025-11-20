@@ -39,10 +39,10 @@ import kotlin.uuid.Uuid
 class AddressesScreen(
     private val onNavigateBack: (() -> Unit)? = null
 ) : BaseScreen<
-        AddressesScreenViewModel,
-        AddressesScreenUIState,
-        AddressesScreenUIEffect,
-        AddressesScreenInteractionListener>() {
+    AddressesScreenViewModel,
+    AddressesScreenUIState,
+    AddressesScreenUIEffect,
+    AddressesScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -127,7 +127,6 @@ class AddressesScreen(
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
-                        onSuccess = effect.onSuccess
                     )
                 )
             }
