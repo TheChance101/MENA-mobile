@@ -19,7 +19,6 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
@@ -31,10 +30,10 @@ import org.koin.core.parameter.parametersOf
 class SelectGenderScreen(
     private val registerUIState: RegisterUIState
 ) : BaseScreen<
-        SelectGenderScreenViewModel,
-        SelectGenderScreenUIState,
-        SelectGenderScreenUIEffect,
-        SelectGenderScreenInteractionListener>() {
+    SelectGenderScreenViewModel,
+    SelectGenderScreenUIState,
+    SelectGenderScreenUIEffect,
+    SelectGenderScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -74,10 +73,6 @@ class SelectGenderScreen(
                 }
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage
-        )
     }
 
     override fun onEffect(
@@ -92,6 +87,12 @@ class SelectGenderScreen(
                         authTokens = effect.authTokens,
                         phoneNumber = effect.phoneNumber
                     )
+                )
+            }
+
+            is SelectGenderScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
                 )
             }
         }
