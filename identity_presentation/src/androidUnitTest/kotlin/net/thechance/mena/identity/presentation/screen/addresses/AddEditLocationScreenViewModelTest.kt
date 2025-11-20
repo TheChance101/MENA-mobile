@@ -138,7 +138,7 @@ class AddEditLocationScreenViewModelTest {
                 viewModel.onClickSave()
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.ShowSnackBarSuccess::class)
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -166,7 +166,7 @@ class AddEditLocationScreenViewModelTest {
                 viewModel.onClickSave()
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.ShowSnackBarError::class)
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
 
         }
@@ -185,7 +185,7 @@ class AddEditLocationScreenViewModelTest {
 
             viewModel.effect.test {
                 testDispatcher.scheduler.advanceUntilIdle()
-                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.ShowSnackBarSuccess::class)
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -210,7 +210,7 @@ class AddEditLocationScreenViewModelTest {
             viewModel.effect.test(timeout = 1000.milliseconds) {
                 viewModel.onClickSave()
                 testDispatcher.scheduler.advanceUntilIdle()
-                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.ShowSnackBarError::class)
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -238,17 +238,6 @@ class AddEditLocationScreenViewModelTest {
         assertTrue { !viewModel.state.value.isSaveEnabled }
 
     }
-
-    /*
-        @Test
-        fun `changeIsSaveEnabled() should be true when address data is valid`() = runTest {
-
-            viewModel.onClickAddressType(addressType)
-
-            assertTrue { viewModel.state.value.isSaveEnabled }
-
-        }
-    */
 
     @Test
     fun `changeIsSaveEnabled() should be false in edit mode when data is not changed`() = runTest {

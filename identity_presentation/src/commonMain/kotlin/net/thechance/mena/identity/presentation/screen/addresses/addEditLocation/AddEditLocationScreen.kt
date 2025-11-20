@@ -130,6 +130,18 @@ class AddEditLocationScreen(
     ) {
         when (effect) {
             is AddEditLocationScreenUIEffect.NavigateBack -> {
+                effect.successStringResource?.let { successMessage ->
+                    snackBarController.showSnackBarSuccess(
+                        message = successMessage
+                    )
+                }
+
+                effect.errorStringResource?.let { errorMessage ->
+                    snackBarController.showSnackBarError(
+                        message = errorMessage
+                    )
+                }
+
                 navigator.pop()
             }
 
@@ -139,18 +151,6 @@ class AddEditLocationScreen(
                     onUpdateLocation = effect.onUpdateLocation
                 )
             )
-
-            is AddEditLocationScreenUIEffect.ShowSnackBarError -> {
-                snackBarController.showSnackBarError(
-                    message = effect.errorStringResource
-                )
-            }
-
-            is AddEditLocationScreenUIEffect.ShowSnackBarSuccess -> {
-                snackBarController.showSnackBarSuccess(
-                    message = effect.successStringResource
-                )
-            }
         }
     }
 }

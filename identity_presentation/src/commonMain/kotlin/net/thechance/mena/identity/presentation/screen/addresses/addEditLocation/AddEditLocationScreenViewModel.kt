@@ -44,7 +44,7 @@ class AddEditLocationScreenViewModel(
     }
 
     override fun onClickBack() {
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack)
+        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack())
     }
 
     override fun onClickAddressType(addressType: AddressType) {
@@ -135,7 +135,7 @@ class AddEditLocationScreenViewModel(
             if (isEditMode) Res.string.edit_location_successfully else Res.string.add_location_successfully
 
         sendNewEffect(
-            AddEditLocationScreenUIEffect.ShowSnackBarSuccess(
+            AddEditLocationScreenUIEffect.NavigateBack(
                 successStringResource = successMessage
             )
         )
@@ -147,8 +147,8 @@ class AddEditLocationScreenViewModel(
 
     private fun onSaveAddressError(throwable: Throwable) {
         sendNewEffect(
-            AddEditLocationScreenUIEffect.ShowSnackBarError(
-                errorStringResource = mapErrorMessage(throwable),
+            AddEditLocationScreenUIEffect.NavigateBack(
+                errorStringResource = mapErrorMessage(throwable)
             )
         )
     }
