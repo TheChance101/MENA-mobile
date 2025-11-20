@@ -92,56 +92,18 @@ actual fun MapView(
                     val title = pointAnnotation.title
                     val isCluster = title != null && title.toIntOrNull() != null
 
-                    if (isCluster) {
-                        val identifier = "ClusterPin"
-                        var annotationView =
-                            mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-
-                        if (annotationView == null) {
-                            annotationView = MKAnnotationView(
-                                annotation = viewForAnnotation,
-                                reuseIdentifier = identifier
-                            )
-                        } else {
-                            annotationView.annotation = viewForAnnotation
-                        }
-
-                        annotationView.canShowCallout = false
-                        val count = title.toIntOrNull() ?: 0
-                        annotationView.image = createClusterIcon(count)
-                        annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
-
-                        return annotationView
+                    return if (isCluster) {
+                        createClusterAnnotationView(
+                            mapView = mapView,
+                            viewForAnnotation = viewForAnnotation,
+                            title = title
+                        )
                     } else {
-                        val identifier = "MosquePin"
-                        var annotationView =
-                            mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-
-                        if (annotationView == null) {
-                            annotationView = MKAnnotationView(
-                                annotation = viewForAnnotation,
-                                reuseIdentifier = identifier
-                            )
-                        } else {
-                            annotationView.annotation = viewForAnnotation
-                        }
-
-                        annotationView.canShowCallout = false
-
-                        if (markerImage != null) {
-                            val targetSize = CGSizeMake(width = 45.0, height = 58.0)
-                            val renderer = UIGraphicsImageRenderer(size = targetSize)
-                            val width = targetSize.useContents { this.width }
-                            val height = targetSize.useContents { this.height }
-                            val resizedImage = renderer.imageWithActions { context ->
-                                markerImage.drawInRect(CGRectMake(x = 0.0, y = 0.0, width, height))
-                            }
-                            annotationView.image = resizedImage
-                            annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
-                        } else {
-                            return null
-                        }
-                        return annotationView
+                        createMarkerAnnotationView(
+                            mapView = mapView,
+                            viewForAnnotation = viewForAnnotation,
+                            markerImage = markerImage
+                        )
                     }
                 }
             }
@@ -168,6 +130,80 @@ actual fun MapView(
             mapView
         },
     )
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun createClusterAnnotationView(
+    mapView: MKMapView,
+    viewForAnnotation: MKPointAnnotation,
+    title: String
+): MKAnnotationView {
+    val identifier = "ClusterPin"
+    var annotationView =
+        mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+
+    if (annotationView == null) {
+        annotationView = MKAnnotationView(
+            annotation = viewForAnnotation,
+            reuseIdentifier = identifier
+        )
+    } else {
+        annotationView.annotation = viewForAnnotation
+    }
+
+    annotationView.canShowCallout = false
+    val count = title.toIntOrNull() ?: 0
+    annotationView.image = createClusterIcon(count)
+    annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
+
+    return annotationView
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun createMarkerAnnotationView(
+    mapView: MKMapView,
+    viewForAnnotation: MKPointAnnotation,
+    markerImage: UIImage?
+): MKAnnotationView? {
+    val identifier = "MosquePin"
+    var annotationView =
+        mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
+
+    if (annotationView == null) {
+        annotationView = MKAnnotationView(
+            annotation = viewForAnnotation,
+            reuseIdentifier = identifier
+        )
+    } else {
+        annotationView.annotation = viewForAnnotation
+    }
+
+    annotationView.canShowCallout = false
+
+    markerImage?.let {
+        configureAnnotationImage(
+            markerImage = markerImage,
+            annotationView = annotationView
+        )
+    } ?: return null
+
+    return annotationView
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun configureAnnotationImage(
+    markerImage: UIImage,
+    annotationView: MKAnnotationView
+) {
+    val targetSize = CGSizeMake(width = 45.0, height = 58.0)
+    val renderer = UIGraphicsImageRenderer(size = targetSize)
+    val width = targetSize.useContents { this.width }
+    val height = targetSize.useContents { this.height }
+    val resizedImage = renderer.imageWithActions { context ->
+        markerImage.drawInRect(CGRectMake(x = 0.0, y = 0.0, width, height))
+    }
+    annotationView.image = resizedImage
+    annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
 }
 
 private fun calculateZoomLevel(spanValue: CLLocationDegrees): Double {

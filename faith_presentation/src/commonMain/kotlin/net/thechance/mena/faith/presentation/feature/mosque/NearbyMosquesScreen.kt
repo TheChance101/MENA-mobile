@@ -161,13 +161,9 @@ private fun Content(
                         listener.selectMosque(it)
                     },
                     onCameraMove = { _, _ ->
-                        listener.changeSearchButtonVisibility(false)
+                        listener.onCameraMove()
                     },
-                    onMapIdle = { lat, lon ->
-                        listener.changeSearchButtonVisibility(true)
-                        listener.changeMapMovement(false)
-                        listener.changeCenterOfMap(Coordinate(lat, lon))
-                    }
+                    onMapIdle = listener::onMapIdle
                 )
             }
             Column(
@@ -269,15 +265,14 @@ private fun Preview() {
                     override fun onViewOnMapClick(coordinate: Coordinate) {}
                     override fun onSearchByCoordinates(coordinate: Coordinate) {}
                     override fun onSearchResultClick(mosque: MosqueUiState) {}
-                    override fun changeCenterOfMap(coordinate: Coordinate) {}
                     override fun onQueryChange(query: String) {}
                     override fun onSearchSubmit() {}
-                    override fun changeSearchButtonVisibility(isVisible: Boolean) {}
                     override fun onDismissSearchBottomSheet() {}
                     override fun selectMosque(mosque: MosqueUiState) {}
                     override fun unselectMosque() {}
-                    override fun changeMapMovement(canMove: Boolean) {}
                     override fun showSuccessMessage(message: StringResource) {}
+                    override fun onCameraMove() {}
+                    override fun onMapIdle(latitude: Double, longitude: Double) {}
                 }
             )
         }
