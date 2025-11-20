@@ -48,6 +48,7 @@ import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -62,6 +63,7 @@ class MessageRepositoryImpl(
     private val cachedMessageDao: CachedMessageDao,
     private val cachedChatDao: CachedChatDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
+    private val quranService: QuranService,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -141,7 +143,7 @@ class MessageRepositoryImpl(
             }
         }
 
-        val page = response.toPagedListOfMessages()
+        val page = response.toPagedListOfMessages(quranService)
 
         updateLocalMessages(chatId, page.data)
 
@@ -204,12 +206,11 @@ class MessageRepositoryImpl(
                 if (response.data.isNotEmpty()) {
                     chatSyncTimeDao.upsert(ChatSyncTimeLocalDto(chatId.toString(), now.toString()))
 
-                    updateLocalMessages(chatId, response.data.toListOfMessages())
+                    updateLocalMessages(chatId, response.data.toListOfMessages(quranService))
 
-                    messagesFlow.emitAll(response.data.map(MessageDto::toDomain).asFlow())
-                }
+                    messagesFlow.emitAll(response.data.map { it.toDomain(quranService) }.asFlow())                }
 
-                isLastPage = response.toPagedListOfMessages().isLastPage
+                isLastPage = response.toPagedListOfMessages(quranService).isLastPage
                 page++
             }
         } catch (e: Throwable) {
@@ -308,9 +309,9 @@ class MessageRepositoryImpl(
             }
 
             PRIVATE_MESSAGES -> {
-                val message = json.decodeFromString<MessageDto>(body).toDomain()
+                val message = json.decodeFromString<MessageDto>(body).toDomain(quranService)
                 message.let {
-                    updateLocalMessages(chatId = message.chatId, messages = listOf(message))
+                    updateLocalMessages(listOf(message))
                     messagesFlow.emit(it)
                 }
             }
@@ -380,6 +381,7 @@ class MessageRepositoryImpl(
 
         webSocketManager.sendTextFrame(destination, payload)
     }
+
 
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"

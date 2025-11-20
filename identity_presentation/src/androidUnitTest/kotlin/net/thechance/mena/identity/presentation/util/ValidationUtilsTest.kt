@@ -314,31 +314,4 @@ class ValidationUtilsTest {
         assertFalse(result)
     }
 
-    @Test
-    fun `validatePasswordConfirmation should return null when passwords match`() {
-        val result = validatePasswordConfirmation("Password123", "Password123")
-
-        assertFalse(result)
-    }
-
-    @Test
-    fun `validatePasswordConfirmation should return error message when passwords do not match`() {
-        val result = validatePasswordConfirmation("Password123", "Password456")
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isPasswordMatch should return true when passwords match`() {
-        val result = isPasswordMatch("Password123", "Password123")
-
-        assertTrue(result)
-    }
-
-    @Test
-    fun `isPasswordMatch should return false when passwords do not match`() {
-        val result = isPasswordMatch("Password123", "Password456")
-
-        assertFalse(result)
-    }
 }

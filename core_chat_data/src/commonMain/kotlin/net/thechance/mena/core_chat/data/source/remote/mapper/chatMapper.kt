@@ -18,31 +18,41 @@ import net.thechance.mena.core_chat.domain.entity.ImageData.*
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-fun MessageDto.toDomain(): Message {
+suspend fun MessageDto.toDomain(quranService: QuranService): Message {
     return Message(
         id = (id).toUuid(),
         senderId = (senderId).toUuid(),
         chatId = (chatId).toUuid(),
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
-        content = content.toDomain(),
+        content = content.toDomain(quranService),
         reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
     )
 }
 
-fun MessageContentDto.toDomain(): MessageContent {
-    return when(this) {
+suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageContent {
+    return when (this) {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
         is MessageContentDto.Money -> MessageContent.Text(amount.toString())
+        is MessageContentDto.Ayah -> {
+            val surahName = quranService.getSurahDetails(surahNumber).name
+            MessageContent.Ayah(
+                surahId = surahNumber,
+                ayahContent = ayahContent,
+                ayahNumber = ayahNumber,
+                surahName = surahName
+            )
+        }
     }
 }
 
@@ -214,14 +224,13 @@ fun DeleteChatDto.toDomain(): DeleteChatEvent {
     )
 }
 
-fun List<MessageDto>.toListOfMessages(): List<Message> {
-    return mapNotNull { it.toDomain() }
+suspend fun List<MessageDto>.toListOfMessages(quranService: QuranService): List<Message> {
+    return mapNotNull { it.toDomain(quranService) }
 }
 
-
-fun PagedDataDto<MessageDto>.toPagedListOfMessages(): PagedData<Message> {
+suspend fun PagedDataDto<MessageDto>.toPagedListOfMessages(quranService: QuranService): PagedData<Message> {
     return PagedData(
-        data = data.toListOfMessages(),
+        data = data.toListOfMessages(quranService),
         totalItems = totalItems,
         isLastPage = pageNumber >= totalPages
     )

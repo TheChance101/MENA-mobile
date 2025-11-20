@@ -14,4 +14,5 @@ fun ProductSearchDto.toDomain(): ProductSearch = ProductSearch(
     dukanId = dukanId,
     price = price,
     imageUrl = mainImageUrl,
+    isOutOfStock = isOutOfStock
 )

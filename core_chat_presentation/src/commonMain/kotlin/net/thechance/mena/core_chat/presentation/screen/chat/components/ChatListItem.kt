@@ -35,6 +35,7 @@ fun ChatListItem(
     onMessageVoiceClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
+    onLinkClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (item) {
@@ -64,6 +65,7 @@ fun ChatListItem(
                 onMessageClick = { onMessageClick(item.messageDetails.id) },
                 onMessageLongClick = { onMessageLongClick(item) },
                 onFailClick = { onFailedMessageClick(item) },
+                onLinkClick = onLinkClick,
             )
         }
 

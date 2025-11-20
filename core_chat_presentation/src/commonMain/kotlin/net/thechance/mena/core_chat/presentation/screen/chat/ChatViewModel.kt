@@ -32,7 +32,6 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
@@ -49,7 +48,6 @@ import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
-import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -81,24 +79,14 @@ class ChatViewModel(
     private var hasResentPendingMessages = false
 
     init {
-        val chatId = getUuidOrNull(chatArgs.chatId)
+        val chatId = Uuid.parse(chatArgs.chatId)
         getUserInfo()
-        updateState { state ->
-            state.copy(
-                chatId = chatId,
-                chatName = chatArgs.chatName
-            )
-        }
-
-        if (chatId == null) {
-            onGetChatError()
-        } else {
-            tryToExecute(
-                execute = { chatRepository.getChatById(chatId) },
-                onSuccess = ::onGetChatSuccess,
-                onError = { onGetChatError() }
-            )
-        }
+        updateState { state -> state.copy(chatId = chatId, chatName = chatArgs.chatName) }
+        getChat(chatId)
+        onMessagesScrolled()
+        subscribeToPendingMessages(chatId)
+        observeDeleteChat()
+        observeConnectionStatus(chatId)
         startUiDerivation()
     }
 
@@ -153,7 +141,9 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    updateState { it.copy(chatListItems = messageList.toChatItems()) }
+                    updateState {
+                        it.copy(chatListItems = messageList.toChatItems())
+                    }
 
                     updateSelectedImages(messageList)
 
@@ -211,20 +201,22 @@ class ChatViewModel(
         }
     }
 
-    private fun onGetChatSuccess(chat: Chat) {
-        updateState { state ->
-            state.copy(
-                chatId = chat.id,
-                chatName = chat.name,
-                chatAvatarUrl = chat.imageUrl.orEmpty(),
-                chatRequesterId = chat.requesterId,
-            )
-        }
+    private fun getChat(chatId: Uuid) {
 
-        onMessagesScrolled()
-        subscribeToPendingMessages(chat.id)
-        observeDeleteChat()
-        observeConnectionStatus(chat.id)
+        tryToExecute(
+            execute = { chatRepository.getChatById(chatId) },
+            onSuccess = { chat ->
+                updateState { state ->
+                    state.copy(
+                        chatId = chat.id,
+                        chatName = chat.name,
+                        chatAvatarUrl = chat.imageUrl.orEmpty(),
+                        chatRequesterId = chat.requesterId,
+                    )
+                }
+            },
+            onError = { onGetChatError() }
+        )
     }
 
     private fun observeConnectionStatus(chatId: Uuid) {
@@ -382,8 +374,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
         onDeleteChatSuccess()
         emitEffect(ChatScreenEffect.NavigateBack)
     }
@@ -829,6 +820,9 @@ class ChatViewModel(
                 isRecordingVoice = false
             )
         }
+    }
+    override fun onLinkClicked(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 
     companion object {

@@ -147,6 +147,38 @@
     <string name="isha">Isha</string>
     <string name="icon_shadow">icon shadow</string>
     <string name="sunrise">Sunrise</string>
+    <string name="select_date">Select date</string>
+    <string name="ok">Ok</string>
+    <string name="clear_selection">Clear</string>
+    <string-array name="hijri_months">
+        <item>Muharram</item>
+        <item>Safar</item>
+        <item>Rabi' al-Awwal</item>
+        <item>Rabi' al-Thani</item>
+        <item>Jumada al-Awwal</item>
+        <item>Jumada al-Thani</item>
+        <item>Rajab</item>
+        <item>Sha'ban</item>
+        <item>Ramadan</item>
+        <item>Shawwal</item>
+        <item>Dhul-Qa'dah</item>
+        <item>Dhul-Hijjah</item>
+    </string-array>
+    <string-array name="hijri_months_shortened">
+        <item>Muharram</item>
+        <item>Safar</item>
+        <item>Rabi' I</item>
+        <item>Rabi' II</item>
+        <item>Jumada I</item>
+        <item>Jumada II</item>
+        <item>Rajab</item>
+        <item>Sha'ban</item>
+        <item>Ramadan</item>
+        <item>Shawwal</item>
+        <item>Dhul-Qa'dah</item>
+        <item>Dhul-Hijjah</item>
+    </string-array>
+
 
     <!-- Surah Specific -->
     <string name="unknown_surah">Unknown Surah</string>
@@ -202,6 +234,8 @@
     <string name="read_all_surah">Tilawah All Surah</string>
     <string name="mosque_image">Mosque image</string>
     <string name="remove_aya">Remove Aya</string>
+    <string name="empty_download_icon">empty download icon</string>
+    <string name="empty_download_text">There is no downloaded sur yet!</string>
     <string name="remove_aya_message">"Are you sure you want to remove this aya from bookmarks?"</string>
 
 </resources>
