@@ -19,7 +19,7 @@ class MapMarkerManager() {
 
         val clusterer = MosqueClusterer()
 
-        val clusterDistance = MapUtils.getClusterDistance(zoomLevel)
+        val clusterDistance = getClusterDistance(zoomLevel)
 
         val clusters = clusterer.clusterMosques(mosques, clusterDistance)
 
@@ -56,5 +56,19 @@ class MapMarkerManager() {
             annotation.setTitle("${cluster.count}")
         }
         return annotation
+    }
+
+    private fun getClusterDistance(zoomLevel: Double): Double {
+        return when {
+            zoomLevel < 4.0 -> 100000.0
+            zoomLevel < 6.0 -> 50000.0
+            zoomLevel < 8.0 -> 20000.0
+            zoomLevel < 10.0 -> 8000.0
+            zoomLevel < 12.0 -> 3000.0
+            zoomLevel < 14.0 -> 1000.0
+            zoomLevel < 15.0 -> 500.0
+            zoomLevel < 16.0 -> 200.0
+            else -> 0.0
+        }
     }
 }

@@ -18,12 +18,12 @@ import platform.UIKit.sizeWithAttributes
 @OptIn(ExperimentalForeignApi::class)
 fun createClusterIcon(count: Int): UIImage {
     val size = 44.0
-    val renderer = UIGraphicsImageRenderer(size = CGSizeMake(size, size))
+    val renderer = UIGraphicsImageRenderer(size = CGSizeMake(width = size, height = size))
 
     return renderer.imageWithActions { context ->
         UIColor.blackColor.setFill()
         val circlePath = UIBezierPath.bezierPathWithOvalInRect(
-            CGRectMake(0.0, 0.0, size, size)
+            CGRectMake(x = 0.0, y = 0.0, width = size, height = size)
         )
         circlePath.fill()
 
@@ -35,10 +35,10 @@ fun createClusterIcon(count: Int): UIImage {
         val countText = count.toString() as NSString
         val textSize = countText.sizeWithAttributes(textAttributes)
         val textRect = CGRectMake(
-            (size - textSize.useContents { width }) / 2.0,
-            (size - textSize.useContents { height }) / 2.0,
-            textSize.useContents { width },
-            textSize.useContents { height }
+            x = (size - textSize.useContents { width }) / 2.0,
+            y = (size - textSize.useContents { height }) / 2.0,
+            width = textSize.useContents { width },
+            height = textSize.useContents { height }
         )
         countText.drawInRect(textRect, withAttributes = textAttributes)
     }

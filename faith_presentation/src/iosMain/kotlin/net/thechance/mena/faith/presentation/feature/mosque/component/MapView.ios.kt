@@ -19,6 +19,7 @@ import platform.CoreGraphics.CGPointMake
 import platform.CoreGraphics.CGRectMake
 import platform.CoreGraphics.CGSizeMake
 import platform.CoreLocation.CLLocationCoordinate2DMake
+import platform.CoreLocation.CLLocationDegrees
 import platform.MapKit.MKAnnotationProtocol
 import platform.MapKit.MKAnnotationView
 import platform.MapKit.MKCoordinateRegionMake
@@ -59,14 +60,7 @@ actual fun MapView(
                     val centerLong = currentRegion.useContents { this.center.longitude }
                     val spanValue = currentRegion.useContents { this.span.latitudeDelta }
 
-                    val newZoom = if (spanValue > 0) {
-                        (ln(360.0 / spanValue) / ln(2.0)).coerceIn(
-                            MapConstants.MIN_ZOOM_LEVEL,
-                            MapConstants.MAX_ZOOM_LEVEL
-                        )
-                    } else {
-                        zoomLevel
-                    }
+                    val newZoom = if (spanValue > 0) calculateZoomLevel(spanValue) else zoomLevel
 
                     onCameraMove(centerLat, centerLong)
 
@@ -115,7 +109,7 @@ actual fun MapView(
                         annotationView.canShowCallout = false
                         val count = title.toIntOrNull() ?: 0
                         annotationView.image = createClusterIcon(count)
-                        annotationView.centerOffset = CGPointMake(0.0, 0.0)
+                        annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
 
                         return annotationView
                     } else {
@@ -135,15 +129,15 @@ actual fun MapView(
                         annotationView.canShowCallout = false
 
                         if (markerImage != null) {
-                            val targetSize = CGSizeMake(45.0, 58.0)
+                            val targetSize = CGSizeMake(width = 45.0, height = 58.0)
                             val renderer = UIGraphicsImageRenderer(size = targetSize)
                             val width = targetSize.useContents { this.width }
                             val height = targetSize.useContents { this.height }
                             val resizedImage = renderer.imageWithActions { context ->
-                                markerImage.drawInRect(CGRectMake(0.0, 0.0, width, height))
+                                markerImage.drawInRect(CGRectMake(x = 0.0, y = 0.0, width, height))
                             }
                             annotationView.image = resizedImage
-                            annotationView.centerOffset = CGPointMake(0.0, 0.0)
+                            annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
                         } else {
                             return null
                         }
@@ -166,12 +160,19 @@ actual fun MapView(
 
             val coordinate = CLLocationCoordinate2DMake(centerLatitude, centerLongitude)
             val spanDelta = 0.1 * (20.0 - zoomLevel)
-            val span = MKCoordinateSpanMake(spanDelta, spanDelta)
+            val span = MKCoordinateSpanMake(latitudeDelta = spanDelta, longitudeDelta = spanDelta)
             val region = MKCoordinateRegionMake(coordinate, span)
             mapView.setRegion(region, animated = false)
 
             mapView.delegate = mapKitController.delegate
             mapView
         },
+    )
+}
+
+private fun calculateZoomLevel(spanValue: CLLocationDegrees): Double {
+    return (ln(360.0 / spanValue) / ln(2.0)).coerceIn(
+        MapConstants.MIN_ZOOM_LEVEL,
+        MapConstants.MAX_ZOOM_LEVEL
     )
 }

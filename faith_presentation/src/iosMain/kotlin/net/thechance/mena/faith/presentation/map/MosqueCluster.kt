@@ -2,6 +2,11 @@ package net.thechance.mena.faith.presentation.map
 
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class MosqueClusterer {
 
@@ -27,7 +32,7 @@ class MosqueClusterer {
     ): MutableList<MosqueUiState>? {
         return clusters.firstOrNull { cluster ->
             val representative = cluster.first()
-            val distance = MapUtils.calculateDistance(
+            val distance = calculateDistance(
                 firstCoordinate = Coordinate(
                     latitude = mosque.coordinate.latitude,
                     longitude = mosque.coordinate.longitude
@@ -39,6 +44,27 @@ class MosqueClusterer {
             )
             distance <= maxDistance
         }
+    }
+
+    private fun calculateDistance(
+        firstCoordinate: Coordinate,
+        secondCoordinate: Coordinate
+    ): Double {
+        val latRadians1 = firstCoordinate.latitude * PI / 180.0
+        val longRadians1 = firstCoordinate.longitude * PI / 180.0
+        val latRadians2 = secondCoordinate.latitude * PI / 180.0
+        val longRadians2 = secondCoordinate.longitude * PI / 180.0
+
+        val deltaLat = latRadians2 - latRadians1
+        val deltaLong = longRadians2 - longRadians1
+
+        val haversineOfHalfAngle = sin(deltaLat * 0.5) * sin(deltaLat * 0.5) +
+                cos(latRadians1) * cos(latRadians2) *
+                sin(deltaLong * 0.5) * sin(deltaLong * 0.5)
+        val angularDistanceInRadians =
+            2.0 * atan2(y = sqrt(haversineOfHalfAngle), x = sqrt(1.0 - haversineOfHalfAngle))
+
+        return MapConstants.EARTH_RADIUS_METERS * angularDistanceInRadians
     }
 }
 
