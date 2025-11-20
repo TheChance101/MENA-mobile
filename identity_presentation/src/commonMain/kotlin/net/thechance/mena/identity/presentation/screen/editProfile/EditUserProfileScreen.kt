@@ -45,7 +45,6 @@ import mena.identity_presentation.generated.resources.username
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -54,6 +53,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.editProfile.components.DialogActionButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileImage
@@ -270,6 +270,7 @@ class EditUserProfileScreen : BaseScreen<
     override fun onEffect(
         effect: EditUserProfileUIEffect,
         navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
             EditUserProfileUIEffect.NavigateBackToProfile -> navigator.pop()

@@ -30,6 +30,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.register.enterName.EnterNameScreen
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.stringResource
@@ -112,7 +113,8 @@ class RegisterOtpScreen(
 
     override fun onEffect(
         effect: RegisterOtpUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is RegisterOtpUIEffect.NavigateToEnterName -> {

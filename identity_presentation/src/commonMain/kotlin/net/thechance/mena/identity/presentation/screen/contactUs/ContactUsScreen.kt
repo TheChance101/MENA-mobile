@@ -38,6 +38,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactCard
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactUsScreenShimmer
 import org.jetbrains.compose.resources.painterResource
@@ -152,6 +153,7 @@ class ContactUsScreen : BaseScreen<
     override fun onEffect(
         effect: ContactUsUIEffect,
         navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
             ContactUsUIEffect.NavigateBack -> navigator.pop()

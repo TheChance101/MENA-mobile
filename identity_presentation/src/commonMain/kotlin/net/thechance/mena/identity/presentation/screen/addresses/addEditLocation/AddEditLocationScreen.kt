@@ -20,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.component.textField.TextFiel
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
@@ -126,7 +127,8 @@ class AddEditLocationScreen(
 
     override fun onEffect(
         effect: AddEditLocationScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is AddEditLocationScreenUIEffect.NavigateBack -> {

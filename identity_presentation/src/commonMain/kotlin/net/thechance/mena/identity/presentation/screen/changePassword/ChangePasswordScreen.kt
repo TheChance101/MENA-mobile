@@ -22,6 +22,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIEffect.NavigateBack
 import net.thechance.mena.identity.presentation.screen.changePassword.components.CurrentPasswordContent
 import net.thechance.mena.identity.presentation.screen.changePassword.components.NewPasswordContent
@@ -109,7 +110,8 @@ class ChangePasswordScreen(
 
     override fun onEffect(
         effect: ChangePasswordScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is NavigateBack -> {

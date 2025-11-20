@@ -35,6 +35,7 @@ import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
@@ -138,7 +139,8 @@ class LoginScreen : BaseScreen<
 
     override fun onEffect(
         effect: LoginScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterPhoneEntryScreen())

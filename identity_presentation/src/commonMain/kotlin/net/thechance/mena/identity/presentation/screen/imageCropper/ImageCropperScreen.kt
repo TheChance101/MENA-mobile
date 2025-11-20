@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.imageCropper.components.ImageCropperComponent
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
@@ -68,7 +69,11 @@ class ImageCropperScreen(
         }
     }
 
-    override fun onEffect(effect: ImageCropperScreenEffect, navigator: Navigator) {
+    override fun onEffect(
+        effect: ImageCropperScreenEffect,
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
+    ) {
         when (effect) {
             is ImageCropperScreenEffect.NavigateBackToEditProfile -> navigator.pop()
             is ImageCropperScreenEffect.NavigateBackToEditProfileWithImage -> {

@@ -23,6 +23,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCardShimmer
@@ -114,7 +115,8 @@ class AddressesScreen(
 
     override fun onEffect(
         effect: AddressesScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> {

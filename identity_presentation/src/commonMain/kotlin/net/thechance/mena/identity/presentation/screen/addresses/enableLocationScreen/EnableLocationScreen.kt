@@ -16,6 +16,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.EnableLocationLayout
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import org.jetbrains.compose.resources.stringResource
 
 
@@ -59,7 +60,8 @@ class EnableLocationScreen : BaseScreen<
 
     override fun onEffect(
         effect: EnableLocationScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             EnableLocationScreenUIEffect.NavigateBack -> navigator.pop()

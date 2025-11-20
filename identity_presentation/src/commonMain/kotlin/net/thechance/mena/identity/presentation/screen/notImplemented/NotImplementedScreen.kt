@@ -11,6 +11,7 @@ import mena.identity_presentation.generated.resources.back
 import net.thechance.mena.designsystem.presentation.component.button.NegativeButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -39,7 +40,8 @@ class NotImplementedScreen :
 
     override fun onEffect(
         effect: NotImplementedScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             NotImplementedScreenUIEffect.NavigateBack -> navigator.pop()

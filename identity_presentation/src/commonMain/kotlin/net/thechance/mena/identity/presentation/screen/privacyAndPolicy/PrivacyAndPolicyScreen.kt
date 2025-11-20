@@ -4,34 +4,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.last_update
 import mena.identity_presentation.generated.resources.privacy_and_policy
-import mena.identity_presentation.generated.resources.privacy_logo
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
-import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
-import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.components.PrivacyScreenContainer
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.components.PrivacyScreenContent
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.components.PrivacyScreenContentShimmer
-import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.components.PrivacySection
-import net.thechance.mena.identity.presentation.util.animation.shimmerLoading
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -85,7 +71,8 @@ class PrivacyAndPolicyScreen :
 
     override fun onEffect(
         effect: PrivacyAndPolicyScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             PrivacyAndPolicyScreenUIEffect.NavigateBack -> navigator.pop()

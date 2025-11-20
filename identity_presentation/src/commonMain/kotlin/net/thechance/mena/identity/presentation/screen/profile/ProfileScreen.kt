@@ -33,6 +33,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
@@ -211,7 +212,9 @@ class ProfileScreen : BaseScreen<
 
 
     override fun onEffect(
-        effect: ProfileScreenUIEffect, navigator: Navigator
+        effect: ProfileScreenUIEffect,
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
             ProfileScreenUIEffect.NavigateToEditProfileScreen -> {

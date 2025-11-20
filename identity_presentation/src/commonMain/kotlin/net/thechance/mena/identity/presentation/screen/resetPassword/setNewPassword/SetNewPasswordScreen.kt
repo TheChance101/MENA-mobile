@@ -35,6 +35,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
 
@@ -132,7 +133,9 @@ class SetNewPasswordScreen() : BaseScreen<
     }
 
     override fun onEffect(
-        effect: SetNewPasswordScreenUIEffect, navigator: Navigator
+        effect: SetNewPasswordScreenUIEffect,
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             SetNewPasswordScreenUIEffect.NavigateBackToLogin -> navigator.push(LoginScreen())

@@ -32,6 +32,7 @@ import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
@@ -127,7 +128,8 @@ class RegisterPhoneEntryScreen : BaseScreen<
 
     override fun onEffect(
         effect: RegisterPhoneEntryUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is RegisterPhoneEntryUIEffect.NavigateToOTP -> navigator.push(

@@ -20,6 +20,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.PickLocationMap
@@ -93,7 +94,8 @@ data class PickLocationScreen(
 
     override fun onEffect(
         effect: PickLocationScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             PickLocationScreenUIEffect.NavigateBack -> navigator.pop()
