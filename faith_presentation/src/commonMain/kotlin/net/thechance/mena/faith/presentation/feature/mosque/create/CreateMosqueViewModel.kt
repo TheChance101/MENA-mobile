@@ -10,14 +10,20 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add_mosque_message
+import net.thechance.mena.faith.domain.entity.Mosque
+import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
+import net.thechance.mena.faith.presentation.utils.extentions.toByteArray
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import org.jetbrains.compose.resources.getString
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 internal class CreateMosqueViewModel(
+    private val repository: MosqueRepository,
     private val sharedImageViewModel: SharedImageViewModel,
     private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -75,14 +81,27 @@ internal class CreateMosqueViewModel(
         checkIfFormIsComplete()
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onAddClick() {
         tryToExecute(
             execute = {
-//        TODO: sent mosque data to the server
+                repository.addMosque(
+                    Mosque(
+                        id = Uuid.random(),
+                        name = uiState.value.name,
+                        coordinates = Mosque.Coordinates(
+                            latitude = uiState.value.mosqueLocation?.latitude ?: 0.0,
+                            longitude = uiState.value.mosqueLocation?.longitude ?: 0.0
+                        ),
+                        address = uiState.value.address,
+                        imageUrl = "",
+                    ),
+                    imageBytes = uiState.value.croppedImage?.toByteArray() ?: ByteArray(0)
+                )
                 val addMosqueMessage = getString(Res.string.add_mosque_message)
                 updateState { it.copy(successMessage = addMosqueMessage) }
                 sendEffect(CreateMosqueEffect.NavigateBack)
-            }
+            },
         )
     }
 

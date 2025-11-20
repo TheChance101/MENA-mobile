@@ -4,8 +4,8 @@ import net.thechance.mena.faith.data.mapper.mosque.toMosque
 import net.thechance.mena.faith.data.remote.model.PageResponse
 import net.thechance.mena.faith.data.remote.model.mosque.MosqueDto
 import net.thechance.mena.faith.data.remote.service.MosqueApiService
-import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.data.utils.buildMosqueMultipart
+import net.thechance.mena.faith.data.utils.executeApiSafely
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 
@@ -22,7 +22,8 @@ class MosqueRepositoryImpl(
                 longitude = mosque.coordinates.longitude,
                 image = imageBytes,
             )
-            mosqueApiService.createMosque(multipartBody)
+            val response = mosqueApiService.createMosque(mosque = multipartBody)
+            response
         }
     }
 
