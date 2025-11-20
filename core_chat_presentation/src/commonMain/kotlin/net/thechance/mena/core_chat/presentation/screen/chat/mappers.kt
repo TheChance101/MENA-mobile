@@ -123,7 +123,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
     }
 }
 
- fun Message.toUi(): MessageUiState {
+fun Message.toUi(): MessageUiState {
     val messageDetails = MessageDetailsUiState(
         id = id,
         senderId = senderId,
@@ -158,7 +158,7 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
             surahId = content.surahId,
             ayahContent = content.ayahContent,
             ayahNumber = content.ayahNumber,
-            surahName = "",
+            surahName = content.surahName,
             messageDetails = messageDetails
         )
     }
@@ -207,6 +207,7 @@ fun MessageUiState.toEntity(): Message {
                 senderId = messageDetails.senderId,
                 content = Ayah(
                     surahId = surahId,
+                    surahName = surahName,
                     ayahContent = ayahContent,
                     ayahNumber = ayahNumber
                 ),

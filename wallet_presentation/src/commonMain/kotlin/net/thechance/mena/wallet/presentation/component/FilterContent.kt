@@ -42,6 +42,7 @@ fun FilterContent(
     onStartDateClicked: () -> Unit,
     onEndDateClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    horizontalPadding: Int = 16,
     showStatusFilter: Boolean = true,
     selectedStatus: FilterStatus = FilterStatus.ALL,
     onStatusSelected: (FilterStatus) -> Unit = {}
@@ -49,7 +50,7 @@ fun FilterContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = horizontalPadding.dp)
     ) {
 
         Text(

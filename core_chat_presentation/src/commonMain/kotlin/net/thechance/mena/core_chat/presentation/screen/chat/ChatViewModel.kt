@@ -132,7 +132,9 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    updateState { it.copy(chatListItems = messageList.toChatItems()) }
+                    updateState {
+                        it.copy(chatListItems = messageList.toChatItems())
+                    }
                 }
         }
     }
@@ -998,6 +1000,9 @@ class ChatViewModel(
                 isRecordingVoice = false
             )
         }
+    }
+    override fun onLinkClicked(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 
     companion object {

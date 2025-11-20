@@ -76,8 +76,8 @@ fun AnimatedStatementItem(
             StatementHistoryCard(
                 startDate = statement.startDate,
                 endDate = statement.endDate,
-                totalInflow = statement.totalInflow.toString(),
-                totalOutflow = statement.totalOutflow.toString(),
+                totalInflow = statement.totalInflow,
+                totalOutflow = statement.totalOutflow,
                 onStatementCardClicked = { if (!isEditMode) onStatementCardClicked() },
                 isEditMode = isEditMode,
                 historyIconOffsetX = historyIconOffsetX,
@@ -129,8 +129,8 @@ private fun AnimatedStatementItemPreview() {
                 id = Uuid.random(),
                 startDate = "Jul 23 2025",
                 endDate = "Aug 27 2025",
-                totalInflow = 2000.0,
-                totalOutflow = 4200.0,
+                totalInflow = "2000.0",
+                totalOutflow = "4200.0",
                 fileName = "",
                 isDeleting = false
             ),
