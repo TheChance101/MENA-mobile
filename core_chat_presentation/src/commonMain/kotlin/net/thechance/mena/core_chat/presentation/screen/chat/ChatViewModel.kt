@@ -122,7 +122,8 @@ class ChatViewModel(
             when {
                 message.isMine -> break
                 message.isMine.not() && message.status == MessageStatus.READ -> break
-                message.isMine.not() && message.status == MessageStatus.SENT -> firstUnReadByMeMessageTime = message.sendAt
+                message.isMine.not() && message.status == MessageStatus.SENT -> firstUnReadByMeMessageTime =
+                    message.sendAt
             }
         }
         if (firstUnReadByMeMessageTime == null) firstUnReadByMeMessageTime = LocalDateTime.now()
@@ -328,7 +329,8 @@ class ChatViewModel(
                             it.copy(status = MessageStatus.LOADING)
                         else
                             it
-                    }}
+                    }
+                }
             },
             onSuccess = { sendMessage(message) }
         )
@@ -538,18 +540,61 @@ class ChatViewModel(
 
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
         val currentUserId = state.value.chatRequesterId ?: return
-        val message = _messages.value.firstOrNull { it.id == messageId } ?: return
-        val hasSameReaction =
-            message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+        val message = _messages.value.find { it.id == messageId } ?: return
 
-        if (hasSameReaction) {
-            tryToExecute(
-                execute = { messageRepository.removeMessageReaction(messageId, reaction) },
-            )
+        val oldReactions = message.reactions
+        val newReactions = calculateNewReactions(oldReactions, currentUserId, reaction, messageId)
+
+        tryToExecute(
+            execute = {
+                updateMessageReactions(messageId, newReactions)
+                syncReactionWithServer(oldReactions, currentUserId, reaction, messageId)
+            },
+            onError = {
+                viewModelScope.launch(dispatcher) {
+                    updateMessageReactions(messageId, oldReactions)
+                }
+            }
+        )
+    }
+
+    private suspend fun updateMessageReactions(id: Uuid, newReactions: List<MessageReaction>) {
+        safeUpdateMessages { messages ->
+            messages.map { msg ->
+                if (msg.id == id) msg.copy(reactions = newReactions) else msg
+            }
+        }
+    }
+
+    private fun calculateNewReactions(
+        oldReactions: List<MessageReaction>,
+        userId: Uuid,
+        emoji: String,
+        messageId: Uuid
+    ): List<MessageReaction> {
+
+        val updatedReactions = oldReactions.filter { it.userId != userId }
+        val isRemoving = oldReactions.any { it.userId == userId && it.emoji == emoji }
+
+        return if (isRemoving) {
+            updatedReactions
         } else {
-            tryToExecute(
-                execute = { messageRepository.addMessageReaction(messageId, reaction) },
-            )
+            updatedReactions + MessageReaction(emoji, userId, messageId)
+        }
+    }
+
+    private suspend fun syncReactionWithServer(
+        oldReactions: List<MessageReaction>,
+        userId: Uuid,
+        emoji: String,
+        messageId: Uuid
+    ) {
+        delay(1000)
+        val isRemoving = oldReactions.any { it.userId == userId && it.emoji == emoji }
+        if (isRemoving) {
+            messageRepository.removeMessageReaction(messageId, emoji)
+        } else {
+            messageRepository.addMessageReaction(messageId, emoji)
         }
     }
 
