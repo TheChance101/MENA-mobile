@@ -13,7 +13,6 @@ interface EditUserProfileInteractionListener : BaseInteractionListener {
     fun onClickCancelButton()
     fun onClickShowLogoutOptions()
     fun onChangeDate(day: Int, month: Int, year: Int)
-    fun clearErrorMessage()
     fun onClickEditImage()
     fun onDismissEditImageDialog()
     fun onDismissLogoutDialog()
