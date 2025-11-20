@@ -13,12 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
-import net.thechance.mena.admin_panel.resources.img_no_internet
-import net.thechance.mena.admin_panel.resources.no_internet_content
-import net.thechance.mena.admin_panel.resources.no_internet_title
 import net.thechance.mena.admin_panel.resources.retry
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

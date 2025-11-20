@@ -70,7 +70,7 @@ fun WideImageDukanDetailsContent(
                 bottom = Theme.spacing._16
             ),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanHeader(

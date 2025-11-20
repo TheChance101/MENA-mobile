@@ -79,14 +79,17 @@ private fun ProductCardLoaded(
                     productCardBackground = productCardBackground,
                     productPrice = product.price,
                     productAction = {
-                        CartProductAction(
-                            state = state,
-                            listener = listener,
-                            product = product,
-                            quantity = state.productQuantity[product.id] ?: 0
-                        )
+                        if (product.isOutOfStock.not()) {
+                            CartProductAction(
+                                state = state,
+                                listener = listener,
+                                product = product,
+                                quantity = state.productQuantity[product.id] ?: 0
+                            )
+                        }
                     },
                     onProductClick = { listener.onProductClicked(product.id) },
+                    isOutOfStock = product.isOutOfStock
                 )
             }
         }
