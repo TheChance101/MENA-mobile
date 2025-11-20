@@ -10,5 +10,4 @@ interface ResetPasswordPhoneEntryScreenInteractionListener : BaseInteractionList
     fun onClickCountry()
     fun onChangePhone(phone: String)
     fun onClickBack()
-    fun onClearErrorMessage()
 }
