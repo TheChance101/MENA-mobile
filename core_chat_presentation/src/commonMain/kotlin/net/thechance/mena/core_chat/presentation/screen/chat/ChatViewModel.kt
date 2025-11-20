@@ -17,10 +17,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
@@ -73,15 +70,15 @@ class ChatViewModel(
 
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     private val messages = _messages.asStateFlow()
-    private val messagesMutex = Mutex()
     private val waveformCache = mutableMapOf<Uuid, List<Float>>()
 
-    private var hasResentPendingMessages = false
+    private val pendingMessages = MutableStateFlow<List<Message>>(emptyList())
 
     private val pageFlows = mutableMapOf<Int, Flow<List<Message>>>()
     private val pageSnapshots = mutableMapOf<Int, List<Message>>()
 
     private var firstUnReadByMeMessageTime: LocalDateTime? = null
+    private var hasResentPendingMessages = false
 
     init {
         val chatId = getUuidOrNull(chatArgs.chatId)
@@ -126,7 +123,7 @@ class ChatViewModel(
             }
             .launchIn(viewModelScope)
 
-        combine(pageFlows.values) { pagesArray ->
+        combine(pageFlows.values + pendingMessages) { pagesArray ->
             pagesArray
                 .asList()
                 .flatten()
@@ -158,22 +155,26 @@ class ChatViewModel(
                 .collectLatest { messageList ->
                     updateState { it.copy(chatListItems = messageList.toChatItems()) }
 
-                    if (state.value.selectedImageMessages.isNotEmpty()) {
-                        if (state.value.selectedImageMessages.any { it.messageDetails.id in messageList.map { msg -> msg.id } }) {
-                            updateState { currentState ->
-                                currentState.copy(selectedImageMessages = currentState.selectedImageMessages.map { imageMessage ->
-                                    messageList.firstOrNull { it.id == imageMessage.messageDetails.id }
-                                        ?.toUi() as? ImageMessageUiState ?: imageMessage
-                                }
-                                )
-                            }
-                        }
-                    }
+                    updateSelectedImages(messageList)
 
                     messageRepository.markMessagesOfChatAsRead(
                         state.value.chatId ?: return@collectLatest
                     )
                 }
+        }
+    }
+
+    private fun updateSelectedImages(messages: List<Message>) {
+        if (state.value.selectedImageMessages.isNotEmpty()) {
+            if (state.value.selectedImageMessages.any { it.messageDetails.id in messages.map { msg -> msg.id } }) {
+                updateState { currentState ->
+                    currentState.copy(selectedImageMessages = currentState.selectedImageMessages.map { imageMessage ->
+                        messages.firstOrNull { it.id == imageMessage.messageDetails.id }
+                            ?.toUi() as? ImageMessageUiState ?: imageMessage
+                    }
+                    )
+                }
+            }
         }
     }
 
@@ -322,12 +323,11 @@ class ChatViewModel(
 
         tryToExecute(
             execute = { messageRepository.deleteMessageById(failedMessage.messageDetails.id) },
-            onSuccess = { onDeleteFailedMessageSuccess(failedMessage) }
+            onSuccess = { onDeleteFailedMessageSuccess() }
         )
     }
 
-    private suspend fun onDeleteFailedMessageSuccess(failedMessage: MessageUiState) {
-        safeUpdateMessages { messages -> messages.filter { it.id != failedMessage.messageDetails.id } }
+    private fun onDeleteFailedMessageSuccess() {
         updateState { state ->
             state.copy(
                 failedMessageToReSend = null,
@@ -346,19 +346,8 @@ class ChatViewModel(
                 failedMessageToReSend = null
             )
         }
-        tryToExecute(
-            execute = {
-                safeUpdateMessages { messages ->
-                    messages.map {
-                        if (it.id == message.messageDetails.id)
-                            it.copy(status = MessageStatus.LOADING)
-                        else
-                            it
-                    }
-                }
-            },
-            onSuccess = { sendMessage(message) }
-        )
+
+        sendMessage(message)
     }
 
     override fun onResendMessageDialogDismissed() {
@@ -372,21 +361,15 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectPendingMessages(messages: List<Message>?) {
-        val pendingMessages = messages ?: emptyList()
-        safeUpdateMessages { current ->
-            current
-                .filter { it.status != MessageStatus.LOADING }
-                .toMutableList()
-                .apply { addAll(pendingMessages) }
-                .distinctBy { it.id }
-        }
+    private fun onCollectPendingMessages(messages: List<Message>?) {
+        pendingMessages.value = messages ?: emptyList()
 
         if (!hasResentPendingMessages) {
             hasResentPendingMessages = true
-            pendingMessages
-                .filter { it.status == MessageStatus.LOADING }
-                .forEach { sendMessage(it.toUi()) }
+            messages?.let {
+                it.filter { it.status == MessageStatus.LOADING }
+                    .forEach { sendMessage(it.toUi()) }
+            }
         }
 
         emitEffect(ChatScreenEffect.ScrollToBottom)
@@ -831,12 +814,6 @@ class ChatViewModel(
 
     override fun onMessagesScrolled() {
         loadPage(pageFlows.size)
-    }
-
-    private suspend fun safeUpdateMessages(block: (List<Message>) -> List<Message>) {
-        messagesMutex.withLock {
-            _messages.update(block)
-        }
     }
 
     override fun onStopAudioPlayback() {
