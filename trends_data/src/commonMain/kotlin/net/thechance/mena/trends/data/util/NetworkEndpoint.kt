@@ -10,6 +10,7 @@ internal object NetworkEndpoint {
     const val CATEGORIES_ENDPOINT = "$TRENDS_PATH/categories"
     const val PROFILE_REELS_ENDPOINT = "$TRENDS_PATH/user"
     const val REFRESH_REEL_ENDPOINT = "refresh"
+    const val WATCH_TIME_ENDPOINT = "$TRENDS_PATH/user/watch-time"
 
     // Parameters
     const val PAGE_PARAMETER = "page"

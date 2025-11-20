@@ -18,14 +18,21 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.io.buffered
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.trends.data.di.DEFAULT_CLIENT_NAME
 import net.thechance.mena.trends.data.di.UPLOAD_CLIENT_NAME
+import net.thechance.mena.trends.data.local.database.UserEngagement
+import net.thechance.mena.trends.data.local.database.UserEngagementDao
 import net.thechance.mena.trends.data.remote.dto.ReelDto
 import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.remote.dto.SubmitWatchTimeRequest
 import net.thechance.mena.trends.data.remote.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
+import net.thechance.mena.trends.data.remote.dto.WatchTimeDto
+import net.thechance.mena.trends.data.remote.mapper.toDto
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 import net.thechance.mena.trends.data.remote.mapper.toReelUrls
 import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
@@ -36,10 +43,12 @@ import net.thechance.mena.trends.data.util.NetworkEndpoint.REFRESH_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.THUMBNAIL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.TRENDS_PATH
 import net.thechance.mena.trends.data.util.NetworkEndpoint.VIEW_REEL_ENDPOINT
+import net.thechance.mena.trends.data.util.NetworkEndpoint.WATCH_TIME_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL
 import net.thechance.mena.trends.data.util.NetworkKeys.THUMBNAIL_MIME_TYPE
 import net.thechance.mena.trends.data.util.NetworkKeys.VIDEO
 import net.thechance.mena.trends.data.util.VideoFileHandler
+import net.thechance.mena.trends.data.util.getLastMidnightTime
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Reel
@@ -49,12 +58,17 @@ import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
     @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
     @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
-    @Provided private val videoFileHandler: VideoFileHandler
+    @Provided private val userRepository: UserRepository,
+    @Provided private val videoFileHandler: VideoFileHandler,
+    private val engagementDao: UserEngagementDao
 ) : ReelsRepository {
 
     private val observableUploadingFlow: MutableSharedFlow<UploadReelProgress> = MutableSharedFlow()
@@ -86,7 +100,42 @@ internal class ReelsRepositoryImpl(
             networkClient.get(endpoint) {
                 parameter(PAGE_PARAMETER, page)
             }
-        }.results.orEmpty().map { it.toEntity() }
+        }.results.orEmpty().map(ReelDto::toEntity).also {
+            runCatching { sendUserEngagementsBeforeToday() }
+        }
+    }
+
+
+    @OptIn(ExperimentalTime::class)
+    private suspend fun sendUserEngagementsBeforeToday() {
+        val userId = userRepository.getUser().first()?.id.toString()
+        engagementDao.getUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
+            .takeIf { it.isNotEmpty() }
+            ?.let { engagements ->
+                sendUserEngagementsData(
+                    userId = userId,
+                    engagements = engagements
+                )
+            }
+    }
+
+    private suspend fun sendUserEngagementsData(
+        userId: String,
+        engagements: List<UserEngagement>
+    ) {
+        safeApiCall<Unit> {
+            networkClient.post(WATCH_TIME_ENDPOINT) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    SubmitWatchTimeRequest(
+                        userId = userId,
+                        watchTimes = engagements.map(UserEngagement::toDto)
+                    )
+                )
+            }
+        }.also {
+            engagementDao.deleteUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
+        }
     }
 
     override suspend fun updateReelById(
