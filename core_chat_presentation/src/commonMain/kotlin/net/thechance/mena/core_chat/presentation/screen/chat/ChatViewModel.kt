@@ -999,6 +999,9 @@ class ChatViewModel(
             )
         }
     }
+    override fun onLinkClick(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
+    }
 
     companion object {
         const val PAGE_SIZE = 40
