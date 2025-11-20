@@ -237,7 +237,7 @@ private fun DiscountSection(
         Text(
             text = stringResource(Res.string.discount),
             style = Theme.typography.label.medium,
-            color = Theme.colorScheme.shadeSecondary // Todo check color from design system
+            color = Theme.colorScheme.shadeSecondary
         )
         Text(
             text = "-$discountAmount%",
@@ -424,13 +424,18 @@ private fun TotalAmountInOrder(
 @Composable
 private fun OrderDetailsScreenPreview() {
     MenaTheme {
-        OrderSummary(
-            orderDate = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.orderDate,
-            productsInOrder = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.productInOrder,
-            discountAmount = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.discount,
-            platformFeesAmount =  PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.platformFees,
-            totalAmount =  PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.totalAmount,
-            modifier = Modifier.padding(16.dp)
-        )
+        Box(
+            modifier = Modifier
+                .background(color = Theme.colorScheme.background.surface)
+        ) {
+            OrderSummary(
+                orderDate = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.orderDate,
+                productsInOrder = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.productInOrder,
+                discountAmount = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.discount,
+                platformFeesAmount = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.platformFees,
+                totalAmount = PreviewOrderDetailsUiState.orderDetailsUiState.orderUiState.totalAmount,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }

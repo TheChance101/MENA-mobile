@@ -33,6 +33,7 @@ import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetails
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetailsViewModel
+import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -140,7 +141,21 @@ private fun OrderDetailsContent(
 @Preview(name = "Order Details english",locale = "en")
 @Preview(name = "Order Details arabic",locale = "ar")
 @Composable
-private fun OrderDetailsScreenPreview() {
+private fun OrderDetailsScreenPreviewLightTheme() {
+    MenaTheme (
+        appTheme = AppTheme.LIGHT.name
+    ){
+        OrderDetailsContent(
+            state = PreviewOrderDetailsUiState.orderDetailsUiState,
+            interactionListener = PreviewOrderDetailsInteractionListener,
+            orderId = Uuid.random()
+        )
+    }
+}
+@Preview(name = "Order Details english",locale = "en")
+@Preview(name = "Order Details arabic",locale = "ar")
+@Composable
+private fun OrderDetailsScreenPreviewDarkTheme() {
     MenaTheme {
         OrderDetailsContent(
             state = PreviewOrderDetailsUiState.orderDetailsUiState,

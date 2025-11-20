@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -18,26 +20,32 @@ import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetails
 
 @Composable
 fun OrderDetailsSuccessContent(
-    state : OrderDetailsUiState,
-    interactionListener : OrderDetailsInteractionListener
-){
-    val lazyVerticalState = rememberLazyStaggeredGridState()
-    val isFirstItemVisibleInSecondColumn = derivedStateOf {
-        lazyVerticalState.layoutInfo.visibleItemsInfo.any {
-            it.index == 1 && it.lane == 1
+    state: OrderDetailsUiState,
+    interactionListener: OrderDetailsInteractionListener
+) {
+    val lazyVerticalStaggeredState = rememberLazyStaggeredGridState()
+
+    val isFirstItemVisibleInSecondColumn by remember(lazyVerticalStaggeredState.layoutInfo.visibleItemsInfo) {
+        derivedStateOf {
+            lazyVerticalStaggeredState.layoutInfo.visibleItemsInfo.any {
+                it.index == 1 && it.lane == 1
+            }
         }
     }
-    val staggeredGridCellsType = derivedStateOf {
-        if ( getScreenWidth() < 600.dp) {
-            StaggeredGridCells.Adaptive(305.dp)
-        } else {
-            StaggeredGridCells.Fixed(2)
+
+    val staggeredGridCellsType by remember(getScreenWidth()) {
+        derivedStateOf {
+            if (getScreenWidth() < 600.dp) {
+                StaggeredGridCells.Adaptive(305.dp)
+            } else {
+                StaggeredGridCells.Fixed(2)
+            }
         }
     }
 
     LazyVerticalStaggeredGrid(
-        columns = staggeredGridCellsType.value,
-        state = lazyVerticalState,
+        columns = staggeredGridCellsType,
+        state = lazyVerticalStaggeredState,
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._16,
@@ -62,13 +70,13 @@ fun OrderDetailsSuccessContent(
             contentType = { "delivery_address_section" },
         ) {
             val topPaddingValue =
-                if (isFirstItemVisibleInSecondColumn.value) 0.dp
+                if (isFirstItemVisibleInSecondColumn) 0.dp
                 else Theme.spacing._24
 
             DeliveryAddressSection(
                 address = state.orderUiState.addressDeliveryUiState.addressDeliveryTitle,
                 isUserOwner = state.orderUiState.isUserOwner,
-                onClick = { interactionListener.onAddressDeliveryClicked(address = state.orderUiState.addressDeliveryUiState ) },
+                onClick = { interactionListener.onAddressDeliveryClicked(address = state.orderUiState.addressDeliveryUiState) },
                 modifier = Modifier.padding(top = topPaddingValue),
             )
         }
