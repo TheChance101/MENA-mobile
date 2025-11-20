@@ -36,20 +36,21 @@ class DownloadedRecitersViewModel(
 
 
     private fun applyLocalSearch(query: String) {
-        val source = uiState.value.cachedReciters
+        val recitersToSearch = uiState.value.cachedReciters
 
-        val filtered =
-            if (query.isBlank()) source
-            else source.filter { it.name.contains(query, ignoreCase = true) }
+        val filteredReciters =
+            if (query.isBlank()) recitersToSearch
+            else recitersToSearch.filter { it.name.contains(query, ignoreCase = true) }
 
-        updateState { it.copy(displayedReciters = filtered) }
+        updateState { it.copy(displayedReciters = filteredReciters) }
     }
+
 
     override fun onDeleteReciterAudioClick(reciterId: Int) {
         updateState {
             it.copy(
                 isDeleteConfirmationDialogVisible = true,
-                reciterIdToDelete = reciterId
+                reciterIdPendingDeletion = reciterId
             )
         }
     }
@@ -62,7 +63,7 @@ class DownloadedRecitersViewModel(
         updateState {
             it.copy(
                 isDeleteConfirmationDialogVisible = false,
-                reciterIdToDelete = null
+                reciterIdPendingDeletion = null
             )
         }
     }
