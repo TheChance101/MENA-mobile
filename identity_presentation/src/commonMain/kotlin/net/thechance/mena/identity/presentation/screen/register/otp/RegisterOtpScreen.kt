@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,7 +26,6 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -40,10 +38,10 @@ import org.koin.core.parameter.parametersOf
 class RegisterOtpScreen(
     private val registerUIState: RegisterUIState
 ) : BaseScreen<
-        RegisterOtpViewModel,
-        RegisterOtpUIState,
-        RegisterOtpUIEffect,
-        RegisterOtpInteractionListener>() {
+    RegisterOtpViewModel,
+    RegisterOtpUIState,
+    RegisterOtpUIEffect,
+    RegisterOtpInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
@@ -104,11 +102,6 @@ class RegisterOtpScreen(
                 )
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
@@ -119,6 +112,12 @@ class RegisterOtpScreen(
         when (effect) {
             is RegisterOtpUIEffect.NavigateToEnterName -> {
                 navigator.push(EnterNameScreen(phoneNumber = effect.phoneNumber))
+            }
+
+            is RegisterOtpUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }
@@ -156,7 +155,6 @@ fun PreviewRegisterOtpScreen() {
                 override fun onClickVerify() {}
                 override fun onClickResend() {}
                 override fun onChangeOtp(otp: String) {}
-                override fun onClearErrorMessage() {}
             }
         )
     }
