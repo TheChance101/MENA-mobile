@@ -2,11 +2,14 @@ package net.thechance.mena.trends.data.repository.util
 
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.utils.EmptyContent.status
 import io.ktor.http.HttpStatusCode
 import net.thechance.mena.trends.data.remote.dto.ReelDto
 import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
 import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
+import net.thechance.mena.trends.data.remote.dto.SubmitWatchTimeRequest
 import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
+import net.thechance.mena.trends.data.remote.dto.WatchTimeDto
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 
 internal val fakeReelDtoList = RemotePaginationResponse(
@@ -108,5 +111,25 @@ internal fun MockRequestHandleScope.uploadReelResponse(
         UploadReelResponse("1")
     ),
     status = status,
+    headers = jsonHeaders
+)
+
+internal fun MockRequestHandleScope.sendEngagements() = respond(
+    content = jsonSerialization.encodeToString(
+        SubmitWatchTimeRequest.serializer(),
+        SubmitWatchTimeRequest(
+            userId = "uuid",
+            watchTimes = listOf(
+                WatchTimeDto(
+                    trendId = "uuid",
+                    videoDuration = 1000,
+                    watchStartTimeStamp = "start",
+                    watchEndTimeStamp = "end",
+                    percentWatched = 10.0
+                )
+            )
+        )
+    ),
+    status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
