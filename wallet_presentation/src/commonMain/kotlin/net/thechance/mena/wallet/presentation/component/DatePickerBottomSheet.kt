@@ -71,7 +71,7 @@ import kotlin.time.ExperimentalTime
 fun ScaffoldScope.DatePickerBottomSheet(
     isVisible: Boolean,
     title: String = stringResource(Res.string.pick_start_date),
-    minYear: Int = 2023,
+    minYear: Int = 2025,
     maxYear: Int = LocalDate.today().year,
     defaultSelectedDate: LocalDate = LocalDate.today().date,
     onPickClick: (LocalDate) -> Unit,
@@ -101,7 +101,7 @@ fun ScaffoldScope.DatePickerBottomSheet(
 @Composable
 private fun DatePickerBottomSheetContent(
     title: String = stringResource(Res.string.pick_start_date),
-    minYear: Int = 2023,
+    minYear: Int = 2025,
     maxYear: Int = LocalDate.today().year,
     onPickClick: (LocalDate) -> Unit,
     selectedDate: LocalDate,

@@ -29,10 +29,10 @@ data class TransactionFilterState(
 
     val currentFilterHash: Int
         get() = listOf(
-            selectedTypes.hashCode(),
-            selectedStatus.hashCode(),
-            startDate.hashCode(),
-            endDate.hashCode()
+            selectedTypes,
+            selectedStatus,
+            startDate,
+            endDate
         ).hashCode()
 
     enum class DatePickerMode(val titleRes: StringResource) {
@@ -51,10 +51,10 @@ data class TransactionFilterState(
 
     companion object {
         private val EMPTY_FILTER_HASH = listOf(
-            emptySet<FilterType>().hashCode(),
-            FilterStatus.ALL.hashCode(),
-            null.hashCode(),
-            null.hashCode()
+            emptySet<FilterType>(),
+            FilterStatus.ALL,
+            null,
+            null
         ).hashCode()
     }
 }
