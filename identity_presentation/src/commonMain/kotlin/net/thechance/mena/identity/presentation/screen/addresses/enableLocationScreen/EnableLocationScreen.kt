@@ -1,11 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen
 
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
@@ -15,16 +12,15 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.EnableLocationLayout
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import org.jetbrains.compose.resources.stringResource
 
 
 class EnableLocationScreen : BaseScreen<
-        EnableLocationScreenViewModel,
-        EnableLocationScreenUIState,
-        EnableLocationScreenUIEffect,
-        EnableLocationScreenInteractionListener>() {
+    EnableLocationScreenViewModel,
+    EnableLocationScreenUIState,
+    EnableLocationScreenUIEffect,
+    EnableLocationScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -43,18 +39,10 @@ class EnableLocationScreen : BaseScreen<
                 )
             }
         ) {
-            Box() {
-                EnableLocationLayout(
-                    onEnablePermissionClicked = listener::onClickEnablePermission,
-                    modifier = Modifier.padding(horizontal = 28.dp)
-                )
-                ErrorSnackBar(
-                    errorMessage = state.errorMessage?.let { stringResource(it) },
-                    onDismiss = listener::onClearErrorMessage,
-                    modifier = Modifier.statusBarsPadding().align(Alignment.TopCenter)
-                )
-            }
-
+            EnableLocationLayout(
+                onEnablePermissionClicked = listener::onClickEnablePermission,
+                modifier = Modifier.padding(horizontal = 28.dp)
+            )
         }
     }
 
@@ -65,6 +53,12 @@ class EnableLocationScreen : BaseScreen<
     ) {
         when (effect) {
             EnableLocationScreenUIEffect.NavigateBack -> navigator.pop()
+
+            is EnableLocationScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
+            }
         }
     }
 }
