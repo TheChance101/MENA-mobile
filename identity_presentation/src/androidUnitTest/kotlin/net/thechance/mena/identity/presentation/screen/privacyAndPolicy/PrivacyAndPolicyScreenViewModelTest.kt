@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.privacyAndPolicy
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -13,7 +15,6 @@ import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
@@ -42,12 +43,6 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClearErrorMessage() should update errorMessage to null`() = runTest {
-        viewModel.onClearErrorMessage()
-        assertNull(viewModel.state.value.errorMessage)
-    }
-
-    @Test
     fun `getPrivacyAndPolicy() should update state when get privacy and policy successfully`() =
         runTest {
             coEvery { applicationInfoRepository.getPrivacyAndPolicy() } returns fakePrivacyAndPolicy
@@ -56,12 +51,14 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
         }
 
     @Test
-    fun `getPrivacyAndPolicy() should update error message when get privacy and policy throws exception`() =
+    fun `getPrivacyAndPolicy() should show snack bar with error message when get privacy and policy throws exception`() =
         runTest {
             coEvery { applicationInfoRepository.getPrivacyAndPolicy() } throws UnAuthorizedException()
-            testDispatcher.scheduler.advanceUntilIdle()
-            val state = viewModel.state.value
-            assertTrue { state.errorMessage != null }
+
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(PrivacyAndPolicyScreenUIEffect.ShowSnackBarError::class)
+            }
         }
 
 
@@ -71,9 +68,9 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
             Section(
                 title = "What is Lorem Ipsum?",
                 content = "is simply dummy text of the printing and typesetting industry. " +
-                        "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s," +
-                        " when an unknown printer took a galley of type and scrambled it to make a type specimen book." +
-                        " It has survived not only five centuries"
+                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s," +
+                          " when an unknown printer took a galley of type and scrambled it to make a type specimen book." +
+                          " It has survived not only five centuries"
             )
 
         )
