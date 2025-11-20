@@ -12,8 +12,18 @@ import kotlin.uuid.Uuid
 @Single([WalletApi::class])
 class WalletApiImpl : WalletApi {
     @Composable
-    override fun WalletEntry(navigateBack: () -> Unit) {
-        NavigationHost(startDestination = WalletMainScreenRoute, navigateBack = navigateBack)
+    override fun WalletEntry(
+        navigateBack: () -> Unit,
+        updateBottomNavigationVisibility: (Boolean) -> Unit
+    ) {
+        updateBottomNavigationVisibility(HIDE_BOTTOM_NAVIGATION)
+        NavigationHost(
+            startDestination = WalletMainScreenRoute,
+            navigateBack = {
+                updateBottomNavigationVisibility(SHOW_BOTTOM_NAVIGATION)
+                navigateBack()
+            }
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -28,5 +38,10 @@ class WalletApiImpl : WalletApi {
             ),
             navigateBack = navigateBack
         )
+    }
+
+    companion object {
+        const val HIDE_BOTTOM_NAVIGATION = false
+        const val SHOW_BOTTOM_NAVIGATION = true
     }
 }
