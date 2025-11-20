@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -176,6 +177,7 @@ fun ChatScreenContent(
                 onViewOrderDetailsClick = interactions::onViewOrderDetailsClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
+                onLinkClick = interactions::onLinkClicked,
             )
         }
 
@@ -254,6 +256,7 @@ private fun EffectsHandler(
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
 
     EffectHandler(effects, key1 = navController.currentBackStackEntry) { effect ->
         when (effect) {
@@ -272,6 +275,10 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.NavigateToOrderDetails -> {
                 navController.navigate(OrderDetailsRoute(effect.orderId.toString()))
+            }
+
+            is ChatScreenEffect.OpenUrl -> {
+                uriHandler.openUri(effect.url)
             }
         }
     }

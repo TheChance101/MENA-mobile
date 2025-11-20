@@ -7,4 +7,5 @@ sealed interface ChatScreenEffect {
     data class ShowSnackBar(val snackBarData: SnackBarData) : ChatScreenEffect
     object ScrollToBottom: ChatScreenEffect
     data class NavigateToOrderDetails(val orderId: String) : ChatScreenEffect
+    data class OpenUrl(val url: String) : ChatScreenEffect
 }

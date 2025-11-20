@@ -22,6 +22,7 @@ import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBa
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
+import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMessageScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.core_chat.presentation.utils.rememberImageLoader
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -41,6 +42,7 @@ fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
     dukanApi: DukanApi = koinInject(),
     onNavigateBackFromChat: () -> Unit = {},
+    onNavigateBackFromShareMessage: () -> Unit = {},
     startDestination: ChatRoute = HomeRoute
 ) {
 
@@ -78,6 +80,7 @@ fun ChatNavHost(
                         }
                     )
                 }
+                composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
 
             Box(

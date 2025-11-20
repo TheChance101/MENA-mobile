@@ -29,12 +29,15 @@ import net.thechance.mena.wallet.presentation.utils.splitPdfToPngs
 @Composable
 fun PdfViewer(
     pdf: ByteArray,
+    onPagesReady: (Boolean) -> Unit
 ) {
     var pages by remember { mutableStateOf<List<ByteArray>?>(null) }
     LaunchedEffect(pdf) {
         pages = splitPdfToPngs(pdfData = pdf)
+        onPagesReady(true)
     }
     if (pages == null) {
+        onPagesReady(false)
         Box(modifier = Modifier.fillMaxSize()) {
             ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
         }

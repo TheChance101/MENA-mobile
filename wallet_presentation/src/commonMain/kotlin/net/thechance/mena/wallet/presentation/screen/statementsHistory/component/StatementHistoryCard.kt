@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -115,7 +116,9 @@ private fun StatementHistoryContent(
 
 @Composable
 private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    FlowRow(
+        verticalArrangement = Arrangement.Center
+    ) {
         FlowItem(
             amount = "+$totalInflow",
             label = stringResource(Res.string.inflows),
@@ -150,13 +153,11 @@ private fun FlowItem(
                 stringResource(Res.string.silvers)
             ),
             style = Theme.typography.label.extraSmall,
-            softWrap = false,
             color = color,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = label,
-            softWrap = false,
             style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeSecondary
         )
