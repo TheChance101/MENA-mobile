@@ -92,9 +92,7 @@ class AddEditLocationScreenViewModel(
     override fun onClickMap() {
         sendNewEffect(
             createNavigateToMapEffect(
-                addressModel = createAddressModelFromCurrentState(
-                    addressUIState = state.value.addressUIState
-                ),
+                addressModel = null,
                 onSuccess = ::onAddressFromPickLocation
             )
         )
@@ -174,10 +172,16 @@ class AddEditLocationScreenViewModel(
                 addressUIState = addressUIState.copy(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
-                    addressType = if (addressUIState.addressType != null || updateOriginals) newAddress.addressType else null,
-                    otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
-                    addressID = newAddress.id ?: addressUIState.addressID,
-                    isMainAddress = newAddress.isMainAddress
+                    addressType = if (updateOriginals) newAddress.addressType else addressUIState.addressType,
+                    otherAddressType = if (updateOriginals && newAddress.addressType is AddressType.Other)
+                        newAddress.addressType.getAddressType()
+                    else
+                        addressUIState.otherAddressType,
+                    addressID = if (updateOriginals)
+                        newAddress.id ?: addressUIState.addressID
+                    else
+                        addressUIState.addressID,
+                    isMainAddress = if (updateOriginals) newAddress.isMainAddress else addressUIState.isMainAddress
                 )
             )
         }
