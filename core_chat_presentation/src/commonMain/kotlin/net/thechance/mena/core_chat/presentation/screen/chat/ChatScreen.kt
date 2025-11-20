@@ -175,7 +175,7 @@ fun ChatScreenContent(
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
-                onLinkClick = interactions::onLinkClick,
+                onLinkClick = interactions::onLinkClicked,
             )
         }
 

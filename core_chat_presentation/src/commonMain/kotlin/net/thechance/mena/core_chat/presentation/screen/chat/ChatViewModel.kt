@@ -999,7 +999,7 @@ class ChatViewModel(
             )
         }
     }
-    override fun onLinkClick(url: String) {
+    override fun onLinkClicked(url: String) {
         emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 

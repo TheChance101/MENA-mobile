@@ -136,9 +136,9 @@ fun TextMessageLayout(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    val styledText = detectAndStyleUrls(text = message.text, linkColor = Theme.colorScheme.brand.brand)
 
                     if (containsUrl(message.text)) {
+                        val styledText = detectAndStyleUrls(text = message.text, linkColor = Theme.colorScheme.brand.brand)
                         ClickableUrlText(
                             text = styledText,
                             style = Theme.typography.body.small,
