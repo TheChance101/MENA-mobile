@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.data.messagesender
 
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 
 class MessageSenderFactory(
     private val textMessageSender: TextMessageSender,
@@ -13,6 +14,6 @@ class MessageSenderFactory(
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
         is MessageContent.Ayah -> ayahMessageSender
-        is MessageContent.Order -> TODO("Not yet implemented")
+        else -> throw OperationFailedException("This message type is not supported")
     }
 }
