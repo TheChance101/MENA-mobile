@@ -83,7 +83,6 @@ actual fun MapView(
                     onMapIdle(centerLat, centerLong)
                 }
 
-                @ObjCSignatureOverride
                 override fun mapView(
                     mapView: MKMapView,
                     viewForAnnotation: MKAnnotationProtocol
@@ -105,6 +104,21 @@ actual fun MapView(
                             markerImage = markerImage
                         )
                     }
+                }
+
+                override fun mapView(
+                    mapView: MKMapView,
+                    didSelectAnnotationView: MKAnnotationView
+                ) {
+                    val coordinate = didSelectAnnotationView.annotation?.coordinate
+                    val latitude = coordinate?.useContents { this.latitude }
+                    val longitude = coordinate?.useContents { this.longitude }
+                    markers.find {
+                        it.coordinate.latitude == latitude && it.coordinate.longitude == longitude
+                    }
+                        ?.let { mosque ->
+                            onMarkerClick(mosque)
+                        }
                 }
             }
         }
