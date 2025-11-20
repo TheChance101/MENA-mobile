@@ -31,7 +31,6 @@ import net.thechance.mena.trends.data.remote.dto.RemotePaginationResponse
 import net.thechance.mena.trends.data.remote.dto.SubmitWatchTimeRequest
 import net.thechance.mena.trends.data.remote.dto.UpdateReelRequestDTO
 import net.thechance.mena.trends.data.remote.dto.UploadReelResponse
-import net.thechance.mena.trends.data.remote.dto.WatchTimeDto
 import net.thechance.mena.trends.data.remote.mapper.toDto
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 import net.thechance.mena.trends.data.remote.mapper.toReelUrls
