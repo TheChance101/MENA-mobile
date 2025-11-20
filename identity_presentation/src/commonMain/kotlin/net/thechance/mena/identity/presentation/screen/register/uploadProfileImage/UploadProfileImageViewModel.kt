@@ -51,7 +51,7 @@ class UploadProfileImageViewModel(
         )
     }
 
-    private suspend fun getCachedImageBytes(phoneNumber: PhoneNumber) =
+    private fun getCachedImageBytes(phoneNumber: PhoneNumber) =
         cachedImageRepository.getCachedImage(getImageKey(phoneNumber))
 
     private fun handleCachedImageLoaded(cachedImage: ByteArray?) {
@@ -78,7 +78,7 @@ class UploadProfileImageViewModel(
     }
 
     private fun startUpload(imageBitmap: ImageBitmap, authTokens: AuthenticationTokens) {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { uploadImage(imageBitmap, authTokens) },
             onSuccess = { onUploadSuccess() },
@@ -121,10 +121,6 @@ class UploadProfileImageViewModel(
         }
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     private fun onUploadSuccess() {
         updateState { copy(isLoading = false) }
         authTokens?.let { tokens ->
@@ -143,32 +139,36 @@ class UploadProfileImageViewModel(
     private fun navigateToAccountCreated(authTokens: AuthenticationTokens) {
         sendNewEffect(UploadProfileImageUIEffect.NavigateToAccountCreated(authTokens))
     }
-    
+
     private fun markImageUploadCompleted() {
         tryToExecute(
             function = { registrationDraftRepository.setImageUploadCompleted(true) },
             dispatcher = dispatcher
         )
     }
-    
+
     private fun clearCachedImageAfterUpload(phoneNumber: PhoneNumber) {
         screenModelScope.launch(dispatcher) {
             removeCachedImage(phoneNumber)
         }
     }
 
-    private suspend fun removeCachedImage(phoneNumber: PhoneNumber) {
+    private fun removeCachedImage(phoneNumber: PhoneNumber) {
         val imageKey = getImageKey(phoneNumber)
         cachedImageRepository.removeCachedImage(imageKey)
     }
 
     private fun onUploadError(throwable: Throwable) {
-        updateState { 
+        updateState {
             copy(
                 isLoading = false,
-                errorMessage = mapErrorMessage(throwable)
-            ) 
+            )
         }
+        sendNewEffect(
+            UploadProfileImageUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onImageCropped(croppedImageBitmap: ImageBitmap) {
@@ -240,7 +240,11 @@ class UploadProfileImageViewModel(
     }
 
     private fun onCacheCropImageError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            UploadProfileImageUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private suspend fun <T> withTemporaryTokens(
@@ -258,6 +262,7 @@ class UploadProfileImageViewModel(
         is AuthenticationException -> mapAuthenticationErrorToMessage(
             handleUploadProfileImageException(throwable)
         )
+
         else -> mapErrorToMessage(ErrorState.GenericError(throwable))
     }
 }

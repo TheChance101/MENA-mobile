@@ -7,7 +7,6 @@ interface UploadProfileImageInteractionListener: BaseInteractionListener {
     fun onClickUpload()
     fun onClickSkip()
     fun onSelectImage(imageBitmap: ImageBitmap)
-    fun onClearErrorMessage()
     fun onClickEdit(imageBitmap: ImageBitmap)
     fun onImageCropped(croppedImageBitmap: ImageBitmap)
 }
