@@ -74,7 +74,7 @@ fun ProductCard(
             )
             .height(104.dp)
             .clip(SquircleShape(Theme.radius.md))
-            .clickable(onClick = onProductClick)
+            .clickable(onClick = onProductClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4),
     ) {
         Box(
