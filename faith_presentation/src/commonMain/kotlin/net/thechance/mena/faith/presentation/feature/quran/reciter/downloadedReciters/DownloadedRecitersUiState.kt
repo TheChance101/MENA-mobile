@@ -11,7 +11,7 @@ data class DownloadedRecitersUiState(
     val selectedReciterId: Int? = null,
     val isSwipeable: Boolean = false,
     val isDeleteConfirmationDialogVisible: Boolean = false,
-    val reciterIdPendingDeletion: Int? = null,
+    val reciterId: Int? = null,
 )
 
 data class DownloadedReciterItemUi(

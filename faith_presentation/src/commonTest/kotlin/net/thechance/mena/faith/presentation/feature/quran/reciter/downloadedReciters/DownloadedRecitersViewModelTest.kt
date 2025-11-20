@@ -235,7 +235,6 @@ class DownloadedRecitersViewModelTest {
 
         val state = testViewModel.uiState.value
         assertTrue(state.isDeleteConfirmationDialogVisible)
-        assertEquals(reciterId, state.reciterIdPendingDeletion)
     }
 
     @Test
@@ -246,7 +245,6 @@ class DownloadedRecitersViewModelTest {
         testViewModel.onDismissDeleteDialog()
         val state = testViewModel.uiState.value
         assertEquals(false, state.isDeleteConfirmationDialogVisible)
-        assertEquals(null, state.reciterIdPendingDeletion)
     }
 
     @Test

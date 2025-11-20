@@ -50,7 +50,6 @@ class DownloadedRecitersViewModel(
         updateState {
             it.copy(
                 isDeleteConfirmationDialogVisible = true,
-                reciterIdPendingDeletion = reciterId
             )
         }
     }
@@ -63,7 +62,6 @@ class DownloadedRecitersViewModel(
         updateState {
             it.copy(
                 isDeleteConfirmationDialogVisible = false,
-                reciterIdPendingDeletion = null
             )
         }
     }
