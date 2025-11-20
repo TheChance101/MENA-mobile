@@ -24,8 +24,10 @@ import mena.dukan_presentation.generated.resources.error_update_product
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
+import mena.dukan_presentation.generated.resources.price_after_discount_bigger_than_base_price
 import mena.dukan_presentation.generated.resources.product_name_is_already_exist
 import mena.dukan_presentation.generated.resources.save_product_success
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.CreationFailedException
@@ -43,6 +45,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.util.file.ImageFile
+import net.thechance.mena.dukan.presentation.util.filterPriceInput
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.util.rounded
 import net.thechance.mena.dukan.presentation.util.toFileName
@@ -101,7 +104,8 @@ class EditProductViewModel(
         updateState {
             copy(
                 productName = product.name,
-                price = product.price.toString(),
+                price = product.price.base.toString(),
+                priceAfterDiscount = product.price.final.toString(),
                 description = product.description,
                 existingImageUrls = filteredImages,
                 isTextFieldEnabled = true,
@@ -227,7 +231,15 @@ class EditProductViewModel(
     override fun onPriceChange(price: String) {
         updateState {
             copy(
-                price = price.filter { it.isDigit() || it == PRICE_DECIMAL_SEPARATOR },
+                price = filterPriceInput(price)
+            ).updateButtonState()
+        }
+    }
+
+    override fun onPriceAfterDiscountChange(price: String) {
+        updateState {
+            copy(
+                priceAfterDiscount = filterPriceInput(price)
             ).updateButtonState()
         }
     }
@@ -453,7 +465,7 @@ class EditProductViewModel(
         val fileName = bytes.toFileName()
         val result = productRepository.uploadProductImage(
             fileName = fileName,
-            fileBytes =bytes,
+            fileBytes = bytes,
             productId = productId
         )
         return result
@@ -490,7 +502,10 @@ class EditProductViewModel(
         return UpdateProductParams(
             name = trimmedName,
             description = trimmedDescription,
-            price = state.value.price.toDoubleOrNull(),
+            price = Price(
+                base = state.value.price.toDoubleOrNull() ?: 0.0,
+                final = state.value.priceAfterDiscount.toDoubleOrNull()
+            ),
             shelfId = state.value.selectedShelf?.id,
             imageUrls = finalImageUrls,
             isOutOfStock = state.value.isOutOfStock
@@ -627,6 +642,7 @@ class EditProductViewModel(
             productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
             productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
             productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH -> Res.string.error_description_length
+            productUiState.priceAfterDiscount > productUiState.price -> Res.string.price_after_discount_bigger_than_base_price
             else -> null
         }
     }
@@ -639,6 +655,5 @@ class EditProductViewModel(
         const val MIN_DESCRIPTION_LENGTH = 100
         const val MAX_DESCRIPTION_LENGTH = 3000
         const val PRICE_EXCLUSIVE_LOWER_BOUND = 0.0
-        const val PRICE_DECIMAL_SEPARATOR = '.'
     }
 }

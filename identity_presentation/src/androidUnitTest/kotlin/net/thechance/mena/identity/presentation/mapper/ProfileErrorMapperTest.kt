@@ -8,7 +8,7 @@ import mena.identity_presentation.generated.resources.error_no_network
 import mena.identity_presentation.generated.resources.error_password_mismatch
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import mena.identity_presentation.generated.resources.error_username_required
-import net.thechance.mena.identity.presentation.base.error.ProfileErrorState
+import net.thechance.mena.identity.presentation.base.errorState.ProfileErrorState
 import org.junit.Test
 import kotlin.test.assertEquals
 

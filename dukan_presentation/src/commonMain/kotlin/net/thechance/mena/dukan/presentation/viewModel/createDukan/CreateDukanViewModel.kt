@@ -158,7 +158,7 @@ class CreateDukanViewModel(
     }
 
     override fun onNameChanged(name: String) {
-        updateState { copy(name = limitNameLength(name), snackBarState = null) }
+        updateState { copy(name = mapDukanNameToValidName(name), snackBarState = null) }
         updateNextButtonEnableState()
     }
 
@@ -232,7 +232,8 @@ class CreateDukanViewModel(
         if (!isBasicInformationStepValid(state.value)) {
             return
         }
-        checkNameUniqueness(state.value.name)
+        val trimmedName = state.value.name.trim()
+        checkNameUniqueness(trimmedName)
     }
 
     private fun nextStep(step: CreateDukanStep): CreateDukanStep {
@@ -307,18 +308,30 @@ class CreateDukanViewModel(
 
     private fun checkNameUniqueness(name: String) {
         tryToExecute(
-            onStart = {updateState { copy(isNextCreateButtonLoading = true) }},
+            onStart = { updateState { copy(isNextCreateButtonLoading = true) } },
             block = { dukanManagementRepository.isDukanNameTaken(name) },
             onSuccess = { isTaken -> handleNameValidationResult(isTaken) },
             onError = ::onNameValidationError
         )
     }
 
-    private fun limitNameLength(name: String): String {
-        return if (name.length > MAX_NAME_LENGTH)
-            name.trim().take(MAX_NAME_LENGTH)
-        else
-            name.trim()
+    private fun mapDukanNameToValidName(name: String): String {
+        val validDukanName = StringBuilder()
+        var isPreviousCharWhitespace = false
+
+        for (ch in name) {
+            if (ch.isWhitespace()) {
+                if (validDukanName.isEmpty() || isPreviousCharWhitespace) continue
+                validDukanName.append(' ')
+                isPreviousCharWhitespace = true
+            } else {
+                validDukanName.append(ch)
+                isPreviousCharWhitespace = false
+            }
+            if (validDukanName.length >= MAX_NAME_LENGTH) break
+        }
+
+        return validDukanName.toString()
     }
 
     private fun handleNameValidationResult(isTaken: Boolean) {

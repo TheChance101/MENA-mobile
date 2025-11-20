@@ -41,15 +41,11 @@ fun DeviceContact.toListOfContactCreationRequestDto(): List<ContactCreationReque
         ContactCreationRequestDto(
             firstName = firstName.orEmpty(),
             lastName = lastName.orEmpty(),
-            phone = removePhoneNumberPlusIfExist(phone)
+            phone = phone
         )
     }
 }
 
 fun List<DeviceContact>.toListOfContactCreationRequestDto(): List<ContactCreationRequestDto> {
     return flatMap ( DeviceContact::toListOfContactCreationRequestDto )
-}
-
-fun removePhoneNumberPlusIfExist(phoneNumber: String): String{
-    return phoneNumber.dropWhile { it == '+' }
 }

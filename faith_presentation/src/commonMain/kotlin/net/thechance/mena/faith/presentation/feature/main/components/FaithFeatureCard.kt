@@ -23,6 +23,7 @@ import mena.faith_presentation.generated.resources.ic_column_mosque
 import mena.faith_presentation.generated.resources.ic_quran
 import mena.faith_presentation.generated.resources.mosque_image_description
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -45,7 +46,7 @@ fun FaithFeatureCard(
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_column_mosque),
-            stringResource(Res.string.mosque_image_description),
+            contentDescription = stringResource(Res.string.mosque_image_description),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
@@ -74,11 +75,13 @@ fun FaithFeatureCard(
 @Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        FaithFeatureCard(
-            icon = painterResource(Res.drawable.ic_quran),
-            title = "Quran Kareem",
-            onClick = {}
-        )
+    MenaTheme {
+        QuranTheme {
+            FaithFeatureCard(
+                icon = painterResource(Res.drawable.ic_quran),
+                title = "Quran Kareem",
+                onClick = {}
+            )
+        }
     }
 }

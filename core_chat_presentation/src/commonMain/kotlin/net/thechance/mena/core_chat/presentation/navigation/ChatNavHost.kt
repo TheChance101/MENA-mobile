@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil3.compose.setSingletonImageLoaderFactory
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarHostController
@@ -21,6 +22,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.ChatScreen
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactsScreen
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreen
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
+import net.thechance.mena.core_chat.presentation.utils.rememberImageLoader
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
@@ -36,6 +38,8 @@ fun ChatNavHost(
     startDestination: ChatRoute = HomeRoute
 ) {
 
+    val coilImageLoader = rememberImageLoader()
+    setSingletonImageLoaderFactory { coilImageLoader }
     val navController = rememberNavController()
     val snackBarHostController = remember { SnackBarHostController() }
 

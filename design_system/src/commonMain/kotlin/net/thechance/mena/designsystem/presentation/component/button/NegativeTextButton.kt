@@ -9,8 +9,14 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import mena.design_system.generated.resources.Res
+import mena.design_system.generated.resources.ic_cheese_cake
 import net.thechance.mena.designsystem.presentation.component.button.content.BaseButtonContent
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun NegativeTextButton(
@@ -44,5 +50,31 @@ fun NegativeTextButton(
             iconStartPadding = iconStartPadding,
             contentColor = it
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NegativeTextButtonPreview() {
+    MenaTheme {
+        PreviewComponent(
+            isScrollable = true,
+            title = "Negative Text button"
+        ) {
+            NegativeTextButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                modifier = Modifier
+            )
+            NegativeTextButton(
+                text = "Button",
+                trailingIcon = painterResource(resource = Res.drawable.ic_cheese_cake),
+                onClick = {},
+                isEnabled = false,
+                modifier = Modifier
+            )
+        }
+
     }
 }

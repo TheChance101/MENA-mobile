@@ -1,5 +1,6 @@
 package net.thechance.mena.designsystem.presentation.component.bottomNavigation
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +31,9 @@ fun BottomNavigationBarItem(
     modifier: Modifier = Modifier
 ) {
     val painter = if (isSelected) selectedIcon else unselectedIcon
+    val animatedIconTint by animateColorAsState(
+        targetValue = if (isSelected) Theme.colorScheme.brand.brand else Theme.colorScheme.shadeSecondary,
+    )
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
@@ -58,12 +63,14 @@ fun BottomNavigationBarItem(
                 painter = painter,
                 modifier = Modifier.size(24.dp),
                 contentDescription = title,
+                tint = animatedIconTint
             )
 
             if (isSelected) {
                 Text(
                     text = title,
                     style = Theme.typography.label.medium,
+                    color = Theme.colorScheme.brand.brand,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }

@@ -26,7 +26,7 @@ fun StockStatusSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = Theme.spacing._16, vertical = Theme.spacing._12),
+            .padding(horizontal = Theme.spacing._16),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {

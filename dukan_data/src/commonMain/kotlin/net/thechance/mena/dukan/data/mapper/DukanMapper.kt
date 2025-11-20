@@ -1,17 +1,20 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.data.mapper
 
 import net.thechance.mena.dukan.data.dto.dukan.CreateDukanRequest
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
+import net.thechance.mena.dukan.data.dto.dukan.TopDiscountedDukanDto
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
 fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     return CreateDukanRequest(
         name = name,
@@ -24,7 +27,6 @@ fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
     )
 }
 
-@OptIn(ExperimentalUuidApi::class)
 fun List<DukanCategoryDto>.toCategoryList(): List<Category> {
     return map {
         Category(
@@ -35,7 +37,6 @@ fun List<DukanCategoryDto>.toCategoryList(): List<Category> {
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 fun List<DukanColorDto>.toColorsList(): List<Color> {
     return map {
         Color(
@@ -54,7 +55,6 @@ fun MyDukanStatusDto.toMyDukanStatus(): MyDukanStatus {
 }
 
 
-@OptIn(ExperimentalUuidApi::class)
 fun DukanDetailsDto.toDukan(): Dukan {
     return Dukan(
         id = id,
@@ -73,5 +73,13 @@ fun DukanDetailsDto.toDukan(): Dukan {
         style = Dukan.Style.valueOf(style),
         categories = emptySet(),
         status = Dukan.Status.APPROVED
+    )
+}
+
+fun TopDiscountedDukanDto.toEntity(): TopDiscountedDukanPreview{
+    return TopDiscountedDukanPreview(
+        id = id,
+        imageUrl = imageUrl,
+        discount = discount.toInt()
     )
 }

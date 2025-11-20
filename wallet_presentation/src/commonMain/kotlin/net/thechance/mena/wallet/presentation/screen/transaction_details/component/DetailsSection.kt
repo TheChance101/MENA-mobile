@@ -76,7 +76,7 @@ private fun ColumnScope.HeaderSection(transactionDetailsUiState: TransactionDeta
         textColor = Theme.colorScheme.shadeSecondary,
         icon = painterResource(transactionDetailsUiState.transactionType.iconRes),
         iconContentDescription = stringResource(transactionDetailsUiState.transactionType.iconContentDescriptionRes),
-        iconTint = Theme.colorScheme.shadeSecondary,
+        iconTint = transactionDetailsUiState.transactionType.iconTint(),
         iconSize = 16.dp,
         gap = 4.dp,
     )

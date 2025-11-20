@@ -11,6 +11,7 @@ data class ShelfDetailsUiState(
     val dukancolor: Long = 0L,
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val snackBarState: SnackBarUiState? = null,
+    val productQuantity: Map<String, Int> = emptyMap(),
     val hasProductInCart: Boolean = false
 ) {
     data class ProductUiState(
@@ -20,7 +21,8 @@ data class ShelfDetailsUiState(
         val price: Double = 0.0,
         val description: String = "",
         val showProductQuantity: Boolean = false,
-        val inCartQuantity: Int = 1
+        val inCartQuantity: Int = 1,
+        val isOutOfStock: Boolean = false
     )
 
     enum class Style {

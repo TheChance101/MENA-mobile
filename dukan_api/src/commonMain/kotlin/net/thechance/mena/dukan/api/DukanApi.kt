@@ -10,5 +10,5 @@ interface DukanApi {
     fun TabEntry()
 
     @Composable
-    fun OrderDetailsEntry(orderId: Uuid)
+    fun OrderDetailsEntry(orderId: Uuid, onNavigateBack: () -> Unit)
 }

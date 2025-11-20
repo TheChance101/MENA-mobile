@@ -17,7 +17,9 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.icon_location
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
 import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
@@ -60,12 +62,16 @@ internal fun PrayerTimeTopBar(uiState: PrayerTimeUiState, onClick: () -> Unit) {
     }
 }
 
+@OptIn(kotlin.time.ExperimentalTime::class)
 @Preview
 @Composable
 private fun Preview() {
-    @OptIn(kotlin.time.ExperimentalTime::class)
-    PrayerTimeTopBar(
-        uiState = PrayerTimeUiState(address = "Baghdad, Iraq"),
-        onClick = {}
-    )
+    MenaTheme {
+        QuranTheme {
+            PrayerTimeTopBar(
+                uiState = PrayerTimeUiState(address = "Baghdad, Iraq"),
+                onClick = {}
+            )
+        }
+    }
 }

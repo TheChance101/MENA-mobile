@@ -6,21 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Canvas
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
@@ -74,27 +60,15 @@ class ImageCropperComponentViewModel(
         state = state.copy(componentSize = componentSize)
     }
 
-    override fun cropToBitmap(
-        painter: Painter,
-        density: Density,
-        layoutDirection: LayoutDirection,
-    ) {
+    override fun saveImageToGallery(imageByteArray: ByteArray) {
         viewModelScope.launch {
-            val imageBitmap = ImageBitmap(state.componentSize.width, state.componentSize.height)
-            drawOnBitmap(
-                imageBitmap = imageBitmap,
-                painter = painter,
-                density = density,
-                layoutDirection = layoutDirection,
-                drawingSize = state.imageSize.toSize()
-            )
-            sendNewEffect(ImageCropperComponentEffect.SaveImage(imageBitmap))
+            sendNewEffect(ImageCropperComponentEffect.SaveImage(imageByteArray))
         }
     }
 
-    override fun onUploadAnotherImageClicked(imageBitmap: ImageBitmap) {
+    override fun onUploadAnotherImageClicked(imageByteArray: ByteArray) {
         viewModelScope.launch {
-            sendNewEffect(ImageCropperComponentEffect.UploadAnotherImage(imageBitmap))
+            sendNewEffect(ImageCropperComponentEffect.UploadAnotherImage(imageByteArray))
         }
     }
 
@@ -131,59 +105,6 @@ class ImageCropperComponentViewModel(
         val newAddedVerticalBounds = abs(imageSize.height * (scale - 1f)) / 2
         val minValue = -newAddedVerticalBounds - initialVerticalBounds
         return minValue..newAddedVerticalBounds
-    }
-
-    private fun drawOnBitmap(
-        imageBitmap: ImageBitmap,
-        painter: Painter,
-        density: Density,
-        layoutDirection: LayoutDirection,
-        drawingSize: Size
-    ) {
-        val canvas = Canvas(imageBitmap)
-        val clipPath = createClipPath()
-
-        CanvasDrawScope().draw(
-            density = density,
-            layoutDirection = layoutDirection,
-            canvas = canvas,
-            size = drawingSize
-        ) {
-            drawBlock(
-                painter = painter,
-                imageSize = drawingSize,
-                clipPath = clipPath
-            )
-        }
-    }
-
-    private fun createClipPath(): Path {
-        val clipCircleRadius = state.componentSize.width / 2
-        val clipCircleCenter = Offset(
-            x = state.componentSize.width.toFloat() / 2,
-            y = state.componentSize.height.toFloat() / 2
-        )
-        val clipBounds = Rect(
-            left = clipCircleCenter.x - clipCircleRadius,
-            top = clipCircleCenter.y - clipCircleRadius,
-            right = clipCircleCenter.x + clipCircleRadius,
-            bottom = clipCircleCenter.y + clipCircleRadius
-        )
-        return Path().apply { addOval(oval = clipBounds) }
-    }
-
-    private fun DrawScope.drawBlock(
-        painter: Painter,
-        imageSize: Size,
-        clipPath: Path
-    ) {
-        clipPath(path = clipPath) {
-            with(painter) {
-                translate(left = state.translation.x, top = state.translation.y) {
-                    scale(scale = state.scale, block = { draw(imageSize) })
-                }
-            }
-        }
     }
 
     @OptIn(ExperimentalTime::class)

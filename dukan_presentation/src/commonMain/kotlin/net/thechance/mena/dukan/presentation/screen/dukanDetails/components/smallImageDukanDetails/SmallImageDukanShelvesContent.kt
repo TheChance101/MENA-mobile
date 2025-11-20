@@ -71,7 +71,9 @@ private fun ShelfContent(
         modifier = modifier,
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-        contentPadding = PaddingValues(vertical = Theme.spacing._16),
+        contentPadding = PaddingValues(
+            bottom = Theme.spacing._16
+        ),
     ) {
         items(
             count = shelves.itemCount,
@@ -162,34 +164,37 @@ private fun ProductItem(
         productName = product.name,
         productImageUrl = product.imageUrl,
         productDescription = product.description,
+        isOutOfStock = product.isOutOfStock,
         productPrice = product.price,
         productCardBackground = Theme.colorScheme.background.surfaceLow,
         onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
-            SmallAndWideImageDukanProductAction(
-                showProductQuantity = quantity > 0,
-                inCartQuantity = quantity,
-                dukanColor = cartColor,
-                cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
-                onAddToCartClick = {
-                    listener.onAddToCartClicked(
-                        productId = product.id,
-                        productQuantity = quantity + 1
-                    )
-                },
-                onPlusClick = {
-                    listener.onPlusClicked(
-                        productId = product.id,
-                        productQuantity = quantity + 1
-                    )
-                },
-                onMinusClick = {
-                    listener.onMinusClicked(
-                        productId = product.id,
-                        productQuantity = quantity - 1
-                    )
-                }
-            )
+            if (product.isOutOfStock.not()) {
+                SmallAndWideImageDukanProductAction(
+                    showProductQuantity = quantity > 0,
+                    inCartQuantity = quantity,
+                    dukanColor = cartColor,
+                    cartIcon = painterResource(Res.drawable.ic_add_shopping_basket),
+                    onAddToCartClick = {
+                        listener.onAddToCartClicked(
+                            productId = product.id,
+                            productQuantity = quantity + 1
+                        )
+                    },
+                    onPlusClick = {
+                        listener.onPlusClicked(
+                            productId = product.id,
+                            productQuantity = quantity + 1
+                        )
+                    },
+                    onMinusClick = {
+                        listener.onMinusClicked(
+                            productId = product.id,
+                            productQuantity = quantity - 1
+                        )
+                    }
+                )
+            }
         }
     )
 }

@@ -7,8 +7,8 @@ import kotlin.uuid.Uuid
 data class Product(
     val id: Uuid,
     val name: String,
-    val price: Double,
-    val discountedPrice: Double?,
+    val finalPrice: Double,
+    val basePrice: Double,
     val description: String,
     val imageUrls: List<String>,
 )

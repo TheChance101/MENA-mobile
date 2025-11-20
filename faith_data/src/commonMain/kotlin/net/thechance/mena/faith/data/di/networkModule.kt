@@ -19,7 +19,8 @@ val networkModule = module {
     single<HttpClient>(named(FAITH_HTTP_CLIENT_KEY)) {
         NetworkClient(
             authorizationService = get(),
-            baseUrl = get(named(BASE_URL_KEY))
+            baseUrl = get(named(BASE_URL_KEY)),
+            engine = get(),
         ).provideHttpClient()
     }
 

@@ -31,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
@@ -152,15 +153,17 @@ private fun ConfigurationMessage() {
     }
 }
 
-@Composable
 @Preview
-private fun CalibrateDeviceScreenPreview() {
-    QuranTheme {
-        Content(
-            listener = object : CalibrateDeviceInteractionListener {
-                override fun onBackClick() {}
-                override fun onContinueClick() {}
-            }
-        )
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                listener = object : CalibrateDeviceInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onContinueClick() {}
+                }
+            )
+        }
     }
 }

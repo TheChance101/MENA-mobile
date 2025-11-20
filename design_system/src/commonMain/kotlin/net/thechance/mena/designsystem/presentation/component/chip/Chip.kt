@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.Dp
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.ic_chip
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -90,30 +90,30 @@ fun Chip(
     }
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
+
 @Composable
 private fun ChipPreview() {
     MenaTheme {
-        Row(
-            Modifier.background(Color(0xFFF2F4F7)),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        PreviewComponent(
+            title = "Chips"
         ) {
             Chip(
-                text = "Not selected",
+                text = "Chips",
                 painter = painterResource(Res.drawable.ic_chip),
                 isSelected = false,
                 onClick = {}
             )
 
             Chip(
-                text = "Selected",
+                text = "Chips",
                 painter = painterResource(Res.drawable.ic_chip),
                 isSelected = true,
                 onClick = {}
             )
 
             Chip(
-                text = "Not enabled",
+                text = "Chips",
                 painter = painterResource(Res.drawable.ic_chip),
                 isSelected = true,
                 isEnabled = false,

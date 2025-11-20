@@ -17,5 +17,5 @@ fun UpdateProductCartQuantityParams.toDto(): UpdateProductCartQuantityRequest {
 @OptIn(ExperimentalUuidApi::class)
 fun CartDto.toDomain() = Cart(
     id = id,
-    totalPrice = totalPrice
+    totalPrice = totalPriceBeforeDiscount
 )

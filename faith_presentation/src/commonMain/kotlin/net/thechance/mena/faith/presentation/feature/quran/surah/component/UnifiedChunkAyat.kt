@@ -13,6 +13,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.compose.rememberNavController
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.presentation.components.getAyahTextStyle
@@ -81,26 +82,27 @@ private fun findClickedAyahIndexFromPosition(ayat: List<Ayah>, position: Int): I
 }
 
 
-
-@Preview()
+@Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        CompositionLocalProvider(LocalNavController provides rememberNavController()) {
-            val sampleChunk = listOf(
-                Ayah(1, 1, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "بسم الله الرحمن الرحيم"),
-                Ayah(2, 1, "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "الحمد لله رب العالمين"),
-                Ayah(3, 1, "الرَّحْمَٰنِ الرَّحِيمِ", "الرحمن الرحيم")
-            )
+    MenaTheme {
+        QuranTheme {
+            CompositionLocalProvider(LocalNavController provides rememberNavController()) {
+                val sampleChunk = listOf(
+                    Ayah(1, 1, "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "بسم الله الرحمن الرحيم"),
+                    Ayah(2, 1, "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ", "الحمد لله رب العالمين"),
+                    Ayah(3, 1, "الرَّحْمَٰنِ الرَّحِيمِ", "الرحمن الرحيم")
+                )
 
-            UnifiedChunkAyat(
-                chunkAyat = sampleChunk,
-                selectedAyahIndex = 2,
-                textLayoutResult = null,
-                onTextLayoutResultChange = {},
-                onLongPress = {},
-                onDismiss = {}
-            )
+                UnifiedChunkAyat(
+                    chunkAyat = sampleChunk,
+                    selectedAyahIndex = 2,
+                    textLayoutResult = null,
+                    onTextLayoutResultChange = {},
+                    onLongPress = {},
+                    onDismiss = {}
+                )
+            }
         }
     }
 }

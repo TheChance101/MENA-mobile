@@ -10,16 +10,18 @@ import mena.identity_presentation.generated.resources.address_deleted_successful
 import mena.identity_presentation.generated.resources.error_address_not_found
 import mena.identity_presentation.generated.resources.is_main_address_error
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.exception.LocationException
-import net.thechance.mena.identity.domain.exception.NoActiveAddressException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.handleAuthenticationException
-import net.thechance.mena.identity.presentation.base.error.handleLocationException
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.toUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -199,7 +201,7 @@ class AddressesScreenViewModel(
 
     private fun onAddressOperationError(throwable: Throwable) {
         when (throwable) {
-            is NoActiveAddressException -> updateState {
+            is InvalidCredentialsException -> updateState {
                 copy(isLoading = false, isAddingNewAddress = false)
             }
 
@@ -318,7 +320,7 @@ class AddressesScreenViewModel(
         return when (throwable) {
             is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
             is AuthenticationException -> mapAuthenticationErrorToMessage(
-                handleAuthenticationException(throwable)
+                handleLocationAuthenticationException(throwable)
             )
 
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))

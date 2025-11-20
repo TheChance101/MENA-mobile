@@ -18,6 +18,7 @@ import net.thechance.mena.identity.domain.exception.UnknownException
 import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -33,8 +34,8 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
     private val testDispatcher = StandardTestDispatcher()
 
-    private val userRepository: UserRepository = mockk()
-    private val settingsRepository: SettingsRepository = mockk()
+    private val userRepository: UserRepository = mockk(relaxed = true)
+    private val settingsRepository: SettingsRepository = mockk(relaxed = true)
     private lateinit var viewModel: ProfileScreenViewModel
 
     @BeforeTest
@@ -42,6 +43,7 @@ class ProfileViewModelTest : BaseCoroutineTest() {
         super.setUp()
         coEvery { userRepository.getUser() } returns flowOf(fakeUser)
         coEvery { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
+        coEvery { settingsRepository.observeAppTheme().value } returns AppTheme.LIGHT
         viewModel = ProfileScreenViewModel(
             userRepository,
             settingsRepository,
@@ -85,7 +87,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
             val emittedEffect = awaitItem()
             assertTrue { emittedEffect is ProfileScreenUIEffect.NavigateToEditProfileScreen }
             cancelAndConsumeRemainingEvents()
-
         }
     }
 
@@ -157,14 +158,51 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `should update state to show theme dialog when onThemeClicked`() = runTest {
-        viewModel.onThemeClicked()
-
+    fun `onThemeSettingsClicked()should update state to show theme dialog when `() = runTest {
+        viewModel.onThemeSettingsClicked()
         testDispatcher.scheduler.advanceUntilIdle()
-
-        assertTrue(viewModel.state.value.showThemeDialog)
-
+        assertTrue(viewModel.state.value.themeDialogUiState.isVisible)
     }
+
+    @Test
+    fun `onSelectTheme() should update selected theme in dialog state`() = runTest {
+        val newTheme = AppTheme.DARK
+        viewModel.onSelectTheme(newTheme)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newTheme, viewModel.state.value.themeDialogUiState.selectedAppTheme)
+    }
+
+    @Test
+    fun `onConfirmThemeSelection() should apply theme, hide dialog, and update current theme`() =
+        runTest {
+            val newTheme = AppTheme.DARK
+            viewModel.onSelectTheme(newTheme)
+            testDispatcher.scheduler.advanceUntilIdle()
+            coEvery { settingsRepository.applyAppTheme(newTheme) } returns Unit
+            viewModel.onConfirmThemeSelection()
+            testDispatcher.scheduler.advanceUntilIdle()
+            coVerify { settingsRepository.applyAppTheme(newTheme) }
+            assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
+            assertEquals(newTheme, viewModel.state.value.currentTheme)
+        }
+
+    @Test
+    fun `onDismissThemeDialog() should hide dialog and reset selection to current theme`() =
+        runTest {
+            val currentTheme = viewModel.state.value.currentTheme
+            val newThemeSelection = AppTheme.DARK
+            viewModel.onSelectTheme(newThemeSelection)
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(
+                newThemeSelection,
+                viewModel.state.value.themeDialogUiState.selectedAppTheme
+            )
+            viewModel.onDismissThemeDialog()
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertFalse(viewModel.state.value.themeDialogUiState.isVisible)
+            assertEquals(currentTheme, viewModel.state.value.themeDialogUiState.selectedAppTheme)
+        }
+
 
     @Test
     fun `should emit NavigateToPrivacyAndPolicyScreen effect when onPrivacyAndPolicyClicked`() =
@@ -186,29 +224,44 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onConfirmLanguageSelection should save language and hide dialog`() = runTest {
+    fun `onSelectLanguage() should update selected language in dialog state`() = runTest {
+        val newLanguage = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newLanguage, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
+    }
+
+    @Test
+    fun `onConfirmLanguageSelection() should save language and hide dialog`() = runTest {
         val newAppLanguage = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newAppLanguage)
+        testDispatcher.scheduler.advanceUntilIdle()
         coEvery { settingsRepository.applyLanguage(newAppLanguage) } returns Unit
 
-        viewModel.onConfirmLanguageSelection(newAppLanguage)
+        viewModel.onConfirmLanguageSelection()
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify { settingsRepository.applyLanguage(newAppLanguage) }
         viewModel.state.test {
             val state = awaitItem()
             assertFalse(state.languageDialogUiState.isVisible)
-            assertEquals(newAppLanguage, state.languageDialogUiState.selectedAppLanguage)
+            assertEquals(newAppLanguage, state.currentLanguage)
         }
     }
 
     @Test
-    fun `should update state to hide language dialog when onDismissLanguageDialog`() = runTest {
-        viewModel.onDismissLanguageDialog()
+    fun `onDismissLanguageDialog() should hide dialog and reset selection to current language`() = runTest {
+        val currentLanguage = viewModel.state.value.currentLanguage
+        val newLanguageSelection = AppLanguage.ARABIC
+        viewModel.onSelectLanguage(newLanguageSelection)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(newLanguageSelection, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
 
+        viewModel.onDismissLanguageDialog()
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
-
+        assertEquals(currentLanguage, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
     }
 
     @Test
@@ -220,15 +273,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         assertFalse(viewModel.state.value.showShareBottomSheet)
 
-    }
-
-
-    @Test
-    fun `should update state to hide theme dialog when onDismissThemeDialog`() = runTest {
-        viewModel.onDismissThemeDialog()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertFalse(viewModel.state.value.showThemeDialog)
     }
 
     @Test

@@ -35,6 +35,7 @@ internal fun AuthAppBar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_arrow_left),
                     contentDescription = stringResource(Res.string.back),
+                    tint = Theme.colorScheme.shadePrimary
                 )
             },
             onLeadingClick = onClickBack

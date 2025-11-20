@@ -29,6 +29,9 @@ internal var Settings.appLanguage: String
     get() = getString(APP_LANGUAGE, "")
     set(value) = putString(APP_LANGUAGE, value)
 
+internal var Settings.appTheme: String
+    get() = getString(APP_THEME, "")
+    set(value) = putString(APP_THEME, value)
 
 //region keys
 
@@ -39,5 +42,6 @@ const val LAST_REGISTRATION_COUNTRY_CODE = "last_registration_country_code"
 const val LAST_REGISTRATION_LOCAL_NUMBER = "last_registration_local_number"
 const val IMAGE_UPLOAD_COMPLETED = "image_upload_completed"
 const val APP_LANGUAGE = "app_language"
+const val APP_THEME = "app_theme"
 
 //endregion

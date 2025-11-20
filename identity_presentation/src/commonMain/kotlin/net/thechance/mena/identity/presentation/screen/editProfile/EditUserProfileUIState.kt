@@ -15,6 +15,8 @@ data class EditUserProfileUIState(
     val gender: Gender = Gender.MALE,
     val showEditImageDialog: Boolean = false,
     val showLogoutDialog: Boolean = false,
+    val showConfirmLogoutDialog: Boolean = false,
+    val showConfirmDeleteAccountDialog: Boolean = false,
     val showCamera: Boolean = false,
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,

@@ -1,17 +1,19 @@
 package net.thechance.mena.core_chat.presentation.screen.home
 
 import kotlinx.datetime.LocalDateTime
-import net.thechance.mena.core_chat.presentation.utils.UiText
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class HomeScreenState(
-    val isLoading: Boolean = false,
+    val isChatsLoading: Boolean = false,
     val isBalanceLoading: Boolean = false,
-    val isSynced: Boolean = false,
-    val isError: Boolean = false,
-    val balanceAmount: String = "0",
-    val chats: List<ChatUiState> = emptyList()
+    val isPrayerTimeLoading: Boolean = false,
+    val isWeatherLoading: Boolean = false,
+    val balanceAmount: String = "",
+    val chats: List<ChatUiState> = emptyList(),
+    val prayerUiState: PrayerUiState? = null,
+    val weatherUiState: WeatherUiState? = null
 ) {
     data class ChatUiState @OptIn(ExperimentalUuidApi::class) constructor(
         val id: Uuid,
@@ -22,7 +24,6 @@ data class HomeScreenState(
     ) {
         data class MessageUiState(
             val text: String,
-            val uiTime: UiText,
             val isMine: Boolean,
             val time: LocalDateTime
         )
@@ -34,4 +35,16 @@ data class HomeScreenState(
             data object Received : Status()
         }
     }
+
+    data class PrayerUiState(
+        val displayName: StringResource,
+        val time: LocalDateTime,
+    )
+
+    data class WeatherUiState(
+        val currentTemperature: String,
+        val weatherCondition: String,
+        val maxTemperature: String,
+        val minTemperature: String,
+    )
 }

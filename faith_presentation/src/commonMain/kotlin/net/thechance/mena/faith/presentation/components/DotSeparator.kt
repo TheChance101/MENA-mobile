@@ -8,7 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun DotSeparator(
@@ -24,4 +27,14 @@ fun DotSeparator(
                 shape = RoundedCornerShape(Theme.radius.full)
             )
     )
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            DotSeparator()
+        }
+    }
 }

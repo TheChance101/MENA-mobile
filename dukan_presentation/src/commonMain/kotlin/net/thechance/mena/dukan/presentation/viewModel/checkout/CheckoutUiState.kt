@@ -15,9 +15,12 @@ data class CheckoutUiState(
     val snackBarState: SnackBarUiState? = null,
     ) {
     data class Address(
-        val label: String = "",
+        val label: AddressLabel = AddressLabel.Home,
         val street: String = ""
     )
+    enum class AddressLabel{
+        Home, Office, Other;
+    }
 
     data class CartItem(
         val id: String = "",

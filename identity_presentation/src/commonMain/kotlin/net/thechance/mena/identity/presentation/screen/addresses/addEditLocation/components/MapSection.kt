@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.location
@@ -22,15 +21,11 @@ import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun MapSection(
+    isMapClickable: Boolean,
     cameraPosition: CameraPosition,
     onClickEdit: () -> Unit,
     onClickMap: () -> Unit,
-    setAnchorLocation: (DpOffset) -> Unit,
-    longitude : Double?,
-    latitude : Double?,
-    modifier: Modifier = Modifier,
-    anchorLocation: DpOffset? = null,
-    animateToCurrentLocation: Boolean = false
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -51,18 +46,14 @@ fun MapSection(
             )
         }
         AddLocationMap(
+            isMapClickable = isMapClickable,
             modifier = Modifier
                 .clip(SquircleShape(Theme.radius.md))
                 .fillMaxWidth()
                 .height(244.dp),
             cameraPosition = cameraPosition,
             onEditClick = onClickEdit,
-            onClickMap = onClickMap,
-            longitude = longitude,
-            latitude = latitude,
-            animateToCurrentLocation = animateToCurrentLocation,
-            onSetAnchorLocation = setAnchorLocation,
-            anchorLocation = anchorLocation
+            onClickMap = onClickMap
         )
     }
 }

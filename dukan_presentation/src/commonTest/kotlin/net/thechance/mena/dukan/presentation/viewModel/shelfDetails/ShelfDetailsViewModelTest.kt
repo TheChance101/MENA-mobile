@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -54,7 +55,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("013e0bb1-6177-4430-ae08-f3a1a24f6f7d"),
             name = "Laptop",
             description = "High-end laptop",
-            price = 1200.0,
+            price = Price(
+                base = 1200.0,
+                final = 1200.0
+            ),
             imageUrls = listOf("https://example.com/laptop.jpg"),
             createdAt = "",
             quantityInCart = 10,
@@ -65,7 +69,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("4b8f1a92-9d2c-4bde-91ab-5c812dbb4a62"),
             name = "Mouse",
             description = "Wireless mouse",
-            price = 25.0,
+            price = Price(
+                base = 25.0,
+                final = 25.0
+            ),
             imageUrls = listOf("https://example.com/mouse.jpg"),
             createdAt = "",
             quantityInCart = 10,
@@ -76,7 +83,10 @@ class ShelfDetailsViewModelTest {
             id = Uuid.parse("a17e3c45-2fd4-4c1d-bb4a-2d5a3c739ef1"),
             name = "Keyboard",
             description = "Mechanical keyboard",
-            price = 75.0,
+            price = Price(
+                base = 75.0,
+                final = 75.0
+            ),
             imageUrls = listOf("https://example.com/keyboard.jpg"),
             createdAt = "",
             quantityInCart = 10,

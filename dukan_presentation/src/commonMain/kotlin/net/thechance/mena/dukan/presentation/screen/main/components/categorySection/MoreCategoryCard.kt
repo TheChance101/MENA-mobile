@@ -48,7 +48,6 @@ fun MoreCategoryCard(
         ) {
             Image(
                 painter = image,
-                modifier = Modifier.padding(top = Theme.spacing._4),
                 contentDescription = stringResource(resource = Res.string.category_icon),
             )
         }

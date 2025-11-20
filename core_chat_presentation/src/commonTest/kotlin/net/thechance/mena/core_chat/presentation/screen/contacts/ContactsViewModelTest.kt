@@ -22,7 +22,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.contact_not_mena_user
+import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.Contact
@@ -118,14 +118,14 @@ class ContactsViewModelTest {
     @Test
     fun `onContactClicked should get chat with correct contact when called`() = runTest {
         val contactId = Uuid.random()
-        everySuspend { chatRepository.getChatByContactUserId(any()) } returns chat
+        everySuspend { chatRepository.getChatByOtherUserId(any()) } returns chat
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onContactClicked(contactId)
         advanceUntilIdle()
 
-        verifySuspend { chatRepository.getChatByContactUserId(contactId) }
+        verifySuspend { chatRepository.getChatByOtherUserId(contactId) }
     }
 
     @Test
@@ -133,7 +133,7 @@ class ContactsViewModelTest {
         runTest {
             val contactId = Uuid.random()
             everySuspend { contactsRepository.getUserContacts(any()) } returns pagedContacts
-            everySuspend { chatRepository.getChatByContactUserId(any()) } returns chat
+            everySuspend { chatRepository.getChatByOtherUserId(any()) } returns chat
 
             val viewModel = createViewModel()
             advanceUntilIdle()
@@ -154,7 +154,7 @@ class ContactsViewModelTest {
 
     @Test
     fun `onContactClicked should emit snackBar effect when repository throws error`() = runTest {
-        everySuspend { chatRepository.getChatByContactUserId(any()) } throws Exception()
+        everySuspend { chatRepository.getChatByOtherUserId(any()) } throws Exception()
         val viewModel = createViewModel()
         advanceUntilIdle()
 
@@ -165,8 +165,8 @@ class ContactsViewModelTest {
             assertEquals(
                 ContactsScreenEffect.ShowSnackBar(
                     SnackBarData(
-                        title = UiText.StringRes(Res.string.something_went_wrong),
-                        message = UiText.StringRes(Res.string.contact_not_mena_user),
+                        title = UiText.StringRes(Res.string.error),
+                        message = UiText.StringRes(Res.string.something_went_wrong),
                         isError = true
                     )
                 ), awaitItem()

@@ -43,6 +43,7 @@ kotlin {
             implementation(projects.faithApi)
             implementation(projects.identityDomain)
             implementation(projects.identityApi)
+            implementation(projects.coreChatApi)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.ui)
@@ -103,6 +104,9 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
                 "net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.reciter.reciterSelection.ReciterSelectionViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.reciter.manageDownloadsReciters.ManageDownloadsRecitersViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedSurahRecitersScreen.DownloadedSurahRecitersViewModel",
                 "*MapperKt",
             )
         }

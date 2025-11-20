@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart
 
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.cart.CartDto
+import net.thechance.mena.dukan.data.dto.product.PriceDto
 import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.domain.entity.Product
@@ -12,7 +13,9 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 val cartDto = CartDto(
     id = Uuid.random(),
-    totalPrice = 150.0
+    totalPriceBeforeDiscount = 150.0,
+    totalPriceAfterDiscount = 100.0,
+    discount = 50.0
 )
 
 val cart1 = cartDto.toDomain()
@@ -21,7 +24,10 @@ val cart1 = cartDto.toDomain()
 val productCartDto1 = ProductCartDto(
     id = Uuid.random(),
     name = "Demo Product 1",
-    price = 9.99,
+   price = PriceDto(
+       base = 100.0,
+       final = 100.0
+   ),
     description = "This is a demo product",
     imageUrl = "https://picsum.photos/200/200?random=1",
     quantityInCart = 10
@@ -31,7 +37,10 @@ val productCartDto1 = ProductCartDto(
 val productCartDto2 = ProductCartDto(
     id = Uuid.random(),
     name = "Demo Product 2",
-    price = 9.99,
+    price = PriceDto(
+        base = 10.0,
+        final = 10.0
+    ),
     description = "This is a demo product",
     imageUrl = "https://picsum.photos/200/200?random=1",
     quantityInCart = 10
