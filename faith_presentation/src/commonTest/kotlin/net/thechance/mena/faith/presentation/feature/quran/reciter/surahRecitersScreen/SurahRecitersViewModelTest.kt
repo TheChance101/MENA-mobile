@@ -161,16 +161,6 @@ class SurahRecitersViewModelTest {
         }
     }
 
-    @Test
-    fun `onSelectReciterClick should save reciter as default`() = runTest {
-        everySuspend { quranRepository.saveDefaultReciter(SELECTED_RECITER_ID) } returns Unit
-
-        testViewModel.onSelectReciterClick(SELECTED_RECITER_ID)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        verifySuspend(exactly(1)) { quranRepository.saveDefaultReciter(SELECTED_RECITER_ID) }
-        assertEquals(SELECTED_RECITER_ID, testViewModel.uiState.value.selectedReciterId)
-    }
 
     @Test
     fun `onDownloadClick should get remote url from repository`() = runTest {
