@@ -7,6 +7,7 @@ import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel.Companion.SHARE_URL
@@ -18,20 +19,32 @@ class ProfileScreenViewModel(
     val appVersion: String,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
-    BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>
-        (
-        ProfileScreenUIState(
-            languageDialogUiState = LanguageDialogUiState(
-                selectedAppLanguage = AppLanguage.entries.find { it.iso == settingsRepository.getCurrentAppLanguage().iso }
-                    ?: AppLanguage.ENGLISH,
-            ),
-        )
+    BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>(
+        ProfileScreenUIState()
     ),
     ProfileScreenInteractionListener {
 
     init {
         getUserInfo()
         setAppVersion()
+        getAppSettings()
+    }
+
+    private fun getAppSettings() {
+        val currentAppTheme=settingsRepository.observeAppTheme().value
+        val currentAppLanguage=settingsRepository.getCurrentAppLanguage()
+        updateState {
+            state.value.copy(
+                languageDialogUiState = LanguageDialogUiState(
+                    selectedAppLanguage = currentAppLanguage,
+                ),
+                themeDialogUiState = ThemeDialogUiState(
+                    selectedAppTheme =currentAppTheme,
+                ),
+                currentTheme = currentAppTheme,
+                currentLanguage = currentAppLanguage
+            )
+        }
     }
 
     private fun setAppVersion() {
@@ -92,8 +105,8 @@ class ProfileScreenViewModel(
     override fun onLanguageClicked() =
         updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = true)) }
 
-    override fun onThemeClicked() =
-        updateState { copy(showThemeDialog = true) }
+    override fun onThemeSettingsClicked() =
+        updateState { copy(themeDialogUiState = themeDialogUiState.copy(isVisible = true)) }
 
     override fun onPrivacyAndPolicyClicked() =
         sendNewEffect(ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen)
@@ -102,21 +115,52 @@ class ProfileScreenViewModel(
         sendNewEffect(ProfileScreenUIEffect.NavigateContactUsScreen)
 
 
-    override fun onConfirmLanguageSelection(appLanguage: AppLanguage) {
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
+    override fun onConfirmLanguageSelection() {
         tryToExecute(
-            function = { settingsRepository.applyLanguage(appLanguage) },
-            onSuccess = {
-                updateState {
-                    copy(
-                        languageDialogUiState = languageDialogUiState.copy(
-                            isVisible = false
-                        )
-                    )
-                }
-            },
+            function = { settingsRepository.applyLanguage(state.value.languageDialogUiState.selectedAppLanguage) },
+            onSuccess = { onLanguageConfirmationSuccess() },
             onError = ::onUserInfoError,
+            dispatcher = dispatcher
         )
+    }
+
+    private fun onLanguageConfirmationSuccess() {
+        updateState {
+            copy(
+                languageDialogUiState = languageDialogUiState.copy(
+                    isVisible = false,
+                ),
+                currentLanguage = state.value.languageDialogUiState.selectedAppLanguage
+            )
+        }
+    }
+
+    override fun onSelectLanguage(appLanguage: AppLanguage) {
+        updateState { copy(languageDialogUiState = languageDialogUiState.copy(selectedAppLanguage = appLanguage)) }
+    }
+
+    override fun onConfirmThemeSelection() {
+        tryToExecute(
+            function = { settingsRepository.applyAppTheme(state.value.themeDialogUiState.selectedAppTheme) },
+            onSuccess = { onThemeConfirmationSuccess() },
+            onError = ::onUserInfoError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onThemeConfirmationSuccess() {
+        updateState {
+            copy(
+                themeDialogUiState = themeDialogUiState.copy(
+                    isVisible = false,
+                ),
+                currentTheme = state.value.themeDialogUiState.selectedAppTheme
+            )
+        }
+    }
+
+    override fun onSelectTheme(appTheme: AppTheme) {
+        updateState { copy(themeDialogUiState = themeDialogUiState.copy(selectedAppTheme = appTheme)) }
     }
 
     override fun onDismissSnackBar() {
@@ -129,8 +173,16 @@ class ProfileScreenViewModel(
         }
     }
 
-    override fun onDismissLanguageDialog() =
-        updateState { copy(languageDialogUiState = languageDialogUiState.copy(isVisible = false)) }
+    override fun onDismissLanguageDialog() {
+        updateState {
+            copy(
+                languageDialogUiState = languageDialogUiState.copy(
+                    isVisible = false,
+                    selectedAppLanguage = state.value.currentLanguage
+                )
+            )
+        }
+    }
 
     override fun onDismissBottomSheet() =
         updateState { copy(showShareBottomSheet = false) }
@@ -139,9 +191,16 @@ class ProfileScreenViewModel(
         updateState { copy(showShareProfileDialog = false) }
     }
 
-
-    override fun onDismissThemeDialog() =
-        updateState { copy(showThemeDialog = false) }
+    override fun onDismissThemeDialog() {
+        updateState {
+            copy(
+                themeDialogUiState = themeDialogUiState.copy(
+                    isVisible = false,
+                    selectedAppTheme = state.value.currentTheme
+                )
+            )
+        }
+    }
 
     override fun clearErrorMessage() {
         updateState { copy(errorMessage = null) }

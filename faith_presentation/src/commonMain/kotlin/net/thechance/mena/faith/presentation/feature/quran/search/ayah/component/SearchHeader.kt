@@ -19,6 +19,7 @@ import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_clear
 import mena.faith_presentation.generated.resources.ic_outline_search
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -69,14 +70,16 @@ fun SearchHeader(
 
 @Preview
 @Composable
-private fun SearchHeaderWithQueryPreview() {
-    QuranTheme {
-        SearchHeader(
-            query = "Allah",
-            hint = "Search in Quran...",
-            onQueryChange = {},
-            onBackClick = {},
-            clearQuery = {}
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            SearchHeader(
+                query = "Allah",
+                hint = "Search in Quran...",
+                onQueryChange = {},
+                onBackClick = {},
+                clearQuery = {}
+            )
+        }
     }
 }

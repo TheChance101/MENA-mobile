@@ -14,16 +14,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.DukanDetails
 import net.thechance.mena.admin_panel.navigation.LocalNavController
+import net.thechance.mena.admin_panel.presentation.component.EmptyDukansState
+import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementHeader
 import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.DukanManagementTableContent
-import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
-import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_management
-import net.thechance.mena.admin_panel.resources.no_dukan_results
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -58,15 +57,10 @@ fun DukanManagementsContent(
     modifier: Modifier = Modifier
 ) {
     PanelScaffold(
-        topBar = {
-            AppBar(
-                title = stringResource(Res.string.dukan_management),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
-                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
-            )
-        },
+        topBar = { DukanManagementScreenTopBar() },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isInitialLoading,
         onRetry = interactionListener::onRetryClicked
     ) {
         Column(
@@ -82,15 +76,9 @@ fun DukanManagementsContent(
             when {
                 state.dukans.isEmpty() && !state.isLoading -> {
                     if (state.query.isNotEmpty())
-                        EmptySearchState(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .offset(y = -(76.dp))
-                        )
+                        EmptySearchState(modifier = Modifier.fillMaxSize().offset(y = -(76.dp)))
                     else {
-                        EmptyDukanState(
-                            description = stringResource(Res.string.no_dukan_results)
-                        )
+                        EmptyDukansState(modifier = Modifier.fillMaxSize().offset(y = -(76.dp)))
                     }
                 }
 
@@ -102,6 +90,16 @@ fun DukanManagementsContent(
     }
 }
 
+@Composable
+private fun DukanManagementScreenTopBar() {
+    AppBar(
+        title = stringResource(Res.string.dukan_management),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
+        modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
+    )
+}
+
+
 @OptIn(ExperimentalUuidApi::class)
 private fun onDukanManagementEffect(
     effect: DukanManagementEffect,
@@ -109,7 +107,7 @@ private fun onDukanManagementEffect(
 ) {
     when (effect) {
         is DukanManagementEffect.NavigateToDukanDetails -> {
-            navController.navigate(DukanDetails){
+            navController.navigate(DukanDetails) {
                 popUpTo(DukanDetails)
             }
         }

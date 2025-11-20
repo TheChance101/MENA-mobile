@@ -17,7 +17,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 @Composable
 fun DukansCounter(
     count: Int,
-    title: String ,
+    title: String,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -28,25 +28,19 @@ fun DukansCounter(
         Text(
             text = title,
             style = Theme.typography.title.small,
+            color = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(end = 8.dp)
         )
-        CountItem(count)
+        Text(
+            text = count.toString(),
+            style = Theme.typography.label.medium,
+            modifier = Modifier
+                .background(
+                    color = Theme.colorScheme.background.surfaceLow,
+                    shape = RoundedCornerShape(Theme.radius.full)
+                )
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .wrapContentSize(Alignment.Center)
+        )
     }
-}
-
-@Composable
-private fun CountItem(
-    count: Int
-) {
-    Text(
-        text = count.toString(),
-        style = Theme.typography.label.medium,
-        modifier = Modifier
-            .background(
-                color = Theme.colorScheme.background.surfaceLow,
-                shape = RoundedCornerShape(Theme.radius.full)
-            )
-            .padding(horizontal = 8.dp, vertical = 4.dp)
-            .wrapContentSize(Alignment.Center)
-    )
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -82,6 +83,7 @@ private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(Res.drawable.ic_clock),
         contentDescription = stringResource(Res.string.transaction_history),
+        tint = Theme.colorScheme.shadeSecondary,
         modifier = modifier
             .size(48.dp)
             .clip(CircleShape)
@@ -148,11 +150,13 @@ private fun FlowItem(
                 stringResource(Res.string.silvers)
             ),
             style = Theme.typography.label.extraSmall,
+            softWrap = false,
             color = color,
             modifier = Modifier.padding(end = 4.dp)
         )
         Text(
             text = label,
+            softWrap = false,
             style = Theme.typography.label.extraSmall,
             color = Theme.colorScheme.shadeSecondary
         )

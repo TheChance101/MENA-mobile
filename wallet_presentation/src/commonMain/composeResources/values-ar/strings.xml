@@ -136,5 +136,7 @@
     <string name="file_missing_description">تعذر العثور على ملف البيان هذا. قد يكون قد تم حذفه أو نقله من جهازك.</string>
     <string name="share_image">مشاركة الصورة</string>
     <string name="share_pdf">مشاركة الملف</string>
+    <string name="refresh_icon">أيقونة التحديث</string>
+    <string name="deposit_icon">أيقونة الإيداع</string>
     <string name="this_account_cant_receive_transactions">هذا الحساب غير قادر علي استقبال التحويلات.</string>
 </resources>

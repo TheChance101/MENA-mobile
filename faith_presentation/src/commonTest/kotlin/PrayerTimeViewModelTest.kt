@@ -12,12 +12,15 @@ import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.domain.service.PrayerTimeService
+import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
+import net.thechance.mena.faith.presentation.utils.IslamicDate
+import net.thechance.mena.faith.presentation.utils.IslamicDateCalculator
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.repository.AddressesRepository
@@ -29,6 +32,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.hours
@@ -43,6 +47,7 @@ class PrayerTimeViewModelTest {
     private lateinit var prayerTimeRepository: PrayerTimeRepository
     private lateinit var addressesRepository: AddressesRepository
     private lateinit var locationService: LocationService
+    private lateinit var islamicDateCalculator: IslamicDateCalculator
     private lateinit var prayerTimeService: PrayerTimeService
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -53,6 +58,7 @@ class PrayerTimeViewModelTest {
         }
 
         prayerTimeRepository = mock(MockMode.autofill)
+        islamicDateCalculator = mock(MockMode.autofill)
         prayerTimeService = PrayerTimeService(prayerTimeRepository)
         addressesRepository = mock(MockMode.autofill)
         locationService = LocationService(addressesRepository)
@@ -72,6 +78,7 @@ class PrayerTimeViewModelTest {
             prayerTimeRepository,
             locationService,
             prayerTimeService,
+            islamicDateCalculator,
             testDispatcher
         )
 
@@ -88,6 +95,7 @@ class PrayerTimeViewModelTest {
             prayerTimeRepository,
             locationService,
             prayerTimeService,
+            islamicDateCalculator,
             testDispatcher
         )
 
@@ -99,8 +107,7 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend {
             prayerTimeRepository.getPrayerTimes(
-                any(),
-                any()
+                any(), any()
             )
         } throws Exception("Network error")
 
@@ -108,6 +115,7 @@ class PrayerTimeViewModelTest {
             prayerTimeRepository,
             locationService,
             prayerTimeService,
+            islamicDateCalculator,
             testDispatcher
         )
 
@@ -123,21 +131,13 @@ class PrayerTimeViewModelTest {
             prayerTimeRepository,
             locationService,
             prayerTimeService,
+            islamicDateCalculator,
             testDispatcher
         )
 
         viewModel.uiEffect.test {
             viewModel.onBackClick()
             assertEquals(PrayerTimeEffect.NavigateBack, awaitItem())
-
-            viewModel.onNextDateClick()
-            assertEquals(PrayerTimeEffect.NavigateNextDate, awaitItem())
-
-            viewModel.onPrevDateClick()
-            assertEquals(PrayerTimeEffect.NavigatePrevDate, awaitItem())
-
-            viewModel.onDateDropdownClick()
-            assertEquals(PrayerTimeEffect.NavigateCalenderDialog, awaitItem())
 
             viewModel.onLocationClick()
             assertEquals(PrayerTimeEffect.NavigateToAddressesScreen, awaitItem())
@@ -146,6 +146,154 @@ class PrayerTimeViewModelTest {
         }
     }
 
+    @Test
+    fun `onDatePickerDismiss should disappear date picker dialog`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) }
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        viewModel.onDatePickerDismiss()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isDatePickerShown)
+    }
+
+    @Test
+    fun `onDateSelected should set selected date and hide date picker dialog`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) }
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        viewModel.onDateSelected()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.uiState.value.isDatePickerShown)
+        assertEquals(
+            viewModel.uiState.value.currentDate,
+            viewModel.uiState.value.islamicDatePickerUiState.selectedIslamicDate
+        )
+        assertEquals(
+            viewModel.uiState.value.islamicDatePickerUiState,
+            PrayerTimeUiState.IslamicDatePickerUiState()
+        )
+    }
+
+    @Test
+    fun `onSelectedDateChange should update selected date and activate clear button`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        val selectedDate = IslamicDate(1, 1, 1447)
+        viewModel.onSelectedDateChange(1, 1, 1447)
+        advanceUntilIdle()
+
+        assertEquals(
+            PrayerTimeUiState.IslamicDatePickerUiState(
+                selectedIslamicDate = selectedDate, isClearDateActive = true
+            ), viewModel.uiState.value.islamicDatePickerUiState
+        )
+    }
+
+    @Test
+    fun `onDateDropdownClick should show date picker dialog`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        viewModel.onDateDropdownClick()
+
+        assertTrue(viewModel.uiState.value.isDatePickerShown)
+        assertEquals(
+            PrayerTimeUiState.IslamicDatePickerUiState(
+                selectedIslamicDate = viewModel.uiState.value.currentDate
+            ), viewModel.uiState.value.islamicDatePickerUiState
+        )
+    }
+
+    @Test
+    fun `onPrevDateClick should handle month change when going from first day`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
+        everySuspend {
+            prayerTimeRepository.getPrayerTimeWithHijriDate(
+                any(), any(), any(), true
+            )
+        } returns emptyList()
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        viewModel.onSelectedDateChange(1, 1, 1447)
+        viewModel.onDateSelected()
+        advanceUntilIdle()
+
+        viewModel.onPrevDateClick()
+        advanceUntilIdle()
+
+        assertEquals(IslamicDate(29, 12, 1446), viewModel.uiState.value.currentDate)
+    }
+
+    @Test
+    fun `onNextDateClick should handle month change when going from last day`() = runTest {
+        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
+        everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
+        everySuspend {
+            prayerTimeRepository.getPrayerTimeWithHijriDate(
+                any(), any(), any(), true
+            )
+        } returns emptyList()
+
+        viewModel = PrayerTimeViewModel(
+            prayerTimeRepository,
+            locationService,
+            prayerTimeService,
+            islamicDateCalculator,
+            testDispatcher
+        )
+
+        viewModel.onSelectedDateChange(29, 12, 1446)
+        viewModel.onDateSelected()
+        advanceUntilIdle()
+
+        viewModel.onNextDateClick()
+        advanceUntilIdle()
+
+        assertEquals(IslamicDate(1, 1, 1447), viewModel.uiState.value.currentDate)
+    }
 
     private companion object {
         private val now = Clock.System.now()
@@ -166,6 +314,5 @@ class PrayerTimeViewModelTest {
             addressLine = "Baghdad, Iraq",
             addressType = AddressType.Home
         )
-
     }
 }

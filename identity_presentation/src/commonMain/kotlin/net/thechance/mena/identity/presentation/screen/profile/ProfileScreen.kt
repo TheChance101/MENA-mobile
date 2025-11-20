@@ -28,7 +28,6 @@ import mena.identity_presentation.generated.resources.profile_title
 import mena.identity_presentation.generated.resources.share_message
 import mena.identity_presentation.generated.resources.version
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -38,7 +37,6 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.Add
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
@@ -48,6 +46,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.OtherS
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
+import net.thechance.mena.identity.presentation.screen.profile.components.ThemeDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
 import org.jetbrains.compose.resources.stringResource
@@ -85,16 +84,20 @@ class ProfileScreen : BaseScreen<
                         onDismissRequest = listener::onDismissLanguageDialog,
                         appLanguages = state.languageDialogUiState.options,
                         onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
-                        currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
+                        currentAppLanguage = state.currentLanguage,
+                        selectedAppLanguage = state.languageDialogUiState.selectedAppLanguage,
+                        onLanguageChanged = listener::onSelectLanguage
                     )
                 }
-                dialog(state.showThemeDialog) {
-                    Dialog(
+                dialog(state.themeDialogUiState.isVisible) {
+                    ThemeDialog(
                         isVisible = it,
-                        title = "HI",
-                        message = "Not Yet Implemented",
-                        onDismiss = listener::onDismissThemeDialog,
-                        actionButtons = {}
+                        onDismissRequest = listener::onDismissThemeDialog,
+                        appThemes = state.themeDialogUiState.options,
+                        onConfirmThemeSelection = listener::onConfirmThemeSelection,
+                        currentAppTheme = state.currentTheme,
+                        onThemeChanged = listener::onSelectTheme,
+                        selectedAppTheme = state.themeDialogUiState.selectedAppTheme
                     )
                 }
                 dialog(state.showShareProfileDialog) {
@@ -111,7 +114,9 @@ class ProfileScreen : BaseScreen<
                     snackBarState = state.snackBarUiState,
                     onDismiss = listener::onDismissSnackBar,
                 )
-            }) {
+            }
+        )
+        {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -174,8 +179,9 @@ class ProfileScreen : BaseScreen<
                     item {
                         AppSettingsSection(
                             onLanguageClicked = listener::onLanguageClicked,
-                            onThemeClicked = listener::onThemeClicked,
-                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso
+                            onThemeClicked = listener::onThemeSettingsClicked,
+                            currentLanguage = state.languageDialogUiState.selectedAppLanguage.iso,
+                            currentTheme = state.currentTheme.name
                         )
                     }
                     item {
@@ -202,6 +208,7 @@ class ProfileScreen : BaseScreen<
             }
         }
     }
+
 
     override fun onEffect(
         effect: ProfileScreenUIEffect, navigator: Navigator

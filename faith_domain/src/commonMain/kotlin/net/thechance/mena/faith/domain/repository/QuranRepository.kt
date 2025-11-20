@@ -25,4 +25,6 @@ interface QuranRepository {
     suspend fun getReciterById(reciterId: Int): Reciter
     suspend fun saveDefaultReciter(reciterId: Int)
     suspend fun getDefaultReciter(): Flow<Int>
+    suspend fun deleteSurahAudioByReciter(surahId: Int, reciterId: Int)
+
 }

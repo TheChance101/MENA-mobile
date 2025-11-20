@@ -22,7 +22,7 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 
-private const val BASE_URL = "https://a.basemaps.cartocdn.com/rastertiles/voyager_no_buildings"
+private const val BASE_URL = "https://a.basemaps.cartocdn.com/rastertiles/voyager_labels_under"
 private const val FACTORY_NAME = "cartocdn"
 private const val IMAGE_PATH = "drawable/map_marker.svg"
 

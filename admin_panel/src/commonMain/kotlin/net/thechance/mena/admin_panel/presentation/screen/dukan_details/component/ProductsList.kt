@@ -2,6 +2,7 @@ package net.thechance.mena.admin_panel.presentation.screen.dukan_details.compone
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,10 +28,13 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import net.thechance.mena.admin_panel.domain.entity.dukan.Product
 import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
 import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import net.thechance.mena.admin_panel.presentation.utils.formatAmount
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_img
+import net.thechance.mena.admin_panel.resources.empty_shelf_img
+import net.thechance.mena.admin_panel.resources.empty_shelf_title
 import net.thechance.mena.admin_panel.resources.ic_dukan_placholder
 import net.thechance.mena.admin_panel.resources.silver_img
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -60,7 +64,7 @@ internal fun ProductsList(
 
     when {
         isProductLoading && products.isEmpty() -> {
-            Column (
+            Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(600.dp),
@@ -71,9 +75,7 @@ internal fun ProductsList(
             }
         }
 
-        products.isEmpty() -> {
-            EmptyShelfScreen(modifier = Modifier.fillMaxSize())
-        }
+        products.isEmpty() -> { EmptyProductsState() }
 
         else -> {
             LazyColumn(
@@ -153,7 +155,7 @@ private fun ProductPrice(
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Start
     ) {
-        if (basePrice != finalPrice){
+        if (basePrice != finalPrice) {
             Text(
                 modifier = Modifier.alignByBaseline(),
                 text = formatAmount(basePrice),
@@ -177,6 +179,23 @@ private fun ProductPrice(
                 .alignByBaseline(),
             painter = painterResource(Res.drawable.silver_img),
             contentDescription = stringResource(Res.string.silver_img)
+        )
+    }
+}
+
+@Composable
+private fun EmptyProductsState(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        StatePlaceholder(
+            image = painterResource(Res.drawable.empty_shelf_img),
+            title = stringResource(Res.string.empty_shelf_title),
+            description = "",
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

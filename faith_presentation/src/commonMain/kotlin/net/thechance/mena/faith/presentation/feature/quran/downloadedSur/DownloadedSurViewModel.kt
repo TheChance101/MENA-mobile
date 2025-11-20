@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.surah_deleted_successfully
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel

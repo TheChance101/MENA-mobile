@@ -63,11 +63,17 @@ class UsersManagementViewModel(
     override fun onSearchQueryChanged(query: String) {
         if (query == currentState.query) return
 
+        val trimmedQuery = query.trim().replace(Regex("\\s+"), " ")
+
         updateState { it.copy(query = query, pageInfo = it.pageInfo.copy(page = 0)) }
         searchJob?.cancel()
 
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_DELAY)
+        if (trimmedQuery.isNotBlank()) {
+            searchJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_DELAY)
+                getUsers()
+            }
+        } else {
             getUsers()
         }
     }
@@ -120,10 +126,18 @@ class UsersManagementViewModel(
             callee = { userRepository.getUsers(queryParams) },
             onSuccess = ::onGetUsersSuccess,
             onError = ::onError,
-            onStart = { updateState { it.copy(isLoading = true) } },
-            onFinish = { updateState { it.copy(isLoading = false) } },
+            onStart = ::onGetUsersStart,
+            onFinish = ::onGetUsersFinish,
             dispatcher = dispatcher
         )
+    }
+
+    private fun onGetUsersStart() {
+        updateState { it.copy(isLoading = true) }
+    }
+
+    private fun onGetUsersFinish() {
+        updateState { it.copy(isLoading = false, isInitialLoading = false) }
     }
 
     private fun getUserQueryParams(): UserQueryParams {

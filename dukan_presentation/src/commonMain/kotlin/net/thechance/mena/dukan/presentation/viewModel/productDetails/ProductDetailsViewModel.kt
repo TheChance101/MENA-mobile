@@ -145,6 +145,7 @@ class ProductDetailsViewModel(
     private suspend fun onAddToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
         if (state.value.product.inCartQuantity == 0) removeProductFromCart()
         else addProductToCart(domainRequest)
+        refreshCartInfo()
     }
 
     private suspend fun addProductToCart(domainRequest: UpdateProductCartQuantityParams) {
@@ -157,6 +158,7 @@ class ProductDetailsViewModel(
             dukanId = args.dukanId,
             productId = args.productId
         )
+        updateState { copy(isFirstQuantityOne = true) }
     }
 
     override fun onPlusClicked(productId: String) {
@@ -247,5 +249,9 @@ class ProductDetailsViewModel(
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
         )
+    }
+
+    fun refreshCartInfo(){
+        loadCartInfo()
     }
 }

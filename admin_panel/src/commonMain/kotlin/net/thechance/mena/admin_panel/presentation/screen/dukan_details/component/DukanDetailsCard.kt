@@ -42,7 +42,7 @@ internal fun DukanDetailsCard(
     dukan: DukanDetailsScreenState.DukanItemUiState,
     isLoading: Boolean,
     isMapVisible: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier
@@ -143,8 +143,8 @@ private fun DukanLocationMap(
                         .clip(RoundedCornerShape(Theme.radius.md)),
                     latitude = latitude,
                     longitude = longitude,
-                    markerWidth = 60,
-                    markerHeight = 80,
+                    markerWidth = 45,
+                    markerHeight = 58
                 )
             } else {
                 Image(
