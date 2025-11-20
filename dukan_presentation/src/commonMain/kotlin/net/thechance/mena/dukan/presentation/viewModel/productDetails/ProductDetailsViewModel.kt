@@ -13,10 +13,12 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -27,6 +29,7 @@ import org.jetbrains.compose.resources.StringResource
 class ProductDetailsViewModel(
     private val productRepository: ProductRepository,
     private val dukanCartRepository: CartRepository,
+    private val dukanManagementRepository: DukanManagementRepository,
     savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<ProductDetailsUiState, ProductDetailsEffects>(
@@ -41,6 +44,23 @@ class ProductDetailsViewModel(
     init {
         loadProductDetails()
         loadCartInfo()
+        loadDukanInfo()
+    }
+
+    private fun loadDukanInfo() {
+        tryToExecute(
+            block = { dukanManagementRepository.getDukanDetailsByDukanId(args.dukanId) },
+            onSuccess = ::onLoadDukanSuccess,
+            onError = ::onLoadDukanError
+        )
+    }
+
+    private fun onLoadDukanSuccess(dukan: Dukan) {
+        updateState { copy(dukanColor = parseHexColor(color = dukan.color.hexCode)) }
+    }
+
+    private fun onLoadDukanError(throwable: Throwable) {
+        updateState { copy(dukanColor = 0xFF000000) }
     }
 
     private fun loadCartInfo() {
@@ -96,8 +116,10 @@ class ProductDetailsViewModel(
         loadProductDetails()
     }
 
-    override fun onSecondaryImageClicked(imageUrl: String) {
-        updateState { copy(selectedImageUrl = imageUrl) }
+    override fun onSecondaryImageClicked(imageUrl: String, selectedImageUrl: String) {
+        if (imageUrl != selectedImageUrl) {
+            updateState { copy(selectedImageUrl = imageUrl) }
+        }
     }
 
     override fun onBackClicked() {
@@ -123,6 +145,7 @@ class ProductDetailsViewModel(
     private suspend fun onAddToCartBlock(domainRequest: UpdateProductCartQuantityParams) {
         if (state.value.product.inCartQuantity == 0) removeProductFromCart()
         else addProductToCart(domainRequest)
+        refreshCartInfo()
     }
 
     private suspend fun addProductToCart(domainRequest: UpdateProductCartQuantityParams) {
@@ -135,6 +158,7 @@ class ProductDetailsViewModel(
             dukanId = args.dukanId,
             productId = args.productId
         )
+        updateState { copy(isFirstQuantityOne = true) }
     }
 
     override fun onPlusClicked(productId: String) {
@@ -225,5 +249,9 @@ class ProductDetailsViewModel(
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
         )
+    }
+
+    fun refreshCartInfo(){
+        loadCartInfo()
     }
 }

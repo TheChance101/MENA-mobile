@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
@@ -32,10 +31,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun WideImageDukanDetailsContent(
     state: DukanDetailsUiState,
-    listener: DukanDetailsInteractionListener,
+    listener: DukanDetailsInteractionListener
 ) {
-    val productShelf = state.productsShelf.collectAsLazyPagingItems()
     val shelves = state.shelves.collectAsLazyPagingItems()
+    val productShelf = state.productsShelf.collectAsLazyPagingItems()
 
     OnSystemBackPressed(listener::onBackClicked)
     Scaffold(
@@ -71,7 +70,7 @@ fun WideImageDukanDetailsContent(
                 bottom = Theme.spacing._16
             ),
             verticalArrangement = Arrangement.spacedBy(Theme.spacing._12),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._12)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanHeader(
@@ -90,8 +89,8 @@ fun WideImageDukanDetailsContent(
                 is LoadState.Loading -> wideImageProductCardSkeletonGrid(productCount = 6)
                 is LoadState.NotLoading -> {
                     wideImageProductsGrid(
+                        state = state,
                         listener = listener,
-                        cartColor = Color(state.dukanInfo.color),
                         productsShelf = productShelf
                     )
                 }
@@ -108,7 +107,7 @@ private fun WideImageDukanDetailsPreview() {
     MenaTheme {
         WideImageDukanDetailsContent(
             state = fakeDukanDetails,
-            listener = PreviewDukanDetailsInteractionListener,
+            listener = PreviewDukanDetailsInteractionListener
         )
     }
 }

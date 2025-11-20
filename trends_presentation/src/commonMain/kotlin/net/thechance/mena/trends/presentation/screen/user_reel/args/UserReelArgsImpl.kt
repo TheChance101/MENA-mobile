@@ -6,11 +6,10 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import org.koin.core.annotation.Factory
 
 @Factory(binds = [UserReelArgs::class])
-class UserReelArgsImpl(
+internal class UserReelArgsImpl(
     savedStateHandle: SavedStateHandle
 ) : UserReelArgs {
-    override val realId: String = savedStateHandle.toRoute<Route.ReelDetails>().reelId
-    override val isFromHome: Boolean = savedStateHandle.toRoute<Route.ReelDetails>().isFromHome
-    override val isFromManageTrends: Boolean =
-        savedStateHandle.toRoute<Route.ReelDetails>().isFromManageTrends
+    private val route = savedStateHandle.toRoute<Route.ReelDetails>()
+    override val realId: String = route.reelId
+    override val reelSource: Route.ReelSource = Route.ReelSource.valueOf(route.source)
 }

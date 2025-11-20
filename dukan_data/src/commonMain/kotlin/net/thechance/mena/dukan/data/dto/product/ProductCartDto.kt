@@ -15,7 +15,7 @@ data class ProductCartDto(
     val name: String,
 
     @SerialName("price")
-    val price: Double,
+    val price: PriceDto,
 
     @SerialName("description")
     val description: String,

@@ -35,6 +35,7 @@ data class SearchUiState(
     data class ProductUiState(
         val id: Uuid,
         val name: String,
+        val isOutOfStock: Boolean,
         val imageUrl: String,
         val dukanName: String,
         val dukanId:Uuid,

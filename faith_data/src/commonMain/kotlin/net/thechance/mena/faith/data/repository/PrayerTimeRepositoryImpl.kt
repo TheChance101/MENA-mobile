@@ -33,14 +33,14 @@ class PrayerTimeRepositoryImpl(
 
     override suspend fun getPrayerTimeWithHijriDate(
         date: String,
-        location: Address,
+        address: Address,
         timeZone: TimeZone,
         isHijri: Boolean
     ): List<PrayerTime> = executeApiSafely<PrayerTimesDto> {
         prayerTimeApiService.getPrayerTimes(
             date = date,
-            latitude = location.latitude,
-            longitude = location.longitude,
+            latitude = address.latitude,
+            longitude = address.longitude,
             isHijri = isHijri
         )
     }.toDomain()

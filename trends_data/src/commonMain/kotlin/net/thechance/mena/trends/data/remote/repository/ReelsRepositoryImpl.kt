@@ -35,6 +35,8 @@ import net.thechance.mena.trends.data.remote.dto.WatchTimeDto
 import net.thechance.mena.trends.data.remote.mapper.toDto
 import net.thechance.mena.trends.data.remote.mapper.toEntity
 import net.thechance.mena.trends.data.remote.mapper.toReelUrls
+import net.thechance.mena.trends.data.util.NetworkEndpoint.FAVORITE_REEL_ENDPOINT
+import net.thechance.mena.trends.data.remote.mapper.toUserEngagement
 import net.thechance.mena.trends.data.util.NetworkEndpoint.LIKE_REEL_ENDPOINT
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PAGE_PARAMETER
 import net.thechance.mena.trends.data.util.NetworkEndpoint.PROFILE_REELS_ENDPOINT
@@ -53,22 +55,23 @@ import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Reel
 import net.thechance.mena.trends.domain.model.ReelUrls
+import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import net.thechance.mena.trends.domain.repository.ReelsRepository
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
-import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalUuidApi::class)
 @Single(binds = [ReelsRepository::class])
 internal class ReelsRepositoryImpl(
     @Named(DEFAULT_CLIENT_NAME) private val networkClient: HttpClient,
     @Named(UPLOAD_CLIENT_NAME) private val uploadClient: HttpClient,
-    @Provided private val userRepository: UserRepository,
     @Provided private val videoFileHandler: VideoFileHandler,
-    private val engagementDao: UserEngagementDao
+    @Provided private val userRepository: UserRepository,
+    private val userEngagementDao: UserEngagementDao,
 ) : ReelsRepository {
 
     private val observableUploadingFlow: MutableSharedFlow<UploadReelProgress> = MutableSharedFlow()
@@ -105,11 +108,10 @@ internal class ReelsRepositoryImpl(
         }
     }
 
-
     @OptIn(ExperimentalTime::class)
     private suspend fun sendUserEngagementsBeforeToday() {
         val userId = userRepository.getUser().first()?.id.toString()
-        engagementDao.getUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
+        userEngagementDao.getUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
             .takeIf { it.isNotEmpty() }
             ?.let { engagements ->
                 sendUserEngagementsData(
@@ -134,7 +136,7 @@ internal class ReelsRepositoryImpl(
                 )
             }
         }.also {
-            engagementDao.deleteUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
+            userEngagementDao.deleteUserEngagementsBeforeGivenTime(userId, getLastMidnightTime())
         }
     }
 
@@ -220,6 +222,21 @@ internal class ReelsRepositoryImpl(
         }.toReelUrls()
     }
 
+    override suspend fun getFavoriteReels(
+        pageNumber: Int,
+        reelId: String?
+    ): List<Reel> {
+        val endpoint = reelId?.let {
+            "$FAVORITE_REEL_ENDPOINT/$it"
+        } ?: FAVORITE_REEL_ENDPOINT
+
+        return safeApiCall<RemotePaginationResponse<ReelDto>> {
+            networkClient.get(endpoint) {
+                parameter(PAGE_PARAMETER, pageNumber)
+            }
+        }.results.orEmpty().map { it.toEntity() }
+    }
+
     private fun createRequestBody(
         key: String,
         mimeType: String,
@@ -237,5 +254,11 @@ internal class ReelsRepositoryImpl(
                 )
             }
         )
+    }
+
+    override suspend fun saveUserEngagementWithReel(reelWatchSession: ReelWatchSession) {
+        val userId = userRepository.getUser().first()?.id.toString()
+        if (reelWatchSession.watchStartTime != null)
+            userEngagementDao.insertEngagement(reelWatchSession.toUserEngagement(userId))
     }
 }

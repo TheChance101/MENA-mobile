@@ -1,13 +1,14 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
 import kotlinx.coroutines.flow.MutableSharedFlow
+import org.jetbrains.compose.resources.StringResource
 
 data class ContactUsUIState(
+    val isLoading: Boolean = true,
     val urlToOpen: MutableSharedFlow<String> = MutableSharedFlow(),
-    val displayedEmail: String = "MENA2025@gmail.com",
-    val displayedPhoneNumber: String = "+964 770 0000 000",
     val displayedFacebookAccount: String = "MENA-THE-CHANCE",
-    val email: String = "MENA2025@gmail.com",
-    val phoneNumber: String = "+9647700000000",
-    val facebookUrl: String = "https://www.facebook.com",
+    val email: String = "",
+    val phoneNumber: String = "",
+    val facebookUrl: String = "",
+    val errorMessage : StringResource? = null
 )

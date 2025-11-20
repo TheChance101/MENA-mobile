@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -62,15 +63,15 @@ fun Segment(
 @Composable
 private fun SegmentPreview() {
     MenaTheme {
-        Box(
-            modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
-                .padding(16.dp)
+        PreviewComponent(
+            title = "Segment buttons"
         ) {
-            Segment {
+            Segment(contentPadding = PaddingValues(top = 8.dp)) {
                 item("Option1") {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .height(200.dp)
                             .clip(RoundedCornerShape(Theme.radius.md))
                             .background(Theme.colorScheme.background.surfaceHigh),
                         contentAlignment = Alignment.Center
@@ -81,7 +82,8 @@ private fun SegmentPreview() {
                 item("Option2") {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .height(200.dp)
                             .clip(RoundedCornerShape(Theme.radius.md))
                             .background(Theme.colorScheme.background.surfaceHigh),
                         contentAlignment = Alignment.Center

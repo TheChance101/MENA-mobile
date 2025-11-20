@@ -19,33 +19,23 @@ import net.thechance.mena.faith.domain.entity.AyahBookmark
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.createPagingSourceFlow
-import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
-import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 
 class BookmarkViewModel(
     private val bookmarkRepository: BookmarkRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    snackBarHandler: SnackbarHandler,
-) : BaseViewModel<BookMarkUiState, BookmarkEffect>(
-        BookMarkUiState(),
-        snackBarHandler,
-    ),
+) : BaseViewModel<BookMarkUiState, BookmarkEffect>(BookMarkUiState()),
     BookmarkInteractionListener {
-    private val cachedBookmarksFlow =
-        createBookmarksPagingSource()
-            .map { pagingData ->
-                pagingData.map(AyahBookmark::toUiState)
-            }.cachedIn(viewModelScope)
+
+    private val cachedBookmarksFlow = createBookmarksPagingSource()
+        .map { pagingData -> pagingData.map(AyahBookmark::toUiState) }.cachedIn(viewModelScope)
 
     private val deletedBookmarkIdsFlow = MutableStateFlow(setOf<Int>())
+    private var pendingDeleteBookmarkId: Int? = null
 
-    private val filteredBookmarksFlow =
-        combine(
-            cachedBookmarksFlow,
-            deletedBookmarkIdsFlow,
-        ) { pagingData, deletedIds ->
-            pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
-        }
+    private val filteredBookmarksFlow = combine(cachedBookmarksFlow, deletedBookmarkIdsFlow)
+    { pagingData, deletedIds ->
+        pagingData.filter { bookmark -> bookmark.bookmarkId !in deletedIds }
+    }
 
     init {
         initializeBookmarks()
@@ -56,13 +46,29 @@ class BookmarkViewModel(
     override fun onStartTilawahClick() = sendEffect(BookmarkEffect.NavigateToSur)
 
     override fun onDeleteBookmarkClick(bookmarkId: Int) {
+        pendingDeleteBookmarkId = bookmarkId
+        updateState { it.copy(isDeleteConfirmationDialogVisible = true) }
+    }
+
+    override fun onConfirmDeleteBookmarkClick() {
+        val bookmarkId = pendingDeleteBookmarkId ?: return
+
         tryToExecute(
             dispatcher = dispatcher,
             execute = { bookmarkRepository.deleteAyahBookmark(bookmarkId) },
             onStart = { insertDeletedBookmarkId(bookmarkId) },
             onSuccess = { onDeleteBookmarkSuccess() },
-            onError = { removeDeletedBookmarkId(bookmarkId) },
+            onError = {
+                removeDeletedBookmarkId(bookmarkId)
+                handleErrorSnackBar(it)
+                onDismissDeleteConfirmationDialog()
+            },
         )
+    }
+
+    override fun onDismissDeleteConfirmationDialog() {
+        updateState { it.copy(isDeleteConfirmationDialogVisible = false) }
+        pendingDeleteBookmarkId = null
     }
 
     private fun insertDeletedBookmarkId(id: Int) =
@@ -80,15 +86,15 @@ class BookmarkViewModel(
         }
     }
 
-    private fun onDeleteBookmarkSuccess() =
-        snackbarHandler.showSnackBar(
-            message = Res.string.bookmark_removed_successfully,
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope,
-        )
+    private fun onDeleteBookmarkSuccess() {
+        handleSuccessSnackBar(Res.string.bookmark_removed_successfully)
+        updateState { it.copy(isDeleteConfirmationDialogVisible = false) }
+        pendingDeleteBookmarkId = null
+    }
 
     private fun createBookmarksPagingSource(): Flow<PagingData<AyahBookmark>> =
         createPagingSourceFlow { pageNumber, pageSize ->
             bookmarkRepository.getAyahBookmarks(pageNumber = pageNumber, pageSize = pageSize)
         }
+
 }

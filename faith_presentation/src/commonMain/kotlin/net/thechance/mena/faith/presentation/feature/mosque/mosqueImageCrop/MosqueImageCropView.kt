@@ -27,6 +27,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropUiState.Companion.MAX_ZOOM
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropUiState.Companion.MIN_ZOOM
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.component.CropImageBottomContainer
@@ -139,24 +140,22 @@ private fun MosqueImageAppBar(
 
 @Preview
 @Composable
-private fun MosqueImageCropContentPreview() {
+private fun Preview() {
     MenaTheme {
-        MosqueImageCropContent(
-            aspectRatio = 16f / 9f,
-            state = MosqueImageCropUiState(),
-            onBackClick = {},
-            interactionListener = object : MosqueImageCropInteractionListener {
-                override fun onUploadAnotherImageClicked(imageSrc: ImageSrc?) {}
+        QuranTheme {
+            MosqueImageCropContent(
+                aspectRatio = 16f / 9f,
+                state = MosqueImageCropUiState(),
+                onBackClick = {},
+                interactionListener = object : MosqueImageCropInteractionListener {
+                    override fun onUploadAnotherImageClicked(imageSrc: ImageSrc?) {}
+                    override fun onZoomInClicked() {}
+                    override fun onZoomOutClicked() {}
+                    override fun onResetClicked() {}
+                    override fun onSaveClicked() {}
 
-                override fun onZoomInClicked() {}
-
-                override fun onZoomOutClicked() {}
-
-                override fun onResetClicked() {}
-
-                override fun onSaveClicked() {}
-
-            },
-        )
+                },
+            )
+        }
     }
 }

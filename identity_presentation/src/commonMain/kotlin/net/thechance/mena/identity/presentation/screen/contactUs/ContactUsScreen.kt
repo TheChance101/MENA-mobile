@@ -1,11 +1,16 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,7 +37,9 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactCard
+import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactUsScreenShimmer
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -73,6 +80,7 @@ class ContactUsScreen : BaseScreen<
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_left),
                             contentDescription = stringResource(Res.string.back),
+                            tint = Theme.colorScheme.shadePrimary
                         )
                     },
                     onLeadingClick = listener::onClickBack,
@@ -80,43 +88,64 @@ class ContactUsScreen : BaseScreen<
                 )
             }
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .systemBarsPadding()
-                    .verticalScroll(scrollState)
-                    .background(Theme.colorScheme.background.surface)
-                    .padding(Theme.spacing._16),
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+            AnimatedVisibility(
+                visible = state.isLoading,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500))
             ) {
-                Text(
-                    text = stringResource(Res.string.contact_info),
-                    style = Theme.typography.title.small,
-                    color = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier.padding(bottom = Theme.spacing._4),
-                )
-
-                ContactCard(
-                    icon = Res.drawable.ic_mailbox,
-                    title = Res.string.contact_email_address,
-                    info = state.displayedEmail,
-                    onClick = listener::onClickEmailAddress
-                )
-
-                ContactCard(
-                    icon = Res.drawable.ic_telephone,
-                    title = Res.string.contact_phone_number,
-                    info = state.displayedPhoneNumber,
-                    onClick = listener::onClickPhoneNumber
-                )
-
-                ContactCard(
-                    icon = Res.drawable.ic_facebook,
-                    title = Res.string.contact_facebook_account,
-                    info = state.displayedFacebookAccount,
-                    onClick = listener::onClickFacebookAccount
-                )
+                ContactUsScreenShimmer()
             }
+            AnimatedVisibility(
+                visible = !state.isLoading,
+                enter = fadeIn(animationSpec = tween(durationMillis = 500)),
+                exit = fadeOut(animationSpec = tween(durationMillis = 500))
+            ) {
+
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .systemBarsPadding()
+                        .verticalScroll(scrollState)
+                        .background(Theme.colorScheme.background.surface)
+                        .padding(Theme.spacing._16),
+                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+                ) {
+                    Text(
+                        text = stringResource(Res.string.contact_info),
+                        style = Theme.typography.title.small,
+                        color = Theme.colorScheme.shadePrimary,
+                        modifier = Modifier.padding(bottom = Theme.spacing._4),
+                    )
+
+                    ContactCard(
+                        icon = Res.drawable.ic_mailbox,
+                        title = Res.string.contact_email_address,
+                        info = state.email,
+                        onClick = listener::onClickEmailAddress
+                    )
+
+                    ContactCard(
+                        icon = Res.drawable.ic_telephone,
+                        title = Res.string.contact_phone_number,
+                        info = state.phoneNumber,
+                        onClick = listener::onClickPhoneNumber
+                    )
+
+                    ContactCard(
+                        icon = Res.drawable.ic_facebook,
+                        title = Res.string.contact_facebook_account,
+                        info = state.displayedFacebookAccount,
+                        onClick = listener::onClickFacebookAccount
+                    )
+                }
+            }
+            ErrorSnackBar(
+                errorMessage = state.errorMessage?.let { stringResource(it) },
+                onDismiss = {
+                    listener.onClearErrorMessage()
+                },
+                modifier = Modifier.statusBarsPadding()
+            )
         }
     }
 

@@ -10,6 +10,7 @@ import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultProduc
 import net.thechance.mena.dukan.data.repository.mockEngine.product.defaultUploadImageResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.product.demoPagedResult
 import net.thechance.mena.dukan.data.repository.mockEngine.product.dummyImageUrls
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import net.thechance.mena.dukan.domain.model.UpdateProductParams
 import org.junit.Test
@@ -34,7 +35,10 @@ class DukanProductRepositoryImplTest {
             params = CreateProductParams(
                 name = "new product",
                 description = "new product description",
-                price = 12.2,
+                price = Price(
+                    base = 12.2,
+                    final = 12.2
+                ),
                 shelfId = "shelf-123"
             )
         )
@@ -98,7 +102,7 @@ class DukanProductRepositoryImplTest {
 
         assertTrue(called, "Expected the mock engine to be called")
         assertEquals("Demo Product 1", product.name)
-        assertEquals(9.99, product.price)
+        assertEquals(9.99, product.price.base)
         assertEquals("This is a demo product", product.description)
     }
 
@@ -116,7 +120,10 @@ class DukanProductRepositoryImplTest {
             productId = "product-123",
             params = UpdateProductParams(
                 name = "Updated Product",
-                price = 15.99,
+                price = Price(
+                    base = 15.99,
+                    final = 15.99
+                ),
                 description = "Updated description",
                 shelfId = "shelf-123",
                 imageUrls = listOf("image1.jpg")

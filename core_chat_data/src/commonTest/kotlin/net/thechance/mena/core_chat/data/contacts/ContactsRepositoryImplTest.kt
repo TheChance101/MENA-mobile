@@ -394,4 +394,151 @@ class ContactsRepositoryImplTest {
             assertThat(result.data).isEmpty()
         }
 
+    @Test
+    fun `should return paged contacts when getContactsByName is called successfully`() = runTest {
+        val searchName = "John"
+        val pageNumber = 1
+        val isMenaUser = true
+
+        repository = createRepository(
+            contactsProvider = mockContactsProvider,
+            contactsDataStore = mockDataStore,
+            contactsResponse = {
+                mockSuccessPagedResponse(
+                    PagedDataDto(
+                        data = listOf(
+                            ContactDto(
+                                firstName = "John",
+                                lastName = "Doe",
+                                phoneNumber = "0100000001",
+                                menaUserId = null,
+                                imageUrl = null
+                            )
+                        ),
+                        pageNumber = pageNumber,
+                        pageSize = 20,
+                        totalItems = 1,
+                        totalPages = 1
+                    )
+                )
+            }
+        )
+
+        val result = repository.getContactsByName(
+            name = searchName,
+            pageNumber = pageNumber,
+            isMenaUser = isMenaUser
+        )
+
+        assertThat(result.data).isEqualTo(
+            listOf(
+                ContactDto(
+                    firstName = "John",
+                    lastName = "Doe",
+                    phoneNumber = "0100000001",
+                    menaUserId = null,
+                    imageUrl = null
+                ).toDomain()
+            )
+        )
+    }
+
+    @Test
+    fun `should return empty paged contacts when getContactsByName returns no data`() = runTest {
+        val searchName = "Unknown"
+        val pageNumber = 1
+        val isMenaUser = true
+
+        repository = createRepository(
+            contactsProvider = mockContactsProvider,
+            contactsDataStore = mockDataStore,
+            contactsResponse = {
+                mockSuccessPagedResponse<ContactDto>(
+                    PagedDataDto(
+                        data = emptyList(),
+                        pageNumber = pageNumber,
+                        pageSize = 20,
+                        totalItems = 0,
+                        totalPages = 1
+                    )
+                )
+            }
+        )
+
+        val result = repository.getContactsByName(
+            name = searchName,
+            pageNumber = pageNumber,
+            isMenaUser = isMenaUser
+        )
+
+        assertThat(result.data).isEmpty()
+    }
+
+    @Test
+    fun `should throw UnAuthorizedException when getContactsByName receives unauthorized response`() = runTest {
+        val searchName = "John"
+        val pageNumber = 1
+        val isMenaUser = true
+
+        repository = createRepository(
+            contactsProvider = mockContactsProvider,
+            contactsDataStore = mockDataStore,
+            contactsResponse = {
+                mockErrorPagedResponse<PagedDataDto<ContactDto>>(HttpStatusCode.Unauthorized)
+            }
+        )
+
+        assertFailsWith<UnAuthorizedException> {
+            repository.getContactsByName(
+                name = searchName,
+                pageNumber = pageNumber,
+                isMenaUser = isMenaUser
+            )
+        }
+    }
+
+    @Test
+    fun `should throw UnknownException when getContactsByName receives server error`() = runTest {
+        val searchName = "John"
+        val pageNumber = 1
+        val isMenaUser = true
+
+        repository = createRepository(
+            contactsProvider = mockContactsProvider,
+            contactsDataStore = mockDataStore,
+            contactsResponse = {
+                mockErrorPagedResponse<PagedDataDto<ContactDto>>(HttpStatusCode.InternalServerError)
+            }
+        )
+
+        assertFailsWith<UnknownException> {
+            repository.getContactsByName(
+                name = searchName,
+                pageNumber = pageNumber,
+                isMenaUser = isMenaUser
+            )
+        }
+    }
+
+    @Test
+    fun `should throw NoInternetException when getContactsByName encounters network error`() = runTest {
+        val searchName = "John"
+        val pageNumber = 1
+        val isMenaUser = true
+
+        repository = createRepository(
+            contactsProvider = mockContactsProvider,
+            contactsDataStore = mockDataStore,
+            contactsResponse = { throw IOException() }
+        )
+
+        assertFailsWith<NoInternetException> {
+            repository.getContactsByName(
+                name = searchName,
+                pageNumber = pageNumber,
+                isMenaUser = isMenaUser
+            )
+        }
+    }
+
 }

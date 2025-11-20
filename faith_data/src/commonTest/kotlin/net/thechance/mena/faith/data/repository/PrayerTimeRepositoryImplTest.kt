@@ -183,7 +183,7 @@ class PrayerTimeRepositoryImplTest {
 
             val result = prayerTimeRepository.getPrayerTimeWithHijriDate(
                 date = HIJRI_DATE,
-                location = address,
+                address = address,
                 timeZone = timeZone,
                 isHijri = true
             )
@@ -208,7 +208,7 @@ class PrayerTimeRepositoryImplTest {
 
             val result = prayerTimeRepository.getPrayerTimeWithHijriDate(
                 date = DATE,
-                location = address,
+                address = address,
                 timeZone = timeZone,
                 isHijri = false
             )
@@ -234,7 +234,7 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimeWithHijriDate(
                     date = HIJRI_DATE,
-                    location = address,
+                    address = address,
                     timeZone = timeZone,
                     isHijri = true
                 )
@@ -256,7 +256,7 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimeWithHijriDate(
                     date = HIJRI_DATE,
-                    location = address,
+                    address = address,
                     timeZone = timeZone,
                     isHijri = true
                 )
@@ -278,7 +278,7 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimeWithHijriDate(
                     date = HIJRI_DATE,
-                    location = address,
+                    address = address,
                     timeZone = timeZone,
                     isHijri = true
                 )
@@ -300,7 +300,7 @@ class PrayerTimeRepositoryImplTest {
             assertFailure {
                 prayerTimeRepository.getPrayerTimeWithHijriDate(
                     date = HIJRI_DATE,
-                    location = address,
+                    address = address,
                     timeZone = timeZone,
                     isHijri = true
                 )

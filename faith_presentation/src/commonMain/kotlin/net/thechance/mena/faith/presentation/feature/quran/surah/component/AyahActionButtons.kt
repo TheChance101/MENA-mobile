@@ -40,6 +40,7 @@ import mena.faith_presentation.generated.resources.play
 import mena.faith_presentation.generated.resources.send_to
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
@@ -66,7 +67,7 @@ internal fun AnimatedAyahActionButtons(
             AyahActionButtons(
                 onBookmarkClick = { listener.onBookmarkClick(selectedAyah?.number ?: 0) },
                 onCopyClick = { listener.onCopyClick(ayahContent = state.selectedAyah) },
-                onShareClick = { listener.onShareClick(state.selectedAyah) },
+                onShareClick = { listener.onShareClick() },
                 onListenClick = { listener.onListenClick() }
             )
         }
@@ -176,17 +177,19 @@ private fun isValidAyahSelection(state: SurahUiState): Boolean {
             state.selectedAyahNumber <= state.ayatOfSurah.size
 }
 
-@Preview()
+@Preview
 @Composable
 private fun Preview() {
-    QuranTheme {
-        CompositionLocalProvider(LocalNavController provides rememberNavController()) {
-            AyahActionButtons(
-                onBookmarkClick = {},
-                onCopyClick = {},
-                onShareClick = {},
-                onListenClick = {}
-            )
+    MenaTheme {
+        QuranTheme {
+            CompositionLocalProvider(LocalNavController provides rememberNavController()) {
+                AyahActionButtons(
+                    onBookmarkClick = {},
+                    onCopyClick = {},
+                    onShareClick = {},
+                    onListenClick = {}
+                )
+            }
         }
     }
 }

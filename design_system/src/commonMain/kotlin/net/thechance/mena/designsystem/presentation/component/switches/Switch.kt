@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import net.thechance.mena.designsystem.presentation.component.preview.PreviewComponent
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -81,15 +82,36 @@ fun Switch(
     }
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 private fun PreviewSwitch() {
     MenaTheme {
         val (isSwitchChecked, onCheckedChange) = remember { mutableStateOf(false) }
 
-        Switch(
-            isChecked = isSwitchChecked,
-            onCheckedChange = onCheckedChange
-        )
+        PreviewComponent(
+            title = "Switch"
+        ) {
+            Switch(
+                isChecked = isSwitchChecked,
+                onCheckedChange = onCheckedChange
+            )
+
+            Switch(
+                isChecked = false,
+                isEnabled = false,
+                onCheckedChange = onCheckedChange
+            )
+
+            Switch(
+                isChecked = true,
+                onCheckedChange = onCheckedChange
+            )
+
+            Switch(
+                isChecked = true,
+                isEnabled = false,
+                onCheckedChange = onCheckedChange
+            )
+        }
     }
 }

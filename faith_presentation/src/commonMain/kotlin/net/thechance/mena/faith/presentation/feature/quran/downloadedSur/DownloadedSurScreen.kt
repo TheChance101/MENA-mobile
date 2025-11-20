@@ -10,11 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.delete_surah
+import mena.faith_presentation.generated.resources.delete_surah_dialog_message
 import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_al_kahf
 import mena.faith_presentation.generated.resources.ic_an_nas
 import mena.faith_presentation.generated.resources.ic_ash_shams
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
@@ -25,6 +28,7 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DownloadedSurahCard
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -39,9 +43,14 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
         when (effect) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
             is DownloadedSurEffect.NavigateToRecitersScreen ->
-                navController.navigate(Route.DownloadedRecitersRoute(surahId = effect.surahId))
-
-            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> Unit // TODO("Navigate to downloaded surah reciters when done")
+                navController.navigate(Route.ReciterSelectionRoute)
+            is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
+                navController.navigate(
+                    Route.DownloadedRecitersRoute(
+                        surahId = effect.surahId,
+                    )
+                )
+            }
         }
     }
 
@@ -80,6 +89,8 @@ private fun Content(
                     showDialog = uiState.showDeleteConfirmationDialog,
                     onDeleteClick = listener::onConfirmDeleteDownloadedSurahClick,
                     onDismiss = listener::onDismissDeleteConfirmationDialog,
+                    title = stringResource(Res.string.delete_surah),
+                    message = stringResource(Res.string.delete_surah_dialog_message)
                 )
             }
         }
@@ -113,48 +124,50 @@ private fun Content(
 
 @Preview
 @Composable
-private fun PreviewDownloadedSurScreen() {
-    QuranTheme {
-        Content(
-            uiState = DownloadedSurUiState(
-                showDeleteConfirmationDialog = true,
-                surDetails = listOf(
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ad_duha,
-                        "Al-Duha",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_an_nas,
-                        "An-Nas",
-                        listOf("Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_al_kahf,
-                        "Al-Kahf",
-                        listOf("Al Minshawi", "Sudais"),
-                    ),
-                    DownloadedSurUiState.SurahDetailsUiState(
-                        1,
-                        Res.drawable.ic_ash_shams,
-                        "Ash-Shams",
-                        listOf("Al Minshawi", "Sudais"),
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = DownloadedSurUiState(
+                    showDeleteConfirmationDialog = true,
+                    surDetails = listOf(
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_ad_duha,
+                            "Al-Duha",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_an_nas,
+                            "An-Nas",
+                            listOf("Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_al_kahf,
+                            "Al-Kahf",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
+                        DownloadedSurUiState.SurahDetailsUiState(
+                            1,
+                            Res.drawable.ic_ash_shams,
+                            "Ash-Shams",
+                            listOf("Al Minshawi", "Sudais"),
+                        ),
                     ),
                 ),
-            ),
-            snackBar = SnackBarState(),
-            listener =
-                object : DownloadedSurInteractionListener {
-                    override fun onReciterSettingsClick() {}
-                    override fun onDownloadedSurahClick(surahId: Int) {}
-                    override fun onBackClick() {}
-                    override fun onDeleteSurahClick(surahId: Int) {}
-                    override fun onDismissDeleteConfirmationDialog() {}
-                    override fun onConfirmDeleteDownloadedSurahClick() {}
-                },
-        )
+                snackBar = SnackBarState(),
+                listener =
+                    object : DownloadedSurInteractionListener {
+                        override fun onReciterSettingsClick() {}
+                        override fun onDownloadedSurahClick(surahId: Int) {}
+                        override fun onBackClick() {}
+                        override fun onDeleteSurahClick(surahId: Int) {}
+                        override fun onDismissDeleteConfirmationDialog() {}
+                        override fun onConfirmDeleteDownloadedSurahClick() {}
+                    },
+            )
+        }
     }
 }

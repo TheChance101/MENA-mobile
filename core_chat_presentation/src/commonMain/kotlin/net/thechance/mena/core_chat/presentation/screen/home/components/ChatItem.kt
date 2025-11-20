@@ -19,12 +19,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.am
 import mena.core_chat_presentation.generated.resources.ic_message_read
 import mena.core_chat_presentation.generated.resources.ic_message_sent
+import mena.core_chat_presentation.generated.resources.pm
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
+import net.thechance.mena.core_chat.presentation.utils.getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -40,8 +43,10 @@ fun ChatItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable { onChatClicked(chat) },
+            .clickable { onChatClicked(chat) }
+            .padding(horizontal = Theme.spacing._16),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         CircularAvatar(
             contactImageUri = chat.imageUrl,
@@ -63,8 +68,13 @@ private fun TimeAndStatus(chat: ChatUiState) {
     ) {
         chat.lastMessage ?: return
 
+        val uiTime = getFormattedTimeWithTodayTimeOrYesterdayTextOrSimpleDate(
+            dateTime = chat.lastMessage.time,
+            am = stringResource(Res.string.am),
+            pm = stringResource(Res.string.pm)
+        )
         Text(
-            text = chat.lastMessage.uiTime.asString(),
+            text = uiTime.asString(),
             style = Theme.typography.label.small,
             color = Theme.colorScheme.shadeSecondary
         )
@@ -110,8 +120,8 @@ private fun TimeAndStatus(chat: ChatUiState) {
 @Composable
 private fun RowScope.NameAndLastMessage(chat: ChatUiState) {
     val lastMessage = if (chat.lastMessage == null) ""
-        else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
-        else chat.lastMessage.text
+    else if (chat.lastMessage.isMine) "${stringResource(Res.string.you)}: ${chat.lastMessage.text}"
+    else chat.lastMessage.text
 
     Column(
         modifier = Modifier.padding(vertical = Theme.spacing._4).weight(1f)

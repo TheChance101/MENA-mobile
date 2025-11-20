@@ -30,7 +30,11 @@ fun ScaffoldScope.DeleteShelfConfirmationDialog(
             TextButton(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .padding(top = Theme.spacing._24, bottom = Theme.spacing._8),
+                    .padding(
+                        top = Theme.spacing._24,
+                        bottom = Theme.spacing._8,
+                        end = Theme.spacing._12
+                    ),
                 text = stringResource(state.type.text),
                 contentColor = deleteShelfConfirmationDialog,
                 onClick = {

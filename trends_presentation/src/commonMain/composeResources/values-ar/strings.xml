@@ -101,8 +101,7 @@
 
     <string name="empty_trends_icon">أيقونة التريند الفارغ</string>
     <string name="empty_trends_title">لا توجد تريندات حتى الآن</string>
-    <string name="empty_trends_description">
-    يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
+    <string name="empty_trends_description">يمكنك البدء بإضافة المنتجات التي تحتوي على العلامة إلى الرف بالضغط على زر الإضافة في الأعلى.</string>
     <string name="no_connection_icon">أيقونة عدم الاتصال</string>
     <string name="no_connection_title">عذرًا! يبدو أنك غير متصل بالإنترنت.</string>
     <string name="something_went_wrong_title">عذرًا! يبدو انه حدث خطأ</string>
@@ -114,4 +113,7 @@
 
     <string name="show_more">اعرض المزيد</string>
     <string name="show_less">عرض أقل</string>
+
+    <string name="no_favorites_title">لا توجد مفضلات بعد!</string>
+    <string name="no_favorites_description">ابدأ بإضافة الترندات المفضلة لديك لعرضها هنا, انقر على أيقونة القلب لإضافة الترندات إلى قائمة المفضلة الخاصة بك.</string>
 </resources>

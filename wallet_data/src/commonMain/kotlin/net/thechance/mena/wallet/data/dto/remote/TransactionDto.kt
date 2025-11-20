@@ -7,10 +7,10 @@ import kotlinx.serialization.Serializable
 data class TransactionDto(
     @SerialName("id")
     val id: String,
-    @SerialName("senderName")
-    val senderName: String? = null,
-    @SerialName("receiverName")
-    val receiverName: String? = null,
+    @SerialName("sender")
+    val senderInfo: TransactionPartyInfo? = TransactionPartyInfo(),
+    @SerialName("receiver")
+    val receiverInfo: TransactionPartyInfo? = TransactionPartyInfo(),
     @SerialName("status")
     val status: String? = null,
     @SerialName("type")
@@ -19,4 +19,12 @@ data class TransactionDto(
     val createdAt: String? = null,
     @SerialName("amount")
     val amount: Double? = null
+)
+
+@Serializable
+data class TransactionPartyInfo(
+    @SerialName("name")
+    var name: String? = null,
+    @SerialName("imageUrl")
+    var imageUrl: String? = null
 )

@@ -10,9 +10,9 @@ import net.thechance.mena.identity.data.dto.resetPassword.response.OtpResponse
 import net.thechance.mena.identity.data.utils.mockHttpClient
 import net.thechance.mena.identity.data.utils.mockHttpClientError
 import net.thechance.mena.identity.domain.entity.PhoneNumber
-import net.thechance.mena.identity.domain.exception.InvalidOTPException
-import net.thechance.mena.identity.domain.exception.OtpExpiredException
+import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.exception.PhoneNumberAlreadyExistsException
+import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import kotlin.test.Test
 
 class RegisterRepositoryImplTest {
@@ -68,7 +68,7 @@ class RegisterRepositoryImplTest {
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
-        }.isInstanceOf<InvalidOTPException>()
+        }.isInstanceOf<UnAuthorizedException>()
     }
 
     @Test
@@ -83,7 +83,7 @@ class RegisterRepositoryImplTest {
 
         assertFailure {
             registerRepository.verifyOTPCode(otpCode = "123456")
-        }.isInstanceOf<OtpExpiredException>()
+        }.isInstanceOf<InvalidRequestException>()
     }
 
     @Test

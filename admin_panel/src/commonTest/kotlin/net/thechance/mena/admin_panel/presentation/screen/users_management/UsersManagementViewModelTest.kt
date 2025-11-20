@@ -383,7 +383,8 @@ class UsersManagementViewModelTest {
                         lastVisitAt = LocalDateTime(2025, 10, 18, 23, 59, 59),
                         status = User.Status.ACTIVE
                     )
-                ), totalPages = 10, currentPage = 0
+                ), totalPages = 10, currentPage = 0,
+                totalElements = 25
             )
     }
 }

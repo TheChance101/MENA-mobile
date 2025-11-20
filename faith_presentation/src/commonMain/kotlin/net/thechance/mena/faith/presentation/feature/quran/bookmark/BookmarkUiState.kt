@@ -11,7 +11,8 @@ data class BookMarkUiState(
     val bookmarks: Flow<PagingData<BookmarkCardUiState>> = emptyFlow(),
     val isLoading: Boolean = false,
     val error: String? = null,
-) {
+    val isDeleteConfirmationDialogVisible: Boolean = false,
+    ) {
     data class BookmarkCardUiState(
         val bookmarkId: Int = 0,
         val surahName: String = "",

@@ -44,6 +44,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
@@ -284,7 +285,8 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
             text = uiState.address.takeCityAndCountry(),
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
-            modifier = Modifier.padding(end = Theme.spacing._8)
+            modifier = Modifier.padding(end = Theme.spacing._8),
+            maxLines = 1
         )
     }
 }
@@ -310,21 +312,23 @@ enum class CompassDirection(
     WEST("W", Alignment.CenterStart)
 }
 
-@Composable
 @Preview
-private fun CompassScreenPreview() {
-    QuranTheme {
-        Content(
-            uiState = CompassUiState(
-                continuousAzimuth = 45f,
-                qiblahAngleValue = 120f,
-                angleToQiblah = 75f,
-                address = "Cairo, Egypt",
-            ),
-            listener = object : CompassInteractionListener {
-                override fun onBackClick() {}
-                override fun onLocationClick() {}
-            }
-        )
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = CompassUiState(
+                    continuousAzimuth = 45f,
+                    qiblahAngleValue = 120f,
+                    angleToQiblah = 75f,
+                    address = "Cairo, Egypt",
+                ),
+                listener = object : CompassInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onLocationClick() {}
+                }
+            )
+        }
     }
 }

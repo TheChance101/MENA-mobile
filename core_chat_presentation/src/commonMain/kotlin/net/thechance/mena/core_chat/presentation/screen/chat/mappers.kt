@@ -8,133 +8,18 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageContent.*
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
 import net.thechance.mena.core_chat.presentation.utils.minusDays
 import net.thechance.mena.core_chat.presentation.utils.now
+import kotlin.random.Random
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-fun Message.toUi(): MessageUiState {
 
-    return MessageUiState(
-        id = id,
-        senderId = senderId,
-        chatId = chatId,
-        sendTime = sendAt,
-        status = status,
-        isMine = isMine,
-        content = content,
-        reactions = reactions,
-        waveformData = null
-    )
-}
-
-fun MessageUiState.toEntity(): Message {
-    return Message(
-        id = id,
-        senderId = senderId,
-        chatId = chatId,
-        content = content,
-        sendAt = sendTime,
-        status = status,
-        isMine = isMine,
-        reactions = reactions
-    )
-}
-
-fun List<MessageUiState>.markLastInSeries(): List<MessageUiState> {
-    return this.mapIndexed { index, message ->
-        val nextIsMine = this.getOrNull(index - 1)?.isMine
-        val nextStatus = this.getOrNull(index - 1)?.status
-        val isLastInSeries = nextIsMine != message.isMine || nextStatus != message.status
-        message.copy(isLastInSeries = isLastInSeries)
-    }
-}
-
-fun List<MessageUiState>.toChatList(shouldGroupMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
-    if (isEmpty()) return emptyList()
-
-    val today = LocalDateTime.now().date
-    val yesterday = today.minusDays(1)
-
-    return asReversed()
-        .groupBy { it.sendTime.date }
-        .flatMap { (date, messages) ->
-            val markedMessages = messages.markLastInGroup()
-            val groupedMessages = markedMessages.toGroupedMessagesChatList(shouldGroupMessages)
-
-            buildList {
-                add(ChatListItem.DateSeparator(date.toLabel(today, yesterday)))
-                addAll(groupedMessages)
-            }
-        }
-        .asReversed()
-}
-
-
-fun List<MessageUiState>.toGroupedMessagesChatList(shouldGroupMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
-    val grouped = mutableListOf<ChatListItem>()
-    var tempImages = mutableListOf<MessageUiState>()
-
-    fun groupAndClear() {
-        if (tempImages.isNotEmpty()) {
-            grouped.add(ChatListItem.ImageMessages(tempImages.toList()))
-            tempImages = mutableListOf()
-        }
-    }
-
-    for (msg in this) {
-        when (msg.content) {
-            is MessageContent.Image -> {
-                val last = tempImages.lastOrNull()
-                if (last != null && last.isMine == msg.isMine && last.status == msg.status && shouldGroupMessages(
-                        msg
-                    )
-                ) {
-                    tempImages.add(msg)
-                } else {
-                    groupAndClear()
-                    tempImages.add(msg)
-                }
-            }
-
-            is MessageContent.Audio -> {
-                groupAndClear()
-                grouped.add(
-                    ChatListItem.VoiceMessage(
-                        data = msg,
-                        isPlaying = false,
-                        isLoading = false,
-                        progress = 0f,
-                        duration = msg.content.audioDurationMs ?: 0L,
-                        waveformData = msg.waveformData ?: emptyList()
-                    )
-                )
-            }
-
-            is MessageContent.Text -> {
-                groupAndClear()
-                grouped.add(ChatListItem.TextMessage(msg))
-            }
-        }
-    }
-
-    groupAndClear()
-    return grouped
-}
-
-private fun List<MessageUiState>.markLastInGroup(): List<MessageUiState> {
-    return mapIndexed { index, message ->
-        if (index == lastIndex)
-            message.copy(isLastInSeries = true)
-        else
-            message
-    }
-}
-
-private fun LocalDate.toLabel(
+fun LocalDate.toLabel(
     today: LocalDate,
     yesterday: LocalDate,
     todayLabel: UiText = UiText.StringRes(Res.string.today),
@@ -145,20 +30,192 @@ private fun LocalDate.toLabel(
     else -> UiText.DynamicString(format())
 }
 
+fun List<MessageUiState>.addDateSeparators(): List<ChatListItem> {
+    val today = LocalDateTime.now().date
+    val yesterday = today.minusDays(1)
+    return groupBy { it.messageDetails.sendTime.date }
+        .flatMap { (date, messages) ->
+            val markedMessages = messages.markIsLastMessages()
+            buildList {
+                addAll(markedMessages)
+                add(DateSeparator(date.toLabel(today, yesterday)))
+            }
+        }
+}
+
+
+fun List<MessageUiState>.markIsLastMessages(): List<MessageUiState> {
+    if (isEmpty()) return this
+    var lastIsMine = first().messageDetails.isMine
+    return mapIndexed { index, messageUiState ->
+        val isLastInSeries = index == 0 || messageUiState.messageDetails.isMine != lastIsMine
+        lastIsMine = messageUiState.messageDetails.isMine
+        messageUiState.copyMessage(messageUiState.messageDetails.copy(
+            isLastInSeries = isLastInSeries
+        ))
+    }
+}
+
+fun List<ChatListItem>.groupImages(keepSeparatedAfter: LocalDateTime): List<ChatListItem> {
+    val grouped = mutableListOf<ChatListItem>()
+    var tempImagesGroup = ImagesGroupChatItem(imagesUiState = emptyList())
+    for (item in this) {
+        if (item !is ImageMessageUiState) {
+            if (tempImagesGroup.imagesUiState.isNotEmpty()) {
+                grouped.add(tempImagesGroup)
+                tempImagesGroup = ImagesGroupChatItem(imagesUiState = emptyList())
+            }
+            grouped.add(item)
+            continue
+        }
+
+        if (item.messageDetails.status == MessageStatus.FAILED) {
+            if (tempImagesGroup.imagesUiState.isNotEmpty()) {
+                grouped.add(tempImagesGroup)
+                tempImagesGroup = ImagesGroupChatItem(imagesUiState = emptyList())
+            }
+            grouped.add(item)
+            continue
+        }
+
+        if (
+            tempImagesGroup.imagesUiState.isNotEmpty()
+            && tempImagesGroup.imagesUiState.last().messageDetails.isMine != item.messageDetails.isMine
+        ) {
+            grouped.add(tempImagesGroup)
+            tempImagesGroup = ImagesGroupChatItem(imagesUiState = listOf(item))
+            continue
+        }
+
+        if (item.messageDetails.sendTime >= keepSeparatedAfter) {
+            if (tempImagesGroup.imagesUiState.isNotEmpty()) {
+                grouped.add(tempImagesGroup)
+                tempImagesGroup = ImagesGroupChatItem(imagesUiState = emptyList())
+            }
+            grouped.add(item)
+            continue
+        }
+
+        tempImagesGroup = tempImagesGroup.copy(imagesUiState = tempImagesGroup.imagesUiState + item)
+    }
+    if (tempImagesGroup.imagesUiState.isNotEmpty()) {
+        grouped.add(tempImagesGroup)
+    }
+    return grouped
+}
+
 fun generateWaveformData(): List<Float> {
-    return List(50) { kotlin.random.Random.nextFloat() * 0.8f + 0.2f }
+    return List(50) { Random.nextFloat() * 0.8f + 0.2f }
 }
 
 fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = map { item ->
-    if (item is ChatListItem.TextMessage && item.data.id == messageId)
-        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
-    else if (item is ChatListItem.VoiceMessage && item.data.id == messageId)
-        item.copy(data = item.data.copy(isVisibleMessageInfo = !item.data.isVisibleMessageInfo))
-    else item
+    when {
+        item is TextMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        item is AudioMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        item is AyahMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
+        else -> item
+    }
 }
 
+ fun Message.toUi(): MessageUiState {
+    val messageDetails = MessageDetailsUiState(
+        id = id,
+        senderId = senderId,
+        chatId = chatId,
+        sendTime = sendAt,
+        status = status,
+        isMine = isMine,
+        reactions = reactions,
+    )
+    return when (val content = content) {
+        is Image -> ImageMessageUiState(
+            imageDate = content.data,
+            messageDetails = messageDetails
+        )
 
-fun List<MessageUiState>.buildListItems(shouldGroupImageMessages: (MessageUiState) -> Boolean): List<ChatListItem> {
-    return sortedByDescending { it.sendTime }.markLastInSeries()
-        .toChatList(shouldGroupImageMessages)
+        is Audio -> AudioMessageUiState(
+            data = content.data,
+            isPlaying = false,
+            isLoading = false,
+            progress = 0f,
+            duration = content.audioDurationMs ?: 0,
+            waveformData = generateWaveformData(),
+            messageDetails = messageDetails
+        )
+
+        is Text -> TextMessageUiState(
+            text = content.text,
+            messageDetails = messageDetails
+        )
+
+        is Ayah -> AyahMessageUiState(
+            surahId = content.surahId,
+            ayahContent = content.ayahContent,
+            ayahNumber = content.ayahNumber,
+            surahName = "",
+            messageDetails = messageDetails
+        )
+    }
+}
+
+fun MessageUiState.toEntity(): Message {
+    return when (this) {
+        is AudioMessageUiState -> Message(
+            chatId = messageDetails.chatId,
+            senderId = messageDetails.senderId,
+            content = Audio(data = data, audioDurationMs = duration),
+            id = messageDetails.id,
+            sendAt = messageDetails.sendTime,
+            status = messageDetails.status,
+            isMine = messageDetails.isMine,
+            reactions = messageDetails.reactions
+        )
+
+        is ImageMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Image(data = imageDate),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+        is TextMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Text(text = text),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+        is AyahMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Ayah(
+                    surahId = surahId,
+                    ayahContent = ayahContent,
+                    ayahNumber = ayahNumber
+                ),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+    }
 }

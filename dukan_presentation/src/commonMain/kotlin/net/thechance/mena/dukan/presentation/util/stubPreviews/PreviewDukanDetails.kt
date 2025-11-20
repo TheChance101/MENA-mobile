@@ -40,50 +40,53 @@ val fakeProducts = listOf(
 val fakeShelves = listOf(
     ShelfUiState(
         id = "1",
-        name = "Clothes",
-        products = fakeProducts
+        name = "Clothes"
     ),
     ShelfUiState(
         id = "2",
-        name = "Perfumes",
-        products = fakeProducts
+        name = "Perfumes"
     ),
     ShelfUiState(
         id = "3",
-        name = "Accessories",
-        products = fakeProducts
+        name = "Accessories"
     ),
     ShelfUiState(
         id = "4",
-        name = "Shoes",
-        products = fakeProducts
+        name = "Shoes"
     ),
     ShelfUiState(
         id = "5",
-        name = "Bags",
-        products = fakeProducts
+        name = "Bags"
     ),
     ShelfUiState(
         id = "6",
-        name = "Electronics",
-        products = fakeProducts
+        name = "Electronics"
     ),
     ShelfUiState(
         id = "7",
-        name = "Clearance",
-        products = fakeProducts
+        name = "Clearance"
     ),
     ShelfUiState(
         id = "8",
-        name = "Books",
-        products = fakeProducts
+        name = "Books"
     )
 )
 
+val fakeProductsLimited = mapOf(
+    "1" to fakeProducts,
+    "2" to fakeProducts,
+    "3" to fakeProducts,
+    "4" to fakeProducts,
+    "5" to fakeProducts,
+    "6" to fakeProducts,
+    "7" to fakeProducts,
+    "8" to fakeProducts
+)
 val fakeDukanDetails = DukanDetailsUiState(
     dukanInfo = fakeDukanInfo,
     shelfIdSelected = "1",
     shelves = flowOf(PagingData.from(fakeShelves)),
     productsShelf = flowOf(PagingData.from(fakeProducts)),
-    bestSellingProducts = flowOf(PagingData.from(fakeProducts))
+    bestSellingProducts = flowOf(PagingData.from(fakeProducts)),
+    shelfProductsLimited = fakeProductsLimited
 )

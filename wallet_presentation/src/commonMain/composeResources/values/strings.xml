@@ -140,4 +140,6 @@
     <string name="share_image">Share Image</string>
     <string name="share_pdf">Share Pdf</string>
     <string name="this_account_cant_receive_transactions">This account cannot receive payments.</string>
+    <string name="refresh_icon">Refresh Icon</string>
+    <string name="deposit_icon">Deposit Icon</string>
 </resources>

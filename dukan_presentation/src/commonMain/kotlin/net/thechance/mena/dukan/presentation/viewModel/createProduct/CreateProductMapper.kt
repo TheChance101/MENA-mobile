@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.createProduct
 
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.model.CreateProductParams
 import kotlin.uuid.ExperimentalUuidApi
@@ -16,7 +17,10 @@ fun CreateProductUiState.toCreateProductParam(shelfId: String): CreateProductPar
     return CreateProductParams(
         name = productName,
         description = description,
-        price = price.toDouble(),
+        price = Price(
+            base = price.toDouble(),
+            final = priceAfterDiscount.toDoubleOrNull()
+        ),
         shelfId = shelfId
     )
 }

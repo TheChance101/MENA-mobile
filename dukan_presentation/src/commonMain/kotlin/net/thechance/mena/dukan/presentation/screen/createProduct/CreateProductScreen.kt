@@ -16,6 +16,8 @@ import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add
 import mena.dukan_presentation.generated.resources.add_product
+import mena.dukan_presentation.generated.resources.price
+import mena.dukan_presentation.generated.resources.price_after_discount
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -130,9 +132,19 @@ private fun CreateProductContent(
 
             item {
                 PriceSection(
+                    title = stringResource(Res.string.price),
                     price = state.price,
                     isTextFieldEnabled = state.isTextFieldEnabled,
                     onPriceChange = interactionListener::onPriceChange
+                )
+            }
+
+            item {
+                PriceSection(
+                    title = stringResource(Res.string.price_after_discount),
+                    price = state.priceAfterDiscount,
+                    isTextFieldEnabled = state.isTextFieldEnabled,
+                    onPriceChange = interactionListener::onPriceAfterDiscountChange
                 )
             }
 
