@@ -16,10 +16,15 @@ class DownloadedSurViewModel(
     }
 
     private fun loadDownloadedSur() {
-        // TODO: After the domain is done, integrate this function to load the real data
         tryToExecute(
-            execute = {},
-            onSuccess = {},
+            execute = { quranRepository.getDownloadedSur() },
+            onSuccess = { downloadedSurah ->
+                updateState {
+                    it.copy(
+                        surDetails = downloadedSurah.map { surah -> surah.toUiState() }
+                    )
+                }
+            }
         )
     }
 

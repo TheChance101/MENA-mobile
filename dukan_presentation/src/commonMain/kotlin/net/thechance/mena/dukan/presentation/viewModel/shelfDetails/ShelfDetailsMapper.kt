@@ -14,7 +14,8 @@ fun Product.toUiState() = ShelfDetailsUiState.ProductUiState(
     description = description,
     price = price.base,
     imageUrl = imageUrls.firstOrNull().orEmpty(),
-    inCartQuantity = quantityInCart
+    inCartQuantity = quantityInCart,
+    isOutOfStock = isOutOfStock
 )
 
 fun ShelfDetailsUiState.ProductUiState.toDomainParams(dukanId: String): UpdateProductCartQuantityParams {

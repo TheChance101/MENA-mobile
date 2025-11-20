@@ -15,12 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
+import net.thechance.mena.admin_panel.presentation.designSystem.theme.EmojiTheme
 import net.thechance.mena.admin_panel.presentation.screen.deposit.component.AmountInputField
 import net.thechance.mena.admin_panel.presentation.screen.deposit.component.PhoneNumberInputField
-import net.thechance.mena.admin_panel.presentation.designSystem.theme.EmojiTheme
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.deposit
 import net.thechance.mena.admin_panel.resources.fill_a_wallet
@@ -49,62 +48,59 @@ private fun DepositScreenContent(
     PanelScaffold(
         topBar = { DepositTopBar() },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        isLoading = state.isCountriesLoading
     ) {
-        if (state.isCountriesLoading) {
-            AdminPanelContentLoading()
-        } else {
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 118.dp)
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 118.dp)
+                    .align(Alignment.TopCenter)
+                    .width(506.dp)
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
             ) {
-                Column(
+                Text(
+                    text = stringResource(Res.string.fill_a_wallet),
+                    style = Theme.typography.title.medium,
+                    color = Theme.colorScheme.shadePrimary,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                Text(
+                    text = stringResource(Res.string.fill_a_wallet_description),
+                    style = Theme.typography.body.medium,
+                    color = Theme.colorScheme.shadeSecondary,
+                    modifier = Modifier.padding(bottom = 20.dp)
+                )
+                PhoneNumberInputField(
+                    phoneNumber = state.phoneNumber,
+                    onPhoneChange = interactionListener::onPhoneNumberChanged,
+                    selectedCountry = state.selectedCountry,
+                    availableCountries = state.availableCountries,
+                    onCountrySelected = interactionListener::onCountryCodeChanged,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                AmountInputField(
+                    modifier = Modifier.padding(top = 16.dp),
+                    amount = state.amount,
+                    onAmountChanged = interactionListener::onAmountChanged,
+                )
+
+                PrimaryButton(
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .width(506.dp)
-                        .padding(32.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = stringResource(Res.string.fill_a_wallet),
-                        style = Theme.typography.title.medium,
-                        color = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(bottom = 4.dp)
-                    )
-                    Text(
-                        text = stringResource(Res.string.fill_a_wallet_description),
-                        style = Theme.typography.body.medium,
-                        color = Theme.colorScheme.shadeSecondary,
-                        modifier = Modifier.padding(bottom = 20.dp)
-                    )
-                    PhoneNumberInputField(
-                        phoneNumber = state.phoneNumber,
-                        onPhoneChange = interactionListener::onPhoneNumberChanged,
-                        selectedCountry = state.selectedCountry,
-                        availableCountries = state.availableCountries,
-                        onCountrySelected = interactionListener::onCountryCodeChanged,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    AmountInputField(
-                        modifier = Modifier.padding(top = 16.dp),
-                        amount = state.amount,
-                        onAmountChanged = interactionListener::onAmountChanged,
-                    )
-
-                    PrimaryButton(
-                        modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(top = 64.dp)
-                            .width(123.dp),
-                        text = stringResource(Res.string.fill_the_wallet),
-                        onClick = interactionListener::onFillTheWalletButtonClicked,
-                        isEnabled = state.isFillWalletButtonEnabled,
-                        isLoading = state.isDepositProcessLoading,
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
-                    )
-                }
+                        .align(Alignment.End)
+                        .padding(top = 64.dp)
+                        .width(123.dp),
+                    text = stringResource(Res.string.fill_the_wallet),
+                    onClick = interactionListener::onFillTheWalletButtonClicked,
+                    isEnabled = state.isFillWalletButtonEnabled,
+                    isLoading = state.isDepositProcessLoading,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+                )
             }
         }
     }

@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.cancel
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
@@ -41,32 +42,36 @@ fun ScaffoldScope.AdminConfirmationDialog(
     scrimColor: Color = Theme.colorScheme.primary.primary.copy(.66f),
     modifier: Modifier = Modifier
 ) {
-    BasicDialog(
-        onDismiss = onDismiss,
-        isVisible = isVisible,
-        dialogCornerShape = RoundedCornerShape(24.dp),
-        contentPadding = PaddingValues(24.dp),
-        hasDismissButton = false,
-        scrimColor = scrimColor,
-        contentColor = Theme.colorScheme.background.surfaceLow,
-        actionButtons = {
-            AdminConfirmationDialogActionButtons(
-                onDismiss = onDismiss,
-                onConfirm = onConfirm,
-                confirmationIcon = confirmationIcon,
-                confirmationButtonText = confirmationButtonText
+    Popup(
+        alignment = Alignment.Center,
+        onDismissRequest = onDismiss
+    ){
+        BasicDialog(
+            onDismiss = onDismiss,
+            isVisible = isVisible,
+            dialogCornerShape = RoundedCornerShape(24.dp),
+            contentPadding = PaddingValues(24.dp),
+            hasDismissButton = false,
+            scrimColor = scrimColor,
+            contentColor = Theme.colorScheme.background.surfaceLow,
+            actionButtons = {
+                AdminConfirmationDialogActionButtons(
+                    onDismiss = onDismiss,
+                    onConfirm = onConfirm,
+                    confirmationIcon = confirmationIcon,
+                    confirmationButtonText = confirmationButtonText
+                )
+            },
+            modifier = modifier
+        ) {
+            AdminConfirmationDialogContent(
+                dialogIcon = dialogIcon,
+                title = title,
+                description = description
             )
-        },
-        modifier = modifier
-    ) {
-        AdminConfirmationDialogContent(
-            dialogIcon = dialogIcon,
-            title = title,
-            description = description
-        )
+        }
     }
 }
-
 
 @Composable
 private fun AdminConfirmationDialogActionButtons(

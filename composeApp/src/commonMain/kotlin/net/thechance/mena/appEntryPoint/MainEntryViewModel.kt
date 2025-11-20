@@ -17,6 +17,10 @@ class MainEntryViewModel : ViewModel(), MainEntryInteractionListener {
         _state.update { it.copy(deepLink = null) }
     }
 
+    override fun onBottomNavigationChanged(isShowed: Boolean) {
+        _state.update { it.copy(showBottomNavigation = isShowed) }
+    }
+
     override fun setActiveFeature(feature: Feature) {
         _state.update { it.copy(activeFeature = feature) }
     }
