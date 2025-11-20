@@ -12,7 +12,6 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
 
 class CreatePasswordViewModel(
     private val passwordValidator: PasswordValidator,
@@ -38,7 +37,7 @@ class CreatePasswordViewModel(
             copy(
                 confirmPassword = password,
                 confirmPasswordErrorMessage =
-                    if (validatePasswordConfirmation(newPassword, password))
+                    if (!passwordValidator.isPasswordMatch(newPassword, password))
                         Res.string.error_confirm_password_not_match
                     else null,
             )
@@ -119,7 +118,7 @@ class CreatePasswordViewModel(
 
     private fun checkCreateButtonEnabled() {
         updateState {
-            val passwordsMatch = newPassword.isNotBlank() && newPassword == confirmPassword
+            val passwordsMatch = passwordValidator.isPasswordMatch(newPassword, confirmPassword)
             val passwordSecure = passwordValidator.isValid(newPassword)
 
             copy(

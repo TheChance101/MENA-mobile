@@ -44,6 +44,7 @@ internal val repositoryModule = module {
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON)),
             cachedMessageDao = get(),
+            quranService = get(),
             chatSyncTimeDao = get()
         )
     }

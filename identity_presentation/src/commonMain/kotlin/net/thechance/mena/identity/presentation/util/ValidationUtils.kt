@@ -39,9 +39,3 @@ fun AddEditLocationScreenUIState.isSaveEnabled(): Boolean {
     }
 }
 
-fun validatePasswordConfirmation(password: String, confirmPassword: String) =
-    password != confirmPassword
-
-
-fun isPasswordMatch(password: String, confirmPassword: String): Boolean = password == confirmPassword
-

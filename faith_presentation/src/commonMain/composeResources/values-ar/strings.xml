@@ -194,5 +194,7 @@
     <string name="send_to">إرسال إلي</string>
     <string name="bookmark">إشارة مرجعية</string>
     <string name="copy">نسخ</string>
+    <string name="empty_download_icon">أيقونة التحميل فارغة</string>
+    <string name="empty_download_text">لا توجد تنزيلات</string>
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
 </resources>

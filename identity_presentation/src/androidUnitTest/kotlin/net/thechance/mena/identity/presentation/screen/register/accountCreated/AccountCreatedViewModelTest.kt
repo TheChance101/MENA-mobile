@@ -5,6 +5,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
@@ -17,6 +18,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
     private val authenticationRepository = mockk<AuthenticationRepository>()
     private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
     private val testDispatcher = StandardTestDispatcher()
+    private val testPhoneNumber = PhoneNumber("+964", "7701234567")
 
     @Before
     fun setup() {
@@ -27,6 +29,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
                 accessToken = "test_access_token",
                 refreshToken = "test_refresh_token"
             ),
+            phoneNumber = testPhoneNumber,
             dispatcher = testDispatcher
         )
     }
@@ -47,18 +50,20 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClickGoToHome should call clearLastPhoneNumber`() = runTest {
+    fun `onClickGoToHome should call clearLastPhoneNumber and clearDraft`() = runTest {
         val authTokens = AuthenticationTokens(
             accessToken = "test_access_token",
             refreshToken = "test_refresh_token"
         )
         coEvery { authenticationRepository.saveAuthTokensAndEmit(any()) } returns Unit
         coEvery { registrationDraftRepository.clearLastPhoneNumber() } returns Unit
+        coEvery { registrationDraftRepository.clearDraft(any()) } returns Unit
 
         accountCreatedViewModel.onClickGoToHome()
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify { registrationDraftRepository.clearLastPhoneNumber() }
+        coVerify { registrationDraftRepository.clearDraft(testPhoneNumber) }
     }
 
     @Test
@@ -67,6 +72,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
             authTokens = null,
+            phoneNumber = testPhoneNumber,
             dispatcher = testDispatcher
         )
 
@@ -82,6 +88,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
             authTokens = null,
+            phoneNumber = testPhoneNumber,
             dispatcher = testDispatcher
         )
 
@@ -89,5 +96,6 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 0) { registrationDraftRepository.clearLastPhoneNumber() }
+        coVerify(exactly = 0) { registrationDraftRepository.clearDraft(any()) }
     }
 }

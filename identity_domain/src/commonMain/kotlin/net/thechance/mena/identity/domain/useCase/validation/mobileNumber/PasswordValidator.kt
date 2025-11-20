@@ -7,6 +7,8 @@ class PasswordValidator {
                 password.any { it.isUpperCase() }
     }
 
+    fun isPasswordMatch(password: String, confirmPassword: String) = password == confirmPassword
+
     private companion object {
         const val MIN_PASSWORD_LENGTH = 8
     }
