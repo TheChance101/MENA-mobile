@@ -116,7 +116,7 @@ fun ChatScreenContent(
 
     val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
     val maxKeyboardHeight = rememberKeyboardMaxHeight()
-    val shouldAddOffset = keyboardHeight > maxKeyboardHeight * 0.53
+    val shouldAddOffset = remember(keyboardHeight) { keyboardHeight > maxKeyboardHeight * 0.53 }
 
     val chatInputBarOffset = if (shouldAddOffset) Constants.NAVIGATION_BAR_HEIGHT else 0
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -162,7 +162,11 @@ fun ChatScreenContent(
                     onMessageVoiceClick = interactions::onMessageVoiceClicked,
                     onFailedMessageClick = interactions::onFailedMessageClicked,
                     onMessageLongClick = interactions::onMessageLongClicked,
-                    modifier = Modifier.imePadding().padding(bottom = if (keyboardHeight > maxKeyboardHeight * 0.53) 0.dp else 80.dp).clickable(indication = null, interactionSource = remember { MutableInteractionSource() }){ keyboardController?.hide()}
+                    modifier = Modifier.imePadding()
+                        .padding(bottom = if (keyboardHeight > maxKeyboardHeight * 0.53) 0.dp else 80.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
                 )
                 ChatInputBarContent(
                     state = state,
@@ -239,7 +243,11 @@ fun AudioLifecycleObserver(viewModel: ChatViewModel) {
 }
 
 @Composable
-private fun ChatInputBarContent(state: ChatScreenState, interactions: ChatInteractionListener,modifier: Modifier = Modifier) {
+private fun ChatInputBarContent(
+    state: ChatScreenState,
+    interactions: ChatInteractionListener,
+    modifier: Modifier = Modifier
+) {
     AnimatedContent(
         targetState = state.isRecordingVoice,
         modifier = modifier,
@@ -256,7 +264,7 @@ private fun ChatInputBarContent(state: ChatScreenState, interactions: ChatIntera
     ) { isRecording ->
         if (isRecording) {
             RecordingBar(
-                onSendClick =interactions::onSendRecordClicked,
+                onSendClick = interactions::onSendRecordClicked,
                 onCancelClick = interactions::onCancelRecordClicked,
             )
         } else {
@@ -302,6 +310,7 @@ private fun EffectsHandler(
 private object Constants{
     const val NAVIGATION_BAR_HEIGHT = 74
 }
+
 @Composable
 private fun rememberKeyboardMaxHeight(): Int {
     val density = LocalDensity.current
