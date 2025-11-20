@@ -47,7 +47,7 @@ internal fun PageDescription(
                     text = stringResource(Res.string.app_name),
                     textAlign = TextAlign.Center,
                     style = Theme.typography.appName,
-                    color = Theme.colorScheme.shadePrimary
+                    color = Theme.colorScheme.brand.brand
                 )
             }
         }
