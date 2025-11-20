@@ -36,6 +36,7 @@ val fakePumaShoesProductPaged = PagedResult(
             dukanName = "Puma",
             dukanId = Uuid.random(),
             price = 20.0,
+            isOutOfStock = false,
         ),
     )
 )

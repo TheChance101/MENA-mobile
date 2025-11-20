@@ -183,6 +183,8 @@
     <string name="shop_now">Shop Now</string>
     <string name="dukan_discount_details">Get discount for every order, only valid for today.</string>
     <string name="dukan_discount_title">%1$s% DISCOUNT\nToday special</string>
+    <string name="out_of_stock">Out of stock</string>
+    <string name= "sold_out">Sold out</string>
     <string name="order_title">Order #%1$d</string>
     <string name="order_date_icon">Order Date Icon</string>
     <string name="product_order_image">Product of Order Image</string>

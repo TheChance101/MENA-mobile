@@ -44,7 +44,8 @@ fun ManageDukanProductsList(
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = { onEditProductClick(product.id) }) },
-                    onProductClick = { onProductClick(product) }
+                    onProductClick = { onProductClick(product) },
+                    isOutOfStock = product.isOutOfStock
                 )
             }
         }
@@ -66,7 +67,8 @@ private fun ManageDukanProductsLayoutPreview() {
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = {}) },
-                    onProductClick = {}
+                    onProductClick = {},
+                    isOutOfStock = product.isOutOfStock
                 )
             }
         }
