@@ -16,12 +16,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.profile_title
@@ -45,7 +43,6 @@ import net.thechance.mena.identity.presentation.screen.profile.components.Invite
 import net.thechance.mena.identity.presentation.screen.profile.components.LanguageDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
-import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
 import net.thechance.mena.identity.presentation.screen.profile.components.ThemeDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
@@ -53,10 +50,10 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-        ProfileScreenViewModel,
-        ProfileScreenUIState,
-        ProfileScreenUIEffect,
-        ProfileScreenInteractionListener>() {
+    ProfileScreenViewModel,
+    ProfileScreenUIState,
+    ProfileScreenUIEffect,
+    ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -109,12 +106,6 @@ class ProfileScreen : BaseScreen<
                         onDismissShareDialog = listener::onDismissShareDialog,
                     )
                 }
-            },
-            snakeBar = {
-                ProfileSnackBar(
-                    snackBarState = state.snackBarUiState,
-                    onDismiss = listener::onDismissSnackBar,
-                )
             }
         )
         {
@@ -201,11 +192,6 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                 }
-
-                LaunchedEffect(state.errorMessage) {
-                    delay(3000)
-                    listener.clearErrorMessage()
-                }
             }
         }
     }
@@ -235,6 +221,12 @@ class ProfileScreen : BaseScreen<
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {
                 navigator.push(PrivacyAndPolicyScreen())
+            }
+
+            is ProfileScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }
