@@ -15,6 +15,10 @@ import mena.identity_presentation.generated.resources.success
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 
+val LocalSnackBarController = staticCompositionLocalOf<IdentitySnackBarController> {
+    error("No SnackBarController provided")
+}
+
 @Immutable
 data class SnackBarData(
     val message: StringResource,
@@ -29,10 +33,6 @@ data class SnackBarData(
     }
 }
 
-val LocalSnackBarController = staticCompositionLocalOf<IdentitySnackBarController> {
-    error("No SnackBarController provided")
-}
-
 class IdentitySnackBarController() {
 
     private val _effect = Channel<SnackBarData>(capacity = Channel.UNLIMITED)
@@ -40,7 +40,6 @@ class IdentitySnackBarController() {
 
     var currentSnackBarData by mutableStateOf<SnackBarData?>(null)
         private set
-
 
     fun showSnackBarError(
         message: StringResource,

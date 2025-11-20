@@ -269,9 +269,7 @@ class EditUserProfileScreen : BaseScreen<
 
             is EditUserProfileUIEffect.NavigateBackToProfile -> {
                 effect.successStringResource?.let { successMessage ->
-                    snackBarController.showSnackBarSuccess(
-                        message = successMessage
-                    )
+                    snackBarController.showSnackBarSuccess(message = successMessage)
                 }
                 navigator.pop()
             }
