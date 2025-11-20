@@ -62,19 +62,17 @@ class ContactUsViewModel(
         sendNewEffect(ContactUsUIEffect.OpenUrl(facebookUrl))
     }
 
-    override fun onClearErrorMessage() {
-        updateState {
-            copy(errorMessage = null)
-        }
-    }
-
     private fun onGetContactInfoError(throwable: Throwable) {
         updateState {
             copy(
-                errorMessage = mapErrorMessage(throwable),
                 isLoading = false,
             )
         }
+        sendNewEffect(
+            ContactUsUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {

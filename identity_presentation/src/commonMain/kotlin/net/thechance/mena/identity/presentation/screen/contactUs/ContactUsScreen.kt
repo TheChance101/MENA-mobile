@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,7 +36,6 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactCard
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactUsScreenShimmer
@@ -45,10 +43,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class ContactUsScreen : BaseScreen<
-        ContactUsViewModel,
-        ContactUsUIState,
-        ContactUsUIEffect,
-        ContactUsInteractionListener>() {
+    ContactUsViewModel,
+    ContactUsUIState,
+    ContactUsUIEffect,
+    ContactUsInteractionListener>() {
     @Composable
     override fun Content() {
         val viewModel = getScreenModel<ContactUsViewModel>()
@@ -140,13 +138,6 @@ class ContactUsScreen : BaseScreen<
                     )
                 }
             }
-            ErrorSnackBar(
-                errorMessage = state.errorMessage?.let { stringResource(it) },
-                onDismiss = {
-                    listener.onClearErrorMessage()
-                },
-                modifier = Modifier.statusBarsPadding()
-            )
         }
     }
 
@@ -157,6 +148,11 @@ class ContactUsScreen : BaseScreen<
     ) {
         when (effect) {
             ContactUsUIEffect.NavigateBack -> navigator.pop()
+
+            is ContactUsUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(message = effect.errorStringResource)
+            }
+
             is ContactUsUIEffect.OpenUrl -> {}
         }
     }
