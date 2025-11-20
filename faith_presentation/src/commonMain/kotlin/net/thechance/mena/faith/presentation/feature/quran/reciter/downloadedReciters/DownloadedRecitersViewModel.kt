@@ -6,12 +6,14 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters.args.DownloadedRecitersArgs
 
 class DownloadedRecitersViewModel(
     private val quranRepository: QuranRepository,
     private val surahArgs: DownloadedRecitersArgs,
+    private val searchRecitersUseCase: SearchRecitersUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DownloadedRecitersUiState, DownloadedRecitersEffect>(
     initialState = DownloadedRecitersUiState(
@@ -29,22 +31,13 @@ class DownloadedRecitersViewModel(
 
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
-        applyLocalSearch(query)
+        getAllReciters()
     }
 
-    override fun onClearQueryClick() = updateState { it.copy(query = "", displayedReciters = it.cachedReciters) }
-
-
-    private fun applyLocalSearch(query: String) {
-        val recitersToSearch = uiState.value.cachedReciters
-
-        val filteredReciters =
-            if (query.isBlank()) recitersToSearch
-            else recitersToSearch.filter { it.name.contains(query, ignoreCase = true) }
-
-        updateState { it.copy(displayedReciters = filteredReciters) }
+    override fun onClearQueryClick() {
+        updateState { it.copy(query = "") }
+        getAllReciters()
     }
-
 
     override fun onDeleteReciterAudioClick(reciterId: Int) {
         updateState {
@@ -94,19 +87,17 @@ class DownloadedRecitersViewModel(
 
     private suspend fun onGetAllRecitersSuccess(reciters: List<Reciter>) {
         val surahId = surahArgs.surahId ?: return
+        val query = uiState.value.query
 
         val downloadedReciters = reciters.filter { reciter ->
             quranRepository.isSurahAudioCached(surahId = surahId, reciterId = reciter.id)
         }
 
-        val mapped = downloadedReciters.map { reciter ->
-            reciter.toUi(isDownloaded = true)
-        }
+        val filteredReciters = searchRecitersUseCase(query, downloadedReciters)
 
         updateState {
             it.copy(
-                cachedReciters = mapped,
-                displayedReciters = mapped
+                reciters = filteredReciters.map { reciter -> reciter.toUi(isDownloaded = true) }
             )
         }
     }

@@ -78,7 +78,7 @@ private fun Content(
         }
     ) {
 
-        if (uiState.query.isNotBlank() && uiState.displayedReciters.isEmpty())
+        if (uiState.query.isNotBlank() && uiState.reciters.isEmpty())
             EmptyRecitersContent()
         else
             RecitersListContent(uiState = uiState, listener = listener)
@@ -110,7 +110,7 @@ fun RecitersListContent(
     LazyColumn(
         modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
     ) {
-        items(uiState.displayedReciters) { reciter ->
+        items(uiState.reciters) { reciter ->
             ReciterItem(
                 reciterId = reciter.id,
                 reciter = reciter.name,
@@ -130,7 +130,7 @@ private fun Preview() {
         QuranTheme {
             Content(
                 uiState = DownloadedRecitersUiState(
-                    displayedReciters = listOf(
+                    reciters = listOf(
                         DownloadedReciterItemUi(
                             id = 1,
                             name = "Mishary Rashid Alafasy",
