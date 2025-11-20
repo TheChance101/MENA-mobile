@@ -65,8 +65,8 @@ class DownloadedRecitersViewModelTest {
     @Test
     fun `init should load all reciters successfully`() = runTest {
         verifySuspend(exactly(1)) { quranRepository.getReciters() }
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.displayedReciters.size)
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.displayedReciters.size)
     }
 
     @Test
@@ -118,7 +118,7 @@ class DownloadedRecitersViewModelTest {
     fun `onQueryChange should filter reciters by name case insensitive`() = runTest {
         testViewModel.onQueryChange(FILTER_QUERY)
 
-        val filteredReciters = testViewModel.uiState.value.reciters
+        val filteredReciters = testViewModel.uiState.value.displayedReciters
         assertTrue(filteredReciters.size < dummyReciters.size)
         assertTrue(filteredReciters.all { it.name.contains(FILTER_QUERY, ignoreCase = true) })
     }
@@ -128,7 +128,7 @@ class DownloadedRecitersViewModelTest {
         testViewModel.onQueryChange(FILTER_QUERY)
         testViewModel.onQueryChange(EMPTY_STRING)
 
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.displayedReciters.size)
     }
 
     @Test
@@ -136,28 +136,28 @@ class DownloadedRecitersViewModelTest {
         testViewModel.onQueryChange(FILTER_QUERY)
         testViewModel.onQueryChange(BLANK_STRING)
 
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.displayedReciters.size)
     }
 
     @Test
     fun `onQueryChange should not modify allReciters`() = runTest {
-        val allRecitersBefore = testViewModel.allReciters
+        val allRecitersBefore = testViewModel.uiState.value.cachedReciters
 
         testViewModel.onQueryChange(FILTER_QUERY)
 
-        assertEquals(allRecitersBefore, testViewModel.allReciters)
+        assertEquals(allRecitersBefore,testViewModel.uiState.value.cachedReciters)
     }
 
     @Test
     fun `onQueryChange with no matches should return empty list`() = runTest {
         testViewModel.onQueryChange(NO_MATCH_QUERY)
 
-        assertTrue(testViewModel.uiState.value.reciters.isEmpty())
+        assertTrue(testViewModel.uiState.value.displayedReciters.isEmpty())
     }
 
     @Test
     fun `onQueryChange should perform local search without repository call`() = runTest {
-        val initialCallCount = 1 // من الـ init
+        val initialCallCount = 1
         testViewModel.onQueryChange(FILTER_QUERY)
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -175,24 +175,24 @@ class DownloadedRecitersViewModelTest {
 
     @Test
     fun `onClearQueryClick should restore all reciters`() = runTest {
-        val allRecitersBeforeFilter = testViewModel.allReciters
+        val allRecitersBeforeFilter = testViewModel.uiState.value.cachedReciters
 
         testViewModel.onQueryChange(FILTER_QUERY)
 
         testViewModel.onClearQueryClick()
 
-        assertEquals(allRecitersBeforeFilter, testViewModel.uiState.value.reciters)
-        assertEquals(allRecitersBeforeFilter.size, testViewModel.uiState.value.reciters.size)
+        assertEquals(allRecitersBeforeFilter, testViewModel.uiState.value.displayedReciters)
+        assertEquals(allRecitersBeforeFilter.size, testViewModel.uiState.value.displayedReciters.size)
     }
 
     @Test
     fun `onClearQueryClick after filtering should show all reciters`() = runTest {
         testViewModel.onQueryChange(FILTER_QUERY)
-        assertTrue(testViewModel.uiState.value.reciters.size < dummyReciters.size)
+        assertTrue(testViewModel.uiState.value.displayedReciters.size < dummyReciters.size)
 
         testViewModel.onClearQueryClick()
 
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.displayedReciters.size)
     }
 
 
@@ -224,9 +224,29 @@ class DownloadedRecitersViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val downloadedReciter = testViewModel.uiState.value.reciters
+        val downloadedReciter = testViewModel.uiState.value.displayedReciters
             .find { it.id == DOWNLOADED_RECITER_ID }
         assertTrue(downloadedReciter?.isDownloaded ?: false)
+    }
+    @Test
+    fun `onDeleteReciterAudioClick should show delete dialog`() = runTest {
+        val reciterId = 1
+        testViewModel.onDeleteReciterAudioClick(reciterId)
+
+        val state = testViewModel.uiState.value
+        assertTrue(state.isDeleteConfirmationDialogVisible)
+        assertEquals(reciterId, state.reciterIdToDelete)
+    }
+
+    @Test
+    fun `onDismissDeleteDialog should hide delete dialog`() = runTest {
+        testViewModel.onDeleteReciterAudioClick(1)
+        assertTrue(testViewModel.uiState.value.isDeleteConfirmationDialogVisible)
+
+        testViewModel.onDismissDeleteDialog()
+        val state = testViewModel.uiState.value
+        assertEquals(false, state.isDeleteConfirmationDialogVisible)
+        assertEquals(null, state.reciterIdToDelete)
     }
 
     @Test
@@ -244,7 +264,7 @@ class DownloadedRecitersViewModelTest {
 
         testViewModel.onQueryChange(ABDUL_QUERY)
 
-        val filteredReciter = testViewModel.uiState.value.reciters
+        val filteredReciter = testViewModel.uiState.value.displayedReciters
             .find { it.id == DOWNLOADED_RECITER_ID }
         assertTrue(filteredReciter?.isDownloaded ?: false)
     }
@@ -252,13 +272,13 @@ class DownloadedRecitersViewModelTest {
     @Test
     fun `multiple filter operations should work correctly`() = runTest {
         testViewModel.onQueryChange(ABDUL_QUERY)
-        val firstFilterSize = testViewModel.uiState.value.reciters.size
+        val firstFilterSize = testViewModel.uiState.value.displayedReciters.size
 
         testViewModel.onQueryChange(BASIT_QUERY)
-        val secondFilterSize = testViewModel.uiState.value.reciters.size
+        val secondFilterSize = testViewModel.uiState.value.displayedReciters.size
 
         testViewModel.onClearQueryClick()
-        val allRecitersSize = testViewModel.uiState.value.reciters.size
+        val allRecitersSize = testViewModel.uiState.value.displayedReciters.size
 
         assertTrue(secondFilterSize <= firstFilterSize)
         assertEquals(dummyReciters.size, allRecitersSize)
@@ -267,17 +287,17 @@ class DownloadedRecitersViewModelTest {
     @Test
     fun `filter should be case insensitive for English names`() = runTest {
         testViewModel.onQueryChange(LOWERCASE_QUERY)
-        val lowercaseResults = testViewModel.uiState.value.reciters.size
+        val lowercaseResults = testViewModel.uiState.value.displayedReciters.size
 
         testViewModel.onQueryChange(UPPERCASE_QUERY)
-        val uppercaseResults = testViewModel.uiState.value.reciters.size
+        val uppercaseResults = testViewModel.uiState.value.displayedReciters.size
 
         assertEquals(lowercaseResults, uppercaseResults)
     }
 
     @Test
     fun `allReciters should remain unchanged after multiple operations`() = runTest {
-        val initialAllReciters = testViewModel.uiState.value.reciters
+        val initialAllReciters = testViewModel.uiState.value.displayedReciters
 
         testViewModel.onQueryChange(FILTER_QUERY)
         testViewModel.onQueryChange(ANOTHER_QUERY)
@@ -285,7 +305,7 @@ class DownloadedRecitersViewModelTest {
         testViewModel.onQueryChange(FILTER_QUERY)
         testViewModel.onClearQueryClick()
 
-        assertEquals(initialAllReciters, testViewModel.uiState.value.reciters)
+        assertEquals(initialAllReciters, testViewModel.uiState.value.displayedReciters)
     }
 
     @Test

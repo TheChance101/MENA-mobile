@@ -19,7 +19,6 @@ class DownloadedRecitersViewModel(
         isSwipeable = surahArgs.isSwipeToDeleteEnabled,
     ),
 ), DownloadedRecitersListener {
-    var allReciters: List<DownloadedReciterItemUi> = emptyList()
 
     init {
         getAllReciters()
@@ -33,35 +32,39 @@ class DownloadedRecitersViewModel(
         applyLocalSearch(query)
     }
 
-    override fun onClearQueryClick() {
-        updateState { it.copy(query = "", reciters = allReciters) }
-    }
+    override fun onClearQueryClick() = updateState { it.copy(query = "", displayedReciters = it.cachedReciters) }
+
 
     private fun applyLocalSearch(query: String) {
-        val filtered = if (query.isBlank()) {
-            allReciters
-        } else {
-            allReciters.filter { it.name.contains(query, ignoreCase = true) }
-        }
-        updateState { it.copy(reciters = filtered) }
+        val source = uiState.value.cachedReciters
+
+        val filtered =
+            if (query.isBlank()) source
+            else source.filter { it.name.contains(query, ignoreCase = true) }
+
+        updateState { it.copy(displayedReciters = filtered) }
     }
 
     override fun onDeleteReciterAudioClick(reciterId: Int) {
-        val surahId = uiState.value.surahId ?: return
-
-        tryToExecute(
-            execute = { quranRepository.deleteSurahAudioByReciter(surahId = surahId, reciterId = reciterId) },
-            onSuccess = { updateReciterAfterDelete(reciterId) },
-            dispatcher = dispatcher
-        )
+        updateState {
+            it.copy(
+                isDeleteConfirmationDialogVisible = true,
+                reciterIdToDelete = reciterId
+            )
+        }
     }
 
-    private fun updateReciterAfterDelete(reciterId: Int) {
-        val updated = allReciters.map { reciterUi ->
-            if (reciterUi.id == reciterId) reciterUi.copy(isDownloaded = false) else reciterUi
+    override fun onConfirmDeleteReciterClick() {
+        // TODO CONFIRM DELETE
+    }
+
+    override fun onDismissDeleteDialog() {
+        updateState {
+            it.copy(
+                isDeleteConfirmationDialogVisible = false,
+                reciterIdToDelete = null
+            )
         }
-        allReciters = updated
-        applyLocalSearch(uiState.value.query)
     }
 
     override fun onSelectReciterClick(reciterId: Int) {
@@ -101,9 +104,11 @@ class DownloadedRecitersViewModel(
             reciter.toUi(isDownloaded = true)
         }
 
-        allReciters = mapped
-
-        updateState { it.copy(reciters = mapped) }
+        updateState {
+            it.copy(
+                cachedReciters = mapped,
+                displayedReciters = mapped
+            )
+        }
     }
-
 }

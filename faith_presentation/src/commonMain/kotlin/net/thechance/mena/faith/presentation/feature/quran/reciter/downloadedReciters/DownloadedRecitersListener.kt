@@ -6,4 +6,6 @@ interface DownloadedRecitersListener {
     fun onClearQueryClick()
     fun onSelectReciterClick(reciterId: Int)
     fun onDeleteReciterAudioClick(reciterId: Int)
+    fun onConfirmDeleteReciterClick()
+    fun onDismissDeleteDialog()
 }
