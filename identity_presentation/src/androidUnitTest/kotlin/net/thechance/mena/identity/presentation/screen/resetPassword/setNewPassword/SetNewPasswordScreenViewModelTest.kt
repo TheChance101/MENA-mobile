@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -10,11 +12,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.exception.InvalidPasswordException
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
-import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -140,11 +139,11 @@ class SetNewPasswordScreenViewModelTest {
         viewModel.onChangeNewPassword(validPassword)
         viewModel.onChangeConfirmPassword("DifferentPass123")
 
-        viewModel.onClickResetPassword()
-        testDispatcher.scheduler.advanceUntilIdle()
+        viewModel.effect.test {
+            viewModel.onClickResetPassword()
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.test {
-            assertTrue(awaitItem().errorMessage != null)
+            assertThat(awaitItem()).isInstanceOf(SetNewPasswordScreenUIEffect.ShowSnackBarError::class)
         }
     }
 
@@ -155,26 +154,6 @@ class SetNewPasswordScreenViewModelTest {
             assertTrue(awaitItem() is SetNewPasswordScreenUIEffect.NavigateBackToLogin)
         }
     }
-
-    @Test
-    fun `onClearErrorMessage should clear errorMessage in state when reset password throw exception`() =
-        runTest {
-            coEvery {
-                resetPasswordRepository.resetPassword(
-                    any(),
-                    any()
-                )
-            } throws InvalidPasswordException()
-
-            viewModel.onClickResetPassword()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-
-            viewModel.onClearErrorMessage()
-            viewModel.state.test {
-                assertTrue(awaitItem().errorMessage == null)
-            }
-        }
 
     @Test
     fun `onClickBack should send NavigateBackToLogin effect`() = runTest {
