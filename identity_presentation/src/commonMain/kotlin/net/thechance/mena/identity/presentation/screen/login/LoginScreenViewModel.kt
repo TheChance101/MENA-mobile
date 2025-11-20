@@ -20,7 +20,7 @@ class LoginScreenViewModel(
     LoginScreenInteractionListener {
 
     override fun onLoginClicked() {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = ::onLogin,
             onSuccess = { onLoginSuccess() },
@@ -43,7 +43,13 @@ class LoginScreenViewModel(
     }
 
     private fun onLoginError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isLoading = false) }
+
+        sendNewEffect(
+            LoginScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
 
@@ -82,11 +88,6 @@ class LoginScreenViewModel(
     override fun onPasswordVisibilityToggled() {
         updateState { copy(isPasswordVisible = !isPasswordVisible) }
     }
-
-    override fun clearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
 
     override fun onConfirmCountryItem(country: MenaCountry) {
         updateState { copy(currentCountry = country, showCountryBottomSheet = false) }
