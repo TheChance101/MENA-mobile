@@ -3,6 +3,7 @@ package net.thechance.mena.faith.data.mapper.ayahBookmark
 import net.thechance.mena.faith.data.database.SurahDto
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -12,32 +13,32 @@ class SurahMapperKtTest {
 
     @Test
     fun `toSurah should return mapped surah when dto has valid values`() {
-        val result = validSurahDto.toSurah()
+        val result = validSurahDto.toSurah(AppLanguage.ENGLISH)
         assertEquals(expectedValidSurah, result)
     }
 
     @Test
     fun `toSurah should return mapped surah when dto has minimum valid order`() {
-        val result = minOrderSurahDto.toSurah()
+        val result = minOrderSurahDto.toSurah(AppLanguage.ENGLISH)
         assertEquals(expectedMinOrderSurah, result)
     }
 
     @Test
     fun `toSurah should return mapped surah when dto has maximum valid order`() {
-        val result = maxOrderSurahDto.toSurah()
+        val result = maxOrderSurahDto.toSurah(AppLanguage.ENGLISH)
         assertEquals(expectedMaxOrderSurah, result)
     }
 
     @Test
     fun `toSurah should return mapped surah when dto has empty name`() {
-        val result = emptyNameSurahDto.toSurah()
+        val result = emptyNameSurahDto.toSurah(AppLanguage.ENGLISH)
         assertEquals(expectedEmptyNameSurah, result)
     }
 
     @Test
     fun `toSurah should throw exception when dto has order not in SurahOrder`() {
         assertFailsWith<NoSuchElementException> {
-            invalidOrderSurahDto.toSurah()
+            invalidOrderSurahDto.toSurah(AppLanguage.ENGLISH)
         }
     }
 
@@ -45,7 +46,7 @@ class SurahMapperKtTest {
     fun `toSurah should throw exception when dto has zero order if zero not valid`() {
         if (Surah.SurahOrder.entries.none { it.order == 0 }) {
             assertFailsWith<NoSuchElementException> {
-                zeroOrderSurahDto.toSurah()
+                zeroOrderSurahDto.toSurah(AppLanguage.ENGLISH)
             }
         }
     }
@@ -53,14 +54,19 @@ class SurahMapperKtTest {
     @Test
     fun `toSurah should throw exception when dto has negative order`() {
         assertFailsWith<NoSuchElementException> {
-            negativeOrderSurahDto.toSurah()
+            negativeOrderSurahDto.toSurah(AppLanguage.ENGLISH)
         }
     }
 
     @Test
     fun `toSurah should return correct mappings when mapping all SurahOrders`() {
         Surah.SurahOrder.entries.forEach { entry ->
-            val dto = SurahDto(number = entry.order, name = "Surah ${entry.order}", ayahCount = 1)
+            val dto = SurahDto(
+                number = entry.order,
+                nameEn = "Surah ${entry.order}",
+                nameAr = "${entry.order}سورة ",
+                ayahCount = 1
+            )
             val expected = Surah(
                 id = entry.order,
                 order = entry,
@@ -68,7 +74,7 @@ class SurahMapperKtTest {
                 ayahCount = 1,
             )
 
-            val result = dto.toSurah()
+            val result = dto.toSurah(AppLanguage.ENGLISH)
             assertEquals(expected, result)
         }
     }
@@ -77,7 +83,8 @@ class SurahMapperKtTest {
         private val firstOrder = Surah.SurahOrder.entries.minOf { it.order }
         private val lastOrder = Surah.SurahOrder.entries.maxOf { it.order }
 
-        val validSurahDto = SurahDto(number = firstOrder, name = "Al-Fatiha", ayahCount = 1)
+        val validSurahDto =
+            SurahDto(number = firstOrder, nameEn = "Al-Fatiha", nameAr = "الفاتحة", ayahCount = 1)
         val expectedValidSurah = Surah(
             id = firstOrder,
             order = Surah.SurahOrder.entries.first { it.order == firstOrder },
@@ -87,41 +94,47 @@ class SurahMapperKtTest {
 
         val minOrderSurahDto = SurahDto(
             number = firstOrder,
-            name = "Test Surah",
+            nameEn = "Al-Fatiha",
+            nameAr = "الفاتحة",
             ayahCount = 1
         )
         val expectedMinOrderSurah = expectedValidSurah.copy(
-            name = "Test Surah"
+            name = "Al-Fatiha"
         )
 
         val maxOrderSurahDto = SurahDto(
             number = lastOrder,
-            name = "Test Surah",
+            nameEn = "Al-Fatiha",
+            nameAr = "الفاتحة",
             ayahCount = 1
         )
         val expectedMaxOrderSurah = Surah(
             id = lastOrder,
             order = Surah.SurahOrder.entries.first { it.order == lastOrder },
-            name = "Test Surah",
+            name = "Al-Fatiha",
             ayahCount = 1,
         )
 
-        val emptyNameSurahDto = SurahDto(number = firstOrder, name = "", ayahCount = 1)
+        val emptyNameSurahDto =
+            SurahDto(number = firstOrder, nameEn = "", nameAr = "", ayahCount = 1)
         val expectedEmptyNameSurah = expectedValidSurah.copy(name = "")
 
         val invalidOrderSurahDto = SurahDto(
             number = lastOrder + 1000,
-            name = "InvalidOrder",
+            nameEn = "Al-Fatiha",
+            nameAr = "الفاتحة",
             ayahCount = 1
         )
         val zeroOrderSurahDto = SurahDto(
             number = 0,
-            name = "ZeroOrder",
+            nameEn = "Al-Fatiha",
+            nameAr = "الفاتحة",
             ayahCount = 1
         )
         val negativeOrderSurahDto = SurahDto(
             number = -1,
-            name = "NegativeOrder",
+            nameEn = "Al-Fatiha",
+            nameAr = "الفاتحة",
             ayahCount = 1
         )
     }

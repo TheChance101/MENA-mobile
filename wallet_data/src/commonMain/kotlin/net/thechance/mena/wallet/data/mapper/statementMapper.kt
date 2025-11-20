@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package net.thechance.mena.wallet.data.mapper
 
 import io.ktor.client.request.HttpRequestBuilder
@@ -7,18 +9,32 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.plus
 import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.domain.entity.Statement
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.domain.model.StatementWithMetaData
 import net.thechance.mena.wallet.domain.model.TransactionFilterParams
+import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
 
 fun TransactionFilterParams.toStatementRequest(): HttpRequestBuilder.() -> Unit = {
+    val timezone = TimeZone.currentSystemDefault()
     header(HttpHeaders.Accept, ContentType.Application.Pdf)
     types?.let { parameter("type", it.joinToString(",")) }
-    startDate?.let { parameter("startDate", it.toString()) }
-    endDate?.let { parameter("endDate", it.toString()) }
+
+    startDate?.let {
+        val startDateTime = it.atStartOfDayIn(timezone)
+        parameter("from", startDateTime.toString().removeSuffix("Z"))
+    }
+
+    endDate?.let {
+        val endDateTime = it.plus(DatePeriod(days = 1)).atStartOfDayIn(timezone)
+        parameter("to", endDateTime.toString().removeSuffix("Z"))
+    }
 }
 
 @OptIn(ExperimentalUuidApi::class)

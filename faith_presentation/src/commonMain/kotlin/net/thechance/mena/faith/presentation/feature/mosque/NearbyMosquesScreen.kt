@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.emptyFlow
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add
+import mena.faith_presentation.generated.resources.add_mosque_message
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.ic_add
 import mena.faith_presentation.generated.resources.ic_gps
@@ -45,15 +46,18 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
 import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResultsBottomSheet
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.utils.MapNavigator
-import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -74,7 +78,7 @@ internal fun NearbyMosquesScreen(
         savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
             ?.collect { successMessage ->
                 successMessage?.let {
-                    viewModel.showSuccessMessage(successMessage)
+                    viewModel.showSuccessMessage(Res.string.add_mosque_message)
                     savedStateHandle.remove<String?>("add_mosque_message")
                 }
             }
@@ -248,28 +252,32 @@ private fun SearchMosquesButton(onClick: () -> Unit) {
     )
 }
 
-@Composable
 @Preview
-private fun NearbyMosquesScreenPreview() {
-    Content(
-        uiState = NearbyMosquesMapUiState(isSearchButtonVisible = true),
-        listener = object : NearbyMosquesInteractionListener {
-            override fun onBackClick() {}
-            override fun onAddMosqueClick() {}
-            override fun getUserLocation() {}
-            override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-            override fun onViewOnMapClick(coordinate: Coordinate) {}
-            override fun onSearchByCoordinates(coordinate: Coordinate) {}
-            override fun onSearchResultClick(mosque: MosqueUiState) {}
-            override fun changeCenterOfMap(coordinate: Coordinate) {}
-            override fun onQueryChange(query: String) {}
-            override fun onSearchSubmit() {}
-            override fun changeSearchButtonVisibility(isVisible: Boolean) {}
-            override fun onDismissSearchBottomSheet() {}
-            override fun selectMosque(mosque: MosqueUiState) {}
-            override fun unselectMosque() {}
-            override fun changeMapMovement(canMove: Boolean) {}
-            override fun showSuccessMessage(message: String) {}
+@Composable
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = NearbyMosquesMapUiState(isSearchButtonVisible = true),
+                listener = object : NearbyMosquesInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onAddMosqueClick() {}
+                    override fun getUserLocation() {}
+                    override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
+                    override fun onViewOnMapClick(coordinate: Coordinate) {}
+                    override fun onSearchByCoordinates(coordinate: Coordinate) {}
+                    override fun onSearchResultClick(mosque: MosqueUiState) {}
+                    override fun changeCenterOfMap(coordinate: Coordinate) {}
+                    override fun onQueryChange(query: String) {}
+                    override fun onSearchSubmit() {}
+                    override fun changeSearchButtonVisibility(isVisible: Boolean) {}
+                    override fun onDismissSearchBottomSheet() {}
+                    override fun selectMosque(mosque: MosqueUiState) {}
+                    override fun unselectMosque() {}
+                    override fun changeMapMovement(canMove: Boolean) {}
+                    override fun showSuccessMessage(message: StringResource) {}
+                }
+            )
         }
-    )
+    }
 }

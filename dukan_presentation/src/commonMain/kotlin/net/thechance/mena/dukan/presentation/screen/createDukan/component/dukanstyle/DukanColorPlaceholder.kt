@@ -38,7 +38,7 @@ fun ColorOptionsPlaceholder(
         modifier = modifier.size(48.dp)
             .clip(CircleShape)
             .background(Theme.colorScheme.background.surface)
-            .border(1.dp, backgroundColor)
+            .border(1.dp, backgroundColor,CircleShape)
             .clickable(
                 onClick = onClick,
                 indication = null,

@@ -8,13 +8,15 @@ import net.thechance.mena.faith.data.mapper.toAyah
 import net.thechance.mena.faith.data.mapper.toSurah
 import net.thechance.mena.faith.data.remote.model.bookmark.AyahBookmarkDto
 import net.thechance.mena.faith.domain.entity.AyahBookmark
+import net.thechance.mena.identity.domain.util.AppLanguage
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 suspend fun AyahBookmarkDto.toAyahBookmark(
     fetchSurah: suspend (Int) -> SurahDto,
-    fetchAyah: suspend (ayahNumber: Int, surahId: Int) -> AyahDto
+    fetchAyah: suspend (ayahNumber: Int, surahId: Int) -> AyahDto,
+    appLanguage: AppLanguage
 ): AyahBookmark {
     return coroutineScope {
         val surahDeferred = async { fetchSurah(surahId) }
@@ -25,7 +27,7 @@ suspend fun AyahBookmarkDto.toAyahBookmark(
 
         AyahBookmark(
             id = id.toInt(),
-            surah = surahEntity.toSurah(),
+            surah = surahEntity.toSurah(appLanguage),
             ayah = ayahEntity.toAyah(),
             createdAt = Instant.parse(createdAt)
         )

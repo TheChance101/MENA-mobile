@@ -9,9 +9,6 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -152,7 +149,7 @@ class ChatRepositoryImpl(
         }
     }
 
-    override suspend fun getChatByContactUserId(userId: Uuid): Chat {
+    override suspend fun getChatByOtherUserId(userId: Uuid): Chat {
         return tryNetworkCall<ChatDto>(
             bodyType = typeInfo<ChatDto>()
         ) {

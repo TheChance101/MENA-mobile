@@ -11,9 +11,10 @@ import kotlin.uuid.Uuid
 data class UsersManagementScreenState(
     val users: List<UserItem> = emptyList(),
     val query: String = "",
-    val pageInfo : UserPageInfo = UserPageInfo(),
+    val pageInfo: UserPageInfo = UserPageInfo(),
     val sort: SortState = SortState(),
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val isInitialLoading: Boolean = true,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isBlockDialogShown: Boolean = false,
@@ -25,6 +26,7 @@ data class UsersManagementScreenState(
     )
 
     data class UserItem(
+        val index: Int,
         val id: Uuid,
         val fullName: String,
         val phoneNumber: String,
@@ -40,10 +42,13 @@ data class UsersManagementScreenState(
 
     enum class SortDirection {
         ASC, DESC;
-       fun toggle(): SortDirection = if (this == ASC) DESC else ASC
+
+        fun toggle(): SortDirection = if (this == ASC) DESC else ASC
     }
 
     enum class SortType {
-        USERNAME, LAST_LOGIN_DATE, LAST_VISIT_DATE
+        USERNAME,
+        LAST_LOGIN_DATE, LAST_VISIT_DATE,
+        ACTIVATION_STATUS
     }
 }

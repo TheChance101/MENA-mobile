@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.shelfDetails
 
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -17,7 +18,10 @@ class ShelfDetailsMapperTest {
             id = Uuid.random(),
             name = "Test Product",
             description = "Description",
-            price = 10.0,
+            price = Price(
+                base = 10.0,
+                final = 10.0
+            ),
             imageUrls = listOf("image.png"),
             quantityInCart = 0,
             createdAt = "2023-01-01",
@@ -29,7 +33,7 @@ class ShelfDetailsMapperTest {
 
         assertEquals(product.name, uiState.name)
         assertEquals(product.description, uiState.description)
-        assertEquals(product.price, uiState.price, 0.0)
+        assertEquals(product.price.base, uiState.price, 0.0)
         assertEquals("image.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
     }
@@ -40,7 +44,10 @@ class ShelfDetailsMapperTest {
             id = Uuid.random(),
             name = "Another Product",
             description = "Test Desc",
-            price = 50.0,
+            price = Price(
+                base = 50.0,
+                final = 50.0
+            ),
             imageUrls = listOf("img.jpg"),
             quantityInCart = 3,
             createdAt = "2023-01-01",

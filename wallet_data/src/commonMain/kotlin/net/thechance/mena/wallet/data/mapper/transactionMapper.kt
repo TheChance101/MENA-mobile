@@ -10,11 +10,13 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 fun TransactionDto.toEntity(): Transaction {
     return Transaction(
-        id = id.toUuidOrNull()?: throw UnknownNetworkException("Invalid transaction id"),
+        id = id.toUuidOrNull() ?: throw UnknownNetworkException("Invalid transaction id"),
         createdAt = parseLocalDateTimeOrDefault(createdAt),
         status = TransactionStatus.valueOfOrDefault(status),
-        senderName = senderName ?: "",
-        receiverName = receiverName ?: "",
+        senderName = senderInfo?.name ?: "",
+        senderImageUrl = senderInfo?.imageUrl,
+        receiverName = receiverInfo?.name ?: "",
+        receiverImageUrl = receiverInfo?.imageUrl,
         amount = amount ?: 0.0,
         type = TransactionType.valueOfOrDefault(type),
     )

@@ -5,10 +5,10 @@ import mena.identity_presentation.generated.resources.error_address_not_found
 import mena.identity_presentation.generated.resources.error_invalid_otp
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import mena.identity_presentation.generated.resources.error_username_required
-import net.thechance.mena.identity.presentation.base.error.AuthenticationErrorState
-import net.thechance.mena.identity.presentation.base.error.ErrorState
-import net.thechance.mena.identity.presentation.base.error.LocationErrorState
-import net.thechance.mena.identity.presentation.base.error.ProfileErrorState
+import net.thechance.mena.identity.presentation.base.errorState.AuthenticationErrorState
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.base.errorState.LocationErrorState
+import net.thechance.mena.identity.presentation.base.errorState.ProfileErrorState
 import org.junit.Test
 import kotlin.test.assertEquals
 

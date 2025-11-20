@@ -26,8 +26,6 @@ import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 
-private const val ANIMATION_DURATION = 500
-
 @Composable
 fun SnackBarContainer(
     snackBarState: SnackBarState,
@@ -83,3 +81,4 @@ private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
             animationSpec = tween(ANIMATION_DURATION),
             targetOffsetX = { it / 2 },
         )
+private const val ANIMATION_DURATION = 500

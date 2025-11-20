@@ -97,7 +97,7 @@ class ChatRepositoryImplTest {
     }
 
     @Test
-    fun `should return chat when getChatByContactUserId is successful`() = runTest {
+    fun `should return chat when getChatByOtherUserId is successful`() = runTest {
         httpClient = createHttpClient(chatResponse = { defaultChatResponse() })
         repository = createChatRepository(
             httpClient = httpClient,
@@ -107,13 +107,13 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao
         )
 
-        val result = repository.getChatByContactUserId(userId)
+        val result = repository.getChatByOtherUserId(userId)
 
         assertThat(result.name).isEqualTo("Test Chat")
     }
 
     @Test
-    fun `should throw ChatNotFoundException when getChatByContactUserId fails`() = runTest {
+    fun `should throw ChatNotFoundException when getChatByOtherUserId fails`() = runTest {
         httpClient = createHttpClient(
             chatResponse = { respond("", HttpStatusCode.NotFound, jsonHeaders) }
         )
@@ -126,7 +126,7 @@ class ChatRepositoryImplTest {
         )
 
         assertFailsWith<NotFoundException> {
-            repository.getChatByContactUserId(userId)
+            repository.getChatByOtherUserId(userId)
         }
     }
 
@@ -355,7 +355,6 @@ class ChatRepositoryImplTest {
         job.cancel()
     }
 
-
     @Test
     fun `should emit Offline when network is unavailable during chat sync`() = runTest {
         val pageNumber = 0
@@ -414,7 +413,6 @@ class ChatRepositoryImplTest {
         job.cancel()
     }
 
-
     @Test
     fun `should emit DeletedChatsSynced when lastSyncTime is not null`() = runTest {
         val pageNumber = 0
@@ -424,6 +422,7 @@ class ChatRepositoryImplTest {
         val preferences = mutablePreferencesOf(
             stringPreferencesKey("lastTimeChatSummariesSynced") to Clock.System.now().toString()
         )
+
         everySuspend { dataStore.data } returns flowOf(preferences)
         everySuspend { cachedChatSummaryDao.getChatSummaries(20, 0) } returns emptyList()
         everySuspend { cachedChatSummaryDao.getChatSummariesCount() } returns 0
@@ -465,6 +464,8 @@ class ChatRepositoryImplTest {
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
 
         val emittedState = repository.observeChatSummariesSyncState().first { it is SyncState.DeletedChatsSynced }
+
+        assertThat(emittedState).isEqualTo(SyncState.DeletedChatsSynced(deletedIds))
 
         job.cancel()
     }

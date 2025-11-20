@@ -2,17 +2,16 @@ package net.thechance.mena.faith.presentation.utils.extentions.prayerTime
 
 import net.thechance.mena.faith.domain.entity.PrayerTime
 
-fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String = runCatching {
+fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String {
     val hijriDate = prayerTimes.firstOrNull()?.hijriDate ?: return ""
     val parts = hijriDate.split("-")
     if (parts.size != 3) return hijriDate
     val day = parts[DAY_INDEX].toInt()
     val month = parts[MONTH_INDEX].toInt()
     val year = parts[YEAR_INDEX].toInt()
-    val monthName = hijriMonths[month]
-    "$day $monthName $year"
-}.getOrDefault("")
-
+    val monthName = hijriMonths[month] ?: return hijriDate
+    return "$day $monthName $year"
+}
 
 private val hijriMonths: Map<Int, String> = mapOf(
     1 to "Muharram",

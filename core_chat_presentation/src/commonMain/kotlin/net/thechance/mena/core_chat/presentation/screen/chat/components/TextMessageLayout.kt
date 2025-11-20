@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -21,21 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import kotlinx.datetime.LocalDateTime
-import mena.core_chat_presentation.generated.resources.Res
-import mena.core_chat_presentation.generated.resources.ic_profile_placeholder
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.now
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -43,7 +38,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun TextMessageLayout(
-    message: MessageUiState,
+    message: TextMessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
     modifier: Modifier = Modifier,
@@ -52,22 +47,20 @@ fun TextMessageLayout(
     onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
 ) {
-    if (message.content !is MessageContent.Text) return
-
     val messageBackground =
-        if (message.isMine) Theme.colorScheme.background.surfaceLow
+        if (message.messageDetails.isMine) Theme.colorScheme.background.surfaceLow
         else Theme.colorScheme.brand.brandVariant
 
     val maxRadius = Theme.radius.md
 
-    val messageShape = if (message.isMine && isMarkedLastInSeries)
+    val messageShape = if (message.messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
             bottomStart = maxRadius,
             bottomEnd = Theme.radius.xxs
         )
-    else if (!message.isMine && isMarkedLastInSeries)
+    else if (!message.messageDetails.isMine && isMarkedLastInSeries)
         RoundedCornerShape(
             topStart = maxRadius,
             topEnd = maxRadius,
@@ -81,23 +74,23 @@ fun TextMessageLayout(
     val avatarSpacing = Theme.spacing._8
     val myMessageMarginStart = Theme.spacing._24
     val otherMessageMarginEnd = Theme.spacing._8
-    val messageInfoAlignment = if (message.isMine) Alignment.Start else Alignment.End
+    val messageInfoAlignment = if (message.messageDetails.isMine) Alignment.Start else Alignment.End
 
-    val messageBubblePaddingStart = if (message.isMine) myMessageMarginStart else 0.dp
-    val messageBubblePaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+    val messageBubblePaddingStart = if (message.messageDetails.isMine) myMessageMarginStart else 0.dp
+    val messageBubblePaddingEnd = if (message.messageDetails.isMine) 0.dp else otherMessageMarginEnd
 
-    val infoRowPaddingStart = if (message.isMine) {
+    val infoRowPaddingStart = if (message.messageDetails.isMine) {
         myMessageMarginStart
     } else {
         avatarSize + avatarSpacing
     }
-    val infoRowPaddingEnd = if (message.isMine) 0.dp else otherMessageMarginEnd
+    val infoRowPaddingEnd = if (message.messageDetails.isMine) 0.dp else otherMessageMarginEnd
 
-    val messageAlignment = if (message.isMine) Alignment.End else Alignment.Start
+    val messageAlignment = if (message.messageDetails.isMine) Alignment.End else Alignment.Start
 
     Box(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = if (message.isMine) Alignment.CenterEnd else Alignment.CenterStart
+        contentAlignment = if (message.messageDetails.isMine) Alignment.CenterEnd else Alignment.CenterStart
     ) {
 
         Column(
@@ -108,7 +101,7 @@ fun TextMessageLayout(
                 verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.spacedBy(avatarSpacing)
             ) {
-                if (!message.isMine) {
+                if (!message.messageDetails.isMine) {
                     Box(
                         modifier = Modifier
                             .clip(CircleShape)
@@ -116,13 +109,9 @@ fun TextMessageLayout(
                         contentAlignment = Alignment.Center
                     ) {
                         if (isMarkedLastInSeries) {
-                            AsyncImage(
-                                modifier = Modifier.fillMaxSize(),
-                                model = chatAvatarUrl,
-                                placeholder = painterResource(Res.drawable.ic_profile_placeholder),
-                                error = painterResource(Res.drawable.ic_profile_placeholder),
-                                contentScale = ContentScale.Crop,
-                                contentDescription = "Contact photo",
+                            CircularAvatar(
+                                contactImageUri = chatAvatarUrl,
+                                size = 24.dp,
                             )
                         }
                     }
@@ -145,7 +134,7 @@ fun TextMessageLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = message.content.text,
+                        text = message.text,
                         style = Theme.typography.body.small,
                         color = Theme.colorScheme.shadeSecondary
                     )
@@ -158,25 +147,25 @@ fun TextMessageLayout(
                 horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (!message.isMine && message.reactions.isNotEmpty()) {
+                if (!message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
-                        reactions = message.reactions,
+                        reactions = message.messageDetails.reactions,
                         modifier= Modifier.offset(y = (-8).dp)
                     )
                 }
 
                 AnimatedVisibility(visible = showMessageInfo) {
                     MessageInfo(
-                        messageTime = message.sendTime,
-                        messageStatus = message.status,
-                        messageIsMine = message.isMine,
+                        messageTime = message.messageDetails.sendTime,
+                        messageStatus = message.messageDetails.status,
+                        messageIsMine = message.messageDetails.isMine,
                         onFailClick = onFailClick,
                     )
                 }
 
-                if (message.isMine && message.reactions.isNotEmpty()) {
+                if (message.messageDetails.isMine && message.messageDetails.reactions.isNotEmpty()) {
                     ReactionBubble(
-                        reactions = message.reactions,
+                        reactions = message.messageDetails.reactions,
                         modifier= Modifier.offset(y = (-8).dp)
                     )                }
             }
@@ -192,27 +181,31 @@ private fun Preview() {
             modifier = Modifier.fillMaxWidth()
         ) {
             TextMessageLayout(
-                message = MessageUiState(
-                    Uuid.random(),
-                    Uuid.random(),
-                    sendTime = LocalDateTime.now(),
-                    status = MessageStatus.READ,
-                    isMine = false,
-                    reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random())),
-                    content = MessageContent.Text("Good Morning!")
+                message = TextMessageUiState(
+                    text = "Good Morning!",
+                    messageDetails = MessageDetailsUiState(
+                        Uuid.random(),
+                        Uuid.random(),
+                        sendTime = LocalDateTime.now(),
+                        status = MessageStatus.READ,
+                        isMine = false,
+                        reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random())),
+                    )
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true,
             )
 
             TextMessageLayout(
-                message = MessageUiState(
-                    Uuid.random(),
-                    Uuid.random(),
-                    sendTime = LocalDateTime.now(),
-                    status = MessageStatus.READ,
-                    isMine = true,
-                    content = MessageContent.Text("Good Morning!")
+                message = TextMessageUiState(
+                    text = "Good Morning!",
+                    messageDetails = MessageDetailsUiState(
+                        Uuid.random(),
+                        Uuid.random(),
+                        sendTime = LocalDateTime.now(),
+                        status = MessageStatus.READ,
+                        isMine = true,
+                    )
                 ),
                 showMessageInfo = true,
                 isMarkedLastInSeries = true,

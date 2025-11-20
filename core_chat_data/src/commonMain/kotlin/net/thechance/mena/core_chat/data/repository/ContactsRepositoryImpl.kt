@@ -88,12 +88,34 @@ class ContactsRepositoryImpl(
         }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    override suspend fun getContactsByName(
+        name: String,
+        pageNumber: Int,
+        isMenaUser: Boolean
+    ): PagedData<Contact> {
+        return tryNetworkCall<PagedDataDto<ContactDto>>(
+            defaultException = ContactsFetchFailedException("Couldn't get contacts") ,
+            bodyType = typeInfo<PagedDataDto<ContactDto>>()
+        ) {
+            client.get(SEARCH_CONTACTS_ENDPOINT) {
+                parameter(CONTACT_NAME_PARAMETER,name)
+                parameter(ONLY_MENA_USER_PARAMETER,isMenaUser)
+                parameter(PAGE_NUMBER_PARAMETER, pageNumber)
+                parameter(PAGE_SIZE_PARAMETER, PAGE_SIZE)
+            }
+        }.toPagedListOfContacts()
+    }
+
     private companion object {
         val USER_SYNCED_STATE_KEY = booleanPreferencesKey("user_synced_state_key")
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"
+        const val CONTACT_NAME_PARAMETER = "query"
+        const val ONLY_MENA_USER_PARAMETER = "onlyMenaUsers"
         const val PAGE_SIZE = 20
         const val CONTACTS_ENDPOINT = "/chat/contacts"
         const val SYNC_CONTACTS_ENDPOINT = "/chat/contacts/sync"
+        const val SEARCH_CONTACTS_ENDPOINT = "/chat/contacts/search"
     }
 }

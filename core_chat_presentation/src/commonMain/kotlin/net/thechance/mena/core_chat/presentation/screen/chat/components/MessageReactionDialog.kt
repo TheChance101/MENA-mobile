@@ -23,9 +23,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.react_to_message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.presentation.components.ChatBasicDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -45,7 +45,7 @@ private val availableReactions = listOf(
 
 @Composable
 @OptIn(ExperimentalUuidApi::class)
-fun messageReactionDialog(
+fun MessageReactionDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit = { },
     message: MessageUiState? = null,
@@ -62,12 +62,12 @@ fun messageReactionDialog(
         actionButtons = {
             MessageToReactDisplay(message = message)
 
-            val selected = message.reactions.firstOrNull { it.userId == currentUserId }?.emoji
+            val selected = message.messageDetails.reactions.firstOrNull { it.userId == currentUserId }?.emoji
 
             ReactionContent(
                 selectedReaction = selected,
                 onReactionSelected = { emoji ->
-                    onReactionClicked(message.id, emoji)
+                    onReactionClicked(message.messageDetails.id, emoji)
                     onDismiss()
                 }
             )
@@ -89,7 +89,7 @@ fun messageReactionDialog(
 fun MessageToReactDisplay(
     message: MessageUiState
 ) {
-    if (message.content !is MessageContent.Text) {
+    if (message !is TextMessageUiState) {
         return
     }
 
@@ -99,17 +99,15 @@ fun MessageToReactDisplay(
             .fillMaxWidth()
             .padding(vertical = Theme.spacing._16)
             .background(
-                color = if (message.isMine)
+                color = if (message.messageDetails.isMine)
                     Theme.colorScheme.background.surface
                 else
                     Theme.colorScheme.brand.brandVariant,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
     ) {
-        val textContent = message.content
-
         Text(
-            text = textContent.text,
+            text = message.text,
             modifier = Modifier.padding(Theme.spacing._12),
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary,

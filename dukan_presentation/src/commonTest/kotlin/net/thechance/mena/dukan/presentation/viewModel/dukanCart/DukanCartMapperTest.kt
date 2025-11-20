@@ -2,6 +2,7 @@ package net.thechance.mena.dukan.presentation.viewModel.dukanCart
 
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,7 +17,10 @@ class DukanCartMapperTest {
             id = Uuid.random(),
             name = "Headphones",
             description = "Wireless Bluetooth Headphones",
-            price = 999.99,
+            price = Price(
+                base = 999.99,
+                final = 999.99
+            ),
             imageUrls = listOf("headphones.png"),
             quantityInCart = 2,
             createdAt = "2023-01-01",
@@ -40,7 +44,10 @@ class DukanCartMapperTest {
             id = Uuid.random(),
             name = "Book",
             description = "E-book",
-            price = 50.0,
+            price = Price(
+                base = 50.0,
+                final = 50.0
+            ),
             imageUrls = emptyList(),
             quantityInCart = 1,
             createdAt = "2023-01-01",

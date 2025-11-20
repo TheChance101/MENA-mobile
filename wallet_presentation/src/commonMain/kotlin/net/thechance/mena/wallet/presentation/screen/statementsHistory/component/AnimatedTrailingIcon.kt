@@ -40,6 +40,7 @@ fun AnimatedTrailingIcon(
         Icon(
             painter = painterResource(Res.drawable.ic_edit),
             contentDescription = stringResource(Res.string.edit),
+            tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier
                 .size(40.dp)
                 .background(

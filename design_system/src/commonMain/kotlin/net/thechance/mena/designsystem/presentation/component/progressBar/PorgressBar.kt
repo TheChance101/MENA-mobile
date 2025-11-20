@@ -53,7 +53,7 @@ fun ProgressBar(
     )
 }
 
-@Preview
+@Preview(showBackground = true,backgroundColor = 0xFFF2F4F7)
 @Composable
 private fun ProgressBarPreview() {
     MenaTheme {

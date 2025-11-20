@@ -1,17 +1,17 @@
 package net.thechance.mena.faith.data.remote.service
 
 import de.jensklingenberg.ktorfit.Response
-import de.jensklingenberg.ktorfit.http.Body
 import de.jensklingenberg.ktorfit.http.GET
-import net.thechance.mena.faith.data.remote.model.tilawah.AyahSoundUrlRequest
+import de.jensklingenberg.ktorfit.http.Query
 import net.thechance.mena.faith.data.remote.model.tilawah.RecitersRequest
-import net.thechance.mena.faith.data.remote.model.tilawah.SurahSoundRequest
 
 interface TilawahApiService {
 
     @GET("faith/tilawah/ayah/sound")
     suspend fun getAyahSoundUrl(
-        @Body body: AyahSoundUrlRequest
+        @Query reciterId: Int,
+        @Query ayahNumber: Int,
+        @Query surahNumber: Int,
     ): Response<String>
 
     @GET("faith/tilawah/reciters")
@@ -19,7 +19,8 @@ interface TilawahApiService {
 
     @GET("faith/tilawah/surah/sound")
     suspend fun getSurahSoundUrl(
-        @Body body: SurahSoundRequest
+        @Query reciterId: Int,
+        @Query surahNumber: Int,
     ): Response<String>
 
 }

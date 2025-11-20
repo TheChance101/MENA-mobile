@@ -34,6 +34,7 @@ import mena.faith_presentation.generated.resources.repeat
 import mena.faith_presentation.generated.resources.surah_ayah_format
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -155,18 +156,20 @@ fun AudioButtons(
 
 @Preview
 @Composable
-private fun TilawahButtonsPreview() {
-    QuranTheme {
-        AudioButtons(
-            surahName = "Al-Fatiha",
-            ayahNumber = 1,
-            isPlaying = true,
-            onReciterClick = {},
-            onPreviousClick = {},
-            onPlayPauseClick = {},
-            onNextClick = {},
-            onRepeatClick = {},
-            onTilawahClick = {}
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            AudioButtons(
+                surahName = "Al-Fatiha",
+                ayahNumber = 1,
+                isPlaying = true,
+                onReciterClick = {},
+                onPreviousClick = {},
+                onPlayPauseClick = {},
+                onNextClick = {},
+                onRepeatClick = {},
+                onTilawahClick = {}
+            )
+        }
     }
 }

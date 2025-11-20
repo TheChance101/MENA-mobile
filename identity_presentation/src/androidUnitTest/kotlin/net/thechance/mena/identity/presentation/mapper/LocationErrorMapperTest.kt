@@ -6,7 +6,7 @@ import mena.identity_presentation.generated.resources.error_failed_to_open_setti
 import mena.identity_presentation.generated.resources.error_location_permission_denied
 import mena.identity_presentation.generated.resources.error_permission_not_granted
 import mena.identity_presentation.generated.resources.error_something_went_wrong
-import net.thechance.mena.identity.presentation.base.error.LocationErrorState
+import net.thechance.mena.identity.presentation.base.errorState.LocationErrorState
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -19,15 +19,6 @@ class LocationErrorMapperTest {
         val result = mapLocationErrorToMessage(error)
 
         assertEquals(Res.string.error_location_permission_denied, result)
-    }
-
-    @Test
-    fun `mapLocationErrorToMessage should return error_permission_not_granted for FailedToRequestPermission`() {
-        val error = LocationErrorState.FailedToRequestPermission
-
-        val result = mapLocationErrorToMessage(error)
-
-        assertEquals(Res.string.error_permission_not_granted, result)
     }
 
     @Test

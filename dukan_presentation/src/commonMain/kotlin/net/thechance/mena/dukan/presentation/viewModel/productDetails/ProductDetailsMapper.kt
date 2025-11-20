@@ -9,10 +9,11 @@ fun Product.toUiState(): ProductDetailsUiState.ProductInfo {
     return ProductDetailsUiState.ProductInfo(
         id = id.toString(),
         name = name,
-        price = price,
+        price = price.base,
         description = description,
         images = imageUrls,
-        inCartQuantity = quantityInCart
+        inCartQuantity = quantityInCart,
+        isOutOfStock = isOutOfStock
     )
 }
 

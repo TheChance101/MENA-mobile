@@ -10,4 +10,6 @@ interface ContactsRepository {
     suspend fun syncContacts()
     suspend fun getHasUserSyncedContactsStatus(): Boolean
     suspend fun setHasUserSyncedContactsStatus(isSynced: Boolean)
+    @OptIn(ExperimentalUuidApi::class)
+    suspend fun getContactsByName(name: String, pageNumber: Int, isMenaUser: Boolean = true): PagedData<Contact>
 }
