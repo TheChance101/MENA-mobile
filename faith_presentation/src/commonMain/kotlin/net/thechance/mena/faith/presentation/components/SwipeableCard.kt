@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,17 +42,19 @@ import kotlin.math.roundToInt
 fun SwappableCard(
     id: Int,
     onClick: () -> Unit,
-    isSwipeable: Boolean = true,
+    currentSwipedCardId: Int,
+    onSwipeStateChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
     backgroundIcon: Painter = painterResource(Res.drawable.bookmark),
     contentDescription: String = stringResource(Res.string.remove_bookmark_icon),
     swipeThreshold: Float = 130f,
     cardContent: @Composable (Modifier) -> Unit,
 ) {
-    val currentSwipedCardId = remember(id) { mutableIntStateOf(NORMAL_STATE) }
+    var rawOffsetX by remember(currentSwipedCardId, id) {
+        mutableFloatStateOf(if (currentSwipedCardId == id) -swipeThreshold else 0f)
+    }
 
-    var rawOffsetX by remember(id) { mutableFloatStateOf(0f) }
-    val isCurrentCardSwiped = currentSwipedCardId.intValue == id
+    val isCurrentCardSwiped = currentSwipedCardId == id
 
     LaunchedEffect(isCurrentCardSwiped) {
         rawOffsetX = if (isCurrentCardSwiped) -swipeThreshold else 0f
@@ -61,51 +62,47 @@ fun SwappableCard(
 
     val animatedOffsetX by animateFloatAsState(
         targetValue = rawOffsetX,
-        animationSpec = tween(),
+        animationSpec = tween(durationMillis = 300),
         label = stringResource(Res.string.swipe_animation)
     )
 
-    if (isSwipeable) {
-        Box(modifier.fillMaxWidth()) {
-            AnimatedVisibility(
-                visible = animatedOffsetX < 0f,
-                enter = fadeIn(tween()),
-                exit = fadeOut(tween()),
-                modifier = Modifier
-                    .matchParentSize()
-                    .padding(vertical = Theme.spacing._4)
-            ) {
-                SwipeBackground(
-                    painter = backgroundIcon,
-                    contentDescription = contentDescription,
-                    onClick = {
-                        currentSwipedCardId.intValue = -1
-                        onClick()
-                    }
-                )
-            }
-            cardContent(
-                Modifier
-                    .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
-                    .pointerInput(id) {
-                        detectHorizontalDragGestures(
-                            onDragEnd = {
-                                if (rawOffsetX <= -swipeThreshold) {
-                                    currentSwipedCardId.intValue = id
-                                    rawOffsetX = -swipeThreshold
-                                } else {
-                                    currentSwipedCardId.intValue = -1
-                                    rawOffsetX = 0f
-                                }
-                            }
-                        ) { _, dragAmount ->
-                            rawOffsetX = (rawOffsetX + dragAmount).coerceIn(-swipeThreshold, 0f)
-                        }
-                    }
+    Box(modifier.fillMaxWidth()) {
+        AnimatedVisibility(
+            visible = animatedOffsetX < 0f,
+            enter = fadeIn(tween()),
+            exit = fadeOut(tween()),
+            modifier = Modifier
+                .matchParentSize()
+                .padding(vertical = Theme.spacing._4)
+        ) {
+            SwipeBackground(
+                painter = backgroundIcon,
+                contentDescription = contentDescription,
+                onClick = {
+                    onSwipeStateChange(-1)
+                    onClick()
+                }
             )
         }
-    } else {
-        cardContent(modifier)
+        cardContent(
+            Modifier
+                .offset { IntOffset(animatedOffsetX.roundToInt(), 0) }
+                .pointerInput(id) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            if (rawOffsetX <= -swipeThreshold) {
+                                onSwipeStateChange(id)
+                                rawOffsetX = -swipeThreshold
+                            } else {
+                                onSwipeStateChange(-1)
+                                rawOffsetX = 0f
+                            }
+                        }
+                    ) { _, dragAmount ->
+                        rawOffsetX = (rawOffsetX + dragAmount).coerceIn(-swipeThreshold, 0f)
+                    }
+                }
+        )
     }
 }
 
@@ -134,5 +131,3 @@ private fun SwipeBackground(
         )
     }
 }
-
-private const val NORMAL_STATE = -1

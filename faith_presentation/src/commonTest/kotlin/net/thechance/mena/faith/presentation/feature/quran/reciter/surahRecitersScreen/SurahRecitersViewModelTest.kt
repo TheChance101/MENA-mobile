@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
@@ -33,6 +34,7 @@ class SurahRecitersViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var testViewModel: SurahRecitersViewModel
+    private val player: QuranPlayer = mock(mode = MockMode.autofill)
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val downloadManager: DownloadSurahManager = mock(mode = MockMode.autofill)
     private val surahArgs: SurahRecitersArgs = mock(mode = MockMode.autofill)
@@ -58,6 +60,7 @@ class SurahRecitersViewModelTest {
             surahArgs = surahArgs,
             downloadManager = downloadManager,
             dispatcher = testDispatcher,
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -274,7 +277,8 @@ class SurahRecitersViewModelTest {
         testViewModel.onDownloadClick(TEST_RECITER_ID)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val updatedReciter = testViewModel.uiState.value.allReciters.find { it.id == TEST_RECITER_ID }
+        val updatedReciter =
+            testViewModel.uiState.value.allReciters.find { it.id == TEST_RECITER_ID }
         assertTrue(updatedReciter?.isDownloaded ?: false)
     }
 
@@ -312,8 +316,7 @@ class SurahRecitersViewModelTest {
             surahArgs = surahArgs,
             downloadManager = downloadManager,
             dispatcher = testDispatcher,
-
-
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -333,6 +336,7 @@ class SurahRecitersViewModelTest {
             surahArgs = surahArgs,
             downloadManager = downloadManager,
             dispatcher = testDispatcher,
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
 

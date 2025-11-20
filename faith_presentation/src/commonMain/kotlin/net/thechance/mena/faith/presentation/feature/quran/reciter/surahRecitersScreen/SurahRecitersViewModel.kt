@@ -2,8 +2,10 @@ package net.thechance.mena.faith.presentation.feature.quran.reciter.surahReciter
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
@@ -14,6 +16,7 @@ class SurahRecitersViewModel(
     private val quranRepository: QuranRepository,
     private val surahArgs: SurahRecitersArgs,
     private val downloadManager: DownloadSurahManager,
+    private val quranPlayer: QuranPlayer,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<SurahRecitersUiState, SurahRecitersScreenEffect>(
     initialState = SurahRecitersUiState(surahId = surahArgs.surahId),
@@ -52,6 +55,21 @@ class SurahRecitersViewModel(
         }
     }
 
+    override fun playReciterSample(reciterId: Int) {
+        tryToExecute(
+            execute = {
+                quranRepository.getAyahSoundUrl(
+                    ayahNumber = 1,
+                    surahNumber = 1,
+                    reciterId = reciterId
+                )
+            },
+            onSuccess = { quranPlayer.playAyah(it) },
+            dispatcher = Main
+        )
+    }
+
+
     override fun onBackClick() =
         sendEffect(SurahRecitersScreenEffect.NavigateBack)
 
@@ -59,7 +77,7 @@ class SurahRecitersViewModel(
         tryToExecute(
             execute = {
                 val surahId = surahArgs.surahId ?: return@tryToExecute
-                downloadAndCacheSurah(surahId=surahId,reciterId= reciterId)
+                downloadAndCacheSurah(surahId = surahId, reciterId = reciterId)
             },
             onSuccess = { onDownloadComplete(reciterId) },
             dispatcher = dispatcher
@@ -112,8 +130,8 @@ class SurahRecitersViewModel(
         val recitersUi = reciters.map { reciter ->
             reciter.toUi(
                 isDownloaded = quranRepository.isSurahAudioCached(
-                    surahId= surahId,
-                    reciterId =reciter.id
+                    surahId = surahId,
+                    reciterId = reciter.id
                 )
             )
         }

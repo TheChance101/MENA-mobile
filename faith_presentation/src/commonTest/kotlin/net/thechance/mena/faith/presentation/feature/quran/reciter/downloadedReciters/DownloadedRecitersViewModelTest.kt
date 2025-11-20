@@ -45,7 +45,6 @@ class DownloadedRecitersViewModelTest {
 
         testDispatcher = StandardTestDispatcher()
         everySuspend { surahArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { surahArgs.isSwipeToDeleteEnabled } returns true
         everySuspend { quranRepository.getDefaultReciter() } returns flowOf(DEFAULT_RECITER_ID)
         everySuspend { quranRepository.getReciters() } returns dummyReciters
         everySuspend { quranRepository.isSurahAudioCached(TEST_SURAH_ID, any()) } returns true
@@ -84,11 +83,6 @@ class DownloadedRecitersViewModelTest {
     @Test
     fun `state should initialize with correct surahId from args`() = runTest {
         assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
-    }
-
-    @Test
-    fun `state should initialize with isSwipeable from args`() = runTest {
-        assertTrue(testViewModel.uiState.value.isSwipeable)
     }
 
     @Test
@@ -288,20 +282,6 @@ class DownloadedRecitersViewModelTest {
         assertEquals(initialAllReciters, testViewModel.uiState.value.reciters)
     }
 
-    @Test
-    fun `swipeable state should be passed from args`() = runTest {
-        everySuspend { surahArgs.isSwipeToDeleteEnabled } returns false
-
-        testViewModel = DownloadedRecitersViewModel(
-            quranRepository = quranRepository,
-            surahArgs = surahArgs,
-            dispatcher = testDispatcher,
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(false, testViewModel.uiState.value.isSwipeable)
-    }
-
     private companion object {
         const val TEST_SURAH_ID = 1
         const val DEFAULT_RECITER_ID = 1
@@ -317,13 +297,6 @@ class DownloadedRecitersViewModelTest {
         const val UPPERCASE_QUERY = "ABDUL"
         const val EMPTY_STRING = ""
         const val BLANK_STRING = "   "
-
-        val reciters = Reciter(
-            id = 1,
-            name = "Abdul Basit Abdul Samad",
-            arabicName = "عبد الباسط عبد الصمد",
-            tilawahType = "Murattal"
-        )
 
         private val dummyReciters = listOf(
             Reciter(
