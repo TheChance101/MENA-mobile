@@ -14,6 +14,6 @@ class MessageSenderFactory(
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
         is MessageContent.Ayah -> ayahMessageSender
-        else -> throw OperationFailedException("This message type is not supported")
+        else -> throw OperationFailedException("order message cannot be sent by mobile")
     }
 }
