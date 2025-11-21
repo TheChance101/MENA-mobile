@@ -74,7 +74,7 @@ class DownloadedRecitersViewModel(
     }
 
     private fun updateSelectedReciter(reciterId: Int) {
-        updateState { it.copy(selectedReciterId = reciterId) }
+        updateState { it.copy(reciterId = reciterId) }
     }
 
     private fun getAllReciters() {
