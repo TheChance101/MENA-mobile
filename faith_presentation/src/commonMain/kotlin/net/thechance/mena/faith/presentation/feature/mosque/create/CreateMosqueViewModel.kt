@@ -83,7 +83,8 @@ internal class CreateMosqueViewModel(
                 updateState { it.copy(successMessage = addMosqueMessage) }
                 sharedImageViewModel.clearImage()
                 sendEffect(CreateMosqueEffect.NavigateBack)
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 

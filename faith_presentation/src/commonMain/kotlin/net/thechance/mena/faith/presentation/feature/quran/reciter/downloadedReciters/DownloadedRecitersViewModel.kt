@@ -52,6 +52,7 @@ class DownloadedRecitersViewModel(
         tryToExecute(
             execute = { quranRepository.deleteSurahAudioByReciter(surahId = surahId, reciterId = reciterId) },
             onSuccess = { updateReciterAfterDelete(reciterId) },
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -86,7 +87,8 @@ class DownloadedRecitersViewModel(
         tryToExecute(
             execute = { quranRepository.getReciters() },
             onSuccess = ::onGetAllRecitersSuccess,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            onError = ::handleErrorSnackBar
         )
     }
 

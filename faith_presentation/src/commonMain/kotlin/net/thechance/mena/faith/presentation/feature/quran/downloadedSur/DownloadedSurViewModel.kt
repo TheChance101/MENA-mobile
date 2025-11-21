@@ -24,7 +24,8 @@ class DownloadedSurViewModel(
                         surDetails = downloadedSurah.map { surah -> surah.toUiState() }
                     )
                 }
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 
@@ -66,7 +67,8 @@ class DownloadedSurViewModel(
             },
             onSuccess = {
                 onDeleteSurahSuccess()
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 

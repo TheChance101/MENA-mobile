@@ -63,7 +63,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: (suspend (T) -> Unit)? = null,
-        onError: (ErrorState) -> Unit = ::handleErrorSnackBar,
+        onError: (ErrorState) -> Unit = {},
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,

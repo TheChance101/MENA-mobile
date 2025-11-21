@@ -39,7 +39,6 @@ internal class NearbyMosquesViewModel(
             onSuccess = ::onGetUserLocationSuccess,
             onError = {
                 sendEffect(NearbyMosquesEffect.NavigateToAddressesScreen)
-                handleErrorSnackBar(it)
             }
         )
     }
@@ -78,6 +77,7 @@ internal class NearbyMosquesViewModel(
             execute = { mosqueRepository.getMosquesByName(uiState.value.query) },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = { mosques -> handleSearchSuccess(mosques, uiState.value.query) },
+            onError = ::handleErrorSnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )
