@@ -35,7 +35,8 @@ data class ManageDukanUiState(
         val name: String = "",
         val description: String? = null,
         val price: Double = 0.0,
-        val imageUrl: String = ""
+        val imageUrl: String = "",
+        val isOutOfStock: Boolean = false
     )
 
     enum class DialogType(val text: StringResource) {

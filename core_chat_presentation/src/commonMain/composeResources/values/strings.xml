@@ -71,7 +71,6 @@
     <string name="more_hours_ago">%1$d hours ago</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
-
     <string name="next_prayer_in">Next prayer %1$s in:</string>
     <string name="fajr">Fajr</string>
     <string name="dhuhr">Dhuhr</string>

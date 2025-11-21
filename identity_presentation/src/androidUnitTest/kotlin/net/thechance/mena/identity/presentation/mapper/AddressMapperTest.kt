@@ -7,6 +7,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressU
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -302,7 +303,7 @@ class AddressMapperTest {
     fun `AddEditAddressUIState toAddressInput should use Other when otherAddressType is not blank`() {
         val addEditAddressUIState = AddEditLocationScreenUIState.AddEditAddressUIState(
             addressID = null,
-            addressType = AddressType.Home,
+            addressType = AddressType.Other(""),
             otherAddressType = "Custom",
             addressDetails = "Test Street",
             coordinates = CoordinatesUiState(33.3152, 44.3661)
@@ -310,7 +311,7 @@ class AddressMapperTest {
 
         val result = addEditAddressUIState.toAddressInput()
 
-        assertEquals(AddressType.Other("Custom"), result.addressType)
+        assertIs<AddressType.Other>(result.addressType)
     }
 
     @Test

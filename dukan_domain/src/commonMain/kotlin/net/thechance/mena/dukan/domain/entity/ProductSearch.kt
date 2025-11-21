@@ -12,4 +12,5 @@ data class ProductSearch(
     val dukanId: Uuid,
     val imageUrl: String,
     val price: Double,
+    val isOutOfStock: Boolean
 )

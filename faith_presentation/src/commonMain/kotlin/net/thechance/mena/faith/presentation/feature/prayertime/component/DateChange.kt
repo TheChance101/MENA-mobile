@@ -24,6 +24,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeUiState
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.convertIslamicDateToString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -57,7 +58,7 @@ internal fun DateChange(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = uiState.currentDate,
+                text = uiState.currentDate.convertIslamicDateToString(),
                 style = Theme.typography.label.extraSmall,
                 color = Theme.colorScheme.shadeSecondary
             )

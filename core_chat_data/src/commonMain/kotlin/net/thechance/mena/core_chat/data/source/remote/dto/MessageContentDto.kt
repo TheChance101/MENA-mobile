@@ -30,8 +30,11 @@ sealed class MessageContentDto {
     @Serializable
     @SerialName("AYAH")
     data class Ayah(
-        val suraNumber: Int,
+        @SerialName("suraNumber")
+        val surahNumber: Int,
+        @SerialName("ayahNumber")
         val ayahNumber: Int,
-        val ayahText: String
+        @SerialName("ayahText")
+        val ayahContent: String
     ) : MessageContentDto()
 }

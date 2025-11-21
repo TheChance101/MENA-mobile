@@ -27,6 +27,7 @@ fun PlayButton(
     Icon(
         painter = painterIcon,
         contentDescription = contentDescription,
+        tint = Theme.colorScheme.primary.primary,
         modifier = modifier
             .size(40.dp)
             .clip(RoundedCornerShape(Theme.radius.md))

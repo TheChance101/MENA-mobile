@@ -115,7 +115,7 @@ class MessageRepositoryImpl(
             }
         }
 
-        val page = response.toPagedListOfMessages()
+        val page = response.toPagedListOfMessages(quranService)
 
         updateLocalMessages(page.data)
 
@@ -152,12 +152,11 @@ class MessageRepositoryImpl(
                 if (response.data.isNotEmpty()) {
                     chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now.toString()))
 
-                    updateLocalMessages(response.data.toListOfMessages())
+                    updateLocalMessages(response.data.toListOfMessages(quranService))
 
-                    messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
-                }
+                    messagesFlow.emitAll(response.data.map { it.toDomain(quranService) }.asFlow())                }
 
-                isLastPage = response.toPagedListOfMessages().isLastPage
+                isLastPage = response.toPagedListOfMessages(quranService).isLastPage
                 page++
             }
         } catch (e: Throwable) {
@@ -260,7 +259,7 @@ class MessageRepositoryImpl(
             }
 
             PRIVATE_MESSAGES -> {
-                val message = json.decodeFromString<MessageDto>(body).toDomain()
+                val message = json.decodeFromString<MessageDto>(body).toDomain(quranService)
                 message.let {
                     updateLocalMessages(listOf(message))
                     messagesFlow.emit(it)
@@ -327,11 +326,6 @@ class MessageRepositoryImpl(
         }
 
         webSocketManager.sendTextFrame(destination, payload)
-    }
-
-    override suspend fun getSurahName(surahId: Int): String {
-        val surah: Surah = quranService.getSurahDetails(surahId)
-        return surah.name
     }
 
     private companion object {

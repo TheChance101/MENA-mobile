@@ -158,7 +158,8 @@ private fun AddressTypeItem(
             leadingIcon = painterResource(Res.drawable.ic_add_location),
             modifier = modifier
                 .fillMaxWidth()
-                .padding(top = Theme.spacing._12)
+                .padding(top = Theme.spacing._12),
+            maxCharacters = 48
         )
     }
 }

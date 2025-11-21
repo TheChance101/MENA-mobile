@@ -71,7 +71,6 @@
     <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
-
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="fajr">الفجر</string>
     <string name="dhuhr">الظهر</string>

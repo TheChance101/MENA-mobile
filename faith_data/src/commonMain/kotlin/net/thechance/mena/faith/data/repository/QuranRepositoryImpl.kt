@@ -8,6 +8,7 @@ import net.thechance.mena.faith.data.database.SurahAudioDao
 import net.thechance.mena.faith.data.database.SurahAudioDto
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.mapper.toAyah
+import net.thechance.mena.faith.data.mapper.toDownlodedSurUi
 import net.thechance.mena.faith.data.mapper.toReciter
 import net.thechance.mena.faith.data.mapper.toReciterDto
 import net.thechance.mena.faith.data.mapper.toSurah
@@ -17,6 +18,7 @@ import net.thechance.mena.faith.data.utils.executeLocalSafely
 import net.thechance.mena.faith.data.utils.loadFromCacheOrFetch
 import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.model.DownlodedSur
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
@@ -51,6 +53,25 @@ class QuranRepositoryImpl(
 
     override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) =
         tilawahDataStore.saveLastAyah(savedAyah)
+
+    override suspend fun getDownloadedSur(): List<DownlodedSur> = executeLocalSafely {
+        surahSoundDao.getDownloadedSurahInfo()
+            .groupBy { it.surahId }
+            .map { (surahId, items) -> mapToDownloadedSur(surahId, items) }
+    }
+
+    private suspend fun mapToDownloadedSur(
+        surahId: Int,
+        items: List<SurahAudioDto>
+    ): DownlodedSur {
+        return items.first().toDownlodedSurUi(
+            surahName = getSurahById(surahId).name,
+            reciterName = getRecitersNames(items)
+        )
+    }
+
+    private suspend fun getRecitersNames(items: List<SurahAudioDto>): List<String> =
+        items.map { recitersDao.getReciterById(it.reciterId).name }
 
     override suspend fun searchForAyahInSurah(
         surahId: Int,
@@ -88,7 +109,7 @@ class QuranRepositoryImpl(
     }
 
     override suspend fun deleteSurahWithSpecificReciter(surahId: Int) {
-        recitersDao.deleteSurahWithSpecificReciter(surahId)
+        recitersDao.deleteSurahAudioByReciter(surahId)
     }
 
     override suspend fun getRemoteSurahSoundUrl(
@@ -171,6 +192,12 @@ class QuranRepositoryImpl(
                 INDEX_OFFSET,
                 files.size - ayatCount
             ) else files
+    }
+
+    override suspend fun deleteSurahAudioByReciter(surahId: Int, reciterId: Int) {
+        executeLocalSafely {
+            recitersDao.deleteSpecificDownloadedAudio(surahId = surahId,reciterId = reciterId)
+        }
     }
 
     private fun calculateFileIndex(ayahNumber: Int, surahNumber: Int): Int {

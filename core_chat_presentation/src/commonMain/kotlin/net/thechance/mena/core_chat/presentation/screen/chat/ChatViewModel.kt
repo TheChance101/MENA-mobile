@@ -33,7 +33,6 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
@@ -55,7 +54,6 @@ import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
-import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import net.thechance.mena.core_chat.presentation.utils.now
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -95,24 +93,17 @@ class ChatViewModel(
     private var firstUnReadByMeMessageTime: LocalDateTime? = null
 
     init {
-        val chatId = getUuidOrNull(chatArgs.chatId)
+        val chatId = Uuid.parse(chatArgs.chatId)
         getUserInfo()
-        updateState { state ->
-            state.copy(
-                chatId = chatId,
-                chatName = chatArgs.chatName
-            )
-        }
-
-        if (chatId == null) {
-            onGetChatError()
-        } else {
-            tryToExecute(
-                execute = { chatRepository.getChatById(chatId) },
-                onSuccess = ::onGetChatSuccess,
-                onError = { onGetChatError() }
-            )
-        }
+        updateState { state -> state.copy(chatId = chatId, chatName = chatArgs.chatName) }
+        getChat(chatId)
+        onMessagesScrolled()
+        subscribeToNewMessages(chatId)
+        subscribeToPendingMessages(chatId)
+        observeReadMessages()
+        observeDeleteChat()
+        observeConnectionStatus(chatId)
+        observeMessageReactions()
         startUiDerivation()
     }
 
@@ -132,18 +123,17 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    val newChatListItems = messageList.toChatItems(messageRepository)
                     updateState {
-                        it.copy(chatListItems = newChatListItems)
+                        it.copy(chatListItems = messageList.toChatItems())
                     }
                 }
         }
     }
 
-    private suspend fun List<Message>.toChatItems(messageRepository: MessageRepository): List<ChatListItem> {
+    private fun List<Message>.toChatItems(): List<ChatListItem> {
         if (firstUnReadByMeMessageTime == null) setFirstUnReadByMeMessageTime(this)
         return sortedByDescending { it.sendAt }
-            .map { it.toUi(messageRepository) }
+            .map { it.toUi() }
             .map { if (it is AudioMessageUiState) it.useCacheWaveform() else it }
             .markIsLastMessages()
             .addDateSeparators()
@@ -182,23 +172,22 @@ class ChatViewModel(
         )
     }
 
-    private fun onGetChatSuccess(chat: Chat) {
-        updateState { state ->
-            state.copy(
-                chatId = chat.id,
-                chatName = chat.name,
-                chatAvatarUrl = chat.imageUrl.orEmpty(),
-                chatRequesterId = chat.requesterId,
-            )
-        }
+    private fun getChat(chatId: Uuid) {
 
-        onMessagesScrolled()
-        subscribeToNewMessages(chat.id)
-        subscribeToPendingMessages(chat.id)
-        observeReadMessages()
-        observeDeleteChat()
-        observeConnectionStatus(chat.id)
-        observeMessageReactions()
+        tryToExecute(
+            execute = { chatRepository.getChatById(chatId) },
+            onSuccess = { chat ->
+                updateState { state ->
+                    state.copy(
+                        chatId = chat.id,
+                        chatName = chat.name,
+                        chatAvatarUrl = chat.imageUrl.orEmpty(),
+                        chatRequesterId = chat.requesterId,
+                    )
+                }
+            },
+            onError = { onGetChatError() }
+        )
     }
 
     private fun observeConnectionStatus(chatId: Uuid) {
@@ -349,8 +338,7 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectNewMessage(message: Message?) {
-        if (message == null) return
+    private suspend fun onCollectNewMessage(message: Message) {
         safeUpdateMessages { current ->
             current.toMutableList().apply { add(0, message) }
                 .distinctBy { it.id }
@@ -374,8 +362,8 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectPendingMessages(messages: List<Message>?) {
-        val pendingMessages = messages ?: emptyList()
+    private suspend fun onCollectPendingMessages(messages: List<Message>) {
+        val pendingMessages = messages
         safeUpdateMessages { current ->
             current
                 .filter { it.status != MessageStatus.LOADING }
@@ -388,7 +376,7 @@ class ChatViewModel(
             hasResentPendingMessages = true
             pendingMessages
                 .filter { it.status == MessageStatus.LOADING }
-                .forEach { sendMessage(it.toUi(messageRepository)) }
+                .forEach { sendMessage(it.toUi()) }
         }
 
         emitEffect(ChatScreenEffect.ScrollToBottom)
@@ -423,8 +411,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
         onDeleteChatSuccess()
         emitEffect(ChatScreenEffect.NavigateBack)
     }
@@ -436,8 +423,7 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectReadMessagesEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-        if (markMessageAsReadEvent == null) return
+    private suspend fun onCollectReadMessagesEvent(markMessageAsReadEvent: MarkMessageAsReadEvent) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.senderId != markMessageAsReadEvent.readByUserId && message.status == MessageStatus.SENT)
@@ -569,8 +555,7 @@ class ChatViewModel(
     }
 
 
-    private suspend fun onCollectAddReaction(reaction: MessageReaction?) {
-        if (reaction == null) return
+    private suspend fun onCollectAddReaction(reaction: MessageReaction) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.id == reaction.messageId) {
@@ -605,8 +590,7 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
-        if (reaction == null) return
+    private suspend fun onCollectRemoveReaction(reaction: MessageReaction) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.id == reaction.messageId) {
@@ -1001,6 +985,9 @@ class ChatViewModel(
                 isRecordingVoice = false
             )
         }
+    }
+    override fun onLinkClicked(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 
     companion object {

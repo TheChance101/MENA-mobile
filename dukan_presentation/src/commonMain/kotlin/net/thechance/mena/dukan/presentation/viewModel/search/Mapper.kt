@@ -23,6 +23,7 @@ fun ProductSearch.toSearchUiState(): SearchUiState.ProductUiState{
         imageUrl = imageUrl,
         dukanName = dukanName,
         dukanId = dukanId,
-        price = price
+        price = price,
+        isOutOfStock = isOutOfStock
     )
 }

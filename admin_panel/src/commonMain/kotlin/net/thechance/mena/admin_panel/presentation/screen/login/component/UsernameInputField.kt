@@ -24,7 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 internal fun UsernameInputField(
     username: String,
     onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Text(
