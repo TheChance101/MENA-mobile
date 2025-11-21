@@ -39,7 +39,7 @@ fun ReciterItem(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
-    reciterAudioSample: () -> Unit = {},
+    onPlayClick: () -> Unit = {},
     onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
     isSelectReciter: Boolean,
@@ -72,7 +72,7 @@ fun ReciterItem(
             contentDescription = stringResource(Res.string.play),
             modifier = Modifier
                 .size(size = 40.dp)
-                .noRippleClickable(reciterAudioSample)
+                .noRippleClickable(onPlayClick)
         )
         Column(
             modifier = Modifier.weight(1f)

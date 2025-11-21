@@ -82,7 +82,7 @@ private fun Content(
                     onDownloadClick = { listener.onDownloadClick(reciter.id) },
                     isSelectReciter = reciter.id == uiState.selectedReciterId,
                     isDownloadIconVisible = true,
-                    reciterAudioSample = { listener.playReciterSample(reciter.id) }
+                    onPlayClick = { listener.playReciterSample(reciter.id) }
                 )
             }
         }
