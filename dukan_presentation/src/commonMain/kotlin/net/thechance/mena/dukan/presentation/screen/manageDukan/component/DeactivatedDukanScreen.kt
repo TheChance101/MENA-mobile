@@ -20,9 +20,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DeactivatedDukanScreen(
-    onBackClick: () -> Unit,
-) {
+fun DeactivatedDukanScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,6 +59,6 @@ fun DeactivatedDukanScreen(
 @Composable
 fun DeactivatedDukanScreenPreview() {
     MenaTheme {
-        DeactivatedDukanScreen(onBackClick = {})
+        DeactivatedDukanScreen()
     }
 }
