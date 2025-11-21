@@ -84,8 +84,8 @@ class AddressesScreenViewModel(
         when {
             addressId == null || address == null -> onAddressNotFoundError()
             address.isMainAddress -> onMainAddressDeletionError()
-            else -> executeAddressDeletion(addressId)
         }
+        onDismissDeleteDialog()
     }
 
     override fun onDismissDeleteDialog() = updateState {
@@ -111,7 +111,6 @@ class AddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null,
                 errorMessage = mapErrorMessage(throwable)
             )
