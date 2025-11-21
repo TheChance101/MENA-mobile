@@ -61,7 +61,7 @@ class DownloadedSurViewModel(
         tryToExecute(
             execute = {
                 surahId?.let {
-                    quranRepository.deleteSurahWithSpecificReciter(surahId)
+                    quranRepository.deleteSurahAudioByReciter(surahId)
                 }
             },
             onSuccess = {
@@ -83,6 +83,10 @@ class DownloadedSurViewModel(
         }
 
         handleSuccessSnackBar(Res.string.surah_deleted_successfully)
+    }
+
+    fun refreshDownloadedSur() {
+        loadDownloadedSur()
     }
 
 }
