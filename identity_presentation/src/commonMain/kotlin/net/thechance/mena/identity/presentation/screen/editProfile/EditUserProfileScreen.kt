@@ -2,7 +2,6 @@ package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -107,6 +105,22 @@ class EditUserProfileScreen : BaseScreen<
         }
 
         Scaffold(
+            topBar = {
+                AppBar(
+                    title = stringResource(Res.string.edit_profile_information),
+                    leadingContent = {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_arrow_left),
+                            contentDescription = stringResource(Res.string.back),
+                            tint = Theme.colorScheme.shadePrimary,
+                        )
+                    },
+                    onLeadingClick = listener::onClickCancelButton,
+                    trailingContent = {
+                        MoreActionsButton(onClick = listener::onClickShowLogoutOptions)
+                    }
+                )
+            },
             overlays = {
                 dialog(state.showEditImageDialog) {
                     GetImageDialog(
@@ -171,22 +185,6 @@ class EditUserProfileScreen : BaseScreen<
                     .padding(horizontal = Theme.spacing._16)
                     .padding(bottom = Theme.spacing._16),
             ) {
-                AppBar(
-                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
-                    title = stringResource(Res.string.edit_profile_information),
-                    leadingContent = {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_left),
-                            contentDescription = stringResource(Res.string.back),
-                            tint = Theme.colorScheme.shadePrimary,
-                        )
-                    },
-                    onLeadingClick = listener::onClickCancelButton,
-                    trailingContent = {
-                        MoreActionsButton(onClick = listener::onClickShowLogoutOptions)
-                    }
-                )
-
                 EditProfileImage(
                     profileImageUrl = state.profileImageUrl,
                     profileImageBitmap = state.profileImageBitmap,
