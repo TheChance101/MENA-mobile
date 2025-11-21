@@ -22,16 +22,17 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
 
     private val testDispatcher = StandardTestDispatcher()
     private val applicationInfoRepository = mockk<ApplicationInfoRepository>()
-    private lateinit var viewModel: PrivacyAndPolicyScreenViewModel
 
+    val viewModel: PrivacyAndPolicyScreenViewModel by lazy {
+        PrivacyAndPolicyScreenViewModel(
+            applicationInfoRepository = applicationInfoRepository,
+            dispatcher = testDispatcher
+        )
+    }
 
     @Before
     override fun setUp() {
         super.setUp()
-        viewModel = PrivacyAndPolicyScreenViewModel(
-            applicationInfoRepository = applicationInfoRepository,
-            dispatcher = testDispatcher
-        )
     }
 
     @Test
@@ -48,10 +49,10 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
         runTest {
             coEvery { applicationInfoRepository.getPrivacyAndPolicy() } returns fakePrivacyAndPolicy
 
+            viewModel
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.state.test {
-                testDispatcher.scheduler.advanceUntilIdle()
                 assertThat(awaitItem().privacyAndPolicySections).isNotEmpty()
             }
         }
@@ -78,7 +79,6 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
                           " when an unknown printer took a galley of type and scrambled it to make a type specimen book." +
                           " It has survived not only five centuries"
             )
-
         )
     )
 }
