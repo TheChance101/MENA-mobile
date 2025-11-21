@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -86,7 +86,7 @@ private fun RowScope.ToggleOption(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.fillMaxHeight(0.44f),
+            modifier = Modifier.size(64.dp),
             painter = printer,
             contentDescription = stringResource(Res.string.options),
             tint = animateIconColor
