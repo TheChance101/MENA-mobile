@@ -40,7 +40,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun TrendsNavHost(
-    appThemeService: AppThemeService = koinInject()
+    appThemeService: AppThemeService = koinInject(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit
 ) {
 
     val navController = rememberNavController()
@@ -58,6 +59,8 @@ fun TrendsNavHost(
         LocalImageLoader provides coilLoader,
         LocalDarkTheme provides isDarkTheme
     ) {
+        handleBottomNavigationVisibility(updateBottomNavigationVisibility)
+
         Box(modifier = Modifier.fillMaxSize()) {
 
             NavHost(

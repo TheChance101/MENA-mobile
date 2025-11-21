@@ -204,21 +204,20 @@ class SurahViewModel(
         }
     }
 
-    override fun onShareClick() {
+    override fun onShareClick(content: String) {
         val surahId: Int = uiState.value.surahId
         val ayahNumber: Int = uiState.value.selectedAyahNumber ?: 1
-        val ayahContent: String = uiState.value.selectedAyah
         updateState {
             it.copy(
                 isAyahActionButtonsVisible = false,
-                selectedAyah = ayahContent,
+                selectedAyah = content,
                 selectedAyahNumber = null
             )
         }
         sendEffect(SurahScreenEffect.ShareAyah(
             surahId = surahId.toString(),
             ayahNumber = ayahNumber,
-            ayahContent = ayahContent,
+            ayahContent = content,
         ))
     }
 
