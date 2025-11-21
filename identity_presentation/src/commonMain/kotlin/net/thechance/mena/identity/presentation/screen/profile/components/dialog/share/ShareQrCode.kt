@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -33,8 +32,6 @@ import mena.identity_presentation.generated.resources.copy_to_clipboard_success_
 import mena.identity_presentation.generated.resources.download_icon_content_description
 import mena.identity_presentation.generated.resources.download_success
 import mena.identity_presentation.generated.resources.download_success_message
-import mena.identity_presentation.generated.resources.error_unknown
-import mena.identity_presentation.generated.resources.ic_check_circle
 import mena.identity_presentation.generated.resources.ic_download
 import mena.identity_presentation.generated.resources.ic_link
 import mena.identity_presentation.generated.resources.ic_share_02
@@ -48,10 +45,10 @@ import net.thechance.mena.designsystem.presentation.component.dialog.BasicDialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeInteractionListener
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIEffect
@@ -74,24 +71,31 @@ fun ScaffoldScope.ShareQrCode(
 ) {
 
     val shareState by viewModel.state.collectAsStateWithLifecycle()
+    val snackBarController = LocalSnackBarController.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                ShareQrCodeUIEffect.OnClickDownload -> {
-                    viewModel.onShowSnackBar(
+                ShareQrCodeUIEffect.ShowClickDownloadSnackBar -> {
+                    snackBarController.showSnackBarSuccess(
                         title = Res.string.download_success,
                         message = Res.string.download_success_message
                     )
                     onDismissShareDialog()
                 }
 
-                ShareQrCodeUIEffect.OnCopyToClipBoard -> {
-                    viewModel.onShowSnackBar(
+                ShareQrCodeUIEffect.ShowCopyToClipBoardSnackBar -> {
+                    snackBarController.showSnackBarSuccess(
                         title = Res.string.copy_to_clipboard_success,
                         message = Res.string.copy_to_clipboard_success_message
                     )
                     onDismissShareDialog()
+                }
+
+                is ShareQrCodeUIEffect.ShowSnackBarError -> {
+                    snackBarController.showSnackBarError(
+                        message = effect.errorStringResource
+                    )
                 }
             }
         }
@@ -125,18 +129,6 @@ private fun ScaffoldScope.ShareQrCodeContent(
     val layoutDirection = LocalLayoutDirection.current
     val screenSize = LocalWindowInfo.current.containerSize
 
-    state.snackBarTitle?.let { title ->
-        SnackBar(
-            title = stringResource(title),
-            message = stringResource(state.snackBarMessage ?: Res.string.error_unknown),
-            leadingIcon = painterResource(Res.drawable.ic_check_circle),
-            modifier = modifier.fillMaxWidth().safeDrawingPadding()
-                .padding(horizontal = Theme.spacing._16),
-            onDismiss = listener::onDismissSnackBar,
-            isVisible = state.showSnackBar && !state.isLoading,
-
-            )
-    }
     BasicDialog(
         onDismiss = onDismissShareDialog,
         onCancelClick = onDismissShareDialog,
