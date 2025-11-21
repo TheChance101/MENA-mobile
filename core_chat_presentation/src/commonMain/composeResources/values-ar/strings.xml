@@ -43,6 +43,15 @@
     <string name="cancel">الغاء</string>
     <string name="photo">صوره</string>
     <string name="camera">الكاميرا</string>
+    <string name="send_money">أرسل المال</string>
+    <string name="send_a_money">أرسل المبلغ</string>
+    <string name="amount">الكمية</string>
+    <string name="send">أرسل</string>
+    <string name="mine_send_message">أرسلت</string>
+    <string name="other_send_message">أرسل</string>
+    <string name="to">إلى</string>
+    <string name="mine_wallet">محفظة</string>
+    <string name="other_wallet">محفظتك</string>
     <string name="no_chats_history_title">ليس لديك أي محادثات حتى الآن!</string>
     <string name="no_chats_history_desc">ابدأ الدردشة مع أصدقائك بالضغط على زر بدء الدردشة.</string>
     <string name="you">أنت</string>

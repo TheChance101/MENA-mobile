@@ -48,7 +48,8 @@ fun FavoriteIcon(
             Icon(
                 painter = painterResource(favoriteIcon),
                 contentDescription = stringResource(Res.string.favorites),
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
+                tint = Theme.colorScheme.primary.onPrimary
             )
         }
     }

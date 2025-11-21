@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import coil3.compose.setSingletonImageLoaderFactory
 import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
@@ -29,11 +30,14 @@ import net.thechance.mena.core_chat.presentation.utils.rememberImageLoader
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("No NavController provided")
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
@@ -61,6 +65,7 @@ fun ChatNavHost(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
         CompositionLocalProvider(
             LocalNavController provides navController,
             LocalSnackBarHostController provides snackBarHostController
@@ -80,9 +85,17 @@ fun ChatNavHost(
                         updateBottomNavigationVisibility = updateBottomNavigationVisibility,
                     )
                 }
+                composable<ConfirmPaymentRoute> { backStack ->
+                    walletApi.ConfirmPaymentEntry(
+                        transactionId = Uuid.parse(backStack.savedStateHandle.toRoute<ConfirmPaymentRoute>().transactionId),
+                        navigateBack = {
+                            navController.popBackStack()
+                        }
+
+                    )
+                }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
-
             Box(
                 modifier = Modifier.fillMaxSize().statusBarsPadding()
                     .padding(horizontal = Theme.spacing._16),

@@ -12,13 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.AudioMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ChatListItem
 import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MoneyMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -28,6 +29,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ChatListItem(
+    chatName: String,
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
@@ -57,10 +59,10 @@ fun ChatListItem(
                 message = item,
                 chatAvatarUrl = chatAvatarUrl,
                 showMessageInfo = (
-                    item.messageDetails.isVisibleMessageInfo
-                    || item.messageDetails.isLastInSeries
-                    || item.messageDetails.status == MessageStatus.FAILED
-                ),
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED
+                        ),
                 isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                 onMessageClick = { onMessageClick(item.messageDetails.id) },
                 onMessageLongClick = { onMessageLongClick(item) },
@@ -76,10 +78,10 @@ fun ChatListItem(
                 messages = imageMessages,
                 chatAvatarUrl = chatAvatarUrl,
                 showMessageInfo = (
-                    imageMessages.first().messageDetails.isVisibleMessageInfo
-                    || imageMessages.first().messageDetails.isLastInSeries
-                    || imageMessages.first().messageDetails.status == MessageStatus.FAILED
-                ),
+                        imageMessages.first().messageDetails.isVisibleMessageInfo
+                                || imageMessages.first().messageDetails.isLastInSeries
+                                || imageMessages.first().messageDetails.status == MessageStatus.FAILED
+                        ),
                 isMarkedLastInSeries = imageMessages.first().messageDetails.isLastInSeries,
                 onMessageImageClick = onMessageImageClick,
                 onFailClick = onFailedMessageClick,
@@ -96,10 +98,10 @@ fun ChatListItem(
                     message = item,
                     chatAvatarUrl = chatAvatarUrl,
                     showMessageInfo = (
-                        item.messageDetails.isVisibleMessageInfo
-                        || item.messageDetails.isLastInSeries
-                        || item.messageDetails.status == MessageStatus.FAILED
-                    ),
+                            item.messageDetails.isVisibleMessageInfo
+                                    || item.messageDetails.isLastInSeries
+                                    || item.messageDetails.status == MessageStatus.FAILED
+                            ),
                     isMarkedLastInSeries = item.messageDetails.isLastInSeries,
                     isMessageLoading = item.isLoading || item.isPlaying,
                     progress = item.progress,
@@ -145,5 +147,20 @@ fun ChatListItem(
                 modifier = modifier
             )
         }
+
+        is MoneyMessageUiState ->
+            MoneyMessageLayout(
+                chatName =chatName,
+                message = item,
+                showMessageInfo = (
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED),
+                isMarkedLastInSeries = item.messageDetails.isLastInSeries,
+                chatAvatarUrl = chatAvatarUrl,
+                onFailClick = { onFailedMessageClick(item) },
+                onMessageLongClick = { onMessageLongClick(item) },
+
+                )
     }
 }

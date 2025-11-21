@@ -23,6 +23,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MoneyMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -31,6 +32,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ChatList(
+    chatName: String,
     items: List<ChatListItem>,
     chatAvatarUrl: String,
     chatListState: LazyListState,
@@ -63,6 +65,7 @@ fun ChatList(
                     is AudioMessageUiState -> item.messageDetails.id.toString()
                     is AyahMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
+                    is MoneyMessageUiState -> item.messageDetails.id.toString()
                 }
             }
         ) { _ , item ->
@@ -79,6 +82,7 @@ fun ChatList(
                 Theme.spacing._2
 
             ChatListItem(
+                chatName = chatName,
                 item = item,
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,

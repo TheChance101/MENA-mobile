@@ -8,4 +8,5 @@ data class ChatDto(
     val name: String,
     val imageUrl: String?,
     val requesterId: String,
+    val receiverId: String,
 )
