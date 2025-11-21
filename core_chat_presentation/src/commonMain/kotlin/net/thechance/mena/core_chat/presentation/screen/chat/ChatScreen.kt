@@ -170,10 +170,11 @@ fun ChatScreenContent(
                 onMessageClick = interactions::onMessageClicked,
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
+                onViewOrderDetailsClick = interactions::onViewOrderDetailsClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
                 onLinkClick = interactions::onLinkClicked,
-            modifier = Modifier
+                modifier = Modifier
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }

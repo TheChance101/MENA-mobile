@@ -82,7 +82,6 @@
     <string name="pm">PM</string>
     <string name="new_order">New order</string>
     <string name="number_of_items">No. of items</string>
-    <string name="to">To</string>
     <string name="total_price">Total price</string>
     <string name="view_order_details">View order details</string>
     <string name="next_prayer_in">Next prayer %1$s in:</string>
