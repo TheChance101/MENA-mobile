@@ -29,12 +29,9 @@ actual fun SetNavigationBarAppearance(appTheme: AppTheme) {
     SideEffect {
         val activity = context as? ComponentActivity ?: return@SideEffect
         val window = activity.window
-
         val controller = WindowCompat.getInsetsController(window, window.decorView)
 
-        val isLight = appTheme == AppTheme.LIGHT
         window.navigationBarColor = color.toArgb()
-
-        controller.isAppearanceLightNavigationBars = isLight
+        controller.isAppearanceLightNavigationBars = appTheme == AppTheme.LIGHT
     }
 }
