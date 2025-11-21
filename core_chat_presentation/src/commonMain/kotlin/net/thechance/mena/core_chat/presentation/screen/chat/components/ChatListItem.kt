@@ -31,6 +31,8 @@ import kotlin.uuid.Uuid
 @Composable
 fun ChatListItem(
     chatName: String,
+    onSurahClick: (Int) -> Unit,
+    onAyahClick: (Int, Int) -> Unit,
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
@@ -145,6 +147,8 @@ fun ChatListItem(
                 chatAvatarUrl = chatAvatarUrl,
                 onFailClick = { onFailedMessageClick(item) },
                 onMessageLongClick = { onMessageLongClick(item) },
+                onAyahClick = onAyahClick,
+                onSurahClick = onSurahClick,
                 onMessageClick = { onMessageClick(item.messageDetails.id) },
                 modifier = modifier
             )
