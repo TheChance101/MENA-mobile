@@ -28,6 +28,7 @@ import net.thechance.mena.core_chat.presentation.screen.shareAyaScreen.ShareMess
 import net.thechance.mena.core_chat.presentation.screen.syncContacts.SyncContactsScreen
 import net.thechance.mena.core_chat.presentation.utils.rememberImageLoader
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.api.FaithApi
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
 import kotlin.uuid.ExperimentalUuidApi
@@ -41,6 +42,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 @Composable
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
+    faithApi : FaithApi = koinInject(),
     updateBottomNavigationVisibility: (Boolean) -> Unit = {},
     onNavigateBackFromChat: () -> Unit = {},
     onNavigateBackFromShareMessage: () -> Unit = {},
@@ -96,6 +98,23 @@ fun ChatNavHost(
                     )
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
+                composable<SurahRoute> { backStackEntry ->
+                    val route = backStackEntry.toRoute<SurahRoute>()
+                    faithApi.NavigateToSurahScreen(
+                        surahId = route.surahId,
+                        ayahNumber = 1,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable<AyahRoute> { backStackEntry ->
+                    val route = backStackEntry.toRoute<AyahRoute>()
+                    faithApi.NavigateToSurahScreen(
+                        surahId = route.surahId,
+                        ayahNumber = route.ayahId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
             Box(
                 modifier = Modifier.fillMaxSize().statusBarsPadding()

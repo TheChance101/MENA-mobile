@@ -24,3 +24,9 @@ data class ChatDetailsRoute(val chatId: String, val chatName: String) : ChatRout
 
 @Serializable
 data class ShareMessageRoute(val messageArgsJson: String) : ChatRoute
+
+@Serializable
+data class  SurahRoute(val surahId: Int) : ChatRoute
+
+@Serializable
+data class AyahRoute(val surahId: Int, val ayahId: Int) : ChatRoute

@@ -87,8 +87,7 @@
     <string name="maghrib">المغرب</string>
     <string name="isha">العشاء</string>
     <string name="sunrise">الشروق</string>
-    <string name="aya">%1$d آية</string>
-
+    <string name="aya">آية %1$d</string>
     <string name="weather_clear_sky">سماء صافية</string>
     <string name="weather_mainly_clear">صافية غالباً</string>
     <string name="weather_partly_cloudy">غائم جزئياً</string>
