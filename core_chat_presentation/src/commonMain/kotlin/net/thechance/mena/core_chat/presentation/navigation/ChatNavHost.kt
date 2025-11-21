@@ -91,9 +91,10 @@ fun ChatNavHost(
                     walletApi.ConfirmPaymentEntry(
                         transactionId = Uuid.parse(backStack.savedStateHandle.toRoute<ConfirmPaymentRoute>().transactionId),
                         navigateBack = {
-                            navController.popBackStack()
-                        }
 
+                            navController.popBackStack()
+                        },
+                        updateBottomNavigationVisibility = updateBottomNavigationVisibility
                     )
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
