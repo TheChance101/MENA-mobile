@@ -23,6 +23,14 @@ data class CachedMessageLocalDto(
     val audioUrl: String? = null,
     @ColumnInfo(name = "audio_duration")
     val audioDurationMs: Long? = null,
+    @ColumnInfo(name = "surah_id")
+    val surahId: Int? = null,
+    @ColumnInfo(name = "surah_name")
+    val surahName: String? = null,
+    @ColumnInfo(name = "ayah_number")
+    val ayahNumber: Int? = null,
+    @ColumnInfo(name = "ayah_text")
+    val ayahText: String? = null,
     @ColumnInfo(name = "reactions")
     val reactions: List<MessageReactionLocalDto>,
     @ColumnInfo(name = "timestamp")
@@ -32,7 +40,15 @@ data class CachedMessageLocalDto(
     @ColumnInfo(name = "status")
     val status: MessageStatus,
     @ColumnInfo(name = "is_mine")
-    val isMine: Boolean
+    val isMine: Boolean,
+    @ColumnInfo(name = "order_id")
+    val orderId: String?,
+    @ColumnInfo(name = "number_of_items")
+    val numberOfItems: Int?,
+    @ColumnInfo(name = "deliver_to")
+    val deliverTo: String?,
+    @ColumnInfo(name = "total_price")
+    val totalPrice: Double?
 )
 
 

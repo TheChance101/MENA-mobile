@@ -4,6 +4,7 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import mena.core_chat_presentation.generated.resources.Res
+import mena.core_chat_presentation.generated.resources.aya
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.designSystem.theme.QuranTheme
@@ -30,6 +34,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiSta
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -40,6 +45,8 @@ fun AyahMessageLayout(
     onFailClick: () -> Unit = {},
     onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
+    onSurahClick: (Int) -> Unit = {},
+    onAyahClick: (Int, Int) -> Unit = { _, _ -> },
     message: AyahMessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
@@ -119,7 +126,10 @@ fun AyahMessageLayout(
 
                 Box(
                     modifier = Modifier
-                        .padding(start = messageBubblePaddingStart, end = messageBubblePaddingEnd)
+                        .padding(
+                            start = messageBubblePaddingStart,
+                            end = messageBubblePaddingEnd
+                        )
                         .clip(messageShape)
                         .sizeIn(minWidth = 120.dp)
                         .combinedClickable(
@@ -134,7 +144,7 @@ fun AyahMessageLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+                        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
@@ -143,7 +153,8 @@ fun AyahMessageLayout(
                             Text(
                                 text = surahName,
                                 style = Theme.typography.label.small,
-                                color = Theme.colorScheme.shadePrimary
+                                color = Theme.colorScheme.shadePrimary,
+                                modifier = Modifier.clickable(onClick = { onSurahClick(message.surahId) })
                             )
                             Text(
                                 text = "•",
@@ -151,18 +162,32 @@ fun AyahMessageLayout(
                                 color = Theme.colorScheme.shadeTertiary
                             )
                             Text(
-                                text = "Aya ${message.ayahNumber}",
+                                text = stringResource(Res.string.aya, message.ayahNumber),
                                 style = Theme.typography.label.small,
-                                color = Theme.colorScheme.shadePrimary
+                                color = Theme.colorScheme.shadePrimary,
+                                modifier = Modifier.clickable(onClick = {
+                                    onAyahClick(
+                                        message.surahId,
+                                        message.ayahNumber
+                                    )
+                                })
+                            )
+                        }
+                        val ayahColor = Theme.colorScheme.shadeSecondary
+                        QuranTheme {
+                            Text(
+                                text = message.ayahContent,
+                                color = ayahColor,
+                                style = Theme.typography.quran.medium,
+                                modifier = Modifier.clickable(onClick = {
+                                    onAyahClick(
+                                        message.surahId,
+                                        message.ayahNumber
+                                    )
+                                })
                             )
                         }
 
-                        Text(
-                            text = message.ayahContent,
-                            style = Theme.typography.quran.medium,
-                            color = Theme.colorScheme.shadeSecondary,
-                            modifier = Modifier.fillMaxWidth()
-                        )
                     }
                 }
             }
@@ -203,28 +228,26 @@ fun AyahMessageLayout(
 @Preview
 @Composable
 private fun AyahMessageLayoutPreview() {
-    QuranTheme {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            AyahMessageLayout(
-                message = AyahMessageUiState(
-                    surahId = 4,
-                    ayahContent = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ " +
-                            "هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًاوَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
-                    ayahNumber = 176,
-                    surahName = "An-Nisa",
-                    messageDetails = MessageDetailsUiState(
-                        id = Uuid.random(),
-                        chatId = Uuid.random(),
-                        status = MessageStatus.READ,
-                        isMine = false,
-                        reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random()))
-                    )
-                ),
-                showMessageInfo = true,
-                isMarkedLastInSeries = true,
-            )
-        }
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        AyahMessageLayout(
+            message = AyahMessageUiState(
+                surahId = 4,
+                ayahContent = "يَسْتَفْتُونَكَ قُلِ اللَّهُ يُفْتِيكُمْ فِي الْكَلَالَةِ ۚ إِنِ امْرُؤٌ " +
+                        "هَلَكَ لَيْسَ لَهُ وَلَدٌ وَلَهُ أُخْتٌ فَلَهَا نِصْفُ مَا تَرَكَ ۚ وَهُوَ يَرِثُهَا إِن لَّمْ يَكُن لَّهَا وَلَدٌ ۚ فَإِن كَانَتَا اثْنَتَيْنِ فَلَهُمَا الثُّلُثَانِ مِمَّا تَرَكَ ۚ وَإِن كَانُوا إِخْوَةً رِّجَالًاوَنِسَاءً فَلِلذَّكَرِ مِثْلُ حَظِّ الْأُنْثَيَيْنِ ۗ يُبَيِّنُ اللَّهُ لَكُمْ أَنْ تَضِلُّوا ۗ وَاللَّهُ بِكُلِّ شَيْءٍ عَلِيمٌ",
+                ayahNumber = 176,
+                surahName = "An-Nisa",
+                messageDetails = MessageDetailsUiState(
+                    id = Uuid.random(),
+                    chatId = Uuid.random(),
+                    status = MessageStatus.READ,
+                    isMine = false,
+                    reactions = listOf(MessageReaction("❤️", Uuid.random(), Uuid.random()))
+                )
+            ),
+            showMessageInfo = true,
+            isMarkedLastInSeries = true,
+        )
     }
 }

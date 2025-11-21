@@ -30,13 +30,14 @@ import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.error_invalid_recording
 import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
+import mena.core_chat_presentation.generated.resources.no_internet
+import mena.core_chat_presentation.generated.resources.no_internet_connected
 import mena.core_chat_presentation.generated.resources.permission_denied_title
+import mena.core_chat_presentation.generated.resources.something_went_wrong
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
@@ -55,8 +56,9 @@ import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
-import net.thechance.mena.core_chat.presentation.utils.getUuidOrNull
 import net.thechance.mena.core_chat.presentation.utils.now
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException
+import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -69,6 +71,7 @@ class ChatViewModel(
     private val imageDownloaderService: ImageDownloaderService,
     val permissionsController: PermissionsController,
     private val audioPlayer: AudioPlayer,
+    private val transactionRepository: TransactionRepository,
     chatArgs: ChatArgs,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ChatScreenState, ChatScreenEffect>(ChatScreenState(), dispatcher),
@@ -95,24 +98,17 @@ class ChatViewModel(
     private var firstUnReadByMeMessageTime: LocalDateTime? = null
 
     init {
-        val chatId = getUuidOrNull(chatArgs.chatId)
+        val chatId = Uuid.parse(chatArgs.chatId)
         getUserInfo()
-        updateState { state ->
-            state.copy(
-                chatId = chatId,
-                chatName = chatArgs.chatName
-            )
-        }
-
-        if (chatId == null) {
-            onGetChatError()
-        } else {
-            tryToExecute(
-                execute = { chatRepository.getChatById(chatId) },
-                onSuccess = ::onGetChatSuccess,
-                onError = { onGetChatError() }
-            )
-        }
+        updateState { state -> state.copy(chatId = chatId, chatName = chatArgs.chatName) }
+        getChat(chatId)
+        onMessagesScrolled()
+        subscribeToNewMessages(chatId)
+        subscribeToPendingMessages(chatId)
+        observeReadMessages()
+        observeDeleteChat()
+        observeConnectionStatus(chatId)
+        observeMessageReactions()
         startUiDerivation()
     }
 
@@ -122,7 +118,8 @@ class ChatViewModel(
             when {
                 message.isMine -> break
                 message.isMine.not() && message.status == MessageStatus.READ -> break
-                message.isMine.not() && message.status == MessageStatus.SENT -> firstUnReadByMeMessageTime = message.sendAt
+                message.isMine.not() && message.status == MessageStatus.SENT -> firstUnReadByMeMessageTime =
+                    message.sendAt
             }
         }
         if (firstUnReadByMeMessageTime == null) firstUnReadByMeMessageTime = LocalDateTime.now()
@@ -132,7 +129,9 @@ class ChatViewModel(
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
-                    updateState { it.copy(chatListItems = messageList.toChatItems()) }
+                    updateState {
+                        it.copy(chatListItems = messageList.toChatItems())
+                    }
                 }
         }
     }
@@ -179,23 +178,23 @@ class ChatViewModel(
         )
     }
 
-    private fun onGetChatSuccess(chat: Chat) {
+    private fun getChat(chatId: Uuid) {
+
+        tryToExecute(
+            execute = { chatRepository.getChatById(chatId) },
+            onSuccess = { chat ->
         updateState { state ->
             state.copy(
                 chatId = chat.id,
                 chatName = chat.name,
                 chatAvatarUrl = chat.imageUrl.orEmpty(),
                 chatRequesterId = chat.requesterId,
+                receiverId = chat.receiverId
             )
         }
-
-        onMessagesScrolled()
-        subscribeToNewMessages(chat.id)
-        subscribeToPendingMessages(chat.id)
-        observeReadMessages()
-        observeDeleteChat()
-        observeConnectionStatus(chat.id)
-        observeMessageReactions()
+},
+            onError = { onGetChatError() }
+        )
     }
 
     private fun observeConnectionStatus(chatId: Uuid) {
@@ -328,7 +327,8 @@ class ChatViewModel(
                             it.copy(status = MessageStatus.LOADING)
                         else
                             it
-                    }}
+                    }
+                }
             },
             onSuccess = { sendMessage(message) }
         )
@@ -346,8 +346,7 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectNewMessage(message: Message?) {
-        if (message == null) return
+    private suspend fun onCollectNewMessage(message: Message) {
         safeUpdateMessages { current ->
             current.toMutableList().apply { add(0, message) }
                 .distinctBy { it.id }
@@ -371,8 +370,8 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectPendingMessages(messages: List<Message>?) {
-        val pendingMessages = messages ?: emptyList()
+    private suspend fun onCollectPendingMessages(messages: List<Message>) {
+        val pendingMessages = messages
         safeUpdateMessages { current ->
             current
                 .filter { it.status != MessageStatus.LOADING }
@@ -420,8 +419,7 @@ class ChatViewModel(
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
         onDeleteChatSuccess()
         emitEffect(ChatScreenEffect.NavigateBack)
     }
@@ -433,8 +431,7 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun onCollectReadMessagesEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-        if (markMessageAsReadEvent == null) return
+    private suspend fun onCollectReadMessagesEvent(markMessageAsReadEvent: MarkMessageAsReadEvent) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.senderId != markMessageAsReadEvent.readByUserId && message.status == MessageStatus.SENT)
@@ -538,18 +535,60 @@ class ChatViewModel(
 
     override fun onReactionSelected(messageId: Uuid, reaction: String) {
         val currentUserId = state.value.chatRequesterId ?: return
-        val message = _messages.value.firstOrNull { it.id == messageId } ?: return
-        val hasSameReaction =
-            message.reactions.any { it.userId == currentUserId && it.emoji == reaction }
+        val message = _messages.value.find { it.id == messageId } ?: return
 
-        if (hasSameReaction) {
-            tryToExecute(
-                execute = { messageRepository.removeMessageReaction(messageId, reaction) },
-            )
+        val oldReactions = message.reactions
+        val newReactions = determineNewReactions(oldReactions, currentUserId, reaction, messageId)
+
+        tryToExecute(
+            execute = {
+                updateMessageReactions(messageId, newReactions)
+                toggleReaction(oldReactions, currentUserId, reaction, messageId)
+            },
+            onError = {
+                viewModelScope.launch(dispatcher) {
+                    updateMessageReactions(messageId, oldReactions)
+                }
+            }
+        )
+    }
+
+    private suspend fun updateMessageReactions(messageID: Uuid, reactions: List<MessageReaction>) {
+        safeUpdateMessages { messages ->
+            messages.map { msg ->
+                if (msg.id == messageID) msg.copy(reactions = reactions) else msg
+            }
+        }
+    }
+
+    private fun determineNewReactions(
+        oldReactions: List<MessageReaction>,
+        userId: Uuid,
+        emoji: String,
+        messageId: Uuid
+    ): List<MessageReaction> {
+
+        val updatedReactions = oldReactions.filter { it.userId != userId }
+        val isRemoving = oldReactions.any { it.userId == userId && it.emoji == emoji }
+
+        return if (isRemoving) {
+            updatedReactions
         } else {
-            tryToExecute(
-                execute = { messageRepository.addMessageReaction(messageId, reaction) },
-            )
+            updatedReactions + MessageReaction(emoji, userId, messageId)
+        }
+    }
+
+    private suspend fun toggleReaction(
+        oldReactions: List<MessageReaction>,
+        userId: Uuid,
+        emoji: String,
+        messageId: Uuid
+    ) {
+        val isRemoving = oldReactions.any { it.userId == userId && it.emoji == emoji }
+        if (isRemoving) {
+            messageRepository.removeMessageReaction(messageId, emoji)
+        } else {
+            messageRepository.addMessageReaction(messageId, emoji)
         }
     }
 
@@ -566,8 +605,7 @@ class ChatViewModel(
     }
 
 
-    private suspend fun onCollectAddReaction(reaction: MessageReaction?) {
-        if (reaction == null) return
+    private suspend fun onCollectAddReaction(reaction: MessageReaction) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.id == reaction.messageId) {
@@ -602,8 +640,7 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun onCollectRemoveReaction(reaction: MessageReaction?) {
-        if (reaction == null) return
+    private suspend fun onCollectRemoveReaction(reaction: MessageReaction) {
         safeUpdateMessages { messages ->
             messages.map { message ->
                 if (message.id == reaction.messageId) {
@@ -863,31 +900,6 @@ class ChatViewModel(
         )
     }
 
-    private fun toEntityAudioMessage(
-        audioByteArray: ByteArray,
-        audioDurationMs: Long,
-        chatId: Uuid,
-        senderId: Uuid
-    ): Message {
-        val message = Message(
-            chatId = chatId,
-            senderId = senderId,
-            content = MessageContent.Audio(
-                data = AudioData.AudioByteArray(byteArray = audioByteArray),
-                audioDurationMs = audioDurationMs
-            ),
-            id = Uuid.random(),
-            sendAt = LocalDateTime.now(),
-            status = MessageStatus.LOADING,
-            isMine = true,
-            reactions = emptyList()
-        )
-
-        waveformCache[message.id] = generateWaveformData()
-
-        return message
-    }
-
     override fun onDownloadImageClicked(url: String) {
         tryToExecute(
             execute = { imageDownloaderService.downloadImageToGallery(url) },
@@ -941,12 +953,98 @@ class ChatViewModel(
     override fun onGalleryClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
+    override fun onSurahClicked(surahId: Int) {
+        emitEffect(ChatScreenEffect.NavigateToSurah(surahId))
+    }
+
+    override fun onAyahClicked(surahId: Int, ayahNumber: Int) {
+        emitEffect(ChatScreenEffect.NavigateToAyah(surahId, ayahNumber))
+    }
 
     override fun onCameraClicked() {
         tryToExecute(
             execute = { permissionsController.providePermission(permission = Permission.CAMERA) },
             onSuccess = { onCameraPermissionGranted() },
             onError = { showSnackBar(Res.string.error, Res.string.permission_denied_title, true) }
+        )
+    }
+
+    override fun onSendMoneyClicked() {
+        updateState {
+            it.copy(
+                amountToTransfer = "",
+                isAttachmentsOverlayVisible = false,
+                isSendMoneyDialogVisible = true
+            )
+        }
+    }
+
+    override fun onValueChanged(value: String) {
+        updateState { it.copy(amountToTransfer = value) }
+    }
+
+    override fun onSendClicked() {
+        tryToExecute(
+            onStart = { updateState { it.copy(isLoadingSendMoneyButton = true) } },
+            execute = ::sendMoney,
+            onSuccess = { transactionId -> onSendMoneySuccess(transactionId) },
+            onError = ::onSendMoneyFailed,
+        )
+    }
+
+    private suspend fun sendMoney(): Uuid {
+        val receiverId = state.value.receiverId
+        val amount = state.value.amountToTransfer.toDouble()
+        return getTransactionId(receiverId!!, amount)
+    }
+
+    private fun onSendMoneySuccess(transactionId: Uuid) {
+        updateState {
+            it.copy(
+                isSendMoneyDialogVisible = false,
+                isLoadingSendMoneyButton = false
+            )
+        }
+        emitEffect(
+            ChatScreenEffect.NavigateToConfirmPayment(
+                state.value.amountToTransfer,
+                transactionId
+            )
+        )
+    }
+
+    override fun onDismissSendMoneyDialog() {
+        updateState {
+            it.copy(
+                isSendMoneyDialogVisible = false
+            )
+        }
+    }
+
+    private fun onSendMoneyFailed(e: Throwable) {
+        updateState { it.copy(isLoadingSendMoneyButton = false) }
+        when (e) {
+            is NoInternetException -> {
+                showSnackBar(
+                    titleStringResource = Res.string.no_internet,
+                    messageStringResource = Res.string.no_internet_connected,
+                    isError = true
+                )
+            }
+
+            else -> showSnackBar(
+                titleStringResource = Res.string.error,
+                messageStringResource = Res.string.something_went_wrong,
+                isError = true
+            )
+        }
+    }
+
+
+    private suspend fun getTransactionId(receiverId: Uuid, amount: Double): Uuid {
+        return transactionRepository.addPendingTransaction(
+            receiverId = receiverId,
+            amount = amount,
         )
     }
 
@@ -975,6 +1073,10 @@ class ChatViewModel(
         }
     }
 
+    override fun onViewOrderDetailsClicked(orderId: Uuid) {
+        emitEffect(ChatScreenEffect.NavigateToOrderDetails(orderId = orderId.toString()))
+    }
+
     private suspend fun safeUpdateMessages(block: (List<Message>) -> List<Message>) {
         messagesMutex.withLock {
             _messages.update(block)
@@ -998,6 +1100,9 @@ class ChatViewModel(
                 isRecordingVoice = false
             )
         }
+    }
+    override fun onLinkClicked(url: String) {
+        emitEffect(ChatScreenEffect.OpenUrl(url))
     }
 
     companion object {

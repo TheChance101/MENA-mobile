@@ -126,6 +126,7 @@ private fun DialogContent(
             if (hasDismissButton) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_cancel),
+                    tint = Theme.colorScheme.primary.primary,
                     contentDescription = null,
                     modifier = Modifier
                         .clip(cancelBackgroundShape)

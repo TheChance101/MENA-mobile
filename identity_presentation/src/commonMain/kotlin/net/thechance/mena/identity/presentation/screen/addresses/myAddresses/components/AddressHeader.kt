@@ -60,7 +60,8 @@ fun AddressHeader(
             Text(
                 text = mapAddressTypeTitle(addressType),
                 style = Theme.typography.label.medium,
-                color = Theme.colorScheme.shadePrimary
+                color = Theme.colorScheme.shadePrimary,
+                maxLines = 1
             )
             Text(
                 text = addressDetails,

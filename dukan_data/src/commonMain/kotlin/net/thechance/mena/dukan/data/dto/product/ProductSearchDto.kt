@@ -28,5 +28,7 @@ data class ProductSearchDto(
     val mainImageUrl: String,
 
     @SerialName("isFavorite")
-    val isFavorite: Boolean
+    val isFavorite: Boolean,
+    @SerialName("isOutOfStock")
+    val isOutOfStock: Boolean = false
 )

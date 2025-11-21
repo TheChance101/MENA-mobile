@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,9 +25,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreen
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.stringResource
@@ -38,10 +37,10 @@ import org.koin.core.parameter.parametersOf
 class CreatePasswordScreen(
     private val registerUIState: RegisterUIState
 ) : BaseScreen<
-        CreatePasswordViewModel,
-        CreatePasswordUIState,
-        CreatePasswordUIEffect,
-        CreatePasswordInteractionListener>() {
+    CreatePasswordViewModel,
+    CreatePasswordUIState,
+    CreatePasswordUIEffect,
+    CreatePasswordInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -81,7 +80,7 @@ class CreatePasswordScreen(
                         onChangePassword = listener::onChangeConfirmPassword,
                         onTogglePasswordVisibility = listener::onToggleConfirmPasswordVisibility,
                         label = stringResource(Res.string.confirm_password_label),
-                        errorMessage = state.confirmPasswordErrorMessage?.let{
+                        errorMessage = state.confirmPasswordErrorMessage?.let {
                             stringResource(it)
                         },
                         modifier = Modifier.padding(bottom = Theme.spacing._16)
@@ -103,20 +102,20 @@ class CreatePasswordScreen(
                 }
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
         effect: CreatePasswordUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is CreatePasswordUIEffect.NavigateToDatePicker -> {
                 navigator.push(DatePickerScreen(registerUIState = effect.registerUIState))
+            }
+
+            is CreatePasswordUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(effect.errorStringResource)
             }
         }
     }
@@ -146,7 +145,6 @@ fun PreviewCreatePasswordScreen() {
                 override fun onToggleNewPasswordVisibility() {}
                 override fun onToggleConfirmPasswordVisibility() {}
                 override fun onClickCreatePassword() {}
-                override fun onClearErrorMessage() {}
             }
         )
     }

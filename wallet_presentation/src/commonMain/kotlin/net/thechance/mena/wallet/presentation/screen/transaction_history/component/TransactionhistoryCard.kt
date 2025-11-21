@@ -36,7 +36,7 @@ fun TransactionHistoryCard(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         TransactionStatusIcon(
-            transactionTypeIcon = transaction.type.iconRes,
+            transactionType = transaction.type,
             transactionStatus = transaction.status
         )
         TransactionContent(

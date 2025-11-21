@@ -8,7 +8,9 @@ import org.koin.core.annotation.Single
 class TrendsApiImpl() : TrendsApi {
 
     @Composable
-    override fun TabEntry() {
-        TrendsNavHost()
+    override fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
+        TrendsNavHost(
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
+        )
     }
 }

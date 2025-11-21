@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -77,13 +76,13 @@ fun EditorPickDukanItem(
             modifier = Modifier.fillMaxSize()
         )
         if (isError || isLoading) {
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_no_image_loaded),
                 contentDescription = null,
+                tint = Theme.colorScheme.primary.primary,
                 modifier = Modifier
                     .size(64.dp)
                     .align(Alignment.Center),
-                contentScale = ContentScale.Fit
             )
         }
         Box(
@@ -104,7 +103,7 @@ fun EditorPickDukanItem(
             Text(
                 text = dukanName,
                 style = Theme.typography.title.small,
-                color = Theme.colorScheme.primary.onPrimary,
+                color = Color.White,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
             )
@@ -118,6 +117,7 @@ fun EditorPickDukanItem(
                 Icon(
                     painter = painterResource(favoriteIcon),
                     contentDescription = stringResource(Res.string.heart_icon),
+                    tint = Theme.colorScheme.primary.onPrimary,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable(

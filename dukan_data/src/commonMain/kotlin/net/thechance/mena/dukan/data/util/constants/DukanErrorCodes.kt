@@ -15,4 +15,6 @@ object DukanErrorCodes {
     const val CART_NOT_FOUND = 1501
     const val PRODUCT_NOT_IN_CART = 1502
     const val PRODUCT_ALREADY_IN_CART = 1503
+    const val FORBIDDEN_ORDER_ACCESS = 1601
+    const val ORDER_NOT_FOUND = 1602
 }

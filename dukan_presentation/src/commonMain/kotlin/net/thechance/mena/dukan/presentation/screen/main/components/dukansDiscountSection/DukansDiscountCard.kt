@@ -166,14 +166,14 @@ private fun DukanDiscountText(
         Text(
             text = stringResource(Res.string.dukan_discount_title, dukanDiscount),
             style = Theme.typography.title.large,
-            color = Theme.colorScheme.primary.onPrimary,
+            color = Color.White,
             modifier = Modifier.padding(bottom = Theme.spacing._4)
         )
 
         Text(
             text = stringResource(Res.string.dukan_discount_details),
             style = Theme.typography.label.small,
-            color = Theme.colorScheme.primary.onPrimary,
+            color = Color.White,
             modifier = Modifier.padding(bottom = Theme.spacing._8)
         )
 
@@ -208,6 +208,7 @@ private fun ShopNowButton(
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_right),
             contentDescription = null,
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }

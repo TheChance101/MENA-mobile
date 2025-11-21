@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.data.di
 import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.AudioMessageSender
+import net.thechance.mena.core_chat.data.messagesender.AyahMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
@@ -50,12 +51,15 @@ internal val networkModule = module {
     single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT))) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
     single(named(AUDIO_MESSAGE_SENDER)) { AudioMessageSender(get(named(CHAT_CLIENT))) }
+    single(named(AYAH_MESSAGE_SENDER)) { AyahMessageSender(get(), get(named(CHAT_JSON))) }
+
 
     single {
         MessageSenderFactory(
             textMessageSender = get(named(TEXT_MESSAGE_SENDER)),
             imageMessageSender = get(named(IMAGE_MESSAGE_SENDER)),
-            audioMessageSender = get(named(AUDIO_MESSAGE_SENDER))
+            audioMessageSender = get(named(AUDIO_MESSAGE_SENDER)),
+            ayahMessageSender = get(named(AYAH_MESSAGE_SENDER)),
         )
     }
 
@@ -71,4 +75,5 @@ const val CHAT_JSON = "chatJson"
 const val IMAGE_MESSAGE_SENDER = "image_message_sender"
 const val TEXT_MESSAGE_SENDER = "text_message_sender"
 const val AUDIO_MESSAGE_SENDER = "audio_message_sender"
+const val AYAH_MESSAGE_SENDER = "ayah_message_sender"
 const val CHAT_COIL_CLIENT = "chat_coil_client"

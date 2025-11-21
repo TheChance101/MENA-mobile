@@ -50,7 +50,7 @@ fun ScaffoldScope.BasicDialog(
     dismissOnBackPress: Boolean = true,
     dismissOnClickOutside: Boolean = true,
     contentColor: Color = Theme.colorScheme.background.surfaceLow,
-    scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
+    scrimColor: Color = Color.Black.copy(0.55f),
     dialogCornerShape: Shape = SquircleShape(Theme.radius.xl),
     cancelBackgroundShape: Shape = RoundedCornerShape(Theme.radius.full),
     contentPadding: PaddingValues = PaddingValues(12.dp),
@@ -130,17 +130,18 @@ private fun DialogContent(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
+            content()
             if (hasDismissButton) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_cancel),
                     contentDescription = stringResource(Res.string.cancel_dialog_icon),
                     modifier = Modifier
-                        .clip(cancelBackgroundShape)
                         .clickable(
                             onClick = onCancelClick,
                             indication = ripple(),
                             interactionSource = remember { MutableInteractionSource() }
                         )
+                        .clip(cancelBackgroundShape)
                         .background(
                             Theme.colorScheme.background.surface,
                             cancelBackgroundShape
@@ -149,7 +150,6 @@ private fun DialogContent(
                     tint = Theme.colorScheme.primary.primary
                 )
             }
-            content()
         }
         actionButtons()
     }

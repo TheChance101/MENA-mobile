@@ -11,7 +11,8 @@ fun Product.toUiState() = DukanCartUiState.ProductUiState(
     description = description,
     price = price.base,
     imageUrl = imageUrls.firstOrNull().orEmpty(),
-    quantity = quantityInCart
+    quantity = quantityInCart,
+    isOutOfStock = isOutOfStock
 )
 
 @OptIn(ExperimentalUuidApi::class)

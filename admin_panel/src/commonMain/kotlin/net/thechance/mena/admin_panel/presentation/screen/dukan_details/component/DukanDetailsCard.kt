@@ -42,7 +42,7 @@ internal fun DukanDetailsCard(
     dukan: DukanDetailsScreenState.DukanItemUiState,
     isLoading: Boolean,
     isMapVisible: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier

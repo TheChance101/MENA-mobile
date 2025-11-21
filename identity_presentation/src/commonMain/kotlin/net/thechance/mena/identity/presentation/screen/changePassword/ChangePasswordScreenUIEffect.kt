@@ -1,8 +1,10 @@
 package net.thechance.mena.identity.presentation.screen.changePassword
 
-import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
+import org.jetbrains.compose.resources.StringResource
 
 
 sealed interface ChangePasswordScreenUIEffect {
-    data class NavigateBack(val snackBarUiState: SnackBarUiState? = null): ChangePasswordScreenUIEffect
+    data class NavigateBack(val successStringResource: StringResource? = null) : ChangePasswordScreenUIEffect
+
+    data class ShowSnackBarError(val errorStringResource: StringResource) : ChangePasswordScreenUIEffect
 }

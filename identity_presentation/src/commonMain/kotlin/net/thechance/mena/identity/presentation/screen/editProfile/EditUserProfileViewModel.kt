@@ -15,10 +15,13 @@ import mena.identity_presentation.generated.resources.error_camera_permission_re
 import mena.identity_presentation.generated.resources.error_first_name_required
 import mena.identity_presentation.generated.resources.error_last_name_required
 import mena.identity_presentation.generated.resources.error_username_required
+import mena.identity_presentation.generated.resources.success_profile_info_updated
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.domain.util.getCurrentDate
@@ -38,6 +41,8 @@ class EditUserProfileViewModel(
     private val userRepository: UserRepository,
     private val imagesRepository: ImagesRepository,
     private val imageDecoder: ImageDecoder,
+    private val authenticationRepository: AuthenticationRepository,
+    private val registrationDraftRepository: RegistrationDraftRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -91,7 +96,7 @@ class EditUserProfileViewModel(
     override fun onClickSaveButton() {
         if (!validateFormInputs()) return
 
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { saveUserProfile() },
             onSuccess = { handleSaveSuccess() },
@@ -101,7 +106,7 @@ class EditUserProfileViewModel(
     }
 
     override fun onClickCancelButton() {
-        sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
+        sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile())
     }
 
     override fun onClickShowLogoutOptions() {
@@ -110,10 +115,6 @@ class EditUserProfileViewModel(
 
     override fun onChangeDate(day: Int, month: Int, year: Int) {
         updateState { copy(birthDate = LocalDate(year, month, day)) }
-    }
-
-    override fun clearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     override fun onClickEditImage() {
@@ -126,6 +127,78 @@ class EditUserProfileViewModel(
 
     override fun onDismissLogoutDialog() {
         updateState { copy(showLogoutDialog = false) }
+    }
+
+    override fun onClickLogout() {
+        updateState { copy(showLogoutDialog = false, showConfirmLogoutDialog = true) }
+    }
+
+    override fun onClickDeleteAccount() {
+        updateState { copy(showLogoutDialog = false, showConfirmDeleteAccountDialog = true) }
+    }
+
+    override fun onDismissConfirmLogoutDialog() {
+        updateState { copy(showConfirmLogoutDialog = false) }
+    }
+
+    override fun onDismissConfirmDeleteAccountDialog() {
+        updateState { copy(showConfirmDeleteAccountDialog = false) }
+    }
+
+    override fun onConfirmLogout() {
+        tryToExecute(
+            function = ::performLogout,
+            onSuccess = { onLogoutSuccess() },
+            onError = ::onLogoutError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private suspend fun performLogout() {
+        authenticationRepository.logout()
+        registrationDraftRepository.clearLastPhoneNumber()
+    }
+
+    private fun onLogoutSuccess() {
+        updateState { copy(showConfirmLogoutDialog = false) }
+    }
+
+    private fun onLogoutError(throwable: Throwable) {
+        updateState { copy(showConfirmLogoutDialog = false) }
+        sendNewEffect(
+            EditUserProfileUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
+    }
+
+    override fun onConfirmDeleteAccount() {
+        tryToExecute(
+            function = ::performDeleteAccount,
+            onSuccess = { onDeleteAccountSuccess() },
+            onError = ::onDeleteAccountError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private suspend fun performDeleteAccount() {
+        userRepository.deleteAccount()
+        authenticationRepository.clearAuthTokens()
+        registrationDraftRepository.clearLastPhoneNumber()
+    }
+
+    private fun onDeleteAccountSuccess() {
+        updateState { copy(showConfirmDeleteAccountDialog = false) }
+    }
+
+    private fun onDeleteAccountError(throwable: Throwable) {
+        updateState { copy(showConfirmDeleteAccountDialog = false) }
+
+        sendNewEffect(
+            EditUserProfileUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onRemoveProfileImage() {
@@ -156,7 +229,11 @@ class EditUserProfileViewModel(
     }
 
     private fun onGetUserInfoError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            EditUserProfileUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun validateFormInputs(): Boolean {
@@ -164,22 +241,38 @@ class EditUserProfileViewModel(
 
         return when {
             currentState.username.isEmpty() -> {
-                updateState { copy(errorMessage = Res.string.error_username_required) }
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_username_required
+                    )
+                )
                 false
             }
 
             currentState.firstName.isEmpty() -> {
-                updateState { copy(errorMessage = Res.string.error_first_name_required) }
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_first_name_required
+                    )
+                )
                 false
             }
 
             currentState.lastName.isEmpty() -> {
-                updateState { copy(errorMessage = Res.string.error_last_name_required) }
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_last_name_required
+                    )
+                )
                 false
             }
 
             !ageValidator.isValid(currentState.birthDate.orCurrent()) -> {
-                updateState { copy(errorMessage = Res.string.error_age_restriction) }
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_age_restriction
+                    )
+                )
                 false
             }
 
@@ -229,11 +322,20 @@ class EditUserProfileViewModel(
 
     private fun handleSaveSuccess() {
         updateState { copy(isLoading = false) }
-        sendNewEffect(EditUserProfileUIEffect.NavigateBackToProfile)
+        sendNewEffect(
+            EditUserProfileUIEffect.NavigateBackToProfile(
+                successStringResource = Res.string.success_profile_info_updated
+            )
+        )
     }
 
     private fun handleSaveError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isLoading = false) }
+        sendNewEffect(
+            EditUserProfileUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun cacheRequiredCropImage(imageBitmap: ImageBitmap) {
@@ -269,7 +371,11 @@ class EditUserProfileViewModel(
     }
 
     private fun onCacheCropImageError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            EditUserProfileUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private suspend fun requestCameraPermission() {
@@ -289,10 +395,18 @@ class EditUserProfileViewModel(
             }
 
             is DeniedException -> {
-                updateState { copy(errorMessage = Res.string.error_camera_permission_required) }
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_camera_permission_required
+                    )
+                )
             }
 
-            else -> updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+            else -> sendNewEffect(
+                EditUserProfileUIEffect.ShowSnackBarError(
+                    errorStringResource = mapErrorMessage(throwable)
+                )
+            )
         }
     }
 

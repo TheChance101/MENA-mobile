@@ -20,20 +20,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 open class BaseViewModel<S, E>(
     initialState: S,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-) : ViewModel(), KoinComponent {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(initialState)
     val state = _state.asStateFlow()
@@ -77,7 +74,7 @@ open class BaseViewModel<S, E>(
     protected fun <T> tryToCollect(
         onStart: () -> Unit = {},
         collect: () -> Flow<T>,
-        onCollect: suspend (T?) -> Unit,
+        onCollect: suspend (T) -> Unit,
         onError: (Throwable) -> Unit = {},
         coroutineScope: CoroutineScope = viewModelScope,
         dispatcher: CoroutineDispatcher = defaultDispatcher,
@@ -87,8 +84,7 @@ open class BaseViewModel<S, E>(
             collect()
                 .onStart { onStart() }
                 .catch { onError(it) }
-                .onEmpty { onCollect(null) }
-                .collectLatest { onCollect(it) }
+                .collect { onCollect(it) }
         }
     }
 
