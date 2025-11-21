@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import coil3.compose.setSingletonImageLoaderFactory
+import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarHostController
@@ -41,6 +43,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
     dukanApi: DukanApi = koinInject(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit = {},
     onNavigateBackFromChat: () -> Unit = {},
     onNavigateBackFromShareMessage: () -> Unit = {},
     startDestination: ChatRoute = HomeRoute
@@ -51,9 +54,20 @@ fun ChatNavHost(
     val navController = rememberNavController()
     val snackBarHostController = remember { SnackBarHostController() }
 
+    LaunchedEffect(Unit) {
+        navController.currentBackStack.collectLatest {
+            if (navController.currentDestination?.route in routsWithBottomNavigation) {
+                updateBottomNavigationVisibility(true)
+            } else {
+                updateBottomNavigationVisibility(false)
+            }
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
         CompositionLocalProvider(
             LocalNavController provides navController,
             LocalSnackBarHostController provides snackBarHostController
@@ -69,12 +83,17 @@ fun ChatNavHost(
                 composable<ChatDetailsRoute> { ChatScreen(onClickBackFromChat = onNavigateBackFromChat) }
                 composable<WalletRoute> {
                     walletApi.WalletEntry(
+                        navigateBack = { navController.popBackStack() },
+                        updateBottomNavigationVisibility = updateBottomNavigationVisibility,
+                    )
+                }
+                composable<ConfirmPaymentRoute> { backStack ->
+                    walletApi.ConfirmPaymentEntry(
+                        transactionId = Uuid.parse(backStack.savedStateHandle.toRoute<ConfirmPaymentRoute>().transactionId),
                         navigateBack = {
                             navController.popBackStack()
                         },
-                        updateBottomNavigationVisibility = {
-                            //pass updateBottomNavigationVisibility here
-                        },
+                        updateBottomNavigationVisibility = updateBottomNavigationVisibility
                     )
                 }
                 composable<OrderDetailsRoute> {
@@ -87,7 +106,6 @@ fun ChatNavHost(
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
-
             Box(
                 modifier = Modifier.fillMaxSize().statusBarsPadding()
                     .padding(horizontal = Theme.spacing._16),
@@ -98,3 +116,8 @@ fun ChatNavHost(
         }
     }
 }
+
+private val routsWithBottomNavigation = listOf(
+    HomeRoute::class.qualifiedName,
+    WalletRoute::class.qualifiedName
+)

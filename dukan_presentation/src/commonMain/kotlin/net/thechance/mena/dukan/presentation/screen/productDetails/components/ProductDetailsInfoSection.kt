@@ -19,6 +19,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.silver_tc
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -102,9 +103,10 @@ private fun ProductDetailsPriceRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.discount_icon),
             contentDescription = stringResource(Res.string.discount_icon),
+            tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(end = Theme.spacing._4)
         )
         Text(

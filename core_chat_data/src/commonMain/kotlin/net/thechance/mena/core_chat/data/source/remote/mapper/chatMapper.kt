@@ -53,7 +53,7 @@ suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageConte
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
-        is MessageContentDto.Money -> MessageContent.Text(amount.toString())
+        is MessageContentDto.Money -> MessageContent.Money(amount=amount)
         is MessageContentDto.Ayah -> {
             val surahName = quranService.getSurahDetails(surahNumber).name
             MessageContent.Ayah(
@@ -88,7 +88,8 @@ fun ChatDto.toDomain(): Chat {
         id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId.toUuid()
+        requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -97,7 +98,8 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
         id = id,
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId
+        requesterId = requesterId,
+        receiverId = receiverId
     )
 }
 
@@ -107,6 +109,7 @@ fun CachedChatLocalDto.toDomain(): Chat {
         imageUrl = imageUrl,
         name = name,
         requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 

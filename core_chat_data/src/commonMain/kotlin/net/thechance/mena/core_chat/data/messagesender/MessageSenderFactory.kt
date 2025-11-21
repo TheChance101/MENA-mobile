@@ -13,6 +13,7 @@ class MessageSenderFactory(
         is MessageContent.Text -> textMessageSender
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
+        is MessageContent.Money -> throw IllegalArgumentException("Money message can not send by mobile")
         is MessageContent.Ayah -> ayahMessageSender
         else -> throw OperationFailedException("order message cannot be sent by mobile")
     }

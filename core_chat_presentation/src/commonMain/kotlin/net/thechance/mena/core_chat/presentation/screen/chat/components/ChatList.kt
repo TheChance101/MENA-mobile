@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.OrderMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MoneyMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -31,6 +33,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ChatList(
+    chatName: String,
     items: List<ChatListItem>,
     chatAvatarUrl: String,
     chatListState: LazyListState,
@@ -51,7 +54,8 @@ fun ChatList(
             .padding(horizontal = Theme.spacing._12),
         state = chatListState,
         reverseLayout = true,
-        contentPadding = PaddingValues(top = Theme.spacing._16)
+        contentPadding = PaddingValues(top = Theme.spacing._16),
+        verticalArrangement = Arrangement.Bottom
     ) {
         itemsIndexed(
             items = items,
@@ -64,6 +68,7 @@ fun ChatList(
                     is AyahMessageUiState -> item.messageDetails.id.toString()
                     is OrderMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
+                    is MoneyMessageUiState -> item.messageDetails.id.toString()
                 }
             }
         ) { _, item ->
@@ -84,6 +89,7 @@ fun ChatList(
                 Theme.spacing._2
 
             ChatListItem(
+                chatName = chatName,
                 item = item,
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
