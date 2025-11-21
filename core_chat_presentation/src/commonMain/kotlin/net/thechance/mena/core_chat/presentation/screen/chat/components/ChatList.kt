@@ -76,6 +76,10 @@ fun ChatList(
                 Theme.spacing._16
             else if (item is AudioMessageUiState && item.messageDetails.isLastInSeries)
                 Theme.spacing._16
+            else if (item is AyahMessageUiState && item.messageDetails.isLastInSeries)
+                Theme.spacing._16
+            else if (item is OrderMessageUiState && item.messageDetails.isLastInSeries)
+                Theme.spacing._16
             else
                 Theme.spacing._2
 
