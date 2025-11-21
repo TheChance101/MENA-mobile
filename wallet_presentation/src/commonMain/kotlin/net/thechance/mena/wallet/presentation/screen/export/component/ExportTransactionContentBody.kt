@@ -43,7 +43,6 @@ fun ExportTransactionContentBody(
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -59,7 +58,7 @@ fun ExportTransactionContentBody(
             isDownloadLoading = state.isDownloadLoading,
             isDownloadEnabled = state.isDownloadButtonEnabled,
             interactionListener = interactionListener,
-            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp)
+            modifier = Modifier.padding(top = 32.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
         )
     }
 }
@@ -79,7 +78,7 @@ private fun ExportTransactionFilterSection(
             onCardSelected = interactionListener::onAllTransactionsClicked,
             isSelected = (!state.isCustomFilterCardSelected),
             isEnabled = (!state.canSelectExportType),
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 12.dp, start = 16.dp, end = 16.dp)
         )
 
         ExportTypeCard(
@@ -87,6 +86,7 @@ private fun ExportTransactionFilterSection(
             isSelected = state.isCustomFilterCardSelected,
             isEnabled = (!state.canSelectExportType),
             onCardSelected = interactionListener::onCustomFilteringClicked,
+            modifier = Modifier.padding(horizontal = 16.dp)
         )
 
         AnimatedVisibility(
