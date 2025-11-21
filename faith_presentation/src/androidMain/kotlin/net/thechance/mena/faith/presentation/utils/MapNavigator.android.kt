@@ -8,22 +8,27 @@ import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 internal actual class MapNavigatorImpl(
     private val context: Context
 ) : MapNavigator {
-    actual override fun openMapAtCoordinate(coordinate: Coordinate)  {
+    actual override fun openMapAtCoordinate(coordinate: Coordinate) {
         val lat = coordinate.latitude
         val lon = coordinate.longitude
 
-        val gmmIntentUri = "geo:$lat,$lon?q=$lat,$lon(Mosque)".toUri()
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
-            setPackage("com.google.android.apps.maps")
-        }
+        val geoIntent = Intent(
+            Intent.ACTION_VIEW,
+            "geo:$lat,$lon?q=$lat,$lon(Mosque)".toUri()
+        )
 
-        if (mapIntent.resolveActivity(context.packageManager) != null) {
-            context.startActivity(mapIntent)
+        if (geoIntent.resolveActivity(context.packageManager) != null) {
+            val chooserIntent = Intent.createChooser(geoIntent, null).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(chooserIntent)
         } else {
             val browserIntent = Intent(
                 Intent.ACTION_VIEW,
                 "https://www.google.com/maps/search/?api=1&query=$lat,$lon".toUri()
-            )
+            ).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
             context.startActivity(browserIntent)
         }
     }

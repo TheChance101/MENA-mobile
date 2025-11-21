@@ -19,6 +19,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.service.AppThemeService
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.trends.presentation.screen.category_pick.CategoryPickScreen
 import net.thechance.mena.trends.presentation.screen.category_publish.CategoryPublishScreen
 import net.thechance.mena.trends.presentation.screen.home.HomeScreen
@@ -34,9 +36,12 @@ import net.thechance.mena.trends.presentation.shared.util.provideImageLoader
 import net.thechance.mena.trends.presentation.snackbar.LocalSnackbarController
 import net.thechance.mena.trends.presentation.snackbar.SnackBarControllerImpl
 import net.thechance.mena.trends.presentation.snackbar.defaultSnackBarAnimationConfig
+import org.koin.compose.koinInject
 
 @Composable
-fun TrendsNavHost() {
+fun TrendsNavHost(
+    appThemeService: AppThemeService = koinInject()
+) {
 
     val navController = rememberNavController()
     val coroutineScope = rememberCoroutineScope()
@@ -44,10 +49,14 @@ fun TrendsNavHost() {
     val currentSnackbarData by snackBarController.state.collectAsStateWithLifecycle()
     val coilLoader = provideImageLoader()
 
+    val currentTheme by appThemeService.observeAppTheme().collectAsStateWithLifecycle()
+    val isDarkTheme = currentTheme == AppTheme.DARK
+
     CompositionLocalProvider(
         LocalNavController provides navController,
         LocalSnackbarController provides snackBarController,
-        LocalImageLoader provides coilLoader
+        LocalImageLoader provides coilLoader,
+        LocalDarkTheme provides isDarkTheme
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
 
@@ -116,3 +125,4 @@ fun TrendsNavHost() {
 val LocalNavController = compositionLocalOf<NavController> {
     error("NavController not provided")
 }
+val LocalDarkTheme = compositionLocalOf { false }

@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.users_management
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,17 +19,19 @@ import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SearchBar
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
-import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersListContent
-import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
-import net.thechance.mena.admin_panel.presentation.component.EmptyUsersState
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
+import net.thechance.mena.admin_panel.presentation.screen.users_management.component.UsersManagementTableContent
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.block
 import net.thechance.mena.admin_panel.resources.block_user
 import net.thechance.mena.admin_panel.resources.block_user_confirmation_message
+import net.thechance.mena.admin_panel.resources.empty_users
 import net.thechance.mena.admin_panel.resources.ic_block
 import net.thechance.mena.admin_panel.resources.ic_user_block
+import net.thechance.mena.admin_panel.resources.no_users_yet
 import net.thechance.mena.admin_panel.resources.search_hint
 import net.thechance.mena.admin_panel.resources.users_management
+import net.thechance.mena.admin_panel.resources.users_will_appear
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
@@ -48,7 +51,7 @@ private fun UsersManagementScreenContent(
     listener: UsersManagementInteractionListener
 ) {
     PanelScaffold(
-        topBar = { UsersManagementTopBar() },
+        topBar = { UsersManagementScreenTopBar() },
         overlays = {
             dialog(state.isBlockDialogShown) {
                 AdminConfirmationDialog(
@@ -66,6 +69,7 @@ private fun UsersManagementScreenContent(
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
+        isLoading = state.isInitialLoading,
         onRetry = listener::onRetryClicked
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -81,22 +85,17 @@ private fun UsersManagementScreenContent(
             )
 
             when {
-                state.isLoading -> AdminPanelContentLoading()
-
-                state.users.isEmpty() -> {
+                state.users.isEmpty() && !state.isLoading -> {
                     if (state.query.isNotEmpty()) {
-                        UsersSearchEmptyState()
+                        EmptySearchState(modifier = Modifier.fillMaxSize().offset(y = -(76.dp)))
+
                     } else {
-                        EmptyUsersState(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .offset(y = -(76.dp))
-                        )
+                        EmptyUsersState()
                     }
                 }
 
                 else -> {
-                    UsersListContent(
+                    UsersManagementTableContent(
                         listener = listener,
                         state = state,
                         modifier = Modifier.fillMaxSize()
@@ -108,21 +107,30 @@ private fun UsersManagementScreenContent(
 }
 
 @Composable
-private fun UsersManagementTopBar() {
+private fun EmptyUsersState(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        StatePlaceholder(
+            image = painterResource(Res.drawable.empty_users),
+            title = stringResource(Res.string.no_users_yet),
+            description = stringResource(Res.string.users_will_appear),
+            modifier = Modifier
+                .fillMaxSize()
+                .align(Alignment.Center)
+                .offset(y = -(76.dp))
+        )
+    }
+}
+
+@Composable
+private fun UsersManagementScreenTopBar() {
     AppBar(
         title = stringResource(Res.string.users_management),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),
         modifier = Modifier.background(Theme.colorScheme.background.surfaceLow)
     )
 }
-
-@Composable
-private fun UsersSearchEmptyState() {
-    EmptySearchState(
-        modifier = Modifier
-            .fillMaxSize()
-            .offset(y = -(76.dp))
-    )
-}
-
-

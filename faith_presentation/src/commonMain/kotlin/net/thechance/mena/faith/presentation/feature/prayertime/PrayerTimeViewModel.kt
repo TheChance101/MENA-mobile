@@ -8,21 +8,28 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.service.PrayerTimeService
 import net.thechance.mena.faith.presentation.base.BaseViewModel
+import net.thechance.mena.faith.presentation.utils.IslamicDate
+import net.thechance.mena.faith.presentation.utils.IslamicDateCalculator
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.calculateNextIslamicDate
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.calculatePreviousIslamicDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
-import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
 class PrayerTimeViewModel(
     private val prayerTimeRepository: PrayerTimeRepository,
     private val locationService: LocationService,
     private val prayerTimeService: PrayerTimeService,
+    private val islamicDateCalculator: IslamicDateCalculator,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<PrayerTimeUiState, PrayerTimeEffect>(PrayerTimeUiState()),
     PrayerTimeInteractionListener {
+
+    private var currentAddress: Address? = null
 
     init {
         getUserLocation()
@@ -38,15 +45,14 @@ class PrayerTimeViewModel(
     }
 
     private fun onGetUserLocationSuccess(address: Address) {
-        updateState { state -> state.copy(address = address.addressLine) }
+        currentAddress = address
+        updateState { it.copy(address = address.addressLine) }
+        getPrayerTimes(address, Clock.System.now())
+    }
 
+    private fun getPrayerTimes(address: Address, date: Instant) {
         tryToExecute(
-            execute = {
-                prayerTimeRepository.getPrayerTimes(
-                    date = Clock.System.now(),
-                    address = address
-                )
-            },
+            execute = { prayerTimeRepository.getPrayerTimes(date = date, address = address) },
             onSuccess = { onPrayerTimesSuccess(prayerTimes = it, address = address) },
             dispatcher = dispatcher
         )
@@ -56,15 +62,20 @@ class PrayerTimeViewModel(
         tryToExecute(
             execute = {
                 val filteredPrayerTimes = prayerTimes.filter { it.name != PrayerName.SUNRISE }
-                val hijriDate = getHijriReadableDate(prayerTimes)
+
+                val currentIslamicDate = IslamicDate.now(islamicDateCalculator)
+
                 updateState {
                     it.copy(
                         prayerTimes = filteredPrayerTimes,
-                        currentDate = hijriDate
+                        currentDate = currentIslamicDate,
                     )
                 }
             },
-            onSuccess = { startNextPrayerObserver(address) })
+            onSuccess = {
+                startNextPrayerObserver(address)
+            }
+        )
     }
 
     private fun startNextPrayerObserver(address: Address) {
@@ -105,11 +116,102 @@ class PrayerTimeViewModel(
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
 
-    override fun onPrevDateClick() = sendEffect(PrayerTimeEffect.NavigatePrevDate)
+    override fun onPrevDateClick() {
+        val currentDate = uiState.value.currentDate
+        val previousIslamicDate = calculatePreviousIslamicDate(currentDate)
 
-    override fun onNextDateClick() = sendEffect(PrayerTimeEffect.NavigateNextDate)
+        updateState { it.copy(currentDate = previousIslamicDate) }
 
-    override fun onDateDropdownClick() = sendEffect(PrayerTimeEffect.NavigateCalenderDialog)
+        getPrayerTimesForIslamicDate(previousIslamicDate)
+    }
+
+    override fun onNextDateClick() {
+        val currentDate = uiState.value.currentDate
+        val nextIslamicDate = calculateNextIslamicDate(currentDate)
+
+        updateState { it.copy(currentDate = nextIslamicDate) }
+
+        getPrayerTimesForIslamicDate(nextIslamicDate)
+    }
+
+    override fun onDateDropdownClick() =
+        updateState {
+            it.copy(
+                isDatePickerShown = true,
+                islamicDatePickerUiState = PrayerTimeUiState.IslamicDatePickerUiState(
+                    selectedIslamicDate = uiState.value.currentDate,
+                )
+            )
+        }
 
     override fun onLocationClick() = sendEffect(PrayerTimeEffect.NavigateToAddressesScreen)
+
+    override fun onSelectedDateChange(day: Int, month: Int, year: Int) {
+        val selectedIslamicDate = IslamicDate(day, month, year)
+
+        updateState {
+            it.copy(
+                islamicDatePickerUiState = it.islamicDatePickerUiState.copy(
+                    selectedIslamicDate = selectedIslamicDate,
+                    isClearDateActive = selectedIslamicDate != IslamicDate.now(islamicDateCalculator),
+                )
+            )
+        }
+    }
+
+    override fun onDateSelected() {
+        val selectedIslamicDate = uiState.value.islamicDatePickerUiState.selectedIslamicDate
+        updateState {
+            it.copy(
+                isDatePickerShown = false,
+                currentDate = selectedIslamicDate,
+                isTodayPrayer = selectedIslamicDate == IslamicDate.now(islamicDateCalculator),
+                islamicDatePickerUiState = PrayerTimeUiState.IslamicDatePickerUiState(),
+            )
+        }
+
+        getPrayerTimesForIslamicDate(uiState.value.currentDate)
+    }
+
+    override fun onClearSelectedDate() =
+        updateState {
+            it.copy(
+                islamicDatePickerUiState = it.islamicDatePickerUiState.copy(
+                    selectedIslamicDate = IslamicDate.now(islamicDateCalculator),
+                    isClearDateActive = false,
+                )
+            )
+        }
+
+    override fun onDatePickerDismiss() =
+        updateState {
+            it.copy(
+                isDatePickerShown = false,
+                islamicDatePickerUiState = PrayerTimeUiState.IslamicDatePickerUiState(),
+            )
+        }
+
+    private fun getPrayerTimesForIslamicDate(islamicDate: IslamicDate) {
+        val address = currentAddress ?: return
+
+        tryToExecute(
+            execute = {
+                prayerTimeRepository.getPrayerTimeWithHijriDate(
+                    date = formatIslamicDate(islamicDate),
+                    isHijri = true,
+                    address = address
+                )
+            },
+            onSuccess = ::onHijriPrayerTimesSuccess,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onHijriPrayerTimesSuccess(prayerTimes: List<PrayerTime>) {
+        val filteredPrayerTimes = prayerTimes.filter { it.name != PrayerName.SUNRISE }
+        updateState { it.copy(prayerTimes = filteredPrayerTimes) }
+    }
+
+    private fun formatIslamicDate(islamicDate: IslamicDate): String =
+        "${islamicDate.year}-${islamicDate.month}-${islamicDate.day}"
 }

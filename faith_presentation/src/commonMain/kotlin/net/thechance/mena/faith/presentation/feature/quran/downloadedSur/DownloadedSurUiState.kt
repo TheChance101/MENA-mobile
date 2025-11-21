@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
-import org.jetbrains.compose.resources.DrawableResource
+import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.model.DownlodedSur
 
 data class DownloadedSurUiState(
     val surDetails: List<SurahDetailsUiState> = emptyList(),
@@ -9,8 +10,17 @@ data class DownloadedSurUiState(
 ) {
     data class SurahDetailsUiState(
         val id: Int,
-        val arabicNameImg: DrawableResource,
+        val arabicNameImg: Surah.SurahOrder,
         val surahName: String,
-        val downloadedReciters: List<String>,
+        val recitersName: List<String>,
     )
 }
+
+fun DownlodedSur.toUiState(): DownloadedSurUiState.SurahDetailsUiState =
+    DownloadedSurUiState.SurahDetailsUiState(
+        id = id,
+        arabicNameImg = arabicNameImg,
+        surahName = surahName,
+        recitersName = recitersName,
+    )
+

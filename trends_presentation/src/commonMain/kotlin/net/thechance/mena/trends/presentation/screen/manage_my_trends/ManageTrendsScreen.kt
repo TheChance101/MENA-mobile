@@ -46,6 +46,7 @@ import coil3.compose.AsyncImage
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.favorite
 import mena.trends_presentation.generated.resources.ic_empty_trends
+import mena.trends_presentation.generated.resources.ic_empty_trends_dark
 import mena.trends_presentation.generated.resources.ic_paly_now
 import mena.trends_presentation.generated.resources.ic_placeholder_profile
 import mena.trends_presentation.generated.resources.manage_trends_title
@@ -60,6 +61,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.trends.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
@@ -243,8 +245,13 @@ private fun EmptyStateForTab(tab: SelectTab) {
 
 @Composable
 private fun EmptyFavorites(modifier: Modifier = Modifier) {
+    val icon = if (LocalDarkTheme.current)
+        painterResource(Res.drawable.ic_empty_trends_dark)
+    else
+        painterResource(Res.drawable.ic_empty_trends)
+
     StatePlaceholder(
-        icon = painterResource(Res.drawable.ic_empty_trends),
+        icon = icon,
         title = stringResource(Res.string.no_favorites_title),
         description = stringResource(Res.string.no_favorites_description),
         isScrollable = false,

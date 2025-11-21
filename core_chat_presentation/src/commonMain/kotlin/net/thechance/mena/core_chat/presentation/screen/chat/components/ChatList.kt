@@ -38,11 +38,13 @@ fun ChatList(
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
-) {
+    onLinkClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    ) {
     val isConnectedToNetwork by rememberNetworkStatus()
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._12),
         state = chatListState,
@@ -69,6 +71,8 @@ fun ChatList(
                 Theme.spacing._16
             else if (item is ImagesGroupChatItem && item.imagesUiState.last().messageDetails.isLastInSeries)
                 Theme.spacing._16
+            else if (item is AudioMessageUiState && item.messageDetails.isLastInSeries)
+                Theme.spacing._16
             else
                 Theme.spacing._2
 
@@ -80,6 +84,7 @@ fun ChatList(
                 onMessageVoiceClick = onMessageVoiceClick,
                 onFailedMessageClick = onFailedMessageClick,
                 onMessageLongClick = onMessageLongClick,
+                onLinkClick = onLinkClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }

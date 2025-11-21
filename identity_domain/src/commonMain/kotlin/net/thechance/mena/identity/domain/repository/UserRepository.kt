@@ -15,4 +15,5 @@ interface UserRepository {
         newPassword: String,
         confirmPassword: String
     )
+    suspend fun deleteAccount()
 }

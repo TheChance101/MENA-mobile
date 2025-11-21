@@ -28,6 +28,7 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(projects.identityDomain)
             implementation(projects.trendsDomain)
             implementation(libs.koin.core)
             api(libs.koin.annotations)
