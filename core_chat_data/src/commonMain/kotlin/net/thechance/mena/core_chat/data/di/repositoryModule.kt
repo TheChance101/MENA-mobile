@@ -32,7 +32,8 @@ internal val repositoryModule = module {
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
             dataStore = get(),
-            cachedChatDao = get()
+            cachedChatDao = get(),
+            quranService = get()
         )
     }
 

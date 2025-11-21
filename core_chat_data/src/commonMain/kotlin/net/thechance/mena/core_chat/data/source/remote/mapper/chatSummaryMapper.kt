@@ -9,25 +9,26 @@ import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.model.PagedData
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.faith.domain.service.QuranService
 
-fun PagedDataDto<ChatSummaryDto>.toPagedListOfChatSummary(): PagedData<ChatSummary> {
+suspend fun PagedDataDto<ChatSummaryDto>.toPagedListOfChatSummary(quranService: QuranService): PagedData<ChatSummary> {
     val pagedData = this
     return PagedData(
         data = pagedData.data
-            .toListOfChatSummary()
+            .toListOfChatSummary(quranService)
             .filter { chatSummary -> chatSummary.lastMessage != null },
         totalItems = pagedData.totalItems,
         isLastPage = pagedData.pageNumber >= pagedData.totalPages
     )
 }
 
-private fun List<ChatSummaryDto>.toListOfChatSummary(): List<ChatSummary> {
-    return mapNotNull { it.toDomain() }
+private suspend fun List<ChatSummaryDto>.toListOfChatSummary(quranService: QuranService): List<ChatSummary> {
+    return mapNotNull { it.toDomain(quranService) }
 }
 
 @OptIn(ExperimentalTime::class)
-fun ChatSummaryDto.toDomain(): ChatSummary {
-    val lastMessage = lastMessage?.toDomain()
+suspend fun ChatSummaryDto.toDomain(quranService: QuranService): ChatSummary {
+    val lastMessage = lastMessage?.toDomain(quranService)
 
     return ChatSummary(
         id = id.toUuid(),

@@ -37,6 +37,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import net.thechance.mena.faith.domain.service.QuranService
 
 
 @OptIn(ExperimentalUuidApi::class)
@@ -45,7 +46,8 @@ class ChatRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val cachedChatDao: CachedChatDao,
     private val cachedChatSummaryDao: CachedChatSummaryDao,
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val quranService: QuranService
 ) : ChatRepository {
 
     private val _syncState = MutableSharedFlow<SyncState>()
@@ -81,7 +83,7 @@ class ChatRepositoryImpl(
                     parameter(PAGE_NUMBER_PARAMETER, pageNumber)
                     parameter(PAGE_SIZE_PARAMETER, pageSize)
                 }
-            }.toPagedListOfChatSummary()
+            }.toPagedListOfChatSummary(quranService)
 
             val remoteChatSummariesData = remoteChatSummaries.data
             if (remoteChatSummariesData.isNotEmpty()) {
@@ -123,7 +125,7 @@ class ChatRepositoryImpl(
             bodyType = typeInfo<ChatSummaryDto>()
         ) {
             client.get(getChatSummaryEndpoint(chatId))
-        }.toDomain()
+        }.toDomain(quranService)
     }
 
     @OptIn(ExperimentalTime::class)
