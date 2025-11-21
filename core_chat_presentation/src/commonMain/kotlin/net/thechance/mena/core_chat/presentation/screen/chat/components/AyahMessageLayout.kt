@@ -179,7 +179,6 @@ fun AyahMessageLayout(
                                 text = message.ayahContent,
                                 color = ayahColor,
                                 style = Theme.typography.quran.medium,
-                                textAlign = TextAlign.Left,
                                 modifier = Modifier.clickable(onClick = {
                                     onAyahClick(
                                         message.surahId,
