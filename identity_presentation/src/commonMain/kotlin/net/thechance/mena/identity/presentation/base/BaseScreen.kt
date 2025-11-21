@@ -1,3 +1,5 @@
+@file:Suppress("ERROR_SUPPRESSION")
+
 package net.thechance.mena.identity.presentation.base
 
 import androidx.compose.foundation.layout.padding
@@ -55,6 +57,7 @@ abstract class BaseScreen<VM, S, E, I> : Screen
                 title = stringResource(snackBarData.title),
                 message = stringResource(snackBarData.message),
                 leadingIcon = painterResource(snackBarData.type.icon),
+                displayDurationMs = snackBarData.duration,
                 onDismiss = snackBarController::dismissSnackBar,
                 modifier = Modifier
                     .statusBarsPadding()
