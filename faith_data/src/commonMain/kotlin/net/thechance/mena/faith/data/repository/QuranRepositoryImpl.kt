@@ -108,7 +108,7 @@ class QuranRepositoryImpl(
         }
     }
 
-    override suspend fun deleteSurahWithSpecificReciter(surahId: Int) {
+    override suspend fun deleteSurahAudioByReciter(surahId: Int) {
         recitersDao.deleteSurahAudioByReciter(surahId)
     }
 
@@ -194,12 +194,6 @@ class QuranRepositoryImpl(
             ) else files
     }
 
-    override suspend fun deleteSurahAudioByReciter(surahId: Int, reciterId: Int) {
-        executeLocalSafely {
-            recitersDao.deleteSpecificDownloadedAudio(surahId = surahId,reciterId = reciterId)
-        }
-    }
-
     private fun calculateFileIndex(ayahNumber: Int, surahNumber: Int): Int {
         return if (surahNumber == INDEX_OFFSET) ayahNumber
         else ayahNumber + INDEX_OFFSET
@@ -227,6 +221,12 @@ class QuranRepositoryImpl(
 
     override suspend fun saveDefaultReciter(reciterId: Int) =
         tilawahDataStore.saveDefaultReciter(reciterId)
+
+    override suspend fun deleteDownlodedReciterAudio(surahId: Int, reciterId: Int) {
+        executeLocalSafely {
+            recitersDao.deleteDowonloadedReciter(surahId, reciterId)
+        }
+    }
 
     override suspend fun getDefaultReciter(): Flow<Int> =
         tilawahDataStore.getDefaultReciter()
