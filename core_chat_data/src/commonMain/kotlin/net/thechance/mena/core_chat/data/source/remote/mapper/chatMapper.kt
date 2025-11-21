@@ -63,6 +63,7 @@ suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageConte
                 surahName = surahName
             )
         }
+
         is MessageContentDto.Order -> {
             MessageContent.Order(
                 orderId = orderId.toUuid(),
@@ -162,9 +163,9 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         isMine = this.isMine,
         status = status,
         orderId = orderId.toString(),
-        numberOfItems = numberOfItems ?: 0,
-        deliverTo = deliverTo ?: "",
-        totalPrice = totalPrice ?: 0.0
+        numberOfItems = numberOfItems,
+        deliverTo = deliverTo,
+        totalPrice = totalPrice
     )
 }
 
@@ -198,7 +199,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
-        orderId.isNotEmpty() -> {
+        orderId != null && numberOfItems != null && deliverTo != null && totalPrice != null -> {
             MessageContent.Order(
                 orderId = orderId.toUuid(),
                 numberOfItems = numberOfItems,

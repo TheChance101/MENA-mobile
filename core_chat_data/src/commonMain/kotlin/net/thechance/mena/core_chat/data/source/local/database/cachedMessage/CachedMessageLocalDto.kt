@@ -34,13 +34,13 @@ data class CachedMessageLocalDto(
     @ColumnInfo(name = "is_mine")
     val isMine: Boolean,
     @ColumnInfo(name = "order_id")
-    val orderId: String,
+    val orderId: String?,
     @ColumnInfo(name = "number_of_items")
-    val numberOfItems: Int,
+    val numberOfItems: Int?,
     @ColumnInfo(name = "deliver_to")
-    val deliverTo: String,
+    val deliverTo: String?,
     @ColumnInfo(name = "total_price")
-    val totalPrice: Double
+    val totalPrice: Double?
 )
 
 
