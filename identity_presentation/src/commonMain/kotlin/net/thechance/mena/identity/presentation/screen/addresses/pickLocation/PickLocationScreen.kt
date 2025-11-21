@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,7 +18,6 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.components.GpsFabButton
@@ -32,10 +30,10 @@ data class PickLocationScreen(
     private val addressModel: AddressUIState?,
     private val onUpdateLocation: (AddressUIState) -> Unit,
 ) : BaseScreen<
-        PickLocationScreenViewModel,
-        PickLocationScreenUIState,
-        PickLocationScreenUIEffect,
-        PickLocationScreenInteractionListener>() {
+    PickLocationScreenViewModel,
+    PickLocationScreenUIState,
+    PickLocationScreenUIEffect,
+    PickLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -85,11 +83,6 @@ data class PickLocationScreen(
 
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
@@ -107,6 +100,12 @@ data class PickLocationScreen(
             PickLocationScreenUIEffect.NavigateToEnableLocation -> navigator.push(
                 EnableLocationScreen()
             )
+
+            is PickLocationScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    effect.errorStringResource
+                )
+            }
         }
     }
 }
