@@ -30,39 +30,37 @@ import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
-import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-suspend fun MessageDto.toDomain(quranService: QuranService): Message {
+fun MessageDto.toDomain(): Message {
     return Message(
         id = (id).toUuid(),
         senderId = (senderId).toUuid(),
         chatId = (chatId).toUuid(),
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
-        content = content.toDomain(quranService),
+        content = content.toDomain(),
         reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
     )
 }
 
-suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageContent {
+fun MessageContentDto.toDomain(): MessageContent {
     return when (this) {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
         is MessageContentDto.Money -> MessageContent.Text(amount.toString())
         is MessageContentDto.Ayah -> {
-            val surahName = quranService.getSurahDetails(surahNumber).name
             MessageContent.Ayah(
                 surahId = surahNumber,
                 ayahContent = ayahContent,
                 ayahNumber = ayahNumber,
-                surahName = surahName
+                surahName = ""
             )
         }
     }
@@ -224,7 +222,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
 fun MessageContentLocalDto.toDomain(): MessageContent {
     return when (this) {
         is MessageContentLocalDto.Audio -> MessageContent.Audio(AudioUrl(url), durationMs)
-        is MessageContentLocalDto.Ayah -> MessageContent.Ayah(surahId, ayahText, ayahNumber)
+        is MessageContentLocalDto.Ayah -> MessageContent.Ayah(surahId, "", ayahText, ayahNumber)
         is MessageContentLocalDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentLocalDto.Text -> MessageContent.Text(text)
     }
@@ -243,10 +241,20 @@ fun PendingMessageLocalDto.toDomain(): Message {
 }
 
 fun PendingMessageContentLocalDto.toDomain(): MessageContent {
-    return when(this) {
-        is PendingMessageContentLocalDto.Audio -> MessageContent.Audio(AudioByteArray(bytes), durationMs)
+    return when (this) {
+        is PendingMessageContentLocalDto.Audio -> MessageContent.Audio(
+            AudioByteArray(bytes),
+            durationMs
+        )
+
         is PendingMessageContentLocalDto.Image -> MessageContent.Image(ImageByteArray(bytes))
-        is PendingMessageContentLocalDto.Ayah -> MessageContent.Ayah(surahId, ayahText, ayahNumber)
+        is PendingMessageContentLocalDto.Ayah -> MessageContent.Ayah(
+            surahId,
+            "",
+            ayahText,
+            ayahNumber
+        )
+
         is PendingMessageContentLocalDto.Text -> MessageContent.Text(text)
 
     }
@@ -269,13 +277,13 @@ fun DeleteChatDto.toDomain(): DeleteChatEvent {
     )
 }
 
-suspend fun List<MessageDto>.toListOfMessages(quranService: QuranService): List<Message> {
-    return mapNotNull { it.toDomain(quranService) }
+fun List<MessageDto>.toListOfMessages(): List<Message> {
+    return mapNotNull { it.toDomain() }
 }
 
-suspend fun PagedDataDto<MessageDto>.toPagedListOfMessages(quranService: QuranService): PagedData<Message> {
+fun PagedDataDto<MessageDto>.toPagedListOfMessages(): PagedData<Message> {
     return PagedData(
-        data = data.toListOfMessages(quranService),
+        data = data.toListOfMessages(),
         totalItems = totalItems,
         isLastPage = pageNumber >= totalPages
     )
