@@ -53,7 +53,7 @@ abstract class BaseScreen<VM, S, E, I> : Screen
 
         snackBarController.currentSnackBarData?.let { snackBarData ->
             SnackBar(
-                isVisible = true,
+                isVisible = snackBarData.isVisible,
                 title = stringResource(snackBarData.title),
                 message = stringResource(snackBarData.message),
                 leadingIcon = painterResource(snackBarData.type.icon),

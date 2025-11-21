@@ -11,6 +11,7 @@ import org.jetbrains.compose.resources.StringResource
 data class SnackBarData(
     val message: StringResource,
     val title: StringResource,
+    val isVisible: Boolean = false,
     val duration: Long = 3_000L,
     val type: SnackBarType = SnackBarType.ERROR
 ) {

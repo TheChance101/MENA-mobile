@@ -51,6 +51,7 @@ class IdentitySnackBarController() {
         duration: Long
     ) {
         val snackBarData = SnackBarData(
+            isVisible = true,
             message = message,
             title = title,
             type = type,
@@ -61,6 +62,8 @@ class IdentitySnackBarController() {
     }
 
     fun dismissSnackBar() {
-        currentSnackBarData = null
+        currentSnackBarData = currentSnackBarData?.copy(
+            isVisible = false
+        )
     }
 }
