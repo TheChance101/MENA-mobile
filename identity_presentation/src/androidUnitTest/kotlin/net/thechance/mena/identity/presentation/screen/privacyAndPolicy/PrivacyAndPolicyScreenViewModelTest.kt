@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.privacyAndPolicy
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isNotEmpty
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -46,8 +47,12 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
     fun `getPrivacyAndPolicy() should update state when get privacy and policy successfully`() =
         runTest {
             coEvery { applicationInfoRepository.getPrivacyAndPolicy() } returns fakePrivacyAndPolicy
+
             testDispatcher.scheduler.advanceUntilIdle()
-            assert(viewModel.state.value.privacyAndPolicySections.isNotEmpty())
+
+            viewModel.state.test {
+                assertThat(awaitItem().privacyAndPolicySections).isNotEmpty()
+            }
         }
 
     @Test
