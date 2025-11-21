@@ -101,6 +101,7 @@ fun ChatInputBar(
                 Icon(
                     painter = painterResource(Res.drawable.ic_mic),
                     contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.size(20.dp).clickable(
                         onClick = onVoiceRecordClick, indication = null,
                         interactionSource = remember { MutableInteractionSource() },
@@ -141,7 +142,8 @@ private fun AttachButton(onClick: () -> Unit) {
         Icon(
             painter = painterResource(Res.drawable.ic_add),
             contentDescription = null,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(20.dp),
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }

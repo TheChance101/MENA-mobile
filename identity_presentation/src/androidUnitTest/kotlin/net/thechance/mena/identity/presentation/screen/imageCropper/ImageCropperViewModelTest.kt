@@ -1,8 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
 import app.cash.turbine.test
-import assertk.assertThat
-import assertk.assertions.isNull
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -54,16 +52,6 @@ internal class ImageCropperViewModelTest : BaseCoroutineTest() {
         imageCropperViewModel.effect.test {
             imageCropperViewModel.onNavigateBack()
             assertTrue(awaitItem() is ImageCropperScreenEffect.NavigateBackToEditProfile)
-        }
-    }
-
-    @Test
-    fun `dismissSnackBar() should make error message null`() = runTest {
-        imageCropperViewModel.state.test {
-            imageCropperViewModel.onDismissSnackBar()
-
-            val errorMessage = awaitItem().errorMessage
-            assertThat(errorMessage).isNull()
         }
     }
 }

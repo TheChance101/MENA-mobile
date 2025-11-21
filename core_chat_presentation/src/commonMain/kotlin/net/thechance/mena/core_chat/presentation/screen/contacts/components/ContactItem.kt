@@ -56,7 +56,6 @@ fun ContactItem(
                 overflow = TextOverflow.Ellipsis
             )
             CompositionLocalProvider(
-
                 LocalLayoutDirection provides LayoutDirection.Ltr,
             ) {
 

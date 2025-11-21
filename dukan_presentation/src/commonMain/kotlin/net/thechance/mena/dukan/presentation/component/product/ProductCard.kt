@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.product
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
@@ -61,6 +63,8 @@ fun ProductCard(
     var isError by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val imageCorner by animateDpAsState(targetValue = if (isDukanStyleNoImage) Theme.radius.lg else Theme.radius.sm)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -70,25 +74,30 @@ fun ProductCard(
             )
             .height(104.dp)
             .clip(SquircleShape(Theme.radius.md))
-            .clickable(onClick = onProductClick)
+            .clickable(onClick = onProductClick, indication = null, interactionSource = null)
             .padding(Theme.spacing._4),
     ) {
         Box(
             modifier = Modifier.background(
                 color = productImageBackground,
-                shape = SquircleShape(Theme.radius.md)
+                shape = SquircleShape(imageCorner)
             )
         ) {
             Box(
                 modifier = Modifier
                     .size(96.dp)
-                    .clip(SquircleShape(Theme.radius.sm))
+                    .clip(SquircleShape(imageCorner))
                     .background(productImageBackground)
             ) {
                 AsyncImage(
                     model = productImageUrl,
                     contentDescription = null,
                     modifier = Modifier.matchParentSize(),
+                    onState = {
+                        isError = it is AsyncImagePainter.State.Error
+                        isLoading = it is AsyncImagePainter.State.Loading
+
+                    },
                     contentScale = ContentScale.Crop
                 )
 

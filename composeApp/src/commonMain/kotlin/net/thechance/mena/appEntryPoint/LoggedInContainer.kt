@@ -138,10 +138,13 @@ private fun FeatureContent(
             when (feature) {
                 Feature.CHAT -> chatApi.TabEntry()
                 Feature.DUKAN -> dukanApi.TabEntry()
-                Feature.TREND -> trendsApi.TabEntry()
+                Feature.TREND -> trendsApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.FAITH -> faithApi.TabEntry()
                 Feature.PROFILE -> identityApi.ProfileTabEntry(updateBottomNavigationVisibility)
-                Feature.WALLET -> walletApi.WalletEntry(navigateBack = {})
+                Feature.WALLET -> walletApi.WalletEntry(
+                    navigateBack = {},
+                    updateBottomNavigationVisibility,
+                )
             }
         }
     }

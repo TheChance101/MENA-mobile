@@ -30,7 +30,8 @@ fun ChatHeader(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = null
+                contentDescription = null,
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = onBackClick,
@@ -39,7 +40,8 @@ fun ChatHeader(
             AppBarOptionContainer(onClick = onMenuClick) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_menu),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
         },
