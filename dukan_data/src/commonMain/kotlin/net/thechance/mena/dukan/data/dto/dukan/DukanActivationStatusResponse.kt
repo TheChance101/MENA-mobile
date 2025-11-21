@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DukanActivationStatusResponse(
     @SerialName("activationStatus")
-    val status: String = "ACTIVATED" //until endpoint merged
+    val status: String
 )
