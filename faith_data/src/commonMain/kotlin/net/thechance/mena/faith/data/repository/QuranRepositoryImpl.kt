@@ -1,6 +1,7 @@
 package net.thechance.mena.faith.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.AyahDto
 import net.thechance.mena.faith.data.database.RecitersDao
@@ -54,11 +55,14 @@ class QuranRepositoryImpl(
     override suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah) =
         tilawahDataStore.saveLastAyah(savedAyah)
 
-    override suspend fun getDownloadedSur(): List<DownlodedSur> = executeLocalSafely {
-        surahSoundDao.getDownloadedSurahInfo()
-            .groupBy { it.surahId }
-            .map { (surahId, items) -> mapToDownloadedSur(surahId, items) }
-    }
+    override suspend fun getDownloadedSur(): Flow<List<DownlodedSur>> =
+        surahSoundDao.getDownloadedSurahInfoFlow()
+            .map { items ->
+                items.groupBy { it.surahId }
+                    .map { (surahId, surahItems) ->
+                        mapToDownloadedSur(surahId, surahItems)
+                    }
+            }
 
     private suspend fun mapToDownloadedSur(
         surahId: Int,

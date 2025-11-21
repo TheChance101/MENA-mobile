@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,10 +36,6 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-
-    LaunchedEffect(Unit) {
-        viewModel.refreshDownloadedSur()
-    }
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {

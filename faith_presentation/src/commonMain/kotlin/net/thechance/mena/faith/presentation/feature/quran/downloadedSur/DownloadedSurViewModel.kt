@@ -16,17 +16,18 @@ class DownloadedSurViewModel(
     }
 
     private fun loadDownloadedSur() {
-        tryToExecute(
-            execute = { quranRepository.getDownloadedSur() },
-            onSuccess = { downloadedSurah ->
+        tryToCollect(
+            block = { quranRepository.getDownloadedSur() },
+            onEmitNewValue = { downloadedSur ->
                 updateState {
                     it.copy(
-                        surDetails = downloadedSurah.map { surah -> surah.toUiState() }
+                        surDetails = downloadedSur.map { surah -> surah.toUiState() }
                     )
                 }
             }
         )
     }
+
 
     override fun onReciterSettingsClick() {
         val surahId = uiState.value.selectedSurahForDelete
@@ -83,10 +84,6 @@ class DownloadedSurViewModel(
         }
 
         handleSuccessSnackBar(Res.string.surah_deleted_successfully)
-    }
-
-    fun refreshDownloadedSur() {
-        loadDownloadedSur()
     }
 
 }
