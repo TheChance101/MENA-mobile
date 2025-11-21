@@ -141,7 +141,10 @@ private fun FeatureContent(
                 Feature.TREND -> trendsApi.TabEntry()
                 Feature.FAITH -> faithApi.TabEntry()
                 Feature.PROFILE -> identityApi.ProfileTabEntry(updateBottomNavigationVisibility)
-                Feature.WALLET -> walletApi.WalletEntry(navigateBack = {})
+                Feature.WALLET -> walletApi.WalletEntry(
+                    navigateBack = {},
+                    updateBottomNavigationVisibility,
+                )
             }
         }
     }

@@ -51,8 +51,10 @@ internal val viewModelModule = module {
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
         )
     }
-    viewModel { ChatEntryViewModel(get()) }
     viewModel {
-        ShareMessageViewModel(get(), get())
+        ChatEntryViewModel(get())
+    }
+    viewModel {
+        ShareMessageViewModel(get(), get(), get(), get())
     }
 }
