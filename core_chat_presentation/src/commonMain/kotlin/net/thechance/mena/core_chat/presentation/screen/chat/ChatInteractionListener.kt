@@ -30,6 +30,9 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onStopAudioPlayback()
 
     fun onLinkClicked(url: String)
+
+    fun onSurahClicked(surahId: Int)
+    fun onAyahClicked(surahId: Int, ayahNumber: Int)
 }
 
 interface MessageListInteractionListener {
@@ -40,6 +43,7 @@ interface MessageListInteractionListener {
     fun onResendMessageDialogDismissed()
 
     fun onMessagesScrolled()
+    fun onViewOrderDetailsClicked(orderId: Uuid)
 }
 
 interface AttachmentsInteractionListener {

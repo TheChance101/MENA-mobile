@@ -56,6 +56,7 @@ sealed class MessageUiState(open val messageDetails: MessageDetailsUiState) : Ch
         is TextMessageUiState -> copy(messageDetails = messageDetails)
         is AyahMessageUiState -> copy(messageDetails = messageDetails)
         is MoneyMessageUiState -> copy(messageDetails = messageDetails)
+        is OrderMessageUiState -> copy(messageDetails = messageDetails)
     }
 }
 
@@ -104,5 +105,13 @@ data class AudioMessageUiState(
 
 data class MoneyMessageUiState(
     val amount: Double,
+    override val messageDetails: MessageDetailsUiState
+) : MessageUiState(messageDetails)
+
+data class OrderMessageUiState(
+    val orderId: Uuid,
+    val numberOfItems: Int,
+    val deliverTo: String,
+    val totalPrice: Double,
     override val messageDetails: MessageDetailsUiState
 ) : MessageUiState(messageDetails)

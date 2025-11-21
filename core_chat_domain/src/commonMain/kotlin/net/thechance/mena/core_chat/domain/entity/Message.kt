@@ -34,6 +34,12 @@ sealed interface MessageContent {
         val ayahContent: String,
         val ayahNumber: Int
     ) : MessageContent
+    data class Order(
+        val orderId: Uuid,
+        val numberOfItems: Int,
+        val deliverTo: String,
+        val totalPrice: Double
+    ) : MessageContent
 }
 
 sealed interface ImageData {
