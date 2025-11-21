@@ -135,7 +135,8 @@ private fun SmallImageDukanAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
+                contentDescription = stringResource(Res.string.back_arrow),
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = listener::onBackClicked,
@@ -146,7 +147,8 @@ private fun SmallImageDukanAppBar(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
-                    contentDescription = stringResource(Res.string.shopping_basket_icon)
+                    contentDescription = stringResource(Res.string.shopping_basket_icon),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
         }

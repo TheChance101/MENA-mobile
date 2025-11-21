@@ -101,28 +101,32 @@ private fun DukanIcon(dukanStatus: MainScreenUiState.DukanStatusUi) {
             MainScreenUiState.DukanStatusUi.None -> {
                 Icon(
                     painter = painterResource(resource = Res.drawable.ic_add_dukan),
-                    contentDescription = stringResource(resource = Res.string.add_dukan_icon)
+                    contentDescription = stringResource(resource = Res.string.add_dukan_icon),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
 
             MainScreenUiState.DukanStatusUi.Pending -> {
                 Icon(
                     painter = painterResource(resource = Res.drawable.ic_dukan),
-                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    contentDescription = stringResource(resource = Res.string.dukan_icon),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
 
             MainScreenUiState.DukanStatusUi.Approved -> {
                 Icon(
                     painter = painterResource(resource = Res.drawable.ic_dukan),
-                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    contentDescription = stringResource(resource = Res.string.dukan_icon),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
 
             MainScreenUiState.DukanStatusUi.Default -> {
                 Icon(
                     painter = painterResource(resource = Res.drawable.ic_dukan),
-                    contentDescription = stringResource(resource = Res.string.dukan_icon)
+                    contentDescription = stringResource(resource = Res.string.dukan_icon),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
 

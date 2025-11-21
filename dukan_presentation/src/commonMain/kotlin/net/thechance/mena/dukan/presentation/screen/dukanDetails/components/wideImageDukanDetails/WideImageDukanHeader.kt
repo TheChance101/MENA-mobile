@@ -54,7 +54,8 @@ fun WideImageDukanAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
+                contentDescription = stringResource(Res.string.back_arrow),
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = onBackClicked,
@@ -65,7 +66,8 @@ fun WideImageDukanAppBar(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_shopping_basket),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
         }
@@ -102,7 +104,6 @@ private fun DukanActionButtons(
 ) {
     Column(modifier = modifier.padding(top = Theme.spacing._8)) {
         DukanIconButton(
-            iconColor = Color(state.color),
             onIconClick = { onFavoriteClicked(state.dukanId) }
         ) {
             Crossfade(
@@ -158,7 +159,7 @@ private fun DukanImageAndTitle(
         Text(
             text = state.name,
             style = Theme.typography.title.medium,
-            color = Theme.colorScheme.primary.onPrimary,
+            color = Color.White,
             maxLines = 2,
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -169,7 +170,6 @@ private fun DukanImageAndTitle(
 
 @Composable
 private fun DukanIconButton(
-    iconColor: Color,
     onIconClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit
@@ -183,7 +183,7 @@ private fun DukanIconButton(
                 indication = null,
                 interactionSource = null
             )
-            .background(color = Theme.colorScheme.background.surfaceLow)
+            .background(color = Color.White)
             .border(
                 width = 3.dp,
                 color = Theme.colorScheme.background.surface,
