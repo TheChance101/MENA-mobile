@@ -100,7 +100,10 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
     val audioData = if (content is MessageContent.Audio) content.data else null
     val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audio = if (audioData is AudioData.AudioByteArray) audioData.byteArray else null
-
+    val surahId = if (content is MessageContent.Ayah) content.surahId else null
+    val surahName = if (content is MessageContent.Ayah) content.surahName else null
+    val ayahText = if (content is MessageContent.Ayah) content.ayahContent else null
+    val ayahNumber = if (content is MessageContent.Ayah) content.ayahNumber else null
 
 
     return PendingMessageLocalDto(
@@ -110,6 +113,10 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
         image = image,
         audio = audio,
         audioDurationMs = audioDuration,
+        surahId = surahId,
+        surahName = surahName,
+        ayahText = ayahText,
+        ayahNumber = ayahNumber,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status
@@ -126,8 +133,10 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val audioData = if (content is MessageContent.Audio) content.data else null
     val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
-
-
+    val surahId = if (content is MessageContent.Ayah) content.surahId else null
+    val surahName = if (content is MessageContent.Ayah) content.surahName else null
+    val ayahText = if (content is MessageContent.Ayah) content.ayahContent else null
+    val ayahNumber = if (content is MessageContent.Ayah) content.ayahNumber else null
 
     return CachedMessageLocalDto(
         id = this.id.toString(),
@@ -136,6 +145,10 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         imageUrl = imageUrl,
         audioUrl = audioUrl,
         audioDurationMs = audioDuration,
+        surahId = surahId,
+        surahName = surahName,
+        ayahText = ayahText,
+        ayahNumber = ayahNumber,
         reactions = reactions.toLocalDto(),
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
@@ -174,6 +187,9 @@ fun CachedMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
+        ayahText != null && surahName != null && surahId != null && ayahNumber != null ->
+            MessageContent.Ayah(surahId, surahName, ayahText, ayahNumber)
+
         else -> error("Invalid message content")
     }
 
@@ -194,6 +210,8 @@ fun PendingMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         image != null -> MessageContent.Image(ImageData.ImageByteArray(image))
         audio != null -> MessageContent.Audio(AudioData.AudioByteArray(audio), audioDurationMs)
+        ayahText != null && surahName != null && surahId != null && ayahNumber != null ->
+            MessageContent.Ayah(surahId, surahName, ayahText, ayahNumber)
         else -> error("Invalid message content")
     }
 

@@ -78,6 +78,7 @@
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
     <string name="sunrise">Sunrise</string>
+    <string name="aya">Aya %1$d</string>
 
     <string name="weather_clear_sky">Clear sky</string>
     <string name="weather_mainly_clear">Mainly clear</string>

@@ -20,4 +20,4 @@ data class SyncContactsRoute(val forceSync: Boolean) : ChatRoute
 data class ChatDetailsRoute(val chatId: String, val chatName: String) : ChatRoute
 
 @Serializable
-data object ShareMessageRoute : ChatRoute
+data class ShareMessageRoute(val messageArgsJson: String) : ChatRoute
