@@ -22,6 +22,7 @@ internal val viewModelModule = module {
             messageRepository = get(),
             prayerTimeService = get(),
             locationService = get(),
+            weatherRepository = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER))
         )
     }

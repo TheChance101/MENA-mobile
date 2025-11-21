@@ -132,7 +132,8 @@ class LoginScreen : BaseScreen<
             }
             ErrorSnackBar(
                 errorMessage = state.errorMessage?.let { stringResource(it) },
-                onDismiss = listener::clearErrorMessage
+                onDismiss = listener::clearErrorMessage,
+                modifier = Modifier.systemBarsPadding()
             )
         }
     }

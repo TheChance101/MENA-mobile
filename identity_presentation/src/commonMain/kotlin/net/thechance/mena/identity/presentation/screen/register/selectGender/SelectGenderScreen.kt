@@ -74,7 +74,8 @@ class SelectGenderScreen(
         }
         ErrorSnackBar(
             errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage
+            onDismiss = listener::onClearErrorMessage,
+            modifier = Modifier.systemBarsPadding()
         )
     }
 
