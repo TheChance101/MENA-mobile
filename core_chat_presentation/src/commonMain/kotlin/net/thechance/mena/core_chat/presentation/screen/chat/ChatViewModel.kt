@@ -558,10 +558,10 @@ class ChatViewModel(
         )
     }
 
-    private suspend fun updateMessageReactions(id: Uuid, newReactions: List<MessageReaction>) {
+    private suspend fun updateMessageReactions(messageID: Uuid, reactions: List<MessageReaction>) {
         safeUpdateMessages { messages ->
             messages.map { msg ->
-                if (msg.id == id) msg.copy(reactions = newReactions) else msg
+                if (msg.id == messageID) msg.copy(reactions = reactions) else msg
             }
         }
     }
@@ -589,7 +589,6 @@ class ChatViewModel(
         emoji: String,
         messageId: Uuid
     ) {
-        delay(1000)
         val isRemoving = oldReactions.any { it.userId == userId && it.emoji == emoji }
         if (isRemoving) {
             messageRepository.removeMessageReaction(messageId, emoji)
