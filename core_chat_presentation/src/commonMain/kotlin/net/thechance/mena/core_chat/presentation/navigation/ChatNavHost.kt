@@ -67,7 +67,6 @@ fun ChatNavHost(
                         updateBottomNavigationVisibility = {
                             //pass updateBottomNavigationVisibility here
                         },
-                        currentBottomNavigationVisibility = true
                     )
                 }
             }

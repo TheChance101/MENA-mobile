@@ -144,7 +144,6 @@ private fun FeatureContent(
                 Feature.WALLET -> walletApi.WalletEntry(
                     navigateBack = {},
                     updateBottomNavigationVisibility,
-                    currentBottomNavigationVisibility = true
                 )
             }
         }

@@ -15,15 +15,11 @@ class WalletApiImpl : WalletApi {
     override fun WalletEntry(
         navigateBack: () -> Unit,
         updateBottomNavigationVisibility: (Boolean) -> Unit,
-        currentBottomNavigationVisibility: Boolean
     ) {
-        updateBottomNavigationVisibility(HIDE_BOTTOM_NAVIGATION)
         NavigationHost(
             startDestination = WalletMainScreenRoute,
-            navigateBack = {
-                updateBottomNavigationVisibility(currentBottomNavigationVisibility)
-                navigateBack()
-            }
+            navigateBack = navigateBack,
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
         )
     }
 
@@ -33,21 +29,13 @@ class WalletApiImpl : WalletApi {
         transactionId: Uuid,
         navigateBack: () -> Unit,
         updateBottomNavigationVisibility: (Boolean) -> Unit,
-        currentBottomNavigationVisibility : Boolean
     ) {
-        updateBottomNavigationVisibility(HIDE_BOTTOM_NAVIGATION)
         NavigationHost(
             startDestination = ConfirmPaymentScreenRoute(
                 transactionId = transactionId.toString()
             ),
-            navigateBack = {
-                updateBottomNavigationVisibility(currentBottomNavigationVisibility)
-                navigateBack()
-            }
+            navigateBack = navigateBack,
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
         )
-    }
-
-    companion object {
-        const val HIDE_BOTTOM_NAVIGATION = false
     }
 }

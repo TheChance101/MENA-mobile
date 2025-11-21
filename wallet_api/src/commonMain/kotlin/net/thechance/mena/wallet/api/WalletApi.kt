@@ -9,7 +9,6 @@ interface WalletApi {
     fun WalletEntry(
         navigateBack: () -> Unit,
         updateBottomNavigationVisibility: (Boolean) -> Unit,
-        currentBottomNavigationVisibility: Boolean
     )
 
     @OptIn(ExperimentalUuidApi::class)
@@ -18,6 +17,5 @@ interface WalletApi {
         transactionId: Uuid,
         navigateBack: () -> Unit,
         updateBottomNavigationVisibility: (Boolean) -> Unit,
-        currentBottomNavigationVisibility: Boolean
     )
 }
