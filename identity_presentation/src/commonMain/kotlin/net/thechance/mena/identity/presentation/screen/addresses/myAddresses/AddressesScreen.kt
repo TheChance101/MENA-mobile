@@ -21,8 +21,8 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.components.AddressSnackBar
 import net.thechance.mena.identity.presentation.components.NoSavedLocationsLayout
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCard
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.components.AddressCardShimmer
@@ -38,10 +38,10 @@ import kotlin.uuid.Uuid
 class AddressesScreen(
     private val onNavigateBack: (() -> Unit)? = null
 ) : BaseScreen<
-        AddressesScreenViewModel,
-        AddressesScreenUIState,
-        AddressesScreenUIEffect,
-        AddressesScreenInteractionListener>() {
+    AddressesScreenViewModel,
+    AddressesScreenUIState,
+    AddressesScreenUIEffect,
+    AddressesScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -65,12 +65,6 @@ class AddressesScreen(
                     title = stringResource(Res.string.my_location_app_bar_title),
                     onBackClicked = listener::onBackButtonClicked,
                     onAddClicked = listener::onAddButtonClicked
-                )
-            },
-            snakeBar = {
-                AddressSnackBar(
-                    snackBarState = state.snackBarUiState,
-                    onDismiss = listener::onDismissSnackBar,
                 )
             }
         ) {
@@ -114,7 +108,8 @@ class AddressesScreen(
 
     override fun onEffect(
         effect: AddressesScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             AddressesScreenUIEffect.NavigateBack -> {
@@ -125,8 +120,19 @@ class AddressesScreen(
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
-                        onSuccess = effect.onSuccess
                     )
+                )
+            }
+
+            is AddressesScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
+            }
+
+            is AddressesScreenUIEffect.ShowSnackBarSuccess -> {
+                snackBarController.showSnackBarSuccess(
+                    message = effect.successStringResource
                 )
             }
         }

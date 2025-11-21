@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -22,21 +21,21 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
-import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
+import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ResetPasswordOtpScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class ResetPasswordPhoneEntryScreen : BaseScreen<
-        ResetPasswordPhoneEntryScreenViewModel,
-        ResetPasswordPhoneEntryScreenUIState,
-        ResetPasswordPhoneEntryScreenUIEffect,
-        ResetPasswordPhoneEntryScreenInteractionListener>() {
+    ResetPasswordPhoneEntryScreenViewModel,
+    ResetPasswordPhoneEntryScreenUIState,
+    ResetPasswordPhoneEntryScreenUIEffect,
+    ResetPasswordPhoneEntryScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -50,7 +49,7 @@ class ResetPasswordPhoneEntryScreen : BaseScreen<
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
         LaunchedEffect(state.showCountryBottomSheet) {
-            if (state.showCountryBottomSheet){
+            if (state.showCountryBottomSheet) {
                 focusManager.clearFocus()
                 keyboardController?.hide()
             }
@@ -103,16 +102,12 @@ class ResetPasswordPhoneEntryScreen : BaseScreen<
                 )
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
         effect: ResetPasswordPhoneEntryScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             ResetPasswordPhoneEntryScreenUIEffect.NavigateBack -> navigator.pop()
@@ -123,6 +118,12 @@ class ResetPasswordPhoneEntryScreen : BaseScreen<
                     callingCode = effect.callingCode
                 )
             )
+
+            is ResetPasswordPhoneEntryScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
+            }
         }
     }
 }

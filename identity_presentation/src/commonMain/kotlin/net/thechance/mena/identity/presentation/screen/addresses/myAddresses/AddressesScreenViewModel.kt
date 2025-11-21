@@ -15,13 +15,13 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -41,20 +41,20 @@ class AddressesScreenViewModel(
 
     override fun onAddButtonClicked() {
         navigateToAddressDetails(null, isAdding = true)
-        onDismissSnackBar()
     }
 
     override fun onEditAddressClicked(addressUIState: AddressUIState) {
         navigateToAddressDetails(addressUIState, isAdding = false)
-        onDismissSnackBar()
     }
 
     private fun navigateToAddressDetails(addressUIState: AddressUIState?, isAdding: Boolean) {
+        onAddEditSuccess(
+            isAdding = isAdding,
+            addressId = addressUIState?.id
+        )
+
         sendNewEffect(
-            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(
-                addressUIState = addressUIState,
-                onSuccess = { snackBar -> onAddEditSuccess(snackBar, isAdding, addressUIState?.id) }
-            )
+            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = addressUIState)
         )
     }
 
@@ -92,9 +92,6 @@ class AddressesScreenViewModel(
         copy(deleteDialogUIState = DeleteDialogUIState(isVisible = false))
     }
 
-    override fun onDismissSnackBar() = updateState {
-        copy(snackBarUiState = snackBarUiState.copy(isVisible = false))
-    }
 
     private fun getUserAddresses() {
         tryToExecute(
@@ -113,7 +110,6 @@ class AddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
@@ -135,31 +131,21 @@ class AddressesScreenViewModel(
     }
 
     private fun onUserAddressesSuccess(addresses: List<AddressUIState>) {
-        val pending = state.value.pendingSnackBar
         updateState {
             copy(
                 addresses = addresses,
                 animateToCurrentLocation = true,
                 isLoading = false,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
-        // Show snackbar after addresses are updated for synchronized visual feedback
-        if (pending != null) {
-            updateState {
-                copy(snackBarUiState = pending.copy(isVisible = true))
-            }
-        }
     }
 
-    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?, isAdding: Boolean, addressId: Uuid?) {
-        if (snackBarUiState == null) return
+    private fun onAddEditSuccess(isAdding: Boolean, addressId: Uuid?) {
         updateState {
             copy(
                 isAddingNewAddress = isAdding,
-                pendingSnackBar = snackBarUiState,
                 editedAddressId = addressId
             )
         }
@@ -170,28 +156,22 @@ class AddressesScreenViewModel(
     }
 
     private fun onAddressActivationSuccess() {
-        updateState {
-            copy(
-                pendingSnackBar = buildSnackBar(
-                    Res.string.address_activated_successfully,
-                    true
-                )
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarSuccess(
+                successStringResource = Res.string.address_activated_successfully
             )
-        }
+        )
         getUserAddresses()
     }
 
     private suspend fun onAddressDeletionSuccess(addressId: Uuid) {
         delay(300L)
         removeAddress(addressId)
-        updateState {
-            copy(
-                pendingSnackBar = buildSnackBar(
-                    Res.string.address_deleted_successfully,
-                    true
-                )
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarSuccess(
+                successStringResource = Res.string.address_deleted_successfully
             )
-        }
+        )
         getUserAddresses()
     }
 
@@ -213,7 +193,6 @@ class AddressesScreenViewModel(
                             addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                         } else addresses,
                         isAddingNewAddress = false,
-                        pendingSnackBar = null,
                         editedAddressId = null
                     )
                 }
@@ -230,7 +209,6 @@ class AddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
@@ -245,36 +223,19 @@ class AddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
         showErrorSnackBar(Res.string.is_main_address_error)
     }
 
-    private fun showSuccessSnackBar(message: StringResource) {
-        updateState {
-            copy(
-                snackBarUiState = buildSnackBar(message, true),
-                deleteDialogUIState = DeleteDialogUIState(isVisible = false)
-            )
-        }
-    }
-
     private fun showErrorSnackBar(message: StringResource) {
-        updateState {
-            copy(
-                snackBarUiState = buildSnackBar(message, false),
-                deleteDialogUIState = DeleteDialogUIState(isVisible = false)
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarError(
+                errorStringResource = message
             )
-        }
+        )
     }
-
-    private fun buildSnackBar(message: StringResource, isSuccess: Boolean) = SnackBarUiState(
-        isVisible = true,
-        snackBarType = if (isSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
-        message = message
-    )
 
     private fun findAddressById(addressId: Uuid?) =
         state.value.addresses.find { it.id == addressId }

@@ -8,6 +8,4 @@ interface ImageCropperInteractionListener : BaseInteractionListener {
     fun onChangeImage(imageByteArray: ByteArray)
 
     fun onNavigateBack()
-
-    fun onDismissSnackBar()
 }

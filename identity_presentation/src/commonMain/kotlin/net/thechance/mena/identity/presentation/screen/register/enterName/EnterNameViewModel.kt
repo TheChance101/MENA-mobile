@@ -50,10 +50,6 @@ class EnterNameViewModel(
         checkUsernameAvailability()
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     private fun loadSavedData() {
         tryToExecute(
             function = { registrationDraftRepository.getDraft(phoneNumber) },
@@ -93,7 +89,7 @@ class EnterNameViewModel(
     }
 
     private fun checkUsernameAvailability() {
-        updateState { copy(isLoading = true, isCheckingUsername = true, errorMessage = null) }
+        updateState { copy(isLoading = true, isCheckingUsername = true) }
         tryToExecute(
             function = { registerRepository.checkUserExistence(state.value.username) },
             onSuccess = { onUsernameCheckSuccess() },
@@ -125,15 +121,20 @@ class EnterNameViewModel(
             copy(
                 isLoading = false,
                 isCheckingUsername = false,
-                errorMessage = mapErrorMessage(throwable)
             )
         }
+        sendNewEffect(
+            EnterNameUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource = when (throwable) {
         is AuthenticationException -> mapAuthenticationErrorToMessage(
             handleRegisterEnterNameException(throwable)
         )
+
         else -> mapErrorToMessage(ErrorState.GenericError(throwable))
     }
 }

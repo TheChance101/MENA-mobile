@@ -35,7 +35,7 @@ class ResetPasswordOtpScreenViewModel(
     }
 
     override fun onClickVerify() {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { verifyOTPCode() },
             onSuccess = { onOTPVerificationSuccess() },
@@ -56,12 +56,14 @@ class ResetPasswordOtpScreenViewModel(
     }
 
     private fun onOTPVerificationError(throwable: Throwable) {
-        updateState { 
-            copy(
-                isLoading = false,
-                errorMessage = mapErrorMessage(throwable)
-            ) 
+        updateState {
+            copy(isLoading = false)
         }
+        sendNewEffect(
+            ResetPasswordOtpScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onChangeOtp(otp: String) {
@@ -69,10 +71,6 @@ class ResetPasswordOtpScreenViewModel(
         if (filteredOtp == otp) {
             updateState { copy(otpValue = otp, isVerifyEnabled = filteredOtp.length == OTP_LENGTH) }
         }
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     override fun onClickResend() {
@@ -99,7 +97,11 @@ class ResetPasswordOtpScreenViewModel(
     }
 
     private fun onResendOTPError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            ResetPasswordOtpScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun startTimer() {
@@ -114,8 +116,11 @@ class ResetPasswordOtpScreenViewModel(
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
-        return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleResetPasswordOtpException(throwable))
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handleResetPasswordOtpException(throwable)
+            )
+
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }

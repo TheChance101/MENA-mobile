@@ -29,12 +29,8 @@ class PrivacyAndPolicyScreenViewModel(
         sendNewEffect(PrivacyAndPolicyScreenUIEffect.NavigateBack)
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     private fun getPrivacyAndPolicy() {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { applicationInfoRepository.getPrivacyAndPolicy() },
             onSuccess = ::onGetPrivacyAndPolicySuccess,
@@ -55,11 +51,13 @@ class PrivacyAndPolicyScreenViewModel(
 
     private fun onGetPrivacyAndPolicyError(throwable: Throwable) {
         updateState {
-            copy(
-                errorMessage = mapErrorMessage(throwable),
-                isLoading = false,
-            )
+            copy(isLoading = false)
         }
+        sendNewEffect(
+            PrivacyAndPolicyScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
@@ -71,6 +69,4 @@ class PrivacyAndPolicyScreenViewModel(
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
-
-
 }
