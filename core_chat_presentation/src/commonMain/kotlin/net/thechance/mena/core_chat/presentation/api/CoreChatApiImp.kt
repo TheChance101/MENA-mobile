@@ -34,6 +34,7 @@ class CoreChatApiImp() : CoreChatApi {
                     AyahMessageArgs(surahId.toInt(), ayahNumber, ayahContent)
                 )
             ),
+            onNavigateBackFromChat = onNavigateBack,
             onNavigateBackFromShareMessage = onNavigateBack
         )
     }
