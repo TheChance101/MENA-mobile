@@ -50,7 +50,10 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
 
             testDispatcher.scheduler.advanceUntilIdle()
 
-            assertThat(viewModel.state.value.privacyAndPolicySections).isNotEmpty()
+            viewModel.state.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem().privacyAndPolicySections).isNotEmpty()
+            }
         }
 
     @Test
@@ -77,6 +80,5 @@ class PrivacyAndPolicyScreenViewModelTest : BaseCoroutineTest() {
             )
 
         )
-
     )
 }
