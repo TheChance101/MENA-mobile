@@ -15,13 +15,13 @@ import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.toUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -109,12 +109,14 @@ class AddressesScreenViewModel(
         val editedId = state.value.editedAddressId
         updateState {
             copy(
+                isLoading = false,
                 addresses = if (editedId != null) {
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
                 pendingSnackBar = null,
-                editedAddressId = null
+                editedAddressId = null,
+                errorMessage = mapErrorMessage(throwable)
             )
         }
         onAddressOperationError(throwable)
@@ -158,6 +160,7 @@ class AddressesScreenViewModel(
         if (snackBarUiState == null) return
         updateState {
             copy(
+                isLoading = false,
                 isAddingNewAddress = isAdding,
                 pendingSnackBar = snackBarUiState,
                 editedAddressId = addressId
