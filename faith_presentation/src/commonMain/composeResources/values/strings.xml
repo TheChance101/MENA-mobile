@@ -233,11 +233,11 @@
     <string name="add_mosque_message">Added mosque successfully.</string>
     <string name="read_all_surah">Tilawah All Surah</string>
     <string name="mosque_image">Mosque image</string>
-    <string name="remove_aya">Remove Aya</string>
+    <string name="remove_aya">Delete Aya</string>
     <string name="empty_download_icon">empty download icon</string>
     <string name="empty_download_text">There is no downloaded sur yet!</string>
-    <string name="remove_aya_message">"Are you sure you want to remove this aya from bookmarks?"</string>
-    <string name="remove_audio">Remove Audio</string>
-    <string name="remove_audio_message">Are you sure you want to remove this audio from downloading?</string>
+    <string name="remove_aya_message">Are you sure you want to delete this aya from bookmarks?</string>
+    <string name="remove_audio">Delete Audio</string>
+    <string name="remove_audio_message">Are you sure you want to delete this audio from downloading?</string>
 
 </resources>
