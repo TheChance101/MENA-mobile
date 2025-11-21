@@ -53,7 +53,7 @@ import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnac
 import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.editProfile.components.DialogActionButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileImage
-import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
+import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggleSection
 import net.thechance.mena.identity.presentation.screen.editProfile.components.MoreActionsButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
 import net.thechance.mena.identity.presentation.screen.editProfile.components.dialog.GetImageDialog
@@ -224,12 +224,12 @@ class EditUserProfileScreen : BaseScreen<
                 )
 
                 GregorianDatePicker(
-                    modifier = Modifier.padding(top = Theme.spacing._16),
+                    modifier = Modifier.padding(top = Theme.spacing._4),
                     selectedDate = state.birthDate,
                     onDateChange = listener::onChangeDate,
                 )
 
-                GenderToggle(
+                GenderToggleSection(
                     gender = state.gender,
                     onChangeGender = listener::onChangeGender
                 )
