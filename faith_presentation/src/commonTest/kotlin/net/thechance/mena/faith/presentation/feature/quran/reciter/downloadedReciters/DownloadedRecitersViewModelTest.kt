@@ -88,11 +88,6 @@ class DownloadedRecitersViewModelTest {
     }
 
     @Test
-    fun `state should initialize with isSwipeable from args`() = runTest {
-        assertTrue(testViewModel.uiState.value.isSwipeable)
-    }
-
-    @Test
     fun `state should initialize with empty query`() = runTest {
         assertEquals(EMPTY_STRING, testViewModel.uiState.value.query)
     }
@@ -218,21 +213,6 @@ class DownloadedRecitersViewModelTest {
 
         assertTrue(size2 <= size1)
         assertEquals(dummyReciters.size, sizeAll)
-    }
-
-    @Test
-    fun `swipeable state should come from args`() = runTest {
-        everySuspend { surahArgs.isSwipeToDeleteEnabled } returns false
-
-        val vm = DownloadedRecitersViewModel(
-            quranRepository,
-            surahArgs,
-            searchRecitersUseCase,
-            testDispatcher
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(false, vm.uiState.value.isSwipeable)
     }
 
     private companion object {

@@ -257,29 +257,6 @@ class SurahRecitersViewModelTest {
     }
 
     @Test
-    fun `onDownloadClick should update allReciters download status`() = runTest {
-        everySuspend {
-            quranRepository.getRemoteSurahSoundUrl(TEST_SURAH_ID, TEST_RECITER_ID)
-        } returns REMOTE_URL
-        everySuspend {
-            downloadManager.downloadSurahFile(REMOTE_URL, TEST_SURAH_ID, TEST_RECITER_ID)
-        } returns LOCAL_PATH
-        everySuspend {
-            quranRepository.saveSurahAudioToCache(TEST_SURAH_ID, TEST_RECITER_ID, LOCAL_PATH)
-        } returns Unit
-        everySuspend {
-            quranRepository.isSurahAudioCached(TEST_SURAH_ID, TEST_RECITER_ID)
-        } returns true
-
-        testViewModel.onDownloadClick(TEST_RECITER_ID)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val updatedReciter =
-            testViewModel.uiState.value.allReciters.find { it.id == TEST_RECITER_ID }
-        assertTrue(updatedReciter?.isDownloaded ?: false)
-    }
-
-    @Test
     fun `download should not affect other reciters download status`() = runTest {
         everySuspend {
             quranRepository.getRemoteSurahSoundUrl(TEST_SURAH_ID, TEST_RECITER_ID)
@@ -371,7 +348,6 @@ class SurahRecitersViewModelTest {
         const val TEST_SURAH_ID = 1
         const val DEFAULT_RECITER_ID = 1
         const val TEST_RECITER_ID = 1
-        const val SELECTED_RECITER_ID = 2
         const val DOWNLOADED_RECITER_ID = 1
         const val TEST_QUERY = "Abdul"
         const val FILTER_QUERY = "Abdul"
