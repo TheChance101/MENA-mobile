@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -82,6 +84,7 @@ private fun StatementHistoryIcon(modifier: Modifier = Modifier) {
     Icon(
         painter = painterResource(Res.drawable.ic_clock),
         contentDescription = stringResource(Res.string.transaction_history),
+        tint = Theme.colorScheme.shadeSecondary,
         modifier = modifier
             .size(48.dp)
             .clip(CircleShape)
@@ -113,7 +116,9 @@ private fun StatementHistoryContent(
 
 @Composable
 private fun StatementInOutflowRow(totalInflow: String, totalOutflow: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    FlowRow(
+        verticalArrangement = Arrangement.Center
+    ) {
         FlowItem(
             amount = "+$totalInflow",
             label = stringResource(Res.string.inflows),

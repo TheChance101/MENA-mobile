@@ -3,13 +3,16 @@ package net.thechance.mena.identity.presentation.screen.imageCropper.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,10 +27,11 @@ import mena.identity_presentation.generated.resources.ic_remove
 import mena.identity_presentation.generated.resources.reset
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import sv.lib.squircleshape.SquircleShape
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ZoomOptionsSection(
@@ -65,7 +69,9 @@ fun ZoomOptionsSection(
         targetValue = if (isZoomOutEnabled) enabledColor else disabledColor
     )
 
-    Row(modifier = modifier) {
+    Row(
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
+    ) {
         ZoomButton(
             painter = zoomOutIcon,
             contentDescription = "zoom out",
@@ -110,7 +116,7 @@ private fun ZoomButton(
         contentDescription = contentDescription,
         tint = iconTint,
         modifier = modifier
-            .clip(SquircleShape(Theme.radius.full))
+            .clip(RoundedCornerShape(Theme.radius.full))
             .clickable(
                 onClick = onZoomClicked,
                 enabled = isEnabled
@@ -131,4 +137,37 @@ private fun RowScope.Divider() {
             .width(1.dp)
             .background(Theme.colorScheme.stroke)
     )
+}
+
+@Preview
+@Composable
+private fun ZoomOptionsSectionPreview() {
+    MenaTheme {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            ZoomOptionsSection(
+                isZoomInEnabled = true,
+                isZoomOutEnabled = true,
+                onZoomInClicked = {},
+                onZoomOutClicked = {},
+                onResetClick = {}
+            )
+            ZoomOptionsSection(
+                isZoomInEnabled = false,
+                isZoomOutEnabled = true,
+                onZoomInClicked = {},
+                onZoomOutClicked = {},
+                onResetClick = {}
+            )
+            ZoomOptionsSection(
+                isZoomInEnabled = true,
+                isZoomOutEnabled = false,
+                onZoomInClicked = {},
+                onZoomOutClicked = {},
+                onResetClick = {}
+            )
+        }
+    }
 }

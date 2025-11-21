@@ -23,6 +23,7 @@ import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postFileWithData
 import net.thechance.mena.identity.data.utils.postFileWithDataAndTokens
 import net.thechance.mena.identity.data.utils.postJson
+import net.thechance.mena.identity.data.utils.postEmpty
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.entity.Gender
@@ -111,6 +112,18 @@ class UserRepositoryImpl(
 
     }
 
+    override suspend fun deleteAccount() {
+        safeWrapper {
+            client.postEmpty(DELETE_ACCOUNT_PATH)
+        }
+        withContext(dispatcher) {
+            try {
+                userDao.deleteUser()
+            } catch (_: Exception) {
+            }
+        }
+    }
+
     fun User.toRequest(): UpdateProfileRequestDto {
         return UpdateProfileRequestDto(
             firstName = this.firstName,
@@ -129,6 +142,7 @@ class UserRepositoryImpl(
         const val PROFILE = "identity/profile"
         const val PROFILE_IMAGE = "identity/profile/image"
         const val CHANGE_PASSWORD_PATH = "identity/profile/change-password"
+        const val DELETE_ACCOUNT_PATH = "identity/profile/delete-account"
 
     }
 }

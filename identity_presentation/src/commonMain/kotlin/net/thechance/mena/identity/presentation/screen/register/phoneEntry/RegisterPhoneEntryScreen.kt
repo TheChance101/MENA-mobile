@@ -81,7 +81,6 @@ class RegisterPhoneEntryScreen : BaseScreen<
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
-                    .padding(top = 24.dp)
             ) {
                 AuthScreenContainer {
                     PageDescription(

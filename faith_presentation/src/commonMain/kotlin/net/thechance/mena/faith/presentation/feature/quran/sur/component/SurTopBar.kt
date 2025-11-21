@@ -21,6 +21,7 @@ import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptio
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -88,12 +89,14 @@ private fun AppBarIcon(
 
 @Preview
 @Composable
-private fun SurTopbarPreview() {
+private fun Preview() {
     MenaTheme {
-        SurTopbar(
-            onBackClick = {},
-            onBookmarkClick = {},
-            onSearchClick = {}
-        )
+        QuranTheme {
+            SurTopbar(
+                onBackClick = {},
+                onBookmarkClick = {},
+                onSearchClick = {}
+            )
+        }
     }
 }

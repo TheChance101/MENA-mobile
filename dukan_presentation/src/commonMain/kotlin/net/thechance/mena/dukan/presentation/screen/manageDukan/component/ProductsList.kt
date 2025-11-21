@@ -27,7 +27,7 @@ fun ManageDukanProductsList(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = Theme.spacing._8),
+            .padding(top = Theme.spacing._4),
         contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = Theme.spacing._8),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
@@ -44,7 +44,8 @@ fun ManageDukanProductsList(
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = { onEditProductClick(product.id) }) },
-                    onProductClick = { onProductClick(product) }
+                    onProductClick = { onProductClick(product) },
+                    isOutOfStock = product.isOutOfStock
                 )
             }
         }
@@ -66,7 +67,8 @@ private fun ManageDukanProductsLayoutPreview() {
                     productPrice = product.price,
                     productCardBackground = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = {}) },
-                    onProductClick = {}
+                    onProductClick = {},
+                    isOutOfStock = product.isOutOfStock
                 )
             }
         }

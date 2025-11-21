@@ -127,6 +127,13 @@
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
+    <string name="profile_settings">Profile settings</string>
+    <string name="logout">Logout</string>
+    <string name="delete_account">Delete account</string>
+    <string name="logout_title">Logout</string>
+    <string name="logout_description">Ara you sure to continue logout?</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_description">Ara you sure to continue deleting your account?</string>
     <string name="enable_location_permission_button">Enable location permission</string>
     <string name="location_icon_desc">Location service icon</string>
 

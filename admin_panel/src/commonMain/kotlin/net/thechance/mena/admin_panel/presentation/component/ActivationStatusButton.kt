@@ -14,11 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.active
-import net.thechance.mena.admin_panel.resources.deactivated
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -26,6 +24,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ActivationStatusButton(
     isActive: Boolean,
+    deactivationText: String,
     modifier: Modifier = Modifier
 ) {
     val backgroundColor =
@@ -49,7 +48,7 @@ fun ActivationStatusButton(
     val statusText = if (isActive) {
         stringResource(Res.string.active)
     } else {
-        stringResource(Res.string.deactivated)
+        deactivationText
     }
 
     Row(
@@ -63,7 +62,11 @@ fun ActivationStatusButton(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        StatusDot(color = animatedContentColor)
+        Box(
+            modifier = Modifier
+                .size(6.dp)
+                .background(color = animatedContentColor, shape = CircleShape)
+        )
         Text(
             text = statusText,
             style = Theme.typography.label.medium,
@@ -71,16 +74,4 @@ fun ActivationStatusButton(
             color = animatedContentColor
         )
     }
-}
-
-@Composable
-private fun StatusDot(
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(6.dp)
-            .background(color = color, shape = CircleShape)
-    )
 }

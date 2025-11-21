@@ -40,6 +40,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
@@ -270,19 +271,21 @@ private fun UploadMosqueImage(
 
 @Composable
 @Preview
-private fun MosqueCreateScreenPreview() {
-    QuranTheme {
-        Content(
-            uiState = CreateMosqueUiState(),
-            listener = object : CreateMosqueInteractionListener {
-                override fun onBackClick() {}
-                override fun onClickUploadImage(image: ImageSrc) {}
-                override fun onAddClick() {}
-                override fun onNameChange(name: String) {}
-                override fun onAddressChange(address: String) {}
-                override fun onMapClick(position: Position, offset: DpOffset) {}
-                override fun onEditMarkerClick() {}
-            }
-        )
+private fun Preview() {
+    MenaTheme {
+        QuranTheme {
+            Content(
+                uiState = CreateMosqueUiState(),
+                listener = object : CreateMosqueInteractionListener {
+                    override fun onBackClick() {}
+                    override fun onClickUploadImage(image: ImageSrc) {}
+                    override fun onAddClick() {}
+                    override fun onNameChange(name: String) {}
+                    override fun onAddressChange(address: String) {}
+                    override fun onMapClick(position: Position, offset: DpOffset) {}
+                    override fun onEditMarkerClick() {}
+                }
+            )
+        }
     }
 }

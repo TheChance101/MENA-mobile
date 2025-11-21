@@ -40,6 +40,7 @@ fun ShareIcon(
             .padding(10.dp)
             .size(20.dp),
         painter = painterResource(Res.drawable.ic_share),
+        tint = Theme.colorScheme.shadePrimary,
         contentDescription = stringResource(Res.string.profile_share_icon_content_description),
     )
 }

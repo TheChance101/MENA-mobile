@@ -23,7 +23,9 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_something_went_wrong
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
@@ -40,6 +42,8 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     private val imagesRepository = mockk<ImagesRepository>()
     private val ageValidator = mockk<AgeValidator>()
     private val imageDecoder = mockk<ImageDecoder>()
+    private val authenticationRepository = mockk<AuthenticationRepository>()
+    private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
     private val testDispatcher = StandardTestDispatcher()
 
     val viewModel by lazy {
@@ -49,7 +53,9 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             imagesRepository = imagesRepository,
             imageDecoder = imageDecoder,
             dispatcher = testDispatcher,
-            ageValidator = ageValidator
+            ageValidator = ageValidator,
+            authenticationRepository = authenticationRepository,
+            registrationDraftRepository = registrationDraftRepository
         )
     }
 

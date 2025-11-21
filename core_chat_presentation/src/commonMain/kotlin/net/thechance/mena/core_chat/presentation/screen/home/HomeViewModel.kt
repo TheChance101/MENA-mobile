@@ -27,6 +27,10 @@ import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.Cha
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
 import net.thechance.mena.core_chat.presentation.utils.Paginator
 import net.thechance.mena.core_chat.presentation.utils.UiText
+import net.thechance.mena.faith.domain.entity.PrayerTime
+import net.thechance.mena.faith.domain.service.PrayerTimeService
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 import net.thechance.mena.wallet.domain.repository.BalanceRepository
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -37,6 +41,8 @@ class HomeViewModel(
     private val chatRepository: ChatRepository,
     private val messageRepository: MessageRepository,
     private val balanceRepository: BalanceRepository,
+    private val prayerTimeService: PrayerTimeService,
+    private val locationService: LocationService,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
@@ -60,6 +66,7 @@ class HomeViewModel(
         listenToMarkAsReadEvent()
         observeDeleteChat()
         observeChatSummariesSyncState()
+        getCurrentAddressInfo()
     }
 
     private fun observeChatSummariesSyncState() {
@@ -69,7 +76,7 @@ class HomeViewModel(
         )
     }
 
-    private suspend fun onCollectSyncString(syncState: SyncState?) {
+    private suspend fun onCollectSyncString(syncState: SyncState) {
         delay(100)
         when (syncState) {
             is SyncState.Error -> showErrorLoadingChatsSnackBar()
@@ -78,8 +85,6 @@ class HomeViewModel(
             is SyncState.DeletedChatsSynced -> {
                 updateState { it.copy(chats = it.chats.filterNot { syncState.chatIds.contains(it.id) }) }
             }
-
-            else -> Unit
         }
     }
 
@@ -91,7 +96,6 @@ class HomeViewModel(
                     .let { chatSummaries -> chatSummaries + state.chats }
                     .distinctBy { it.id }
                     .sortedByDescending { chatSummary -> chatSummary.lastMessage?.time }
-
             )
         }
     }
@@ -110,8 +114,7 @@ class HomeViewModel(
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
         updateState {
             it.copy(
                 chats = it.chats.filterNot { chat -> chat.id == deleteChatEvent.chatId }
@@ -119,11 +122,9 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-        if (markMessageAsReadEvent == null) return
-        if (markMessageAsReadEvent.readByMe.not()) return
-
+    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent) {
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
+
         updateState {
             it.copy(
                 chats = it.chats.map { chatSummary ->
@@ -137,43 +138,16 @@ class HomeViewModel(
     private fun listenToIncomingMessages() {
         tryToCollect(
             collect = { messageRepository.observeMessagesForChatOrAll() },
-            onCollect = ::onCollectMessage,
-            onError = { },
+            onCollect = ::onCollectMessage
         )
     }
 
-    private suspend fun onCollectMessage(message: Message?) {
-        if (message == null) return
-        val chatSummary = state.value.chats.firstOrNull { chat ->
-            chat.id == message.chatId
-        }
+    private suspend fun onCollectMessage(message: Message) {
+        val updatedChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
 
-        if (chatSummary == null) {
-            val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
-            updateState {
-                it.copy(
-                    chats = listOf(newChatSummary) + it.chats
-                )
-            }
-            return
-        }
-
-        val updatedChatSummary = chatSummary.copy(
-            lastMessage = ChatUiState.MessageUiState(
-                text = message.content.toPreviewText(),
-                isMine = message.isMine,
-                time = message.sendAt,
-            ),
-            status =
-                if (message.isMine) ChatUiState.Status.Sent
-                else ChatUiState.Status.UnRead(
-                    if (chatSummary.status is ChatUiState.Status.UnRead) chatSummary.status.count + 1
-                    else 1
-                )
-        )
-
-        val updatedChats =
-            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
+        val updatedChats = listOf(updatedChatSummary) +
+                state.value.chats
+                    .filterNot { it.id == message.chatId }
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
@@ -211,7 +185,7 @@ class HomeViewModel(
     }
 
     private fun changeLoadingState(isLoading: Boolean) {
-        updateState { it.copy(isLoading = isLoading) }
+        updateState { it.copy(isChatsLoading = isLoading) }
     }
 
     private suspend fun getChatsSummary(pageNumber: Int): PagedData<ChatSummary> {
@@ -257,6 +231,30 @@ class HomeViewModel(
         }
     }
 
+    private fun getCurrentAddressInfo(){
+        tryToExecute(
+            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
+            execute = { locationService.getActiveAddress() },
+            onSuccess = ::observeNextPrayer
+        )
+    }
+    private fun observeNextPrayer(address: Address?){
+        if (address == null) return
+
+        tryToCollect(
+            collect = { prayerTimeService.getNextPrayer(address) },
+            onCollect = ::onObserveNextPrayerSuccess,
+            onError = { onObserveNextPrayerError() }
+        )
+    }
+
+    private fun onObserveNextPrayerSuccess(prayerTime: PrayerTime?) {
+        updateState { it.copy(prayerUiState = prayerTime?.toUi(), isPrayerTimeLoading = false) }
+    }
+    private fun onObserveNextPrayerError() {
+        updateState { it.copy(prayerUiState = null, isPrayerTimeLoading = false) }
+    }
+
     override fun onNewChatClicked() {
         tryToExecute(
             execute = { contactsRepository.getHasUserSyncedContactsStatus() },
@@ -266,7 +264,6 @@ class HomeViewModel(
     }
 
     private fun onGetSyncStatusSuccess(isSynced: Boolean) {
-        updateState { it.copy(isSynced = isSynced) }
         if (isSynced) {
             emitEffect(HomeScreenEffect.NavigateToContacts)
         } else {

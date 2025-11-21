@@ -130,25 +130,26 @@ private fun DialogContent(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
+            content()
             if (hasDismissButton) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_cancel),
                     contentDescription = stringResource(Res.string.cancel_dialog_icon),
                     modifier = Modifier
-                        .clip(cancelBackgroundShape)
                         .clickable(
                             onClick = onCancelClick,
                             indication = ripple(),
                             interactionSource = remember { MutableInteractionSource() }
                         )
+                        .clip(cancelBackgroundShape)
                         .background(
                             Theme.colorScheme.background.surface,
                             cancelBackgroundShape
                         )
-                        .padding(PaddingValues(8.dp))
+                        .padding(PaddingValues(8.dp)),
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
-            content()
         }
         actionButtons()
     }

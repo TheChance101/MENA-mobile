@@ -11,6 +11,7 @@ import mena.faith_presentation.generated.resources.reciters_settings
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.painterResource
@@ -32,9 +33,9 @@ fun DownloadedSurAppBar(
         onLeadingClick = onBackClick,
         title = stringResource(Res.string.downloaded_sur),
         contentPadding = PaddingValues(
-                vertical = Theme.spacing._8,
-                horizontal = Theme.spacing._16,
-            ),
+            vertical = Theme.spacing._8,
+            horizontal = Theme.spacing._16,
+        ),
         trailingContent = {
             AppBarOptionContainer(
                 onClick = onRecitersSettingsClick,
@@ -50,11 +51,13 @@ fun DownloadedSurAppBar(
 
 @Preview
 @Composable
-private fun PreviewDownloadedSurTopBar() {
-    QuranTheme {
-        DownloadedSurAppBar(
-            {},
-            {},
-        )
+private fun PreviewDownloadedSurScreen() {
+    MenaTheme {
+        QuranTheme {
+            DownloadedSurAppBar(
+                {},
+                {},
+            )
+        }
     }
 }

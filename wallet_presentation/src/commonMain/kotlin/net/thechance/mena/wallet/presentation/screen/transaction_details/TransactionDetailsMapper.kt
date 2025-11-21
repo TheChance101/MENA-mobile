@@ -46,18 +46,21 @@ private fun Transaction.getUserName(): String = when (type) {
     TransactionType.SENT -> senderName
     TransactionType.RECEIVED -> receiverName
     TransactionType.ONLINE_PURCHASE -> senderName
+    TransactionType.DEPOSIT -> receiverName
 }
 
 private fun Transaction.getOtherParty(): String = when (type) {
     TransactionType.SENT -> receiverName
     TransactionType.RECEIVED -> senderName
     TransactionType.ONLINE_PURCHASE -> receiverName
+    TransactionType.DEPOSIT -> senderName
 }
 
 private fun Transaction.getTransactionType(): TransactionTypeUiState = when (type) {
     TransactionType.SENT -> TransactionTypeUiState.SENT
     TransactionType.RECEIVED -> TransactionTypeUiState.RECEIVED
     TransactionType.ONLINE_PURCHASE -> TransactionTypeUiState.ONLINE_PURCHASE
+    TransactionType.DEPOSIT -> TransactionTypeUiState.DEPOSIT
 }
 
 private fun Transaction.getTransactionStatus(): TransactionStatusUiState = when (status) {
@@ -68,17 +71,20 @@ private fun Transaction.getTransactionStatus(): TransactionStatusUiState = when 
 private fun Transaction.getUserInfo() = when (type) {
     TransactionType.SENT, TransactionType.ONLINE_PURCHASE -> Res.string.from
     TransactionType.RECEIVED -> Res.string.to
+    TransactionType.DEPOSIT -> Res.string.to
 }
 
 private fun Transaction.getTypeContent() = when (type) {
     TransactionType.SENT, TransactionType.RECEIVED -> Res.string.transfer
     TransactionType.ONLINE_PURCHASE -> Res.string.purchase
+    TransactionType.DEPOSIT ->Res.string.transfer
 }
 
 private fun Transaction.getOtherPartyTitle() = when (type) {
     TransactionType.SENT -> Res.string.to
     TransactionType.RECEIVED -> Res.string.from
     TransactionType.ONLINE_PURCHASE -> Res.string.receiver
+    TransactionType.DEPOSIT -> Res.string.from
 }
 
 private object Constants {

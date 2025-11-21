@@ -1,20 +1,17 @@
 package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,7 +57,6 @@ import net.thechance.mena.identity.presentation.screen.profile.components.dialog
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIEffect
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIState
 import net.thechance.mena.identity.presentation.screen.profile.components.dialog.utils.createQrCodeByteArray
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -74,7 +70,7 @@ fun ScaffoldScope.ShareQrCode(
     fullName: String,
     onClickShare: () -> Unit,
     onDismissShareDialog: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val shareState by viewModel.state.collectAsStateWithLifecycle()
@@ -107,8 +103,8 @@ fun ScaffoldScope.ShareQrCode(
         isVisible = isVisible,
         fullName = fullName,
         qrCodePainter = rememberQrCodePainter(data = shareState.shareLinkUrl),
-        onDismissShareDialog = onDismissShareDialog,
         onClickShare = onClickShare,
+        onDismissShareDialog = onDismissShareDialog,
         modifier = modifier
     )
 }
@@ -122,7 +118,7 @@ private fun ScaffoldScope.ShareQrCodeContent(
     qrCodePainter: Painter,
     onClickShare: () -> Unit = {},
     onDismissShareDialog: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val clipboard = LocalClipboard.current
     val density = LocalDensity.current
@@ -130,26 +126,32 @@ private fun ScaffoldScope.ShareQrCodeContent(
     val screenSize = LocalWindowInfo.current.containerSize
 
     state.snackBarTitle?.let { title ->
-        CopyToClipboardSnackBar(
+        SnackBar(
+            title = stringResource(title),
+            message = stringResource(state.snackBarMessage ?: Res.string.error_unknown),
+            leadingIcon = painterResource(Res.drawable.ic_check_circle),
+            modifier = modifier.fillMaxWidth().safeDrawingPadding()
+                .padding(horizontal = Theme.spacing._16),
+            onDismiss = listener::onDismissSnackBar,
             isVisible = state.showSnackBar && !state.isLoading,
-            title = title,
-            message = state.snackBarMessage ?: Res.string.error_unknown,
-        )
-    }
 
+            )
+    }
     BasicDialog(
         onDismiss = onDismissShareDialog,
         onCancelClick = onDismissShareDialog,
         hasDismissButton = true,
         isVisible = isVisible,
         dialogCornerShape = SquircleShape(Theme.radius.xl),
-        modifier = modifier,
+        modifier = modifier.safeDrawingPadding(),
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(top = 12.dp)
                 .align(Alignment.Center)
+                .verticalScroll(rememberScrollState())
+
         ) {
             Text(
                 text = stringResource(Res.string.share_profile_title),
@@ -240,33 +242,8 @@ private fun ShareProfileButton(
     ) {
         Icon(
             painter = icon,
-            contentDescription = contentDescription
-        )
-    }
-}
-
-@Composable
-private fun CopyToClipboardSnackBar(
-    isVisible: Boolean,
-    title: StringResource,
-    message: StringResource,
-    modifier: Modifier = Modifier
-) {
-
-    AnimatedVisibility(
-        visible = isVisible,
-        enter = slideInHorizontally(initialOffsetX = { it }),
-        exit = slideOutHorizontally(targetOffsetX = { it }),
-        modifier = modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.statusBars)
-    ) {
-        SnackBar(
-            title = stringResource(title),
-            message = stringResource(message),
-            leadingIcon = painterResource(Res.drawable.ic_check_circle),
-            modifier = Modifier.fillMaxWidth().padding(bottom = Theme.spacing._16)
-                .padding(horizontal = Theme.spacing._16)
+            contentDescription = contentDescription,
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }
@@ -280,8 +257,8 @@ private fun ShareProfileQrCodePreview() {
                 dialog(true) {
                     ShareQrCode(
                         isVisible = true,
-                        onClickShare = {},
                         fullName = "Hassan Ali",
+                        onClickShare = {},
                         onDismissShareDialog = {},
                     )
                 }

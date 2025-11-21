@@ -18,10 +18,11 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun DukanDetailsInCompactMode(
     state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
+    interactionListener: DukanDetailsInteractionListener,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 16.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),

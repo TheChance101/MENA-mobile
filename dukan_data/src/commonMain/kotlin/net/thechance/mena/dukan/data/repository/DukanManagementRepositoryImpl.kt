@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -43,7 +44,9 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
         return safeApiCall<DukanNameResponse> {
-            client.get("$DUKAN_BASE_PATH/available?name=$name").body()
+            client.get("$DUKAN_BASE_PATH/available") {
+                parameter("name", name)
+            }.body()
         }.available.not()
     }
 

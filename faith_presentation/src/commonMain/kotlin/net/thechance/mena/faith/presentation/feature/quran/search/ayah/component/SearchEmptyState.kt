@@ -19,6 +19,7 @@ import mena.faith_presentation.generated.resources.no_results_found_title
 import mena.faith_presentation.generated.resources.shadow
 import mena.faith_presentation.generated.resources.start_searching_title
 import net.thechance.mena.designsystem.presentation.component.text.Text
+import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import org.jetbrains.compose.resources.DrawableResource
@@ -101,25 +102,29 @@ private fun getSubtitleResource(
 @Preview
 @Composable
 private fun SearchEmptyStateStartPreview() {
-    QuranTheme {
-        SearchEmptyState(
-            isStartState = true,
-            isResultsState = false,
-            modifier = Modifier.fillMaxSize(),
-            subtitle = Res.string.start_searching_title
-        )
+    MenaTheme {
+        QuranTheme {
+            SearchEmptyState(
+                isStartState = true,
+                isResultsState = false,
+                modifier = Modifier.fillMaxSize(),
+                subtitle = Res.string.start_searching_title
+            )
+        }
     }
 }
 
 @Preview
 @Composable
 private fun SearchEmptyStateNoResultsPreview() {
-    QuranTheme {
-        SearchEmptyState(
-            isStartState = false,
-            isResultsState = true,
-            modifier = Modifier.fillMaxSize(),
-            subtitle = Res.string.start_searching_title
-        )
+    MenaTheme {
+        QuranTheme {
+            SearchEmptyState(
+                isStartState = false,
+                isResultsState = true,
+                modifier = Modifier.fillMaxSize(),
+                subtitle = Res.string.start_searching_title
+            )
+        }
     }
 }
