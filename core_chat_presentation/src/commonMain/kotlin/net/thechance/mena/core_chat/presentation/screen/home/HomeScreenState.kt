@@ -43,7 +43,7 @@ data class HomeScreenState(
 
     data class WeatherUiState(
         val currentTemperature: String,
-        val weatherCondition: String,
+        val weatherCondition: StringResource?,
         val maxTemperature: String,
         val minTemperature: String,
     )

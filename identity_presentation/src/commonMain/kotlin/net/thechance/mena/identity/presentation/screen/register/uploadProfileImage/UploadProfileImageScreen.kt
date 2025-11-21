@@ -31,6 +31,7 @@ import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.components.UploadImageContainer
@@ -41,10 +42,10 @@ class UploadProfileImageScreen(
     private val authTokens: AuthenticationTokens? = null,
     private val phoneNumber: PhoneNumber? = null
 ) : BaseScreen<
-        UploadProfileImageViewModel,
-        UploadProfileImageUIState,
-        UploadProfileImageUIEffect,
-        UploadProfileImageInteractionListener>() {
+    UploadProfileImageViewModel,
+    UploadProfileImageUIState,
+    UploadProfileImageUIEffect,
+    UploadProfileImageInteractionListener>() {
 
     @Composable
     override fun OnRender(
@@ -104,7 +105,8 @@ class UploadProfileImageScreen(
 
     override fun onEffect(
         effect: UploadProfileImageUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is UploadProfileImageUIEffect.NavigateToAccountCreated -> {
@@ -117,6 +119,12 @@ class UploadProfileImageScreen(
                         imageKey = effect.imageKey,
                         onResult = effect.onResult,
                     )
+                )
+            }
+
+            is UploadProfileImageUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
                 )
             }
         }

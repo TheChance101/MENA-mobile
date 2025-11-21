@@ -106,7 +106,6 @@ private fun NewPasswordContentPreview() {
 
         override fun onToggleConfirmPasswordVisibility() {}
 
-        override fun onClearErrorMessage() {}
     }
     MenaTheme {
         NewPasswordContent(

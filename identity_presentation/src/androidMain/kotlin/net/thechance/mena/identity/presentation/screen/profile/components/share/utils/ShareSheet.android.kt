@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
+package net.thechance.mena.identity.presentation.screen.profile.components.share.utils
 
 import android.content.ClipData
 import android.content.Context

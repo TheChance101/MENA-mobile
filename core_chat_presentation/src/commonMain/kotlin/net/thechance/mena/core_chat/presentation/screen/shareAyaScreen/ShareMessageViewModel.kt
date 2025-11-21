@@ -20,7 +20,13 @@ import net.thechance.mena.core_chat.domain.entity.Contact
 import net.thechance.mena.core_chat.domain.exception.ChatException
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
+import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
+import net.thechance.mena.core_chat.presentation.navigation.AyahMessageArgs
+import net.thechance.mena.core_chat.presentation.screen.chat.AyahMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageDetailsUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.toEntity
 import net.thechance.mena.core_chat.presentation.screen.contacts.ContactUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.toUi
 import net.thechance.mena.core_chat.presentation.shared.BasePagingSource
@@ -34,9 +40,12 @@ import kotlin.uuid.Uuid
 class ShareMessageViewModel(
     private val contactsRepository: ContactsRepository,
     private val chatRepository: ChatRepository,
+    private val messageRepository: MessageRepository,
+    args: ShareMessageArgs
 ) : BaseViewModel<ShareMessageScreenState, ShareMessageEffect>(ShareMessageScreenState()),
     ShareMessageInteractionListener {
 
+    private var messageArgs: AyahMessageArgs = args.messageArgs
     val searchQueryFlow = MutableStateFlow("")
 
     init {
@@ -162,7 +171,22 @@ class ShareMessageViewModel(
     }
 
     private fun onContactClickSuccess(chatId: Uuid, chatName: String) {
+        val message = AyahMessageUiState(
+            surahId = messageArgs.surahId,
+            ayahContent = messageArgs.ayahContent,
+            ayahNumber = messageArgs.ayahNumber,
+            surahName = "",
+            messageDetails = MessageDetailsUiState(chatId = chatId)
+        )
+        sendMessage(message)
+
         emitEffect(ShareMessageEffect.NavigateToChatScreen(chatId = chatId, chatName = chatName))
+    }
+
+    private fun sendMessage(message: MessageUiState) {
+        tryToExecute (
+            execute = { messageRepository.sendMessage(message.toEntity()) }
+        )
     }
 
     companion object {

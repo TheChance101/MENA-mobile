@@ -77,13 +77,6 @@ class CreatePasswordViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClearErrorMessage should clear error message`() {
-        createPasswordViewModel.onClearErrorMessage()
-
-        assert(createPasswordViewModel.state.value.errorMessage == null)
-    }
-
-    @Test
     fun `loadSavedData should load saved password from draft`() = runTest {
         val savedPassword = "SavedPassword123"
         val savedDraft = RegistrationDraft(password = savedPassword)

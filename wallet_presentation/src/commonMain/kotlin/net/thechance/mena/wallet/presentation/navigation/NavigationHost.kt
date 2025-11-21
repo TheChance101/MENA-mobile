@@ -5,10 +5,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
@@ -31,9 +34,17 @@ const val TransitionDuration = 300
 @Composable
 fun NavigationHost(
     startDestination: WalletRoute = WalletMainScreenRoute,
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    updateBottomNavigationVisibility: (Boolean) -> Unit,
 ) {
     val navController = rememberNavController()
+    val currentRoute by navController.currentBackStackEntryAsState()
+
+    LaunchedEffect(currentRoute) {
+        currentRoute?.destination?.route.let { route ->
+            updateBottomNavigationVisibility(RoutesWithBottomNavigation.contains(route))
+        }
+    }
 
     CompositionLocalProvider(
         LocalNavController provides navController
@@ -86,3 +97,9 @@ fun NavigationHost(
 val LocalNavController = compositionLocalOf<NavController> {
     throw UnknownNetworkException("nav controller not provided")
 }
+
+private val RoutesWithBottomNavigation = listOf(
+    WalletMainScreenRoute::class.qualifiedName,
+    TransactionsHistoryScreenRoute::class.qualifiedName,
+    StatementsHistoryScreenRoute::class.qualifiedName
+)

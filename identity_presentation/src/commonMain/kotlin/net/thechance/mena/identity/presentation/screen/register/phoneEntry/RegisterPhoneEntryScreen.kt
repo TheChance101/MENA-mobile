@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,9 +28,9 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
@@ -41,10 +40,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 class RegisterPhoneEntryScreen : BaseScreen<
-        RegisterPhoneEntryViewModel,
-        RegisterPhoneEntryUIState,
-        RegisterPhoneEntryUIEffect,
-        RegisterPhoneEntryInteractionListener>() {
+    RegisterPhoneEntryViewModel,
+    RegisterPhoneEntryUIState,
+    RegisterPhoneEntryUIEffect,
+    RegisterPhoneEntryInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -58,7 +57,7 @@ class RegisterPhoneEntryScreen : BaseScreen<
         val keyboardController = LocalSoftwareKeyboardController.current
         val focusManager = LocalFocusManager.current
         LaunchedEffect(state.showCountryBottomSheet) {
-            if (state.showCountryBottomSheet){
+            if (state.showCountryBottomSheet) {
                 focusManager.clearFocus()
                 keyboardController?.hide()
 
@@ -117,23 +116,25 @@ class RegisterPhoneEntryScreen : BaseScreen<
                 }
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
         effect: RegisterPhoneEntryUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is RegisterPhoneEntryUIEffect.NavigateToOTP -> navigator.push(
                 item = RegisterOtpScreen(effect.registerUIState)
             )
 
-            RegisterPhoneEntryUIEffect.NavigateToLogin -> navigator.push(LoginScreen())
+            is RegisterPhoneEntryUIEffect.NavigateToLogin -> navigator.push(LoginScreen())
+
+            is RegisterPhoneEntryUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
+            }
         }
     }
 }
@@ -154,7 +155,6 @@ fun PreviewRegisterPhoneEntryScreen() {
                 override fun onClickRegister() {}
                 override fun onClickCountry() {}
                 override fun onChangePhone(phone: String) {}
-                override fun onClearErrorMessage() {}
                 override fun onClickLogin() {}
             }
         )
