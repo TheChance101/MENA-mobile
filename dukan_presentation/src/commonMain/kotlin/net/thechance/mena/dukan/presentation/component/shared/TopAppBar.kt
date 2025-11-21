@@ -35,7 +35,8 @@ fun TopAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(resource = Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
+                contentDescription = stringResource(Res.string.back_arrow),
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = onBackClick,

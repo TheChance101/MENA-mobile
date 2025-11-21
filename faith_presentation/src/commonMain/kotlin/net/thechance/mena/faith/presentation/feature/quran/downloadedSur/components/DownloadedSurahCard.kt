@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,11 +48,13 @@ fun DownloadedSurahCard(
     onDeleteDownloadedSurahClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var currentSwipedCardId by remember { mutableIntStateOf(-1) }
     SwappableCard(
         id = suraDetails.id,
         onClick = onDeleteDownloadedSurahClick,
         backgroundIcon = painterResource(Res.drawable.ic_delete),
         contentDescription = stringResource(Res.string.delete_surah),
+        currentSwipedCardId = currentSwipedCardId,
         cardContent = { contentModifier ->
             CardContent(
                 surahDetailsUiState = suraDetails,
@@ -64,6 +70,7 @@ fun DownloadedSurahCard(
             )
         },
         modifier = modifier,
+        onSwipeStateChange = { newId -> currentSwipedCardId = newId }
     )
 }
 

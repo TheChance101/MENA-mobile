@@ -65,7 +65,7 @@ private fun ManageDukanScreenContent(
 
             ManageDukanProducts(
                 state = state,
-                onProductClicked = listener::onProductClicked,
+
                 onEditProductClicked = listener::onEditProductClicked
             )
 

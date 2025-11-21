@@ -41,6 +41,7 @@ import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.ConfirmPaymentRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
@@ -49,6 +50,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
 import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
+import net.thechance.mena.core_chat.presentation.screen.chat.components.attachmentsSendMoneyBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
@@ -149,10 +151,18 @@ fun ChatScreenContent(
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
+
+                attachmentsSendMoneyBottomSheet(
+                    isVisible = state.isSendMoneyDialogVisible,
+                    attachmentsInteractionListener = interactions,
+                    value = state.amountToTransfer,
+                    isLoading = state.isLoadingSendMoneyButton,
+                )
             },
             modifier = Modifier.imePadding()
         ) {
             ChatList(
+                chatName = state.chatName,
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
                 chatListState = chatLazyListState,
@@ -162,7 +172,7 @@ fun ChatScreenContent(
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
                 onLinkClick = interactions::onLinkClicked,
-                modifier = Modifier
+            modifier = Modifier
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
@@ -199,6 +209,8 @@ fun ChatScreenContent(
                 attachmentsInteractionListener = interactions
             )
         }
+
+
     }
 
     PaginationTrigger(
@@ -300,6 +312,15 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.OpenUrl -> {
                 uriHandler.openUri(effect.url)
+            }
+
+            is ChatScreenEffect.NavigateToConfirmPayment -> {
+                navController.navigate(
+                    ConfirmPaymentRoute(
+                        effect.amount,
+                        effect.transactionId.toString()
+                    )
+                )
             }
         }
     }

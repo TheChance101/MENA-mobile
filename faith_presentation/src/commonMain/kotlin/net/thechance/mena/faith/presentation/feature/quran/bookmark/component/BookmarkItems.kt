@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.itemKey
@@ -17,6 +21,8 @@ fun BookmarkItems(
     bookmarks: LazyPagingItems<BookMarkUiState.BookmarkCardUiState>,
     onRemoveBookmarkClick: (Int) -> Unit,
 ) {
+    var currentSwipedCardId by remember { mutableIntStateOf(-1) }
+
     LazyColumn(
         contentPadding = PaddingValues(bottom = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
@@ -29,6 +35,8 @@ fun BookmarkItems(
                 SwappableCard(
                     id = it.bookmarkId,
                     onClick = { onRemoveBookmarkClick(it.bookmarkId) },
+                    currentSwipedCardId = currentSwipedCardId,
+                    onSwipeStateChange = { newId -> currentSwipedCardId = newId },
                     cardContent = { contentModifier ->
                         AyaBookmarkCard(
                             surahName = it.surahName,
