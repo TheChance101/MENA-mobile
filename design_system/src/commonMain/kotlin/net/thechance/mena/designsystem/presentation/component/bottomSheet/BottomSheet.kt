@@ -76,7 +76,7 @@ fun ScaffoldScope.BottomSheet(
     dismissOnBackPress: Boolean = true,
     dismissOnClickOutside: Boolean = true,
     containerColor: Color = Theme.colorScheme.background.surface,
-    scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
+    scrimColor: Color = Color.Black.copy(0.55f),
     cornerShape: Shape = RoundedCornerShape(
         topStart = Theme.radius.xl,
         topEnd = Theme.radius.xl

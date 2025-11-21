@@ -18,10 +18,11 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun DukanDetailsInFullScreenMode(
     state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
+    interactionListener: DukanDetailsInteractionListener,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 16.dp)
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)

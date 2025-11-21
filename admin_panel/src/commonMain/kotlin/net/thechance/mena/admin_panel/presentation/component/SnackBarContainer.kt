@@ -7,8 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import net.thechance.mena.admin_panel.resources.ic_check_circle
-import net.thechance.mena.admin_panel.resources.ic_close_circle
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,8 +25,6 @@ import net.thechance.mena.admin_panel.resources.ic_close_circle
 import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
-
-private const val ANIMATION_DURATION = 500
 
 @Composable
 fun SnackBarContainer(
@@ -85,3 +81,4 @@ private val EXIT_ANIMATION = fadeOut(tween(ANIMATION_DURATION)) +
             animationSpec = tween(ANIMATION_DURATION),
             targetOffsetX = { it / 2 },
         )
+private const val ANIMATION_DURATION = 500

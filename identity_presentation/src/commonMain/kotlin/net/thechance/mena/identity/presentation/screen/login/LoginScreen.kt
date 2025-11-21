@@ -36,8 +36,8 @@ import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
-import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
+import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -103,6 +103,7 @@ class LoginScreen : BaseScreen<
                         onTogglePasswordVisibility = listener::onPasswordVisibilityToggled,
                         onChangePassword = listener::onPasswordChanged,
                         label = stringResource(Res.string.password),
+                        modifier = Modifier.padding(top = Theme.spacing._16)
                     )
 
                     ForgetPasswordText(
@@ -131,7 +132,8 @@ class LoginScreen : BaseScreen<
             }
             ErrorSnackBar(
                 errorMessage = state.errorMessage?.let { stringResource(it) },
-                onDismiss = listener::clearErrorMessage
+                onDismiss = listener::clearErrorMessage,
+                modifier = Modifier.systemBarsPadding()
             )
         }
     }

@@ -154,6 +154,39 @@
     <string name="kilometer_unit">كم</string>
     <string name="add_mosque_message">تمت إضافة المسجد بنجاح.</string>
     <string name="mosque_image">صورة المسجد</string>
+    <string name="select_date">اختر التاريخ</string>
+    <string name="ok">موافق</string>
+    <string name="clear_selection">محو</string>
+    <string-array name="hijri_months">
+        <item>محرم</item>
+        <item>صفر</item>
+        <item>ربيع الأول</item>
+        <item>ربيع الثاني</item>
+        <item>جمادى الأولى</item>
+        <item>جمادى الثانية</item>
+        <item>رجب</item>
+        <item>شعبان</item>
+        <item>رمضان</item>
+        <item>شوال</item>
+        <item>ذو القعدة</item>
+        <item>ذو الحجة</item>
+    </string-array>
+
+    <string-array name="hijri_months_shortened">
+        <item>محرم</item>
+        <item>صفر</item>
+        <item>ربيع I</item>
+        <item>ربيع II</item>
+        <item>جمادى I</item>
+        <item>جمادى II</item>
+        <item>رجب</item>
+        <item>شعبان</item>
+        <item>رمضان</item>
+        <item>شوال</item>
+        <item>ذو القعدة</item>
+        <item>ذو الحجة</item>
+    </string-array>
+
     <string name="read_all_surah">تلاوة السورة</string>
     <string name="remove_aya">حذف الآية</string>
     <string name="bookmark_added_successfully">تم إضافة الإشارة المرجعية بنجاح</string>
@@ -161,5 +194,7 @@
     <string name="send_to">إرسال إلي</string>
     <string name="bookmark">إشارة مرجعية</string>
     <string name="copy">نسخ</string>
+    <string name="empty_download_icon">أيقونة التحميل فارغة</string>
+    <string name="empty_download_text">لا توجد تنزيلات</string>
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
 </resources>

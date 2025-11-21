@@ -20,10 +20,10 @@ class CheckoutUiStateTest {
     @Test
     fun `Address SHOULD store its properties correctly`() = runTest {
         val address = CheckoutUiState.Address(
-            label = "Home",
+            label = CheckoutUiState.AddressLabel.Home,
             street = "123 Street Name"
         )
-        assertEquals("Home", address.label)
+        assertEquals(CheckoutUiState.AddressLabel.Home, address.label)
         assertEquals("123 Street Name", address.street)
     }
 

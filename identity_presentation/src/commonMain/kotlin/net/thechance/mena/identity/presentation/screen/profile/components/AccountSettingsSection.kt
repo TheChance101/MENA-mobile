@@ -9,12 +9,10 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.ic_addresses
 import mena.identity_presentation.generated.resources.ic_edit_profile_info
 import mena.identity_presentation.generated.resources.ic_password_lock
-import mena.identity_presentation.generated.resources.ic_privacy_settings
 import mena.identity_presentation.generated.resources.profile_account_settings_header
 import mena.identity_presentation.generated.resources.profile_addresses
 import mena.identity_presentation.generated.resources.profile_change_password
 import mena.identity_presentation.generated.resources.profile_edit_profile_info
-import mena.identity_presentation.generated.resources.profile_privacy_settings
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -27,7 +25,6 @@ fun AccountSettingsSection(
     onEditProfileInfoClicked: () -> Unit,
     onChangePasswordClicked: () -> Unit,
     onAddressesClicked: () -> Unit,
-    onPrivacySettingsClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(top = Theme.spacing._24),
@@ -53,11 +50,6 @@ fun AccountSettingsSection(
             leadingIcon = painterResource(Res.drawable.ic_addresses),
             onClick = onAddressesClicked,
         )
-        SettingItem(
-            title = stringResource(Res.string.profile_privacy_settings),
-            leadingIcon = painterResource(Res.drawable.ic_privacy_settings),
-            onClick = onPrivacySettingsClicked,
-        )
     }
 }
 
@@ -66,7 +58,7 @@ fun AccountSettingsSection(
 fun PreviewAccountSettingsSection() {
     MenaTheme {
         AccountSettingsSection(
-            {}, {}, {}, {}
+            {}, {}, {}
         )
     }
 }
