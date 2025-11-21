@@ -34,6 +34,8 @@ fun ChatList(
     chatAvatarUrl: String,
     chatListState: LazyListState,
     onMessageClick: (Uuid) -> Unit,
+    onSurahClick :(Int) ->Unit,
+    onAyahClick : (Int,Int) -> Unit,
     onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
@@ -85,6 +87,8 @@ fun ChatList(
                 onFailedMessageClick = onFailedMessageClick,
                 onMessageLongClick = onMessageLongClick,
                 onLinkClick = onLinkClick,
+                onSurahClick = onSurahClick,
+                onAyahClick = onAyahClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }
