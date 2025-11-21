@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.DateSeparator
 import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.MoneyMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.rememberNetworkStatus
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -30,6 +32,7 @@ import kotlin.uuid.Uuid
 
 @Composable
 fun ChatList(
+    chatName: String,
     items: List<ChatListItem>,
     chatAvatarUrl: String,
     chatListState: LazyListState,
@@ -38,16 +41,19 @@ fun ChatList(
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
-) {
+    onLinkClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    ) {
     val isConnectedToNetwork by rememberNetworkStatus()
 
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = Theme.spacing._12),
         state = chatListState,
         reverseLayout = true,
-        contentPadding = PaddingValues(top = Theme.spacing._16)
+        contentPadding = PaddingValues(top = Theme.spacing._16),
+        verticalArrangement = Arrangement.Bottom
     ) {
         itemsIndexed(
             items = items,
@@ -59,6 +65,7 @@ fun ChatList(
                     is AudioMessageUiState -> item.messageDetails.id.toString()
                     is AyahMessageUiState -> item.messageDetails.id.toString()
                     is DateSeparator -> item.label.toString()
+                    is MoneyMessageUiState -> item.messageDetails.id.toString()
                 }
             }
         ) { _ , item ->
@@ -69,10 +76,13 @@ fun ChatList(
                 Theme.spacing._16
             else if (item is ImagesGroupChatItem && item.imagesUiState.last().messageDetails.isLastInSeries)
                 Theme.spacing._16
+            else if (item is AudioMessageUiState && item.messageDetails.isLastInSeries)
+                Theme.spacing._16
             else
                 Theme.spacing._2
 
             ChatListItem(
+                chatName = chatName,
                 item = item,
                 chatAvatarUrl = chatAvatarUrl,
                 onMessageClick = onMessageClick,
@@ -80,6 +90,7 @@ fun ChatList(
                 onMessageVoiceClick = onMessageVoiceClick,
                 onFailedMessageClick = onFailedMessageClick,
                 onMessageLongClick = onMessageLongClick,
+                onLinkClick = onLinkClick,
                 modifier = Modifier.padding(bottom = paddingBottom)
             )
         }

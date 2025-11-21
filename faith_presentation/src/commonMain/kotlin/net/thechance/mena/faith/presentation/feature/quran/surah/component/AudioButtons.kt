@@ -1,7 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.surah.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +36,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.utils.extentions.noRippleClickable
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -85,7 +85,7 @@ fun AudioButtons(
                 contentDescription = stringResource(Res.string.reciters),
                 tint = Theme.colorScheme.primary.primary,
                 modifier = Modifier.size(24.dp)
-                    .clickable(onClick = onReciterClick)
+                    .noRippleClickable(onClick = onReciterClick)
             )
 
             Row(
@@ -103,7 +103,7 @@ fun AudioButtons(
                     contentDescription = stringResource(Res.string.previous_ayah),
                     tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.size(24.dp)
-                        .clickable(onClick = onPreviousClick)
+                        .noRippleClickable(onClick = onPreviousClick)
                 )
 
                 Icon(
@@ -115,7 +115,7 @@ fun AudioButtons(
                     ),
                     tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.size(24.dp)
-                        .clickable(onClick = onPlayPauseClick)
+                        .noRippleClickable(onClick = onPlayPauseClick)
                 )
 
                 Icon(
@@ -123,7 +123,7 @@ fun AudioButtons(
                     contentDescription = stringResource(Res.string.next_ayah),
                     tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.size(24.dp)
-                        .clickable(onClick = onNextClick)
+                        .noRippleClickable(onClick = onNextClick)
                 )
             }
 
@@ -137,7 +137,7 @@ fun AudioButtons(
                     tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.padding(end = Theme.spacing._12)
                         .size(24.dp)
-                        .clickable(onClick = onRepeatClick)
+                        .noRippleClickable(onClick = onRepeatClick)
 
                 )
 
@@ -146,8 +146,7 @@ fun AudioButtons(
                     contentDescription = stringResource(Res.string.read_all_surah),
                     tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier.size(24.dp)
-                        .clickable(onClick = onTilawahClick)
-
+                        .noRippleClickable(onClick = onTilawahClick)
                 )
             }
         }

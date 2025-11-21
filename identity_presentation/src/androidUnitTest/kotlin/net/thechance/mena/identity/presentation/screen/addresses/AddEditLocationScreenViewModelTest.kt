@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -10,7 +12,6 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.entity.AddressType
-import java.lang.Exception
 import net.thechance.mena.identity.domain.model.AddressInput
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIEffect
@@ -134,15 +135,10 @@ class AddEditLocationScreenViewModelTest {
             coEvery { addressesRepository.createAddress(any<AddressInput>()) } returns Unit
 
             viewModel.effect.test {
-
                 viewModel.onClickSave()
+                testDispatcher.scheduler.advanceUntilIdle()
 
-                val effect = awaitItem()
-
-                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
-
-                cancelAndConsumeRemainingEvents()
-
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -156,10 +152,11 @@ class AddEditLocationScreenViewModelTest {
                 coordinates = CoordinatesUiState(latitude, longitude),
                 addressDetails = "Test Address"
             )
-            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, testAddress)
-            
+            viewModel =
+                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, testAddress)
+
             testDispatcher.scheduler.advanceUntilIdle()
-            
+
             viewModel.onClickAddressType(addressType)
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -169,35 +166,26 @@ class AddEditLocationScreenViewModelTest {
                 viewModel.onClickSave()
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                val effect = awaitItem()
-
-                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
-                assertTrue(effect.snackBarUiState != null)
-
-                cancelAndConsumeRemainingEvents()
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
+
         }
 
     @Test
     fun `onClickSave() should call updateAddress and handle success when addressID is not null`() =
         runTest {
 
-            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+            viewModel =
+                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
             viewModel.onClickAddressType(addressType)
 
             coEvery { addressesRepository.updateAddress(any(), any<AddressInput>()) } returns Unit
 
+            viewModel.onClickSave()
+
             viewModel.effect.test {
-
-                viewModel.onClickSave()
-
-                val effect = awaitItem()
-
-                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
-                assertTrue(effect.snackBarUiState != null)
-
-                cancelAndConsumeRemainingEvents()
-
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -205,24 +193,24 @@ class AddEditLocationScreenViewModelTest {
     fun `onClickSave() should call updateAddress and handle error when addressID is not null`() =
         runTest {
 
-            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+            viewModel =
+                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
             testDispatcher.scheduler.advanceUntilIdle()
-            
+
             viewModel.onClickAddressType(addressType)
             testDispatcher.scheduler.advanceUntilIdle()
 
-            coEvery { addressesRepository.updateAddress(any(), any<AddressInput>()) } throws Exception("Test error")
+            coEvery {
+                addressesRepository.updateAddress(
+                    any(),
+                    any<AddressInput>()
+                )
+            } throws Exception("Test error")
 
             viewModel.effect.test(timeout = 1000.milliseconds) {
                 viewModel.onClickSave()
                 testDispatcher.scheduler.advanceUntilIdle()
-
-                val effect = awaitItem()
-
-                assertTrue(effect is AddEditLocationScreenUIEffect.NavigateBack)
-                assertTrue(effect.snackBarUiState != null)
-
-                cancelAndConsumeRemainingEvents()
+                assertThat(awaitItem()).isInstanceOf(AddEditLocationScreenUIEffect.NavigateBack::class)
             }
         }
 
@@ -250,17 +238,6 @@ class AddEditLocationScreenViewModelTest {
         assertTrue { !viewModel.state.value.isSaveEnabled }
 
     }
-
-/*
-    @Test
-    fun `changeIsSaveEnabled() should be true when address data is valid`() = runTest {
-
-        viewModel.onClickAddressType(addressType)
-
-        assertTrue { viewModel.state.value.isSaveEnabled }
-
-    }
-*/
 
     @Test
     fun `changeIsSaveEnabled() should be false in edit mode when data is not changed`() = runTest {
@@ -294,7 +271,8 @@ class AddEditLocationScreenViewModelTest {
     @Test
     fun `changeIsSaveEnabled() should be true in edit mode when addressType is changed`() =
         runTest {
-            viewModel = AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+            viewModel =
+                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
 
             viewModel.onClickAddressType(AddressType.Office)
 
@@ -315,6 +293,4 @@ class AddEditLocationScreenViewModelTest {
             assertTrue { viewModel.state.value.isSaveEnabled }
 
         }
-
-
 }

@@ -54,7 +54,12 @@ fun PanelScaffold(
 
                     isLoading -> {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            DotsProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                            DotsProgressIndicator(
+                                modifier = Modifier
+                                    .align(Alignment.Center),
+                                dotSize = 16.dp,
+                                spaceBetween = 4.dp
+                            )
                         }
                     }
 

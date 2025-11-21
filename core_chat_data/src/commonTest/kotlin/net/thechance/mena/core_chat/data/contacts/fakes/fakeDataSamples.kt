@@ -107,12 +107,14 @@ fun createMessageDto(
     id: String = Uuid.random().toString(),
     name: String = "Test Chat",
     imageUrl: String? = null,
-    requesterId: String = Uuid.random().toString()
+    requesterId: String = Uuid.random().toString(),
+    receiverId: String = Uuid.random().toString()
 ) = ChatDto(
     id = id,
     name = name,
     imageUrl = imageUrl,
-    requesterId = requesterId
+    requesterId = requesterId,
+    receiverId = receiverId
 )
 
 fun createLastMessageDto(

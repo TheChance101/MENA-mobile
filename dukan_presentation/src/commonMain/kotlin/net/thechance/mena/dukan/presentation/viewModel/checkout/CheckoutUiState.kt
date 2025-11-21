@@ -21,11 +21,14 @@ data class CheckoutUiState(
     val isTransactionLoading: Boolean = false
 ) {
     data class Address(
-        val label: String = "",
+        val label: AddressLabel = AddressLabel.Home,
         val street: String = "",
         val latitude: Double = 0.0,
         val longitude: Double = 0.0,
     )
+    enum class AddressLabel{
+        Home, Office, Other;
+    }
 
     data class CartItem(
         val id: String = "",

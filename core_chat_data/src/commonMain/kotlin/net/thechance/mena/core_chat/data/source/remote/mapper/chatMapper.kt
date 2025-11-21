@@ -18,31 +18,41 @@ import net.thechance.mena.core_chat.domain.entity.ImageData.*
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-fun MessageDto.toDomain(): Message {
+suspend fun MessageDto.toDomain(quranService: QuranService): Message {
     return Message(
         id = (id).toUuid(),
         senderId = (senderId).toUuid(),
         chatId = (chatId).toUuid(),
         sendAt = Instant.parse(sendAt).toLocalDateTime(),
         status = if (isRead) MessageStatus.READ else MessageStatus.SENT,
-        content = content.toDomain(),
+        content = content.toDomain(quranService),
         reactions = reactions.map(MessageReactionDto::toDomain),
         isMine = isMine
     )
 }
 
-fun MessageContentDto.toDomain(): MessageContent {
-    return when(this) {
+suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageContent {
+    return when (this) {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
-        is MessageContentDto.Money -> MessageContent.Text(amount.toString())
+        is MessageContentDto.Money -> MessageContent.Money(amount=amount)
+        is MessageContentDto.Ayah -> {
+            val surahName = quranService.getSurahDetails(surahNumber).name
+            MessageContent.Ayah(
+                surahId = surahNumber,
+                ayahContent = ayahContent,
+                ayahNumber = ayahNumber,
+                surahName = surahName
+            )
+        }
     }
 }
 
@@ -59,7 +69,8 @@ fun ChatDto.toDomain(): Chat {
         id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId.toUuid()
+        requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -68,7 +79,8 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
         id = id,
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId
+        requesterId = requesterId,
+        receiverId = receiverId
     )
 }
 
@@ -78,6 +90,7 @@ fun CachedChatLocalDto.toDomain(): Chat {
         imageUrl = imageUrl,
         name = name,
         requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -90,7 +103,10 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
     val audioData = if (content is MessageContent.Audio) content.data else null
     val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audio = if (audioData is AudioData.AudioByteArray) audioData.byteArray else null
-
+    val surahId = if (content is MessageContent.Ayah) content.surahId else null
+    val surahName = if (content is MessageContent.Ayah) content.surahName else null
+    val ayahText = if (content is MessageContent.Ayah) content.ayahContent else null
+    val ayahNumber = if (content is MessageContent.Ayah) content.ayahNumber else null
 
 
     return PendingMessageLocalDto(
@@ -100,6 +116,10 @@ fun Message.toPendingMessageLocalDto(): PendingMessageLocalDto {
         image = image,
         audio = audio,
         audioDurationMs = audioDuration,
+        surahId = surahId,
+        surahName = surahName,
+        ayahText = ayahText,
+        ayahNumber = ayahNumber,
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         status = status
@@ -116,8 +136,10 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val audioData = if (content is MessageContent.Audio) content.data else null
     val audioDuration = if (content is MessageContent.Audio) content.audioDurationMs else null
     val audioUrl = if (audioData is AudioData.AudioUrl) audioData.url else null
-
-
+    val surahId = if (content is MessageContent.Ayah) content.surahId else null
+    val surahName = if (content is MessageContent.Ayah) content.surahName else null
+    val ayahText = if (content is MessageContent.Ayah) content.ayahContent else null
+    val ayahNumber = if (content is MessageContent.Ayah) content.ayahNumber else null
 
     return CachedMessageLocalDto(
         id = this.id.toString(),
@@ -126,6 +148,10 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         imageUrl = imageUrl,
         audioUrl = audioUrl,
         audioDurationMs = audioDuration,
+        surahId = surahId,
+        surahName = surahName,
+        ayahText = ayahText,
+        ayahNumber = ayahNumber,
         reactions = reactions.toLocalDto(),
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
@@ -164,6 +190,9 @@ fun CachedMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         imageUrl != null -> MessageContent.Image(ImageData.ImageUrl(imageUrl))
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
+        ayahText != null && surahName != null && surahId != null && ayahNumber != null ->
+            MessageContent.Ayah(surahId, surahName, ayahText, ayahNumber)
+
         else -> error("Invalid message content")
     }
 
@@ -184,6 +213,8 @@ fun PendingMessageLocalDto.toDomain(): Message {
         text != null -> MessageContent.Text(text)
         image != null -> MessageContent.Image(ImageData.ImageByteArray(image))
         audio != null -> MessageContent.Audio(AudioData.AudioByteArray(audio), audioDurationMs)
+        ayahText != null && surahName != null && surahId != null && ayahNumber != null ->
+            MessageContent.Ayah(surahId, surahName, ayahText, ayahNumber)
         else -> error("Invalid message content")
     }
 
@@ -214,14 +245,13 @@ fun DeleteChatDto.toDomain(): DeleteChatEvent {
     )
 }
 
-fun List<MessageDto>.toListOfMessages(): List<Message> {
-    return mapNotNull { it.toDomain() }
+suspend fun List<MessageDto>.toListOfMessages(quranService: QuranService): List<Message> {
+    return mapNotNull { it.toDomain(quranService) }
 }
 
-
-fun PagedDataDto<MessageDto>.toPagedListOfMessages(): PagedData<Message> {
+suspend fun PagedDataDto<MessageDto>.toPagedListOfMessages(quranService: QuranService): PagedData<Message> {
     return PagedData(
-        data = data.toListOfMessages(),
+        data = data.toListOfMessages(quranService),
         totalItems = totalItems,
         isLastPage = pageNumber >= totalPages
     )

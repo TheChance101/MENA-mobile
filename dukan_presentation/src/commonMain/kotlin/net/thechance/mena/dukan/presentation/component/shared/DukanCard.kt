@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.component.shared
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -26,6 +25,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -91,13 +91,13 @@ private fun BoxScope.DukanCardContent(
             .skeletonLoading(isLoading = isLoading)
     )
     if (isError || isLoading) {
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.ic_no_image_loaded),
             contentDescription = null,
+            tint = Theme.colorScheme.primary.primary,
             modifier = Modifier
                 .size(64.dp)
                 .align(Alignment.Center),
-            contentScale = ContentScale.Fit
         )
     }
     Box(
@@ -123,7 +123,7 @@ private fun BoxScope.DukanCardContent(
 
     Text(
         text = title,
-        color = Theme.colorScheme.primary.onPrimary,
+        color = Color.White,
         style = Theme.typography.title.small,
         maxLines = 1,
         modifier = Modifier

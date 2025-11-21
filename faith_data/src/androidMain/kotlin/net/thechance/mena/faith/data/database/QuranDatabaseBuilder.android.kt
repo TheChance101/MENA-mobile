@@ -7,8 +7,7 @@ actual class QuranDatabaseBuilder(private val context: Context) {
     actual fun getBuilder() = Room.databaseBuilder<QuranDatabase>(
         context = context.applicationContext,
         name = DATABASE_NAME
-    ).fallbackToDestructiveMigration(false)
-        .createFromAsset(databaseUri.removePrefix(pathPrefix))
+    ).createFromAsset(databaseUri.removePrefix(pathPrefix))
 
     internal actual val pathPrefix: String
         get() = "file:///android_asset/"

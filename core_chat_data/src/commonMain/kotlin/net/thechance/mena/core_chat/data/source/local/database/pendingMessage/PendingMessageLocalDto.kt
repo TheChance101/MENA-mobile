@@ -18,6 +18,14 @@ data class PendingMessageLocalDto(
     val audio: ByteArray? = null,
     @ColumnInfo(name = "audio_duration_ms")
     val audioDurationMs: Long? = null,
+    @ColumnInfo(name = "surah_id")
+    val surahId: Int? = null,
+    @ColumnInfo(name = "surah_name")
+    val surahName: String? = null,
+    @ColumnInfo(name = "ayah_number")
+    val ayahNumber: Int? = null,
+    @ColumnInfo(name = "ayah_text")
+    val ayahText: String? = null,
     @ColumnInfo(name = "timestamp")
     val timestamp: Long,
     @ColumnInfo(name = "chat_id")

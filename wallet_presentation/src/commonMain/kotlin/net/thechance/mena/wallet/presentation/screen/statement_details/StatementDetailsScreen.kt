@@ -8,20 +8,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.back_button
-import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share_
 import mena.wallet_presentation.generated.resources.share_button_title
 import mena.wallet_presentation.generated.resources.share_pdf
 import mena.wallet_presentation.generated.resources.statement
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.WalletScaffold
@@ -72,6 +72,8 @@ private fun StatementDetailsContent(
     state: StatementDetailsScreenState,
     listener: StatementDetailsInteractionListener
 ) {
+    var pagesReady by remember { mutableStateOf(false) }
+
     WalletScaffold(
         modifier = Modifier
             .background(Theme.colorScheme.background.surface)
@@ -86,7 +88,7 @@ private fun StatementDetailsContent(
         },
         isLoading = state.isLoading,
         bottomContent = {
-            if (state.statement.isNotEmpty()) {
+            if (pagesReady && state.statement.isNotEmpty()) {
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -103,7 +105,9 @@ private fun StatementDetailsContent(
         },
         errorState = state.errorState
     ) {
-        PdfViewer(pdf = state.statement)
+        PdfViewer(pdf = state.statement) { ready ->
+            pagesReady = ready
+        }
     }
 }
 

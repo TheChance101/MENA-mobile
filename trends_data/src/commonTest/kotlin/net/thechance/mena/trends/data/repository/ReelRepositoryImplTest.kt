@@ -10,6 +10,7 @@ import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import io.ktor.client.HttpClient
+import io.ktor.client.request.post
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -20,21 +21,27 @@ import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
+import net.thechance.mena.trends.data.local.database.UserEngagement
 import net.thechance.mena.trends.data.local.database.UserEngagementDao
 import net.thechance.mena.trends.data.remote.mapper.toUserEngagement
+import net.thechance.mena.trends.data.remote.repository.CategoryRepositoryImpl
 import net.thechance.mena.trends.data.remote.repository.ReelsRepositoryImpl
 import net.thechance.mena.trends.data.repository.util.VideoFileHandlerMock
 import net.thechance.mena.trends.data.repository.util.addViewReelResponse
+import net.thechance.mena.trends.data.repository.util.createCategoryHttpClient
 import net.thechance.mena.trends.data.repository.util.createReelsHttpClient
 import net.thechance.mena.trends.data.repository.util.deleteReelResponse
 import net.thechance.mena.trends.data.repository.util.fakeReelList
 import net.thechance.mena.trends.data.repository.util.fakeReelUrls
 import net.thechance.mena.trends.data.repository.util.getReelUrlsResponse
 import net.thechance.mena.trends.data.repository.util.getReelsResponse
+import net.thechance.mena.trends.data.repository.util.patchUserInterestsResponse
+import net.thechance.mena.trends.data.repository.util.sendEngagements
 import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.data.util.NetworkEndpoint.WATCH_TIME_ENDPOINT
 import net.thechance.mena.trends.domain.model.ReelWatchSession
 import net.thechance.mena.trends.domain.model.UploadReelProgress
 import kotlin.test.Test
@@ -401,6 +408,46 @@ internal class ReelRepositoryImplTest {
             }
         }
 
+    @Test
+    fun `should call getUserEngagementsBeforeGivenTime when getFeedReels success`() = runTest {
+        everySuspend { userRepository.getUser() } returns user
+
+        networkClient = createReelsHttpClient { getReelsResponse() }
+        repository = ReelsRepositoryImpl(
+            networkClient,
+            uploadClient,
+            videoHandler,
+            userRepository,
+            userEngagementDao
+        )
+
+        repository.getFeedReels(page = 1)
+
+        verifySuspend { userEngagementDao.getUserEngagementsBeforeGivenTime(any(), any()) }
+    }
+
+    @Test
+    fun `should call sendEngagements if dao returns list with at least one item`() = runTest {
+        everySuspend { userRepository.getUser() } returns user
+        everySuspend { userEngagementDao.getUserEngagementsBeforeGivenTime(any(), any()) } returns fakeEngagements
+
+        networkClient = createReelsHttpClient {
+            getReelsResponse()
+            sendEngagements()
+        }
+        repository = ReelsRepositoryImpl(
+            networkClient,
+            uploadClient,
+            videoHandler,
+            userRepository,
+            userEngagementDao
+        )
+
+        repository.getFeedReels(page = 1)
+
+        verifySuspend { userEngagementDao.deleteUserEngagementsBeforeGivenTime(any(), any()) }
+    }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
@@ -425,6 +472,18 @@ internal class ReelRepositoryImplTest {
                 username = "hend123",
                 birthDate = LocalDate(1995, 11, 15),
                 gender = Gender.FEMALE
+            )
+        )
+
+        val fakeEngagements = listOf(
+            UserEngagement(
+                id = 1,
+                userId = Uuid.random().toString(),
+                trendId = "trend123",
+                watchStartTime = LocalDateTime(2025, 11, 20, 1, 1),
+                watchEndTime = LocalDateTime(2025, 11, 20, 1, 2),
+                percentageOfVideoWatched = 100f,
+                videoDurationInMilliseconds = 1000L
             )
         )
     }

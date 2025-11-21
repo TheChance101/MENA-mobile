@@ -218,7 +218,8 @@ class ContactsViewModelTest {
             id = Uuid.random(),
             imageUrl = null,
             name = "John Doe",
-            requesterId = Uuid.random()
+            requesterId = Uuid.random(),
+            receiverId = Uuid.random()
         )
     }
 }

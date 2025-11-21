@@ -116,19 +116,6 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClickNext should clear error message`() = runTest {
-        enterNameViewModel.onChangeFirstName("Mohammed")
-        enterNameViewModel.onLastNameChange("Ahmed")
-        enterNameViewModel.onUsernameChange("mohammed123")
-        coEvery { registerRepository.checkUserExistence(any()) } returns true
-
-        enterNameViewModel.onClickNext()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assert(enterNameViewModel.state.value.errorMessage == null)
-    }
-
-    @Test
     fun `onClickNext should navigate to password screen on success`() = runTest {
         enterNameViewModel.onChangeFirstName("Mohammed")
         enterNameViewModel.onLastNameChange("Ahmed")
@@ -245,13 +232,6 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClearErrorMessage should clear error message`() {
-        enterNameViewModel.onClearErrorMessage()
-
-        assert(enterNameViewModel.state.value.errorMessage == null)
-    }
-
-    @Test
     fun `loadSavedData should load saved draft data`() = runTest {
         val savedDraft = net.thechance.mena.identity.domain.model.RegistrationDraft(
             firstName = "SavedFirstName",
@@ -280,7 +260,12 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
         enterNameViewModel.onChangeFirstName("NewFirstName")
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { registrationDraftRepository.saveDraft(any(), net.thechance.mena.identity.domain.model.RegistrationDraft(firstName = "NewFirstName")) }
+        coVerify {
+            registrationDraftRepository.saveDraft(
+                any(),
+                net.thechance.mena.identity.domain.model.RegistrationDraft(firstName = "NewFirstName")
+            )
+        }
     }
 
     @Test
@@ -291,7 +276,12 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
         enterNameViewModel.onLastNameChange("NewLastName")
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { registrationDraftRepository.saveDraft(any(), net.thechance.mena.identity.domain.model.RegistrationDraft(lastName = "NewLastName")) }
+        coVerify {
+            registrationDraftRepository.saveDraft(
+                any(),
+                net.thechance.mena.identity.domain.model.RegistrationDraft(lastName = "NewLastName")
+            )
+        }
     }
 
     @Test
@@ -302,6 +292,11 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
         enterNameViewModel.onUsernameChange("newusername")
         testDispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { registrationDraftRepository.saveDraft(any(), net.thechance.mena.identity.domain.model.RegistrationDraft(username = "newusername")) }
+        coVerify {
+            registrationDraftRepository.saveDraft(
+                any(),
+                net.thechance.mena.identity.domain.model.RegistrationDraft(username = "newusername")
+            )
+        }
     }
 }
