@@ -197,4 +197,7 @@
     <string name="empty_download_icon">أيقونة التحميل فارغة</string>
     <string name="empty_download_text">لا توجد تنزيلات</string>
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
+    <string name="remove_audio">حذف الصوت</string>
+    <string name="remove_audio_message">هل أنت متأكد أنك تريد حذف صوت هذا القارئ؟</string>
+
 </resources>

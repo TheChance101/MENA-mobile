@@ -9,11 +9,13 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import org.jetbrains.compose.resources.getString
 
 class ReciterSelectionViewModel(
     private val repository: QuranRepository,
+    private val searchRecitersUseCase: SearchRecitersUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<RecitersSelectionUiState, ReciterSelectionEffect>(
     RecitersSelectionUiState()
@@ -28,7 +30,6 @@ class ReciterSelectionViewModel(
     }
 
     override fun onBackClick() = sendEffect(ReciterSelectionEffect.NavigateBack)
-
 
     override fun onClearQueryClick() {
         updateState { it.copy(query = "") }
@@ -45,6 +46,7 @@ class ReciterSelectionViewModel(
 
         performSearchWithDelay(query)
     }
+
     override fun onSelectReciterClick(reciterId: Int) {
         tryToExecute(
             execute = { repository.saveDefaultReciter(reciterId) },
@@ -58,6 +60,7 @@ class ReciterSelectionViewModel(
             onSuccess = { id -> updateSelectedReciter(id.first()) },
         )
     }
+
     private fun updateSelectedReciter(reciterId: Int) {
         updateState { it.copy(selectedReciterId = reciterId) }
     }
@@ -72,8 +75,10 @@ class ReciterSelectionViewModel(
         )
     }
 
-    private suspend fun searchForReciter(query: String): List<Reciter> =
-        repository.searchForReciter(query)
+    private suspend fun searchForReciter(query: String): List<Reciter> {
+        val allReciters = repository.getReciters()
+        return searchRecitersUseCase(query, allReciters)
+    }
 
     private fun onSearchResultSuccess(reciters: List<Reciter>) {
         val searchResults = reciters.map { reciter ->

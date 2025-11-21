@@ -78,4 +78,33 @@
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
     <string name="sunrise">Sunrise</string>
+
+    <string name="weather_clear_sky">Clear sky</string>
+    <string name="weather_mainly_clear">Mainly clear</string>
+    <string name="weather_partly_cloudy">Partly cloudy</string>
+    <string name="weather_overcast">Overcast</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_depositing_rime_fog">Depositing rime fog</string>
+    <string name="weather_light_drizzle">Light drizzle</string>
+    <string name="weather_moderate_drizzle">Moderate drizzle</string>
+    <string name="weather_dense_drizzle">Dense drizzle</string>
+    <string name="weather_light_freezing_drizzle">Light freezing drizzle</string>
+    <string name="weather_dense_freezing_drizzle">Dense freezing drizzle</string>
+    <string name="weather_slight_rain">Slight rain</string>
+    <string name="weather_moderate_rain">Moderate rain</string>
+    <string name="weather_heavy_rain">Heavy rain</string>
+    <string name="weather_light_freezing_rain">Light freezing rain</string>
+    <string name="weather_heavy_freezing_rain">Heavy freezing rain</string>
+    <string name="weather_slight_snowfall">Slight snowfall</string>
+    <string name="weather_moderate_snowfall">Moderate snowfall</string>
+    <string name="weather_heavy_snowfall">Heavy snowfall</string>
+    <string name="weather_snow_grains">Snow grains</string>
+    <string name="weather_slight_rain_shower">Slight rain shower</string>
+    <string name="weather_moderate_rain_shower">Moderate rain shower</string>
+    <string name="weather_violent_rain_shower">Violent rain shower</string>
+    <string name="weather_slight_snow_shower">Slight snow shower</string>
+    <string name="weather_heavy_snow_shower">Heavy snow shower</string>
+    <string name="weather_moderate_thunderstorm">Moderate thunderstorm</string>
+    <string name="weather_slight_hail_thunderstorm">Thunderstorm with slight hail</string>
+    <string name="weather_heavy_hail_thunderstorm">Thunderstorm with heavy hail</string>
 </resources>

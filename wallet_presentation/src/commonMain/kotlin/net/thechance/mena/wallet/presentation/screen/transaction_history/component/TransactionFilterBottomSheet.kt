@@ -59,7 +59,7 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
         modifier = modifier.navigationBarsPadding(),
         stickyFooterContent = {
             StickyFooterContent(
-                hasActiveFilters = uiState.hasActiveFilters,
+                isApplyButtonEnabled = uiState.isApplyButtonEnabled,
                 isLoading = uiState.isApplyButtonLoading,
                 onClickAddFilter = onClickAddFilter
             )
@@ -99,7 +99,7 @@ fun ScaffoldScope.TransactionFilterBottomSheet(
 
 @Composable
 private fun StickyFooterContent(
-    hasActiveFilters: Boolean,
+    isApplyButtonEnabled: Boolean,
     isLoading: Boolean,
     onClickAddFilter: () -> Unit
 ) {
@@ -109,6 +109,7 @@ private fun StickyFooterContent(
             .fillMaxWidth()
             .background(Theme.colorScheme.background.surface)
             .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
             .padding(bottom = 24.dp)
             .padding(
                 bottom = WindowInsets.navigationBars.asPaddingValues()
@@ -117,7 +118,7 @@ private fun StickyFooterContent(
     ) {
         PrimaryButton(
             text = stringResource(Res.string.apply_filters),
-            isEnabled = hasActiveFilters,
+            isEnabled = isApplyButtonEnabled,
             isLoading = isLoading,
             onClick = onClickAddFilter,
             modifier = Modifier
