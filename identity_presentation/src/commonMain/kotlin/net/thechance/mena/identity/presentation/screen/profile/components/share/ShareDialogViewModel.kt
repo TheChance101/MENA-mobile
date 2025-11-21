@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.dialog
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import androidx.compose.ui.platform.Clipboard
 import androidx.lifecycle.ViewModel
@@ -21,10 +21,9 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
+import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import org.jetbrains.compose.resources.StringResource
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -88,45 +87,26 @@ class ShareDialogViewModel(
         )
     }
 
-    override fun onShowSnackBar(title: StringResource, message: StringResource) {
-        viewModelScope.launch {
-            updateState {
-                copy(
-                    showSnackBar = true,
-                    snackBarTitle = title,
-                    snackBarMessage = message
-                )
-            }
-        }
-    }
-
-    override fun onDismissSnackBar() {
-        updateState {
-            copy (
-                showSnackBar = false,
-            )
-        }
-    }
-
     private fun onDownloadSuccess() {
         viewModelScope.launch(dispatcher) {
             updateState { copy(isLoading = false) }
-            sendNewEffect(ShareQrCodeUIEffect.OnClickDownload)
+            sendNewEffect(ShareQrCodeUIEffect.ShowClickDownloadSnackBar)
         }
     }
 
     private fun onCopyToClipboardSuccess() {
         viewModelScope.launch(dispatcher) {
             updateState { copy(isLoading = false) }
-            sendNewEffect(ShareQrCodeUIEffect.OnCopyToClipBoard)
+            sendNewEffect(ShareQrCodeUIEffect.ShowCopyToClipBoardSnackBar)
         }
     }
 
     private fun onError(throwable: Throwable) {
-        _state.update {
-            it.copy(
-                isLoading = false,
-                errorMessage = Res.string.cant_save_qr_code
+        viewModelScope.launch(dispatcher) {
+            sendNewEffect(
+                ShareQrCodeUIEffect.ShowSnackBarError(
+                    errorStringResource = Res.string.cant_save_qr_code
+                )
             )
         }
     }

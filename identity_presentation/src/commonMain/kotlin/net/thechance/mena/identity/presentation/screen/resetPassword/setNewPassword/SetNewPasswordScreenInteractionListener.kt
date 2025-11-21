@@ -9,6 +9,5 @@ interface SetNewPasswordScreenInteractionListener : BaseInteractionListener {
     fun onToggleConfirmPasswordVisibility()
     fun onClickResetPassword()
     fun onClickBack()
-    fun onClearErrorMessage()
     fun onClickOk()
 }
