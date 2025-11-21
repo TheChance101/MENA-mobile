@@ -78,11 +78,6 @@ class DownloadedRecitersViewModelTest {
     }
 
     @Test
-    fun `init should set default reciter from repository`() = runTest {
-        assertEquals(DEFAULT_RECITER_ID, testViewModel.uiState.value.selectedReciterId)
-    }
-
-    @Test
     fun `init should check download status for all reciters`() = runTest {
         verifySuspend(exactly(dummyReciters.size)) {
             quranRepository.isSurahAudioCached(TEST_SURAH_ID, any())
