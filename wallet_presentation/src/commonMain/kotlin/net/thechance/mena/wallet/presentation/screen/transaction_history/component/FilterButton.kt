@@ -21,7 +21,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun FilterButton(
     activeFilterCount: Int,
-    hasActiveFilters: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,10 +43,7 @@ fun FilterButton(
             style = Theme.typography.label.small,
             color = Theme.colorScheme.primary.primary
         )
-        FilterCount(
-            activeFilterCount = activeFilterCount,
-            hasActiveFilters = hasActiveFilters
-        )
+        FilterCount(activeFilterCount = activeFilterCount)
     }
 }
 
@@ -56,7 +52,6 @@ fun FilterButton(
 private fun FilterButtonPreview() {
     FilterButton(
         activeFilterCount = 1,
-        hasActiveFilters = true,
         onClick = {}
     )
 }

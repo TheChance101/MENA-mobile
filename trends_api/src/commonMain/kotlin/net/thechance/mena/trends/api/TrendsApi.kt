@@ -4,5 +4,5 @@ import androidx.compose.runtime.Composable
 
 interface TrendsApi {
     @Composable
-    fun TabEntry()
+    fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit)
 }

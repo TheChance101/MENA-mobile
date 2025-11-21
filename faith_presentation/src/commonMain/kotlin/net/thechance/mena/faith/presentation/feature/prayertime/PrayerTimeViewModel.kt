@@ -196,7 +196,7 @@ class PrayerTimeViewModel(
 
         tryToExecute(
             execute = {
-                prayerTimeRepository.getPrayerTimeWithHijriDate(
+                prayerTimeRepository.getPrayerTimesByHijriDate(
                     date = formatIslamicDate(islamicDate),
                     isHijri = true,
                     address = address

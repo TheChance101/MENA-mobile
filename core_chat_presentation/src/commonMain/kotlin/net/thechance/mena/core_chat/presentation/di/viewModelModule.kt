@@ -22,6 +22,7 @@ internal val viewModelModule = module {
             messageRepository = get(),
             prayerTimeService = get(),
             locationService = get(),
+            weatherRepository = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER))
         )
     }
@@ -50,8 +51,10 @@ internal val viewModelModule = module {
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
         )
     }
-    viewModel { ChatEntryViewModel(get()) }
     viewModel {
-        ShareMessageViewModel(get(), get())
+        ChatEntryViewModel(get())
+    }
+    viewModel {
+        ShareMessageViewModel(get(), get(), get(), get())
     }
 }

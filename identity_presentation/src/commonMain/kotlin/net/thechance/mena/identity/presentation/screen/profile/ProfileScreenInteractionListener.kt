@@ -16,7 +16,6 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
     fun onLanguageClicked()
     fun onThemeSettingsClicked()
     fun onPrivacyAndPolicyClicked()
-    fun clearErrorMessage()
     fun onDismissLanguageDialog()
     fun onDismissThemeDialog()
     fun onDismissBottomSheet()
@@ -28,5 +27,4 @@ interface ProfileScreenInteractionListener : BaseInteractionListener {
     fun onSelectLanguage(appLanguage: AppLanguage)
     fun onConfirmThemeSelection()
     fun onSelectTheme(appTheme: AppTheme)
-    fun onDismissSnackBar()
 }

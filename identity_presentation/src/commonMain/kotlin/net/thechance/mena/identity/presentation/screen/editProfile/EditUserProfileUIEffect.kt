@@ -1,11 +1,14 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
-import androidx.compose.ui.graphics.ImageBitmap
+import org.jetbrains.compose.resources.StringResource
 
 sealed interface EditUserProfileUIEffect {
-    object NavigateBackToProfile : EditUserProfileUIEffect
+    data class NavigateBackToProfile(val successStringResource: StringResource? = null) : EditUserProfileUIEffect
+
     data class NavigateToCropScreen(
         val imageKey: String,
         val onResult: (String) -> Unit
     ) : EditUserProfileUIEffect
+
+    data class ShowSnackBarError(val errorStringResource: StringResource) : EditUserProfileUIEffect
 }

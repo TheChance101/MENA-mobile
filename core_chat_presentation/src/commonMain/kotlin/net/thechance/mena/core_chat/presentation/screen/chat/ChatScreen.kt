@@ -10,9 +10,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -25,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -43,9 +47,9 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHead
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
-import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -78,7 +82,11 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     AudioLifecycleObserver(viewModel)
 
-    EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
+    EffectsHandler(
+        effects = effects,
+        chatLazyListState = chatLazyListState,
+        onClickBackFromChat = onClickBackFromChat
+    )
 
     ChatScreenContent(
         state = state,
@@ -103,6 +111,8 @@ fun ChatScreenContent(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -120,36 +130,11 @@ fun ChatScreenContent(
                 )
             },
             bottomBar = {
-                AnimatedContent(
-                    targetState = state.isRecordingVoice,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    transitionSpec = {
-                        if (targetState) {
-                            slideInVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeIn() togetherWith
-                                    slideOutVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeOut()
-                        } else {
-                            slideInVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeIn() togetherWith
-                                    slideOutVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeOut()
-                        }
-                    },
-                    label = "ChatBarAnimation"
-                ) { isRecording ->
-                    if (isRecording) {
-                        RecordingBar(
-                            onSendClick =interactions::onSendRecordClicked,
-                            onCancelClick = interactions::onCancelRecordClicked
-                        )
-                    } else {
-                        ChatInputBar(
-                            userInput = state.inputMessage,
-                            onTextChange = interactions::onInputMessageChanged,
-                            onSendButtonClick = interactions::onSendTextMessageClicked,
-                            onAttachButtonClick = interactions::onAttachmentClicked,
-                            onVoiceRecordClick = interactions::onRecordClicked
-                        )
-                    }
-                }
+                ChatInputBarContent(
+                    state = state,
+                    interactions = interactions,
+                    modifier = Modifier.fillMaxWidth()
+                )
             },
             overlays = {
                 resendFailedMessageDialog(
@@ -164,7 +149,8 @@ fun ChatScreenContent(
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
-            }
+            },
+            modifier = Modifier.imePadding()
         ) {
             ChatList(
                 items = state.chatListItems,
@@ -176,6 +162,10 @@ fun ChatScreenContent(
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
                 onLinkClick = interactions::onLinkClicked,
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
             )
         }
 
@@ -241,6 +231,43 @@ fun AudioLifecycleObserver(viewModel: ChatViewModel) {
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
             viewModel.onStopAudioPlayback()
+        }
+    }
+}
+
+@Composable
+private fun ChatInputBarContent(
+    state: ChatScreenState,
+    interactions: ChatInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+        targetState = state.isRecordingVoice,
+        modifier = modifier,
+        transitionSpec = {
+            if (targetState) {
+                slideInVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeIn() togetherWith
+                        slideOutVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeOut()
+            } else {
+                slideInVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeIn() togetherWith
+                        slideOutVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeOut()
+            }
+        },
+        label = "ChatBarAnimation"
+    ) { isRecording ->
+        if (isRecording) {
+            RecordingBar(
+                onSendClick = interactions::onSendRecordClicked,
+                onCancelClick = interactions::onCancelRecordClicked,
+            )
+        } else {
+            ChatInputBar(
+                userInput = state.inputMessage,
+                onTextChange = interactions::onInputMessageChanged,
+                onSendButtonClick = interactions::onSendTextMessageClicked,
+                onAttachButtonClick = interactions::onAttachmentClicked,
+                onVoiceRecordClick = interactions::onRecordClicked,
+            )
         }
     }
 }

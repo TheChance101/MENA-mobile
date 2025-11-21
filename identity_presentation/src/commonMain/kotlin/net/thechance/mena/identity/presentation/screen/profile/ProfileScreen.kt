@@ -16,12 +16,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.download_app_title
 import mena.identity_presentation.generated.resources.profile_title
@@ -33,6 +31,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
@@ -44,18 +43,17 @@ import net.thechance.mena.identity.presentation.screen.profile.components.Invite
 import net.thechance.mena.identity.presentation.screen.profile.components.LanguageDialog
 import net.thechance.mena.identity.presentation.screen.profile.components.OtherSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.ProfileInfoContainer
-import net.thechance.mena.identity.presentation.screen.profile.components.ProfileSnackBar
 import net.thechance.mena.identity.presentation.screen.profile.components.ShareIcon
 import net.thechance.mena.identity.presentation.screen.profile.components.ThemeDialog
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareQrCode
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.ShareSheet
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
+import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.ShareSheet
 import org.jetbrains.compose.resources.stringResource
 
 class ProfileScreen : BaseScreen<
-        ProfileScreenViewModel,
-        ProfileScreenUIState,
-        ProfileScreenUIEffect,
-        ProfileScreenInteractionListener>() {
+    ProfileScreenViewModel,
+    ProfileScreenUIState,
+    ProfileScreenUIEffect,
+    ProfileScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -108,12 +106,6 @@ class ProfileScreen : BaseScreen<
                         onDismissShareDialog = listener::onDismissShareDialog,
                     )
                 }
-            },
-            snakeBar = {
-                ProfileSnackBar(
-                    snackBarState = state.snackBarUiState,
-                    onDismiss = listener::onDismissSnackBar,
-                )
             },
             topBar = {
                 AppBar(
@@ -198,18 +190,15 @@ class ProfileScreen : BaseScreen<
                         )
                     }
                 }
-
-                LaunchedEffect(state.errorMessage) {
-                    delay(3000)
-                    listener.clearErrorMessage()
-                }
             }
         }
     }
 
 
     override fun onEffect(
-        effect: ProfileScreenUIEffect, navigator: Navigator
+        effect: ProfileScreenUIEffect,
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
             ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
@@ -225,11 +214,17 @@ class ProfileScreen : BaseScreen<
             }
 
             is ProfileScreenUIEffect.NavigateToChangePasswordScreen -> {
-                navigator.push(ChangePasswordScreen(effect.onSuccess))
+                navigator.push(ChangePasswordScreen())
             }
 
             ProfileScreenUIEffect.NavigateToPrivacyAndPolicyScreen -> {
                 navigator.push(PrivacyAndPolicyScreen())
+            }
+
+            is ProfileScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }

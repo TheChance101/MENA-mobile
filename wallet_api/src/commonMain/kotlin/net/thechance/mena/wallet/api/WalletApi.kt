@@ -6,8 +6,16 @@ import kotlin.uuid.Uuid
 
 interface WalletApi {
     @Composable
-    fun WalletEntry(navigateBack: () -> Unit)
+    fun WalletEntry(
+        navigateBack: () -> Unit,
+        updateBottomNavigationVisibility: (Boolean) -> Unit,
+    )
+
     @OptIn(ExperimentalUuidApi::class)
     @Composable
-    fun ConfirmPaymentEntry(transactionId: Uuid, navigateBack: () -> Unit)
+    fun ConfirmPaymentEntry(
+        transactionId: Uuid,
+        navigateBack: () -> Unit,
+        updateBottomNavigationVisibility: (Boolean) -> Unit,
+    )
 }

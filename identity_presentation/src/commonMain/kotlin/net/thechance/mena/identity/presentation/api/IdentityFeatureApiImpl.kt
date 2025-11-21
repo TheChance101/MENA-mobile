@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.api
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,8 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
+import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
@@ -23,16 +26,19 @@ import net.thechance.mena.identity.presentation.screen.register.uploadProfileIma
 import org.koin.compose.koinInject
 
 class IdentityFeatureApiImpl : IdentityFeatureApi {
+
     @Composable
     override fun ProfileTabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
         val initialScreen = ProfileScreen()
-        Navigator(initialScreen) { navigator ->
-            val current = navigator.lastItem
-            LaunchedEffect(current.key) {
-                updateBottomNavigationVisibility(current == initialScreen)
-            }
+        IdentityFeatureRoot {
+            Navigator(initialScreen) { navigator ->
+                val current = navigator.lastItem
+                LaunchedEffect(current.key) {
+                    updateBottomNavigationVisibility(current == initialScreen)
+                }
 
-            FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
+                FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
+            }
         }
     }
 
@@ -42,16 +48,36 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val registrationDraftRepository: RegistrationDraftRepository = koinInject()
 
         val loginScreen = remember { LoginScreen() }
-        
+
         val initialScreen = determineInitialScreenOnce(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository
         )
 
-        RenderScreenWithNavigator(
-            targetScreen = initialScreen,
-            defaultScreen = loginScreen
-        )
+        IdentityFeatureRoot {
+            RenderScreenWithNavigator(
+                targetScreen = initialScreen,
+                defaultScreen = loginScreen
+            )
+        }
+    }
+
+    @Composable
+    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
+        IdentityFeatureRoot {
+            Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
+        }
+    }
+
+    @Composable
+    private fun IdentityFeatureRoot(content: @Composable () -> Unit) {
+        val snackBarController = remember { IdentitySnackBarController() }
+
+        CompositionLocalProvider(
+            LocalSnackBarController provides snackBarController
+        ) {
+            content()
+        }
     }
 
     @Composable
@@ -76,15 +102,35 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         return initialScreen
     }
 
+    @Composable
+    private fun RenderScreenWithNavigator(
+        targetScreen: Any?,
+        defaultScreen: LoginScreen
+    ) {
+        when (targetScreen) {
+            is UploadProfileImageScreen -> {
+                Navigator(targetScreen)
+            }
+
+            is AccountCreatedScreen -> {
+                Navigator(targetScreen)
+            }
+
+            else -> {
+                Navigator(defaultScreen)
+            }
+        }
+    }
+
     private suspend fun determineInitialScreen(
         authenticationRepository: AuthenticationRepository,
         registrationDraftRepository: RegistrationDraftRepository
     ): Any {
         val authTokens = authenticationRepository.getAuthTokens()
-            ?: return LoginScreen()
+                         ?: return LoginScreen()
 
         val lastPhoneNumber = registrationDraftRepository.getLastPhoneNumber()
-            ?: return LoginScreen()
+                              ?: return LoginScreen()
 
         return getRegistrationFlowScreen(
             authTokens = authTokens,
@@ -99,7 +145,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         registrationDraftRepository: RegistrationDraftRepository
     ): Any {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
-        
+
         return if (imageUploadCompleted) {
             AccountCreatedScreen(authTokens = authTokens, phoneNumber = lastPhoneNumber)
         } else {
@@ -108,28 +154,5 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 phoneNumber = lastPhoneNumber
             )
         }
-    }
-
-    @Composable
-    private fun RenderScreenWithNavigator(
-        targetScreen: Any?,
-        defaultScreen: LoginScreen
-    ) {
-        when (targetScreen) {
-            is UploadProfileImageScreen -> {
-                Navigator(targetScreen)
-            }
-            is AccountCreatedScreen -> {
-                Navigator(targetScreen)
-            }
-            else -> {
-                Navigator(defaultScreen)
-            }
-        }
-    }
-
-    @Composable
-    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
     }
 }

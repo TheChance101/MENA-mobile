@@ -171,6 +171,7 @@ private fun SendButton(
         Icon(
             painter = painterResource(Res.drawable.ic_send),
             contentDescription = null,
+            tint = Theme.colorScheme.primary.onPrimary,
             modifier = Modifier.size(20.dp)
         )
     }
