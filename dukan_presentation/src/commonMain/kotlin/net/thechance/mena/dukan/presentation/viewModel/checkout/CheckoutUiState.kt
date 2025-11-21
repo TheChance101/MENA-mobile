@@ -10,6 +10,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 data class CheckoutUiState(
     val cartId: Uuid = Uuid.random(),
+    val dukanId: String = "",
     val deliveryAddress: Address = Address(),
     val items: Flow<PagingData<CartItem>> = emptyFlow(),
     val isCheckoutImplementedDialogVisible: Boolean = false,

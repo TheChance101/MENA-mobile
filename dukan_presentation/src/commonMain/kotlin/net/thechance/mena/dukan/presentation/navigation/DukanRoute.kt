@@ -64,5 +64,5 @@ sealed interface DukanRoute {
     data class DukanLocation(val latitude: Double, val longitude: Double) : DukanRoute
 
     @Serializable
-    data class ConfirmPaymentScreenRoute(val transactionId: String) : DukanRoute
+    data class ConfirmPaymentScreenRoute(val transactionId: String, val dukanId: String) : DukanRoute
 }

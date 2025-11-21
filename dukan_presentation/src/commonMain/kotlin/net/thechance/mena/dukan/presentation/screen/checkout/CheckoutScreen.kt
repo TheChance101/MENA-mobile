@@ -57,7 +57,7 @@ fun CheckoutScreen(
             }
 
             is CheckoutEffect.NavigateToConfirmPayment -> {
-                navController.navigate(DukanRoute.ConfirmPaymentScreenRoute(effect.transactionId))
+                navController.navigate(DukanRoute.ConfirmPaymentScreenRoute(effect.transactionId, state.dukanId))
             }
         }
     }

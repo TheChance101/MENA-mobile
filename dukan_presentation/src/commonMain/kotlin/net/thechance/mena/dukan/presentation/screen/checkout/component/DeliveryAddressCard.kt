@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalUuidApi::class)
 package net.thechance.mena.dukan.presentation.screen.checkout.component
 
 import androidx.compose.animation.AnimatedContent
@@ -153,7 +154,6 @@ private fun EditAddressIcon() {
     )
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
 private fun DeliveryAddressCardHomePreview() {

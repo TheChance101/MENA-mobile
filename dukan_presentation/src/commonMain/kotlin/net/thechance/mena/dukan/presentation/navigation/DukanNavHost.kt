@@ -112,7 +112,10 @@ fun DukanNavHost(
                 val route: DukanRoute.ConfirmPaymentScreenRoute = backStackEntry.toRoute()
                 walletApi.ConfirmPaymentEntry(
                     transactionId = Uuid.parse(route.transactionId),
-                    navigateBack = { navController.popBackStack() }
+                    navigateBack = { navController.popBackStack(DukanRoute.DukanDetails(route.dukanId), false) },
+                    updateBottomNavigationVisibility = {
+                        true
+                    }
                 )
             }
             composable<DukanRoute.DukanLocation> {

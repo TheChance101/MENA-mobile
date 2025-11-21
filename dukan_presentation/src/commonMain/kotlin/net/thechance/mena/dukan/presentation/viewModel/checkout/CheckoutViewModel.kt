@@ -102,6 +102,7 @@ class CheckoutViewModel(
 
     private suspend fun getTotalCartPrice(): Cart {
         val args = savedStateHandle.toRoute<DukanRoute.CheckoutScreenRoute>()
+        updateState { copy(dukanId = args.dukanId) }
         return cartRepository.getCartInfo(args.dukanId)
     }
 
@@ -148,9 +149,11 @@ class CheckoutViewModel(
 
     private fun onConfirmOrderSuccess(transaction: Transaction) {
         emitEffect(CheckoutEffect.NavigateToConfirmPayment(transaction.transactionId.toString()))
+        updateState { copy(isTransactionLoading = false)}
     }
 
     private fun onConfirmOrderError(throwable: Throwable) {
+        updateState { copy(isTransactionLoading = false)}
         when (throwable) {
             is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
             else -> showSnackBar(message = Res.string.something_went_wrong)
