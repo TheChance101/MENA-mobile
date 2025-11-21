@@ -4,46 +4,37 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
+import io.ktor.utils.io.core.buildPacket
+import io.ktor.utils.io.core.writeFully
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 fun buildMosqueMultipart(
     name: String,
     address: String,
     latitude: Double,
     longitude: Double,
-    image: ByteArray
+    image: ByteArray,
 ): MultiPartFormDataContent {
-
-    val mosqueJson = Json.encodeToString(
-        MosqueRequest(
-            name = name,
-            address = address,
-            latitude = latitude,
-            longitude = longitude,
-            image = image
-        )
-    )
 
     return MultiPartFormDataContent(
         formData {
-            append(
-                key = "mosque",
-                value = mosqueJson,
+
+            append("name", name)
+            append("address", address)
+            append("latitude", latitude.toString())
+            append("longitude", longitude.toString())
+            appendInput(
+                key = "image",
                 headers = Headers.build {
-                    append(HttpHeaders.ContentType, "application/json")
-                    append(HttpHeaders.ContentDisposition, "form-data; name=\"mosque\"")
+                    append(HttpHeaders.ContentDisposition, "filename=\"${Uuid.random()}.jpg\"")
+                    append(HttpHeaders.ContentType, "image/jpeg")
                 }
-            )
+            ) {
+                buildPacket { writeFully(image) }
+            }
         }
     )
 }
 
-@Serializable
-data class MosqueRequest(
-    val name: String,
-    val address: String,
-    val  latitude: Double,
-    val longitude: Double,
-    val image: ByteArray,
-)

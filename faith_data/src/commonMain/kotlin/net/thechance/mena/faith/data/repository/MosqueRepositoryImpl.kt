@@ -13,17 +13,15 @@ class MosqueRepositoryImpl(
     private val mosqueApiService: MosqueApiService,
 ) : MosqueRepository {
     override suspend fun addMosque(mosque: Mosque, imageBytes: ByteArray) {
-
         executeApiSafely {
             val multipartBody = buildMosqueMultipart(
                 name = mosque.name,
                 address = mosque.address,
                 latitude = mosque.coordinates.latitude,
                 longitude = mosque.coordinates.longitude,
-                image = imageBytes,
+                image = imageBytes
             )
-            val response = mosqueApiService.createMosque(mosque = multipartBody)
-            response
+            mosqueApiService.createMosque(multipartBody)
         }
     }
 
@@ -31,7 +29,7 @@ class MosqueRepositoryImpl(
     override suspend fun getNearbyMosques(
         latitude: Double,
         longitude: Double,
-        radius: Double
+        radius: Double,
     ): List<Mosque> = executeApiSafely<List<MosqueDto>> {
         mosqueApiService.getNearbyMosques(latitude, longitude, radius)
     }.map { it.toMosque() }
