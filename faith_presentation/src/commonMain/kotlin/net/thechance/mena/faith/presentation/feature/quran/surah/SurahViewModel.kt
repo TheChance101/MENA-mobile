@@ -215,11 +215,13 @@ class SurahViewModel(
                 selectedAyahNumber = null
             )
         }
-        sendEffect(SurahScreenEffect.ShareAyah(
-            surahId = surahId.toString(),
-            ayahNumber = ayahNumber,
-            ayahContent = ayahContent,
-        ))
+        sendEffect(
+            SurahScreenEffect.ShareAyah(
+                surahId = surahId.toString(),
+                ayahNumber = ayahNumber,
+                ayahContent = ayahContent,
+            )
+        )
     }
 
     private fun playAyah(ayahNumber: Int) {
@@ -244,7 +246,12 @@ class SurahViewModel(
         val isPlaying = uiState.value.isAyahSoundPlaying
 
         if (isPlaying) quranPlayer.pauseAyah()
-        else quranPlayer.playAyah(currentUrl)
+        else quranPlayer.playAyah(
+            currentUrl,
+            uiState.value.surahName,
+            uiState.value.selectedAyahNumber ?: 0,
+            uiState.value.currentReciter.name,
+        )
 
         updateState { it.copy(isAyahSoundPlaying = !isPlaying) }
     }
@@ -303,7 +310,12 @@ class SurahViewModel(
                 currentPlayingAyahNumber = it.selectedAyahNumber
             )
         }
-        quranPlayer.playAyah(ayahSoundUrl)
+        quranPlayer.playAyah(
+            ayahSoundUrl,
+            uiState.value.surahName,
+            uiState.value.selectedAyahNumber ?: 0,
+            uiState.value.currentReciter.name,
+        )
         updatePlayPause()
     }
 
@@ -319,7 +331,12 @@ class SurahViewModel(
                         currentPlayingAyahNumber = it.selectedAyahNumber
                     )
                 }
-                quranPlayer.playAyah(ayahSoundUrl)
+                quranPlayer.playAyah(
+                    ayahSoundUrl,
+                    uiState.value.surahName,
+                    uiState.value.selectedAyahNumber ?: 0,
+                    uiState.value.currentReciter.name,
+                )
             },
             onSuccess = { updateSurahPlayback() })
     }
