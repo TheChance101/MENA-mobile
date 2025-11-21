@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -72,7 +73,8 @@ private fun WeatherAndPrayerContent(
             painter = painterResource(Res.drawable.prayer_weather_pattern_shape),
             contentDescription = null,
             contentScale = ContentScale.Fit,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp)
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 8.dp),
+            colorFilter = ColorFilter.tint(Theme.colorScheme.primary.onPrimary)
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(
@@ -128,7 +130,7 @@ private fun RowInfoCard(
             Image(
                 painter = leadingIcon,
                 contentDescription = null,
-                modifier = Modifier
+                colorFilter = ColorFilter.tint(Theme.colorScheme.primary.onPrimary)
             )
         }
         Text(

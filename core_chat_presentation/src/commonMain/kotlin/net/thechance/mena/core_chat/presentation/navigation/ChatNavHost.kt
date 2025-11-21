@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.setSingletonImageLoaderFactory
+import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.AnimatedSnackBarHost
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarHostController
@@ -35,6 +37,7 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 @Composable
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit = {},
     onNavigateBackFromChat: () -> Unit = {},
     onNavigateBackFromShareMessage: () -> Unit = {},
     startDestination: ChatRoute = HomeRoute
@@ -44,6 +47,16 @@ fun ChatNavHost(
     setSingletonImageLoaderFactory { coilImageLoader }
     val navController = rememberNavController()
     val snackBarHostController = remember { SnackBarHostController() }
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStack.collectLatest {
+            if (navController.currentDestination?.route in routsWithBottomNavigation) {
+                updateBottomNavigationVisibility(true)
+            } else {
+                updateBottomNavigationVisibility(false)
+            }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -63,12 +76,8 @@ fun ChatNavHost(
                 composable<ChatDetailsRoute> { ChatScreen(onClickBackFromChat = onNavigateBackFromChat) }
                 composable<WalletRoute> {
                     walletApi.WalletEntry(
-                        navigateBack = {
-                            navController.popBackStack()
-                        },
-                        updateBottomNavigationVisibility = {
-                            //pass updateBottomNavigationVisibility here
-                        },
+                        navigateBack = { navController.popBackStack() },
+                        updateBottomNavigationVisibility = updateBottomNavigationVisibility,
                     )
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
@@ -84,3 +93,8 @@ fun ChatNavHost(
         }
     }
 }
+
+private val routsWithBottomNavigation = listOf(
+    HomeRoute::class.qualifiedName,
+    WalletRoute::class.qualifiedName
+)

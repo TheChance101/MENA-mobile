@@ -13,31 +13,23 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -55,9 +47,9 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHead
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
+import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
-import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -90,7 +82,11 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     AudioLifecycleObserver(viewModel)
 
-    EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
+    EffectsHandler(
+        effects = effects,
+        chatLazyListState = chatLazyListState,
+        onClickBackFromChat = onClickBackFromChat
+    )
 
     ChatScreenContent(
         state = state,
@@ -115,11 +111,6 @@ fun ChatScreenContent(
         }
     }
 
-    val keyboardHeight = WindowInsets.ime.getBottom(LocalDensity.current)
-    val maxKeyboardHeight = rememberKeyboardMaxHeight()
-    val shouldAddOffset = remember(keyboardHeight) { keyboardHeight > maxKeyboardHeight * 0.53 }
-
-    val chatInputBarOffset = if (shouldAddOffset) Constants.NAVIGATION_BAR_HEIGHT else 0
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
@@ -138,6 +129,13 @@ fun ChatScreenContent(
                         .fillMaxWidth()
                 )
             },
+            bottomBar = {
+                ChatInputBarContent(
+                    state = state,
+                    interactions = interactions,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
             overlays = {
                 resendFailedMessageDialog(
                     showResendMessageDialog = state.isResendMessageDialogVisible,
@@ -151,32 +149,24 @@ fun ChatScreenContent(
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
-            }
+            },
+            modifier = Modifier.imePadding()
         ) {
-            Box(){
-                ChatList(
-                    items = state.chatListItems,
-                    chatAvatarUrl = state.chatAvatarUrl,
-                    chatListState = chatLazyListState,
-                    onMessageClick = interactions::onMessageClicked,
-                    onMessageImageClick = interactions::onMessageImageClicked,
-                    onMessageVoiceClick = interactions::onMessageVoiceClicked,
-                    onFailedMessageClick = interactions::onFailedMessageClicked,
-                    onMessageLongClick = interactions::onMessageLongClicked,
-                    onLinkClick = interactions::onLinkClicked,
-                    modifier = Modifier.imePadding()
-                        .padding(bottom = if (keyboardHeight > maxKeyboardHeight * 0.53) 0.dp else 80.dp)
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
-                )
-                ChatInputBarContent(
-                    state = state,
-                    interactions = interactions,
-                    modifier = Modifier
-                        .fillMaxWidth().align(Alignment.BottomCenter).imePadding().offset(y = chatInputBarOffset.dp)
-                )
-            }
+            ChatList(
+                items = state.chatListItems,
+                chatAvatarUrl = state.chatAvatarUrl,
+                chatListState = chatLazyListState,
+                onMessageClick = interactions::onMessageClicked,
+                onMessageImageClick = interactions::onMessageImageClicked,
+                onMessageVoiceClick = interactions::onMessageVoiceClicked,
+                onFailedMessageClick = interactions::onFailedMessageClicked,
+                onMessageLongClick = interactions::onMessageLongClicked,
+                onLinkClick = interactions::onLinkClicked,
+                modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
+            )
         }
 
         AnimatedVisibility(
@@ -313,22 +303,4 @@ private fun EffectsHandler(
             }
         }
     }
-}
-
-private object Constants{
-    const val NAVIGATION_BAR_HEIGHT = 74
-}
-
-@Composable
-private fun rememberKeyboardMaxHeight(): Int {
-    val density = LocalDensity.current
-    val imeBottom = WindowInsets.ime.getBottom(density)
-
-    var maxHeight by remember { mutableStateOf(0) }
-
-    if (imeBottom > maxHeight) {
-        maxHeight = imeBottom
-    }
-
-    return maxHeight
 }
