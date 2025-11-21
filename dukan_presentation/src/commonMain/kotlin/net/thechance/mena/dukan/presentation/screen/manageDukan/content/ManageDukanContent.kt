@@ -42,7 +42,7 @@ fun ManageDukanContent(
             ManageDukanUiState.ActivationStatus.ACTIVATED,
             ManageDukanUiState.ActivationStatus.ONHOLD -> ManageDukanScreenContent(state, listener)
 
-            ManageDukanUiState.ActivationStatus.DEACTIVATED -> DeactivatedDukanScreen(listener::onBackClicked)
+            ManageDukanUiState.ActivationStatus.DEACTIVATED -> DeactivatedDukanScreen()
         }
     }
 }
