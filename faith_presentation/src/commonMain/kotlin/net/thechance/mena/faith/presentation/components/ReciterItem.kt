@@ -18,13 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.delete
 import mena.faith_presentation.generated.resources.downloaded
 import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_tick_double_check
 import mena.faith_presentation.generated.resources.icon_download
 import mena.faith_presentation.generated.resources.icon_play
 import mena.faith_presentation.generated.resources.play
+import mena.faith_presentation.generated.resources.remove
 import mena.faith_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -55,7 +55,7 @@ fun ReciterItem(
         id = reciterId,
         onClick = { onDelete(reciterId) },
         backgroundIcon = painterResource(Res.drawable.ic_delete),
-        contentDescription = stringResource(Res.string.delete),
+        contentDescription = stringResource(Res.string.remove),
         cardContent = { contentModifier ->
             CardContent(
                 reciter = reciter,
