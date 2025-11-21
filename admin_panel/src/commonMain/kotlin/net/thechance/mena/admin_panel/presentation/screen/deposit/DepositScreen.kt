@@ -49,7 +49,7 @@ private fun DepositScreenContent(
         topBar = { DepositTopBar() },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         isLoading = state.isCountriesLoading,
-        errorState = state.errorState,                     // 👈 إضافة
+        errorState = state.errorState,
         onRetry = interactionListener::onRetryClicked
     ) {
         Box(
