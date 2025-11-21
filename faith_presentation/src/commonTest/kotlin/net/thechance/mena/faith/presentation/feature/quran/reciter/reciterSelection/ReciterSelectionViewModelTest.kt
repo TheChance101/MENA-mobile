@@ -10,6 +10,7 @@ import dev.mokkery.verify.VerifyMode.Companion.atLeast
 import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -48,6 +49,7 @@ class ReciterSelectionViewModelTest {
         everySuspend { downloadedRecitersArgs.surahId } returns TEST_SURAH_ID
         everySuspend { quranRepository.getReciters() } returns dummyReciters
         everySuspend { quranRepository.isSurahAudioCached(TEST_SURAH_ID, any()) } returns false
+        everySuspend { quranRepository.getDefaultReciter() } returns flowOf(1)
 
         testViewModel = ReciterSelectionViewModel(
             repository = quranRepository,
@@ -55,6 +57,7 @@ class ReciterSelectionViewModelTest {
         )
         testDispatcher.scheduler.advanceUntilIdle()
     }
+
     @AfterTest
     fun tearDown() {
         stopKoin()
@@ -62,7 +65,7 @@ class ReciterSelectionViewModelTest {
 
     @Test
     fun `init should fetch all reciters`() = runTest {
-        verifySuspend(atLeast(1)) { quranRepository.getReciters() }
+        verifySuspend { quranRepository.getReciters() }
         assertEquals(dummyReciters.size, testViewModel.uiState.value.searchResults.size)
     }
 
