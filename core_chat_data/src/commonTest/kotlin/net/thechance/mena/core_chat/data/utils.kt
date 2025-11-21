@@ -203,6 +203,7 @@ fun createChatRepository(
     dataStore: DataStore<Preferences>,
     cachedChatSummaryDao: CachedChatSummaryDao,
     cachedChatDao: CachedChatDao,
+    quranService: QuranService,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -221,7 +222,8 @@ fun createChatRepository(
         webSocketManager = webSocketManager,
         dataStore = dataStore,
         cachedChatSummaryDao = cachedChatSummaryDao,
-        cachedChatDao = cachedChatDao
+        cachedChatDao = cachedChatDao,
+        quranService = quranService
     )
 
 }

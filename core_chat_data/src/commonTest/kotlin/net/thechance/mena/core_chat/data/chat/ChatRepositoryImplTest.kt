@@ -45,10 +45,10 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
 import net.thechance.mena.core_chat.data.source.remote.dto.ChatSummaryDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
 import net.thechance.mena.core_chat.domain.model.SyncState
+import net.thechance.mena.faith.domain.service.QuranService
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -68,6 +68,7 @@ class ChatRepositoryImplTest {
     private lateinit var cachedChatSummaryDao: CachedChatSummaryDao
     private lateinit var dataStore: DataStore<Preferences>
     private lateinit var cachedChatDao: CachedChatDao
+    private lateinit var quranService: QuranService
     private val authRepository = mock<AuthenticationRepository>()
 
 
@@ -82,6 +83,7 @@ class ChatRepositoryImplTest {
         everySuspend { dataStore.data } returns flowOf(emptyPrefs)
         everySuspend { dataStore.updateData(any()) } returns emptyPreferences()
         cachedChatDao = mock<CachedChatDao>()
+        quranService = mock<QuranService>()
 
         everySuspend { cachedChatDao.getChatById(any()) } returns null
         everySuspend { cachedChatDao.insertChat(any()) } returns Unit
@@ -95,6 +97,7 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            quranService = quranService
         )
     }
 
@@ -106,7 +109,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val result = repository.getChatByOtherUserId(userId)
@@ -125,6 +129,7 @@ class ChatRepositoryImplTest {
             cachedChatDao = cachedChatDao,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
@@ -151,7 +156,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val result = repository.getChatById(testChatId)
@@ -174,8 +180,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
-
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
@@ -198,7 +204,8 @@ class ChatRepositoryImplTest {
                 webSocketManager = webSocketManager,
                 cachedChatSummaryDao = cachedChatSummaryDao,
                 dataStore = dataStore,
-                cachedChatDao = cachedChatDao
+                cachedChatDao = cachedChatDao,
+                quranService = quranService
             )
 
             assertThat(repository.getChatsSummary(0, 20).data).isNotEmpty()
@@ -217,7 +224,8 @@ class ChatRepositoryImplTest {
                 webSocketManager = webSocketManager,
                 cachedChatSummaryDao = cachedChatSummaryDao,
                 dataStore = dataStore,
-                cachedChatDao = cachedChatDao
+                cachedChatDao = cachedChatDao,
+                quranService = quranService
             )
 
             assertThat(repository.getChatsSummary(0, 20).data).isEqualTo(emptyList())
@@ -242,7 +250,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val result = repository.getChatSummaryById(testChatId)
@@ -263,7 +272,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
@@ -285,7 +295,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         assertFailsWith<Exception> {
@@ -307,7 +318,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         assertFailsWith<Exception> {
@@ -348,7 +360,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val deferredState = backgroundScope.async {
@@ -382,7 +395,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
@@ -411,7 +425,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
@@ -467,7 +482,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val job = launch { repository.getChatsSummary(pageNumber, pageSize) }
@@ -504,7 +520,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         val result = repository.getDeletedChatAfterSpecificTime(testTime)
@@ -526,7 +543,8 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
-            cachedChatDao = cachedChatDao
+            cachedChatDao = cachedChatDao,
+            quranService = quranService
         )
 
         assertFailsWith<NotFoundException> {
