@@ -49,7 +49,9 @@ import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.AyahRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.navigation.SurahRoute
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -164,6 +166,8 @@ fun ChatScreenContent(
                     onFailedMessageClick = interactions::onFailedMessageClicked,
                     onMessageLongClick = interactions::onMessageLongClicked,
                     onLinkClick = interactions::onLinkClicked,
+                    onSurahClick = interactions::onSurahClicked,
+                    onAyahClick = interactions::onAyahClicked,
                     modifier = Modifier.imePadding()
                         .padding(bottom = if (keyboardHeight > maxKeyboardHeight * 0.53) 0.dp else 80.dp)
                         .clickable(
@@ -174,7 +178,8 @@ fun ChatScreenContent(
                     state = state,
                     interactions = interactions,
                     modifier = Modifier
-                        .fillMaxWidth().align(Alignment.BottomCenter).imePadding().offset(y = chatInputBarOffset.dp)
+                        .fillMaxWidth().align(Alignment.BottomCenter).imePadding()
+                        .offset(y = chatInputBarOffset.dp)
                 )
             }
         }
@@ -310,6 +315,14 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.OpenUrl -> {
                 uriHandler.openUri(effect.url)
+            }
+
+            is ChatScreenEffect.NavigateToSurah -> {
+                navController.navigate(SurahRoute(effect.surahId))
+            }
+
+            is ChatScreenEffect.NavigateToAyah -> {
+                navController.navigate(AyahRoute(effect.surahId, effect.ayahId))
             }
         }
     }

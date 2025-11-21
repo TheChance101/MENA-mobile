@@ -41,6 +41,7 @@ kotlin {
             implementation(projects.walletApi)
             implementation(projects.walletDomain)
 
+            implementation(projects.faithApi)
             implementation(projects.faithDomain)
 
             implementation(projects.identityDomain)
