@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.profile
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isFalse
+import assertk.assertions.isInstanceOf
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -24,7 +25,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -68,14 +68,17 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `should update state with error when repository throws`() = runTest {
+    fun `should show snackBar error when repository throws`() = runTest {
 
         coEvery { userRepository.getUser() } throws UnknownException()
 
         viewModel = ProfileScreenViewModel(userRepository, settingsRepository, "", testDispatcher)
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(null, viewModel.state.value.errorMessage)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(ProfileScreenUIEffect.ShowSnackBarError::class)
+        }
+
     }
 
 
@@ -250,19 +253,26 @@ class ProfileViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onDismissLanguageDialog() should hide dialog and reset selection to current language`() = runTest {
-        val currentLanguage = viewModel.state.value.currentLanguage
-        val newLanguageSelection = AppLanguage.ARABIC
-        viewModel.onSelectLanguage(newLanguageSelection)
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertEquals(newLanguageSelection, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
+    fun `onDismissLanguageDialog() should hide dialog and reset selection to current language`() =
+        runTest {
+            val currentLanguage = viewModel.state.value.currentLanguage
+            val newLanguageSelection = AppLanguage.ARABIC
+            viewModel.onSelectLanguage(newLanguageSelection)
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertEquals(
+                newLanguageSelection,
+                viewModel.state.value.languageDialogUiState.selectedAppLanguage
+            )
 
-        viewModel.onDismissLanguageDialog()
-        testDispatcher.scheduler.advanceUntilIdle()
+            viewModel.onDismissLanguageDialog()
+            testDispatcher.scheduler.advanceUntilIdle()
 
-        assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
-        assertEquals(currentLanguage, viewModel.state.value.languageDialogUiState.selectedAppLanguage)
-    }
+            assertFalse(viewModel.state.value.languageDialogUiState.isVisible)
+            assertEquals(
+                currentLanguage,
+                viewModel.state.value.languageDialogUiState.selectedAppLanguage
+            )
+        }
 
     @Test
     fun `should update state to hide share bottom sheet when onDismissBottomSheet`() = runTest {
@@ -273,12 +283,6 @@ class ProfileViewModelTest : BaseCoroutineTest() {
 
         assertFalse(viewModel.state.value.showShareBottomSheet)
 
-    }
-
-    @Test
-    fun `clearErrorMessage() should update error message to null`() {
-        viewModel.clearErrorMessage()
-        assertNull(viewModel.state.value.errorMessage)
     }
 
     @OptIn(ExperimentalUuidApi::class)

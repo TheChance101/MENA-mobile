@@ -15,8 +15,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.profile.SnackBarType
-import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
 import org.jetbrains.compose.resources.StringResource
 
 class ChangePasswordScreenViewModel(
@@ -144,11 +142,7 @@ class ChangePasswordScreenViewModel(
         updateState { copy(isLoading = false) }
         sendNewEffect(
             ChangePasswordScreenUIEffect.NavigateBack(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.changed_password_successfully,
-                    snackBarType = SnackBarType.SUCCESS,
-                    isVisible = true
-                )
+                successStringResource = Res.string.changed_password_successfully
             )
         )
     }
@@ -156,11 +150,15 @@ class ChangePasswordScreenViewModel(
     private fun onChangePasswordError(throwable: Throwable) {
         updateState {
             copy(
-                errorMessage = mapErrorMessage(throwable),
                 isLoading = false,
                 currentPage = getPageAfterError(throwable)
             )
         }
+        sendNewEffect(
+            ChangePasswordScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun updateSaveEnabledState() {
@@ -216,9 +214,5 @@ class ChangePasswordScreenViewModel(
 
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 }

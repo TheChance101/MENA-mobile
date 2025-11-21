@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,9 +26,9 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
@@ -39,10 +38,10 @@ data class ResetPasswordOtpScreen(
     private val countryCode: String,
     private val callingCode: String
 ) : BaseScreen<
-        ResetPasswordOtpScreenViewModel,
-        ResetPasswordOtpScreenUIState,
-        ResetPasswordOtpScreenUIEffect,
-        ResetPasswordOtpScreenInteractionListener>() {
+    ResetPasswordOtpScreenViewModel,
+    ResetPasswordOtpScreenUIState,
+    ResetPasswordOtpScreenUIEffect,
+    ResetPasswordOtpScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(
@@ -114,22 +113,24 @@ data class ResetPasswordOtpScreen(
                 )
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
         effect: ResetPasswordOtpScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             ResetPasswordOtpScreenUIEffect.NavigateBack -> navigator.pop()
             is ResetPasswordOtpScreenUIEffect.NavigateToResetPassword -> {
                 navigator.popUntilRoot()
                 navigator.push(SetNewPasswordScreen())
+            }
+
+            is ResetPasswordOtpScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }

@@ -14,7 +14,6 @@ import mena.identity_presentation.generated.resources.last_update
 import mena.identity_presentation.generated.resources.privacy_logo
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenInteractionListener
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenUIState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -22,7 +21,6 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun PrivacyScreenContent(
     state: PrivacyAndPolicyScreenUIState,
-    listener: PrivacyAndPolicyScreenInteractionListener
 ) {
     PrivacyScreenContainer {
 

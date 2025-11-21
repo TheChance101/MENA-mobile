@@ -22,7 +22,6 @@ import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.back
@@ -32,10 +31,8 @@ import mena.identity_presentation.generated.resources.delete_account
 import mena.identity_presentation.generated.resources.delete_account_description
 import mena.identity_presentation.generated.resources.delete_account_title
 import mena.identity_presentation.generated.resources.edit_profile_information
-import mena.identity_presentation.generated.resources.error
 import mena.identity_presentation.generated.resources.first_name
 import mena.identity_presentation.generated.resources.ic_arrow_left
-import mena.identity_presentation.generated.resources.ic_close_circle
 import mena.identity_presentation.generated.resources.last_name
 import mena.identity_presentation.generated.resources.logout
 import mena.identity_presentation.generated.resources.logout_description
@@ -45,15 +42,14 @@ import mena.identity_presentation.generated.resources.username
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
-import net.thechance.mena.designsystem.presentation.component.snackbar.SnackBar
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.editProfile.components.DialogActionButton
 import net.thechance.mena.identity.presentation.screen.editProfile.components.EditProfileImage
@@ -69,10 +65,10 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class EditUserProfileScreen : BaseScreen<
-        EditUserProfileViewModel,
-        EditUserProfileUIState,
-        EditUserProfileUIEffect,
-        EditUserProfileInteractionListener>() {
+    EditUserProfileViewModel,
+    EditUserProfileUIState,
+    EditUserProfileUIEffect,
+    EditUserProfileInteractionListener>() {
     @Composable
     override fun Content() {
         val factory = rememberPermissionsControllerFactory()
@@ -110,21 +106,7 @@ class EditUserProfileScreen : BaseScreen<
             listener.onOpenCamera()
         }
 
-        LaunchedEffect(state.errorMessage) {
-            delay(3000)
-            listener.clearErrorMessage()
-        }
-
         Scaffold(
-            snakeBar = {
-                SnackBar(
-                    isVisible = state.errorMessage != null,
-                    title = stringResource(Res.string.error),
-                    message = state.errorMessage?.let { stringResource(it) } ?: "",
-                    leadingIcon = painterResource(Res.drawable.ic_close_circle),
-                    onDismiss = listener::clearErrorMessage,
-                )
-            },
             overlays = {
                 dialog(state.showEditImageDialog) {
                     GetImageDialog(
@@ -270,15 +252,26 @@ class EditUserProfileScreen : BaseScreen<
     override fun onEffect(
         effect: EditUserProfileUIEffect,
         navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
-            EditUserProfileUIEffect.NavigateBackToProfile -> navigator.pop()
             is EditUserProfileUIEffect.NavigateToCropScreen -> {
                 val cropperScreen = ImageCropperScreen(
                     imageKey = effect.imageKey,
                     onResult = effect.onResult,
                 )
                 navigator.push(cropperScreen)
+            }
+
+            is EditUserProfileUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(message = effect.errorStringResource)
+            }
+
+            is EditUserProfileUIEffect.NavigateBackToProfile -> {
+                effect.successStringResource?.let { successMessage ->
+                    snackBarController.showSnackBarSuccess(message = successMessage)
+                }
+                navigator.pop()
             }
         }
     }

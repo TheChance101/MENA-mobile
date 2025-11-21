@@ -2,6 +2,7 @@
 
 package net.thechance.mena.core_chat.presentation.screen.chat.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,7 +52,8 @@ fun ChatList(
             .padding(horizontal = Theme.spacing._12),
         state = chatListState,
         reverseLayout = true,
-        contentPadding = PaddingValues(top = Theme.spacing._16)
+        contentPadding = PaddingValues(top = Theme.spacing._16),
+        verticalArrangement = Arrangement.Bottom
     ) {
         itemsIndexed(
             items = items,
