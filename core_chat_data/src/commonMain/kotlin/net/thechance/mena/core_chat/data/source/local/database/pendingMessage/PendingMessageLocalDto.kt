@@ -1,11 +1,8 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package net.thechance.mena.core_chat.data.source.local.database.pendingMessage
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator

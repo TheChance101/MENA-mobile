@@ -4,13 +4,18 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.SettingsRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfileEffect
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel.Companion.SHARE_URL
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel.Companion.SHARE_URL
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
 class ProfileScreenViewModel(
@@ -31,15 +36,15 @@ class ProfileScreenViewModel(
     }
 
     private fun getAppSettings() {
-        val currentAppTheme=settingsRepository.observeAppTheme().value
-        val currentAppLanguage=settingsRepository.getCurrentAppLanguage()
+        val currentAppTheme = settingsRepository.observeAppTheme().value
+        val currentAppLanguage = settingsRepository.getCurrentAppLanguage()
         updateState {
             state.value.copy(
                 languageDialogUiState = LanguageDialogUiState(
                     selectedAppLanguage = currentAppLanguage,
                 ),
                 themeDialogUiState = ThemeDialogUiState(
-                    selectedAppTheme =currentAppTheme,
+                    selectedAppTheme = currentAppTheme,
                 ),
                 currentTheme = currentAppTheme,
                 currentLanguage = currentAppLanguage
@@ -74,7 +79,12 @@ class ProfileScreenViewModel(
     }
 
     private fun onUserInfoError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = null) }
+        updateState { copy(isLoading = false) }
+        sendNewEffect(
+            ProfileScreenUIEffect.ShowSnackBarError(
+                mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onEditProfileInfoClicked() =
@@ -88,12 +98,8 @@ class ProfileScreenViewModel(
 
     override fun onChangePasswordClicked() {
         sendNewEffect(
-            ProfileScreenUIEffect.NavigateToChangePasswordScreen(
-                onSuccess = ::onChangePasswordSuccess
-
-            )
+            ProfileScreenUIEffect.NavigateToChangePasswordScreen
         )
-        onDismissSnackBar()
     }
 
     override fun onAddressesClicked() =
@@ -163,16 +169,6 @@ class ProfileScreenViewModel(
         updateState { copy(themeDialogUiState = themeDialogUiState.copy(selectedAppTheme = appTheme)) }
     }
 
-    override fun onDismissSnackBar() {
-        updateState {
-            copy(
-                snackBarUiState = SnackBarUiState(
-                    isVisible = false,
-                )
-            )
-        }
-    }
-
     override fun onDismissLanguageDialog() {
         updateState {
             copy(
@@ -202,13 +198,14 @@ class ProfileScreenViewModel(
         }
     }
 
-    override fun clearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
 
-    private fun onChangePasswordSuccess(snackBarUiState: SnackBarUiState?) {
-        updateState {
-            copy(snackBarUiState = snackBarUiState ?: state.value.snackBarUiState)
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handleProfileException(throwable)
+            )
+
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
 }

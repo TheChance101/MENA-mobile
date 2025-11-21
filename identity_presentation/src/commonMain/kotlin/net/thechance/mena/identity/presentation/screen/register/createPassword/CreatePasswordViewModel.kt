@@ -12,7 +12,6 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
 
 class CreatePasswordViewModel(
     private val passwordValidator: PasswordValidator,
@@ -38,7 +37,7 @@ class CreatePasswordViewModel(
             copy(
                 confirmPassword = password,
                 confirmPasswordErrorMessage =
-                    if (validatePasswordConfirmation(newPassword, password))
+                    if (!passwordValidator.isPasswordMatch(newPassword, password))
                         Res.string.error_confirm_password_not_match
                     else null,
             )
@@ -54,13 +53,11 @@ class CreatePasswordViewModel(
         updateState { copy(isConfirmPasswordVisible = !isConfirmPasswordVisible) }
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     override fun onClickCreatePassword() {
         if (passwordsDoNotMatch()) {
-            updateState { copy(errorMessage = Res.string.error_password_mismatch) }
+            sendNewEffect(
+                CreatePasswordUIEffect.ShowSnackBarError(Res.string.error_password_mismatch)
+            )
             return
         }
         navigateToDatePicker()
@@ -96,7 +93,7 @@ class CreatePasswordViewModel(
         tryToExecute(
             function = {
                 val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
-                    ?: RegistrationDraft()
+                            ?: RegistrationDraft()
                 registrationDraftRepository.saveDraft(
                     registerUIState.phoneNumber,
                     draft.copy(password = password)
@@ -119,7 +116,7 @@ class CreatePasswordViewModel(
 
     private fun checkCreateButtonEnabled() {
         updateState {
-            val passwordsMatch = newPassword.isNotBlank() && newPassword == confirmPassword
+            val passwordsMatch = passwordValidator.isPasswordMatch(newPassword, confirmPassword)
             val passwordSecure = passwordValidator.isValid(newPassword)
 
             copy(

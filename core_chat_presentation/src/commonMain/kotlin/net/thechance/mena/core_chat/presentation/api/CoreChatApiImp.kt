@@ -33,7 +33,9 @@ class CoreChatApiImp() : CoreChatApi {
                 Json.encodeToString<AyahMessageArgs>(
                     AyahMessageArgs(surahId.toInt(), ayahNumber, ayahContent)
                 )
-            )
+            ),
+            onNavigateBackFromChat = onNavigateBack,
+            onNavigateBackFromShareMessage = onNavigateBack
         )
     }
 }

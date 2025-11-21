@@ -43,7 +43,7 @@ internal fun ShelvesDetailsCard(
     products: List<Product>,
     isProductLoading: Boolean,
     isShelvesLoading: Boolean,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier

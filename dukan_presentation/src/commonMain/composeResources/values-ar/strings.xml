@@ -184,4 +184,17 @@
     <string name="shop_now">تسوق الآن</string>
     <string name="dukan_discount_details">احصل على خصم لكل طلب، صالح اليوم فقط.</string>
     <string name="dukan_discount_title">%1$s% خصم\nعرض اليوم</string>
+    <string name="out_of_stock"> غير متوفر حاليا</string>
+    <string name="sold_out">نفذت الكمية</string>
+    <string name="order_title">الطلب #%1$d</string>
+    <string name="order_date_icon">ايقونة تاريخ الطلب</string>
+    <string name="product_order_image">صورة المنتج الخاص بالطلب</string>
+    <string name="total_amount">المجموع</string>
+    <string name="discount">الخصم</string>
+    <string name="platform_fees">رسوم المنصة</string>
+    <string name="customer_information">معلومات العميل</string>
+    <string name="profile_icon">ايقونة البروفايل</string>
+    <string name="order_error_unauthorized_access">لا يحق لك عرض تفاصيل هذا الطلب.</string>
+    <string name="order_error_not_found">هذاالطلب غير موجود.</string>
+    <string name="order_error_general">حدث خطأ أثناء جلب تفاصيل الطلب. يرجي المحاولة لاحقا</string>
 </resources>

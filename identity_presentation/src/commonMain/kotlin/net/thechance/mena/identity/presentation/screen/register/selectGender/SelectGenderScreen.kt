@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,8 +18,8 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.editProfile.components.GenderToggle
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
@@ -30,10 +29,10 @@ import org.koin.core.parameter.parametersOf
 class SelectGenderScreen(
     private val registerUIState: RegisterUIState
 ) : BaseScreen<
-        SelectGenderScreenViewModel,
-        SelectGenderScreenUIState,
-        SelectGenderScreenUIEffect,
-        SelectGenderScreenInteractionListener>() {
+    SelectGenderScreenViewModel,
+    SelectGenderScreenUIState,
+    SelectGenderScreenUIEffect,
+    SelectGenderScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -50,7 +49,7 @@ class SelectGenderScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .systemBarsPadding()
-                    .padding(top = 24.dp)
+
             ) {
                 AuthScreenContainer {
                     PageDescription(
@@ -73,15 +72,12 @@ class SelectGenderScreen(
                 }
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage
-        )
     }
 
     override fun onEffect(
         effect: SelectGenderScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is SelectGenderScreenUIEffect.NavigateToUploadProfileImage -> {
@@ -90,6 +86,12 @@ class SelectGenderScreen(
                         authTokens = effect.authTokens,
                         phoneNumber = effect.phoneNumber
                     )
+                )
+            }
+
+            is SelectGenderScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
                 )
             }
         }

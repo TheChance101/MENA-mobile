@@ -542,7 +542,7 @@ class QuranRepositoryImplTest {
         repository.deleteSurahWithSpecificReciter(SURAH_ID_1)
 
         verifySuspend {
-            recitersDao.deleteSurahWithSpecificReciter(SURAH_ID_1)
+            recitersDao.deleteSurahAudioByReciter(SURAH_ID_1)
         }
     }
 
@@ -552,10 +552,10 @@ class QuranRepositoryImplTest {
         repository.deleteSurahWithSpecificReciter(SURAH_ID_2)
 
         verifySuspend {
-            recitersDao.deleteSurahWithSpecificReciter(SURAH_ID_1)
+            recitersDao.deleteSurahAudioByReciter(SURAH_ID_1)
         }
         verifySuspend {
-            recitersDao.deleteSurahWithSpecificReciter(SURAH_ID_2)
+            recitersDao.deleteSurahAudioByReciter(SURAH_ID_2)
         }
     }
 

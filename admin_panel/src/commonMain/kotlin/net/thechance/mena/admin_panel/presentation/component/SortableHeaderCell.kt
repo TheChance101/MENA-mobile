@@ -11,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.presentation.utils.noRippleClickable
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_sort
@@ -23,14 +22,14 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SortableHeaderCell(
+fun <T> SortableHeaderCell(
     text: String,
-    sortType: UsersManagementScreenState.SortType,
-    currentSort: UsersManagementScreenState.SortState,
-    onSortClicked: (UsersManagementScreenState.SortType) -> Unit,
+    sortType: T,
+    currentSortType: T,
+    onSortClicked: (T) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val isSortActive = currentSort.type == sortType
+    val isSortActive = currentSortType == sortType
 
     val iconTint = if (isSortActive) Theme.colorScheme.success else Theme.colorScheme.shadePrimary
 
@@ -61,4 +60,3 @@ fun SortableHeaderCell(
         )
     }
 }
-

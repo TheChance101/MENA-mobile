@@ -62,9 +62,14 @@ fun ChatNavHost(
                 composable<SyncContactsRoute> { SyncContactsScreen() }
                 composable<ChatDetailsRoute> { ChatScreen(onClickBackFromChat = onNavigateBackFromChat) }
                 composable<WalletRoute> {
-                    walletApi.WalletEntry(navigateBack = {
-                        navController.popBackStack()
-                    })
+                    walletApi.WalletEntry(
+                        navigateBack = {
+                            navController.popBackStack()
+                        },
+                        updateBottomNavigationVisibility = {
+                            //pass updateBottomNavigationVisibility here
+                        },
+                    )
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
             }
