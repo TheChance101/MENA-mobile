@@ -33,10 +33,8 @@ import mena.core_chat_presentation.generated.resources.image_saved_successfully
 import mena.core_chat_presentation.generated.resources.permission_denied_title
 import mena.core_chat_presentation.generated.resources.success
 import net.thechance.mena.core_chat.domain.entity.AudioData
-import net.thechance.mena.core_chat.domain.entity.Chat
 import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
@@ -849,31 +847,6 @@ class ChatViewModel(
                 waveformData = generateWaveformData()
             )
         )
-    }
-
-    private fun toEntityAudioMessage(
-        audioByteArray: ByteArray,
-        audioDurationMs: Long,
-        chatId: Uuid,
-        senderId: Uuid
-    ): Message {
-        val message = Message(
-            chatId = chatId,
-            senderId = senderId,
-            content = MessageContent.Audio(
-                data = AudioData.AudioByteArray(byteArray = audioByteArray),
-                audioDurationMs = audioDurationMs
-            ),
-            id = Uuid.random(),
-            sendAt = LocalDateTime.now(),
-            status = MessageStatus.LOADING,
-            isMine = true,
-            reactions = emptyList()
-        )
-
-        waveformCache[message.id] = generateWaveformData()
-
-        return message
     }
 
     override fun onDownloadImageClicked(url: String) {
