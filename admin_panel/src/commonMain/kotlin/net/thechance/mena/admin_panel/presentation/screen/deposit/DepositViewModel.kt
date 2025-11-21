@@ -65,12 +65,11 @@ class DepositViewModel (
             }
     }
 
-    override fun onAmountChanged(amount : String) {
-        amount
-            .filter { char -> char.isDigit() ||char ==  '.'}
-            .let { newAmount->
-                updateState { it.copy(amount =  newAmount) }
-            }
+    override fun onAmountChanged(amount: String) {
+        val filtered = amount.filter { it.isDigit() || it == '.' }
+        if (filtered.count { it == '.' } <= 1) {
+            updateState { it.copy(amount = filtered) }
+        }
     }
 
     override fun onRetryClicked() {
