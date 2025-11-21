@@ -122,12 +122,7 @@ fun AsyncProfileImage(
                         ),
                     painter = painterResource(Res.drawable.not_user_image),
                     contentDescription = null,
-                    tint = Color(0x4D000000)
-                )
-                Icon(
-                    modifier = Modifier,
-                    painter = painterResource(Res.drawable.not_user_image),
-                    contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
         },

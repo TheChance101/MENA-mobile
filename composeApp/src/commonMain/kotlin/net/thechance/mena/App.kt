@@ -21,7 +21,8 @@ fun App() {
         language = currentLanguage.iso,
         appTheme = currentTheme.name ,
         content = {
-            SetStatusBarIconsColor(currentTheme)
+            SetStatusBarAppearance(currentTheme)
+            SetNavigationBarAppearance(currentTheme)
             EntryPoint()
         }
     )

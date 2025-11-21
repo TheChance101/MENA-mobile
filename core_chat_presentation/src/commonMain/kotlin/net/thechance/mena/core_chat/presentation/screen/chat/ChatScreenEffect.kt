@@ -11,6 +11,8 @@ sealed interface ChatScreenEffect {
     data class ShowSnackBar(val snackBarData: SnackBarData) : ChatScreenEffect
     object ScrollToBottom: ChatScreenEffect
     data class OpenUrl(val url: String) : ChatScreenEffect
+    data class NavigateToSurah(val surahId: Int) : ChatScreenEffect
+    data class NavigateToAyah(val surahId: Int, val ayahId: Int) : ChatScreenEffect
     data class NavigateToConfirmPayment(val amount:String,val transactionId: Uuid): ChatScreenEffect
 
 }
