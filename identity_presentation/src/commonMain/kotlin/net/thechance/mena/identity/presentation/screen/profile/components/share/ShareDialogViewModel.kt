@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.dialog
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import androidx.compose.ui.platform.Clipboard
 import androidx.lifecycle.ViewModel
@@ -21,7 +21,7 @@ import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.share.clipEntryOf
+import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import kotlin.time.Clock

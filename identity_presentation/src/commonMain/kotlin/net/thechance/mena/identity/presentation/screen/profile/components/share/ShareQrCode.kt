@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.dialog.share
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -49,11 +49,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeInteractionListener
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIEffect
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareQrCodeUIState
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.utils.createQrCodeByteArray
+import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.createQrCodeByteArray
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

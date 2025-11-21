@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.profile.components.dialog
+package net.thechance.mena.identity.presentation.screen.profile.components.share
 
 import androidx.compose.ui.platform.Clipboard
 

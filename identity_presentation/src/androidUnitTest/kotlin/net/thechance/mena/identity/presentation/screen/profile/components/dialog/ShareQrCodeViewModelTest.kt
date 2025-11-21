@@ -16,6 +16,8 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCodeUIEffect
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.junit.Before
