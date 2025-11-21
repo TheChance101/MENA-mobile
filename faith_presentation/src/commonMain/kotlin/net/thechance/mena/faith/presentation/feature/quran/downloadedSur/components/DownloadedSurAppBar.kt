@@ -51,7 +51,7 @@ fun DownloadedSurAppBar(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewDownloadedSurScreen() {
     MenaTheme {
         QuranTheme {
             DownloadedSurAppBar(

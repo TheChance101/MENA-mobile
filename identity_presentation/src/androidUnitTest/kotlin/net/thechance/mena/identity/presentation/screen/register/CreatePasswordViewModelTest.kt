@@ -24,36 +24,42 @@ class CreatePasswordViewModelTest : BaseCoroutineTest() {
     private val phoneNumber = PhoneNumber("+964", "7901234567")
     private lateinit var createPasswordViewModel: CreatePasswordViewModel
 
+    private val validPassword = "Password123"
+    private val invalidPassword = "short"
+
     @BeforeTest
-    fun setup() {
+    override fun setUp() {
+        super.setUp()
         createPasswordViewModel = CreatePasswordViewModel(
             passwordValidator = passwordValidator,
             registrationDraftRepository = registrationDraftRepository,
             registerUIState = RegisterUIState(phoneNumber),
             dispatcher = testDispatcher
         )
+        every { passwordValidator.isValid(validPassword) } returns true
+        every { passwordValidator.isValid(invalidPassword) } returns false
+
+        every { passwordValidator.isPasswordMatch(validPassword, validPassword) } returns true
+        every { passwordValidator.isPasswordMatch(invalidPassword, any()) } returns false
+        every { passwordValidator.isPasswordMatch(validPassword, "") } returns false
     }
 
 
     @Test
     fun `onChangeNewPassword should update state with new password`() {
-        val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword) } returns true
-        createPasswordViewModel.onChangeNewPassword(newPassword)
+        createPasswordViewModel.onChangeNewPassword(validPassword)
 
-        assert(createPasswordViewModel.state.value.newPassword == newPassword)
+        assert(createPasswordViewModel.state.value.newPassword == validPassword)
     }
 
     @Test
     fun `onChangeConfirmPassword should update state with new password`() {
-        val newPassword = "password123"
 
-        every { passwordValidator.isValid(newPassword) } returns true
-        createPasswordViewModel.onChangeNewPassword(newPassword)
-        createPasswordViewModel.onChangeConfirmPassword(newPassword)
+        createPasswordViewModel.onChangeNewPassword(validPassword)
+        createPasswordViewModel.onChangeConfirmPassword(validPassword)
 
-        assert(createPasswordViewModel.state.value.confirmPassword == newPassword)
+        assert(createPasswordViewModel.state.value.confirmPassword == validPassword)
     }
 
     @Test
@@ -97,28 +103,24 @@ class CreatePasswordViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onChangeNewPassword should save password when valid`() = runTest {
-        val password = "ValidPassword123"
-        every { passwordValidator.isValid(password) } returns true
         coEvery { registrationDraftRepository.getDraft(phoneNumber) } returns RegistrationDraft()
         coEvery { registrationDraftRepository.saveDraft(phoneNumber, any()) } returns Unit
 
-        createPasswordViewModel.onChangeNewPassword(password)
+        createPasswordViewModel.onChangeNewPassword(validPassword)
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify {
             registrationDraftRepository.saveDraft(
                 phoneNumber,
-                RegistrationDraft(password = password)
+                RegistrationDraft(password = validPassword)
             )
         }
     }
 
     @Test
     fun `onChangeNewPassword should not save password when invalid`() = runTest {
-        val password = "short"
-        every { passwordValidator.isValid(password) } returns false
 
-        createPasswordViewModel.onChangeNewPassword(password)
+        createPasswordViewModel.onChangeNewPassword(invalidPassword)
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 0) { registrationDraftRepository.saveDraft(any(), any()) }
@@ -126,10 +128,8 @@ class CreatePasswordViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onChangeNewPassword should not save password when blank`() = runTest {
-        val password = ""
-        every { passwordValidator.isValid(password) } returns false
+        every { passwordValidator.isValid("") } returns false
 
-        createPasswordViewModel.onChangeNewPassword(password)
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 0) { registrationDraftRepository.saveDraft(any(), any()) }

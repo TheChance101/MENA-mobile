@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -105,7 +106,7 @@ private fun Content(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = Theme.spacing._12)
-                .clip(SquircleShape(Theme.radius.full))
+                .clip(RoundedCornerShape(Theme.radius.full))
                 .background(Theme.colorScheme.background.surfaceLow)
                 .padding(horizontal = 12.dp, vertical = 6.dp)
         )

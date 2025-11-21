@@ -108,7 +108,7 @@ class UploadProfileImageScreen(
     ) {
         when (effect) {
             is UploadProfileImageUIEffect.NavigateToAccountCreated -> {
-                navigator.push(AccountCreatedScreen(authTokens = effect.authTokens))
+                navigator.push(AccountCreatedScreen(authTokens = effect.authTokens, phoneNumber = phoneNumber))
             }
 
             is UploadProfileImageUIEffect.NavigateToCropScreen -> {

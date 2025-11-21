@@ -338,7 +338,9 @@ class SurahViewModel(
                     uiState.value.currentReciter.name,
                 )
             },
-            onSuccess = { updateSurahPlayback() })
+            onSuccess = { updateSurahPlayback() },
+            dispatcher = Main
+        )
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {
