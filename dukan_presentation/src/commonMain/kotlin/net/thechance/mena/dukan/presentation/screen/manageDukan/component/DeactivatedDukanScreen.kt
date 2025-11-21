@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.deactivated_dukan
+import mena.dukan_presentation.generated.resources.wrong_information_provided
+import mena.dukan_presentation.generated.resources.your_dukan_has_been_deactivated
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -38,12 +40,12 @@ fun DeactivatedDukanScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Your dukan has been deactivated because:",
+                        text = stringResource(Res.string.your_dukan_has_been_deactivated),
                         style = (Theme.typography.title.small).copy(textAlign = TextAlign.Center),
                         color = Theme.colorScheme.shadePrimary
                     )
                     Text(
-                        text = "Wrong information provided.",
+                        text = stringResource(Res.string.wrong_information_provided),
                         style = Theme.typography.body.small.copy(textAlign = TextAlign.Center),
                         color = Theme.colorScheme.shadeSecondary
                     )
