@@ -17,9 +17,7 @@ class DownloadedRecitersViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DownloadedRecitersUiState, DownloadedRecitersEffect>(
     initialState = DownloadedRecitersUiState(
-        surahId = surahArgs.surahId,
-        isSwipeable = surahArgs.isSwipeToDeleteEnabled,
-    ),
+        surahId = surahArgs.surahId),
 ), DownloadedRecitersListener {
 
     init {
