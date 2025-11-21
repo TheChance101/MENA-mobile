@@ -35,7 +35,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_arrow_left
-import mena.faith_presentation.generated.resources.ic_direction
+import mena.faith_presentation.generated.resources.ic_directions
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
 import mena.faith_presentation.generated.resources.qibla_direction
@@ -158,7 +158,7 @@ private fun CompassView(
         ) {
             DirectionPlaceHolder(modifier = rotateModifier)
             Image(
-                painter = painterResource(Res.drawable.ic_direction),
+                painter = painterResource(Res.drawable.ic_directions),
                 contentDescription = "direction_arrow",
                 modifier = rotateModifier
                     .size(128.dp)
