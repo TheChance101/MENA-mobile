@@ -45,7 +45,6 @@ class DepositViewModel (
         }
     }
 
-
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isDepositProcessLoading = true) } },
