@@ -61,8 +61,8 @@ fun AddToCartSection(
                 .fillMaxWidth()
                 .shadow(
                     elevation = 8.dp,
-                    ambientColor = Color.Black.copy(alpha = 0.4f),
-                    spotColor = Color.Black.copy(alpha = 0.4f)
+                    ambientColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f),
+                    spotColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f)
                 )
                 .background(Theme.colorScheme.background.surface)
                 .padding(
@@ -128,7 +128,7 @@ fun AddToCartSection(
                             style = Theme.typography.label.small.copy(
                                 textDecoration = TextDecoration.LineThrough
                             ),
-                            color = Theme.colorScheme.primary.onPrimaryBody,
+                            color = Theme.colorScheme.primary.onPrimary.copy(alpha = 0.6f),
                         )
                     }
                 }

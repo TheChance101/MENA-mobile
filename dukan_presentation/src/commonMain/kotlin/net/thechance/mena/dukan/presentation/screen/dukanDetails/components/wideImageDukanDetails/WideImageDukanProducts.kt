@@ -150,13 +150,13 @@ private fun ProductCard(
                 )
 
                 if (isError || isLoading) {
-                    Image(
+                    Icon(
                         painter = painterResource(Res.drawable.ic_no_image_loaded),
                         contentDescription = null,
+                        tint = Theme.colorScheme.primary.primary,
                         modifier = Modifier
                             .size(24.dp)
                             .align(Alignment.Center),
-                        contentScale = ContentScale.Fit
                     )
                 }
 
@@ -182,6 +182,7 @@ private fun ProductCard(
                 Icon(
                     painter = painterResource(Res.drawable.discount_icon),
                     contentDescription = stringResource(Res.string.discount_icon),
+                    tint = Theme.colorScheme.shadePrimary,
                     modifier = Modifier.padding(end = Theme.spacing._4)
                 )
                 PriceWithIcon(
