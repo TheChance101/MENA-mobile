@@ -45,7 +45,6 @@ import mena.identity_presentation.generated.resources.username
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
-import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -196,6 +195,7 @@ class EditUserProfileScreen : BaseScreen<
                         Icon(
                             painter = painterResource(Res.drawable.ic_arrow_left),
                             contentDescription = stringResource(Res.string.back),
+                            tint = Theme.colorScheme.shadePrimary,
                         )
                     },
                     onLeadingClick = listener::onClickCancelButton,
