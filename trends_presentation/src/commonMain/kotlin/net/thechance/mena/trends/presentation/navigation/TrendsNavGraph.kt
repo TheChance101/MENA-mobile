@@ -59,6 +59,8 @@ fun TrendsNavHost(
         LocalImageLoader provides coilLoader,
         LocalDarkTheme provides isDarkTheme
     ) {
+        handleBottomNavigationVisibility(updateBottomNavigationVisibility)
+
         Box(modifier = Modifier.fillMaxSize()) {
 
             NavHost(
