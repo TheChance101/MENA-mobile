@@ -78,4 +78,33 @@
     <string name="maghrib">المغرب</string>
     <string name="isha">العشاء</string>
     <string name="sunrise">الشروق</string>
+
+    <string name="weather_clear_sky">سماء صافية</string>
+    <string name="weather_mainly_clear">صافية غالباً</string>
+    <string name="weather_partly_cloudy">غائم جزئياً</string>
+    <string name="weather_overcast">غائم</string>
+    <string name="weather_fog">ضباب</string>
+    <string name="weather_depositing_rime_fog">ضباب صقيعي مترسب</string>
+    <string name="weather_light_drizzle">رذاذ خفيف</string>
+    <string name="weather_moderate_drizzle">رذاذ معتدل</string>
+    <string name="weather_dense_drizzle">رذاذ كثيف</string>
+    <string name="weather_light_freezing_drizzle">رذاذ متجمد خفيف</string>
+    <string name="weather_dense_freezing_drizzle">رذاذ متجمد كثيف</string>
+    <string name="weather_slight_rain">مطر خفيف</string>
+    <string name="weather_moderate_rain">مطر معتدل</string>
+    <string name="weather_heavy_rain">مطر غزير</string>
+    <string name="weather_light_freezing_rain">مطر متجمد خفيف</string>
+    <string name="weather_heavy_freezing_rain">مطر متجمد غزير</string>
+    <string name="weather_slight_snowfall">تساقط ثلوج خفيف</string>
+    <string name="weather_moderate_snowfall">تساقط ثلوج معتدل</string>
+    <string name="weather_heavy_snowfall">تساقط ثلوج كثيف</string>
+    <string name="weather_snow_grains">حبيبات ثلج</string>
+    <string name="weather_slight_rain_shower">زخات مطر خفيفة</string>
+    <string name="weather_moderate_rain_shower">زخات مطر معتدلة</string>
+    <string name="weather_violent_rain_shower">زخات مطر كثيفة</string>
+    <string name="weather_slight_snow_shower">زخات ثلج خفيفة</string>
+    <string name="weather_heavy_snow_shower">زخات ثلج كثيفة</string>
+    <string name="weather_moderate_thunderstorm">عاصفة رعدية معتدلة</string>
+    <string name="weather_slight_hail_thunderstorm">عاصفة رعدية مع بَرَد خفيف</string>
+    <string name="weather_heavy_hail_thunderstorm">عاصفة رعدية مع بَرَد كثيف</string>
 </resources>

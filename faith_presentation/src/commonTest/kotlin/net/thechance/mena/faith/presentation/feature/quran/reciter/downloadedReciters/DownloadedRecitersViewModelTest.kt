@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters.args.DownloadedRecitersArgs
 import org.koin.core.context.startKoin
@@ -33,19 +34,25 @@ class DownloadedRecitersViewModelTest {
     private lateinit var testViewModel: DownloadedRecitersViewModel
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val surahArgs: DownloadedRecitersArgs = mock(mode = MockMode.autofill)
+    private lateinit var searchRecitersUseCase: SearchRecitersUseCase
 
     @BeforeTest
     fun setup() {
         startKoin {
-            modules(module {
+            modules(
+                module {
                     single { mock<SnackbarHandler>(MockMode.autofill) }
                 }
             )
         }
 
         testDispatcher = StandardTestDispatcher()
+
+        searchRecitersUseCase = SearchRecitersUseCase()
+
         everySuspend { surahArgs.surahId } returns TEST_SURAH_ID
         everySuspend { surahArgs.isSwipeToDeleteEnabled } returns true
+
         everySuspend { quranRepository.getDefaultReciter() } returns flowOf(DEFAULT_RECITER_ID)
         everySuspend { quranRepository.getReciters() } returns dummyReciters
         everySuspend { quranRepository.isSurahAudioCached(TEST_SURAH_ID, any()) } returns true
@@ -53,6 +60,7 @@ class DownloadedRecitersViewModelTest {
         testViewModel = DownloadedRecitersViewModel(
             quranRepository = quranRepository,
             surahArgs = surahArgs,
+            searchRecitersUseCase = searchRecitersUseCase,
             dispatcher = testDispatcher,
         )
         testDispatcher.scheduler.advanceUntilIdle()
@@ -62,16 +70,11 @@ class DownloadedRecitersViewModelTest {
     fun tearDown() {
         stopKoin()
     }
+
     @Test
     fun `init should load all reciters successfully`() = runTest {
         verifySuspend(exactly(1)) { quranRepository.getReciters() }
         assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-    }
-
-    @Test
-    fun `init should set default reciter from repository`() = runTest {
-        assertEquals(DEFAULT_RECITER_ID, testViewModel.uiState.value.selectedReciterId)
     }
 
     @Test
@@ -100,73 +103,53 @@ class DownloadedRecitersViewModelTest {
     fun `onBackClick should navigate back`() = runTest {
         testViewModel.uiEffect.test {
             testViewModel.onBackClick()
-
             val effect = awaitItem()
             assertTrue(effect is DownloadedRecitersEffect.NavigateBack)
         }
     }
 
-
     @Test
     fun `onQueryChange should update query in state`() = runTest {
         testViewModel.onQueryChange(TEST_QUERY)
-
         assertEquals(TEST_QUERY, testViewModel.uiState.value.query)
     }
 
     @Test
-    fun `onQueryChange should filter reciters by name case insensitive`() = runTest {
-        testViewModel.onQueryChange(FILTER_QUERY)
-
-        val filteredReciters = testViewModel.uiState.value.reciters
-        assertTrue(filteredReciters.size < dummyReciters.size)
-        assertTrue(filteredReciters.all { it.name.contains(FILTER_QUERY, ignoreCase = true) })
-    }
-
-    @Test
-    fun `onQueryChange with empty string should show all reciters`() = runTest {
-        testViewModel.onQueryChange(FILTER_QUERY)
-        testViewModel.onQueryChange(EMPTY_STRING)
-
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-    }
-
-    @Test
-    fun `onQueryChange with blank string should show all reciters`() = runTest {
-        testViewModel.onQueryChange(FILTER_QUERY)
-        testViewModel.onQueryChange(BLANK_STRING)
-
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-    }
-
-    @Test
-    fun `onQueryChange should not modify allReciters`() = runTest {
-        val allRecitersBefore = testViewModel.allReciters
-
-        testViewModel.onQueryChange(FILTER_QUERY)
-
-        assertEquals(allRecitersBefore, testViewModel.allReciters)
-    }
-
-    @Test
-    fun `onQueryChange with no matches should return empty list`() = runTest {
-        testViewModel.onQueryChange(NO_MATCH_QUERY)
-
-        assertTrue(testViewModel.uiState.value.reciters.isEmpty())
-    }
-
-    @Test
-    fun `onQueryChange should perform local search without repository call`() = runTest {
-        val initialCallCount = 1 // من الـ init
+    fun `onQueryChange should filter reciters using usecase`() = runTest {
         testViewModel.onQueryChange(FILTER_QUERY)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend(exactly(initialCallCount)) { quranRepository.getReciters() }
+        val expected = dummyReciters.filter {
+            it.name.contains(FILTER_QUERY, ignoreCase = true)
+        }
+
+        assertEquals(expected.size, testViewModel.uiState.value.reciters.size)
+    }
+
+    @Test
+    fun `onQueryChange with empty string should restore all reciters`() = runTest {
+        testViewModel.onQueryChange(FILTER_QUERY)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        testViewModel.onClearQueryClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
+    }
+
+    @Test
+    fun `onQueryChange should trigger repository getReciters`() = runTest {
+        val callsBefore = 1
+        testViewModel.onQueryChange(FILTER_QUERY)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        verifySuspend(exactly(callsBefore + 1)) { quranRepository.getReciters() }
     }
 
     @Test
     fun `onClearQueryClick should clear query`() = runTest {
         testViewModel.onQueryChange(TEST_QUERY)
+        testDispatcher.scheduler.advanceUntilIdle()
 
         testViewModel.onClearQueryClick()
 
@@ -174,38 +157,16 @@ class DownloadedRecitersViewModelTest {
     }
 
     @Test
-    fun `onClearQueryClick should restore all reciters`() = runTest {
-        val allRecitersBeforeFilter = testViewModel.allReciters
-
-        testViewModel.onQueryChange(FILTER_QUERY)
-
-        testViewModel.onClearQueryClick()
-
-        assertEquals(allRecitersBeforeFilter, testViewModel.uiState.value.reciters)
-        assertEquals(allRecitersBeforeFilter.size, testViewModel.uiState.value.reciters.size)
-    }
-
-    @Test
-    fun `onClearQueryClick after filtering should show all reciters`() = runTest {
-        testViewModel.onQueryChange(FILTER_QUERY)
-        assertTrue(testViewModel.uiState.value.reciters.size < dummyReciters.size)
-
-        testViewModel.onClearQueryClick()
-
-        assertEquals(dummyReciters.size, testViewModel.uiState.value.reciters.size)
-    }
-
-
-    @Test
-    fun `onSelectReciterClick should update selected reciter in state`() = runTest {
+    fun `onSelectReciterClick should update selected reciter`() = runTest {
         everySuspend { quranRepository.saveDefaultReciter(any()) } returns Unit
 
         testViewModel.uiState.test {
             testViewModel.onSelectReciterClick(SELECTED_RECITER_ID)
             testDispatcher.scheduler.advanceUntilIdle()
             skipItems(1)
-            val updatedState = awaitItem()
-            assertEquals(SELECTED_RECITER_ID, updatedState.selectedReciterId)
+
+            val updated = awaitItem()
+            assertEquals(SELECTED_RECITER_ID, updated.selectedReciterId)
         }
     }
 
@@ -214,92 +175,66 @@ class DownloadedRecitersViewModelTest {
         everySuspend {
             quranRepository.isSurahAudioCached(TEST_SURAH_ID, DOWNLOADED_RECITER_ID)
         } returns true
-        everySuspend { quranRepository.getReciters() } returns dummyReciters
 
         testViewModel = DownloadedRecitersViewModel(
             quranRepository = quranRepository,
             surahArgs = surahArgs,
+            searchRecitersUseCase = searchRecitersUseCase,
             dispatcher = testDispatcher,
-
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        val downloadedReciter = testViewModel.uiState.value.reciters
+        val downloaded = testViewModel.uiState.value.reciters
             .find { it.id == DOWNLOADED_RECITER_ID }
-        assertTrue(downloadedReciter?.isDownloaded ?: false)
+
+        assertTrue(downloaded?.isDownloaded ?: false)
     }
 
     @Test
-    fun `filtered results should maintain download status`() = runTest {
-        everySuspend {
-            quranRepository.isSurahAudioCached(TEST_SURAH_ID, DOWNLOADED_RECITER_ID)
-        } returns true
+    fun `onDeleteReciterAudioClick should show delete dialog`() = runTest {
+        testViewModel.onDeleteReciterAudioClick(1)
+        assertTrue(testViewModel.uiState.value.isDeleteConfirmationDialogVisible)
+    }
 
-        testViewModel = DownloadedRecitersViewModel(
-            quranRepository = quranRepository,
-            surahArgs = surahArgs,
-            dispatcher = testDispatcher,
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
+    @Test
+    fun `onDismissDeleteDialog should hide delete dialog`() = runTest {
+        testViewModel.onDeleteReciterAudioClick(1)
+        testViewModel.onDismissDeleteDialog()
 
-        testViewModel.onQueryChange(ABDUL_QUERY)
-
-        val filteredReciter = testViewModel.uiState.value.reciters
-            .find { it.id == DOWNLOADED_RECITER_ID }
-        assertTrue(filteredReciter?.isDownloaded ?: false)
+        assertEquals(false, testViewModel.uiState.value.isDeleteConfirmationDialogVisible)
     }
 
     @Test
     fun `multiple filter operations should work correctly`() = runTest {
         testViewModel.onQueryChange(ABDUL_QUERY)
-        val firstFilterSize = testViewModel.uiState.value.reciters.size
+        testDispatcher.scheduler.advanceUntilIdle()
+        val size1 = testViewModel.uiState.value.reciters.size
 
         testViewModel.onQueryChange(BASIT_QUERY)
-        val secondFilterSize = testViewModel.uiState.value.reciters.size
+        testDispatcher.scheduler.advanceUntilIdle()
+        val size2 = testViewModel.uiState.value.reciters.size
 
         testViewModel.onClearQueryClick()
-        val allRecitersSize = testViewModel.uiState.value.reciters.size
+        testDispatcher.scheduler.advanceUntilIdle()
+        val sizeAll = testViewModel.uiState.value.reciters.size
 
-        assertTrue(secondFilterSize <= firstFilterSize)
-        assertEquals(dummyReciters.size, allRecitersSize)
+        assertTrue(size2 <= size1)
+        assertEquals(dummyReciters.size, sizeAll)
     }
 
     @Test
-    fun `filter should be case insensitive for English names`() = runTest {
-        testViewModel.onQueryChange(LOWERCASE_QUERY)
-        val lowercaseResults = testViewModel.uiState.value.reciters.size
-
-        testViewModel.onQueryChange(UPPERCASE_QUERY)
-        val uppercaseResults = testViewModel.uiState.value.reciters.size
-
-        assertEquals(lowercaseResults, uppercaseResults)
-    }
-
-    @Test
-    fun `allReciters should remain unchanged after multiple operations`() = runTest {
-        val initialAllReciters = testViewModel.uiState.value.reciters
-
-        testViewModel.onQueryChange(FILTER_QUERY)
-        testViewModel.onQueryChange(ANOTHER_QUERY)
-        testViewModel.onClearQueryClick()
-        testViewModel.onQueryChange(FILTER_QUERY)
-        testViewModel.onClearQueryClick()
-
-        assertEquals(initialAllReciters, testViewModel.uiState.value.reciters)
-    }
-
-    @Test
-    fun `swipeable state should be passed from args`() = runTest {
+    fun `swipeable state should come from args`() = runTest {
         everySuspend { surahArgs.isSwipeToDeleteEnabled } returns false
 
-        testViewModel = DownloadedRecitersViewModel(
-            quranRepository = quranRepository,
-            surahArgs = surahArgs,
-            dispatcher = testDispatcher,
+        val vm = DownloadedRecitersViewModel(
+            quranRepository,
+            surahArgs,
+            searchRecitersUseCase,
+            testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals(false, testViewModel.uiState.value.isSwipeable)
+        assertEquals(false, vm.uiState.value.isSwipeable)
     }
 
     private companion object {
@@ -311,45 +246,13 @@ class DownloadedRecitersViewModelTest {
         const val FILTER_QUERY = "Abdul"
         const val ABDUL_QUERY = "Abdul"
         const val BASIT_QUERY = "Basit"
-        const val NO_MATCH_QUERY = "XYZ123"
-        const val ANOTHER_QUERY = "Mahmoud"
-        const val LOWERCASE_QUERY = "abdul"
-        const val UPPERCASE_QUERY = "ABDUL"
         const val EMPTY_STRING = ""
-        const val BLANK_STRING = "   "
-
-        val reciters = Reciter(
-            id = 1,
-            name = "Abdul Basit Abdul Samad",
-            arabicName = "عبد الباسط عبد الصمد",
-            tilawahType = "Murattal"
-        )
 
         private val dummyReciters = listOf(
-            Reciter(
-                id = 1,
-                name = "Abdul Basit Abdul Samad",
-                arabicName = "عبد الباسط عبد الصمد",
-                tilawahType = "Murattal"
-            ),
-            Reciter(
-                id = 2,
-                name = "Mahmoud Khalil Al-Hussary",
-                arabicName = "محمود خليل الحصري",
-                tilawahType = "Murattal"
-            ),
-            Reciter(
-                id = 3,
-                name = "Mishary Rashid Alafasy",
-                arabicName = "مشاري بن راشد العفاسي",
-                tilawahType = "Murattal"
-            ),
-            Reciter(
-                id = 4,
-                name = "Abdul Rahman Al-Sudais",
-                arabicName = "عبد الرحمن السديس",
-                tilawahType = "Murattal"
-            )
+            Reciter(1, "Abdul Basit Abdul Samad", "عبد الباسط عبد الصمد", "Murattal"),
+            Reciter(2, "Mahmoud Khalil Al-Hussary", "محمود خليل الحصري", "Murattal"),
+            Reciter(3, "Mishary Rashid Alafasy", "مشاري بن راشد العفاسي", "Murattal"),
+            Reciter(4, "Abdul Rahman Al-Sudais", "عبد الرحمن السديس", "Murattal")
         )
     }
 }

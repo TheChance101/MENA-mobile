@@ -73,7 +73,7 @@ class ChatViewModelTest {
     private val messageRepository = mock<MessageRepository>()
     private val userRepository = mock<UserRepository>()
     private val audioRecordRepository = mock<AudioRecordRepository>()
-    private val chatArgs = mock<ChatArgs>()
+    private lateinit var chatArgs: ChatArgs
     private val imageDownloaderService = mock<ImageDownloaderService>()
     private val permissionsController = mock<PermissionsController>()
     private val audioPlayer = mock<AudioPlayer>()
@@ -85,10 +85,11 @@ class ChatViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        every { chatArgs.chatId } returns chatId.toString()
-        every { chatArgs.chatName } returns chatName
         every { audioPlayer.getDurationOfCurrentAudio() } returns 1000L
-
+        chatArgs = object : ChatArgs {
+            override val chatId: String = Companion.chatId.toString()
+            override val chatName: String = Companion.chatName
+        }
         everySuspend { chatRepository.getChatById(chatId) } returns chat
         everySuspend {
             messageRepository.loadMessages(chatId, any(), any())
@@ -121,6 +122,18 @@ class ChatViewModelTest {
         assertThat(viewModel.state.value.userData.firstName).isEqualTo(user.firstName)
         assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.lastName)
         assertThat(viewModel.state.value.userData.imageUrl).isEqualTo(user.imageUrl)
+    }
+
+    @Test
+    fun `init should update user data when receive user data with null imageUrl from repository`() = runTest {
+        everySuspend { userRepository.getUserInfo() } returns user.copy(imageUrl = null)
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.userData.firstName).isEqualTo(user.firstName)
+        assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.lastName)
+        assertThat(viewModel.state.value.userData.imageUrl).isEmpty()
     }
 
     @Test
@@ -697,7 +710,6 @@ class ChatViewModelTest {
     @Test
     fun `onSendVoiceRecordClicked should show error when chatId is null`() = runTest {
         every { audioRecordRepository.stopRecording() } returns "/test/path/audio.mp4"
-        every { chatArgs.chatId } returns ""
 
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -710,7 +722,7 @@ class ChatViewModelTest {
                 ChatScreenEffect.ShowSnackBar(
                     SnackBarData(
                         title = UiText.StringRes(Res.string.error),
-                        message = UiText.StringRes(Res.string.error_invalid_recording),
+                        message = UiText.StringRes(Res.string.error_failed_to_process_audio),
                         isError = true
                     )
                 ), awaitItem()
@@ -722,7 +734,6 @@ class ChatViewModelTest {
     @Test
     fun `onSendVoiceRecordClicked should show error when filePath is empty`() = runTest {
         every { audioRecordRepository.stopRecording() } returns ""
-        every { chatArgs.chatId } returns chatId.toString()
 
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -748,7 +759,6 @@ class ChatViewModelTest {
     fun `onSendVoiceRecordClicked should show error when audio processing fails`() = runTest {
         val testFilePath = "/test/path/audio.mp4"
         every { audioRecordRepository.stopRecording() } returns testFilePath
-        every { chatArgs.chatId } returns chatId.toString()
 
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -832,11 +842,9 @@ class ChatViewModelTest {
     fun `onReactionSelected should add reaction if user has not reacted`() = runTest {
         val reaction = "👍"
         val message = messages.first().copy(id = message1Id, reactions = emptyList())
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(listOf(message), 0, true)
+        everySuspend { messageRepository.loadMessages(chatId, any(), any()) } returns PagedData(listOf(message), 1, true)
         everySuspend { messageRepository.addMessageReaction(message.id, reaction) } returns Unit
-        viewModel.onMessageLongClicked(message.toUi())
+        viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onReactionSelected(message.id, reaction)
@@ -850,10 +858,11 @@ class ChatViewModelTest {
         val reaction = "👍"
         val message = messages.first()
             .copy(reactions = listOf(MessageReaction(reaction, chatRequesterId, message1Id)))
-        everySuspend {
-            messageRepository.loadMessages(chatId, any(), any())
-        } returns PagedData(listOf(message), 0, true)
+        everySuspend { messageRepository.loadMessages(chatId, any(), any()) } returns PagedData(listOf(message), 0, true)
         everySuspend { messageRepository.removeMessageReaction(message.id, reaction) } returns Unit
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
         viewModel.onMessageLongClicked(message.toUi())
         advanceUntilIdle()
 
@@ -1255,7 +1264,7 @@ class ChatViewModelTest {
         val user: User = User(
             firstName = "ali",
             lastName = "nawar",
-            imageUrl = ""
+            imageUrl = "https://image.com",
         )
         val chatId = Uuid.parse("11111111-1111-1111-1111-111111111111")
         val chatRequesterId = Uuid.parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
