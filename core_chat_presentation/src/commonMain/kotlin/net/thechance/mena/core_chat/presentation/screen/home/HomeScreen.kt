@@ -50,6 +50,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.abs
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -144,7 +145,7 @@ private fun HomeScreenAppBar(
                     modifier = Modifier.noHoverClickable { onWalletClicked() }
                 ) {
                     Text(
-                        text = balanceAmount,
+                        text = if(balanceAmount.isNotEmpty()) formatBalance(balanceAmount.toDouble()) else "",
                         color = Theme.colorScheme.shadeSecondary,
                         style = Theme.typography.label.small,
                     )
@@ -261,4 +262,19 @@ private fun EffectsHandler(
             }
         }
     }
+}
+
+fun formatBalance(balance: Double): String {
+    val wholePart = balance.toLong()
+    val decimalPart = ((abs(balance) % 1) * 100).toLong()
+
+    val wholeString = wholePart.toString()
+        .reversed()
+        .chunked(3)
+        .joinToString(",")
+        .reversed()
+
+    val decimalString = decimalPart.toString().padStart(2, '0')
+
+    return "$wholeString.$decimalString"
 }

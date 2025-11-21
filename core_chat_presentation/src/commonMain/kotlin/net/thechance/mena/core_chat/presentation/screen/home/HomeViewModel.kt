@@ -171,7 +171,7 @@ class HomeViewModel(
         }
         updateState {
             it.copy(
-                balanceAmount = balanceAmount.toInt().toString(),
+                balanceAmount = balanceAmount.toString(),
                 isBalanceLoading = false
             )
         }
