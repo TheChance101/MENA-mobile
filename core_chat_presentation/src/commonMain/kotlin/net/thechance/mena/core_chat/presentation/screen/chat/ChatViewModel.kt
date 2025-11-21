@@ -548,7 +548,7 @@ class ChatViewModel(
         tryToExecute(
             execute = {
                 updateMessageReactions(messageId, newReactions)
-                syncReactionWithServer(oldReactions, currentUserId, reaction, messageId)
+                toggleReaction(oldReactions, currentUserId, reaction, messageId)
             },
             onError = {
                 viewModelScope.launch(dispatcher) {
@@ -583,7 +583,7 @@ class ChatViewModel(
         }
     }
 
-    private suspend fun syncReactionWithServer(
+    private suspend fun toggleReaction(
         oldReactions: List<MessageReaction>,
         userId: Uuid,
         emoji: String,
