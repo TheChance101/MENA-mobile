@@ -40,6 +40,7 @@ class ContactUsViewModel(
             copy(
                 email = contactInfo.email,
                 phoneNumber = contactInfo.phoneNumber,
+                displayedFacebookAccount = "MENA-THE-CHANCE",
                 facebookUrl = contactInfo.facebookAccount,
                 isLoading = false
             )
@@ -48,18 +49,26 @@ class ContactUsViewModel(
 
 
     override fun onClickEmailAddress() {
+        if (state.value.email.isBlank())
+            return
+
         val emailUrl = "$EMAIL_URL_PREFIX${state.value.email}"
         sendNewEffect(ContactUsUIEffect.OpenUrl(emailUrl))
     }
 
     override fun onClickPhoneNumber() {
+        if (state.value.phoneNumber.isBlank())
+            return
+
         val phoneUrl = "$PHONE_URL_PREFIX${state.value.phoneNumber}"
         sendNewEffect(ContactUsUIEffect.OpenUrl(phoneUrl))
     }
 
     override fun onClickFacebookAccount() {
-        val facebookUrl = state.value.facebookUrl
-        sendNewEffect(ContactUsUIEffect.OpenUrl(facebookUrl))
+        if (state.value.facebookUrl.isBlank())
+            return
+
+        sendNewEffect(ContactUsUIEffect.OpenUrl(state.value.facebookUrl))
     }
 
     override fun onClearErrorMessage() {
@@ -86,6 +95,7 @@ class ContactUsViewModel(
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
+
     companion object {
         private const val EMAIL_URL_PREFIX = "mailto:"
         private const val PHONE_URL_PREFIX = "tel:"
