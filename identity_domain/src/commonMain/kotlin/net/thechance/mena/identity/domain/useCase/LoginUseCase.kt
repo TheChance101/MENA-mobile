@@ -13,11 +13,13 @@ import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.Mobile
      suspend fun login(countryCode: String, number: String, password: String) {
         if (!isPasswordValid(password)) throw InvalidPasswordException()
         if (!isMobileNumberValid(countryCode, number)) throw InvalidMobileNumberException(number)
+        val phoneNumber = PhoneNumber(countryCode, number)
         authenticationRepository.login(
-            phoneNumber = PhoneNumber(countryCode, number),
+            phoneNumber = phoneNumber,
             password = password
         )
      }
+
      fun isMobileNumberValid(countryCode: String, number: String): Boolean {
         return mobileNumberValidator.isValid(countryCode = countryCode, number = number)
      }

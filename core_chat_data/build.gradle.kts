@@ -21,6 +21,7 @@ kotlin {
             implementation(libs.androidx.room.sqlite.wrapper)
         }
         commonMain.dependencies {
+            implementation(projects.faithDomain)
             implementation(projects.coreChatDomain)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.contacts.provider)

@@ -101,7 +101,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
         
         return if (imageUploadCompleted) {
-            AccountCreatedScreen(authTokens = authTokens)
+            AccountCreatedScreen(authTokens = authTokens, phoneNumber = lastPhoneNumber)
         } else {
             UploadProfileImageScreen(
                 authTokens = authTokens,

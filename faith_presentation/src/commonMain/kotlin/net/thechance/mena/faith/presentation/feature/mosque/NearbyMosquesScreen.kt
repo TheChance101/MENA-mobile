@@ -103,6 +103,7 @@ private fun Content(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
+        statusBarColor = Theme.colorScheme.background.surfaceLow,
         topBar = {
             AppBar(
                 modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),

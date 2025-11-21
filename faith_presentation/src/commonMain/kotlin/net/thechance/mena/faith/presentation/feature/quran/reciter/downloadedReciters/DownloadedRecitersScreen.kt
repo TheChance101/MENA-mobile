@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.reciters
+import mena.faith_presentation.generated.resources.remove_audio
+import mena.faith_presentation.generated.resources.remove_audio_message
 import mena.faith_presentation.generated.resources.search_reciter
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -25,6 +27,7 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.components.ReciterItem
 import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DeleteConfirmationDialog
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
@@ -64,6 +67,19 @@ private fun Content(
                 onBackClick = listener::onBackClick,
                 modifier = Modifier.fillMaxWidth()
             )
+        },
+        overlays = {
+            dialog(
+                isVisible = uiState.isDeleteConfirmationDialogVisible
+            ) {
+                DeleteConfirmationDialog(
+                    showDialog = uiState.isDeleteConfirmationDialogVisible,
+                    onDeleteClick = listener::onConfirmDeleteReciterClick,
+                    onDismiss = listener::onDismissDeleteDialog,
+                    title = stringResource(Res.string.remove_audio),
+                    message = stringResource(Res.string.remove_audio_message)
+                )
+            }
         }
     ) {
 
@@ -169,6 +185,8 @@ private fun Preview() {
                     override fun onClearQueryClick() {}
                     override fun onSelectReciterClick(reciterId: Int) {}
                     override fun onDeleteReciterAudioClick(reciterId: Int) {}
+                    override fun onConfirmDeleteReciterClick() {}
+                    override fun onDismissDeleteDialog() {}
                 }
             )
         }

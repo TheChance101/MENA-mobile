@@ -14,7 +14,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.util.validatePasswordConfirmation
 import org.jetbrains.compose.resources.StringResource
 
 class SetNewPasswordScreenViewModel(
@@ -35,7 +34,7 @@ class SetNewPasswordScreenViewModel(
             copy(
                 confirmPassword = password,
                 confirmPasswordErrorMessage =
-                    if (validatePasswordConfirmation(newPassword, password))
+                    if (!passwordValidator.isPasswordMatch(newPassword, password))
                         Res.string.error_confirm_password_not_match
                     else null,
             )
@@ -96,7 +95,7 @@ class SetNewPasswordScreenViewModel(
 
     private fun checkResetButtonEnabled() {
         updateState {
-            val isPasswordsMatch = newPassword.isNotBlank() && newPassword == confirmPassword
+            val isPasswordsMatch = passwordValidator.isPasswordMatch(newPassword, confirmPassword)
             val isPasswordSecure = passwordValidator.isValid(newPassword)
 
             copy(

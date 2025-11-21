@@ -29,11 +29,26 @@ class AmountVisualTransformation : VisualTransformation {
 
 fun formatAmount(input: String): String {
     if (input.isBlank()) return ""
-
     val clean = input.replace(",", "")
 
-    return clean.reversed()
-        .chunked(3)
-        .joinToString(",")
-        .reversed()
+    val parts = clean.split(".")
+    val integerPart = parts[0]
+    val decimalPart = if (parts.size > 1) parts[1] else null
+
+    val formattedInteger = if (integerPart.isNotEmpty()) {
+        integerPart.reversed()
+            .chunked(3)
+            .joinToString(",")
+            .reversed()
+    } else {
+        ""
+    }
+
+    return if (decimalPart != null) {
+        "$formattedInteger.$decimalPart"
+    } else if (clean.endsWith(".")) {
+        "$formattedInteger."
+    } else {
+        formattedInteger
+    }
 }

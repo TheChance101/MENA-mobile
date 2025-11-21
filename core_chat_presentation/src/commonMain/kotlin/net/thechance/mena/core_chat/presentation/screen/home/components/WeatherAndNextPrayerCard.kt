@@ -82,9 +82,12 @@ private fun WeatherAndPrayerContent(
             modifier = Modifier.padding(Theme.spacing._12).align(Alignment.Center)
         ) {
             if (weatherUiState != null) {
+                val weatherCondition = weatherUiState.weatherCondition?.let {
+                    stringResource(it)
+                } ?: ""
                 RowInfoCard(
                     leadingIcon = painterResource(Res.drawable.ic_tempreature),
-                    leadingText = "${weatherUiState.currentTemperature}°C, ${weatherUiState.weatherCondition}",
+                    leadingText = "${weatherUiState.currentTemperature}°C, $weatherCondition",
                     trailingText = "${weatherUiState.maxTemperature}°C - ${weatherUiState.minTemperature}°C",
                 )
             }

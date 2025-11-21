@@ -6,18 +6,19 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters.args.DownloadedRecitersArgs
 
 class DownloadedRecitersViewModel(
     private val quranRepository: QuranRepository,
     private val surahArgs: DownloadedRecitersArgs,
+    private val searchRecitersUseCase: SearchRecitersUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<DownloadedRecitersUiState, DownloadedRecitersEffect>(
     initialState = DownloadedRecitersUiState(
         surahId = surahArgs.surahId),
 ), DownloadedRecitersListener {
-    var allReciters: List<DownloadedReciterItemUi> = emptyList()
 
     init {
         getAllReciters()
@@ -28,38 +29,32 @@ class DownloadedRecitersViewModel(
 
     override fun onQueryChange(query: String) {
         updateState { it.copy(query = query) }
-        applyLocalSearch(query)
+        getAllReciters()
     }
 
     override fun onClearQueryClick() {
-        updateState { it.copy(query = "", reciters = allReciters) }
-    }
-
-    private fun applyLocalSearch(query: String) {
-        val filtered = if (query.isBlank()) {
-            allReciters
-        } else {
-            allReciters.filter { it.name.contains(query, ignoreCase = true) }
-        }
-        updateState { it.copy(reciters = filtered) }
+        updateState { it.copy(query = "") }
+        getAllReciters()
     }
 
     override fun onDeleteReciterAudioClick(reciterId: Int) {
-        val surahId = uiState.value.surahId ?: return
-
-        tryToExecute(
-            execute = { quranRepository.deleteSurahAudioByReciter(surahId = surahId, reciterId = reciterId) },
-            onSuccess = { updateReciterAfterDelete(reciterId) },
-            dispatcher = dispatcher
-        )
+        updateState {
+            it.copy(
+                isDeleteConfirmationDialogVisible = true,
+            )
+        }
     }
 
-    private fun updateReciterAfterDelete(reciterId: Int) {
-        val updated = allReciters.map { reciterUi ->
-            if (reciterUi.id == reciterId) reciterUi.copy(isDownloaded = false) else reciterUi
+    override fun onConfirmDeleteReciterClick() {
+        // TODO CONFIRM DELETE
+    }
+
+    override fun onDismissDeleteDialog() {
+        updateState {
+            it.copy(
+                isDeleteConfirmationDialogVisible = false,
+            )
         }
-        allReciters = updated
-        applyLocalSearch(uiState.value.query)
     }
 
     override fun onSelectReciterClick(reciterId: Int) {
@@ -90,18 +85,18 @@ class DownloadedRecitersViewModel(
 
     private suspend fun onGetAllRecitersSuccess(reciters: List<Reciter>) {
         val surahId = surahArgs.surahId ?: return
+        val query = uiState.value.query
 
         val downloadedReciters = reciters.filter { reciter ->
             quranRepository.isSurahAudioCached(surahId = surahId, reciterId = reciter.id)
         }
 
-        val mapped = downloadedReciters.map { reciter ->
-            reciter.toUi(isDownloaded = true)
+        val filteredReciters = searchRecitersUseCase(query, downloadedReciters)
+
+        updateState {
+            it.copy(
+                reciters = filteredReciters.map { reciter -> reciter.toUi(isDownloaded = true) }
+            )
         }
-
-        allReciters = mapped
-
-        updateState { it.copy(reciters = mapped) }
     }
-
 }
