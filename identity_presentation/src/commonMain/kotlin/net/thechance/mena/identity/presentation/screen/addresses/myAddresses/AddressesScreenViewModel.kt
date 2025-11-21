@@ -84,6 +84,7 @@ class AddressesScreenViewModel(
         when {
             addressId == null || address == null -> onAddressNotFoundError()
             address.isMainAddress -> onMainAddressDeletionError()
+            else -> executeAddressDeletion(addressId)
         }
         onDismissDeleteDialog()
     }
