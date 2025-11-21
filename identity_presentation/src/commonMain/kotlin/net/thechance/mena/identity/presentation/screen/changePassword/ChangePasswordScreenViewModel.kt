@@ -15,7 +15,6 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.util.isPasswordMatch
 import org.jetbrains.compose.resources.StringResource
 
 class ChangePasswordScreenViewModel(
@@ -82,7 +81,7 @@ class ChangePasswordScreenViewModel(
 
     override fun onChangeConfirmPassword(newValue: String) {
         val password = state.value.newPasswordUIState.newPassword
-        val isPasswordMatch = password == newValue
+        val isPasswordMatch = passwordValidator.isPasswordMatch(password, newValue)
 
         updateState {
             copy(
@@ -167,6 +166,10 @@ class ChangePasswordScreenViewModel(
         val confirmPassword = state.value.newPasswordUIState.confirmPassword
 
         val isPasswordSecure = passwordValidator.isValid(newPassword)
+        val isPasswordMatch = passwordValidator.isPasswordMatch(
+            newPassword,
+            confirmPassword
+        )
 
         updateState {
             copy(
@@ -174,10 +177,7 @@ class ChangePasswordScreenViewModel(
                     newPasswordErrorMessage = if (!isPasswordSecure)
                         Res.string.error_password_validation
                     else null,
-                    isSaveEnabled = isPasswordMatch(
-                        newPassword,
-                        confirmPassword
-                    ) && isPasswordSecure
+                    isSaveEnabled = isPasswordMatch && isPasswordSecure
                 )
             )
         }

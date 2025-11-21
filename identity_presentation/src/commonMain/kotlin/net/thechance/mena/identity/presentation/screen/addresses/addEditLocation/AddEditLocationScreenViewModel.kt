@@ -51,25 +51,15 @@ class AddEditLocationScreenViewModel(
 
         if (addressType == state.value.addressUIState.addressType) return
 
-        if (addressType !is AddressType.Other) {
-            updateState {
-                copy(
-                    addressUIState.copy(
-                        addressType = addressType,
-                        otherAddressType = ""
-                    )
+        updateState {
+            copy(
+                addressUIState.copy(
+                    addressType = addressType,
+                    otherAddressType = addressUIState.otherAddressType
                 )
-            }
-        } else {
-            updateState {
-                copy(
-                    addressUIState.copy(
-                        addressType = AddressType.Other(addressUIState.otherAddressType ?: ""),
-                        otherAddressType = addressUIState.otherAddressType
-                    )
-                )
-            }
+            )
         }
+
         changeIsSaveEnabled()
 
     }
@@ -179,10 +169,16 @@ class AddEditLocationScreenViewModel(
                 addressUIState = addressUIState.copy(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
-                    addressType = if (addressUIState.addressType != null || updateOriginals) newAddress.addressType else null,
-                    otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null,
-                    addressID = newAddress.id ?: addressUIState.addressID,
-                    isMainAddress = newAddress.isMainAddress
+                    addressType = if (updateOriginals) newAddress.addressType else addressUIState.addressType,
+                    otherAddressType = if (updateOriginals && newAddress.addressType is AddressType.Other)
+                        newAddress.addressType.getAddressType()
+                    else
+                        addressUIState.otherAddressType,
+                    addressID = if (updateOriginals)
+                        newAddress.id ?: addressUIState.addressID
+                    else
+                        addressUIState.addressID,
+                    isMainAddress = if (updateOriginals) newAddress.isMainAddress else addressUIState.isMainAddress
                 )
             )
         }

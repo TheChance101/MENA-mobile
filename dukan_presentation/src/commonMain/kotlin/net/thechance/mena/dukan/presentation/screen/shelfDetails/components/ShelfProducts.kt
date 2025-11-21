@@ -78,6 +78,7 @@ private fun ProductCardLoaded(
                     productDescription = product.description,
                     productCardBackground = productCardBackground,
                     productPrice = product.price,
+                    isDukanStyleNoImage = state.dukanStyle == Style.NO_IMAGE,
                     productAction = {
                         if (product.isOutOfStock.not()) {
                             CartProductAction(

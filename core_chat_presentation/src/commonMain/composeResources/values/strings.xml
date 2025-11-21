@@ -57,6 +57,9 @@
     <string name="error_recording_failed">Failed to start recording. Please try again.</string>
     <string name="error_invalid_recording">Invalid recording. Please try recording again.</string>
     <string name="error_failed_to_process_audio">Failed to process audio file. Please try again.</string>
+    <string name="send_to">Send to</string>
+    <string name="search_by_name">Search by name</string>
+    <string name="cannot_get_chat_for_that_contact">Cannot get chat for that contact</string>
     <string name="just_now">Just now</string>
     <string name="minute_ago">1 minute ago</string>
     <string name="two_minute_ago">2 minutes ago</string>
@@ -68,7 +71,6 @@
     <string name="more_hours_ago">%1$d hours ago</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
-
     <string name="next_prayer_in">Next prayer %1$s in:</string>
     <string name="fajr">Fajr</string>
     <string name="dhuhr">Dhuhr</string>

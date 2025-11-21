@@ -29,6 +29,7 @@ fun FilterSection(
     Column {
         HorizontalDivider()
         FilterContent(
+            horizontalPadding = 0,
             showStatusFilter = false,
             selectedTypes = state.selectedTransactionsTypes,
             startDate = state.startDate?.let { formatLocalDate(date = it, outputFormat = "yyyy/MM/dd") } ?: "",

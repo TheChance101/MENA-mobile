@@ -61,15 +61,15 @@ class ContactsViewModel(
         )
     }
 
-    private fun onLoadContactsSuccess(pagingData: PagingData<ContactUiState>?) {
-        val contacts = pagingData?.map {
+    private fun onLoadContactsSuccess(pagingData: PagingData<ContactUiState>) {
+        val contacts = pagingData.map {
             it.copy(
                 phoneNumber =
                     runCatching { PhoneNumberFormatterUtil.format(it.phoneNumber) }.getOrNull()
                         ?: it.phoneNumber
             )
         }
-        updateState { it.copy(contacts = flowOf(contacts ?: PagingData.empty())) }
+        updateState { it.copy(contacts = flowOf(contacts)) }
     }
 
     override fun onRefreshContactsClicked() {

@@ -321,7 +321,9 @@ class SurahViewModel(
                 }
                 quranPlayer.playAyah(ayahSoundUrl)
             },
-            onSuccess = { updateSurahPlayback() })
+            onSuccess = { updateSurahPlayback() },
+            dispatcher = Main
+        )
     }
 
     private fun handleLoadSurahSuccess(ayat: List<Ayah>) {

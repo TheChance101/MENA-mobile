@@ -46,6 +46,11 @@ class SetNewPasswordScreenViewModelTest {
 
         every { passwordValidator.isValid(validPassword) } returns true
         every { passwordValidator.isValid(invalidPassword) } returns false
+        every { passwordValidator.isPasswordMatch(validPassword, validPassword) } returns true
+        every { passwordValidator.isPasswordMatch(invalidPassword, any()) } returns false
+        every { passwordValidator.isPasswordMatch(validPassword, "") } returns false
+
+
     }
 
     @AfterTest
@@ -63,6 +68,7 @@ class SetNewPasswordScreenViewModelTest {
     fun `onChangeNewPassword should update newPassword in state`() = runTest {
         val newPass = "NewP@ss123"
         every { passwordValidator.isValid(newPass) } returns true
+        every { passwordValidator.isPasswordMatch(any(), any()) } returns true
 
         viewModel.onChangeNewPassword(newPass)
 
@@ -92,8 +98,11 @@ class SetNewPasswordScreenViewModelTest {
 
     @Test
     fun `checkResetButtonEnabled should be disabled when passwords do not match`() = runTest {
+        every { passwordValidator.isPasswordMatch(validPassword, "DifferentPass123") } returns false
+
         viewModel.onChangeNewPassword(validPassword)
         viewModel.onChangeConfirmPassword("DifferentPass123")
+
 
         viewModel.state.test {
             assertFalse(awaitItem().isResetEnabled)
@@ -136,6 +145,8 @@ class SetNewPasswordScreenViewModelTest {
 
     @Test
     fun `onClickResetPassword should show error message when passwords do not match`() = runTest {
+        every { passwordValidator.isPasswordMatch(validPassword, "DifferentPass123") } returns false
+
         viewModel.onChangeNewPassword(validPassword)
         viewModel.onChangeConfirmPassword("DifferentPass123")
 

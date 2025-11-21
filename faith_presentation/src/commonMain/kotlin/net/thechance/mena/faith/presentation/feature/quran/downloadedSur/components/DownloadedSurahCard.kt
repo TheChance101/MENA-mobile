@@ -17,7 +17,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.delete_surah
-import mena.faith_presentation.generated.resources.ic_ad_duha
 import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_play_circle
 import mena.faith_presentation.generated.resources.ic_reciter_list
@@ -28,10 +27,12 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.presentation.components.PlayButton
 import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurUiState
+import net.thechance.mena.faith.presentation.feature.quran.sur.getSurahNameDrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -71,27 +72,29 @@ private fun CardContent(
     surahDetailsUiState: DownloadedSurUiState.SurahDetailsUiState,
     modifier: Modifier = Modifier,
 ) {
+    val surahNameImage = getSurahNameDrawableResource(surahDetailsUiState.arabicNameImg)
     Row(
-        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = Theme.spacing._12,
-                vertical = Theme.spacing._8,
-            ),
+            .padding(horizontal = Theme.spacing._12, vertical = Theme.spacing._8),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+
         PlayButton(
             painterIcon = painterResource(Res.drawable.ic_play_circle),
             contentDescription = stringResource(Res.string.play),
             modifier = Modifier.padding(end = Theme.spacing._12),
         )
+
         SurahDetails(
             surahDetailsUiState,
             modifier = Modifier.weight(1f),
         )
+
         Icon(
-            painter = painterResource(surahDetailsUiState.arabicNameImg),
+            painter = painterResource(surahNameImage),
             contentDescription = stringResource(Res.string.surah_arabic_name_icon),
+            tint = Theme.colorScheme.primary.primary,
             modifier = Modifier.size(48.dp),
         )
     }
@@ -106,15 +109,18 @@ private fun SurahDetails(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
         modifier = modifier,
     ) {
+
         Text(
             text = surahDetailsUiState.surahName,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.medium,
         )
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         ) {
+
             Icon(
                 painter = painterResource(Res.drawable.ic_reciter_list),
                 contentDescription = stringResource(Res.string.reciter_list),
@@ -122,7 +128,7 @@ private fun SurahDetails(
             )
 
             Text(
-                text = surahDetailsUiState.downloadedReciters.joinToString(", "),
+                text = surahDetailsUiState.recitersName.joinToString(", "),
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadeSecondary,
                 maxLines = 1,
@@ -135,13 +141,13 @@ private fun SurahDetails(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewDownloadedSuraItem() {
     MenaTheme {
         QuranTheme {
             DownloadedSurahCard(
                 DownloadedSurUiState.SurahDetailsUiState(
                     1,
-                    Res.drawable.ic_ad_duha,
+                    Surah.SurahOrder.AlFajr,
                     "Al-Duha",
                     listOf("Al Minshawi", "Sudais"),
                 ),

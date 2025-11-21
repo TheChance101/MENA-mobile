@@ -103,6 +103,7 @@ class LoginScreen : BaseScreen<
                         onTogglePasswordVisibility = listener::onPasswordVisibilityToggled,
                         onChangePassword = listener::onPasswordChanged,
                         label = stringResource(Res.string.password),
+                        modifier = Modifier.padding(top = Theme.spacing._16)
                     )
 
                     ForgetPasswordText(

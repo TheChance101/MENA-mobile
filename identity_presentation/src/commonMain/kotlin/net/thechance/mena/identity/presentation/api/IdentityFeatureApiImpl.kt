@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.api
 
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -8,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.FadeTransition
 import net.thechance.mena.identity.api.IdentityFeatureApi
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
@@ -23,10 +26,19 @@ import net.thechance.mena.identity.presentation.screen.register.uploadProfileIma
 import org.koin.compose.koinInject
 
 class IdentityFeatureApiImpl : IdentityFeatureApi {
+
     @Composable
-    override fun ProfileTabEntry() {
+    override fun ProfileTabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
+        val initialScreen = ProfileScreen()
         IdentityFeatureRoot {
-            Navigator(ProfileScreen())
+            Navigator(initialScreen) { navigator ->
+                val current = navigator.lastItem
+                LaunchedEffect(current.key) {
+                    updateBottomNavigationVisibility(current == initialScreen)
+                }
+
+                FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
+            }
         }
     }
 
@@ -135,7 +147,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
 
         return if (imageUploadCompleted) {
-            AccountCreatedScreen(authTokens = authTokens)
+            AccountCreatedScreen(authTokens = authTokens, phoneNumber = lastPhoneNumber)
         } else {
             UploadProfileImageScreen(
                 authTokens = authTokens,
