@@ -19,7 +19,6 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
-import co.touchlab.kermit.Logger
 import kotlinx.coroutines.delay
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
@@ -109,7 +108,6 @@ private fun HomeScreenContent(
             snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
                 .collect { (index, offset) ->
                     listener.saveScreenPosition(index, offset)
-                    Logger.i("Home Screen after") { " after ------------- ${state.savedIndex} ${state.savedOffset}" }
                 }
         }
 
@@ -118,8 +116,7 @@ private fun HomeScreenContent(
                 while (reels.itemCount <= state.savedIndex) {
                     delay(10)
                 }
-                listState.scrollToItem(state.savedIndex, state.savedOffset)
-                Logger.i("Home Screen to scroll") { " scroll ------------- ${state.savedIndex} ${state.savedOffset}" }
+                listState.animateScrollToItem(state.savedIndex, state.savedOffset)
             }
         }
 
