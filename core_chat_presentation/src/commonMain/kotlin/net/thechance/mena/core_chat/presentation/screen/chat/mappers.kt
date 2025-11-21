@@ -8,7 +8,11 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.today
 import mena.core_chat_presentation.generated.resources.yesterday
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent.*
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Audio
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Ayah
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Image
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Money
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Text
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.format
@@ -50,9 +54,11 @@ fun List<MessageUiState>.markIsLastMessages(): List<MessageUiState> {
     return mapIndexed { index, messageUiState ->
         val isLastInSeries = index == 0 || messageUiState.messageDetails.isMine != lastIsMine
         lastIsMine = messageUiState.messageDetails.isMine
-        messageUiState.copyMessage(messageUiState.messageDetails.copy(
-            isLastInSeries = isLastInSeries
-        ))
+        messageUiState.copyMessage(
+            messageUiState.messageDetails.copy(
+                isLastInSeries = isLastInSeries
+            )
+        )
     }
 }
 
@@ -161,6 +167,11 @@ fun Message.toUi(): MessageUiState {
             surahName = content.surahName,
             messageDetails = messageDetails
         )
+
+        is Money -> MoneyMessageUiState(
+            amount = content.amount,
+            messageDetails = messageDetails
+        )
     }
 }
 
@@ -189,6 +200,7 @@ fun MessageUiState.toEntity(): Message {
                 reactions = messageDetails.reactions,
             )
         }
+
         is TextMessageUiState -> {
             Message(
                 chatId = messageDetails.chatId,
@@ -201,6 +213,7 @@ fun MessageUiState.toEntity(): Message {
                 reactions = messageDetails.reactions,
             )
         }
+
         is AyahMessageUiState -> {
             Message(
                 chatId = messageDetails.chatId,
@@ -211,6 +224,19 @@ fun MessageUiState.toEntity(): Message {
                     ayahContent = ayahContent,
                     ayahNumber = ayahNumber
                 ),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+
+        is MoneyMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Money(amount = amount),
                 id = messageDetails.id,
                 sendAt = messageDetails.sendTime,
                 status = messageDetails.status,

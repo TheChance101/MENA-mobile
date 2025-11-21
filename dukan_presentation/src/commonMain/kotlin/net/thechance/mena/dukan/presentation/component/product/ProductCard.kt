@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.product
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -36,6 +35,7 @@ import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.out_of_stock
 import mena.dukan_presentation.generated.resources.silver_tc
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -110,13 +110,13 @@ fun ProductCard(
             }
 
             if (isError || isLoading) {
-                Image(
+                Icon(
                     painter = painterResource(Res.drawable.ic_no_image_loaded),
                     contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier
                         .size(24.dp)
                         .align(Alignment.Center),
-                    contentScale = ContentScale.Fit
                 )
             }
         }

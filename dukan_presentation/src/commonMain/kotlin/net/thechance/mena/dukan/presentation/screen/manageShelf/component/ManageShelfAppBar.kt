@@ -11,6 +11,7 @@ import mena.dukan_presentation.generated.resources.ic_delete
 import mena.dukan_presentation.generated.resources.manage_shelf
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -23,9 +24,10 @@ fun ManageShelfAppBar(
     AppBar(
         title = stringResource(Res.string.manage_shelf),
         leadingContent = {
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow)
+                contentDescription = stringResource(Res.string.back_arrow),
+                tint = Theme.colorScheme.primary.primary
             )
         },
         onLeadingClick = onBackClicked,

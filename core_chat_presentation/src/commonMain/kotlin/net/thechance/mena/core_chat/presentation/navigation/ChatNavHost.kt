@@ -31,11 +31,14 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.api.FaithApi
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("No NavController provided")
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun ChatNavHost(
     walletApi: WalletApi = koinInject(),
@@ -64,6 +67,7 @@ fun ChatNavHost(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
+
         CompositionLocalProvider(
             LocalNavController provides navController,
             LocalSnackBarHostController provides snackBarHostController
@@ -81,6 +85,15 @@ fun ChatNavHost(
                     walletApi.WalletEntry(
                         navigateBack = { navController.popBackStack() },
                         updateBottomNavigationVisibility = updateBottomNavigationVisibility,
+                    )
+                }
+                composable<ConfirmPaymentRoute> { backStack ->
+                    walletApi.ConfirmPaymentEntry(
+                        transactionId = Uuid.parse(backStack.savedStateHandle.toRoute<ConfirmPaymentRoute>().transactionId),
+                        navigateBack = {
+                            navController.popBackStack()
+                        }
+
                     )
                 }
                 composable<ShareMessageRoute> { ShareMessageScreen(onClickBack = onNavigateBackFromShareMessage) }
@@ -102,7 +115,6 @@ fun ChatNavHost(
                     )
                 }
             }
-
             Box(
                 modifier = Modifier.fillMaxSize().statusBarsPadding()
                     .padding(horizontal = Theme.spacing._16),

@@ -85,7 +85,7 @@ private fun EditProductContent(
             TopAppBar(
                 onBackClick = interactionListener::onBackClicked,
                 title = stringResource(Res.string.manage_product),
-                onDeleteClick = interactionListener::onDeleteProductClicked
+                onDeleteClick = interactionListener::onDeleteProductClicked,
             )
         },
         overlays = {

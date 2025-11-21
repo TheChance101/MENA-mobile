@@ -9,4 +9,5 @@ data class Chat(
     val name: String,
     val imageUrl:String?,
     val requesterId: Uuid,
+    val receiverId: Uuid,
 )
