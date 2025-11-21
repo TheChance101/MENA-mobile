@@ -538,7 +538,7 @@ class ChatViewModel(
         val message = _messages.value.find { it.id == messageId } ?: return
 
         val oldReactions = message.reactions
-        val newReactions = calculateNewReactions(oldReactions, currentUserId, reaction, messageId)
+        val newReactions = determineNewReactions(oldReactions, currentUserId, reaction, messageId)
 
         tryToExecute(
             execute = {
@@ -561,7 +561,7 @@ class ChatViewModel(
         }
     }
 
-    private fun calculateNewReactions(
+    private fun determineNewReactions(
         oldReactions: List<MessageReaction>,
         userId: Uuid,
         emoji: String,
