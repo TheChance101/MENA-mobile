@@ -45,6 +45,7 @@ class DepositViewModel (
         }
     }
 
+
     override fun onFillTheWalletButtonClicked() {
         tryToExecute(
             onStart = { updateState { it.copy(isDepositProcessLoading = true) } },
@@ -72,6 +73,11 @@ class DepositViewModel (
             }
     }
 
+    override fun onRetryClicked() {
+        updateState { it.copy(errorState = null) }
+        getAvailableCountries()
+    }
+
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
         updateState { it.copy(selectedCountry = country) }
     }
@@ -86,6 +92,7 @@ class DepositViewModel (
 
     private suspend fun onDepositSuccess(){
         updateState { it.copy(isDepositProcessLoading = false) }
+        updateState { it.copy(phoneNumber = "", amount ="") }
 
         showSnackBar(
             title = stringProvider.getString(Res.string.success_deposit_title),
@@ -93,7 +100,6 @@ class DepositViewModel (
             isSuccess = true
         )
 
-        updateState { it.copy(phoneNumber = "", amount ="") }
     }
 
     private suspend fun showSnackBar(
@@ -146,6 +152,7 @@ class DepositViewModel (
     private fun onGetCountriesSuccess(availableCountries: List<Country>) {
         updateState {
             it.copy(
+                errorState = null,
                 availableCountries = availableCountries.map { it.toUiState() },
                 selectedCountry = availableCountries.map{it.toUiState()}.firstOrNull() ?: it.selectedCountry
             )
@@ -153,6 +160,7 @@ class DepositViewModel (
     }
 
     private suspend fun onGetCountriesError(errorState: ErrorState) {
+        updateState { it.copy(errorState = errorState) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),
