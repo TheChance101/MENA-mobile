@@ -197,4 +197,5 @@
     <string name="order_error_unauthorized_access">لا يحق لك عرض تفاصيل هذا الطلب.</string>
     <string name="order_error_not_found">هذاالطلب غير موجود.</string>
     <string name="order_error_general">حدث خطأ أثناء جلب تفاصيل الطلب. يرجي المحاولة لاحقا</string>
+    <string name="deactivated_dukan">الدكان غير مفعل</string>
 </resources>

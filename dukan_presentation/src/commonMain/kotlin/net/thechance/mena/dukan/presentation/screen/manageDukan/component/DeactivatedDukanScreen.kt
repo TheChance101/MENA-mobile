@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.deactivated_dukan
-import mena.dukan_presentation.generated.resources.dukan_waiting_approval
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -52,7 +51,7 @@ fun DeactivatedDukanScreen(
                     )
                 }
             },
-            bodyText = stringResource(Res.string.dukan_waiting_approval),
+            bodyText = stringResource(Res.string.deactivated_dukan),
         )
 
     }
