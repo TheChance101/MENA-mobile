@@ -62,9 +62,7 @@ class EnterNameScreen(
     override fun OnRender(
         state: EnterNameUIState, listener: EnterNameInteractionListener
     ) {
-        Scaffold(
-        )
-        {
+        Scaffold {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -111,7 +109,7 @@ class EnterNameScreen(
                         contentPadding = PaddingValues(vertical = 13.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = Theme.spacing._12)
+                            .padding(vertical = Theme.spacing._12)
                             .imePadding()
                     )
                 }

@@ -120,7 +120,7 @@ class LoginScreen : BaseScreen<
                         contentPadding = PaddingValues(vertical = 13.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = Theme.spacing._12)
+                            .padding(vertical = Theme.spacing._12)
                     )
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
