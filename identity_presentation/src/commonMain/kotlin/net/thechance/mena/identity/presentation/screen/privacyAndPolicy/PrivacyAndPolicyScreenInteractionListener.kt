@@ -5,5 +5,4 @@ import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 interface PrivacyAndPolicyScreenInteractionListener: BaseInteractionListener {
 
     fun onClickBack()
-    fun onClearErrorMessage()
 }

@@ -10,9 +10,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -25,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -36,15 +41,17 @@ import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
+import net.thechance.mena.core_chat.presentation.navigation.ConfirmPaymentRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
-import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
+import net.thechance.mena.core_chat.presentation.screen.chat.components.attachmentsSendMoneyBottomSheet
+import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -77,7 +84,11 @@ fun ChatScreen(onClickBackFromChat: () -> Unit = {}) {
 
     AudioLifecycleObserver(viewModel)
 
-    EffectsHandler(effects = effects, chatLazyListState = chatLazyListState, onClickBackFromChat = onClickBackFromChat)
+    EffectsHandler(
+        effects = effects,
+        chatLazyListState = chatLazyListState,
+        onClickBackFromChat = onClickBackFromChat
+    )
 
     ChatScreenContent(
         state = state,
@@ -102,6 +113,8 @@ fun ChatScreenContent(
         }
     }
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -119,36 +132,11 @@ fun ChatScreenContent(
                 )
             },
             bottomBar = {
-                AnimatedContent(
-                    targetState = state.isRecordingVoice,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    transitionSpec = {
-                        if (targetState) {
-                            slideInVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeIn() togetherWith
-                                    slideOutVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeOut()
-                        } else {
-                            slideInVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeIn() togetherWith
-                                    slideOutVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeOut()
-                        }
-                    },
-                    label = "ChatBarAnimation"
-                ) { isRecording ->
-                    if (isRecording) {
-                        RecordingBar(
-                            onSendClick =interactions::onSendRecordClicked,
-                            onCancelClick = interactions::onCancelRecordClicked
-                        )
-                    } else {
-                        ChatInputBar(
-                            userInput = state.inputMessage,
-                            onTextChange = interactions::onInputMessageChanged,
-                            onSendButtonClick = interactions::onSendTextMessageClicked,
-                            onAttachButtonClick = interactions::onAttachmentClicked,
-                            onVoiceRecordClick = interactions::onRecordClicked
-                        )
-                    }
-                }
+                ChatInputBarContent(
+                    state = state,
+                    interactions = interactions,
+                    modifier = Modifier.fillMaxWidth()
+                )
             },
             overlays = {
                 resendFailedMessageDialog(
@@ -163,9 +151,18 @@ fun ChatScreenContent(
                     showConfirmDeleteChatDialog = state.isConfirmDeleteChatDialogVisible,
                     actionsMenuInteractionListener = interactions as ActionsMenuInteractionListener
                 )
-            }
+
+                attachmentsSendMoneyBottomSheet(
+                    isVisible = state.isSendMoneyDialogVisible,
+                    attachmentsInteractionListener = interactions,
+                    value = state.amountToTransfer,
+                    isLoading = state.isLoadingSendMoneyButton,
+                )
+            },
+            modifier = Modifier.imePadding()
         ) {
             ChatList(
+                chatName = state.chatName,
                 items = state.chatListItems,
                 chatAvatarUrl = state.chatAvatarUrl,
                 chatListState = chatLazyListState,
@@ -174,6 +171,11 @@ fun ChatScreenContent(
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
+                onLinkClick = interactions::onLinkClicked,
+            modifier = Modifier
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
             )
         }
 
@@ -207,6 +209,8 @@ fun ChatScreenContent(
                 attachmentsInteractionListener = interactions
             )
         }
+
+
     }
 
     PaginationTrigger(
@@ -244,6 +248,43 @@ fun AudioLifecycleObserver(viewModel: ChatViewModel) {
 }
 
 @Composable
+private fun ChatInputBarContent(
+    state: ChatScreenState,
+    interactions: ChatInteractionListener,
+    modifier: Modifier = Modifier
+) {
+    AnimatedContent(
+        targetState = state.isRecordingVoice,
+        modifier = modifier,
+        transitionSpec = {
+            if (targetState) {
+                slideInVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeIn() togetherWith
+                        slideOutVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeOut()
+            } else {
+                slideInVertically(animationSpec = tween(300)) { fullHeight -> -fullHeight } + fadeIn() togetherWith
+                        slideOutVertically(animationSpec = tween(300)) { fullHeight -> fullHeight } + fadeOut()
+            }
+        },
+        label = "ChatBarAnimation"
+    ) { isRecording ->
+        if (isRecording) {
+            RecordingBar(
+                onSendClick = interactions::onSendRecordClicked,
+                onCancelClick = interactions::onCancelRecordClicked,
+            )
+        } else {
+            ChatInputBar(
+                userInput = state.inputMessage,
+                onTextChange = interactions::onInputMessageChanged,
+                onSendButtonClick = interactions::onSendTextMessageClicked,
+                onAttachButtonClick = interactions::onAttachmentClicked,
+                onVoiceRecordClick = interactions::onRecordClicked,
+            )
+        }
+    }
+}
+
+@Composable
 private fun EffectsHandler(
     effects: SharedFlow<ChatScreenEffect>,
     chatLazyListState: LazyListState,
@@ -252,6 +293,7 @@ private fun EffectsHandler(
     val snackBarHostController = LocalSnackBarHostController.current
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
+    val uriHandler = LocalUriHandler.current
 
     EffectHandler(effects, key1 = navController.currentBackStackEntry) { effect ->
         when (effect) {
@@ -266,6 +308,19 @@ private fun EffectsHandler(
 
             is ChatScreenEffect.ScrollToBottom -> {
                 scope.launch { chatLazyListState.animateScrollToItem(0) }
+            }
+
+            is ChatScreenEffect.OpenUrl -> {
+                uriHandler.openUri(effect.url)
+            }
+
+            is ChatScreenEffect.NavigateToConfirmPayment -> {
+                navController.navigate(
+                    ConfirmPaymentRoute(
+                        effect.amount,
+                        effect.transactionId.toString()
+                    )
+                )
             }
         }
     }

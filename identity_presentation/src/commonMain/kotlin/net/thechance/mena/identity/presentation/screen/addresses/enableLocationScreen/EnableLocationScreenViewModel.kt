@@ -6,9 +6,9 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.exception.LocationException
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.jetbrains.compose.resources.StringResource
@@ -18,7 +18,7 @@ class EnableLocationScreenViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) :
     BaseScreenModel<EnableLocationScreenUIState, EnableLocationScreenUIEffect>(
-        EnableLocationScreenUIState()
+        EnableLocationScreenUIState
     ),
     EnableLocationScreenInteractionListener {
     override fun onClickBack() {
@@ -28,10 +28,6 @@ class EnableLocationScreenViewModel(
     override fun onClickEnablePermission() {
         locationForegroundHandler.openSettingPage()
         checkIfEnabledPermission()
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     private fun checkIfEnabledPermission() {
@@ -50,10 +46,14 @@ class EnableLocationScreenViewModel(
     }
 
     private fun onPermissionError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            EnableLocationScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
-    private fun mapErrorMessage(throwable: Throwable): StringResource{
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
             is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))

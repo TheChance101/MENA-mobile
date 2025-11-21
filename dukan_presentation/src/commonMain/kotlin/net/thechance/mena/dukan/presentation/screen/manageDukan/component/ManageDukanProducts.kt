@@ -62,7 +62,7 @@ fun ManageDukanProductCountRow(
                 Icon(
                     painter = painterResource(Res.drawable.ic_package_add),
                     contentDescription = stringResource(Res.string.add_product),
-                    tint = Theme.colorScheme.shadePrimary
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
 
@@ -72,7 +72,7 @@ fun ManageDukanProductCountRow(
                 Icon(
                     painter = painterResource(Res.drawable.ic_pencil_edit),
                     contentDescription = stringResource(Res.string.edit_shelf),
-                    tint = Theme.colorScheme.shadePrimary
+                    tint = Theme.colorScheme.primary.primary
                 )
             }
         }

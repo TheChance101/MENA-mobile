@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -56,7 +57,13 @@ fun AddToCartSection(
         )
     } else {
         Column(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
+                .shadow(
+                    elevation = 8.dp,
+                    ambientColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f),
+                    spotColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f)
+                )
                 .background(Theme.colorScheme.background.surface)
                 .padding(
                     top = Theme.spacing._8,
@@ -121,7 +128,7 @@ fun AddToCartSection(
                             style = Theme.typography.label.small.copy(
                                 textDecoration = TextDecoration.LineThrough
                             ),
-                            color = Theme.colorScheme.primary.onPrimaryBody,
+                            color = Theme.colorScheme.primary.onPrimary.copy(alpha = 0.6f),
                         )
                     }
                 }

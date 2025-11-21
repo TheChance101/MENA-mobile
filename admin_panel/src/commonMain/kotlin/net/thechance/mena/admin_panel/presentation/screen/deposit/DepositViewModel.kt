@@ -66,7 +66,7 @@ class DepositViewModel (
 
     override fun onAmountChanged(amount : String) {
         amount
-            .filter { char -> char.isDigit()}
+            .filter { char -> char.isDigit() ||char ==  '.'}
             .let { newAmount->
                 updateState { it.copy(amount =  newAmount) }
             }

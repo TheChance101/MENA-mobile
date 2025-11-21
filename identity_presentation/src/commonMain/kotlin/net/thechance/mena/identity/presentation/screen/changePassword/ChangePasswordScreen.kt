@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -21,21 +20,18 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenUIEffect.NavigateBack
 import net.thechance.mena.identity.presentation.screen.changePassword.components.CurrentPasswordContent
 import net.thechance.mena.identity.presentation.screen.changePassword.components.NewPasswordContent
-import net.thechance.mena.identity.presentation.screen.profile.SnackBarUiState
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
-class ChangePasswordScreen(
-    val onSuccess: (SnackBarUiState?) -> Unit,
-) : BaseScreen<ChangePasswordScreenViewModel,
-            ChangePasswordScreenUIState,
-            ChangePasswordScreenUIEffect,
-            ChangePasswordScreenInteractionListener>() {
+class ChangePasswordScreen() : BaseScreen<ChangePasswordScreenViewModel,
+    ChangePasswordScreenUIState,
+    ChangePasswordScreenUIEffect,
+    ChangePasswordScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -48,7 +44,8 @@ class ChangePasswordScreen(
         state: ChangePasswordScreenUIState,
         listener: ChangePasswordScreenInteractionListener
     ) {
-        val pagerState = rememberPagerState(initialPage = state.currentPage.index, pageCount = { 2 })
+        val pagerState =
+            rememberPagerState(initialPage = state.currentPage.index, pageCount = { 2 })
 
         LaunchedEffect(state.currentPage) {
             pagerState.animateScrollToPage(state.currentPage.index)
@@ -93,14 +90,6 @@ class ChangePasswordScreen(
 
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = {
-                listener.onClearErrorMessage()
-            },
-            modifier = Modifier.statusBarsPadding()
-        )
-
         BackHandler(enabled = true)
         {
             listener.onClickBack()
@@ -109,17 +98,25 @@ class ChangePasswordScreen(
 
     override fun onEffect(
         effect: ChangePasswordScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is NavigateBack -> {
-                onSuccess(effect.snackBarUiState)
+                effect.successStringResource?.let { successMessage ->
+                    snackBarController.showSnackBarSuccess(
+                        message = successMessage
+                    )
+                }
                 navigator.pop()
+            }
+
+            is ChangePasswordScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(message = effect.errorStringResource)
             }
         }
     }
 }
-
 
 
 @Preview
@@ -144,10 +141,9 @@ private fun ChangePasswordScreenPreview() {
 
         override fun onToggleConfirmPasswordVisibility() {}
 
-        override fun onClearErrorMessage() {}
     }
     MenaTheme {
-        ChangePasswordScreen {}.OnRender(
+        ChangePasswordScreen().OnRender(
             state = ChangePasswordScreenUIState(),
             listener = listener
         )

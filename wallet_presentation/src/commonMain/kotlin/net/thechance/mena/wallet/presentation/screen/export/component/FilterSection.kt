@@ -44,7 +44,7 @@ fun FilterSection(
 private fun HorizontalDivider() {
     Box(
         modifier = Modifier
-            .padding(vertical = 24.dp)
+            .padding(vertical = 24.dp, horizontal = 16.dp)
             .fillMaxWidth()
             .height(1.dp)
             .background(

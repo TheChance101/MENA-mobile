@@ -6,6 +6,7 @@ import net.thechance.mena.faith.data.database.AyahDao
 import net.thechance.mena.faith.data.database.QuranDatabase
 import net.thechance.mena.faith.data.database.RecitersDao
 import net.thechance.mena.faith.data.database.SurahAudioDao
+import net.thechance.mena.faith.data.database.prayertimes.PrayerTimesDao
 import net.thechance.mena.faith.data.datastore.TilawahDataStore
 import net.thechance.mena.faith.data.datastore.TilawahDataStoreImpl
 import net.thechance.mena.faith.data.datastore.createDataStore
@@ -18,13 +19,11 @@ val faithDataModule = module {
     single<AyahDao> { get<QuranDatabase>().getAyaDao() }
     single<SurahAudioDao> { get<QuranDatabase>().getSurahAudioDao() }
     single<RecitersDao> { get<QuranDatabase>().getRecitersDao() }
+    single<PrayerTimesDao> { get<QuranDatabase>().getPrayerTimesDao() }
     single<DataStore<Preferences>> { createDataStore() }
     singleOf(::TilawahDataStoreImpl) bind TilawahDataStore::class
     includes(platformModule())
     includes(networkModule)
     includes(repositoryModule)
 
-
 }
-
-
