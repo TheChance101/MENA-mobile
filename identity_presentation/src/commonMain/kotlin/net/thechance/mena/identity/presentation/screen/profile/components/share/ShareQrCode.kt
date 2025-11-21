@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +47,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldS
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.presentation.base.util.collectAsEffectWithLifeCycle
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.createQrCodeByteArray
 import org.jetbrains.compose.resources.painterResource
@@ -69,30 +69,28 @@ fun ScaffoldScope.ShareQrCode(
     val shareState by viewModel.state.collectAsStateWithLifecycle()
     val snackBarController = LocalSnackBarController.current
 
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
-            when (effect) {
-                ShareQrCodeUIEffect.ShowClickDownloadSnackBar -> {
-                    snackBarController.showSnackBarSuccess(
-                        title = Res.string.download_success,
-                        message = Res.string.download_success_message
-                    )
-                    onDismissShareDialog()
-                }
+    viewModel.effect.collectAsEffectWithLifeCycle { effect ->
+        when (effect) {
+            ShareQrCodeUIEffect.ShowClickDownloadSnackBar -> {
+                snackBarController.showSnackBarSuccess(
+                    title = Res.string.download_success,
+                    message = Res.string.download_success_message
+                )
+                onDismissShareDialog()
+            }
 
-                ShareQrCodeUIEffect.ShowCopyToClipBoardSnackBar -> {
-                    snackBarController.showSnackBarSuccess(
-                        title = Res.string.copy_to_clipboard_success,
-                        message = Res.string.copy_to_clipboard_success_message
-                    )
-                    onDismissShareDialog()
-                }
+            ShareQrCodeUIEffect.ShowCopyToClipBoardSnackBar -> {
+                snackBarController.showSnackBarSuccess(
+                    title = Res.string.copy_to_clipboard_success,
+                    message = Res.string.copy_to_clipboard_success_message
+                )
+                onDismissShareDialog()
+            }
 
-                is ShareQrCodeUIEffect.ShowSnackBarError -> {
-                    snackBarController.showSnackBarError(
-                        message = effect.errorStringResource
-                    )
-                }
+            is ShareQrCodeUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
             }
         }
     }

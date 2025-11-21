@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.base.util.collectAsEffectWithLifeCycle
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactCard
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactUsScreenShimmer
@@ -52,11 +52,9 @@ class ContactUsScreen : BaseScreen<
         val viewModel = getScreenModel<ContactUsViewModel>()
         val uriHandler = LocalUriHandler.current
 
-        LaunchedEffect(Unit) {
-            viewModel.effect.collect { effect ->
-                if (effect is ContactUsUIEffect.OpenUrl) {
-                    uriHandler.openUri(effect.url)
-                }
+        viewModel.effect.collectAsEffectWithLifeCycle { effect ->
+            if (effect is ContactUsUIEffect.OpenUrl) {
+                uriHandler.openUri(effect.url)
             }
         }
 
