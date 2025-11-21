@@ -39,8 +39,8 @@ private fun StatementHistoryBodyPreview() {
                         id = Uuid.parse("123e4567-e89b-12d3-a456-42661417400$index"),
                         startDate = "01 Oct 2025",
                         endDate = "15 Oct 2025",
-                        totalInflow = 1000.0 + index * 100,
-                        totalOutflow = 500.0 + index * 50,
+                        totalInflow = "1000.0" ,
+                        totalOutflow = "500.0",
                         fileName = "Statement_$index.pdf",
                         isDeleting = false
                     )

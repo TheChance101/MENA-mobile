@@ -131,6 +131,13 @@ class DukanDetailsViewModel(
         getDukanDetails()
     }
 
+    override fun mapError(throwable: Throwable): ErrorState {
+        return when (throwable) {
+            is NoInternetException -> ErrorState.NoInternet
+            else -> ErrorState.UnknownError
+        }
+    }
+
     private suspend fun onActivationDukanSuccess() {
         updateState {
             it.copy(
@@ -261,7 +268,7 @@ class DukanDetailsViewModel(
     }
 
     private fun initializeProductsPaginator() {
-        updateState { it.copy(products =  emptyList() ) }
+        updateState { it.copy(products = emptyList()) }
         productsPaginator = Paginator(
             initialKey = INITIAL_PAGE,
             onLoadUpdated = ::onProductsPaginationLoading,
@@ -334,13 +341,6 @@ class DukanDetailsViewModel(
     private fun hideSnackBar() {
         updateState { oldState ->
             oldState.copy(snackBar = oldState.snackBar.copy(isVisible = false))
-        }
-    }
-
-    override fun mapError(throwable: Throwable): ErrorState {
-        return when (throwable) {
-            is NoInternetException -> ErrorState.NoInternet
-            else -> ErrorState.UnknownError
         }
     }
 

@@ -11,17 +11,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import net.thechance.mena.admin_panel.presentation.component.AdminPanelContentLoading
+import net.thechance.mena.admin_panel.presentation.component.DukansCounter
+import net.thechance.mena.admin_panel.presentation.component.EmptyDukansState
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
-import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanListContent
-import net.thechance.mena.admin_panel.presentation.component.DukansCounter
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanDetailsDrawerView
+import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanRequestsTableContent
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.RejectionDukanDialog
-import net.thechance.mena.admin_panel.presentation.component.EmptyDukanState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_requests
-import net.thechance.mena.admin_panel.resources.no_dukan_results_description_for_requests
 import net.thechance.mena.admin_panel.resources.requests
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -43,9 +41,9 @@ private fun DukanRequestsScreenContent(
     listener: DukanRequestsInteractionListener
 ) {
     PanelScaffold(
-        topBar = { DukanRequestsTopBar() },
+        topBar = { DukanRequestsScreenTopBar() },
         overlays = {
-            dialog(state.isRejectDialogShown){
+            dialog(state.isRejectDialogShown) {
                 RejectionDukanDialog(
                     isVisible = it,
                     onDismiss = listener::onRejectDukanDialogDismissed,
@@ -57,6 +55,7 @@ private fun DukanRequestsScreenContent(
                 )
             }
         },
+        isLoading = state.isInitialLoading,
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
         onRetry = listener::onRetryClicked
@@ -68,14 +67,11 @@ private fun DukanRequestsScreenContent(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
             when {
-                state.isLoading -> AdminPanelContentLoading()
-
-                state.dukans.isEmpty() -> EmptyDukanState(
-                    description = stringResource(Res.string.no_dukan_results_description_for_requests),
-                    modifier = Modifier.offset(y=-(76.dp))
+                state.dukans.isEmpty() -> EmptyDukansState(
+                    modifier = Modifier.fillMaxSize().offset(y = -(76.dp))
                 )
 
-                else -> DukanListContent(
+                else -> DukanRequestsTableContent(
                     state = state,
                     listener = listener,
                     modifier = Modifier.fillMaxSize()
@@ -96,7 +92,7 @@ private fun DukanRequestsScreenContent(
 }
 
 @Composable
-private fun DukanRequestsTopBar() {
+private fun DukanRequestsScreenTopBar() {
     AppBar(
         title = stringResource(Res.string.dukan_requests),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 18.dp),

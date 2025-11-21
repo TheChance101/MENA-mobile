@@ -19,6 +19,8 @@ import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.repository.ImagesRepository
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.domain.util.getCurrentDate
@@ -38,6 +40,8 @@ class EditUserProfileViewModel(
     private val userRepository: UserRepository,
     private val imagesRepository: ImagesRepository,
     private val imageDecoder: ImageDecoder,
+    private val authenticationRepository: AuthenticationRepository,
+    private val registrationDraftRepository: RegistrationDraftRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -126,6 +130,67 @@ class EditUserProfileViewModel(
 
     override fun onDismissLogoutDialog() {
         updateState { copy(showLogoutDialog = false) }
+    }
+
+    override fun onClickLogout() {
+        updateState { copy(showLogoutDialog = false, showConfirmLogoutDialog = true) }
+    }
+
+    override fun onClickDeleteAccount() {
+        updateState { copy(showLogoutDialog = false, showConfirmDeleteAccountDialog = true) }
+    }
+
+    override fun onDismissConfirmLogoutDialog() {
+        updateState { copy(showConfirmLogoutDialog = false) }
+    }
+
+    override fun onDismissConfirmDeleteAccountDialog() {
+        updateState { copy(showConfirmDeleteAccountDialog = false) }
+    }
+
+    override fun onConfirmLogout() {
+        tryToExecute(
+            function = ::performLogout,
+            onSuccess = { onLogoutSuccess() },
+            onError = ::onLogoutError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private suspend fun performLogout() {
+        authenticationRepository.logout()
+        registrationDraftRepository.clearLastPhoneNumber()
+    }
+
+    private fun onLogoutSuccess() {
+        updateState { copy(showConfirmLogoutDialog = false) }
+    }
+
+    private fun onLogoutError(throwable: Throwable) {
+        updateState { copy(showConfirmLogoutDialog = false, errorMessage = mapErrorMessage(throwable)) }
+    }
+
+    override fun onConfirmDeleteAccount() {
+        tryToExecute(
+            function = ::performDeleteAccount,
+            onSuccess = { onDeleteAccountSuccess() },
+            onError = ::onDeleteAccountError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private suspend fun performDeleteAccount() {
+        userRepository.deleteAccount()
+        authenticationRepository.clearAuthTokens()
+        registrationDraftRepository.clearLastPhoneNumber()
+    }
+
+    private fun onDeleteAccountSuccess() {
+        updateState { copy(showConfirmDeleteAccountDialog = false) }
+    }
+
+    private fun onDeleteAccountError(throwable: Throwable) {
+        updateState { copy(showConfirmDeleteAccountDialog = false, errorMessage = mapErrorMessage(throwable)) }
     }
 
     override fun onRemoveProfileImage() {

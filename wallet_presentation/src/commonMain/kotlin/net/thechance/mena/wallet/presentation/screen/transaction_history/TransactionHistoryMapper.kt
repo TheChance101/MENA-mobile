@@ -46,6 +46,7 @@ private fun Transaction.getTransactionType(): TransactionHistoryScreenState.Tran
         TransactionType.SENT -> TransactionHistoryScreenState.TransactionTypeUiState.SENT
         TransactionType.RECEIVED -> TransactionHistoryScreenState.TransactionTypeUiState.RECEIVED
         TransactionType.ONLINE_PURCHASE -> TransactionHistoryScreenState.TransactionTypeUiState.ONLINE_SHOPPING
+        TransactionType.DEPOSIT -> TransactionHistoryScreenState.TransactionTypeUiState.DEPOSIT
     }
 
 private fun Transaction.getTransactionStatus(): TransactionHistoryScreenState.TransactionStatusUiState =
@@ -57,5 +58,6 @@ private fun Transaction.getTransactionStatus(): TransactionHistoryScreenState.Tr
 private fun Transaction.getUserName(): String? = when (type) {
     TransactionType.SENT -> receiverName
     TransactionType.RECEIVED -> senderName
+    TransactionType.DEPOSIT -> senderName
     else -> null
 }

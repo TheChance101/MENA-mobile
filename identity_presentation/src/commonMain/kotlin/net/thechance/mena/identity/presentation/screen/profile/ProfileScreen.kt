@@ -37,7 +37,6 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.Add
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreen
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreen
 import net.thechance.mena.identity.presentation.screen.profile.components.AccountSettingsSection
 import net.thechance.mena.identity.presentation.screen.profile.components.AppSettingsSection
@@ -85,7 +84,9 @@ class ProfileScreen : BaseScreen<
                         onDismissRequest = listener::onDismissLanguageDialog,
                         appLanguages = state.languageDialogUiState.options,
                         onConfirmLanguageSelection = listener::onConfirmLanguageSelection,
-                        currentAppLanguage = state.languageDialogUiState.selectedAppLanguage
+                        currentAppLanguage = state.currentLanguage,
+                        selectedAppLanguage = state.languageDialogUiState.selectedAppLanguage,
+                        onLanguageChanged = listener::onSelectLanguage
                     )
                 }
                 dialog(state.themeDialogUiState.isVisible) {
@@ -113,6 +114,12 @@ class ProfileScreen : BaseScreen<
                     snackBarState = state.snackBarUiState,
                     onDismiss = listener::onDismissSnackBar,
                 )
+            },
+            topBar = {
+                AppBar(
+                    title = stringResource(Res.string.profile_title),
+                    trailingContent = { ShareIcon(onClick = listener::onShareClicked) }
+                )
             }
         )
         {
@@ -127,13 +134,6 @@ class ProfileScreen : BaseScreen<
                     contentPadding = PaddingValues(horizontal = Theme.spacing._16),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    item {
-                        AppBar(
-                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 14.dp),
-                            title = stringResource(Res.string.profile_title),
-                            trailingContent = { ShareIcon(onClick = listener::onShareClicked) }
-                        )
-                    }
                     item {
                         AnimatedVisibility(
                             visible = state.isSuccess,
@@ -172,7 +172,6 @@ class ProfileScreen : BaseScreen<
                             onEditProfileInfoClicked = listener::onEditProfileInfoClicked,
                             onChangePasswordClicked = listener::onChangePasswordClicked,
                             onAddressesClicked = listener::onAddressesClicked,
-                            onPrivacySettingsClicked = listener::onPrivacySettingsClicked
                         )
                     }
                     item {

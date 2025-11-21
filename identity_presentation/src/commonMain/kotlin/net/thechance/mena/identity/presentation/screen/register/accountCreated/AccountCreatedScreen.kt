@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import org.jetbrains.compose.resources.painterResource
@@ -37,7 +38,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
 class AccountCreatedScreen(
-    private val authTokens: AuthenticationTokens?
+    private val authTokens: AuthenticationTokens?,
+    private val phoneNumber: PhoneNumber? = null
 ) : BaseScreen<
         AccountCreatedViewModel,
         AccountCreatedUIState,
@@ -49,7 +51,7 @@ class AccountCreatedScreen(
         InitScreen(
             getScreenModel(
                 parameters = {
-                    authTokens?.let { parametersOf(it) } ?: parametersOf()
+                    parametersOf(authTokens, phoneNumber)
                 }
             )
         )
