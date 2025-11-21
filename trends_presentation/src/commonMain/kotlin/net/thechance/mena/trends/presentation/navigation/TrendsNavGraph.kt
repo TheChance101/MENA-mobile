@@ -40,7 +40,8 @@ import org.koin.compose.koinInject
 
 @Composable
 fun TrendsNavHost(
-    appThemeService: AppThemeService = koinInject()
+    appThemeService: AppThemeService = koinInject(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit
 ) {
 
     val navController = rememberNavController()
