@@ -30,27 +30,5 @@ actual fun SetStatusBarAppearance(appTheme: AppTheme) {
 }
 @Composable
 actual fun SetNavigationBarAppearance(appTheme: AppTheme) {
-    SideEffect {
-        dispatch_async(dispatch_get_main_queue()) {
-            val appearance = UITabBarAppearance().apply {
-                configureWithOpaqueBackground()
-                backgroundColor = Color.Transparent.toUIColor()
-            }
-            UITabBar.appearance().standardAppearance = appearance
 
-            val systemVersion = UIDevice.currentDevice.systemVersion.split(".").firstOrNull()?.toIntOrNull() ?: 0
-            if (systemVersion >= 15) {
-                UITabBar.appearance().scrollEdgeAppearance = appearance
-            }
-        }
-    }
-}
-
-private fun Color.toUIColor(): UIColor {
-    return UIColor.colorWithRed(
-        red = this.red.toDouble(),
-        green = this.green.toDouble(),
-        blue = this.blue.toDouble(),
-        alpha = this.alpha.toDouble()
-    )
 }
