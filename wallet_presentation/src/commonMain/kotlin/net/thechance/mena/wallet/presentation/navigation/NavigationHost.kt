@@ -42,7 +42,7 @@ fun NavigationHost(
 
     LaunchedEffect(currentRoute) {
         currentRoute?.destination?.route.let { route ->
-            updateBottomNavigationVisibility(RoutsWithBottomNavigation.contains(route))
+            updateBottomNavigationVisibility(RoutesWithBottomNavigation.contains(route))
         }
     }
 
@@ -98,7 +98,7 @@ val LocalNavController = compositionLocalOf<NavController> {
     throw UnknownNetworkException("nav controller not provided")
 }
 
-private val RoutsWithBottomNavigation = listOf(
+private val RoutesWithBottomNavigation = listOf(
     WalletMainScreenRoute::class.qualifiedName,
     TransactionsHistoryScreenRoute::class.qualifiedName,
     StatementsHistoryScreenRoute::class.qualifiedName
