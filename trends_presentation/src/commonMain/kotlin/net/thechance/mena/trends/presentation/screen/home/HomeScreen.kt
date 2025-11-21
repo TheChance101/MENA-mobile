@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,6 +19,8 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
+import co.touchlab.kermit.Logger
+import kotlinx.coroutines.delay
 import mena.trends_presentation.generated.resources.Res
 import mena.trends_presentation.generated.resources.add_reel
 import mena.trends_presentation.generated.resources.edit_tags
@@ -58,7 +61,12 @@ internal fun HomeScreen(
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId, source = Route.ReelSource.Home.name))
+                navController.navigate(
+                    Route.ReelDetails(
+                        effect.trendId,
+                        source = Route.ReelSource.Home.name
+                    )
+                )
 
             is HomeUiEffect.NavigateToAddReel ->
                 navController.navigate(Route.UploadReel)
@@ -96,6 +104,24 @@ private fun HomeScreenContent(
     ) {
         val reels = state.reels.collectAsLazyPagingItems()
         val listState = rememberLazyListState()
+
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+                .collect { (index, offset) ->
+                    listener.saveScreenPosition(index, offset)
+                    Logger.i("Home Screen after") { " after ------------- ${state.savedIndex} ${state.savedOffset}" }
+                }
+        }
+
+        LaunchedEffect(reels.loadState.refresh) {
+            if (reels.loadState.refresh is LoadState.NotLoading) {
+                while (reels.itemCount <= state.savedIndex) {
+                    delay(10)
+                }
+                listState.scrollToItem(state.savedIndex, state.savedOffset)
+                Logger.i("Home Screen to scroll") { " scroll ------------- ${state.savedIndex} ${state.savedOffset}" }
+            }
+        }
 
         val hasNetworkError = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet
                 && reels.itemSnapshotList.isEmpty()
@@ -169,7 +195,7 @@ private fun ReelsListSection(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(vertical = Theme.spacing._8,horizontal = Theme.spacing._16),
+        contentPadding = PaddingValues(vertical = Theme.spacing._8, horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(
@@ -238,6 +264,11 @@ private fun HomeScreenPreview() {
                     override fun onClickRetry() {}
                     override fun onClickExpandDescription(reelId: String) {}
                     override fun onGetRefreshedThumbnail(reelId: String) {}
+                    override fun saveScreenPosition(
+                        savedIndex: Int,
+                        savedOffset: Int
+                    ) {
+                    }
                 }
             )
         }

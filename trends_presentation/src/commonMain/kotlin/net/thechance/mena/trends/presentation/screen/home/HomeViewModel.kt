@@ -25,7 +25,6 @@ internal class HomeViewModel(
     init {
         getFeedReels()
     }
-
     fun addReelLike(reelId: String) {
         tryToExecute(
             onStart = { updateLikesOnUi(reelId) },
@@ -142,6 +141,10 @@ internal class HomeViewModel(
                 onGetRefreshedThumbnailSuccess(refreshedUrl, reelId)
             },
         )
+    }
+
+    override fun saveScreenPosition(savedIndex: Int, savedOffset: Int) {
+        updateState { copy(savedIndex = savedIndex, savedOffset = savedOffset) }
     }
 
     private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String) {

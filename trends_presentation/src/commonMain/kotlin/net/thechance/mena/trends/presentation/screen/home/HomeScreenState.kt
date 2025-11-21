@@ -15,6 +15,8 @@ data class HomeScreenState(
     val reels: Flow<PagingData<ReelUiState>> = flowOf(),
     val reelsStateFlow: MutableStateFlow<PagingData<ReelUiState>> = MutableStateFlow(PagingData.empty()),
     val errorMessage: StringResource? = null,
+    val savedIndex: Int = 0,
+    val savedOffset: Int = 0,
 )
 
 data class ReelUiState(

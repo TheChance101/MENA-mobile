@@ -9,4 +9,5 @@ interface HomeInteractionListener {
     fun onClickRetry()
     fun onClickExpandDescription(reelId: String)
     fun onGetRefreshedThumbnail(reelId: String)
+    fun saveScreenPosition(savedIndex: Int, savedOffset: Int)
 }
