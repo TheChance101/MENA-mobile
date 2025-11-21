@@ -28,6 +28,9 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onStopAudioPlayback()
 
     fun onLinkClicked(url: String)
+
+    fun onSurahClicked(surahId: Int)
+    fun onAyahClicked(surahId: Int, ayahNumber: Int)
 }
 
 interface MessageListInteractionListener {
