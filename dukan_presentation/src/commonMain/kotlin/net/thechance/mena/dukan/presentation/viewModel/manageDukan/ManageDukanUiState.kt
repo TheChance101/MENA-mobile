@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalUuidApi::class)
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
 import androidx.paging.PagingData
@@ -8,6 +9,7 @@ import mena.dukan_presentation.generated.resources.delete
 import mena.dukan_presentation.generated.resources.dismiss
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
 
 data class ManageDukanUiState(
     val shelves: List<ShelfUiState> = emptyList(),
@@ -16,7 +18,8 @@ data class ManageDukanUiState(
     val products: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelvesState: ShelvesState = ShelvesState.LOADING,
     val snackBarState: SnackBarUiState? = null,
-    val deleteDialog: DeleteDialogState? = null
+    val deleteDialog: DeleteDialogState? = null,
+    val activationStatus: ActivationStatus = ActivationStatus.ACTIVATED,
 ) {
     data class DeleteDialogState(
         val title: StringResource,
@@ -48,5 +51,11 @@ data class ManageDukanUiState(
         LOADING,
         LOADED,
         EMPTY
+    }
+
+    enum class ActivationStatus {
+        ACTIVATED,
+        DEACTIVATED,
+        ONHOLD
     }
 }
