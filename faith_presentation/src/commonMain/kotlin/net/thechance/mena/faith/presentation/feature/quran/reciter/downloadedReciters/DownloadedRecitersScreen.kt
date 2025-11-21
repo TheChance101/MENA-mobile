@@ -150,7 +150,7 @@ private fun Preview() {
                             isDownloaded = false
                         )
                     ),
-                    reciterId = 1,
+                    selectedReciterId = 1,
                     surahId = 1
                 ),
                 listener = object : DownloadedRecitersListener {
