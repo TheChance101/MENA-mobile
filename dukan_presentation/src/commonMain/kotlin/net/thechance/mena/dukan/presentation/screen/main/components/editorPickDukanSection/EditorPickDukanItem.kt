@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
