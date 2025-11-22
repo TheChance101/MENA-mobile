@@ -80,7 +80,7 @@ private fun ProductDetailsInfoContent(
         maxLines = 2,
     )
     ProductDetailsPriceRow(
-        price = state.price.toString(),
+        price = state.basePrice.toString(),
         modifier = Modifier.padding(top = Theme.spacing._2)
     )
     Text(

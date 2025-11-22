@@ -39,7 +39,7 @@ fun DukansCounter(
                     color = Theme.colorScheme.background.surfaceLow,
                     shape = RoundedCornerShape(Theme.radius.full)
                 )
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .padding(horizontal = 9.5.dp, vertical = 5.dp)
                 .wrapContentSize(Alignment.Center)
         )
     }

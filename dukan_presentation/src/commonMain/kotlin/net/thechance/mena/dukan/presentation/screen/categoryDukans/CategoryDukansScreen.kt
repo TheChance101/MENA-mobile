@@ -30,9 +30,6 @@ fun CategoryDukansScreen(
         }
     }
 
-    LaunchedEffect(state.dukans) {
-        viewModel.loadCategory()
-    }
 
     CategoryDukansContent(
         state = state,

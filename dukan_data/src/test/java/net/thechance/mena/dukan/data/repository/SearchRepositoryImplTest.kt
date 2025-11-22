@@ -1,45 +1,37 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.mockEngine.search.defaultDukanSearchResponse
-import net.thechance.mena.dukan.data.repository.mockEngine.search.defaultProductSearchResponse
-import net.thechance.mena.dukan.data.repository.mockEngine.search.searchRepository
-import org.junit.Assert.assertTrue
+import net.thechance.mena.dukan.data.repository.mockEngine.search.createSearchRepository
 import org.junit.Test
 
 
 class SearchRepositoryImplTest {
+
     @Test
-    fun `test dukan search is called`() = runTest {
-        var called = false
+    fun `findDukansByQuery returns correct data size`() = runTest {
+        val repository = createSearchRepository()
 
-        val repo = searchRepository(
-            dukanSearchResponse = {
-                called = true
-                defaultDukanSearchResponse()
-            }
-        )
+        val result = repository.findDukansByQuery("query", 0, 10)
 
-        repo.findDukansByQuery("defacto", 0, 10)
-
-        assertTrue(called)
+        assert(result.items.size == 2)
     }
 
     @Test
-    fun `test product search is called`() = runTest {
-        var called = false
+    fun `find dukans by query in category returns correct data size`() = runTest{
+        val repository = createSearchRepository()
 
-        val repo = searchRepository(
-            productSearchResponse = {
-                called = true
-                defaultProductSearchResponse()
-            }
-        )
+        val result = repository.finDukansByQueryInCategory("1", "query", 0, 10)
 
-        repo.findProductsByQuery("perfume", 0, 10)
+        assert(result.items.size == 2)
+    }
 
-        assertTrue(called)
+    @Test
+    fun `findProductsByQuery returns correct data size`() = runTest {
+        val repository = createSearchRepository()
+
+        val result = repository.findProductsByQuery("query", 0, 10)
+
+        assert(result.items.size == 2)
+
     }
 }
-
-

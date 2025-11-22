@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -134,17 +135,20 @@ class ProfileScreen : BaseScreen<
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box {
+                                Box(
+                                    modifier = Modifier.offset(y = 4.dp)
+                                ) {
                                     ProfileImage(
                                         profileImageUrl = state.profileImageUrl,
                                         profileImageBitmap = null
                                     )
                                     Box(
                                         modifier = Modifier
-                                            .padding(end = 15.dp, bottom = 3.dp)
                                             .align(Alignment.BottomEnd)
+                                            .padding(end = 15.dp, bottom = 3.dp)
                                             .size(10.dp)
                                             .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                            .padding(1.dp)
                                             .background(Theme.colorScheme.success, CircleShape)
                                     )
                                 }

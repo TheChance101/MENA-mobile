@@ -11,37 +11,58 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.DukanManagement
 import net.thechance.mena.admin_panel.navigation.LocalNavController
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
-import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DeactivateDukanDialog
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInCompactMode
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInFullScreenMode
+import net.thechance.mena.admin_panel.presentation.component.DukanStatusChangeDialog
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
+import net.thechance.mena.admin_panel.resources.Res
+import net.thechance.mena.admin_panel.resources.deactivate
+import net.thechance.mena.admin_panel.resources.deactivate_dukan_content
+import net.thechance.mena.admin_panel.resources.deactivate_dukan_header
+import net.thechance.mena.admin_panel.resources.deactivate_dukan_reason
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 internal fun DukanDetailsScreen(
     viewModel: DukanDetailsViewModel = koinViewModel()
 ) {
-
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var isMapVisible by remember { mutableStateOf(true) }
     val adminPanelNavController = LocalNavController.current
 
     ObserveAsEffect(
         effect = viewModel.uiEffect,
-        onEffect = { effect -> onDukanDetailsEffect(effect, adminPanelNavController) }
+        onEffect = { effect ->
+            onDukanDetailsEffect(
+                effect = effect,
+                onNavigateBack = {
+                    isMapVisible = false
+                    adminPanelNavController.navigate(DukanManagement)
+                }
+            )
+        }
     )
 
     DukanDetailsScreenContent(
         state = state,
-        interactionListener = viewModel
+        interactionListener = viewModel,
+        isMapVisible = isMapVisible,
+        onBackClick = {
+            isMapVisible = false
+            viewModel.onBackButtonClicked()
+        }
     )
 }
 
@@ -49,29 +70,35 @@ internal fun DukanDetailsScreen(
 @Composable
 private fun DukanDetailsScreenContent(
     state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
-){
+    interactionListener: DukanDetailsInteractionListener,
+    isMapVisible: Boolean,
+    onBackClick: () -> Unit
+) {
+    val isAnyDialogVisible = state.isDeactivateDukanDialogShown
+
     PanelScaffold(
         topBar = {
             DukanDetailsAppBar(
-                onBackBtnClicked = interactionListener::onBackButtonClicked,
+                onBackBtnClicked = onBackClick,
                 dukanStatus = state.dukan.dukanStatus,
-                onChangeDukanStatusBtnClicked =
-                    interactionListener::onChangeDukanStatusButtonClicked,
+                onChangeDukanStatusBtnClicked = interactionListener::onChangeDukanStatusButtonClicked,
                 isActiveDukanButtonLoading = state.isActiveDukanLoading
             )
         },
         overlays = {
-            dialog(state.isDeactivateDukanDialogShown){
-                DeactivateDukanDialog(
+            dialog(state.isDeactivateDukanDialogShown) {
+                DukanStatusChangeDialog(
                     isVisible = it,
                     onDismiss = interactionListener::onDeactivateDukanDialogDismissed,
-                    onDeactivationConfirmed =
-                        interactionListener::onDukanDeactivationButtonClicked,
-                    deactivationReason = state.deactivateReason,
+                    onConfirmed = interactionListener::onDukanDeactivationButtonClicked,
+                    reason = state.deactivateReason,
                     onReasonChanged = interactionListener::onDeactivateReasonChanged,
-                    isDeactivateButtonEnabled = state.isDeactivateBtnEnabled,
-                    isDeactivateButtonLoading = state.isDeactivateBtnLoading,
+                    title = stringResource(Res.string.deactivate_dukan_header),
+                    description = stringResource(Res.string.deactivate_dukan_content),
+                    reasonLabel = stringResource(Res.string.deactivate_dukan_reason),
+                    confirmButtonText = stringResource(Res.string.deactivate),
+                    isConfirmButtonEnabled = state.isDeactivateBtnEnabled,
+                    isConfirmButtonLoading = state.isDeactivateBtnLoading
                 )
             }
         },
@@ -79,10 +106,9 @@ private fun DukanDetailsScreenContent(
         errorState = state.errorState,
         onRetry = interactionListener::onRetry
     ) {
-
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 16.dp, end = 16.dp)
-        ){
+        ) {
             val isCompact = maxWidth < 800.dp
 
             AnimatedContent(
@@ -96,10 +122,17 @@ private fun DukanDetailsScreenContent(
                 label = "layoutTransition"
             ) { compact ->
                 if (compact) {
-                    DukanDetailsInCompactMode(state = state, interactionListener = interactionListener)
-                }
-                else{
-                    DukanDetailsInFullScreenMode(state = state, interactionListener = interactionListener)
+                    DukanDetailsInCompactMode(
+                        state = state,
+                        interactionListener = interactionListener,
+                        isMapVisible = isMapVisible && !isAnyDialogVisible
+                    )
+                } else {
+                    DukanDetailsInFullScreenMode(
+                        state = state,
+                        interactionListener = interactionListener,
+                        isMapVisible = isMapVisible && !isAnyDialogVisible
+                    )
                 }
             }
         }
@@ -108,9 +141,9 @@ private fun DukanDetailsScreenContent(
 
 private fun onDukanDetailsEffect(
     effect: DukanDetailEffect,
-    navController: NavController
+    onNavigateBack: () -> Unit
 ) {
     when (effect) {
-        DukanDetailEffect.NavigateBack -> navController.navigate(DukanManagement)
+        DukanDetailEffect.NavigateBack -> onNavigateBack()
     }
 }

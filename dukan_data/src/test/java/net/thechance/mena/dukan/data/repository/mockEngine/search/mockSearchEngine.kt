@@ -4,12 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpResponseData
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanSearchDto
@@ -17,106 +13,81 @@ import net.thechance.mena.dukan.data.dto.product.ProductSearchDto
 import net.thechance.mena.dukan.data.repository.SearchRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
-
-@OptIn(ExperimentalUuidApi::class)
-fun MockRequestHandleScope.defaultDukanSearchResponse() = respond(
+fun MockRequestHandleScope.defaultPaginatedSearchResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(DukanSearchDto.serializer()),
         PageResponseDto(
-            number = 1,
-            size = 10,
+            content = demoSearchDukansDto,
+            number = 0,
+            size = 2,
             totalPages = 1,
-            totalElements = 1,
+            totalElements = 2,
             first = true,
-            last = true,
-            content = listOf(
-                DukanSearchDto(
-                    id = Uuid.random(),
-                    name = "Test Dukan",
-                    imageUrl = "https://example.com/dukan",
-                    isFavorite = false
-                )
-
-            )
+            last = true
         )
     ),
-    status = HttpStatusCode.OK,
+    status = io.ktor.http.HttpStatusCode.OK,
     headers = jsonHeaders
 )
 
-@OptIn(ExperimentalUuidApi::class)
-fun MockRequestHandleScope.defaultProductSearchResponse() = respond(
+fun MockRequestHandleScope.defaultPaginatedProductsResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(ProductSearchDto.serializer()),
         PageResponseDto(
-            number = 1,
-            size = 10,
+            content = demoProductsDto,
+            number = 0,
+            size = 2,
             totalPages = 1,
-            totalElements = 1,
+            totalElements = 2,
             first = true,
-            last = true,
-            content = listOf(
-                ProductSearchDto(
-                    id = Uuid.random(),
-                    name = "Test Product",
-                    dukanName = "Test Dukan",
-                    dukanId = Uuid.random(),
-                    price = 100.0,
-                    mainImageUrl = "https://example.com/product.png",
-                    isFavorite = false,
-                    isOutOfStock = false
-                )
-            )
+            last = true
         )
     ),
-    status = HttpStatusCode.OK,
+    status = io.ktor.http.HttpStatusCode.OK,
     headers = jsonHeaders
 )
 
 
-@OptIn(ExperimentalUuidApi::class)
-fun searchHttpClient(
-    dukanSearchResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productSearchResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+fun createSearchHttpClient(
+    searchDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    searchProductsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): HttpClient {
+    return HttpClient(MockEngine) {
+        install(ContentNegotiation) {
+            json()
+        }
+        engine {
+            addHandler { request ->
+                when (request.url.encodedPath) {
+                    "/dukan/search" ->
+                        searchDukansResponse?.invoke(this)
+                            ?: defaultPaginatedSearchResponse()
 
-    return HttpClient(
-        MockEngine { request ->
+                    "/dukan/search/categories/1" ->
+                        searchDukansResponse?.invoke(this)
+                            ?: defaultPaginatedSearchResponse()
 
-            when (request.url.encodedPath) {
-                "/dukan/search" ->
-                    dukanSearchResponse?.invoke(this)
-                        ?: defaultDukanSearchResponse()
+                    "/dukan/products/search" ->
+                        searchProductsResponse?.invoke(this)
+                            ?: defaultPaginatedProductsResponse()
 
-                "/dukan/products/search" ->
-                    productSearchResponse?.invoke(this)
-                        ?: defaultProductSearchResponse()
-
-                else ->
-                    respond(
-                        content = "",
-                        status = HttpStatusCode.BadRequest,
-                        headers = jsonHeaders
-                    )
+                    else ->
+                        respond("", status = io.ktor.http.HttpStatusCode.BadRequest)
+                }
             }
         }
-    ) {
-        install(ContentNegotiation) { json(jsonSerialization) }
-        install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
 }
 
-fun searchRepository(
-    dukanSearchResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productSearchResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+fun createSearchRepository(
+    searchDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    searchProductsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
 ): SearchRepositoryImpl {
     return SearchRepositoryImpl(
-        client = searchHttpClient(
-            dukanSearchResponse = dukanSearchResponse,
-            productSearchResponse = productSearchResponse
+        client = createSearchHttpClient(
+            searchDukansResponse = searchDukansResponse,
+            searchProductsResponse = searchProductsResponse
         )
     )
 }

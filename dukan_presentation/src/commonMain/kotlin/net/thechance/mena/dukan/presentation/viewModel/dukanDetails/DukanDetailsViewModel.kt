@@ -10,6 +10,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
@@ -362,18 +363,21 @@ class DukanDetailsViewModel(
     }
 
     override fun onFavoriteDukanClicked(dukanId: String) {
+        val currentProduct = state.value.dukanInfo
+        val isCurrentlyFavorite = currentProduct.isFavorite
+        updateState { copy(dukanInfo.copy(isFavorite = !isCurrentlyFavorite)) }
         tryToExecute(
-            block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = { isFavorite -> setFavoriteState(isFavorite) }
+            block = { dukanManagementRepository.updateFavoriteDukanStatus(currentProduct.dukanId) },
+            onError = ::onErrorUpdateDukanFavorite
         )
     }
 
-    private fun setFavoriteState(isFavorite: Boolean) {
-        updateState {
-            copy(
-                dukanInfo = dukanInfo.copy(isFavorite = isFavorite)
-            )
+    private fun onErrorUpdateDukanFavorite(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
         }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     private fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
