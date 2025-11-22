@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.search
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -22,7 +21,7 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchCompleteContent
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchEmptyContent
-import net.thechance.mena.dukan.presentation.screen.search.component.SearchHeader
+import net.thechance.mena.dukan.presentation.screen.sharedComponents.SearchHeader
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener

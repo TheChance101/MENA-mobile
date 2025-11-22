@@ -14,6 +14,8 @@ import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.model.DukanPreview
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class SearchRepositoryImpl(
     private val client: HttpClient
@@ -29,6 +31,22 @@ class SearchRepositoryImpl(
                parameter("page", page)
                parameter("size", size)
            }
+        }.toDomain(mapper = DukanSearchDto::toEntity)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    override suspend fun finDukansByQueryInCategory(
+        categoryId: String,
+        query: String,
+        page: Int,
+        size: Int
+    ): PagedResult<DukanPreview> {
+        return safeApiCall<PageResponseDto<DukanSearchDto>>{
+            client.get("${DUKAN_IN_CATEGORY_SEARCH_ENDPOINT}/$categoryId") {
+                parameter("query", query)
+                parameter("page", page)
+                parameter("size", size)
+            }
         }.toDomain(mapper = DukanSearchDto::toEntity)
     }
 
@@ -48,6 +66,7 @@ class SearchRepositoryImpl(
 
     companion object {
         const val DUKAN_SEARCH_ENDPOINT = "${EndPoints.DUKAN_BASE_PATH}/search"
+        const val DUKAN_IN_CATEGORY_SEARCH_ENDPOINT = "${EndPoints.DUKAN_BASE_PATH}/search/categories"
         const val PRODUCT_SEARCH_ENDPOINT = "${EndPoints.DUKAN_BASE_PATH}/products/search"
     }
 }

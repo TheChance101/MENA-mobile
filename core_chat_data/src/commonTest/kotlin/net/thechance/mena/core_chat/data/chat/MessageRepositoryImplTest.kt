@@ -210,6 +210,29 @@ class MessageRepositoryImplTest {
     }
 
     @Test
+    fun `should send ayah message successfully when websocket is connected`() = runTest {
+        every { webSocketManager.isConnected() } returns true
+        everySuspend { webSocketManager.sendTextFrame(any(), any()) } returns Unit
+        everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
+        everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
+
+        val message = createMessage(
+            senderId = userId,
+            chatId = chatId,
+            content = MessageContent.Ayah(0, "AlFatihah", "بسم الله الرحمن الرحيم", 1)
+        )
+
+        repository.sendMessage(message)
+
+        verifySuspend {
+            webSocketManager.sendTextFrame(
+                destination = "/app/chat.privateAyahMessage",
+                payload = any()
+            )
+        }
+    }
+
+    @Test
     fun `should throw SendMessageFailedException when websocket is not connected`() = runTest {
         every { webSocketManager.isConnected() } returns false
         everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit

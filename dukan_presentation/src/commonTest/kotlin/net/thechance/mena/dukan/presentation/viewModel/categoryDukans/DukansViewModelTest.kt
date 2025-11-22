@@ -19,6 +19,7 @@ import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -31,6 +32,7 @@ import kotlin.uuid.Uuid
 class DukansViewModelTest {
 
     private val dukanDiscoveryRepository = mock<DukanDiscoveryRepository>(mode = MockMode.autofill)
+    private val searchRepository = mock<SearchRepository>(mode = MockMode.autofill)
     private val dukanManagementRepository =
         mock<DukanManagementRepository>(mode = MockMode.autofill)
     private lateinit var savedStateHandle: SavedStateHandle
@@ -64,6 +66,7 @@ class DukansViewModelTest {
 
         dukansViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
+            searchRepository= searchRepository,
             savedStateHandle = savedStateHandle,
             dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
@@ -141,6 +144,7 @@ class DukansViewModelTest {
 
         val emptyViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
+            searchRepository= searchRepository,
             savedStateHandle = emptySavedStateHandle,
             dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher
@@ -163,6 +167,7 @@ class DukansViewModelTest {
 
         val nullViewModel = CategoryDukansViewModel(
             dukanDiscoveryRepository = dukanDiscoveryRepository,
+            searchRepository= searchRepository,
             savedStateHandle = nullSavedStateHandle,
             dukanManagementRepository = dukanManagementRepository,
             defaultDispatcher = testDispatcher

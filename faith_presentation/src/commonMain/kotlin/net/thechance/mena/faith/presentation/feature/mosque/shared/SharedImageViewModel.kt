@@ -22,4 +22,9 @@ internal class SharedImageViewModel : ViewModel() {
         _croppedImage.value = imageBitmap
     }
 
+    fun clearImage() {
+        _imageSrc.value = null
+        _croppedImage.value = null
+    }
+
 }
