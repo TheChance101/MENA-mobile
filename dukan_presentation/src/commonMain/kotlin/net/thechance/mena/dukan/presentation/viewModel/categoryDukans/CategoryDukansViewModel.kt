@@ -1,14 +1,12 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
@@ -22,7 +20,6 @@ import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class CategoryDukansViewModel(
@@ -52,7 +49,7 @@ class CategoryDukansViewModel(
     }
 
     override fun onFavoriteDukanClicked(dukanId: String) {
-        updateFavoriteDukanPagingData(dukanId = dukanId )
+        updateFavoriteDukanPagingData(dukanId = dukanId)
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
             onError = ::onErrorUpdateDukanFavoriteStatus
@@ -91,13 +88,13 @@ class CategoryDukansViewModel(
         searchWithQuery(query = query)
     }
 
-    private fun searchWithQuery(query: String){
+    private fun searchWithQuery(query: String) {
         if (query.trim().isBlank()) loadCategory()
         val categoryId = savedStateHandle.get<String>("categoryId").orEmpty()
         tryToCollect(
             block = {
                 createPagingSourceFlow(
-                    mapper = {it.toUiState()},
+                    mapper = { it.toUiState() },
                 ) { pageNumber, pageSize ->
                     searchRepository.finDukansByQueryInCategory(
                         categoryId = categoryId,

@@ -12,7 +12,6 @@ import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
 import mena.dukan_presentation.generated.resources.no_result_found
 import mena.dukan_presentation.generated.resources.no_result_found_body
-import mena.dukan_presentation.generated.resources.search_in_dukans
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.util.AppTheme
@@ -64,11 +63,11 @@ fun CategoryDukansContent(
                     if (dukans.itemCount == 0) {
                         EmptyStateContent(
                             image = Res.drawable.dukan_pending,
-                            title = when(state.onSearchMode){
+                            title = when (state.onSearchMode) {
                                 true -> Res.string.no_result_found
                                 false -> Res.string.no_dukans_title
                             },
-                            body = when(state.onSearchMode){
+                            body = when (state.onSearchMode) {
                                 true -> Res.string.no_result_found_body
                                 false -> Res.string.no_dukans_body
                             }
