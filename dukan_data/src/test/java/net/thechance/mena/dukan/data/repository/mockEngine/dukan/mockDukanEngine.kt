@@ -380,31 +380,6 @@ fun createDukanRepository(
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): DukanManagementRepository {
-    return DukanManagementRepositoryImpl(
-        client = createDukanHttpClient(
-            createResponse,
-            stylesResponse,
-            categoriesResponse,
-            colorsResponse,
-            statusResponse,
-            uploadResponse,
-            nameResponse,
-            dukanDetailsResponse = dukanDetailsResponse,
-            getDukanActivationStatus = getDukanActivationStatus
-        )
-    )
-}
-
-fun createDukanManagementRepository(
-    createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    stylesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    categoriesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    colorsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    statusResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanManagementRepositoryImpl {
     return DukanManagementRepositoryImpl(
         client = createDukanHttpClient(
@@ -415,7 +390,8 @@ fun createDukanManagementRepository(
             statusResponse = statusResponse,
             nameResponse = nameResponse,
             dukanDetailsResponse = dukanDetailsResponse,
-            getDukanActivationStatus = getDukanActivationStatus
+            getDukanActivationStatus = getDukanActivationStatus,
+            uploadResponse = uploadResponse
         )
     )
 }
