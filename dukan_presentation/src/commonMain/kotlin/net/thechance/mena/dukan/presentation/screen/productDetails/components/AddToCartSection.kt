@@ -123,7 +123,7 @@ fun AddToCartSection(
                             style = Theme.typography.label.small,
                             color = Theme.colorScheme.primary.onPrimary,
                         )
-                        if (state.product.finalPrice > state.product.basePrice) {
+                        if (state.product.finalPrice < state.product.basePrice) {
                             Text(
                                 text = "${state.product.basePrice}$",
                                 style = Theme.typography.label.extraSmall.copy(
