@@ -20,6 +20,10 @@ data class ChatScreenState(
     val inputMessage: String = "",
     val chatListItems: List<ChatListItem> = emptyList(),
     val isChatActionsDialogVisible: Boolean = false,
+    val isSendMoneyDialogVisible: Boolean = false,
+    val amountToTransfer: String = "",
+    val receiverId: Uuid? = null,
+    val isLoadingSendMoneyButton: Boolean = false,
     val isConfirmDeleteChatDialogVisible: Boolean = false,
     val currentImageIndexForPreview: Int = 0,
     val isResendMessageDialogVisible: Boolean = false,
@@ -32,7 +36,7 @@ data class ChatScreenState(
     val selectedImageMessages: List<ImageMessageUiState> = emptyList(),
     val isReactionDialogVisible: Boolean = false,
     val messageToReactTo: MessageUiState? = null,
-    val isRecordingVoice : Boolean = false
+    val isRecordingVoice: Boolean = false
 )
 
 data class UserData(
@@ -51,6 +55,8 @@ sealed class MessageUiState(open val messageDetails: MessageDetailsUiState) : Ch
         is ImageMessageUiState -> copy(messageDetails = messageDetails)
         is TextMessageUiState -> copy(messageDetails = messageDetails)
         is AyahMessageUiState -> copy(messageDetails = messageDetails)
+        is MoneyMessageUiState -> copy(messageDetails = messageDetails)
+        is OrderMessageUiState -> copy(messageDetails = messageDetails)
     }
 }
 
@@ -94,5 +100,18 @@ data class AudioMessageUiState(
     val progress: Float,
     val duration: Long,
     val waveformData: List<Float> = emptyList(),
+    override val messageDetails: MessageDetailsUiState
+) : MessageUiState(messageDetails)
+
+data class MoneyMessageUiState(
+    val amount: Double,
+    override val messageDetails: MessageDetailsUiState
+) : MessageUiState(messageDetails)
+
+data class OrderMessageUiState(
+    val orderId: Uuid,
+    val numberOfItems: Int,
+    val deliverTo: String,
+    val totalPrice: Double,
     override val messageDetails: MessageDetailsUiState
 ) : MessageUiState(messageDetails)

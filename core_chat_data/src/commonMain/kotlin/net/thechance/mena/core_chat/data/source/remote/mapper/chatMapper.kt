@@ -54,13 +54,22 @@ fun MessageContentDto.toDomain(): MessageContent {
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
-        is MessageContentDto.Money -> MessageContent.Text(amount.toString())
+        is MessageContentDto.Money -> MessageContent.Money(amount = amount)
         is MessageContentDto.Ayah -> {
             MessageContent.Ayah(
                 surahId = surahNumber,
                 ayahContent = ayahContent,
                 ayahNumber = ayahNumber,
                 surahName = ""
+            )
+        }
+
+        is MessageContentDto.Order -> {
+            MessageContent.Order(
+                orderId = orderId.toUuid(),
+                numberOfItems = totalProducts.toInt(),
+                deliverTo = deliverToAddress,
+                totalPrice = totalPrice.toDouble()
             )
         }
     }
@@ -79,7 +88,8 @@ fun ChatDto.toDomain(): Chat {
         id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId.toUuid()
+        requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -88,7 +98,8 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
         id = id,
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId
+        requesterId = requesterId,
+        receiverId = receiverId
     )
 }
 
@@ -98,6 +109,7 @@ fun CachedChatLocalDto.toDomain(): Chat {
         imageUrl = imageUrl,
         name = name,
         requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -157,6 +169,7 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
 }
 
 fun MessageContent.toLocalDto(): MessageContentLocalDto {
+    //todo add money & order
     return when (this) {
         is MessageContent.Audio -> {
             when (val audioData = this.data) {
@@ -220,6 +233,7 @@ fun CachedMessageLocalDto.toDomain(): Message {
 }
 
 fun MessageContentLocalDto.toDomain(): MessageContent {
+    //todo add money & order
     return when (this) {
         is MessageContentLocalDto.Audio -> MessageContent.Audio(AudioUrl(url), durationMs)
         is MessageContentLocalDto.Ayah -> MessageContent.Ayah(surahId, "", ayahText, ayahNumber)
@@ -241,6 +255,7 @@ fun PendingMessageLocalDto.toDomain(): Message {
 }
 
 fun PendingMessageContentLocalDto.toDomain(): MessageContent {
+    //todo add money & order
     return when (this) {
         is PendingMessageContentLocalDto.Audio -> MessageContent.Audio(
             AudioByteArray(bytes),

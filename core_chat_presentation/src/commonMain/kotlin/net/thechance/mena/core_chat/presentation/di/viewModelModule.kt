@@ -49,6 +49,7 @@ internal val viewModelModule = module {
             imageDownloaderService = get(),
             audioPlayer = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
+            transactionRepository = get()
         )
     }
     viewModel {

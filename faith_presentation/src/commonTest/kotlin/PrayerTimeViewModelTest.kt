@@ -244,7 +244,7 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
         everySuspend {
-            prayerTimeRepository.getPrayerTimeWithHijriDate(
+            prayerTimeRepository.getPrayerTimesByHijriDate(
                 any(), any(), any(), true
             )
         } returns emptyList()
@@ -272,7 +272,7 @@ class PrayerTimeViewModelTest {
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns emptyList()
         everySuspend {
-            prayerTimeRepository.getPrayerTimeWithHijriDate(
+            prayerTimeRepository.getPrayerTimesByHijriDate(
                 any(), any(), any(), true
             )
         } returns emptyList()

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
@@ -35,6 +36,7 @@ class SurahRecitersViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
     private lateinit var testViewModel: SurahRecitersViewModel
+    private val player: QuranPlayer = mock(mode = MockMode.autofill)
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val downloadManager: DownloadSurahManager = mock(mode = MockMode.autofill)
     private lateinit var searchRecitersUseCase: SearchRecitersUseCase
@@ -64,6 +66,7 @@ class SurahRecitersViewModelTest {
             downloadManager = downloadManager,
             searchRecitersUseCase = searchRecitersUseCase,
             dispatcher = testDispatcher,
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
     }
@@ -288,6 +291,7 @@ class SurahRecitersViewModelTest {
             downloadManager = downloadManager,
             searchRecitersUseCase = searchRecitersUseCase,
             dispatcher = testDispatcher,
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -308,6 +312,7 @@ class SurahRecitersViewModelTest {
             downloadManager = downloadManager,
             searchRecitersUseCase = searchRecitersUseCase,
             dispatcher = testDispatcher,
+            quranPlayer = player
         )
         testDispatcher.scheduler.advanceUntilIdle()
 
@@ -343,7 +348,6 @@ class SurahRecitersViewModelTest {
         const val TEST_SURAH_ID = 1
         const val DEFAULT_RECITER_ID = 1
         const val TEST_RECITER_ID = 1
-        const val SELECTED_RECITER_ID = 2
         const val DOWNLOADED_RECITER_ID = 1
         const val TEST_QUERY = "Abdul"
         const val FILTER_QUERY = "Abdul"
