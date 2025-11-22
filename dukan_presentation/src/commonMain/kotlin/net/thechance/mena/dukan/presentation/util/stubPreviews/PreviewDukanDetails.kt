@@ -87,6 +87,6 @@ val fakeDukanDetails = DukanDetailsUiState(
     shelfIdSelected = "1",
     shelves = flowOf(PagingData.from(fakeShelves)),
     productsShelf = flowOf(PagingData.from(fakeProducts)),
-    bestSellingProducts = flowOf(PagingData.from(fakeProducts)),
+    bestSellingProducts = fakeProducts,
     shelfProductsLimited = fakeProductsLimited
 )
