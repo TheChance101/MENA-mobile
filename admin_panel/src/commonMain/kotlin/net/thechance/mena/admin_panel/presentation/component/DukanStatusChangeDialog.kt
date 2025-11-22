@@ -1,4 +1,4 @@
-package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
+package net.thechance.mena.admin_panel.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,13 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.cancel
-import net.thechance.mena.admin_panel.resources.deactivate
-import net.thechance.mena.admin_panel.resources.deactivate_dukan
-import net.thechance.mena.admin_panel.resources.deactivate_dukan_content
-import net.thechance.mena.admin_panel.resources.deactivate_dukan_header
-import net.thechance.mena.admin_panel.resources.deactivate_dukan_reason
 import net.thechance.mena.admin_panel.resources.ic_store_remove
 import net.thechance.mena.designsystem.presentation.component.button.OutlinedButton
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -39,48 +36,81 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-internal fun ScaffoldScope.DeactivateDukanDialog(
+internal fun ScaffoldScope.DukanStatusChangeDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit,
-    onDeactivationConfirmed: () -> Unit,
-    deactivationReason: String,
+    onConfirmed: () -> Unit,
+    reason: String,
     onReasonChanged: (String) -> Unit,
-    isDeactivateButtonEnabled: Boolean,
-    isDeactivateButtonLoading: Boolean,
+    title: String,
+    description: String,
+    reasonLabel: String,
+    confirmButtonText: String,
+    isConfirmButtonEnabled: Boolean,
+    isConfirmButtonLoading: Boolean,
     modifier: Modifier = Modifier
 ) {
-    BasicDialog(
-        onDismiss = onDismiss,
-        isVisible = isVisible,
-        contentColor = Theme.colorScheme.background.surface,
-        contentPadding = PaddingValues(24.dp),
-        modifier = modifier
-            .background(
-                color = Theme.colorScheme.background.surface,
-                shape = RoundedCornerShape(24.dp)
-            )
-            .width(400.dp)
-    ) {
-        DialogContent(
-            onDismiss = onDismiss,
-            onDeactivationConfirmed = onDeactivationConfirmed,
-            deactivationReason = deactivationReason,
-            onReasonChanged = onReasonChanged,
-            isDeactivateButtonEnabled = isDeactivateButtonEnabled,
-            isDeactivateButtonLoading = isDeactivateButtonLoading
-        )
+    if (isVisible) {
+        Popup(
+            alignment = Alignment.Center,
+            onDismissRequest = {
+                onReasonChanged("")
+                onDismiss()
+            },
+            properties = PopupProperties(focusable = true)
+        ) {
+            BasicDialog(
+                onDismiss = {
+                    onReasonChanged("")
+                    onDismiss()
+                },
+                isVisible = isVisible,
+                contentColor = Theme.colorScheme.background.surface,
+                contentPadding = PaddingValues(24.dp),
+                hasDismissButton = false,
+                modifier = modifier
+                    .background(
+                        color = Theme.colorScheme.background.surface,
+                        shape = RoundedCornerShape(24.dp)
+                    )
+                    .width(400.dp)
+            ) {
+                DialogContent(
+                    onDismiss = {
+                        onReasonChanged("")
+                        onDismiss()
+                    },
+                    onConfirmed = {
+                        onReasonChanged("")
+                        onConfirmed()
+                    },
+                    reason = reason,
+                    onReasonChanged = onReasonChanged,
+                    title = title,
+                    description = description,
+                    reasonLabel = reasonLabel,
+                    confirmButtonText = confirmButtonText,
+                    isConfirmButtonEnabled = isConfirmButtonEnabled,
+                    isConfirmButtonLoading = isConfirmButtonLoading
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun DialogContent(
     onDismiss: () -> Unit,
-    onDeactivationConfirmed: () -> Unit,
-    deactivationReason: String,
+    onConfirmed: () -> Unit,
+    reason: String,
     onReasonChanged: (String) -> Unit,
-    isDeactivateButtonEnabled: Boolean,
-    isDeactivateButtonLoading: Boolean,
-){
+    title: String,
+    description: String,
+    reasonLabel: String,
+    confirmButtonText: String,
+    isConfirmButtonEnabled: Boolean,
+    isConfirmButtonLoading: Boolean
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -89,7 +119,7 @@ private fun DialogContent(
     ) {
         Icon(
             painter = painterResource(Res.drawable.ic_store_remove),
-            contentDescription = stringResource(Res.string.deactivate_dukan),
+            contentDescription = title,
             modifier = Modifier
                 .size(88.dp)
                 .background(
@@ -102,20 +132,20 @@ private fun DialogContent(
 
         Text(
             modifier = Modifier.padding(top = 12.dp),
-            text = stringResource(Res.string.deactivate_dukan_header),
+            text = title,
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary
         )
 
         Text(
-            text = stringResource(Res.string.deactivate_dukan_content),
+            text = description,
             style = Theme.typography.body.small,
             color = Theme.colorScheme.shadeSecondary
         )
 
         Text(
             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp),
-            text = stringResource(Res.string.deactivate_dukan_reason),
+            text = reasonLabel,
             style = Theme.typography.title.small,
             color = Theme.colorScheme.shadePrimary
         )
@@ -128,18 +158,21 @@ private fun DialogContent(
                 .clip(RoundedCornerShape(Theme.radius.md))
                 .background(color = Theme.colorScheme.background.surfaceLow)
                 .padding(8.dp),
-            value = deactivationReason,
+            value = reason,
             onValueChange = { onReasonChanged(it) },
-            textStyle = Theme.typography.body.small,
+            textStyle = Theme.typography.body.small.copy(
+                color = Theme.colorScheme.shadePrimary
+            ),
             maxLines = 6,
-            cursorBrush = SolidColor(Theme.colorScheme.primary.primary),
+            cursorBrush = SolidColor(Theme.colorScheme.primary.primary)
         )
 
         DialogButtons(
             onDismiss = onDismiss,
-            onConfirmDeactivation = onDeactivationConfirmed,
-            isDeactivateBtnEnabled = isDeactivateButtonEnabled,
-            isDeactivateBtnLoading = isDeactivateButtonLoading
+            onConfirm = onConfirmed,
+            confirmButtonText = confirmButtonText,
+            isConfirmBtnEnabled = isConfirmButtonEnabled,
+            isConfirmBtnLoading = isConfirmButtonLoading
         )
     }
 }
@@ -147,10 +180,11 @@ private fun DialogContent(
 @Composable
 private fun DialogButtons(
     onDismiss: () -> Unit,
-    onConfirmDeactivation: () -> Unit,
-    isDeactivateBtnEnabled: Boolean,
-    isDeactivateBtnLoading: Boolean,
-){
+    onConfirm: () -> Unit,
+    confirmButtonText: String,
+    isConfirmBtnEnabled: Boolean,
+    isConfirmBtnLoading: Boolean,
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End
@@ -162,15 +196,21 @@ private fun DialogButtons(
                 .widthIn(min = 83.dp),
             text = stringResource(Res.string.cancel),
             onClick = onDismiss,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         )
+
         PrimaryButton(
-            modifier = Modifier.width(109.dp),
-            text = stringResource(Res.string.deactivate),
-            onClick = onConfirmDeactivation,
-            isLoading = isDeactivateBtnLoading,
-            isEnabled = isDeactivateBtnEnabled,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp)
+            modifier = Modifier
+                .heightIn(min = 48.dp)
+                .then(
+                    if (isConfirmBtnLoading) Modifier.widthIn(max = 109.dp)
+                    else Modifier.widthIn(min = 76.dp, max = 109.dp)
+                ),
+            text = confirmButtonText,
+            onClick = onConfirm,
+            isLoading = isConfirmBtnLoading,
+            isEnabled = isConfirmBtnEnabled,
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
         )
     }
 }

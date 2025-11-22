@@ -37,7 +37,8 @@ data class ManageDukanUiState(
         val id: String = "",
         val name: String = "",
         val description: String? = null,
-        val price: Double = 0.0,
+        val basePrice: Double = 0.0,
+        val finalPrice: Double = 0.0,
         val imageUrl: String = "",
         val isOutOfStock: Boolean = false
     )

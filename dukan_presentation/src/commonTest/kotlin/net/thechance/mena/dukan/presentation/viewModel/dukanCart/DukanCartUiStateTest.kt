@@ -54,7 +54,8 @@ class DukanCartUiStateTest {
         assertEquals("", product.name)
         assertEquals("", product.description)
         assertEquals("", product.imageUrl)
-        assertEquals(0.0, product.price)
+        assertEquals(0.0, product.basePrice)
+        assertEquals(0.0, product.finalPrice)
         assertEquals(0, product.quantity)
     }
 
@@ -65,14 +66,16 @@ class DukanCartUiStateTest {
             name = "Laptop",
             description = "Gaming Laptop",
             imageUrl = "laptop.png",
-            price = 25000.0,
+            basePrice = 25000.0,
+            finalPrice = 10000.0,
             quantity = 2
         )
         assertEquals("p1", product.id)
         assertEquals("Laptop", product.name)
         assertEquals("Gaming Laptop", product.description)
         assertEquals("laptop.png", product.imageUrl)
-        assertEquals(25000.0, product.price)
+        assertEquals(25000.0, product.basePrice)
+        assertEquals(10000.0, product.finalPrice)
         assertEquals(2, product.quantity)
     }
 

@@ -1,13 +1,15 @@
-package net.thechance.mena.admin_panel.presentation.component
+package net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import net.thechance.mena.admin_panel.presentation.component.StatePlaceholder
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.img_empty_dukan
 import net.thechance.mena.admin_panel.resources.no_dukan_results
+import net.thechance.mena.admin_panel.resources.no_dukan_results_description
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -21,7 +23,7 @@ fun EmptyDukansState(
     ) {
         StatePlaceholder(
             image = painterResource(Res.drawable.img_empty_dukan),
-            title = stringResource(Res.string.no_dukan_results),
+            title = stringResource(Res.string.no_dukan_results_description),
             description = stringResource(Res.string.no_dukan_results),
             modifier = Modifier.align(Alignment.Center)
         )
