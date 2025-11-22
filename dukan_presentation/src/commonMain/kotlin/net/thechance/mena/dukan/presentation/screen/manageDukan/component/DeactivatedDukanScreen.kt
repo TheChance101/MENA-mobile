@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,26 +33,14 @@ fun DeactivatedDukanScreen() {
             foregroundImageRes = Res.drawable.deactivated_dukan,
             haveBlurBackground = false,
             header = {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(Theme.spacing._2),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
                     Text(
                         text = stringResource(Res.string.your_dukan_has_been_deactivated),
                         style = (Theme.typography.title.small).copy(textAlign = TextAlign.Center),
                         color = Theme.colorScheme.shadePrimary
                     )
-                    Text(
-                        text = stringResource(Res.string.wrong_information_provided),
-                        style = Theme.typography.body.small.copy(textAlign = TextAlign.Center),
-                        color = Theme.colorScheme.shadeSecondary
-                    )
-                }
             },
-            bodyText = stringResource(Res.string.deactivated_dukan),
+            bodyText = stringResource(Res.string.wrong_information_provided),
         )
-
     }
 }
 
