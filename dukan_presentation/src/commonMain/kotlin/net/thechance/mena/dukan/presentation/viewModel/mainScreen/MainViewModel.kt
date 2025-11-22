@@ -19,7 +19,6 @@ import mena.dukan_presentation.generated.resources.dukan_managment_loading
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
 import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview

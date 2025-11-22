@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
-import mena.dukan_presentation.generated.resources.remove_product_successfully
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan

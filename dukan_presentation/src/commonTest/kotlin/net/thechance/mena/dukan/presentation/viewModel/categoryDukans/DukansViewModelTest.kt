@@ -187,7 +187,7 @@ class DukansViewModelTest {
             dukanManagementRepository.updateFavoriteDukanStatus(
                 targetDukan.id.toString()
             )
-        } returns true
+        }
 
         advanceUntilIdle()
 
