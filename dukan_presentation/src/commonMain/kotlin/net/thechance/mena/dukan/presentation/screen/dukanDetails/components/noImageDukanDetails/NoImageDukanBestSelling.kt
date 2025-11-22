@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.best_selling
 import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
@@ -43,18 +45,29 @@ fun BestSellingNoImageDukan(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener
 ) {
-    LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(state.bestSellingProducts.size) {
-            val product = state.bestSellingProducts[it]
-            BestSellingItem(
-                modifier = Modifier.width(120.dp),
-                product = product,
-                listener = listener,
-                dukanColor = Color(state.dukanInfo.color),
-                quantity = state.productQuantity[product.id] ?: 0
-            )
+        Text(
+            text = stringResource(Res.string.best_selling),
+            style = Theme.typography.title.medium,
+            color = Theme.colorScheme.shadePrimary,
+            modifier = Modifier.padding(top = Theme.spacing._16)
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(state.bestSellingProducts.size) {
+                val product = state.bestSellingProducts[it]
+                BestSellingItem(
+                    modifier = Modifier.width(120.dp),
+                    product = product,
+                    listener = listener,
+                    dukanColor = Color(state.dukanInfo.color),
+                    quantity = state.productQuantity[product.id] ?: 0
+                )
+            }
         }
     }
 }

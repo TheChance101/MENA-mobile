@@ -29,8 +29,6 @@ fun BestSellingSection(
     listener: DukanDetailsInteractionListener,
     shelves: LazyPagingItems<ShelfUiState>
 ) {
-
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
