@@ -116,7 +116,7 @@ private fun HomeScreenContent(
                 while (reels.itemCount <= state.savedIndex) {
                     delay(10)
                 }
-                listState.animateScrollToItem(state.savedIndex, state.savedOffset)
+                listState.scrollToItem(state.savedIndex, state.savedOffset)
             }
         }
 
