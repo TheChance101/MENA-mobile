@@ -39,6 +39,7 @@ class DukanRequestsViewModel(
     }
 
     override fun onSortClicked(type: DukanRequestsScreenState.SortType) {
+        if (currentState.dukans.size < 2) return
         val newDirection = if (currentState.sort.type == type) {
             currentState.sort.direction.toggle()
         } else {
