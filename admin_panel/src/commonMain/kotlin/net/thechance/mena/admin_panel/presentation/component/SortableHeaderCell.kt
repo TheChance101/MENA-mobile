@@ -27,9 +27,10 @@ fun <T> SortableHeaderCell(
     sortType: T,
     currentSortType: T,
     onSortClicked: (T) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSortingDisabled: Boolean = false,
 ) {
-    val isSortActive = currentSortType == sortType
+    val isSortActive = (currentSortType == sortType) && !isSortingDisabled
 
     val iconTint = if (isSortActive) Theme.colorScheme.success else Theme.colorScheme.shadePrimary
 

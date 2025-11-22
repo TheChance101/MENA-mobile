@@ -20,6 +20,8 @@ data class UsersManagementScreenState(
     val isBlockDialogShown: Boolean = false,
     val selectedUserId: Uuid? = null
 ) {
+    val isSortingDisabled = users.size < 2
+
     data class UserPageInfo(
         val page: Int = 0,
         val totalPages: Int = 1
