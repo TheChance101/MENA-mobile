@@ -12,8 +12,8 @@ import kotlin.uuid.ExperimentalUuidApi
 @OptIn(ExperimentalUuidApi::class)
 class CoreChatApiImp() : CoreChatApi {
     @Composable
-    override fun TabEntry() {
-        ChatNavHost()
+    override fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
+        ChatNavHost(updateBottomNavigationVisibility = updateBottomNavigationVisibility)
     }
 
     @Composable

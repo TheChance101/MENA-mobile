@@ -6,15 +6,25 @@ import net.thechance.mena.core_chat.data.source.local.database.cachedChat.Cached
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.MessageReactionLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
-import net.thechance.mena.core_chat.data.source.remote.dto.*
-import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.ChatDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MarkAsReadDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageContentDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.dto.MessageReactionDto
+import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
+import net.thechance.mena.core_chat.data.source.remote.dto.events.DeleteChatDto
 import net.thechance.mena.core_chat.data.utils.toInstant
 import net.thechance.mena.core_chat.data.utils.toLocalDateTime
 import net.thechance.mena.core_chat.data.utils.toUuid
-import net.thechance.mena.core_chat.domain.entity.*
-import net.thechance.mena.core_chat.domain.entity.AudioData.*
-import net.thechance.mena.core_chat.domain.entity.ImageData.*
+import net.thechance.mena.core_chat.domain.entity.AudioData
+import net.thechance.mena.core_chat.domain.entity.AudioData.AudioUrl
+import net.thechance.mena.core_chat.domain.entity.Chat
+import net.thechance.mena.core_chat.domain.entity.ImageData
+import net.thechance.mena.core_chat.domain.entity.ImageData.ImageUrl
+import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.MessageReaction
+import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -43,7 +53,7 @@ suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageConte
         is MessageContentDto.Text -> MessageContent.Text(text)
         is MessageContentDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentDto.Audio -> MessageContent.Audio(AudioUrl(url), duration)
-        is MessageContentDto.Money -> MessageContent.Text(amount.toString())
+        is MessageContentDto.Money -> MessageContent.Money(amount=amount)
         is MessageContentDto.Ayah -> {
             val surahName = quranService.getSurahDetails(surahNumber).name
             MessageContent.Ayah(
@@ -51,6 +61,15 @@ suspend fun MessageContentDto.toDomain(quranService: QuranService): MessageConte
                 ayahContent = ayahContent,
                 ayahNumber = ayahNumber,
                 surahName = surahName
+            )
+        }
+
+        is MessageContentDto.Order -> {
+            MessageContent.Order(
+                orderId = orderId.toUuid(),
+                numberOfItems = totalProducts.toInt(),
+                deliverTo = deliverToAddress,
+                totalPrice = totalPrice.toDouble()
             )
         }
     }
@@ -69,7 +88,8 @@ fun ChatDto.toDomain(): Chat {
         id = id.toUuid(),
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId.toUuid()
+        requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -78,7 +98,8 @@ fun ChatDto.toLocalDto(): CachedChatLocalDto {
         id = id,
         imageUrl = imageUrl,
         name = name,
-        requesterId = requesterId
+        requesterId = requesterId,
+        receiverId = receiverId
     )
 }
 
@@ -88,6 +109,7 @@ fun CachedChatLocalDto.toDomain(): Chat {
         imageUrl = imageUrl,
         name = name,
         requesterId = requesterId.toUuid(),
+        receiverId = receiverId.toUuid()
     )
 }
 
@@ -137,6 +159,10 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
     val surahName = if (content is MessageContent.Ayah) content.surahName else null
     val ayahText = if (content is MessageContent.Ayah) content.ayahContent else null
     val ayahNumber = if (content is MessageContent.Ayah) content.ayahNumber else null
+    val orderId = if (content is MessageContent.Order) content.orderId else null
+    val numberOfItems = if (content is MessageContent.Order) content.numberOfItems else null
+    val deliverTo = if (content is MessageContent.Order) content.deliverTo else null
+    val totalPrice = if (content is MessageContent.Order) content.totalPrice else null
 
     return CachedMessageLocalDto(
         id = this.id.toString(),
@@ -153,7 +179,11 @@ fun Message.toCachedMessageLocalDto(): CachedMessageLocalDto {
         timestamp = this.sendAt.toInstant().toEpochMilliseconds(),
         chatId = this.chatId.toString(),
         isMine = this.isMine,
-        status = status
+        status = status,
+        orderId = orderId.toString(),
+        numberOfItems = numberOfItems,
+        deliverTo = deliverTo,
+        totalPrice = totalPrice
     )
 }
 
@@ -189,6 +219,14 @@ fun CachedMessageLocalDto.toDomain(): Message {
         audioUrl != null -> MessageContent.Audio(AudioData.AudioUrl(audioUrl), audioDurationMs)
         ayahText != null && surahName != null && surahId != null && ayahNumber != null ->
             MessageContent.Ayah(surahId, surahName, ayahText, ayahNumber)
+        orderId != null && numberOfItems != null && deliverTo != null && totalPrice != null -> {
+            MessageContent.Order(
+                orderId = orderId.toUuid(),
+                numberOfItems = numberOfItems,
+                deliverTo = deliverTo,
+                totalPrice = totalPrice
+            )
+        }
 
         else -> error("Invalid message content")
     }

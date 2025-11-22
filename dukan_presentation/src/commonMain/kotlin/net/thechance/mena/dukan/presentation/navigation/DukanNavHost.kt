@@ -28,6 +28,7 @@ import net.thechance.mena.dukan.presentation.util.provideImageLoader
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 import net.thechance.mena.identity.api.IdentityFeatureApi as IdentityApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -61,9 +62,6 @@ fun DukanNavHost(
                 ManageDukanScreen()
             }
 
-            composable<DukanRoute.MyDukanScreenRoute> {
-                // MyDukanScreen()
-            }
             composable<DukanRoute.PendingScreenRoute> { backStackEntry ->
                 val route: DukanRoute.PendingScreenRoute =
                     backStackEntry.toRoute()
@@ -108,6 +106,16 @@ fun DukanNavHost(
             composable<DukanRoute.AddressesRoute> {
                 identityApi.NavigateToAddressesScreen(
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+            composable<DukanRoute.ConfirmPaymentScreenRoute> { backStackEntry ->
+                val route: DukanRoute.ConfirmPaymentScreenRoute = backStackEntry.toRoute()
+                walletApi.ConfirmPaymentEntry(
+                    transactionId = Uuid.parse(route.transactionId),
+                    navigateBack = { navController.popBackStack(DukanRoute.DukanDetails(route.dukanId), false) },
+                    updateBottomNavigationVisibility = {
+                        true
+                    }
                 )
             }
             composable<DukanRoute.DukanLocation> {
