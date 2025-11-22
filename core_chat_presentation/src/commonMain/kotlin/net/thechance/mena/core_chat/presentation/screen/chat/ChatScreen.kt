@@ -162,7 +162,6 @@ fun ChatScreenContent(
                     isLoading = state.isLoadingSendMoneyButton,
                 )
             },
-            modifier = Modifier.imePadding()
         ) {
             ChatList(
                 chatName = state.chatName,

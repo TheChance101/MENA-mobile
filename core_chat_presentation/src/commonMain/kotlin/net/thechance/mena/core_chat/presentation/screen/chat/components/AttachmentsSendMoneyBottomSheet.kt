@@ -3,7 +3,6 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,8 +47,7 @@ fun ScaffoldScope.attachmentsSendMoneyBottomSheet(
                             topEnd = Theme.radius.xl
                         )
                     )
-                    .padding(horizontal = Theme.spacing._16)
-                   ,
+                    .padding(horizontal = Theme.spacing._16),
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = Theme.spacing._16),
