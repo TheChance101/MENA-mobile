@@ -49,6 +49,7 @@ class DukanDetailsViewModel(
         loadDukanDetails()
         loadCartInfo()
         loadShelvesPaging()
+        loadBestSellingProducts()
     }
 
     private fun loadCartInfo() {
@@ -67,7 +68,6 @@ class DukanDetailsViewModel(
     private fun onLoadCartSuccess(cart: Cart) {
         updateState { copy(hasProductInCart = cart.totalPrice > 0.0) }
     }
-
 
     private fun loadDukanDetails() {
         tryToExecute(
@@ -211,15 +211,44 @@ class DukanDetailsViewModel(
     }
 
     private fun updateQuantityProductPaging(products: PagingData<ProductUiState>): PagingData<ProductUiState> {
-        return products.map {
-            if (state.value.productQuantity[it.id] == null)
-                updateProductQuantityInCart(it.id, it.inCartQuantity)
-            it
+        return products.map { product ->
+            val quantity = state.value.productQuantity[product.id] ?: product.inCartQuantity
+            product.copy(inCartQuantity = quantity)
         }
     }
 
     private fun updateQuantityProductPagingSuccess(products: PagingData<ProductUiState>) {
         updateState { copy(productsShelf = flowOf(products)) }
+    }
+
+    private fun loadBestSellingProducts() {
+        tryToExecute(
+            block = {
+                productRepository.getBestSellingProducts(
+                    dukanId = args.dukanId,
+                    page = 0,
+                    size = 10
+                )
+            },
+            onSuccess = { products ->
+                updateState {
+                    copy(
+                        bestSellingProducts = products.items
+                            .map { it.toUiState() }
+                            .distinctBy { it.id }
+                    )
+                }
+            },
+            onError = { throwable ->
+                updateState {
+                    copy(
+                        error = throwable,
+                        isDukanInfoLoading = false,
+                        dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+                    )
+                }
+            }
+        )
     }
 
     override fun onBackClicked() {

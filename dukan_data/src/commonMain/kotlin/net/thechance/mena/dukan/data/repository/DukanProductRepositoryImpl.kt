@@ -55,6 +55,21 @@ class DukanProductRepositoryImpl(
         return response.toDomain(mapper = ProductDto::toDomain)
     }
 
+    override suspend fun getBestSellingProducts(
+        dukanId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<Product> {
+        val response: PageResponseDto<ProductDto> = safeApiCall {
+            client.get("$PRODUCT_BASE_PATH/$dukanId/best_selling") {
+                parameter("page", page)
+                parameter("size", size)
+            }
+        }
+        return response.toDomain(mapper = ProductDto::toDomain)
+    }
+
+
     override suspend fun getProductById(productId: String): Product {
         val response: ProductDto = safeApiCall {
             client.get("$PRODUCT_BASE_PATH/$productId")

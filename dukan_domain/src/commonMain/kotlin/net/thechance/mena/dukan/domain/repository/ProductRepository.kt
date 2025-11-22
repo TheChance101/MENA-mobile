@@ -14,6 +14,12 @@ interface ProductRepository {
         size: Int
     ): PagedResult<Product>
 
+    suspend fun getBestSellingProducts(
+        dukanId: String,
+        page: Int,
+        size: Int
+    ): PagedResult<Product>
+
     suspend fun getProductById(productId: String): Product
 
     suspend fun uploadProductImages(
