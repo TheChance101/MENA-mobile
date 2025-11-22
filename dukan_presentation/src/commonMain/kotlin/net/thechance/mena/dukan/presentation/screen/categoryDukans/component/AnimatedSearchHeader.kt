@@ -36,15 +36,17 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
-fun AnimatedSearchHeader(
+fun AnimatedCategorySearchHeader(
+    categoryTitle: String,
     query: String,
     onQueryChange: (String) -> Unit,
     onBackClick: () -> Unit,
     onClearClick: () -> Unit,
+    onSearchMode: Boolean = false,
+    onSearchIconClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 ) {
-    var searchable by rememberSaveable { mutableStateOf(false) }
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -67,7 +69,7 @@ fun AnimatedSearchHeader(
 
         AnimatedContent(
             modifier = Modifier.weight(1f),  // <-- makes space available for slide
-            targetState = searchable,
+            targetState = onSearchMode,
             transitionSpec = { slideHorizontalTransition() },
             label = "search-header-animation"
         ) { isSearchable ->
@@ -80,13 +82,13 @@ fun AnimatedSearchHeader(
                 ) {
 
                     Text(
-                        text = query,
+                        text = categoryTitle,
                         color = Theme.colorScheme.shadePrimary,
                         style = Theme.typography.title.medium
                     )
 
                     AppBarOptionContainer(
-                        onClick = { searchable = true },
+                        onClick = onSearchIconClick,
                         content = {
                             Icon(
                                 painter = painterResource(resource = Res.drawable.ic_search),
@@ -128,11 +130,12 @@ private fun SearchScreenPreview() {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            AnimatedSearchHeader(
+            AnimatedCategorySearchHeader(
                 query = "Search query",
                 onQueryChange = {},
                 onClearClick = {},
-                onBackClick = {}
+                onBackClick = {},
+                categoryTitle = "category"
             )
         }
     }

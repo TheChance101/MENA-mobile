@@ -10,12 +10,15 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_pending
 import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
+import mena.dukan_presentation.generated.resources.no_result_found
+import mena.dukan_presentation.generated.resources.no_result_found_body
+import mena.dukan_presentation.generated.resources.search_in_dukans
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.util.AppTheme
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
-import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.AnimatedSearchHeader
+import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.AnimatedCategorySearchHeader
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.CategoryDukansList
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCategoryDukansInteractionListener
@@ -52,8 +55,14 @@ fun CategoryDukansContent(
                     if (dukans.itemCount == 0) {
                         EmptyStateContent(
                             image = Res.drawable.dukan_pending,
-                            title = Res.string.no_dukans_title,
-                            body = Res.string.no_dukans_body
+                            title = when(state.onSearchMode){
+                                true -> Res.string.no_result_found
+                                false -> Res.string.no_dukans_title
+                            },
+                            body = when(state.onSearchMode){
+                                true -> Res.string.no_result_found_body
+                                false -> Res.string.no_dukans_body
+                            }
                         )
                     } else {
                         CategoryDukansList(
@@ -79,11 +88,14 @@ private fun CategoryDukansAppBar(
     state: CategoryDukansUiState,
     listener: CategoryDukansInteractionListener
 ) {
-    AnimatedSearchHeader(
-        query = state.categoryTitle,
-        onQueryChange = {},
-        onClearClick = {},
-        onBackClick = listener::onBackClicked
+    AnimatedCategorySearchHeader(
+        categoryTitle = state.categoryTitle,
+        query = state.searchQuery,
+        onQueryChange = listener::onSearchChanged,
+        onClearClick = listener::onClearSearchClicked,
+        onBackClick = listener::onBackClicked,
+        onSearchMode = state.onSearchMode,
+        onSearchIconClick = listener::onSearchIconClick
     )
 }
 
