@@ -4,9 +4,11 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
 
 class CheckoutUiStateTest {
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `default state SHOULD have empty values`() = runTest {
         val state = CheckoutUiState()

@@ -13,4 +13,6 @@ data class CachedChatLocalDto(
     val imageUrl: String? = null,
     @ColumnInfo(name = "requester_id")
     val requesterId: String,
+    @ColumnInfo(name = "receiver_id")
+    val receiverId: String ,
 )

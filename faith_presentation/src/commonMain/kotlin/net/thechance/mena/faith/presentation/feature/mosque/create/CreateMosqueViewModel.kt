@@ -100,8 +100,10 @@ internal class CreateMosqueViewModel(
                 )
                 val addMosqueMessage = getString(Res.string.add_mosque_message)
                 updateState { it.copy(successMessage = addMosqueMessage) }
+                sharedImageViewModel.clearImage()
                 sendEffect(CreateMosqueEffect.NavigateBack)
             },
+            onError = ::handleErrorSnackBar
         )
     }
 

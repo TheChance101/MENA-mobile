@@ -8,7 +8,7 @@ data class DownloadedRecitersUiState(
     val query: String = "",
     val queryHint: String = "",
     val selectedReciterId: Int? = null,
-    val isSwipeable: Boolean = false,
+    val isDeleteConfirmationDialogVisible: Boolean = false,
 )
 
 data class DownloadedReciterItemUi(

@@ -13,7 +13,7 @@ import net.thechance.mena.admin_panel.presentation.component.DukansCounter
 import net.thechance.mena.admin_panel.presentation.component.SearchBar
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukans
-import net.thechance.mena.admin_panel.resources.search_hint
+import net.thechance.mena.admin_panel.resources.search_dukan_hint
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -37,7 +37,7 @@ fun DukanManagementHeader(
         )
         SearchBar(
             value = query,
-            hint = stringResource(Res.string.search_hint),
+            hint = stringResource(Res.string.search_dukan_hint),
             onValueChange = onQueryChange,
             onClearQueryClicked = onClearQueryClicked,
             modifier = Modifier

@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.presentation.screen.main.components.categorySection
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.category_icon
 import mena.dukan_presentation.generated.resources.menu_circle
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -29,7 +29,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun MoreCategoryCard(
     title: String,
-    image: Painter,
+    icon: Painter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -46,9 +46,10 @@ fun MoreCategoryCard(
                 .clickable(onClick = onClick),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = image,
+            Icon(
+                painter = icon,
                 contentDescription = stringResource(resource = Res.string.category_icon),
+                tint = Theme.colorScheme.primary.primary
             )
         }
 
@@ -78,7 +79,7 @@ private fun MoreCategoryCardPreview() {
             MoreCategoryCard(
                 title = "Category",
                 onClick = {},
-                image = painterResource(Res.drawable.menu_circle),
+                icon = painterResource(Res.drawable.menu_circle),
             )
         }
     }

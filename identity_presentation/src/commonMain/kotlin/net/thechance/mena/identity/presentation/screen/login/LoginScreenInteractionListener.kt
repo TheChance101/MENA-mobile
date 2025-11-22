@@ -12,7 +12,6 @@ interface LoginScreenInteractionListener : BaseInteractionListener {
     fun onPhoneChanged(phone: String)
     fun onPasswordChanged(password: String)
     fun onPasswordVisibilityToggled()
-    fun clearErrorMessage()
     fun onConfirmCountryItem(country: MenaCountry)
     fun onDismissBottomSheet()
 }

@@ -41,7 +41,6 @@ import net.thechance.mena.faith.presentation.feature.main.components.TilawahSect
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import net.thechance.mena.faith.presentation.navigation.Route.SurahDetailsRoute
-import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -97,7 +96,7 @@ private fun Content(
     Scaffold(
         topBar = {
             MainTopBar(
-                locationName = uiState.address.takeCityAndCountry(),
+                locationName = uiState.address,
                 onLocationChange = listener::onLocationClick
             )
         }

@@ -17,6 +17,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.thechance.mena.dukan.data.dto.PageResponseDto
+import net.thechance.mena.dukan.data.dto.dukan.DukanActivationStatusResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
@@ -181,14 +182,15 @@ fun MockRequestHandleScope.defaultDukanDetailsResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+
 @OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultEditorPicksResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(DukanResponseDto.serializer()),
         PageResponseDto(
             content = listOf(
-                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
-                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1", false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1", false)
             ),
             number = 0,
             size = 2,
@@ -208,8 +210,8 @@ fun MockRequestHandleScope.defaultBestAroundResponse() = respond(
         PageResponseDto.serializer(DukanResponseDto.serializer()),
         PageResponseDto(
             content = listOf(
-                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
-                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1", false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1", false)
             ),
             number = 0,
             size = 2,
@@ -222,14 +224,15 @@ fun MockRequestHandleScope.defaultBestAroundResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+
 @OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultDukansByCategoryResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(DukanResponseDto.serializer()),
         PageResponseDto(
             content = listOf(
-                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1",  false),
-                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1",  false)
+                DukanResponseDto(Uuid.random(), "Defacto", "Editor 1", false),
+                DukanResponseDto(Uuid.random(), "Best Buy", "Editor 1", false)
             ),
             number = 0,
             size = 2,
@@ -242,14 +245,23 @@ fun MockRequestHandleScope.defaultDukansByCategoryResponse() = respond(
     status = HttpStatusCode.OK,
     headers = jsonHeaders
 )
+
 @OptIn(ExperimentalUuidApi::class)
 fun MockRequestHandleScope.defaultTopDiscountedResponse() = respond(
     content = jsonSerialization.encodeToString(
         PageResponseDto.serializer(TopDiscountedDukanDto.serializer()),
         PageResponseDto(
             content = listOf(
-                TopDiscountedDukanDto(id = Uuid.random(), imageUrl = "Discount Dukan 1", discount=30.0),
-                TopDiscountedDukanDto(id = Uuid.random(), imageUrl = "Discount Dukan 2",discount= 50.0)
+                TopDiscountedDukanDto(
+                    id = Uuid.random(),
+                    imageUrl = "Discount Dukan 1",
+                    discount = 30.0
+                ),
+                TopDiscountedDukanDto(
+                    id = Uuid.random(),
+                    imageUrl = "Discount Dukan 2",
+                    discount = 50.0
+                )
             ),
             number = 0,
             size = 2,
@@ -263,7 +275,14 @@ fun MockRequestHandleScope.defaultTopDiscountedResponse() = respond(
     headers = jsonHeaders
 )
 
-
+fun MockRequestHandleScope.defaultDukanActivationStatusResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        DukanActivationStatusResponse.serializer(),
+        DukanActivationStatusResponse(status = "ACTIVATED")
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
 
 fun createDukanHttpClient(
     createResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -282,7 +301,7 @@ fun createDukanHttpClient(
     topDiscountedDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     neastAroundDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     editorPicksDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-
+    getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val shelfId = "1"
     val dukanId = "dukan123"
@@ -304,12 +323,25 @@ fun createDukanHttpClient(
                 "PUT" -> updateShelfResponse?.invoke(this) ?: defaultUpdateShelfResponse()
                 else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
             }
-            "/dukan/shelf/$dukanId" -> pagedShelvesResponse?.invoke(this, request) ?: defaultPagedShelvesResponse()
+
+            "/dukan/shelf/$dukanId" -> pagedShelvesResponse?.invoke(this, request)
+                ?: defaultPagedShelvesResponse()
+
             "/dukan/$dukanId" -> dukanDetailsResponse?.invoke(this) ?: defaultDukanDetailsResponse()
-            "/dukan/editor_picks" -> editorPicksDukansResponse?.invoke(this) ?: defaultEditorPicksResponse()
-            "/dukan/nearby/best" -> neastAroundDukansResponse?.invoke(this) ?: defaultBestAroundResponse()
-            "/dukan/categories/$categoryId" -> dukanByCategoriesResponse?.invoke(this) ?: defaultDukansByCategoryResponse()
-            "/dukan/top/discounts" -> topDiscountedDukansResponse?.invoke(this) ?: defaultTopDiscountedResponse()
+            "/dukan/editor_picks" -> editorPicksDukansResponse?.invoke(this)
+                ?: defaultEditorPicksResponse()
+
+            "/dukan/nearby/best" -> neastAroundDukansResponse?.invoke(this)
+                ?: defaultBestAroundResponse()
+
+            "/dukan/categories/$categoryId" -> dukanByCategoriesResponse?.invoke(this)
+                ?: defaultDukansByCategoryResponse()
+
+            "/dukan/top/discounts" -> topDiscountedDukansResponse?.invoke(this)
+                ?: defaultTopDiscountedResponse()
+
+            "/dukan/activation-status" -> getDukanActivationStatus?.invoke(this)
+                ?: defaultDukanActivationStatusResponse()
 
             else -> respond("", HttpStatusCode.BadRequest, jsonHeaders)
         }
@@ -347,6 +379,7 @@ fun createDukanRepository(
     uploadResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanManagementRepository {
     return DukanManagementRepositoryImpl(
         client = createDukanHttpClient(
@@ -357,7 +390,8 @@ fun createDukanRepository(
             statusResponse,
             uploadResponse,
             nameResponse,
-            dukanDetailsResponse = dukanDetailsResponse
+            dukanDetailsResponse = dukanDetailsResponse,
+            getDukanActivationStatus = getDukanActivationStatus
         )
     )
 }
@@ -370,6 +404,7 @@ fun createDukanManagementRepository(
     statusResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     nameResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     dukanDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+    getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): DukanManagementRepositoryImpl {
     return DukanManagementRepositoryImpl(
         client = createDukanHttpClient(
@@ -379,7 +414,8 @@ fun createDukanManagementRepository(
             colorsResponse = colorsResponse,
             statusResponse = statusResponse,
             nameResponse = nameResponse,
-            dukanDetailsResponse = dukanDetailsResponse
+            dukanDetailsResponse = dukanDetailsResponse,
+            getDukanActivationStatus = getDukanActivationStatus
         )
     )
 }
@@ -409,7 +445,8 @@ private class FakeAddressesRepository : AddressesRepository {
         addressId: Uuid,
         addressInput: AddressInput,
         isActive: Boolean
-    ) {}
+    ) {
+    }
 
     override suspend fun getUserAddresses(): List<Address> {
         return listOf(

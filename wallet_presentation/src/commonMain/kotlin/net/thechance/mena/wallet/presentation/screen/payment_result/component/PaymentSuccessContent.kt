@@ -11,10 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.show_transaction_details
+import mena.wallet_presentation.generated.resources.success_dark
 import mena.wallet_presentation.generated.resources.transaction_success
 import mena.wallet_presentation.generated.resources.transaction_successful
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultInteractionListener
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreenState
 import org.jetbrains.compose.resources.painterResource
@@ -26,6 +28,10 @@ internal fun PaymentSuccessContent(
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
+    val successTransactionIcon =
+        if (LocalDarkTheme.current) painterResource(Res.drawable.success_dark)
+        else
+            painterResource(Res.drawable.transaction_success)
     Column (
         modifier = Modifier
             .fillMaxSize()
@@ -34,7 +40,7 @@ internal fun PaymentSuccessContent(
     ) {
         Spacer(modifier = Modifier.weight(1f))
         PaymentResultCard(
-            image = painterResource(Res.drawable.transaction_success),
+            image = successTransactionIcon,
             title = stringResource(Res.string.transaction_successful),
             name = state.receiverName,
             amount = state.amount,

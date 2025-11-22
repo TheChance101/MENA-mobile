@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -113,16 +115,20 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should update state with error message when locationPermissionHandler throws`() {
-        coEvery { mobileLocationRepository.getCurrentLocation() } throws Exception()
-        coEvery { locationPermissionHandler.checkPermission() } throws Exception()
+    fun `onClickGps should show snackbar with error message when locationPermissionHandler throws`() =
+        runTest {
+            coEvery { mobileLocationRepository.getCurrentLocation() } throws Exception()
+            coEvery { locationPermissionHandler.checkPermission() } throws Exception()
 
-        viewModel.onClickGps()
-        testDispatcher.scheduler.advanceUntilIdle()
+            viewModel.onClickGps()
 
-        assert(viewModel.state.value.errorMessage != null)
-        assert(!viewModel.state.value.isGpsButtonLoading)
-    }
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(PickLocationScreenUIEffect.ShowSnackBarError::class)
+            }
+
+            assert(!viewModel.state.value.isGpsButtonLoading)
+        }
 
     @Test
     fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =
@@ -130,12 +136,11 @@ class PickLocationScreenViewModelTest {
             coEvery { mobileLocationRepository.getCurrentLocation() } throws UnableToFindLocationException()
             coEvery { locationPermissionHandler.checkPermission() } returns PermissionState.DENIED
 
+            viewModel.onClickGps()
+
             viewModel.effect.test {
-                viewModel.onClickGps()
                 testDispatcher.scheduler.advanceUntilIdle()
-                val emittedEffect = awaitItem()
-                assert(emittedEffect is PickLocationScreenUIEffect.NavigateToEnableLocation)
-                cancelAndConsumeRemainingEvents()
+                assertThat(awaitItem()).isInstanceOf(PickLocationScreenUIEffect.NavigateToEnableLocation::class)
             }
         }
 }

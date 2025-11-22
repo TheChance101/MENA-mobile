@@ -2,6 +2,8 @@ package net.thechance.mena.identity.presentation.screen.register.uploadProfileIm
 
 import androidx.compose.ui.graphics.ImageBitmap
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -179,21 +181,6 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClickUpload should clear error message`() = runTest {
-        coEvery { imageDecoder.encodeImage(imageBitmap) } returns imageBytes
-        coEvery { cachedImageRepository.cacheImage(any(), any()) } returns Unit
-        coEvery { authenticationRepository.saveAuthTokensWithoutEmit(any()) } returns Unit
-        coEvery { userRepository.uploadUserProfileImage(any()) } returns Unit
-        coEvery { registrationDraftRepository.setImageUploadCompleted(any()) } returns Unit
-        coEvery { cachedImageRepository.removeCachedImage(any()) } returns Unit
-
-        viewModel.onSelectImage(imageBitmap)
-        viewModel.onClickUpload()
-
-        assertNull(viewModel.state.value.errorMessage)
-    }
-
-    @Test
     fun `onClickUpload should save tokens temporarily`() = runTest {
         coEvery { imageDecoder.encodeImage(imageBitmap) } returns imageBytes
         coEvery { cachedImageRepository.cacheImage(any(), any()) } returns Unit
@@ -225,7 +212,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
 
             val effect = awaitItem()
             assertTrue(effect is UploadProfileImageUIEffect.NavigateToAccountCreated)
-            assertEquals(authTokens, (effect as UploadProfileImageUIEffect.NavigateToAccountCreated).authTokens)
+            assertEquals(
+                authTokens,
+                effect.authTokens
+            )
         }
     }
 
@@ -325,7 +315,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
 
             val effect = awaitItem()
             assertTrue(effect is UploadProfileImageUIEffect.NavigateToAccountCreated)
-            assertEquals(authTokens, (effect as UploadProfileImageUIEffect.NavigateToAccountCreated).authTokens)
+            assertEquals(
+                authTokens,
+                effect.authTokens
+            )
         }
     }
 
@@ -385,13 +378,6 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClearErrorMessage should clear error message`() {
-        viewModel.onClearErrorMessage()
-
-        assertNull(viewModel.state.value.errorMessage)
-    }
-
-    @Test
     fun `onClickUpload should set isLoading to false on error`() = runTest {
         coEvery { imageDecoder.encodeImage(imageBitmap) } returns imageBytes
         coEvery { cachedImageRepository.cacheImage(any(), any()) } returns Unit
@@ -406,7 +392,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
     }
 
     @Test
-    fun `onClickUpload should set error message on error`() = runTest {
+    fun `onClickUpload should show snack bar error effect with error message`() = runTest {
         coEvery { imageDecoder.encodeImage(imageBitmap) } returns imageBytes
         coEvery { cachedImageRepository.cacheImage(any(), any()) } returns Unit
         coEvery { authenticationRepository.saveAuthTokensWithoutEmit(any()) } returns Unit
@@ -414,8 +400,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
 
         viewModel.onSelectImage(imageBitmap)
         viewModel.onClickUpload()
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        assert(viewModel.state.value.errorMessage != null)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(UploadProfileImageUIEffect.ShowSnackBarError::class)
+        }
     }
 }

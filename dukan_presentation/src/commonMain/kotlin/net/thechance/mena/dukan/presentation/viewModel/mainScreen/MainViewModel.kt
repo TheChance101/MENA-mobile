@@ -17,6 +17,7 @@ import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_management_general_error
 import mena.dukan_presentation.generated.resources.dukan_managment_loading
 import mena.dukan_presentation.generated.resources.error_general
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
@@ -321,15 +322,12 @@ class MainViewModel(
         emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId))
     }
 
+
     override fun onFavoriteDukanClicked(dukanId: String) {
+        setFavoriteState(dukanId)
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
-            onSuccess = { isFavorite ->
-                setFavoriteState(
-                    dukanId = dukanId,
-                    isFavorite = isFavorite
-                )
-            }
+            onError = ::onErrorUpdateDukanFavoriteStatus
         )
     }
 
@@ -339,16 +337,22 @@ class MainViewModel(
 
     private fun setFavoriteState(
         dukanId: String,
-        isFavorite: Boolean
     ) {
         val currentData = editorPickState.value
         val updatedData = currentData.map { dukan ->
-            if (dukan.id == dukanId) dukan.copy(isFavorite = isFavorite) else dukan
+            if (dukan.id == dukanId) dukan.copy(isFavorite = !dukan.isFavorite) else dukan
         }
         editorPickState.value = updatedData
         updateState { copy(editorPickDukans = editorPickState) }
     }
 
+    private fun onErrorUpdateDukanFavoriteStatus(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
+        }
+        showSnackBar(message = messageRes,type = SnackBarType.ERROR)
+    }
     override fun onSearchButtonClicked() {
         emitEffect(MainScreenEffect.NavigateToSearchScreen)
     }

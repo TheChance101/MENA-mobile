@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -11,17 +12,16 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCodeUIEffect
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShareQrCodeViewModelTest : BaseCoroutineTest() {
@@ -65,7 +65,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
                 viewModel.onClickDownload(byteArray)
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                assertThat(awaitItem()).isEqualTo(ShareQrCodeUIEffect.OnClickDownload)
+                assertThat(awaitItem()).isEqualTo(ShareQrCodeUIEffect.ShowClickDownloadSnackBar)
             }
         }
 
@@ -100,19 +100,16 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
         }
 
     @Test
-    fun `onClickDownload should set error message when save fails`() = runTest(testDispatcher) {
+    fun `onClickDownload should show snack bar with error message when save fails`() = runTest(testDispatcher) {
         every { galleryPermissionHandler.checkPermission() } returns PermissionState.GRANTED
         coEvery { imagesRepository.saveImageToGallery(any()) } throws Exception("Save failed")
 
         viewModel.onClickDownload(byteArray)
-        advanceUntilIdle()
 
-        assertTrue(viewModel.state.value.errorMessage != null)
-    }
-
-    @Test
-    fun `initial state should have null error message`() {
-        assertNull(viewModel.state.value.errorMessage)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(ShareQrCodeUIEffect.ShowSnackBarError::class)
+        }
     }
 
     @Test

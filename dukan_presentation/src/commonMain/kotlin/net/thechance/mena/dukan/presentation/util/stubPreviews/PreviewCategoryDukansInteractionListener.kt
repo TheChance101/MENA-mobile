@@ -8,4 +8,9 @@ object PreviewCategoryDukansInteractionListener : CategoryDukansInteractionListe
     override fun onDukanClicked(dukan: DukanUiState) {}
     override fun onFavoriteDukanClicked(dukanId: String) {}
     override fun onRetryClicked() {}
+    override fun onSearchChanged(query: String) {}
+
+    override fun onClearSearchClicked() {}
+    override fun onSnackBarDismissed() {}
+    override fun onSearchIconClick() {}
 }

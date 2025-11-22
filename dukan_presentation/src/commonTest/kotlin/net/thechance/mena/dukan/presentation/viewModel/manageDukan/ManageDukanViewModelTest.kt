@@ -24,10 +24,12 @@ import mena.dukan_presentation.generated.resources.delete_shelf_title
 import mena.dukan_presentation.generated.resources.edit_shelf_successfully
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.shelf_name_is_already_exist
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Price
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DukanException
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
@@ -49,6 +51,8 @@ class ManageDukanViewModelTest {
 
     private val shelfRepository = mock<ShelfRepository>(mode = MockMode.autofill)
     private val productRepository = mock<ProductRepository>(mode = MockMode.autofill)
+    private val dukanManagementRepository =
+        mock<DukanManagementRepository>(mode = MockMode.autofill)
     private lateinit var manageDukanViewModel: ManageDukanViewModel
     private val testDispatcher = StandardTestDispatcher()
 
@@ -69,10 +73,14 @@ class ManageDukanViewModelTest {
             pageSize = 10,
             totalPages = 1
         )
+        everySuspend {
+            dukanManagementRepository.getDukanActivationStatus()
+        } returns Dukan.ActivationStatus.ACTIVATED
 
         manageDukanViewModel = ManageDukanViewModel(
             shelfRepository,
             productRepository,
+            dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
     }
@@ -84,6 +92,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `init SHOULD load shelves with correct count`() = runTest {
+        advanceUntilIdle()
         manageDukanViewModel.state.test {
             val state = awaitItem()
             assertEquals(3, state.shelves.size)
@@ -94,6 +103,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `init SHOULD select exactly one shelf by default`() = runTest {
+        advanceUntilIdle()
         manageDukanViewModel.state.test {
             val state = awaitItem()
             assertNotNull(state.selectedShelf)
@@ -104,6 +114,7 @@ class ManageDukanViewModelTest {
     @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `init SHOULD select first shelf with correct id`() = runTest {
+        advanceUntilIdle()
         manageDukanViewModel.state.test {
             val state = awaitItem()
             val expectedFirstShelfId = dummyShelves.first().id
@@ -114,6 +125,7 @@ class ManageDukanViewModelTest {
 
     @Test
     fun `init SHOULD select first shelf with correct name`() = runTest {
+        advanceUntilIdle()
         manageDukanViewModel.state.test {
             val state = awaitItem()
             assertEquals("Electronics", state.selectedShelf?.name)
@@ -128,6 +140,7 @@ class ManageDukanViewModelTest {
         manageDukanViewModel = ManageDukanViewModel(
             shelfRepository,
             productRepository,
+            dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
 
@@ -147,6 +160,7 @@ class ManageDukanViewModelTest {
         manageDukanViewModel = ManageDukanViewModel(
             shelfRepository,
             productRepository,
+            dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
 
@@ -166,6 +180,7 @@ class ManageDukanViewModelTest {
         manageDukanViewModel = ManageDukanViewModel(
             shelfRepository,
             productRepository,
+            dukanManagementRepository,
             defaultDispatcher = testDispatcher
         )
 

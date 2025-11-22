@@ -31,10 +31,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthPrompt
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.LabeledInputPhoneNumber
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPicker
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreen
@@ -42,10 +42,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 class LoginScreen : BaseScreen<
-        LoginScreenViewModel,
-        LoginScreenUIState,
-        LoginScreenUIEffect,
-        LoginScreenInteractionListener>() {
+    LoginScreenViewModel,
+    LoginScreenUIState,
+    LoginScreenUIEffect,
+    LoginScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -120,7 +120,7 @@ class LoginScreen : BaseScreen<
                         contentPadding = PaddingValues(vertical = 13.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = Theme.spacing._12)
+                            .padding(vertical = Theme.spacing._12)
                     )
                     AuthPrompt(
                         modifier = Modifier.imePadding(),
@@ -130,21 +130,26 @@ class LoginScreen : BaseScreen<
                     )
                 }
             }
-            ErrorSnackBar(
-                errorMessage = state.errorMessage?.let { stringResource(it) },
-                onDismiss = listener::clearErrorMessage
-            )
         }
     }
 
     override fun onEffect(
         effect: LoginScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is LoginScreenUIEffect.NavigateToRegister -> navigator.push(RegisterPhoneEntryScreen())
-            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(ResetPasswordPhoneEntryScreen())
+            LoginScreenUIEffect.NavigateToForgotPassword -> navigator.push(
+                ResetPasswordPhoneEntryScreen()
+            )
+
             LoginScreenUIEffect.NavigateToHome -> {}
+            is LoginScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource
+                )
+            }
         }
     }
 }

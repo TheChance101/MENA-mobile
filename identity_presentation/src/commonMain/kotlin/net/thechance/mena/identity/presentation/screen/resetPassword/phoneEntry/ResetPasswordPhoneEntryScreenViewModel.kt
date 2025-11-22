@@ -65,7 +65,11 @@ class ResetPasswordPhoneEntryScreenViewModel(
     }
 
     private fun onOTPRequestError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            ResetPasswordPhoneEntryScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onClickCountry() {
@@ -81,10 +85,6 @@ class ResetPasswordPhoneEntryScreenViewModel(
         sendNewEffect(ResetPasswordPhoneEntryScreenUIEffect.NavigateBack)
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     private fun changeIsContinueEnabled() {
         updateState {
             val countryCode = currentCountry.callingCode
@@ -93,9 +93,12 @@ class ResetPasswordPhoneEntryScreenViewModel(
         }
     }
 
-    private fun mapErrorMessage(throwable: Throwable): StringResource{
-        return when(throwable){
-            is AuthenticationException -> mapAuthenticationErrorToMessage(handleResetPasswordPhoneEntryException(throwable))
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handleResetPasswordPhoneEntryException(throwable)
+            )
+
             else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }

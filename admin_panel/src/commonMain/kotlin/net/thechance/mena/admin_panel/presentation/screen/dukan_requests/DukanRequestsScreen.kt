@@ -12,14 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.presentation.component.DukansCounter
-import net.thechance.mena.admin_panel.presentation.component.EmptyDukansState
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanDetailsDrawerView
 import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.DukanRequestsTableContent
-import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.RejectionDukanDialog
+import net.thechance.mena.admin_panel.presentation.component.DukanStatusChangeDialog
+import net.thechance.mena.admin_panel.presentation.screen.dukan_requests.component.EmptyDukanRequests
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.dukan_requests
+import net.thechance.mena.admin_panel.resources.reject
+import net.thechance.mena.admin_panel.resources.reject_dukan_content
+import net.thechance.mena.admin_panel.resources.reject_dukan_header
+import net.thechance.mena.admin_panel.resources.reject_dukan_reason
 import net.thechance.mena.admin_panel.resources.requests
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -44,14 +48,18 @@ private fun DukanRequestsScreenContent(
         topBar = { DukanRequestsScreenTopBar() },
         overlays = {
             dialog(state.isRejectDialogShown) {
-                RejectionDukanDialog(
+                DukanStatusChangeDialog(
                     isVisible = it,
                     onDismiss = listener::onRejectDukanDialogDismissed,
-                    onRejectionConfirmed = listener::onRejectDukanConfirmed,
-                    rejectionReason = state.rejectReason,
+                    onConfirmed = listener::onRejectDukanConfirmed,
+                    reason = state.rejectReason,
                     onReasonChanged = listener::onRejectionMessageChanged,
-                    isRejectButtonEnabled = state.isRejectButtonEnabled,
-                    isRejectButtonLoading = state.isRejectButtonLoading,
+                    title = stringResource(Res.string.reject_dukan_header),
+                    description = stringResource(Res.string.reject_dukan_content),
+                    reasonLabel = stringResource(Res.string.reject_dukan_reason),
+                    confirmButtonText = stringResource(Res.string.reject),
+                    isConfirmButtonEnabled = state.isRejectButtonEnabled,
+                    isConfirmButtonLoading = state.isRejectButtonLoading
                 )
             }
         },
@@ -67,7 +75,7 @@ private fun DukanRequestsScreenContent(
                 modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
             )
             when {
-                state.dukans.isEmpty() -> EmptyDukansState(
+                state.dukans.isEmpty() -> EmptyDukanRequests(
                     modifier = Modifier.fillMaxSize().offset(y = -(76.dp))
                 )
 

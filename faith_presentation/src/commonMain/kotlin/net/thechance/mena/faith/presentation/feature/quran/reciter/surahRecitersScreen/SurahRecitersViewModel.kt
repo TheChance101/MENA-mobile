@@ -2,11 +2,14 @@ package net.thechance.mena.faith.presentation.feature.quran.reciter.surahReciter
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
+import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.service.DownloadSurahManager
+import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.quran.reciter.surahRecitersScreen.args.SurahRecitersArgs
 
@@ -14,6 +17,8 @@ class SurahRecitersViewModel(
     private val quranRepository: QuranRepository,
     private val surahArgs: SurahRecitersArgs,
     private val downloadManager: DownloadSurahManager,
+    private val quranPlayer: QuranPlayer,
+    private val searchRecitersUseCase: SearchRecitersUseCase,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseViewModel<SurahRecitersUiState, SurahRecitersScreenEffect>(
     initialState = SurahRecitersUiState(surahId = surahArgs.surahId),
@@ -32,25 +37,29 @@ class SurahRecitersViewModel(
     }
 
     override fun onQueryChange(query: String) {
-        updateState { state ->
-            val filtered = if (query.isBlank()) state.allReciters
-            else state.allReciters.filter { it.name.contains(query, ignoreCase = true) }
-
-            state.copy(
-                query = query,
-                reciters = filtered
-            )
-        }
+        updateState { it.copy(query = query) }
+        getAllReciters()
     }
 
     override fun onClearQueryClick() {
-        updateState { state ->
-            state.copy(
-                query = "",
-                reciters = state.allReciters
-            )
-        }
+        updateState { it.copy(query = "") }
+        getAllReciters()
     }
+
+    override fun playReciterSample(reciterId: Int) {
+        tryToExecute(
+            execute = {
+                quranRepository.getAyahSoundUrl(
+                    ayahNumber = 1,
+                    surahNumber = 1,
+                    reciterId = reciterId
+                )
+            },
+            onSuccess = { quranPlayer.playAyah(it) },
+            dispatcher = Main
+        )
+    }
+
 
     override fun onBackClick() =
         sendEffect(SurahRecitersScreenEffect.NavigateBack)
@@ -59,7 +68,7 @@ class SurahRecitersViewModel(
         tryToExecute(
             execute = {
                 val surahId = surahArgs.surahId ?: return@tryToExecute
-                downloadAndCacheSurah(surahId=surahId,reciterId= reciterId)
+                downloadAndCacheSurah(surahId = surahId, reciterId = reciterId)
             },
             onSuccess = { onDownloadComplete(reciterId) },
             dispatcher = dispatcher
@@ -101,31 +110,26 @@ class SurahRecitersViewModel(
     }
 
     private fun updateSelectedReciter(reciterId: Int) {
-        updateState { state ->
-            state.copy(selectedReciterId = reciterId)
-        }
+        updateState { it.copy(selectedReciterId = reciterId) }
     }
 
     private suspend fun getAllRecitersSuccessfully(reciters: List<Reciter>) {
         val surahId = surahArgs.surahId ?: return
+        val query = uiState.value.query
 
-        val recitersUi = reciters.map { reciter ->
+        val filteredReciters = searchRecitersUseCase(query, reciters)
+
+        val recitersUi = filteredReciters.map { reciter ->
             reciter.toUi(
                 isDownloaded = quranRepository.isSurahAudioCached(
-                    surahId= surahId,
-                    reciterId =reciter.id
+                    surahId = surahId,
+                    reciterId = reciter.id
                 )
             )
         }
 
-        updateState { state ->
-            state.copy(
-                allReciters = recitersUi,
-                reciters = recitersUi
-            )
-        }
+        updateState { it.copy(reciters = recitersUi) }
     }
-
 
     private suspend fun onDownloadComplete(reciterId: Int) {
         val surahId = surahArgs.surahId ?: return
@@ -135,10 +139,6 @@ class SurahRecitersViewModel(
         updateState { state ->
             state.copy(
                 reciters = state.reciters.map {
-                    if (it.id == reciterId) it.copy(isDownloaded = isDownloaded)
-                    else it
-                },
-                allReciters = state.allReciters.map {
                     if (it.id == reciterId) it.copy(isDownloaded = isDownloaded)
                     else it
                 }

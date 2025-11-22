@@ -42,6 +42,7 @@ internal fun ContactCard(
                 SquircleShape(Theme.radius.lg)
             )
             .clickable(
+                enabled = info.isNotBlank(),
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rippleIndication(),
                 onClick = onClick

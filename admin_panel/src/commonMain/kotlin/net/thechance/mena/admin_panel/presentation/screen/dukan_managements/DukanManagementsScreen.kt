@@ -14,7 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import net.thechance.mena.admin_panel.navigation.DukanDetails
 import net.thechance.mena.admin_panel.navigation.LocalNavController
-import net.thechance.mena.admin_panel.presentation.component.EmptyDukansState
+import net.thechance.mena.admin_panel.presentation.screen.dukan_managements.component.EmptyDukansState
 import net.thechance.mena.admin_panel.presentation.component.EmptySearchState
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer

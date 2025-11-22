@@ -8,11 +8,13 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -321,6 +323,23 @@ fun createHttpClient(
         }
     }
 }
+
+fun mockClient(handler: MockRequestHandler): HttpClient {
+    val mockEngine = MockEngine(handler)
+    return HttpClient(mockEngine) {
+        install(ContentNegotiation) { json(jsonSerialization) }
+    }
+}
+
+inline fun <reified T> MockRequestHandleScope.mockRespond(
+    value: T,
+    status: HttpStatusCode = HttpStatusCode.OK,
+    headers: Headers = jsonHeaders
+) = respond(
+    content = jsonSerialization.encodeToString<T>(value),
+    status = status,
+    headers = headers
+)
 
 
 private const val CONTACTS_ENDPOINT = "/chat/contacts"

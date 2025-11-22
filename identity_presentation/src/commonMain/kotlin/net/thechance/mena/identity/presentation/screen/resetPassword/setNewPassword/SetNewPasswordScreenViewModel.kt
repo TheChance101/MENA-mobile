@@ -54,10 +54,6 @@ class SetNewPasswordScreenViewModel(
         sendNewEffect(SetNewPasswordScreenUIEffect.NavigateBackToLogin)
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     override fun onClickOk() {
         sendNewEffect(SetNewPasswordScreenUIEffect.NavigateBackToLogin)
         updateState { copy(isDialogVisible = false) }
@@ -65,11 +61,15 @@ class SetNewPasswordScreenViewModel(
 
     override fun onClickResetPassword() {
         if (state.value.newPassword != state.value.confirmPassword) {
-            updateState { copy(errorMessage = Res.string.error_password_mismatch) }
+            sendNewEffect(
+                SetNewPasswordScreenUIEffect.ShowSnackBarError(
+                    Res.string.error_password_mismatch
+                )
+            )
             return
         }
 
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { onResetPassword() },
             onSuccess = { onResetPasswordSuccess() },
@@ -90,7 +90,12 @@ class SetNewPasswordScreenViewModel(
     }
 
     private fun onResetPasswordError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isLoading = false) }
+        sendNewEffect(
+            SetNewPasswordScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun checkResetButtonEnabled() {
