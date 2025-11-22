@@ -8,7 +8,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 data class DukanDetailsUiState(
     val dukanInfo: DukanInfo = DukanInfo(),
     val isDukanInfoLoading: Boolean = true,
-    val bestSellingProducts: Flow<PagingData<ProductUiState>> = emptyFlow(),
+    val bestSellingProducts: List<ProductUiState> = emptyList(),
     val shelves: Flow<PagingData<ShelfUiState>> = emptyFlow(),
     val productsShelf: Flow<PagingData<ProductUiState>> = emptyFlow(),
     val shelfIdSelected: String? = null,
