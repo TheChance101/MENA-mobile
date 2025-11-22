@@ -11,11 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import mena.wallet_presentation.generated.resources.Res
+import mena.wallet_presentation.generated.resources.failed_dark
 import mena.wallet_presentation.generated.resources.payment_failed_description
 import mena.wallet_presentation.generated.resources.transaction_failed
 import mena.wallet_presentation.generated.resources.try_again
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.model.SubmissionStatus
+import net.thechance.mena.wallet.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultInteractionListener
 import net.thechance.mena.wallet.presentation.screen.payment_result.PaymentResultScreenState
 import org.jetbrains.compose.resources.painterResource
@@ -27,7 +29,11 @@ internal fun PaymentUnknownErrorContent(
     state: PaymentResultScreenState,
     interactionListener: PaymentResultInteractionListener
 ) {
-    Column (
+    val failedTransactionIcon =
+        if (LocalDarkTheme.current) painterResource(Res.drawable.failed_dark)
+        else
+            painterResource(Res.drawable.transaction_failed)
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 16.dp)
@@ -36,7 +42,7 @@ internal fun PaymentUnknownErrorContent(
         Spacer(modifier = Modifier.weight(1f))
         PaymentResultCard(
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            image = painterResource(Res.drawable.transaction_failed),
+            image = failedTransactionIcon,
             title = stringResource(Res.string.transaction_failed),
             description = stringResource(Res.string.payment_failed_description),
             paymentStatus = state.paymentStatus,

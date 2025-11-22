@@ -85,7 +85,7 @@ class AddressesScreen(
                 }
 
                 AnimatedVisibility(
-                    visible = state.addresses.isEmpty() && !state.isLoading,
+                    visible = state.addresses.isEmpty() && !state.isLoading && state.errorMessage == null,
                     enter = fadeIn(animationSpec = tween(durationMillis = 500)),
                     exit = fadeOut(animationSpec = tween(durationMillis = 500))
                 ) {
