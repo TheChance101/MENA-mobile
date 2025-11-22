@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,17 +31,17 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
-import net.thechance.mena.identity.presentation.components.ErrorSnackBar
 import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import org.jetbrains.compose.resources.stringResource
 
 class SetNewPasswordScreen() : BaseScreen<
-        SetNewPasswordScreenViewModel,
-        SetNewPasswordScreenUIState,
-        SetNewPasswordScreenUIEffect,
-        SetNewPasswordScreenInteractionListener>() {
+    SetNewPasswordScreenViewModel,
+    SetNewPasswordScreenUIState,
+    SetNewPasswordScreenUIEffect,
+    SetNewPasswordScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -77,7 +76,7 @@ class SetNewPasswordScreen() : BaseScreen<
                     .fillMaxSize()
                     .background(Theme.colorScheme.background.surface)
             ) {
-                AuthScreenContainer() {
+                AuthScreenContainer {
                     PageDescription(
                         title = stringResource(Res.string.new_password_title),
                         subtitle = stringResource(Res.string.reset_password_description),
@@ -124,18 +123,21 @@ class SetNewPasswordScreen() : BaseScreen<
 
             }
         }
-        ErrorSnackBar(
-            errorMessage = state.errorMessage?.let { stringResource(it) },
-            onDismiss = listener::onClearErrorMessage,
-            modifier = Modifier.statusBarsPadding()
-        )
     }
 
     override fun onEffect(
-        effect: SetNewPasswordScreenUIEffect, navigator: Navigator
+        effect: SetNewPasswordScreenUIEffect,
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             SetNewPasswordScreenUIEffect.NavigateBackToLogin -> navigator.push(LoginScreen())
+
+            is SetNewPasswordScreenUIEffect.ShowSnackBarError -> {
+                snackBarController.showSnackBarError(
+                    message = effect.errorStringResource,
+                )
+            }
         }
     }
 }

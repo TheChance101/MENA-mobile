@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 
 interface CoreChatApi {
     @Composable
-    fun TabEntry()
+    fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit)
 
     @Composable
     fun ChatEntry(userId: String, onNavigateBack: () -> Unit)

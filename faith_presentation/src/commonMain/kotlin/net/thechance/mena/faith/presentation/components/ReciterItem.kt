@@ -19,7 +19,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.downloaded
-import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.ic_tick_double_check
 import mena.faith_presentation.generated.resources.icon_download
 import mena.faith_presentation.generated.resources.icon_play
@@ -79,6 +78,7 @@ private fun CardContent(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
+    onPlayClick: () -> Unit = {},
     onDownloadClick: () -> Unit,
     onSelect: () -> Unit = {},
     isSelectReciter: Boolean,
@@ -91,6 +91,7 @@ private fun CardContent(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
+            .padding(horizontal = Theme.spacing._16)
             .border(
                 width = 1.dp,
                 color = borderColor,
@@ -101,14 +102,16 @@ private fun CardContent(
                 color = Theme.colorScheme.background.surfaceLow,
                 shape = RoundedCornerShape(Theme.radius.md)
             )
-            .padding(Theme.spacing._8)
+            .padding(horizontal = 8.dp)
             .noRippleClickable(onClick = onSelect),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         PlayButton(
             painterIcon = painterResource(Res.drawable.icon_play),
             contentDescription = stringResource(Res.string.play),
+            modifier = Modifier
+                .size(size = 40.dp)
+                .noRippleClickable(onPlayClick)
         )
         Column(
             modifier = Modifier.weight(1f)
@@ -119,6 +122,7 @@ private fun CardContent(
                 color = Theme.colorScheme.shadePrimary,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
+                modifier = Modifier.padding(start = Theme.spacing._8)
             )
             RecitersDetails(
                 recitingType = recitingType,
@@ -129,7 +133,8 @@ private fun CardContent(
             Icon(
                 painterResource(Res.drawable.icon_download),
                 contentDescription = stringResource(Res.string.success),
-                modifier = Modifier.size(size = 20.dp)
+                modifier = Modifier
+                    .size(size = 20.dp)
                     .clickable(onClick = onDownloadClick)
             )
         }
@@ -150,7 +155,8 @@ private fun RecitersDetails(
         Text(
             text = recitingType,
             style = Theme.typography.label.small,
-            color = Theme.colorScheme.shadeSecondary
+            color = Theme.colorScheme.shadeSecondary,
+            modifier = Modifier.padding(start = Theme.spacing._8)
         )
         if (isDownloaded) {
             Icon(
@@ -172,19 +178,16 @@ private fun RecitersDetails(
 @Composable
 private fun Preview() {
     MenaTheme {
-    QuranTheme {
-        ReciterItem(
-            reciterId = 1,
-            reciter = "Muhammad Siddiq Al-Minshawi",
-            recitingType = "Teacher - Tajweed",
-            isDownloaded = true,
-            onSelect = {},
-            onDownloadClick = {},
-            isSelectReciter = false,
-            isSwipeable = true,
-            isDownloadIconVisible =  true,
-            onDelete = {}
-        )
-    }
+        QuranTheme {
+            ReciterItem(
+                reciter = "Muhammad Siddiq Al-Minshawi",
+                recitingType = "Teacher - Tajweed",
+                isDownloaded = true,
+                onSelect = {},
+                onDownloadClick = {},
+                isSelectReciter = false,
+                isDownloadIconVisible = true,
+            )
+        }
     }
 }

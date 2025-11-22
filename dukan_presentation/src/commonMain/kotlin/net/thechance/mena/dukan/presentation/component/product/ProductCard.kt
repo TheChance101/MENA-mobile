@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.product
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -36,6 +36,7 @@ import mena.dukan_presentation.generated.resources.ic_no_image_loaded
 import mena.dukan_presentation.generated.resources.koin_icon
 import mena.dukan_presentation.generated.resources.out_of_stock
 import mena.dukan_presentation.generated.resources.silver_tc
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -48,13 +49,14 @@ import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun ProductCard(
-    productName: String,
-    productImageUrl: String,
-    productDescription: String,
-    productPrice: Double,
+    name: String,
+    imageUrl: String,
+    description: String,
+    basePrice: Double,
+    finalPrice: Double,
     isOutOfStock: Boolean,
     modifier: Modifier = Modifier,
-    productCardBackground: Color? = null,
+    backgroundColor: Color? = null,
     isDukanStyleNoImage: Boolean = false,
     productImageBackground: Color = Theme.colorScheme.background.surfaceLow,
     productAction: @Composable () -> Unit = {},
@@ -69,7 +71,7 @@ fun ProductCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = productCardBackground ?: Color.Transparent,
+                color = backgroundColor ?: Color.Transparent,
                 shape = SquircleShape(Theme.radius.md)
             )
             .height(104.dp)
@@ -90,7 +92,7 @@ fun ProductCard(
                     .background(productImageBackground)
             ) {
                 AsyncImage(
-                    model = productImageUrl,
+                    model = imageUrl,
                     contentDescription = null,
                     modifier = Modifier.matchParentSize(),
                     onState = {
@@ -110,13 +112,13 @@ fun ProductCard(
             }
 
             if (isError || isLoading) {
-                Image(
+                Icon(
                     painter = painterResource(Res.drawable.ic_no_image_loaded),
                     contentDescription = null,
+                    tint = Theme.colorScheme.primary.primary,
                     modifier = Modifier
                         .size(24.dp)
                         .align(Alignment.Center),
-                    contentScale = ContentScale.Fit
                 )
             }
         }
@@ -130,8 +132,8 @@ fun ProductCard(
                 ),
         ) {
             ProductInfo(
-                name = productName,
-                description = productDescription
+                name = name,
+                description = description
             )
             Spacer(modifier = Modifier.weight(1f))
             Row(
@@ -140,8 +142,18 @@ fun ProductCard(
                     .padding(vertical = Theme.spacing._4),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                if (basePrice > finalPrice) {
+                    Text(
+                        text = basePrice.toString(),
+                        style = Theme.typography.label.extraSmall.copy(
+                            textDecoration = TextDecoration.LineThrough
+                        ),
+                        color = Theme.colorScheme.shadeTertiary,
+                        modifier = Modifier.padding(end = Theme.spacing._4)
+                    )
+                }
                 PriceWithIcon(
-                    price = productPrice.toString(),
+                    price = finalPrice.toString(),
                     iconRes = Res.drawable.silver_tc,
                     contentDescription = stringResource(Res.string.koin_icon),
                 )
@@ -204,15 +216,15 @@ private fun ProductCardPreview() {
         appTheme = AppTheme.LIGHT.name
     ) {
         ProductCard(
-            productName = "Girls Crochet Tank Top",
-            productImageUrl = "https://calvinklein.scene7.com/is/image/CalvinKlein/LX001376_100_alternate1?wid=1728&qlt=80%2C0&resMode=sharp2&op_usm=0.9%2C1.0%2C8%2C0&iccEmbed=0&fmt=webp",
-            productDescription = "Girls Crochet Tank Top description text here for this product",
-            productPrice = 39.5,
-            productCardBackground = Theme.colorScheme.background.surfaceLow,
+            name = "Girls Crochet Tank Top",
+            imageUrl = "https://calvinklein.scene7.com/is/image/CalvinKlein/LX001376_100_alternate1?wid=1728&qlt=80%2C0&resMode=sharp2&op_usm=0.9%2C1.0%2C8%2C0&iccEmbed=0&fmt=webp",
+            description = "Girls Crochet Tank Top description text here for this product",
+            basePrice = 39.5,
+            finalPrice = 33.5,
+            backgroundColor = Theme.colorScheme.background.surfaceLow,
             productAction = { EditProductIcon(onClick = {}) },
             modifier = Modifier.padding(Theme.spacing._12),
-            isOutOfStock = true,
-
-            )
+            isOutOfStock = true
+        )
     }
 }

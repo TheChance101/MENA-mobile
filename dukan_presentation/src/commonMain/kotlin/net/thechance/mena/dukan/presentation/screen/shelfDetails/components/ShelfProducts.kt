@@ -73,11 +73,12 @@ private fun ProductCardLoaded(
         ) { index ->
             products[index]?.let { product ->
                 ProductCard(
-                    productName = product.name,
-                    productImageUrl = product.imageUrl,
-                    productDescription = product.description,
-                    productCardBackground = productCardBackground,
-                    productPrice = product.price,
+                    name = product.name,
+                    imageUrl = product.imageUrl,
+                    description = product.description,
+                    backgroundColor = productCardBackground,
+                    basePrice = product.basePrice,
+                    finalPrice = product.finalPrice,
                     isDukanStyleNoImage = state.dukanStyle == Style.NO_IMAGE,
                     productAction = {
                         if (product.isOutOfStock.not()) {

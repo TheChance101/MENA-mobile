@@ -14,6 +14,7 @@ import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.exceptions.NoSuchItemException
+import net.thechance.mena.dukan.domain.model.Transaction
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -25,16 +26,16 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class CheckoutViewModel(
     private val cartRepository: CartRepository,
     private val locationService: LocationService,
     private val savedStateHandle: SavedStateHandle,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-) :
-    BaseViewModel<CheckoutUiState, CheckoutEffect>(
-        initialState = CheckoutUiState(),
-        defaultDispatcher = dispatcher
-    ), CheckoutInteractionListener {
+) : BaseViewModel<CheckoutUiState, CheckoutEffect>(
+    initialState = CheckoutUiState(),
+    defaultDispatcher = dispatcher
+), CheckoutInteractionListener {
 
 
     init {
@@ -50,7 +51,6 @@ class CheckoutViewModel(
         )
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     private fun createPagingSource(): Flow<PagingData<CheckoutUiState.CartItem>> {
         val args = savedStateHandle.toRoute<DukanRoute.CheckoutScreenRoute>()
         return createPagingSourceFlow(
@@ -95,20 +95,22 @@ class CheckoutViewModel(
     private fun updateTotalPrice() {
         tryToExecute(
             block = ::getTotalCartPrice,
-            onSuccess = { onLoadCartSuccess(it.totalPrice) },
+            onSuccess = ::onLoadCartSuccess,
             onError = ::onCartInfoError,
         )
     }
 
     private suspend fun getTotalCartPrice(): Cart {
         val args = savedStateHandle.toRoute<DukanRoute.CheckoutScreenRoute>()
+        updateState { copy(dukanId = args.dukanId) }
         return cartRepository.getCartInfo(args.dukanId)
     }
 
-    private fun onLoadCartSuccess(totalPrice: Double) {
+    private fun onLoadCartSuccess(cart: Cart) {
         updateState {
             copy(
-                totalAmount = totalPrice,
+                totalAmount = cart.totalPrice,
+                cartId = cart.id
             )
         }
     }
@@ -124,13 +126,38 @@ class CheckoutViewModel(
         }
     }
 
-
     override fun onBackClicked() {
         emitEffect(effect = CheckoutEffect.NavigateBack)
     }
 
     override fun onConfirmOrderClicked() {
-        updateState { copy(isCheckoutImplementedDialogVisible = true) }
+        tryToExecute(
+            onStart = ::onConfirmOrderStart,
+            block = ::onConfirmOrderBlock,
+            onSuccess = ::onConfirmOrderSuccess,
+            onError = ::onConfirmOrderError
+        )
+    }
+
+    private fun onConfirmOrderStart() {
+        updateState { copy(isTransactionLoading = true) }
+    }
+
+    private suspend fun onConfirmOrderBlock(): Transaction {
+        return cartRepository.checkout(state.value.toDomain())
+    }
+
+    private fun onConfirmOrderSuccess(transaction: Transaction) {
+        emitEffect(CheckoutEffect.NavigateToConfirmPayment(transaction.transactionId.toString()))
+        updateState { copy(isTransactionLoading = false)}
+    }
+
+    private fun onConfirmOrderError(throwable: Throwable) {
+        updateState { copy(isTransactionLoading = false)}
+        when (throwable) {
+            is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
+            else -> showSnackBar(message = Res.string.something_went_wrong)
+        }
     }
 
     override fun onDismissCheckoutDialog() {

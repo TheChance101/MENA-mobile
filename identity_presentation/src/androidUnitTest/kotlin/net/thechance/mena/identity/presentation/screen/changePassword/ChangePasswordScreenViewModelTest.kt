@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.changePassword
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -13,7 +15,6 @@ import net.thechance.mena.identity.helper.BaseCoroutineTest
 import org.junit.Test
 import kotlin.test.BeforeTest
 import kotlin.test.assertFalse
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class ChangePasswordScreenViewModelTest : BaseCoroutineTest() {
@@ -67,13 +68,6 @@ class ChangePasswordScreenViewModelTest : BaseCoroutineTest() {
         viewModel.onClickContinue()
         val state = viewModel.state.value
         assertTrue { state.currentPage == PasswordPage.NEW_PASSWORD }
-    }
-
-    @Test
-    fun `onClearErrorMessage() should update errorMessage to null`() = runTest {
-        val state = viewModel.state.value
-        viewModel.onClearErrorMessage()
-        assertNull(state.errorMessage)
     }
 
     @Test
@@ -209,7 +203,7 @@ class ChangePasswordScreenViewModelTest : BaseCoroutineTest() {
         }
 
     @Test
-    fun `onChangePasswordError() should update error message when chang password throws exception`() =
+    fun `onChangePasswordError() should show snack bar error effect when change password throws exception`() =
         runTest {
             coEvery {
                 userRepository.changePassword(
@@ -219,11 +213,11 @@ class ChangePasswordScreenViewModelTest : BaseCoroutineTest() {
                 )
             } throws InvalidRequestException()
 
-            viewModel.onClickSave()
-            testDispatcher.scheduler.advanceUntilIdle()
-
-            val state = viewModel.state.value
-            assertTrue { state.errorMessage != null }
+            viewModel.effect.test {
+                viewModel.onClickSave()
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(ChangePasswordScreenUIEffect.ShowSnackBarError::class)
+            }
         }
 
 }

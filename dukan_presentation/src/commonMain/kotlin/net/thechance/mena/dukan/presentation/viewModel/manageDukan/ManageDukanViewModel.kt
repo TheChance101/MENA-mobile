@@ -17,9 +17,11 @@ import mena.dukan_presentation.generated.resources.dismiss_title
 import mena.dukan_presentation.generated.resources.error_for_delete_shelf
 import mena.dukan_presentation.generated.resources.error_general
 import mena.dukan_presentation.generated.resources.no_internet_message
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.exceptions.DeletionNotAllowedException
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
+import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
@@ -28,10 +30,13 @@ import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DeleteDialogState
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.DialogType
 import org.jetbrains.compose.resources.StringResource
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 class ManageDukanViewModel(
     private val shelfRepository: ShelfRepository,
     private val productRepository: ProductRepository,
+    private val dukanRepository: DukanManagementRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageDukanUiState, ManageDukanUiEffect>(
     initialState = ManageDukanUiState(),
@@ -39,7 +44,7 @@ class ManageDukanViewModel(
 ), ManageDukanInteractionListener {
 
     init {
-        loadShelves()
+        getDukanActivationStatus()
     }
 
     override fun onBackClicked() {
@@ -138,6 +143,20 @@ class ManageDukanViewModel(
             onSuccess = ::onDeleteShelfSuccess,
             onError = ::onDeleteShelfError
         )
+    }
+
+    fun getDukanActivationStatus() {
+        tryToExecute(
+            block = dukanRepository::getDukanActivationStatus,
+            onSuccess = ::updateActivationStatus,
+        )
+    }
+
+    private fun updateActivationStatus(status: Dukan.ActivationStatus) {
+        updateState {
+            copy(activationStatus = status.toUiState())
+        }
+        loadShelves()
     }
 
     private fun loadShelves() {

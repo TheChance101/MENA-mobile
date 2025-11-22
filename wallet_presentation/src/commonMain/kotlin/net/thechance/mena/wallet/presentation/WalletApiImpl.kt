@@ -12,21 +12,30 @@ import kotlin.uuid.Uuid
 @Single([WalletApi::class])
 class WalletApiImpl : WalletApi {
     @Composable
-    override fun WalletEntry(navigateBack: () -> Unit) {
-        NavigationHost(startDestination = WalletMainScreenRoute, navigateBack = navigateBack)
+    override fun WalletEntry(
+        navigateBack: () -> Unit,
+        updateBottomNavigationVisibility: (Boolean) -> Unit,
+    ) {
+        NavigationHost(
+            startDestination = WalletMainScreenRoute,
+            navigateBack = navigateBack,
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
+        )
     }
 
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun ConfirmPaymentEntry(
         transactionId: Uuid,
-        navigateBack: () -> Unit
+        navigateBack: () -> Unit,
+        updateBottomNavigationVisibility: (Boolean) -> Unit,
     ) {
         NavigationHost(
             startDestination = ConfirmPaymentScreenRoute(
                 transactionId = transactionId.toString()
             ),
-            navigateBack = navigateBack
+            navigateBack = navigateBack,
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
         )
     }
 }

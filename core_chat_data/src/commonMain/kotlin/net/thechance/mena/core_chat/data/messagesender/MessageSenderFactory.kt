@@ -1,6 +1,7 @@
 package net.thechance.mena.core_chat.data.messagesender
 
 import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 
 class MessageSenderFactory(
     private val textMessageSender: TextMessageSender,
@@ -12,6 +13,8 @@ class MessageSenderFactory(
         is MessageContent.Text -> textMessageSender
         is MessageContent.Image -> imageMessageSender
         is MessageContent.Audio -> audioMessageSender
+        is MessageContent.Money -> throw IllegalArgumentException("Money message can not send by mobile")
         is MessageContent.Ayah -> ayahMessageSender
+        else -> throw OperationFailedException("order message cannot be sent by mobile")
     }
 }

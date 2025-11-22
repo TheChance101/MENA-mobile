@@ -35,6 +35,7 @@ internal fun MoreActionsButton(
             )
             .padding(10.dp)
             .size(20.dp),
+        tint = Theme.colorScheme.shadePrimary,
         painter = painterResource(Res.drawable.more_horizontal),
         contentDescription = stringResource(Res.string.options),
     )

@@ -19,6 +19,7 @@ import kotlin.uuid.ExperimentalUuidApi
 internal fun DukanDetailsInCompactMode(
     state: DukanDetailsScreenState,
     interactionListener: DukanDetailsInteractionListener,
+    isMapVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -32,7 +33,7 @@ internal fun DukanDetailsInCompactMode(
             modifier = Modifier.fillMaxWidth(),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,
-            isMapVisible = state.isMapVisible
+            isMapVisible = isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.fillMaxWidth(),

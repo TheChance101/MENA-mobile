@@ -29,7 +29,7 @@ fun ManageDukanAppBar(listener: ManageDukanInteractionListener) {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.back_arrow),
-                tint = Theme.colorScheme.shadePrimary
+                tint = Theme.colorScheme.primary.primary
             )
         }
     )

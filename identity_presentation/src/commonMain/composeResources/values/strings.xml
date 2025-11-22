@@ -216,6 +216,7 @@
     <string name="error_something_went_wrong">Something went wrong</string>
     <string name="error_bad_request">Some information you entered is invalid. Please check your input and try again.</string>
     <string name="error_incorrect_password">Old password is incorrect</string>
+
     <!-- Profile Error Messages -->
     <string name="error_username_required">Username is required</string>
     <string name="error_first_name_required">First name is required</string>
@@ -237,6 +238,7 @@
     <string name="error_cannot_delete_active_address">Can't Delete Active Address</string>
     <string name="error_location_is_turned_off">Location is turned off</string>
     <string name="error_confirm_password_not_match">Confirm password doesn't match the new password</string>
+    <string name="success_profile_info_updated">Your profile has been updated</string>
 
     <!-- Account Created Successfully -->
     <string name="success_account_created_title">You have successfully created your account!</string>

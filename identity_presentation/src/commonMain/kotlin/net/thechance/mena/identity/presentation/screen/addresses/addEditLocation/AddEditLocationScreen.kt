@@ -24,10 +24,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.painterResource
@@ -36,13 +36,12 @@ import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 class AddEditLocationScreen(
-    val onSuccess: (SnackBarUiState?) -> Unit,
     private val addressModel: AddressUIState?,
 ) : BaseScreen<
-        AddEditLocationScreenViewModel,
-        AddEditLocationScreenUIState,
-        AddEditLocationScreenUIEffect,
-        AddEditLocationScreenInteractionListener>() {
+    AddEditLocationScreenViewModel,
+    AddEditLocationScreenUIState,
+    AddEditLocationScreenUIEffect,
+    AddEditLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -139,11 +138,23 @@ class AddEditLocationScreen(
 
     override fun onEffect(
         effect: AddEditLocationScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is AddEditLocationScreenUIEffect.NavigateBack -> {
-                onSuccess(effect.snackBarUiState)
+                effect.successStringResource?.let { successMessage ->
+                    snackBarController.showSnackBarSuccess(
+                        message = successMessage
+                    )
+                }
+
+                effect.errorStringResource?.let { errorMessage ->
+                    snackBarController.showSnackBarError(
+                        message = errorMessage
+                    )
+                }
+
                 navigator.pop()
             }
 
@@ -155,8 +166,6 @@ class AddEditLocationScreen(
             )
         }
     }
-
-
 }
 
 
