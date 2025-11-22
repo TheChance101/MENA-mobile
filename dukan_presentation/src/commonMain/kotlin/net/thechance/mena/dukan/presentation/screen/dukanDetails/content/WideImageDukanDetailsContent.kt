@@ -79,14 +79,15 @@ fun WideImageDukanDetailsContent(
                     onFavoriteClicked = listener::onFavoriteDukanClicked,
                 )
             }
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                BestSellingSection(
-                    state = state,
-                    listener = listener,
-                    shelves = shelves
-                )
+            if (state.bestSellingProducts.isNotEmpty()) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    BestSellingSection(
+                        state = state,
+                        listener = listener,
+                        shelves = shelves
+                    )
+                }
             }
-
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanShelves(
                     state = state,
