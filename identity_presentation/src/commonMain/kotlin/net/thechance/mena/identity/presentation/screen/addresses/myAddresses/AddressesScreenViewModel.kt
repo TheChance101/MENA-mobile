@@ -86,6 +86,7 @@ class AddressesScreenViewModel(
             address.isMainAddress -> onMainAddressDeletionError()
             else -> executeAddressDeletion(addressId)
         }
+        onDismissDeleteDialog()
     }
 
     override fun onDismissDeleteDialog() = updateState {
@@ -106,11 +107,13 @@ class AddressesScreenViewModel(
         val editedId = state.value.editedAddressId
         updateState {
             copy(
+                isLoading = false,
                 addresses = if (editedId != null) {
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                editedAddressId = null
+                editedAddressId = null,
+                errorMessage = mapErrorMessage(throwable)
             )
         }
         onAddressOperationError(throwable)
@@ -145,6 +148,7 @@ class AddressesScreenViewModel(
     private fun onAddEditSuccess(isAdding: Boolean, addressId: Uuid?) {
         updateState {
             copy(
+                isLoading = false,
                 isAddingNewAddress = isAdding,
                 editedAddressId = addressId
             )
