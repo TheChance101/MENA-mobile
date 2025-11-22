@@ -23,7 +23,6 @@ import mena.faith_presentation.generated.resources.ic_tick_double_check
 import mena.faith_presentation.generated.resources.icon_download
 import mena.faith_presentation.generated.resources.icon_play
 import mena.faith_presentation.generated.resources.play
-import mena.faith_presentation.generated.resources.remove
 import mena.faith_presentation.generated.resources.success
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -37,44 +36,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ReciterItem(
-    reciterId: Int,
-    reciter: String,
-    recitingType: String,
-    isDownloaded: Boolean = false,
-    isDownloadIconVisible: Boolean = false,
-    isSwipeable: Boolean,
-    onDownloadClick: () -> Unit = {},
-    onSelect: () -> Unit = {},
-    isSelectReciter: Boolean = false,
-    onDelete: (Int) -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    SwappableCard(
-        isSwipeable = isSwipeable,
-        id = reciterId,
-        onClick = { onDelete(reciterId) },
-        backgroundIcon = painterResource(Res.drawable.ic_delete),
-        contentDescription = stringResource(Res.string.remove),
-        cardContent = { contentModifier ->
-            CardContent(
-                reciter = reciter,
-                recitingType = recitingType,
-                isDownloaded = isDownloaded,
-                modifier = contentModifier,
-                onDownloadClick = onDownloadClick,
-                onSelect = onSelect,
-                isSelectReciter = isSelectReciter,
-                isDownloadIconVisible = isDownloadIconVisible
-            )
-        },
-        modifier = modifier
-            .padding(horizontal = Theme.spacing._16)
-            .padding(bottom = Theme.spacing._8)
-    )
-}
-
-@Composable
-private fun CardContent(
     reciter: String,
     recitingType: String,
     isDownloaded: Boolean,
@@ -140,7 +101,6 @@ private fun CardContent(
         }
     }
 }
-
 @Composable
 private fun RecitersDetails(
     recitingType: String,

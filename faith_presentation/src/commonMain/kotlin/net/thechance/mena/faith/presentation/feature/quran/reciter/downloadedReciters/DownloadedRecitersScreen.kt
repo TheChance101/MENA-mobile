@@ -136,7 +136,7 @@ fun RecitersListContent(
                             onDownloadClick = {},
                             isSelectReciter = false,
                             isDownloadIconVisible = false,
-                            modifier = contentModifier
+                            modifier = contentModifier,
                         )
                     },
                     modifier = Modifier.animateItem(
