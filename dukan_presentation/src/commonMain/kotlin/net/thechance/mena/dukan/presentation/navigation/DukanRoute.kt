@@ -16,9 +16,6 @@ sealed interface DukanRoute {
     object ManageDukanScreenRoute : DukanRoute
 
     @Serializable
-    object MyDukanScreenRoute : DukanRoute
-
-    @Serializable
     data class PendingScreenRoute(val dukanName: String) : DukanRoute
 
     @Serializable
@@ -65,4 +62,7 @@ sealed interface DukanRoute {
 
     @Serializable
     data class DukanLocation(val latitude: Double, val longitude: Double) : DukanRoute
+
+    @Serializable
+    data class ConfirmPaymentScreenRoute(val transactionId: String, val dukanId: String) : DukanRoute
 }
