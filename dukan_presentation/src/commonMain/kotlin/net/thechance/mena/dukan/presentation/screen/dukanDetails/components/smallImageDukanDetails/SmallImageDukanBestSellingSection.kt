@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.sma
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,9 +54,12 @@ fun SmallImageDukanBestSellingSection(
             text = stringResource(Res.string.best_selling),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._16)
+            modifier = Modifier.padding(top = Theme.spacing._16, start = 16.dp)
         )
-        LazyRow {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
                 BestSellingItem(
@@ -143,7 +147,6 @@ private fun BestSellingItem(
             maxLines = 1
         )
         PriceWithIcon(
-            modifier = Modifier.fillMaxWidth(),
             price = product.price.toString(),
             iconRes = Res.drawable.silver_tc,
             contentDescription = stringResource(Res.string.koin_icon),

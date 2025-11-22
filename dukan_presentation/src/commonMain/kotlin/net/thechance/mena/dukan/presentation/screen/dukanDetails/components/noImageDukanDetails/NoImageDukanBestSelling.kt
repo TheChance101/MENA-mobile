@@ -1,8 +1,10 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -53,10 +56,14 @@ fun BestSellingNoImageDukan(
             text = stringResource(Res.string.best_selling),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._16)
+            modifier = Modifier.padding(top = Theme.spacing._8, start = 16.dp)
         )
         LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Theme.colorScheme.background.surfaceHigh),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
         ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
@@ -140,10 +147,12 @@ private fun BestSellingItem(
         }
         Column {
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = product.name,
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadePrimary,
-                maxLines = 1
+                maxLines = 1,
+                textAlign = TextAlign.Center
             )
             PriceWithIcon(
                 modifier = Modifier.fillMaxWidth(),
