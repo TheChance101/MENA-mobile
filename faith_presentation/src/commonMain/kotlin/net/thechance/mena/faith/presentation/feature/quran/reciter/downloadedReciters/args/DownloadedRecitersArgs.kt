@@ -2,6 +2,4 @@ package net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedRe
 
 interface DownloadedRecitersArgs {
     val surahId: Int?
-    val isSwipeToDeleteEnabled: Boolean
-        get() = true
 }

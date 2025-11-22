@@ -1,16 +1,16 @@
 package net.thechance.mena.identity.presentation.screen.resetPassword.otp
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -70,15 +70,13 @@ class ResetPasswordOtpScreenViewModelTest {
     @Test
     fun `should show error message when otp is incorrect and user click on verify button`() =
         runTest {
-            coEvery { resetPasswordRepository.verifyOTPCode(any(),) } throws Exception("Test error")
+            coEvery { resetPasswordRepository.verifyOTPCode(any()) } throws Exception("Test error")
 
             viewModel.onClickVerify()
-            advanceUntilIdle()
 
-            viewModel.state.test {
-                val state = awaitItem()
-                assertTrue { state.errorMessage != null }
-                cancelAndConsumeRemainingEvents()
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(ResetPasswordOtpScreenUIEffect.ShowSnackBarError::class)
             }
         }
 

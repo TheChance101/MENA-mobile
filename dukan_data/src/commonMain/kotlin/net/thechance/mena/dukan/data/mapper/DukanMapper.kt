@@ -3,16 +3,17 @@
 package net.thechance.mena.dukan.data.mapper
 
 import net.thechance.mena.dukan.data.dto.dukan.CreateDukanRequest
+import net.thechance.mena.dukan.data.dto.dukan.DukanActivationStatusResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
-import net.thechance.mena.dukan.data.dto.dukan.TopDiscountedDukanDto
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.dukan.TopDiscountedDukanDto
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
-import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview
 import net.thechance.mena.dukan.domain.model.MyDukanStatus
+import net.thechance.mena.dukan.domain.model.TopDiscountedDukanPreview
 import kotlin.uuid.ExperimentalUuidApi
 
 fun Dukan.toCreateDukanRequest(): CreateDukanRequest {
@@ -82,4 +83,8 @@ fun TopDiscountedDukanDto.toEntity(): TopDiscountedDukanPreview{
         imageUrl = imageUrl,
         discount = discount.toInt()
     )
+}
+
+fun DukanActivationStatusResponse.toActivationStatus(): Dukan.ActivationStatus {
+    return Dukan.ActivationStatus.valueOf(status)
 }

@@ -43,6 +43,15 @@
     <string name="cancel">الغاء</string>
     <string name="photo">صوره</string>
     <string name="camera">الكاميرا</string>
+    <string name="send_money">أرسل المال</string>
+    <string name="send_a_money">أرسل المبلغ</string>
+    <string name="amount">الكمية</string>
+    <string name="send">أرسل</string>
+    <string name="mine_send_message">أرسلت</string>
+    <string name="other_send_message">أرسل</string>
+    <string name="to">إلى</string>
+    <string name="mine_wallet">محفظة</string>
+    <string name="other_wallet">محفظتك</string>
     <string name="no_chats_history_title">ليس لديك أي محادثات حتى الآن!</string>
     <string name="no_chats_history_desc">ابدأ الدردشة مع أصدقائك بالضغط على زر بدء الدردشة.</string>
     <string name="you">أنت</string>
@@ -71,6 +80,10 @@
     <string name="more_hours_ago">منذ %1$d ساعة</string>
     <string name="am">صباحًا</string>
     <string name="pm">مساءً</string>
+    <string name="new_order">طلب جديد</string>
+    <string name="number_of_items">عدد العناصر</string>
+    <string name="total_price">اجمالي السعر</string>
+    <string name="view_order_details">عرض تفاصيل الطلب</string>
     <string name="next_prayer_in">الصلاة القادمة %1$s في:</string>
     <string name="fajr">الفجر</string>
     <string name="dhuhr">الظهر</string>
@@ -78,8 +91,7 @@
     <string name="maghrib">المغرب</string>
     <string name="isha">العشاء</string>
     <string name="sunrise">الشروق</string>
-    <string name="aya">%1$d آية</string>
-
+    <string name="aya">آية %1$d</string>
     <string name="weather_clear_sky">سماء صافية</string>
     <string name="weather_mainly_clear">صافية غالباً</string>
     <string name="weather_partly_cloudy">غائم جزئياً</string>

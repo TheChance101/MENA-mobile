@@ -32,4 +32,9 @@ data class Dukan(
         APPROVED,
         REJECTED
     }
+    enum class ActivationStatus {
+        ACTIVATED,
+        DEACTIVATED,
+        ONHOLD
+    }
 }

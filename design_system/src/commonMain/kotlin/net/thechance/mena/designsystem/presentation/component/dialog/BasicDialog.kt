@@ -50,7 +50,7 @@ fun ScaffoldScope.BasicDialog(
     dismissOnBackPress: Boolean = true,
     dismissOnClickOutside: Boolean = true,
     contentColor: Color = Theme.colorScheme.background.surfaceLow,
-    scrimColor: Color = Theme.colorScheme.primary.primary.copy(0.55f),
+    scrimColor: Color = Color.Black.copy(0.55f),
     dialogCornerShape: Shape = SquircleShape(Theme.radius.xl),
     cancelBackgroundShape: Shape = RoundedCornerShape(Theme.radius.full),
     contentPadding: PaddingValues = PaddingValues(12.dp),

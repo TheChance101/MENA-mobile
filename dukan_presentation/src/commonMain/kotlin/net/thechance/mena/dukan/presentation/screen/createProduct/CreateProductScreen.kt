@@ -16,14 +16,17 @@ import androidx.navigation.navOptions
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add
 import mena.dukan_presentation.generated.resources.add_product
+import mena.dukan_presentation.generated.resources.back_arrow
+import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.price
 import mena.dukan_presentation.generated.resources.price_after_discount
+import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
-import net.thechance.mena.dukan.presentation.component.shared.TopAppBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.createProduct.component.DescriptionSection
@@ -38,6 +41,7 @@ import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProdu
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductUiState
 import net.thechance.mena.dukan.presentation.viewModel.createProduct.CreateProductViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -85,9 +89,16 @@ private fun CreateProductContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            AppBar(
                 title = stringResource(resource = Res.string.add_product),
-                onBackClick = interactionListener::onBackClicked
+                onLeadingClick = interactionListener::onBackClicked,
+                leadingContent = {
+                    Icon(
+                        painter = painterResource(Res.drawable.ic_arrow_left),
+                        contentDescription = stringResource(Res.string.back_arrow),
+                        tint = Theme.colorScheme.primary.primary
+                    )
+                }
             )
         },
         bottomBar = {

@@ -29,7 +29,9 @@ class SelectGenderScreenViewModel(
         SelectGenderScreenUIState()
     ), SelectGenderScreenInteractionListener {
 
-    init { loadSavedData() }
+    init {
+        loadSavedData()
+    }
 
     override fun onClickRegister() {
         state.value.gender?.let { gender -> startRegistration(gender) }
@@ -38,10 +40,6 @@ class SelectGenderScreenViewModel(
     override fun onChangeGender(gender: Gender) {
         updateState { copy(gender = gender, isRegisterEnabled = true) }
         saveGender(gender)
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     private fun loadSavedData() {
@@ -59,7 +57,7 @@ class SelectGenderScreenViewModel(
     }
 
     private fun startRegistration(gender: Gender) {
-        updateState { copy(isRegisterLoading = true, errorMessage = null) }
+        updateState { copy(isRegisterLoading = true) }
         tryToExecute(
             function = { register(gender) },
             onSuccess = ::onRegisterSuccess,
@@ -81,7 +79,10 @@ class SelectGenderScreenViewModel(
 
     private fun navigateToUploadScreen(authTokens: AuthenticationTokens) {
         sendNewEffect(
-            SelectGenderScreenUIEffect.NavigateToUploadProfileImage(authTokens, registerUIState.phoneNumber)
+            SelectGenderScreenUIEffect.NavigateToUploadProfileImage(
+                authTokens,
+                registerUIState.phoneNumber
+            )
         )
     }
 
@@ -103,16 +104,24 @@ class SelectGenderScreenViewModel(
         updateState {
             copy(
                 isRegisterLoading = false,
-                errorMessage = mapErrorMessage(throwable)
             )
         }
+        sendNewEffect(
+            SelectGenderScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun saveGender(gender: Gender) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(registerUIState.phoneNumber, draft.copy(gender = gender))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
+                            ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(
+                    registerUIState.phoneNumber,
+                    draft.copy(gender = gender)
+                )
             },
             dispatcher = dispatcher
         )
@@ -122,6 +131,7 @@ class SelectGenderScreenViewModel(
         is AuthenticationException -> mapAuthenticationErrorToMessage(
             handleSelectGenderException(throwable)
         )
+
         else -> mapErrorToMessage(ErrorState.GenericError(throwable))
     }
 }

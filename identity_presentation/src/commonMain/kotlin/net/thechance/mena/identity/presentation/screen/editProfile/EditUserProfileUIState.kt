@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.editProfile
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
-import org.jetbrains.compose.resources.StringResource
 
 data class EditUserProfileUIState(
     val username: String = "",
@@ -20,7 +19,6 @@ data class EditUserProfileUIState(
     val showCamera: Boolean = false,
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val errorMessage: StringResource? = null,
     val profileImageAction: ProfileImageAction = ProfileImageAction.NONE,
 ) {
     enum class ProfileImageAction {

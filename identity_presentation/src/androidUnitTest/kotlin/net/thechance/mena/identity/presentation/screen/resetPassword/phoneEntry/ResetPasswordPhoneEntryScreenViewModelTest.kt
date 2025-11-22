@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +11,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import java.lang.Exception
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ResetPasswordRepository
 import net.thechance.mena.identity.domain.useCase.LoginUseCase
@@ -90,12 +91,10 @@ class ResetPasswordPhoneEntryScreenViewModelTest {
             viewModel.onDismissBottomSheet()
 
             viewModel.onClickContinue()
-            testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.state.test {
-                val state = awaitItem()
-                assertTrue { state.errorMessage != null }
-                cancelAndConsumeRemainingEvents()
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(ResetPasswordPhoneEntryScreenUIEffect.ShowSnackBarError::class)
             }
         }
 }
