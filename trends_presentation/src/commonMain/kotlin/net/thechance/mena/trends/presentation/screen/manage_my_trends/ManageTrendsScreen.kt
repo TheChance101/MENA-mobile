@@ -314,7 +314,7 @@ private fun EmptyProfilePicture(
     defaultPainter: Painter
 ) {
     val isDarkTheme = LocalDarkTheme.current
-    val backgroundColor = if (isDarkTheme) Color.Black else Color.White
+    val backgroundColor = if (isDarkTheme) Theme.colorScheme.stroke else Color.White
     val iconTint = if (isDarkTheme) Color.White else Color.Black
 
     Box(
