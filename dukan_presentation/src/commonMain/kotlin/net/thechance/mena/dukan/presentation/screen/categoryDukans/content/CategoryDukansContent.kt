@@ -7,24 +7,20 @@ import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_pending
-import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.no_dukans_body
 import mena.dukan_presentation.generated.resources.no_dukans_title
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.designsystem.presentation.util.AppTheme
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
+import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.AnimatedSearchHeader
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.CategoryDukansList
 import net.thechance.mena.dukan.presentation.util.animation.fadeCubicTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewCategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -83,29 +79,14 @@ private fun CategoryDukansAppBar(
     state: CategoryDukansUiState,
     listener: CategoryDukansInteractionListener
 ) {
-    AppBar(
-        title = state.categoryTitle,
-        onLeadingClick = listener::onBackClicked,
-        leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back_arrow),
-                tint = Theme.colorScheme.primary.primary
-            )
-        }
-    }
-
-}
-
-fun slideHorizontalTransition(): ContentTransform {
-    return slideInHorizontally(
-        initialOffsetX = { fullWidth -> fullWidth },        // from right
-        animationSpec = tween(300)
-    ) togetherWith slideOutHorizontally(
-        targetOffsetX = { fullWidth -> -fullWidth / 2 },   // slide left
-        animationSpec = tween(250)
+    AnimatedSearchHeader(
+        query = state.categoryTitle,
+        onQueryChange = {},
+        onClearClick = {},
+        onBackClick = listener::onBackClicked
     )
 }
+
 
 @Preview
 @Composable
