@@ -54,6 +54,7 @@ class PrayerTimeViewModel(
         tryToExecute(
             execute = { prayerTimeRepository.getPrayerTimes(date = date, address = address) },
             onSuccess = { onPrayerTimesSuccess(prayerTimes = it, address = address) },
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -94,6 +95,7 @@ class PrayerTimeViewModel(
                         }
                     }
                 },
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -111,7 +113,8 @@ class PrayerTimeViewModel(
                     )
                 }
             },
-            onSuccess = { startNextPrayerObserver(address) })
+            onSuccess = { startNextPrayerObserver(address) }
+        )
     }
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
@@ -203,6 +206,7 @@ class PrayerTimeViewModel(
                 )
             },
             onSuccess = ::onHijriPrayerTimesSuccess,
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }

@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.first
+import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.reciter_deleted_successfully_downloading
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.domain.usecase.SearchRecitersUseCase
@@ -43,6 +45,7 @@ class DownloadedRecitersViewModel(
                 isDeleteConfirmationDialogVisible = true,
             )
         }
+        handleSuccessSnackBar(Res.string.reciter_deleted_successfully_downloading)
     }
 
     override fun onConfirmDeleteReciterClick() {

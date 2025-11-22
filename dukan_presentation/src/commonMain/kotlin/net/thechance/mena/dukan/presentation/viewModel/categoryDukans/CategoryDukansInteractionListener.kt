@@ -5,4 +5,8 @@ interface CategoryDukansInteractionListener {
     fun onDukanClicked(dukan: CategoryDukansUiState.DukanUiState)
     fun onFavoriteDukanClicked(dukanId: String)
     fun onRetryClicked()
+    fun onSearchChanged(query: String)
+    fun onClearSearchClicked()
+    fun onSnackBarDismissed()
+    fun onSearchIconClick()
 }

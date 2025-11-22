@@ -1,20 +1,27 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
+import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class CategoryDukansViewModel(
     private val dukanDiscoveryRepository: DukanDiscoveryRepository,
     private val dukanManagementRepository: DukanManagementRepository,
+    private val searchRepository: SearchRepository,
     private val savedStateHandle: SavedStateHandle,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryDukansUiState, CategoryDukansEffects>(
@@ -57,6 +64,60 @@ class CategoryDukansViewModel(
 
     override fun onRetryClicked() {
         loadCategory()
+    }
+
+    override fun onSearchChanged(query: String) {
+        updateState {
+            copy(
+                searchQuery = query
+            )
+        }
+        searchWithQuery(query = query)
+    }
+
+    private fun searchWithQuery(query: String){
+        if (query.trim().isBlank()) loadCategory()
+        val categoryId = savedStateHandle.get<String>("categoryId").orEmpty()
+        tryToCollect(
+            block = {
+                createPagingSourceFlow(
+                    mapper = {it.toUiState()},
+                ) { pageNumber, pageSize ->
+                    searchRepository.finDukansByQueryInCategory(
+                        categoryId = categoryId,
+                        query = query,
+                        page = pageNumber,
+                        size = 20
+                    ).items
+                }
+            },
+            onCollect = ::onDukansLoaded
+        )
+    }
+
+    override fun onClearSearchClicked() {
+        updateState {
+            copy(
+                searchQuery = ""
+            )
+        }
+        loadCategory()
+    }
+
+    override fun onSnackBarDismissed() {
+        updateState {
+            copy(
+                snackBarUiState = null
+            )
+        }
+    }
+
+    override fun onSearchIconClick() {
+        updateState {
+            copy(
+                onSearchMode = true
+            )
+        }
     }
 
     private fun collectDukans(categoryId: String) {

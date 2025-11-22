@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.surah_deleted_successfully
+import mena.faith_presentation.generated.resources.surah_deleted_successfully_downloading
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
@@ -24,7 +25,8 @@ class DownloadedSurViewModel(
                         surDetails = downloadedSurah.map { surah -> surah.toUiState() }
                     )
                 }
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 
@@ -50,6 +52,7 @@ class DownloadedSurViewModel(
                 showDeleteConfirmationDialog = true,
             )
         }
+        handleSuccessSnackBar(Res.string.surah_deleted_successfully_downloading)
     }
 
     override fun onDismissDeleteConfirmationDialog() {
@@ -66,7 +69,8 @@ class DownloadedSurViewModel(
             },
             onSuccess = {
                 onDeleteSurahSuccess()
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 
