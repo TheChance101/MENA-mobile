@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -271,15 +273,19 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
-    val errorPainter = painterResource(Res.drawable.ic_placeholder_profile)
+private fun UserAvatar(
+    profileImageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    val defaultPainter = painterResource(Res.drawable.ic_placeholder_profile)
     val tintColor = Theme.colorScheme.shadePrimary
-    val tintedErrorPainter = remember(errorPainter) {
+    val hasImage = profileImageUrl.isNotBlank()
+    val tintedErrorPainter = remember(defaultPainter) {
         object : Painter() {
-            override val intrinsicSize = errorPainter.intrinsicSize
+            override val intrinsicSize = defaultPainter.intrinsicSize
 
             override fun DrawScope.onDraw() {
-                with(errorPainter) {
+                with(defaultPainter) {
                     draw(
                         size = size,
                         colorFilter = ColorFilter.tint(tintColor)
@@ -288,13 +294,46 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
             }
         }
     }
-    AsyncImage(
-        model = profileImageUrl,
-        contentDescription = stringResource(Res.string.profile_image_desc),
-        error = tintedErrorPainter,
-        modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop
-    )
+
+    if (hasImage.not()) {
+        EmptyProfilePicture(modifier, defaultPainter)
+    } else {
+        AsyncImage(
+            model = profileImageUrl,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            error = tintedErrorPainter,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+private fun EmptyProfilePicture(
+    modifier: Modifier,
+    defaultPainter: Painter
+) {
+    Box(
+        modifier = modifier
+            .size(88.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                ambientColor = Color.Black.copy(alpha = 0.50f),
+                spotColor = Color.Black.copy(alpha = 0.50f)
+            )
+            .clip(CircleShape)
+            .background(Color.White)
+            .padding(12.dp)
+
+    ) {
+        Image(
+            painter = defaultPainter,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            modifier = Modifier.clip(CircleShape).align(Alignment.Center),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
