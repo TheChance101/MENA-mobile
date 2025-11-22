@@ -313,25 +313,29 @@ private fun EmptyProfilePicture(
     modifier: Modifier,
     defaultPainter: Painter
 ) {
+    val isDarkTheme = LocalDarkTheme.current
+    val backgroundColor = if (isDarkTheme) Color.Black else Color.White
+    val iconTint = if (isDarkTheme) Color.White else Color.Black
+
     Box(
         modifier = modifier
             .size(88.dp)
             .shadow(
                 elevation = 4.dp,
                 shape = CircleShape,
-                ambientColor = Color.Black.copy(alpha = 0.50f),
-                spotColor = Color.Black.copy(alpha = 0.50f)
+                ambientColor = iconTint.copy(alpha = 0.70f),
+                spotColor = iconTint.copy(alpha = 0.70f)
             )
             .clip(CircleShape)
-            .background(Color.White)
-            .padding(12.dp)
+            .background(backgroundColor)
+            .padding(16.dp)
 
     ) {
-        Image(
+        Icon(
             painter = defaultPainter,
             contentDescription = stringResource(Res.string.profile_image_desc),
-            modifier = Modifier.clip(CircleShape).align(Alignment.Center),
-            contentScale = ContentScale.Crop
+            tint = iconTint,
+            modifier = Modifier.align(Alignment.Center),
         )
     }
 }
