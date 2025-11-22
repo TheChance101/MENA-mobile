@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalUuidApi::class)
 package net.thechance.mena.dukan.presentation.screen.checkout.component
 
 import androidx.compose.animation.AnimatedContent
@@ -34,6 +35,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import sv.lib.squircleshape.SquircleShape
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DeliveryAddressCard(
