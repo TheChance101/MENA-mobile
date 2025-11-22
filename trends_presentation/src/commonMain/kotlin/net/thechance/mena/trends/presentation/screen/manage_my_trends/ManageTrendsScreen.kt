@@ -302,8 +302,8 @@ private fun UserAvatar(
             model = profileImageUrl,
             contentDescription = stringResource(Res.string.profile_image_desc),
             error = tintedErrorPainter,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.clip(CircleShape)
+            modifier = modifier.size(100.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop
         )
     }
 }
