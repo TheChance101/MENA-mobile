@@ -9,11 +9,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.error_updating_favorites
+import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.SearchRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -48,6 +55,7 @@ class CategoryDukansViewModel(
         updateFavoriteDukanPagingData(dukanId = dukanId )
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onError = ::onErrorUpdateDukanFavoriteStatus
         )
     }
 
@@ -60,6 +68,14 @@ class CategoryDukansViewModel(
         }
         dukansState.value = updatedData
         updateState { copy(dukans = dukansState) }
+    }
+
+    private fun onErrorUpdateDukanFavoriteStatus(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     override fun onRetryClicked() {
@@ -108,6 +124,17 @@ class CategoryDukansViewModel(
         updateState {
             copy(
                 snackBarUiState = null
+            )
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
             )
         }
     }

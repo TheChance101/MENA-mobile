@@ -16,6 +16,7 @@ import mena.dukan_presentation.generated.resources.search_in_dukans
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.util.AppTheme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.component.AnimatedCategorySearchHeader
@@ -35,6 +36,14 @@ fun CategoryDukansContent(
     Scaffold(
         topBar = {
             CategoryDukansAppBar(state, listener)
+        },
+        snakeBar = {
+            state.snackBarUiState?.let { snackBarState ->
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onSnackBarDismissed
+                )
+            }
         }
     ) {
         AnimatedContent(
