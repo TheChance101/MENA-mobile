@@ -14,12 +14,14 @@ import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -223,33 +225,39 @@ class DukanDetailsViewModel(
 
     private fun loadBestSellingProducts() {
         tryToExecute(
-            block = {
-                productRepository.getBestSellingProducts(
-                    dukanId = args.dukanId,
-                    page = 0,
-                    size = 10
-                )
-            },
-            onSuccess = { products ->
-                updateState {
-                    copy(
-                        bestSellingProducts = products.items
-                            .map { it.toUiState() }
-                            .distinctBy { it.id }
-                    )
-                }
-            },
-            onError = { throwable ->
-                updateState {
-                    copy(
-                        error = throwable,
-                        isDukanInfoLoading = false,
-                        dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
-                    )
-                }
-            }
+            block = ::LoadBestSellingProductsBlock,
+            onSuccess = ::loadBestSellingProductsSuccess,
+            onError = ::loadBestSellingProductsError
+
         )
     }
+
+    private fun loadBestSellingProductsError(throwable: Throwable) {
+        updateState {
+            copy(
+                error = throwable,
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
+    }
+
+    private fun loadBestSellingProductsSuccess(products: PagedResult<Product>) {
+        updateState {
+            copy(
+                bestSellingProducts = products.items
+                    .map { it.toUiState() }
+                    .distinctBy { it.id }
+            )
+        }
+    }
+
+    private suspend fun LoadBestSellingProductsBlock(): PagedResult<Product> =
+        productRepository.getBestSellingProducts(
+            dukanId = args.dukanId,
+            page = 0,
+            size = 10
+        )
 
     override fun onBackClicked() {
         emitEffect(DukanDetailsEffects.NavigateBack)
