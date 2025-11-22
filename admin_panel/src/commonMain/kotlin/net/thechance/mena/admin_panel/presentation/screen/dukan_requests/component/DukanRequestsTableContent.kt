@@ -55,7 +55,8 @@ fun DukanRequestsTableContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked,
             horizontalScrollState = horizontalScrollState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isSortingDisabled = state.isSortingDisabled
         )
         if (state.isLoading) {
             AdminPanelContentLoading()

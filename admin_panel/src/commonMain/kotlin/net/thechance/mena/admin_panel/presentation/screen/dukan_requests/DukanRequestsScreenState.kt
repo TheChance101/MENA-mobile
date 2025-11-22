@@ -22,6 +22,7 @@ data class DukanRequestsScreenState(
     val isDukanDetailsShown: Boolean = false,
     val selectedDukan: DukanItem? = null
 ) {
+    val isSortingDisabled = totalDukanRequests < 2
     val isRejectButtonEnabled: Boolean
         get() = rejectReason.length > 1
 
