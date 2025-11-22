@@ -21,6 +21,8 @@ data class DukanManagementScreenState(
     val errorState: ErrorState? = null,
     val selectedDukanId: Uuid? = null
 ) {
+    val isSortingDisabled = totalDukans < 2
+
     data class Dukan(
         val id: Uuid,
         val index: Int,

@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,7 @@ fun <T> SortableHeaderCell(
     modifier: Modifier = Modifier,
     isSortingDisabled: Boolean = false,
 ) {
-    val isSortActive = (currentSortType == sortType) && !isSortingDisabled
+    val isSortActive = currentSortType == sortType
 
     val iconTint = if (isSortActive) Theme.colorScheme.success else Theme.colorScheme.shadePrimary
 
@@ -53,11 +54,13 @@ fun <T> SortableHeaderCell(
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
-        Icon(
-            painter = painterResource(Res.drawable.ic_sort),
-            contentDescription = stringResource(Res.string.sort),
-            modifier = Modifier.size(20.dp),
-            tint = animatedIconTint
-        )
+        AnimatedVisibility(!isSortingDisabled){
+            Icon(
+                painter = painterResource(Res.drawable.ic_sort),
+                contentDescription = stringResource(Res.string.sort),
+                modifier = Modifier.size(20.dp),
+                tint = animatedIconTint
+            )
+        }
     }
 }
