@@ -29,15 +29,7 @@ data class CachedMessageLocalDto(
     @ColumnInfo(name = "status")
     val status: MessageStatus,
     @ColumnInfo(name = "is_mine")
-    val isMine: Boolean,
-    @ColumnInfo(name = "order_id")
-    val orderId: String?,
-    @ColumnInfo(name = "number_of_items")
-    val numberOfItems: Int?,
-    @ColumnInfo(name = "deliver_to")
-    val deliverTo: String?,
-    @ColumnInfo(name = "total_price")
-    val totalPrice: Double?
+    val isMine: Boolean
 )
 
 @Serializable
@@ -73,4 +65,19 @@ sealed class MessageContentLocalDto {
         val ayahNumber: Int,
         val ayahText: String
     ) : MessageContentLocalDto()
+
+    @Serializable
+    @SerialName("money")
+    data class Money(val amount: Double) : MessageContentLocalDto()
+
+
+    @Serializable
+    @SerialName("order")
+    data class Order(
+        val orderId: String,
+        val totalProducts: Int,
+        val totalPrice: Double,
+        val deliverToAddress: String
+    ) : MessageContentLocalDto()
+
 }

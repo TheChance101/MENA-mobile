@@ -67,7 +67,7 @@ fun MessageContentDto.toDomain(): MessageContent {
         is MessageContentDto.Order -> {
             MessageContent.Order(
                 orderId = orderId.toUuid(),
-                numberOfItems = totalProducts.toInt(),
+                numberOfItems = totalProducts,
                 deliverTo = deliverToAddress,
                 totalPrice = totalPrice.toDouble()
             )
@@ -151,6 +151,13 @@ fun MessageContent.toPendingLocalDto(): PendingMessageContentLocalDto {
         )
 
         is MessageContent.Text -> PendingMessageContentLocalDto.Text(text)
+        is MessageContent.Money -> PendingMessageContentLocalDto.Money(amount)
+        is MessageContent.Order -> PendingMessageContentLocalDto.Order(
+            orderId = orderId.toString(),
+            totalProducts = numberOfItems,
+            totalPrice = totalPrice,
+            deliverToAddress = deliverTo
+        )
     }
 }
 
@@ -191,6 +198,13 @@ fun MessageContent.toLocalDto(): MessageContentLocalDto {
 
         is MessageContent.Ayah -> MessageContentLocalDto.Ayah(surahId, ayahNumber, ayahContent)
         is MessageContent.Text -> MessageContentLocalDto.Text(text)
+        is MessageContent.Money -> MessageContentLocalDto.Money(amount)
+        is MessageContent.Order -> MessageContentLocalDto.Order(
+            orderId = orderId.toString(),
+            totalProducts = numberOfItems,
+            totalPrice = totalPrice,
+            deliverToAddress = deliverTo
+        )
     }
 }
 
@@ -239,6 +253,13 @@ fun MessageContentLocalDto.toDomain(): MessageContent {
         is MessageContentLocalDto.Ayah -> MessageContent.Ayah(surahId, "", ayahText, ayahNumber)
         is MessageContentLocalDto.Image -> MessageContent.Image(ImageUrl(url))
         is MessageContentLocalDto.Text -> MessageContent.Text(text)
+        is MessageContentLocalDto.Money -> MessageContent.Money(amount)
+        is MessageContentLocalDto.Order -> MessageContent.Order(
+            orderId = orderId.toUuid(),
+            numberOfItems = totalProducts,
+            deliverTo = deliverToAddress,
+            totalPrice = totalPrice
+        )
     }
 }
 
@@ -271,7 +292,13 @@ fun PendingMessageContentLocalDto.toDomain(): MessageContent {
         )
 
         is PendingMessageContentLocalDto.Text -> MessageContent.Text(text)
-
+        is PendingMessageContentLocalDto.Money -> MessageContent.Money(amount)
+        is PendingMessageContentLocalDto.Order -> MessageContent.Order(
+            orderId = orderId.toUuid(),
+            numberOfItems = totalProducts,
+            deliverTo = deliverToAddress,
+            totalPrice = totalPrice
+        )
     }
 }
 

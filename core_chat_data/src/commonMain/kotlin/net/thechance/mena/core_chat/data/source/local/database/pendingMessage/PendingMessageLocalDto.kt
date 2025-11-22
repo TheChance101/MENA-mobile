@@ -52,4 +52,18 @@ sealed class PendingMessageContentLocalDto {
         val ayahNumber: Int,
         val ayahText: String
     ) : PendingMessageContentLocalDto()
+
+    @Serializable
+    @SerialName("money")
+    data class Money(val amount: Double) : PendingMessageContentLocalDto()
+
+
+    @Serializable
+    @SerialName("order")
+    data class Order(
+        val orderId: String,
+        val totalProducts: Int,
+        val totalPrice: Double,
+        val deliverToAddress: String
+    ) : PendingMessageContentLocalDto()
 }
