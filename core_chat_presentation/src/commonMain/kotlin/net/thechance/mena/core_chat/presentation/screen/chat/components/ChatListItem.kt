@@ -20,6 +20,7 @@ import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.ImagesGroupChatItem
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.MoneyMessageUiState
+import net.thechance.mena.core_chat.presentation.screen.chat.OrderMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
 import net.thechance.mena.core_chat.presentation.utils.asString
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -30,11 +31,14 @@ import kotlin.uuid.Uuid
 @Composable
 fun ChatListItem(
     chatName: String,
+    onSurahClick: (Int) -> Unit,
+    onAyahClick: (Int, Int) -> Unit,
     item: ChatListItem,
     chatAvatarUrl: String,
     onMessageClick: (Uuid) -> Unit,
     onMessageImageClick: (List<ImageMessageUiState>, Int) -> Unit,
     onMessageVoiceClick: (Uuid) -> Unit,
+    onViewOrderDetailsClick: (Uuid) -> Unit,
     onFailedMessageClick: (MessageUiState) -> Unit,
     onMessageLongClick: (MessageUiState) -> Unit,
     onLinkClick: (String) -> Unit,
@@ -143,6 +147,8 @@ fun ChatListItem(
                 chatAvatarUrl = chatAvatarUrl,
                 onFailClick = { onFailedMessageClick(item) },
                 onMessageLongClick = { onMessageLongClick(item) },
+                onAyahClick = onAyahClick,
+                onSurahClick = onSurahClick,
                 onMessageClick = { onMessageClick(item.messageDetails.id) },
                 modifier = modifier
             )
@@ -162,5 +168,23 @@ fun ChatListItem(
                 onMessageLongClick = { onMessageLongClick(item) },
 
                 )
+
+        is OrderMessageUiState -> {
+            OrderMessageLayout(
+                message = item,
+                showMessageInfo = (
+                        item.messageDetails.isVisibleMessageInfo
+                                || item.messageDetails.isLastInSeries
+                                || item.messageDetails.status == MessageStatus.FAILED
+                        ),
+                isMarkedLastInSeries = item.messageDetails.isLastInSeries,
+                onViewOrderDetailsClick = { onViewOrderDetailsClick(item.orderId) },
+                modifier = modifier,
+                chatAvatarUrl = chatAvatarUrl,
+                onMessageClick = { onMessageClick(item.messageDetails.id) },
+                onMessageLongClick = { onMessageLongClick(item) },
+                onFailClick = onFailedMessageClick
+            )
+        }
     }
 }

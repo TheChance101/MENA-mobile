@@ -12,6 +12,7 @@ import net.thechance.mena.core_chat.domain.entity.MessageContent.Audio
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Ayah
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Image
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Money
+import net.thechance.mena.core_chat.domain.entity.MessageContent.Order
 import net.thechance.mena.core_chat.domain.entity.MessageContent.Text
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.presentation.utils.UiText
@@ -125,6 +126,9 @@ fun List<ChatListItem>.toggleMessageInfo(messageId: Uuid): List<ChatListItem> = 
         item is AyahMessageUiState && item.messageDetails.id == messageId ->
             item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
 
+        item is OrderMessageUiState && item.messageDetails.id == messageId ->
+            item.copy(messageDetails = item.messageDetails.copy(isVisibleMessageInfo = !item.messageDetails.isVisibleMessageInfo))
+
         else -> item
     }
 }
@@ -172,6 +176,16 @@ fun Message.toUi(): MessageUiState {
             amount = content.amount,
             messageDetails = messageDetails
         )
+
+        is Order -> {
+            OrderMessageUiState(
+                orderId = content.orderId,
+                numberOfItems = content.numberOfItems,
+                deliverTo = content.deliverTo,
+                totalPrice = content.totalPrice,
+                messageDetails = messageDetails
+            )
+        }
     }
 }
 
@@ -237,6 +251,24 @@ fun MessageUiState.toEntity(): Message {
                 chatId = messageDetails.chatId,
                 senderId = messageDetails.senderId,
                 content = Money(amount = amount),
+                id = messageDetails.id,
+                sendAt = messageDetails.sendTime,
+                status = messageDetails.status,
+                isMine = messageDetails.isMine,
+                reactions = messageDetails.reactions,
+            )
+        }
+
+        is OrderMessageUiState -> {
+            Message(
+                chatId = messageDetails.chatId,
+                senderId = messageDetails.senderId,
+                content = Order(
+                    orderId = orderId,
+                    numberOfItems = numberOfItems,
+                    deliverTo = deliverTo,
+                    totalPrice = totalPrice
+                ),
                 id = messageDetails.id,
                 sendAt = messageDetails.sendTime,
                 status = messageDetails.status,

@@ -42,7 +42,10 @@ import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
 import net.thechance.mena.core_chat.presentation.navigation.ConfirmPaymentRoute
+import net.thechance.mena.core_chat.presentation.navigation.AyahRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
+import net.thechance.mena.core_chat.presentation.navigation.SurahRoute
+import net.thechance.mena.core_chat.presentation.navigation.OrderDetailsRoute
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -169,10 +172,13 @@ fun ChatScreenContent(
                 onMessageClick = interactions::onMessageClicked,
                 onMessageImageClick = interactions::onMessageImageClicked,
                 onMessageVoiceClick = interactions::onMessageVoiceClicked,
+                onViewOrderDetailsClick = interactions::onViewOrderDetailsClicked,
                 onFailedMessageClick = interactions::onFailedMessageClicked,
                 onMessageLongClick = interactions::onMessageLongClicked,
                 onLinkClick = interactions::onLinkClicked,
-            modifier = Modifier
+                onSurahClick = interactions::onSurahClicked,
+                onAyahClick = interactions::onAyahClicked,
+                modifier = Modifier
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }) { keyboardController?.hide() }
@@ -209,8 +215,6 @@ fun ChatScreenContent(
                 attachmentsInteractionListener = interactions
             )
         }
-
-
     }
 
     PaginationTrigger(
@@ -310,8 +314,20 @@ private fun EffectsHandler(
                 scope.launch { chatLazyListState.animateScrollToItem(0) }
             }
 
+            is ChatScreenEffect.NavigateToOrderDetails -> {
+                navController.navigate(OrderDetailsRoute(effect.orderId.toString()))
+            }
+
             is ChatScreenEffect.OpenUrl -> {
                 uriHandler.openUri(effect.url)
+            }
+
+            is ChatScreenEffect.NavigateToSurah -> {
+                navController.navigate(SurahRoute(effect.surahId))
+            }
+
+            is ChatScreenEffect.NavigateToAyah -> {
+                navController.navigate(AyahRoute(effect.surahId, effect.ayahId))
             }
 
             is ChatScreenEffect.NavigateToConfirmPayment -> {

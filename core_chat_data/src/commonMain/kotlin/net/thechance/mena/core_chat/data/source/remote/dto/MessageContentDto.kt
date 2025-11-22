@@ -37,4 +37,14 @@ sealed class MessageContentDto {
         @SerialName("ayahText")
         val ayahContent: String
     ) : MessageContentDto()
+
+    @Serializable
+    @SerialName("ORDER")
+    data class Order(
+        val orderId: String,
+        val totalProducts: Int,
+        val totalPrice: String,
+        val deliverToAddress: String
+    ) : MessageContentDto()
+
 }
