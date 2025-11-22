@@ -78,10 +78,11 @@ private fun ProductItem(
     modifier: Modifier = Modifier
 ) {
     ProductCard(
-        productName = product.name,
-        productImageUrl = product.imageUrl,
-        productDescription = product.description,
-        productPrice = product.price,
+        name = product.name,
+        imageUrl = product.imageUrl,
+        description = product.description,
+        basePrice = product.basePrice,
+        finalPrice = product.finalPrice,
         isOutOfStock = product.isOutOfStock,
         isDukanStyleNoImage = true,
         modifier = modifier,

@@ -20,7 +20,7 @@ class ShelfDetailsUiStateTest {
             id = "p1",
             name = "Banana",
             imageUrl = "banana.png",
-            price = 5.0,
+            basePrice = 5.0,
             description = "Fresh bananas"
         )
         assertEquals("p1", product.id)

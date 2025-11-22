@@ -252,11 +252,12 @@ private fun ProductsList(
                     ) { index ->
                         productPagingItems[index]?.let { product ->
                             ProductCard(
-                                productName = product.name,
-                                productImageUrl = product.imageUrl,
-                                productDescription = "from (${product.dukanName})",
-                                productPrice = product.price,
-                                productCardBackground = Theme.colorScheme.background.surfaceLow,
+                                name = product.name,
+                                imageUrl = product.imageUrl,
+                                description = "from (${product.dukanName})",
+                                basePrice = product.price,
+                                finalPrice = product.price,
+                                backgroundColor = Theme.colorScheme.background.surfaceLow,
                                 productImageBackground = Theme.colorScheme.background.surfaceHigh,
                                 onProductClick = { onProductClicked(product.id, product.dukanId) },
                                 isOutOfStock = product.isOutOfStock

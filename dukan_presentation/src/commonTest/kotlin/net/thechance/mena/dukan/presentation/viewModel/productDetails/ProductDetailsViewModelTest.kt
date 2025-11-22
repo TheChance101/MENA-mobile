@@ -141,7 +141,7 @@ class ProductDetailsViewModelTest {
         advanceUntilIdle()
 
         val state = productDetailsViewModel.state.value
-        assertEquals(dummyProductDetails().price.base, state.product.price)
+        assertEquals(dummyProductDetails().price.base, state.product.basePrice)
     }
 
     @OptIn(ExperimentalUuidApi::class)
