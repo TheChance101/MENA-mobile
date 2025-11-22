@@ -43,7 +43,6 @@ class UsersManagementViewModel(
     }
 
     override fun onSortClicked(type: UsersManagementScreenState.SortType) {
-        if (currentState.users.size < 2) return
         val newDirection = if (currentState.sort.type == type) {
             currentState.sort.direction.toggle()
         } else {
