@@ -63,13 +63,12 @@ class DepositViewModel (
                 updateState { it.copy(phoneNumber = newPhoneNumber) }
             }
     }
-
-    override fun onAmountChanged(amount: String) {
-        val filtered = amount.filter { it.isDigit() || it == '.' }
-        if (filtered.count { it == '.' } <= 1) {
-            updateState { it.copy(amount = filtered) }
+        override fun onAmountChanged(amount: String) {
+            val regex = Regex("^\\d*\\.?\\d*$")
+            if (regex.matches(amount)) {
+                updateState { it.copy(amount = amount) }
+            }
         }
-    }
 
     override fun onRetryClicked() {
         updateState { it.copy(errorState = null) }
@@ -89,9 +88,7 @@ class DepositViewModel (
     }
 
     private suspend fun onDepositSuccess(){
-        updateState { it.copy(isDepositProcessLoading = false) }
-        updateState { it.copy(phoneNumber = "", amount ="") }
-
+        updateState { it.copy(isDepositProcessLoading = false , phoneNumber = "", amount ="") }
         showSnackBar(
             title = stringProvider.getString(Res.string.success_deposit_title),
             message = stringProvider.getString(Res.string.success_deposit_description),
