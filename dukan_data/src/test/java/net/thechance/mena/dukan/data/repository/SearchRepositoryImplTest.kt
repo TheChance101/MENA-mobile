@@ -20,7 +20,7 @@ class SearchRepositoryImplTest {
             }
         )
 
-        repo.findDukansByQuery("milk", 0, 10)
+        repo.findDukansByQuery("defacto", 0, 10)
 
         assertTrue(called)
     }
@@ -36,7 +36,7 @@ class SearchRepositoryImplTest {
             }
         )
 
-        repo.findProductsByQuery("coffee", 0, 10)
+        repo.findProductsByQuery("perfume", 0, 10)
 
         assertTrue(called)
     }
