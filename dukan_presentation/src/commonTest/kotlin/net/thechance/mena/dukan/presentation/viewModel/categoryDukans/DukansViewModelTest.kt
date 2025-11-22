@@ -187,7 +187,7 @@ class DukansViewModelTest {
             dukanManagementRepository.updateFavoriteDukanStatus(
                 targetDukan.id.toString()
             )
-        } returns true
+        }
 
         advanceUntilIdle()
 
@@ -201,7 +201,7 @@ class DukansViewModelTest {
         val updatedDukans = dukansViewModel.state.value.dukans.asSnapshot()
         val updatedTarget = updatedDukans.first { it.id == targetDukan.id.toString() }
 
-        assertEquals(targetDukan.isFavorite, updatedTarget.isFavorite)
+        assertEquals(!targetDukan.isFavorite, updatedTarget.isFavorite)
     }
 
 }

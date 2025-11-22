@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter.surahRecitersScreen
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,7 +58,8 @@ private fun Content(
         }
     ) {
         LazyColumn(
-            contentPadding = PaddingValues(bottom = Theme.spacing._16),
+            contentPadding = PaddingValues(vertical = Theme.spacing._16),
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
         ) {
 
             if (uiState.query.isNotBlank() && uiState.reciters.isEmpty()) {
@@ -73,16 +75,14 @@ private fun Content(
 
             items(uiState.reciters) { reciter ->
                 ReciterItem(
-                    reciterId = reciter.id,
                     reciter = reciter.name,
                     recitingType = reciter.recitingType,
                     isDownloaded = reciter.isDownloaded,
                     onSelect = { listener.onSelectReciterClick(reciter.id) },
                     onDownloadClick = { listener.onDownloadClick(reciter.id) },
                     isSelectReciter = reciter.id == uiState.selectedReciterId,
-                    isSwipeable = false,
                     isDownloadIconVisible = true,
-                    onDelete = {}
+                    onPlayClick = { listener.playReciterSample(reciter.id) }
                 )
             }
         }
@@ -127,6 +127,7 @@ private fun Preview() {
                     override fun onSelectReciterClick(reciterId: Int) {}
                     override fun onQueryChange(query: String) {}
                     override fun onClearQueryClick() {}
+                    override fun playReciterSample(reciterId: Int) {}
                 }
             )
         }

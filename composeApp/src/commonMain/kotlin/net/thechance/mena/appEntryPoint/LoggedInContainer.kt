@@ -136,8 +136,8 @@ private fun FeatureContent(
     Box(modifier) {
         Crossfade(targetState = activeFeature) { feature ->
             when (feature) {
-                Feature.CHAT -> chatApi.TabEntry()
-                Feature.DUKAN -> dukanApi.TabEntry()
+                Feature.CHAT -> chatApi.TabEntry(updateBottomNavigationVisibility)
+                Feature.DUKAN -> dukanApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.TREND -> trendsApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.FAITH -> faithApi.TabEntry()
                 Feature.PROFILE -> identityApi.ProfileTabEntry(updateBottomNavigationVisibility)

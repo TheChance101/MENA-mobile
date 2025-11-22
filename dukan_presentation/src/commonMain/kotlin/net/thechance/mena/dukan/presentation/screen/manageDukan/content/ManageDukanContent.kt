@@ -14,6 +14,7 @@ import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.manageDukan.component.DeactivatedDukanScreen
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanSnackbar
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.manageDukanDialog
@@ -23,6 +24,7 @@ import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanIn
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun ManageDukanContent(
@@ -36,36 +38,51 @@ fun ManageDukanContent(
         topBar = { ManageDukanAppBar(listener) },
         snakeBar = { ManageDukanSnackbar(state, listener) }
     ) {
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Column {
-                ManageDukanHeader(
-                    state = state,
-                    listener = listener
-                )
+        when (state.activationStatus) {
+            ManageDukanUiState.ActivationStatus.ACTIVATED,
+            ManageDukanUiState.ActivationStatus.ONHOLD -> ManageDukanScreenContent(state, listener)
 
-                if (state.shelves.isEmpty()) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                ManageDukanProducts(
-                    state = state,
-                    onProductClicked = listener::onProductClicked,
-                    onEditProductClicked = listener::onEditProductClicked
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-            FabButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = Theme.spacing._16, bottom = Theme.spacing._24),
-                onClick = listener::onAddShelfClicked,
-                painter = painterResource(Res.drawable.ic_add_bold)
-            )
+            ManageDukanUiState.ActivationStatus.DEACTIVATED -> DeactivatedDukanScreen()
         }
     }
 }
 
+@Composable
+private fun ManageDukanScreenContent(
+    state: ManageDukanUiState,
+    listener: ManageDukanInteractionListener
+) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column {
+            ManageDukanHeader(
+                state = state,
+                listener = listener
+            )
+
+            if (state.shelves.isEmpty()) Spacer(modifier = Modifier.weight(1f))
+
+            ManageDukanProducts(
+                state = state,
+
+                onEditProductClicked = listener::onEditProductClicked
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        FabButton(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = Theme.spacing._16, bottom = Theme.spacing._24),
+            onClick = listener::onAddShelfClicked,
+            painter = painterResource(Res.drawable.ic_add_bold)
+        )
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
 private fun ManageDukanContentPreview() {

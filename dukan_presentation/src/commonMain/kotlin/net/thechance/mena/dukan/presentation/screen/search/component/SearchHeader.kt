@@ -60,6 +60,7 @@ fun SearchHeader(
             onValueChanged = onQueryChange,
             hint = stringResource(resource = Res.string.search_in_dukans),
             leadingIcon = painterResource(resource = Res.drawable.ic_search),
+            leadingIconTint = Theme.colorScheme.shadeSecondary,
             onTrailingIconClick = onClearClick,
             showTrailingDivider = false,
             trailingIcon = if (query.isNotEmpty())

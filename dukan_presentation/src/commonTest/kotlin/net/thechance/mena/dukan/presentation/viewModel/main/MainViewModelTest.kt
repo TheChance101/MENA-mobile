@@ -52,7 +52,7 @@ class MainViewModelTest {
             dukanManagementRepository.updateFavoriteDukanStatus(
                 fakeDukans[0].id.toString()
             )
-        } returns true
+        }
 
     }
 

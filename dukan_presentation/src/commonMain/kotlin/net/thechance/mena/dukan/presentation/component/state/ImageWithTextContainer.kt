@@ -30,6 +30,7 @@ fun ImageWithTextContainer(
     foregroundImageRes: DrawableResource,
     header: @Composable () -> Unit,
     bodyText: String,
+    haveBlurBackground: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -43,6 +44,7 @@ fun ImageWithTextContainer(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
         ) {
+            if (haveBlurBackground)
             Box(
                 modifier = Modifier
                     .size(20.dp)
@@ -65,6 +67,7 @@ fun ImageWithTextContainer(
 
         Text(
             text = bodyText,
+            color = Theme.colorScheme.shadeSecondary,
             style = Theme.typography.body.small,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(Theme.spacing._2)

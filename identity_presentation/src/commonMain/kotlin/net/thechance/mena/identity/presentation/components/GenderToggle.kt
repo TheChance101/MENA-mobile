@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.editProfile.components
+package net.thechance.mena.identity.presentation.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -6,13 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,11 +21,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.female
-import mena.identity_presentation.generated.resources.gender
 import mena.identity_presentation.generated.resources.male
 import mena.identity_presentation.generated.resources.options
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
-import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.designsystem.presentation.util.rippleIndication
 import net.thechance.mena.identity.domain.entity.Gender
@@ -36,26 +32,22 @@ import org.jetbrains.compose.resources.stringResource
 import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun GenderToggle(gender: Gender?, onChangeGender: (Gender) -> Unit) {
-    Column(modifier = Modifier.padding(top = Theme.spacing._16)) {
-        Text(text = stringResource(Res.string.gender), style = Theme.typography.title.small)
+fun GenderToggle(gender: Gender?, onChangeGender: (Gender) -> Unit, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16)
+    ) {
+        ToggleOption(
+            printer = painterResource(Res.drawable.male),
+            isSelected = gender == Gender.MALE,
+            onChange = { onChangeGender(Gender.MALE) }
+        )
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16),
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._16)
-        ) {
-            ToggleOption(
-                printer = painterResource(Res.drawable.male),
-                isSelected = gender == Gender.MALE,
-                onChange = { onChangeGender(Gender.MALE) }
-            )
-
-            ToggleOption(
-                printer = painterResource(Res.drawable.female),
-                isSelected = gender == Gender.FEMALE,
-                onChange = { onChangeGender(Gender.FEMALE) }
-            )
-        }
+        ToggleOption(
+            printer = painterResource(Res.drawable.female),
+            isSelected = gender == Gender.FEMALE,
+            onChange = { onChangeGender(Gender.FEMALE) }
+        )
     }
 }
 
@@ -83,16 +75,14 @@ private fun RowScope.ToggleOption(
             .weight(1f)
             .clip(SquircleShape(Theme.radius.xl))
             .fillMaxWidth()
-            .aspectRatio(1f)
+            .height(156.dp)
             .clip(SquircleShape(Theme.radius.xl))
             .background(animateBackground)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rippleIndication(),
                 onClick = { onChange() }
-            )
-            .padding(10.dp)
-            .size(20.dp),
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(

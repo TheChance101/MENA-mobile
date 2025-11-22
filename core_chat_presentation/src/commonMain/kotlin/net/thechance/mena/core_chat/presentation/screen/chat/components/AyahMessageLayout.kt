@@ -4,6 +4,7 @@ package net.thechance.mena.core_chat.presentation.screen.chat.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.aya
@@ -43,6 +45,8 @@ fun AyahMessageLayout(
     onFailClick: () -> Unit = {},
     onMessageLongClick: () -> Unit = {},
     onMessageClick: () -> Unit = {},
+    onSurahClick: (Int) -> Unit = {},
+    onAyahClick: (Int, Int) -> Unit = { _, _ -> },
     message: AyahMessageUiState,
     showMessageInfo: Boolean,
     isMarkedLastInSeries: Boolean,
@@ -140,7 +144,7 @@ fun AyahMessageLayout(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
+                        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
                     ) {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
@@ -149,7 +153,8 @@ fun AyahMessageLayout(
                             Text(
                                 text = surahName,
                                 style = Theme.typography.label.small,
-                                color = Theme.colorScheme.shadePrimary
+                                color = Theme.colorScheme.shadePrimary,
+                                modifier = Modifier.clickable(onClick = { onSurahClick(message.surahId) })
                             )
                             Text(
                                 text = "•",
@@ -159,15 +164,27 @@ fun AyahMessageLayout(
                             Text(
                                 text = stringResource(Res.string.aya, message.ayahNumber),
                                 style = Theme.typography.label.small,
-                                color = Theme.colorScheme.shadePrimary
+                                color = Theme.colorScheme.shadePrimary,
+                                modifier = Modifier.clickable(onClick = {
+                                    onAyahClick(
+                                        message.surahId,
+                                        message.ayahNumber
+                                    )
+                                })
                             )
                         }
+                        val ayahColor = Theme.colorScheme.shadeSecondary
                         QuranTheme {
                             Text(
                                 text = message.ayahContent,
+                                color = ayahColor,
                                 style = Theme.typography.quran.medium,
-                                color = Theme.colorScheme.shadeSecondary,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.clickable(onClick = {
+                                    onAyahClick(
+                                        message.surahId,
+                                        message.ayahNumber
+                                    )
+                                })
                             )
                         }
 

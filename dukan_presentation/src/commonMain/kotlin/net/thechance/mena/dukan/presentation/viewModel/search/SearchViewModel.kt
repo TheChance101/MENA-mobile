@@ -78,14 +78,10 @@ class SearchViewModel(
     }
 
     override fun onDukanFavoriteToggled(dukanId: Uuid, isFavorite: Boolean) {
+        onDukanFavoriteToggleSuccess(dukanId = dukanId)
+
         tryToExecute(
             block = { onDukanFavoriteToggleBlock(dukanId) },
-            onSuccess = { isFavorite ->
-                onDukanFavoriteToggleSuccess(
-                    isFavorite = isFavorite,
-                    dukanId = dukanId
-                )
-            },
             onError = { onDukanFavoriteToggleError(it as Exception) }
         )
     }
@@ -195,14 +191,14 @@ class SearchViewModel(
         }
     }
 
-    private suspend fun onDukanFavoriteToggleBlock(dukanId: Uuid): Boolean {
-        return dukanManagementRepository.updateFavoriteDukanStatus(dukanId = dukanId.toString())
+    private suspend fun onDukanFavoriteToggleBlock(dukanId: Uuid) {
+        dukanManagementRepository.updateFavoriteDukanStatus(dukanId = dukanId.toString())
     }
 
-    private fun onDukanFavoriteToggleSuccess(isFavorite: Boolean, dukanId: Uuid) {
+    private fun onDukanFavoriteToggleSuccess( dukanId: Uuid) {
         val favoriteToggledDukanPagingFlow = state.value.dukanPagingFlow.map { pagingData ->
             pagingData.map { dukanItem ->
-                if (dukanItem.id == dukanId) dukanItem.copy(isFavorite = isFavorite)
+                if (dukanItem.id == dukanId) dukanItem.copy(isFavorite = !dukanItem.isFavorite)
                 else dukanItem
             }
         }

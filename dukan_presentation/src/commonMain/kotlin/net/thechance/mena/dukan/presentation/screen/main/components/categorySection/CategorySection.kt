@@ -54,7 +54,7 @@ fun CategorySection(
             item {
                 MoreCategoryCard(
                     title = stringResource(Res.string.view_more),
-                    image = painterResource(Res.drawable.ic_view_more),
+                    icon = painterResource(Res.drawable.ic_view_more),
                     onClick = onViewMoreClick
                 )
             }

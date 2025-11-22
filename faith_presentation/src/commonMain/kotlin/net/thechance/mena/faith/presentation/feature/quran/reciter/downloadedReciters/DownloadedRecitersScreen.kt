@@ -1,13 +1,17 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.components.ReciterItem
+import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.components.DeleteConfirmationDialog
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
@@ -107,18 +112,39 @@ fun RecitersListContent(
     uiState: DownloadedRecitersUiState,
     listener: DownloadedRecitersListener
 ) {
+    var currentSwipedCardId by remember { mutableIntStateOf(-1) }
+
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
+        modifier = Modifier.padding(top = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
-        items(uiState.reciters) { reciter ->
-            ReciterItem(
-                reciterId = reciter.id,
-                reciter = reciter.name,
-                recitingType = reciter.recitingType,
-                onSelect = { listener.onSelectReciterClick(reciter.id) },
-                isSwipeable = uiState.isSwipeable,
-                onDelete = { listener.onDeleteReciterAudioClick(it) }
-            )
+        items(
+            count = uiState.reciters.size
+        ) { index ->
+            uiState.reciters[index].let {
+                SwappableCard(
+                    id = it.id,
+                    onClick = { listener.onDeleteReciterAudioClick(it.id) },
+                    currentSwipedCardId = currentSwipedCardId,
+                    onSwipeStateChange = { newId -> currentSwipedCardId = newId },
+                    cardContent = { contentModifier ->
+                        ReciterItem(
+                            reciter = it.name,
+                            recitingType = it.recitingType,
+                            onSelect = { listener.onSelectReciterClick(it.id) },
+                            isDownloaded = false,
+                            onDownloadClick = {},
+                            isSelectReciter = false,
+                            isDownloadIconVisible = false,
+                            modifier = contentModifier
+                        )
+                    },
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = tween(500),
+                        fadeOutSpec = tween(500)
+                    )
+                )
+            }
         }
     }
 }
