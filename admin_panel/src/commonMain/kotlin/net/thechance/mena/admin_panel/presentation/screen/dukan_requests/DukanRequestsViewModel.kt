@@ -23,7 +23,6 @@ import net.thechance.mena.admin_panel.resources.status_updated_title
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
@@ -80,7 +79,7 @@ class DukanRequestsViewModel(
                     message = currentState.rejectReason
                 )
             },
-            onSuccess = { onDukanApprovedSuccess(selectedDukanId) },
+            onSuccess = { onDukanApprovedSuccess() },
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -114,7 +113,7 @@ class DukanRequestsViewModel(
             },
             onStart = { updateState { it.copy(isRejectButtonLoading = true) } },
             onFinish = { updateState { it.copy(isRejectButtonLoading = false) } },
-            onSuccess = { onSuccessDukanRejected(selectedDukanId) },
+            onSuccess = { onSuccessDukanRejected() },
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -137,9 +136,9 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun onDukanApprovedSuccess(dukanId: Uuid) {
+    private fun onDukanApprovedSuccess() {
         onDukanDetailsDismissed()
-        removeDukanFromState(dukanId)
+        reFetchCurrentPage()
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -149,9 +148,9 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun onSuccessDukanRejected(dukanId: Uuid) {
+    private fun onSuccessDukanRejected() {
         onRejectDukanDialogDismissed()
-        removeDukanFromState(dukanId)
+        reFetchCurrentPage()
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -161,12 +160,15 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun removeDukanFromState(dukanId: Uuid) {
-        updateState {
-            it.copy(
-                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
-            )
-        }
+    private fun reFetchCurrentPage() {
+        val queryParams = getDukanQueryParams()
+        tryToExecute(
+            callee = { dukanRepository.getDukans(queryParams) },
+            onSuccess = ::onGetRequestedDukansSuccess,
+            onError = ::onError,
+            onFinish = ::onGetRequestedDukansFinish,
+            dispatcher = dispatcher
+        )
     }
 
     private suspend fun onError(errorState: ErrorState) {
