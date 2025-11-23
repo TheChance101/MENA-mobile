@@ -98,7 +98,9 @@ private fun DukanListTable(
         state = listState,
         modifier = modifier
     ) {
-        itemsIndexed(items = dukan, key = { index, item -> "$index-${item.id}" }) { index, dukanItem ->
+        itemsIndexed(
+            items = dukan,
+            key = { _, item -> item.id }) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
                 modifier = Modifier
