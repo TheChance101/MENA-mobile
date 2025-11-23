@@ -1,5 +1,6 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter.reciterSelection
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -102,20 +103,18 @@ private fun ResultList(
 ) {
 
     LazyColumn(
-        modifier = modifier
+        modifier = modifier.padding(top = Theme.spacing._16),
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(results) { result ->
             ReciterItem(
-                reciterId = result.id,
                 reciter = result.name,
                 recitingType = result.recitingType,
                 isDownloaded = false,
-                onSelect = {
-                    listener.onSelectReciterClick(result.id)
-                },
+                onSelect = { listener.onSelectReciterClick(result.id) },
                 isSelectReciter = result.id == uiState.selectedReciterId,
-                isSwipeable = false,
-                isDownloadIconVisible = false
+                isDownloadIconVisible = false,
+                onDownloadClick = {}
             )
         }
     }
@@ -136,7 +135,7 @@ private fun SearchScreenPreview() {
                             name = "Mishary Rashid Alafasy",
                             recitingType = "Murattal",
 
-                        ),
+                            ),
                         ReciterSearchItemUi(
                             id = 2,
                             name = "Abdul Basit Abdul Samad",
@@ -151,7 +150,7 @@ private fun SearchScreenPreview() {
                     lastSearchedQuery = "",
                     queryHint = "",
                     selectedReciterId = 1,
-                    ),
+                ),
                 listener = object : ReciterSelectionListener {
                     override fun onBackClick() {}
                     override fun onClearQueryClick() {}

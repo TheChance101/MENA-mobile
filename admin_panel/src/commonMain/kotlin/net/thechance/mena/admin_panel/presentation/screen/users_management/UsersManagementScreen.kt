@@ -29,7 +29,7 @@ import net.thechance.mena.admin_panel.resources.empty_users
 import net.thechance.mena.admin_panel.resources.ic_block
 import net.thechance.mena.admin_panel.resources.ic_user_block
 import net.thechance.mena.admin_panel.resources.no_users_yet
-import net.thechance.mena.admin_panel.resources.search_hint
+import net.thechance.mena.admin_panel.resources.search_user_hint
 import net.thechance.mena.admin_panel.resources.users_management
 import net.thechance.mena.admin_panel.resources.users_will_appear
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -75,7 +75,7 @@ private fun UsersManagementScreenContent(
         Column(modifier = Modifier.fillMaxSize()) {
             SearchBar(
                 value = state.query,
-                hint = stringResource(Res.string.search_hint),
+                hint = stringResource(Res.string.search_user_hint),
                 onValueChange = listener::onSearchQueryChanged,
                 onClearQueryClicked = listener::onClearQueryClicked,
                 modifier = Modifier

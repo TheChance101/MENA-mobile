@@ -6,4 +6,5 @@ interface SurahRecitersListener {
     fun onSelectReciterClick(reciterId: Int)
     fun onQueryChange(query: String)
     fun onClearQueryClick()
+    fun playReciterSample(reciterId: Int)
 }

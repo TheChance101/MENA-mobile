@@ -155,6 +155,11 @@ private fun DukanItemRow(
 
         DukanLocation(
             location = dukan.address,
+            iconSize = 20.dp,
+            iconTint = Theme.colorScheme.shadePrimary,
+            textColor = Theme.colorScheme.shadePrimary,
+            textStyle = Theme.typography.label.large,
+            spacing = 8.dp,
             modifier = Modifier.width(315.dp)
         )
 

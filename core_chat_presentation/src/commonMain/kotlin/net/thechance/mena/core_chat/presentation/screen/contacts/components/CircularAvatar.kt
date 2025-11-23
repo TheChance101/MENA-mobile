@@ -34,6 +34,7 @@ fun CircularAvatar(
         Icon(
             painter = painterResource(Res.drawable.ic_profile_placeholder),
             contentDescription = null,
+            tint = Theme.colorScheme.primary.primary,
         )
 
         if (!contactImageUri.isNullOrBlank()) {

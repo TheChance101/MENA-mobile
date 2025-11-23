@@ -64,6 +64,7 @@ class SearchViewModel(
             execute = { searchForAyah(query) },
             onSuccess = ::onSearchResultSuccess,
             dispatcher = dispatcher,
+            onError = ::handleErrorSnackBar,
             delayMillis = SEARCH_DEBOUNCE_DELAY
         )
     }

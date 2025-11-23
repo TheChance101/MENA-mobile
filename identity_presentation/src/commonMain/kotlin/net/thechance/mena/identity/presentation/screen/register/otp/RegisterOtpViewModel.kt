@@ -27,7 +27,7 @@ class RegisterOtpViewModel(
     }
 
     override fun onClickVerify() {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = ::verifyOTPCode,
             onSuccess = { onOTPVerificationSuccess() },
@@ -52,12 +52,16 @@ class RegisterOtpViewModel(
     }
 
     private fun onOTPVerificationError(throwable: Throwable) {
-        updateState { 
+        updateState {
             copy(
                 isLoading = false,
-                errorMessage = mapErrorMessage(throwable)
-            ) 
+            )
         }
+        sendNewEffect(
+            RegisterOtpUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onChangeOtp(otp: String) {
@@ -65,10 +69,6 @@ class RegisterOtpViewModel(
         if (filteredOtp == otp) {
             updateState { copy(otpValue = otp, isVerifyEnabled = filteredOtp.length == OTP_LENGTH) }
         }
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     override fun onClickResend() {
@@ -92,7 +92,11 @@ class RegisterOtpViewModel(
     }
 
     private fun onResendOTPError(throwable: Throwable) {
-        updateState { copy(errorMessage = mapErrorMessage(throwable)) }
+        sendNewEffect(
+            RegisterOtpUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     private fun startTimer() {

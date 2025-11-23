@@ -5,12 +5,19 @@ import dev.jordond.compass.geolocation.Geolocator
 import dev.jordond.compass.geolocation.GeolocatorResult
 import dev.jordond.compass.geolocation.MobileGeolocator
 import io.ktor.client.HttpClient
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.http.HttpStatusCode
-import net.thechance.mena.identity.data.dto.addresses.request.AddressRequestDto
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.thechance.mena.identity.data.dataSource.local.database.dao.AddressDao
 import net.thechance.mena.identity.data.dto.addresses.response.AddressResponseDto
+import net.thechance.mena.identity.data.mapper.toDomain
 import net.thechance.mena.identity.data.mapper.toDto
 import net.thechance.mena.identity.data.mapper.toEntity
+import net.thechance.mena.identity.data.mapper.toLocalEntity
 import net.thechance.mena.identity.data.utils.deleteJson
 import net.thechance.mena.identity.data.utils.getJson
 import net.thechance.mena.identity.data.utils.postJson
@@ -20,34 +27,45 @@ import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.exception.AddressNotFoundException
 import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.model.AddressInput
-import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.model.Coordinates
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class AddressesRepositoryImpl(
     private val client: HttpClient,
     private val geocoder: GeocoderWrapper,
+    private val addressDao: AddressDao,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val scope: CoroutineScope = CoroutineScope(dispatcher)
 ) : AddressesRepository {
-
-    private var activeAddress: Address? = null
 
     override suspend fun createAddress(addressInput: AddressInput) {
         return safeWrapper {
-            client.postJson(
+            val response: AddressResponseDto = client.postJson(
                 requestDto = addressInput.toDto(),
                 path = ADDRESS_ENDPOINT
             )
+            if (response.isActive) {
+                cacheActiveAddress(response)
+            }
         }
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    override suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput, isActive: Boolean) {
+    override suspend fun updateAddress(
+        addressId: Uuid,
+        addressInput: AddressInput,
+        isActive: Boolean
+    ) {
         return safeWrapper {
-            client.putJson(
-                requestDto = addressInput.toDto(id = addressId.toString() , isActive),
+            val response: AddressResponseDto = client.putJson(
+                requestDto = addressInput.toDto(id = addressId.toString(), isActive),
                 path = "$ADDRESS_ENDPOINT/$addressId"
             )
+            if (isActive) {
+                cacheActiveAddress(response)
+            }
         }
     }
 
@@ -65,10 +83,35 @@ class AddressesRepositoryImpl(
         }.map { it.toEntity() }
     }
 
-    override suspend fun getActiveAddress(): Address? {
-        return safeWrapper<AddressResponseDto> {
-            client.getJson(ACTIVE_ADDRESS_ENDPOINT)
-        }.toEntity()
+    @OptIn(DelicateCoroutinesApi::class)
+    override suspend fun getActiveAddress(): Address? = withContext(dispatcher) {
+        getLocalActiveAddress()?.also { revalidateActiveAddressAsync() }
+            ?: fetchAndCacheRemoteActiveAddressOrNull()
+    }
+
+    private suspend fun getLocalActiveAddress(): Address? {
+        return addressDao.getActiveAddress()?.toDomain()
+    }
+
+    private fun revalidateActiveAddressAsync() {
+        scope.launch {
+            runCatching {
+                val remote = fetchRemoteActiveAddress()
+                cacheActiveAddress(remote)
+            }
+        }
+    }
+
+    private suspend fun fetchRemoteActiveAddress(): AddressResponseDto {
+        return safeWrapper { client.getJson(ACTIVE_ADDRESS_ENDPOINT) }
+    }
+
+    private suspend fun fetchAndCacheRemoteActiveAddressOrNull(): Address? {
+        return runCatching {
+            val remote = fetchRemoteActiveAddress()
+            cacheActiveAddress(remote)
+            remote.toEntity()
+        }.getOrNull()
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -77,12 +120,12 @@ class AddressesRepositoryImpl(
             val response: List<AddressResponseDto> = client.getJson(ADDRESS_ENDPOINT)
             val addressToActivate = response.find { it.id == addressId.toString() }?.toEntity()
 
-            if (addressToActivate != null) {
-                client.putJson<AddressRequestDto, Unit>(
-                    requestDto = addressToActivate.toDto(id = addressId.toString(), isActive = true),
+            addressToActivate?.let {
+                val updatedAddress: AddressResponseDto = client.putJson(
+                    requestDto = it.toDto(id = addressId.toString(), isActive = true),
                     path = "$ADDRESS_ENDPOINT/$addressId"
                 )
-                activeAddress = addressToActivate
+                cacheActiveAddress(updatedAddress)
             }
         }
     }
@@ -111,7 +154,17 @@ class AddressesRepositoryImpl(
         return geocoder?.let {
             listOfNotNull(it.subAdministrativeArea, it.administrativeArea, it.country)
                 .joinToString(", ")
-        }?: throw AddressNotFoundException()
+        } ?: throw AddressNotFoundException()
+    }
+
+    private suspend fun cacheActiveAddress(address: AddressResponseDto) {
+        withContext(dispatcher) {
+            try {
+                addressDao.deleteActiveAddress()
+                addressDao.upsert(address.toLocalEntity())
+            } catch (_: Exception) {
+            }
+        }
     }
 
     companion object {

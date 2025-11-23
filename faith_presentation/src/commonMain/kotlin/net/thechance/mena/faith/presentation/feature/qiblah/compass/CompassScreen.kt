@@ -35,7 +35,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_arrow_left
-import mena.faith_presentation.generated.resources.ic_direction
+import mena.faith_presentation.generated.resources.ic_directions
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
 import mena.faith_presentation.generated.resources.qibla_direction
@@ -51,7 +51,6 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -158,7 +157,7 @@ private fun CompassView(
         ) {
             DirectionPlaceHolder(modifier = rotateModifier)
             Image(
-                painter = painterResource(Res.drawable.ic_direction),
+                painter = painterResource(Res.drawable.ic_directions),
                 contentDescription = "direction_arrow",
                 modifier = rotateModifier
                     .size(128.dp)
@@ -282,7 +281,7 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
         )
 
         Text(
-            text = uiState.address.takeCityAndCountry(),
+            text = uiState.address,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8),

@@ -21,8 +21,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error_something_went_wrong
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
@@ -76,14 +74,14 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     }
 
     @Test
-    fun `errorMessage should be updated, when init throws Exception`() = runTest {
+    fun `ShowSnackBarError should be sent, when init throws Exception`() = runTest {
         coEvery { userRepository.getUser() } throws Exception()
 
         viewModel
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.state.test {
-            assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.ShowSnackBarError::class)
         }
 
         coVerify(exactly = 1) { userRepository.getUser() }
@@ -168,7 +166,6 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
         viewModel.onClickSaveButton()
 
         assertThat(viewModel.state.value.isLoading).isTrue()
-        assertThat(viewModel.state.value.errorMessage).isNull()
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -185,12 +182,15 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             viewModel.onChangeFirstName("new User")
             viewModel.onChangeLastName("the chance")
             viewModel.onChangeUsername("new-chance")
+            viewModel.onChangeDate(1, 1, 2000)
+
+            testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.onClickSaveButton()
 
             viewModel.effect.test {
                 testDispatcher.scheduler.advanceUntilIdle()
-                assertThat(awaitItem()).isEqualTo(EditUserProfileUIEffect.NavigateBackToProfile)
+                assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.NavigateBackToProfile::class)
             }
 
             coVerify(exactly = 1) {
@@ -200,7 +200,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
 
     @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `errorMessage should be updated, when on onClickSaveButton is failed with Exception`() =
+    fun `ShowSnackBarError should be sent, when on onClickSaveButton is failed with Exception`() =
         runTest {
             viewModel.userId = fakeUser.id
             coEvery { userRepository.uploadUserProfileImage(any()) } returns Unit
@@ -215,10 +215,10 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             viewModel.onChangeUsername("new-chance")
 
             viewModel.onClickSaveButton()
-            testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.state.test {
-                assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect::class)
             }
 
             coVerify(exactly = 1) {
@@ -230,7 +230,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `onClickCancelButton should navigate back to profile when called, `() = runTest {
         viewModel.effect.test {
             viewModel.onClickCancelButton()
-            assertThat(awaitItem()).isEqualTo(EditUserProfileUIEffect.NavigateBackToProfile)
+            assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.NavigateBackToProfile::class)
         }
     }
 
@@ -329,17 +329,17 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     }
 
     @Test
-    fun `errorMessage should be updated, when onTakeImageCamera is failed with Exception`() =
+    fun `ShowSnackBarError should be sent, when onTakeImageCamera is failed with Exception`() =
         runTest {
             coEvery {
                 permissionsController.providePermission(any())
             } throws Exception()
 
             viewModel.onTakeImageFromCamera()
-            testDispatcher.scheduler.advanceUntilIdle()
 
-            viewModel.state.test {
-                assertThat(awaitItem().errorMessage).isEqualTo(Res.string.error_something_went_wrong)
+            viewModel.effect.test {
+                testDispatcher.scheduler.advanceUntilIdle()
+                assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.ShowSnackBarError::class)
             }
 
             coVerify(exactly = 1) {

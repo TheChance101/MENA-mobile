@@ -25,6 +25,7 @@ import net.thechance.mena.identity.data.utils.postFileWithDataAndTokens
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.postEmpty
 import net.thechance.mena.identity.data.utils.safeWrapper
+import net.thechance.mena.identity.data.utils.invalidateAuthTokens
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
@@ -115,6 +116,10 @@ class UserRepositoryImpl(
     override suspend fun deleteAccount() {
         safeWrapper {
             client.postEmpty(DELETE_ACCOUNT_PATH)
+        }
+        try {
+            client.invalidateAuthTokens()
+        } catch (_: Exception) {
         }
         withContext(dispatcher) {
             try {

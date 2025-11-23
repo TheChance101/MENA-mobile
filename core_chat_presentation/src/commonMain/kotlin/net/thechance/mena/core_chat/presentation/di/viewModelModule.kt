@@ -49,10 +49,13 @@ internal val viewModelModule = module {
             imageDownloaderService = get(),
             audioPlayer = get(),
             dispatcher = get(named(CHAT_IO_DISPATCHER)),
+            transactionRepository = get()
         )
     }
-    viewModel { ChatEntryViewModel(get()) }
     viewModel {
-        ShareMessageViewModel(get(), get())
+        ChatEntryViewModel(get())
+    }
+    viewModel {
+        ShareMessageViewModel(get(), get(), get(), get())
     }
 }

@@ -51,8 +51,6 @@ class DownloadedRecitersViewModelTest {
         searchRecitersUseCase = SearchRecitersUseCase()
 
         everySuspend { surahArgs.surahId } returns TEST_SURAH_ID
-        everySuspend { surahArgs.isSwipeToDeleteEnabled } returns true
-
         everySuspend { quranRepository.getDefaultReciter() } returns flowOf(DEFAULT_RECITER_ID)
         everySuspend { quranRepository.getReciters() } returns dummyReciters
         everySuspend { quranRepository.isSurahAudioCached(TEST_SURAH_ID, any()) } returns true
@@ -87,11 +85,6 @@ class DownloadedRecitersViewModelTest {
     @Test
     fun `state should initialize with correct surahId from args`() = runTest {
         assertEquals(TEST_SURAH_ID, testViewModel.uiState.value.surahId)
-    }
-
-    @Test
-    fun `state should initialize with isSwipeable from args`() = runTest {
-        assertTrue(testViewModel.uiState.value.isSwipeable)
     }
 
     @Test
@@ -166,7 +159,7 @@ class DownloadedRecitersViewModelTest {
             skipItems(1)
 
             val updated = awaitItem()
-            assertEquals(SELECTED_RECITER_ID, updated.selectedReciterId)
+            assertEquals(SELECTED_RECITER_ID, updated.reciterId)
         }
     }
 
@@ -220,21 +213,6 @@ class DownloadedRecitersViewModelTest {
 
         assertTrue(size2 <= size1)
         assertEquals(dummyReciters.size, sizeAll)
-    }
-
-    @Test
-    fun `swipeable state should come from args`() = runTest {
-        everySuspend { surahArgs.isSwipeToDeleteEnabled } returns false
-
-        val vm = DownloadedRecitersViewModel(
-            quranRepository,
-            surahArgs,
-            searchRecitersUseCase,
-            testDispatcher
-        )
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertEquals(false, vm.uiState.value.isSwipeable)
     }
 
     private companion object {

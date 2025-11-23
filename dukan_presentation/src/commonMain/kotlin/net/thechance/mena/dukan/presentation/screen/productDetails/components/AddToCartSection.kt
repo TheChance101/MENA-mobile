@@ -61,8 +61,8 @@ fun AddToCartSection(
                 .fillMaxWidth()
                 .shadow(
                     elevation = 8.dp,
-                    ambientColor = Color.Black.copy(alpha = 0.4f),
-                    spotColor = Color.Black.copy(alpha = 0.4f)
+                    ambientColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f),
+                    spotColor = Theme.colorScheme.primary.primary.copy(alpha = 0.4f)
                 )
                 .background(Theme.colorScheme.background.surface)
                 .padding(
@@ -119,17 +119,19 @@ fun AddToCartSection(
                     )
                     Column {
                         Text(
-                            text = "${state.product.price}$",
+                            text = "${state.product.finalPrice}$",
                             style = Theme.typography.label.small,
                             color = Theme.colorScheme.primary.onPrimary,
                         )
-                        Text(
-                            text = "${state.product.price}$",
-                            style = Theme.typography.label.small.copy(
-                                textDecoration = TextDecoration.LineThrough
-                            ),
-                            color = Theme.colorScheme.primary.onPrimaryBody,
-                        )
+                        if (state.product.finalPrice < state.product.basePrice) {
+                            Text(
+                                text = "${state.product.basePrice}$",
+                                style = Theme.typography.label.extraSmall.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ),
+                                color = Theme.colorScheme.primary.onPrimary.copy(alpha = 0.6f),
+                            )
+                        }
                     }
                 }
             }
