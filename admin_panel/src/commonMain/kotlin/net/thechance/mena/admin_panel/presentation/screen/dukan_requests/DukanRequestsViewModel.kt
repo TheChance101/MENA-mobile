@@ -139,11 +139,7 @@ class DukanRequestsViewModel(
 
     private fun onDukanApprovedSuccess(dukanId: Uuid) {
         onDukanDetailsDismissed()
-        updateState {
-            it.copy(
-                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
-            )
-        }
+        removeDukanFromState(dukanId)
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -155,16 +151,20 @@ class DukanRequestsViewModel(
 
     private fun onSuccessDukanRejected(dukanId: Uuid) {
         onRejectDukanDialogDismissed()
-        updateState {
-            it.copy(
-                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
-            )
-        }
+        removeDukanFromState(dukanId)
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
                 message = stringProvider.getString(Res.string.dukan_rejected_successfully),
                 isSuccess = true
+            )
+        }
+    }
+
+    private fun removeDukanFromState(dukanId: Uuid) {
+        updateState {
+            it.copy(
+                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
             )
         }
     }
