@@ -1,5 +1,8 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -37,12 +40,17 @@ fun ProductDetailsContent(
             )
         },
         bottomBar = {
-            AddToCartSection(
-                onAddToCartClick = { listener.onAddToCartClicked(productId = state.product.id) },
-                onPlusClick = { listener.onPlusClicked(state.product.id) },
-                onMinusClick = { listener.onMinusClicked(productId = state.product.id) },
-                state = state
-            )
+           AnimatedVisibility(state.isLoading.not(),
+               enter = slideInVertically { it },
+               exit = slideOutVertically { -it }
+               ) {
+               AddToCartSection(
+                   onAddToCartClick = { listener.onAddToCartClicked(productId = state.product.id) },
+                   onPlusClick = { listener.onPlusClicked(state.product.id) },
+                   onMinusClick = { listener.onMinusClicked(productId = state.product.id) },
+                   state = state
+               )
+           }
         },
         snakeBar = {
             state.snackBarState?.let { snackBarUiState ->

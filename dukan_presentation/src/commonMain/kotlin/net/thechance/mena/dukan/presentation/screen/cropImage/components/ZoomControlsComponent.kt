@@ -71,7 +71,7 @@ fun ZoomControls(
         )
 
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .width(1.dp)
                 .height(20.dp)
                 .background(Theme.colorScheme.stroke)

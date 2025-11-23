@@ -26,7 +26,6 @@ import net.thechance.mena.faith.presentation.feature.quran.surah.component.AyatO
 import net.thechance.mena.faith.presentation.feature.quran.surah.component.SurahAppBar
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.navigation.Route.DownloadedRecitersRoute
 import net.thechance.mena.faith.presentation.navigation.Route.SearchRoute
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -52,6 +51,7 @@ fun SurahScreen(
                     ),
                 )
             }
+
             is SurahScreenEffect.NavigateToSearchScreen -> {
                 navController.navigate(
                     SearchRoute(effect.surahId)
@@ -59,7 +59,7 @@ fun SurahScreen(
             }
 
             is SurahScreenEffect.NavigateToDownloadedRecitersScreen -> {
-                navController.navigate(DownloadedRecitersRoute(effect.surahId))
+                navController.navigate(Route.SurahRecitersRoute(effect.surahId))
             }
 
         }
@@ -191,7 +191,7 @@ private fun Preview() {
                     listener = object : SurahInteractionListener {
                         override fun onBackClick() {}
                         override fun onDismissActionButtons() {}
-                        override fun onShareClick() {}
+                        override fun onShareClick(content: String) {}
                         override fun onBookmarkClick(ayahNumber: Int) {}
                         override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {}
                         override fun onSearchClick() {}

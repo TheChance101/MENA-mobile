@@ -50,6 +50,11 @@ class MyAddressesScreenViewModel(
     }
 
     private fun navigateToAddressDetails(addressUIState: AddressUIState?, isAdding: Boolean) {
+        onAddEditSuccess(
+            isAdding = isAdding,
+            addressId = addressUIState?.id
+        )
+
         sendNewEffect(
             MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy(
                 addressUIState = addressUIState,
@@ -86,15 +91,13 @@ class MyAddressesScreenViewModel(
             address.isMainAddress -> onMainAddressDeletionError()
             else -> executeAddressDeletion(addressId)
         }
+        onDismissDeleteDialog()
     }
 
     override fun onDismissDeleteDialog() = updateState {
         copy(deleteDialogUIState = DeleteDialogUIState(isVisible = false))
     }
 
-    override fun onDismissSnackBar() = updateState {
-        copy(snackBarUiState = snackBarUiState.copy(isVisible = false))
-    }
 
     private fun getUserAddresses() {
         tryToExecute(
@@ -109,12 +112,13 @@ class MyAddressesScreenViewModel(
         val editedId = state.value.editedAddressId
         updateState {
             copy(
+                isLoading = false,
                 addresses = if (editedId != null) {
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
-                editedAddressId = null
+                editedAddressId = null,
+                errorMessage = mapErrorMessage(throwable)
             )
         }
         onAddressOperationError(throwable)
@@ -135,31 +139,22 @@ class MyAddressesScreenViewModel(
     }
 
     private fun onUserAddressesSuccess(addresses: List<AddressUIState>) {
-        val pending = state.value.pendingSnackBar
         updateState {
             copy(
                 addresses = addresses,
                 animateToCurrentLocation = true,
                 isLoading = false,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
-        // Show snackbar after addresses are updated for synchronized visual feedback
-        if (pending != null) {
-            updateState {
-                copy(snackBarUiState = pending.copy(isVisible = true))
-            }
-        }
     }
 
-    private fun onAddEditSuccess(snackBarUiState: SnackBarUiState?, isAdding: Boolean, addressId: Uuid?) {
-        if (snackBarUiState == null) return
+    private fun onAddEditSuccess(isAdding: Boolean, addressId: Uuid?) {
         updateState {
             copy(
+                isLoading = false,
                 isAddingNewAddress = isAdding,
-                pendingSnackBar = snackBarUiState,
                 editedAddressId = addressId
             )
         }
@@ -170,28 +165,22 @@ class MyAddressesScreenViewModel(
     }
 
     private fun onAddressActivationSuccess() {
-        updateState {
-            copy(
-                pendingSnackBar = buildSnackBar(
-                    Res.string.address_activated_successfully,
-                    true
-                )
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarSuccess(
+                successStringResource = Res.string.address_activated_successfully
             )
-        }
+        )
         getUserAddresses()
     }
 
     private suspend fun onAddressDeletionSuccess(addressId: Uuid) {
         delay(300L)
         removeAddress(addressId)
-        updateState {
-            copy(
-                pendingSnackBar = buildSnackBar(
-                    Res.string.address_deleted_successfully,
-                    true
-                )
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarSuccess(
+                successStringResource = Res.string.address_deleted_successfully
             )
-        }
+        )
         getUserAddresses()
     }
 
@@ -213,7 +202,6 @@ class MyAddressesScreenViewModel(
                             addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                         } else addresses,
                         isAddingNewAddress = false,
-                        pendingSnackBar = null,
                         editedAddressId = null
                     )
                 }
@@ -230,7 +218,6 @@ class MyAddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
@@ -245,36 +232,19 @@ class MyAddressesScreenViewModel(
                     addresses.map { if (it.id == editedId) it.copy(isRefreshing = false) else it }
                 } else addresses,
                 isAddingNewAddress = false,
-                pendingSnackBar = null,
                 editedAddressId = null
             )
         }
         showErrorSnackBar(Res.string.is_main_address_error)
     }
 
-    private fun showSuccessSnackBar(message: StringResource) {
-        updateState {
-            copy(
-                snackBarUiState = buildSnackBar(message, true),
-                deleteDialogUIState = DeleteDialogUIState(isVisible = false)
-            )
-        }
-    }
-
     private fun showErrorSnackBar(message: StringResource) {
-        updateState {
-            copy(
-                snackBarUiState = buildSnackBar(message, false),
-                deleteDialogUIState = DeleteDialogUIState(isVisible = false)
+        sendNewEffect(
+            AddressesScreenUIEffect.ShowSnackBarError(
+                errorStringResource = message
             )
-        }
+        )
     }
-
-    private fun buildSnackBar(message: StringResource, isSuccess: Boolean) = SnackBarUiState(
-        isVisible = true,
-        snackBarType = if (isSuccess) SnackBarType.SUCCESS else SnackBarType.ERROR,
-        message = message
-    )
 
     private fun findAddressById(addressId: Uuid?) =
         state.value.addresses.find { it.id == addressId }

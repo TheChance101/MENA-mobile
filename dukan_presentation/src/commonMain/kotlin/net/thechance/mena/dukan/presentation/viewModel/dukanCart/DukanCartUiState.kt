@@ -25,8 +25,10 @@ data class DukanCartUiState(
         val name: String = "",
         val description: String = "",
         val imageUrl: String = "",
-        val price: Double = 0.0,
-        val quantity: Int = 0
+        val basePrice: Double = 0.0,
+        val finalPrice: Double = 0.0,
+        val quantity: Int = 0,
+        val isOutOfStock: Boolean = false
     )
 
     enum class DukanInfoState {

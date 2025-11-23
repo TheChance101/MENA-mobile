@@ -71,7 +71,6 @@ private fun CategoryPublishContent(
 ) {
     TrendsAnimatedVisibility(visible = !state.isLoading) {
         Scaffold(
-            modifier = Modifier.padding(bottom = Theme.spacing._24),
             topBar = { CategoryPublishAppBar(listener::onClickBack) },
             bottomBar = {
                 PrimaryButton(

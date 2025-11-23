@@ -3,16 +3,19 @@ package net.thechance.mena.dukan.data.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import net.thechance.mena.dukan.data.dto.dukan.DukanActivationStatusResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorsResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanNameResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanStylesResponse
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.mapper.toActivationStatus
 import net.thechance.mena.dukan.data.mapper.toCategoryList
 import net.thechance.mena.dukan.data.mapper.toColorsList
 import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
@@ -43,7 +46,9 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
         return safeApiCall<DukanNameResponse> {
-            client.get("$DUKAN_BASE_PATH/available?name=$name").body()
+            client.get("$DUKAN_BASE_PATH/available") {
+                parameter("name", name)
+            }.body()
         }.available.not()
     }
 
@@ -97,9 +102,15 @@ class DukanManagementRepositoryImpl(
         }
     }
 
-    override suspend fun updateFavoriteDukanStatus(dukanId: String): Boolean {
-        return safeApiCall<Boolean> {
+    override suspend fun updateFavoriteDukanStatus(dukanId: String) {
+        return safeApiCall<Unit> {
             client.post("$DUKAN_BASE_PATH/$dukanId/toggle_favorite")
         }
+    }
+
+    override suspend fun getDukanActivationStatus(): Dukan.ActivationStatus {
+        return safeApiCall<DukanActivationStatusResponse> {
+            client.get("$DUKAN_BASE_PATH/activation-status")
+        }.toActivationStatus()
     }
 }

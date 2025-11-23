@@ -11,10 +11,9 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
@@ -48,7 +47,6 @@ val identityScreensModule = module {
     factory { ProfileScreenViewModel(get(), get(), get(named(APP_VERSION)), get()) }
     factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
-    factoryOf(::NotImplementedScreenViewModel)
     factoryOf(::CreatePasswordViewModel)
     factoryOf(::AccountCreatedViewModel)
     factoryOf(::ResetPasswordPhoneEntryScreenViewModel)

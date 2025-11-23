@@ -11,6 +11,7 @@ import kotlin.uuid.Uuid
 data class DukanManagementScreenState(
     val query: String = "",
     val isLoading: Boolean = false,
+    val isInitialLoading: Boolean = true,
     val pageInfo: PageInfo = PageInfo(),
     val totalDukans: Int = 0,
     val sort: SortState = SortState(),
@@ -20,6 +21,8 @@ data class DukanManagementScreenState(
     val errorState: ErrorState? = null,
     val selectedDukanId: Uuid? = null
 ) {
+    val isSortingDisabled = totalDukans < 2
+
     data class Dukan(
         val id: Uuid,
         val index: Int,

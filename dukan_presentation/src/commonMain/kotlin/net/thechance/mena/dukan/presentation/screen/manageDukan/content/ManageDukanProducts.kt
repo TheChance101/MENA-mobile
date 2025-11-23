@@ -17,12 +17,10 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalLi
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductsList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
-import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState.ProductUiState
 
 @Composable
 fun ManageDukanProducts(
     state: ManageDukanUiState,
-    onProductClicked: (ProductUiState) -> Unit,
     onEditProductClicked: (String) -> Unit
 ) {
     val product = state.products.collectAsLazyPagingItems()

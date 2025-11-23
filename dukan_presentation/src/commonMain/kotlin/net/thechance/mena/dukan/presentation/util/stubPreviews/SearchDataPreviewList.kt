@@ -39,6 +39,7 @@ val previewProductsFlow = flowOf(
                 dukanName = "Puma",
                 dukanId = Uuid.random(),
                 price = 99.99,
+                isOutOfStock = false
             ),
             SearchUiState.ProductUiState(
                 id = Uuid.random(),
@@ -47,6 +48,7 @@ val previewProductsFlow = flowOf(
                 dukanName = "Defacto",
                 dukanId = Uuid.random(),
                 price = 29.99,
+                isOutOfStock = true
             ),
         )
     )

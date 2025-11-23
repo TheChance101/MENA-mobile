@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTime
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
@@ -39,6 +40,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLo
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Message
+import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
@@ -46,6 +48,8 @@ import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.faith.domain.entity.Surah
+import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -59,6 +63,7 @@ class MessageRepositoryImpl(
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
+    private val quranService: QuranService,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -76,7 +81,8 @@ class MessageRepositoryImpl(
             offset = (page * pageSize),
             limit = pageSize
         )
-        val messages = cachedMessages.map { it.toDomain() }
+
+        val messages = cachedMessages.map(CachedMessageLocalDto::toDomain).getSurahsNames()
 
         if (messages.isEmpty()) {
             return getFromRemote(chatId, page, pageSize)
@@ -113,10 +119,9 @@ class MessageRepositoryImpl(
         }
 
         val page = response.toPagedListOfMessages()
-
         updateLocalMessages(page.data)
 
-        return page
+        return page.copy(data = page.data.getSurahsNames())
     }
 
     private suspend fun updateLocalMessages(messages: List<Message>){
@@ -151,7 +156,7 @@ class MessageRepositoryImpl(
 
                     updateLocalMessages(response.data.toListOfMessages())
 
-                    messagesFlow.emitAll(response.data.mapNotNull(MessageDto::toDomain).asFlow())
+                    messagesFlow.emitAll(response.data.toListOfMessages().getSurahsNames().asFlow())
                 }
 
                 isLastPage = response.toPagedListOfMessages().isLastPage
@@ -258,9 +263,9 @@ class MessageRepositoryImpl(
 
             PRIVATE_MESSAGES -> {
                 val message = json.decodeFromString<MessageDto>(body).toDomain()
-                message?.let {
+                message.let {
                     updateLocalMessages(listOf(message))
-                    messagesFlow.emit(it)
+                    messagesFlow.emit(it.getMessageWithSurahName())
                 }
             }
 
@@ -326,6 +331,23 @@ class MessageRepositoryImpl(
         webSocketManager.sendTextFrame(destination, payload)
     }
 
+    private suspend fun List<Message>.getSurahsNames(): List<Message> {
+        return map { it.getMessageWithSurahName() }
+    }
+
+    private suspend fun Message.getMessageWithSurahName(): Message {
+        return when(val content = this.content) {
+            is MessageContent.Ayah -> {
+                this.copy(content = content.copy(surahName = getSurahNameById(surahId = content.surahId)))
+            }
+            else -> this
+        }
+    }
+
+    private suspend fun getSurahNameById(surahId: Int): String {
+        val surah: Surah = quranService.getSurahDetails(surahId)
+        return surah.name
+    }
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"

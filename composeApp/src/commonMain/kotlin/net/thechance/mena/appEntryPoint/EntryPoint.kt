@@ -32,8 +32,8 @@ fun EntryPoint(
     }
 
     LoggedInContainer(
-        activeFeature = state.activeFeature,
-        listener = viewModel
+        state = state,
+        listener = viewModel,
     )
 }
 

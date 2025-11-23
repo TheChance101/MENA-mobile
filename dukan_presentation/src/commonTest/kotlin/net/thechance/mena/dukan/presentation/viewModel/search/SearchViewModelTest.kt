@@ -197,7 +197,7 @@ class SearchViewModelTest {
 
         everySuspend {
             dukanManagementRepository.updateFavoriteDukanStatus(any())
-        } returns true
+        }
 
         val viewModel = createSearchViewModel()
         viewModel.onSearchChanged(query)

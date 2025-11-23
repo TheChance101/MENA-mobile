@@ -2,8 +2,12 @@ package net.thechance.mena.identity.data.repository
 
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
+import net.thechance.mena.identity.data.dataSource.local.database.dao.UserDao
 import net.thechance.mena.identity.data.dataSource.local.setting.accessToken
 import net.thechance.mena.identity.data.dataSource.local.setting.imageUploadCompleted
 import net.thechance.mena.identity.data.dataSource.local.setting.lastRegistrationPhoneNumber
@@ -12,6 +16,8 @@ import net.thechance.mena.identity.data.dto.auth.request.LoginRequestDto
 import net.thechance.mena.identity.data.dto.auth.request.RefreshRequestDto
 import net.thechance.mena.identity.data.dto.auth.response.AuthenticationResponse
 import net.thechance.mena.identity.data.mapper.toDomain
+import net.thechance.mena.identity.data.utils.invalidateAuthTokens
+import net.thechance.mena.identity.data.utils.postEmpty
 import net.thechance.mena.identity.data.utils.postJson
 import net.thechance.mena.identity.data.utils.safeWrapper
 import net.thechance.mena.identity.domain.entity.PhoneNumber
@@ -21,7 +27,8 @@ import kotlin.concurrent.Volatile
 
 class AuthenticationRepositoryImpl(
     private val client: HttpClient,
-    private val settings: Settings
+    private val settings: Settings,
+    private val userDao: UserDao? = null
 ) : AuthenticationRepository {
 
     private val observableToken: MutableStateFlow<String> = MutableStateFlow(
@@ -47,6 +54,29 @@ class AuthenticationRepositoryImpl(
             LOGIN_ENDPOINT
         )
         saveAuthTokens(response.toDomain())
+        try {
+            client.invalidateAuthTokens()
+        } catch (_: Exception) {
+        }
+    }
+
+    override suspend fun logout() {
+        safeWrapper {
+            client.postEmpty(LOGOUT_ENDPOINT)
+        }
+        try {
+            client.invalidateAuthTokens()
+        } catch (_: Exception) {
+        }
+        if (userDao != null) {
+            withContext(Dispatchers.IO) {
+                try {
+                    userDao.deleteUser()
+                } catch (_: Exception) {
+                }
+            }
+        }
+        clearAuthTokens()
     }
 
     override suspend fun refreshAccessToken(): String {
@@ -57,6 +87,10 @@ class AuthenticationRepositoryImpl(
             )
         }
         saveTokens(response.toDomain(), shouldEmit = !isTemporaryTokenMode)
+        try {
+            client.invalidateAuthTokens()
+        } catch (_: Exception) {
+        }
         return settings.accessToken
     }
 
@@ -86,6 +120,7 @@ class AuthenticationRepositoryImpl(
     override suspend fun clearAuthTokens() {
         saveTokensToSettings(createEmptyTokens())
         isTemporaryTokenMode = false
+        emitToken("")
     }
 
     override fun observeTokenChange(): StateFlow<String> = observableToken
@@ -118,5 +153,6 @@ class AuthenticationRepositoryImpl(
     companion object {
         const val LOGIN_ENDPOINT = "identity/authentication/login"
         const val REFRESH_ENDPOINT = "identity/authentication/refresh"
+        const val LOGOUT_ENDPOINT = "identity/authentication/logout"
     }
 }

@@ -46,30 +46,38 @@ private fun StatementHistoryScreenContent(
     state: StatementsHistoryScreenState,
     listener: StatementsHistoryInteractionListener
 ) {
+    WalletScaffold(
+        topBar = {
+            AnimatedAppBar(state = state, listener = listener)
+        },
+        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
+        errorState = state.errorState,
+        isLoading = state.isLoading,
+        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
+    ) { StatementHistoryBody(state = state, listener = listener) }
+}
+
+@Composable
+private fun AnimatedAppBar(
+    state: StatementsHistoryScreenState,
+    listener: StatementsHistoryInteractionListener
+) {
     AnimatedContent(
         targetState = state.isEditMode,
         transitionSpec = {
-            fadeIn(animationSpec = tween(300)) togetherWith
+            fadeIn(animationSpec = tween(500)) togetherWith
                     fadeOut(animationSpec = tween(500))
         }
     ) { isEditMode ->
         if (isEditMode) {
-            EditModeContent(state = state, listener = listener)
+            EditModeAppBar(listener = listener)
         } else {
-            NormalModeContent(state = state, listener = listener)
+            NormalModeAppBar(
+                listener = listener,
+                isStatementFound = state.statements.isEmpty()
+            )
         }
     }
-}
-
-@Composable
-private fun EditModeContent(
-    state: StatementsHistoryScreenState,
-    listener: StatementsHistoryInteractionListener
-) {
-    WalletScaffold(
-        topBar = { EditModeAppBar(listener = listener) },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) }
-    ) { StatementHistoryBody(state = state, listener = listener) }
 }
 
 @Composable
@@ -87,25 +95,6 @@ private fun EditModeAppBar(listener: StatementsHistoryInteractionListener) {
             )
         }
     )
-}
-
-@Composable
-private fun NormalModeContent(
-    state: StatementsHistoryScreenState,
-    listener: StatementsHistoryInteractionListener
-) {
-    WalletScaffold(
-        topBar = {
-            NormalModeAppBar(
-                listener = listener,
-                isStatementFound = state.statements.isEmpty()
-            )
-        },
-        snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-        errorState = state.errorState,
-        isLoading = state.isLoading,
-        onRetry = { listener.onRetryLoadStatementsHistoryClicked() }
-    ) { StatementHistoryBody(state = state, listener = listener) }
 }
 
 @Composable

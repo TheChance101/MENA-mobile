@@ -40,6 +40,7 @@ kotlin {
             implementation(projects.walletDomain)
             implementation(projects.designSystem)
             implementation(projects.walletApi)
+            implementation(projects.identityDomain)
 
             // compose
             implementation(compose.runtime)
@@ -87,8 +88,8 @@ kotlin {
 }
 
 ksp {
-    arg("KOIN_USE_COMPOSE_VIEWMODEL","true")
-    arg("KOIN_CONFIG_CHECK","true")
+    arg("KOIN_USE_COMPOSE_VIEWMODEL", "true")
+    arg("KOIN_CONFIG_CHECK", "true")
 }
 
 dependencies {
@@ -96,7 +97,7 @@ dependencies {
 }
 
 project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if(name != "kspCommonMainKotlinMetadata") {
+    if (name != "kspCommonMainKotlinMetadata") {
         dependsOn("kspCommonMainKotlinMetadata")
     }
 }

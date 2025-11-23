@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import net.thechance.mena.admin_panel.presentation.screen.users_management.UsersManagementScreenState
 import net.thechance.mena.admin_panel.presentation.utils.noRippleClickable
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.ic_sort
@@ -23,14 +23,15 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SortableHeaderCell(
+fun <T> SortableHeaderCell(
     text: String,
-    sortType: UsersManagementScreenState.SortType,
-    currentSort: UsersManagementScreenState.SortState,
-    onSortClicked: (UsersManagementScreenState.SortType) -> Unit,
-    modifier: Modifier = Modifier
+    sortType: T,
+    currentSortType: T,
+    onSortClicked: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    isSortingDisabled: Boolean = false,
 ) {
-    val isSortActive = currentSort.type == sortType
+    val isSortActive = currentSortType == sortType
 
     val iconTint = if (isSortActive) Theme.colorScheme.success else Theme.colorScheme.shadePrimary
 
@@ -53,12 +54,13 @@ fun SortableHeaderCell(
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary
         )
-        Icon(
-            painter = painterResource(Res.drawable.ic_sort),
-            contentDescription = stringResource(Res.string.sort),
-            modifier = Modifier.size(20.dp),
-            tint = animatedIconTint
-        )
+        AnimatedVisibility(!isSortingDisabled){
+            Icon(
+                painter = painterResource(Res.drawable.ic_sort),
+                contentDescription = stringResource(Res.string.sort),
+                modifier = Modifier.size(20.dp),
+                tint = animatedIconTint
+            )
+        }
     }
 }
-

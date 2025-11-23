@@ -78,36 +78,41 @@ private fun ProductItem(
     modifier: Modifier = Modifier
 ) {
     ProductCard(
-        productName = product.name,
-        productImageUrl = product.imageUrl,
-        productDescription = product.description,
-        productPrice = product.price,
+        name = product.name,
+        imageUrl = product.imageUrl,
+        description = product.description,
+        basePrice = product.basePrice,
+        finalPrice = product.finalPrice,
+        isOutOfStock = product.isOutOfStock,
+        isDukanStyleNoImage = true,
         modifier = modifier,
         onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
-            NoImageDukanProductAction(
-                showProductQuantity = quantity > 0,
-                inCartQuantity = quantity,
-                dukanColor = dukanColor,
-                onAddToCartClick = {
-                    listener.onAddToCartClicked(
-                        productId = product.id,
-                        productQuantity = quantity + 1
-                    )
-                },
-                onPlusClick = {
-                    listener.onPlusClicked(
-                        productId = product.id,
-                        productQuantity = quantity + 1
-                    )
-                },
-                onMinusClick = {
-                    listener.onMinusClicked(
-                        productId = product.id,
-                        productQuantity = quantity - 1
-                    )
-                }
-            )
+            if (product.isOutOfStock.not()) {
+                NoImageDukanProductAction(
+                    showProductQuantity = quantity > 0,
+                    inCartQuantity = quantity,
+                    dukanColor = dukanColor,
+                    onAddToCartClick = {
+                        listener.onAddToCartClicked(
+                            productId = product.id,
+                            productQuantity = quantity + 1
+                        )
+                    },
+                    onPlusClick = {
+                        listener.onPlusClicked(
+                            productId = product.id,
+                            productQuantity = quantity + 1
+                        )
+                    },
+                    onMinusClick = {
+                        listener.onMinusClicked(
+                            productId = product.id,
+                            productQuantity = quantity - 1
+                        )
+                    }
+                )
+            }
         }
     )
 }

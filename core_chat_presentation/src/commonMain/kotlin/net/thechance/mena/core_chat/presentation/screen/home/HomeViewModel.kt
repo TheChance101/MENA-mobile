@@ -15,7 +15,7 @@ import mena.core_chat_presentation.generated.resources.no_internet_message
 import mena.core_chat_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
 import net.thechance.mena.core_chat.domain.entity.Message
-import net.thechance.mena.core_chat.domain.entity.MessageContent
+import net.thechance.mena.core_chat.domain.entity.WeatherDetails
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
@@ -23,6 +23,7 @@ import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.core_chat.domain.repository.WeatherRepository
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -44,6 +45,7 @@ class HomeViewModel(
     private val balanceRepository: BalanceRepository,
     private val prayerTimeService: PrayerTimeService,
     private val locationService: LocationService,
+    private val weatherRepository: WeatherRepository,
     dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<HomeScreenState, HomeScreenEffect>(HomeScreenState(), dispatcher),
     HomeScreenInteractionListener {
@@ -77,7 +79,7 @@ class HomeViewModel(
         )
     }
 
-    private suspend fun onCollectSyncString(syncState: SyncState?) {
+    private suspend fun onCollectSyncString(syncState: SyncState) {
         delay(100)
         when (syncState) {
             is SyncState.Error -> showErrorLoadingChatsSnackBar()
@@ -86,8 +88,6 @@ class HomeViewModel(
             is SyncState.DeletedChatsSynced -> {
                 updateState { it.copy(chats = it.chats.filterNot { syncState.chatIds.contains(it.id) }) }
             }
-
-            else -> Unit
         }
     }
 
@@ -117,8 +117,7 @@ class HomeViewModel(
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent?) {
-        if (deleteChatEvent == null) return
+    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
         updateState {
             it.copy(
                 chats = it.chats.filterNot { chat -> chat.id == deleteChatEvent.chatId }
@@ -126,11 +125,9 @@ class HomeViewModel(
         }
     }
 
-    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent?) {
-        if (markMessageAsReadEvent == null) return
-        if (markMessageAsReadEvent.readByMe.not()) return
-
+    private suspend fun onCollectMarkAsReadEvent(markMessageAsReadEvent: MarkMessageAsReadEvent) {
         val newChatSummary = chatRepository.getChatSummaryById(markMessageAsReadEvent.chatId).toUi()
+
         updateState {
             it.copy(
                 chats = it.chats.map { chatSummary ->
@@ -144,43 +141,16 @@ class HomeViewModel(
     private fun listenToIncomingMessages() {
         tryToCollect(
             collect = { messageRepository.observeMessagesForChatOrAll() },
-            onCollect = ::onCollectMessage,
-            onError = { },
+            onCollect = ::onCollectMessage
         )
     }
 
-    private suspend fun onCollectMessage(message: Message?) {
-        if (message == null) return
-        val chatSummary = state.value.chats.firstOrNull { chat ->
-            chat.id == message.chatId
-        }
+    private suspend fun onCollectMessage(message: Message) {
+        val updatedChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
 
-        if (chatSummary == null) {
-            val newChatSummary = chatRepository.getChatSummaryById(message.chatId).toUi()
-            updateState {
-                it.copy(
-                    chats = listOf(newChatSummary) + it.chats
-                )
-            }
-            return
-        }
-
-        val updatedChatSummary = chatSummary.copy(
-            lastMessage = ChatUiState.MessageUiState(
-                text = (message.content as MessageContent.Text).text,
-                isMine = message.isMine,
-                time = message.sendAt,
-            ),
-            status =
-                if (message.isMine) ChatUiState.Status.Sent
-                else ChatUiState.Status.UnRead(
-                    if (chatSummary.status is ChatUiState.Status.UnRead) chatSummary.status.count + 1
-                    else 1
-                )
-        )
-
-        val updatedChats =
-            listOf(updatedChatSummary) + state.value.chats.filterNot { it.id == message.chatId }
+        val updatedChats = listOf(updatedChatSummary) +
+                state.value.chats
+                    .filterNot { it.id == message.chatId }
 
         updateState { it.copy(chats = updatedChats.distinctBy { it.id }) }
     }
@@ -201,7 +171,7 @@ class HomeViewModel(
         }
         updateState {
             it.copy(
-                balanceAmount = balanceAmount.toInt().toString(),
+                balanceAmount = balanceAmount.toString(),
                 isBalanceLoading = false
             )
         }
@@ -264,13 +234,26 @@ class HomeViewModel(
         }
     }
 
-    private fun getCurrentAddressInfo(){
+    private fun getCurrentAddressInfo() {
         tryToExecute(
-            onStart = { updateState { it.copy(isPrayerTimeLoading = true) } },
+            onStart = {
+                updateState { it.copy(isPrayerTimeLoading = true, isWeatherLoading = true) }
+            },
             execute = { locationService.getActiveAddress() },
-            onSuccess = ::observeNextPrayer
+            onSuccess = ::onGetCurrentAddressSuccess,
+            onError = { onGetCurrentAddressError() }
         )
     }
+
+    private fun onGetCurrentAddressSuccess(address: Address?) {
+        observeNextPrayer(address)
+        getWeatherDetails(address)
+    }
+
+    private fun onGetCurrentAddressError() {
+        updateState { it.copy(isPrayerTimeLoading = false, isWeatherLoading = false) }
+    }
+
     private fun observeNextPrayer(address: Address?){
         if (address == null) return
 
@@ -286,6 +269,29 @@ class HomeViewModel(
     }
     private fun onObserveNextPrayerError() {
         updateState { it.copy(prayerUiState = null, isPrayerTimeLoading = false) }
+    }
+
+    private fun getWeatherDetails(address: Address?) {
+        if (address == null) return
+
+        tryToExecute(
+            execute = {
+                weatherRepository.getWeatherDetails(
+                latitude = address.latitude,
+                longitude = address.longitude
+                )
+            },
+            onSuccess = ::onGetWeatherDetailsSuccess,
+            onError = { onGetWeatherDetailsError() }
+        )
+    }
+
+    private fun onGetWeatherDetailsSuccess(weatherDetails: WeatherDetails) {
+        updateState { it.copy(weatherUiState = weatherDetails.toUi(), isWeatherLoading = false) }
+    }
+
+    private fun onGetWeatherDetailsError() {
+        updateState { it.copy(weatherUiState = null, isWeatherLoading = false) }
     }
 
     override fun onNewChatClicked() {

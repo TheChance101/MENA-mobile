@@ -1,9 +1,9 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanManagementRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
+import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultDukanActivationStatusResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultDukanDetailsResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultNameAvailableResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultStatusResponse
@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
 
 class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
-        createDukanManagementRepository()
+        createDukanRepository()
 
     @OptIn(ExperimentalUuidApi::class)
     @Test
@@ -177,4 +177,21 @@ class DukanManagementRepositoryTest {
         // Assert
         assertEquals(30.0444, details.coordinates.latitude)
     }
+
+    @Test
+    fun `getDukanActivationStatus returns mapped activation status`() = runTest {
+        var called = false
+        val repo = createDukanRepository(
+            getDukanActivationStatus = {
+                called = true
+                defaultDukanActivationStatusResponse()
+            }
+        )
+
+        val status = repo.getDukanActivationStatus()
+
+        assertTrue(called)
+        assertEquals(Dukan.ActivationStatus.ACTIVATED, status)
+    }
+
 }

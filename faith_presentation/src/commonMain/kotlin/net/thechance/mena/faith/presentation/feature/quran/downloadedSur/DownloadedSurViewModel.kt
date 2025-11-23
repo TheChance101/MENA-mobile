@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.quran.downloadedSur
 
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.surah_deleted_successfully
+import mena.faith_presentation.generated.resources.surah_deleted_successfully_downloading
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 
@@ -16,12 +17,19 @@ class DownloadedSurViewModel(
     }
 
     private fun loadDownloadedSur() {
-        // TODO: After the domain is done, integrate this function to load the real data
-        tryToExecute(
-            execute = {},
-            onSuccess = {},
+        tryToCollect(
+            block = { quranRepository.getDownloadedSur() },
+            onEmitNewValue = { downloadedSur ->
+                updateState {
+                    it.copy(
+                        surDetails = downloadedSur.map { surah -> surah.toUiState() }
+                    )
+                }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
+
 
     override fun onReciterSettingsClick() {
         val surahId = uiState.value.selectedSurahForDelete
@@ -45,6 +53,7 @@ class DownloadedSurViewModel(
                 showDeleteConfirmationDialog = true,
             )
         }
+        handleSuccessSnackBar(Res.string.surah_deleted_successfully_downloading)
     }
 
     override fun onDismissDeleteConfirmationDialog() {
@@ -56,12 +65,13 @@ class DownloadedSurViewModel(
         tryToExecute(
             execute = {
                 surahId?.let {
-                    quranRepository.deleteSurahWithSpecificReciter(surahId)
+                    quranRepository.deleteSurahAudioByReciter(surahId)
                 }
             },
             onSuccess = {
                 onDeleteSurahSuccess()
-            }
+            },
+            onError = ::handleErrorSnackBar
         )
     }
 

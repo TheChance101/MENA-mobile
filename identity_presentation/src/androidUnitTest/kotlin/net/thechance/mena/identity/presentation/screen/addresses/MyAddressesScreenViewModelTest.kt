@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.addresses
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -98,6 +100,7 @@ class MyAddressesScreenViewModelTest {
         assertTrue(viewModel.state.value.deleteDialogUIState.isVisible)
         assertEquals(addressId, viewModel.state.value.deleteDialogUIState.addressId)
     }
+
     @Test
     fun `onConfirmDeleteAddress() should call deleteAddress when address is valid`() = runTest {
         val address = createFakeAddress().copy(isMainAddress = false)
@@ -126,15 +129,20 @@ class MyAddressesScreenViewModelTest {
         viewModel = MyAddressesScreenViewModel(addressRepository, testDispatcher)
         advanceUntilIdle()
         viewModel.onDeleteAddressClicked(address.id!!)
+
         testDispatcher.scheduler.advanceUntilIdle()
+
 
         viewModel.onConfirmDeleteAddress()
-        testDispatcher.scheduler.advanceUntilIdle()
+
+
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(AddressesScreenUIEffect.ShowSnackBarSuccess::class)
+        }
+        assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
 
         coVerify { addressRepository.deleteAddress(address.id) }
-        assertTrue(viewModel.state.value.snackBarUiState.isVisible)
-        assertEquals(SnackBarType.SUCCESS, viewModel.state.value.snackBarUiState.snackBarType)
-        assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
     }
 
     @Test
@@ -148,17 +156,6 @@ class MyAddressesScreenViewModelTest {
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
-    }
-
-    @Test
-    fun `onDismissSnackBar() should hide snackbar`() = runTest {
-        coEvery { addressRepository.getUserAddresses() } throws Exception()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.onDismissSnackBar()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        assertFalse(viewModel.state.value.snackBarUiState.isVisible)
     }
 
     @Test
@@ -183,6 +180,7 @@ class MyAddressesScreenViewModelTest {
             cancelAndConsumeRemainingEvents()
         }
     }
+
     @Test
     fun `onConfirmDeleteAddress() should show success snackbar after deletion`() = runTest {
         val address = createFakeAddress(isMain = false)
@@ -197,13 +195,14 @@ class MyAddressesScreenViewModelTest {
         advanceUntilIdle()
 
         viewModel.onConfirmDeleteAddress()
-        advanceUntilIdle()
 
-        val snackbar = viewModel.state.value.snackBarUiState
-        assertTrue(snackbar.isVisible)
-        assertEquals(SnackBarType.SUCCESS, snackbar.snackBarType)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(AddressesScreenUIEffect.ShowSnackBarSuccess::class)
+        }
     }
-    private fun createFakeAddress(isMain: Boolean =true): AddressUIState {
+
+    private fun createFakeAddress(isMain: Boolean = true): AddressUIState {
         return AddressUIState(
             id = Uuid.random(),
             addressType = AddressType.Home,
@@ -214,6 +213,5 @@ class MyAddressesScreenViewModelTest {
                 longitude = 0.0
             )
         )
-
     }
 }

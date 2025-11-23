@@ -13,6 +13,5 @@ interface MyAddressesScreenInteractionListener : BaseInteractionListener {
     fun onDeleteAddressClicked(addressId: Uuid)
     fun onConfirmDeleteAddress()
     fun onDismissDeleteDialog()
-    fun onDismissSnackBar()
     fun onClickAddress(addressId: Uuid)
 }

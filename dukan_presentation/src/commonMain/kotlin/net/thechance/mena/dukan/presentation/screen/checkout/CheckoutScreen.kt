@@ -33,7 +33,9 @@ import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewMode
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun CheckoutScreen(
     viewModel: CheckoutViewModel = koinViewModel()
@@ -52,6 +54,10 @@ fun CheckoutScreen(
 
             CheckoutEffect.NavigateToChangeLocation -> {
                 navController.navigate(DukanRoute.AddressesRoute)
+            }
+
+            is CheckoutEffect.NavigateToConfirmPayment -> {
+                navController.navigate(DukanRoute.ConfirmPaymentScreenRoute(effect.transactionId, state.dukanId))
             }
         }
     }
@@ -74,7 +80,10 @@ private fun CheckoutContent(
             CheckoutAppBar(listener)
         },
         bottomBar = {
-            ConfirmOrderButton(listener::onConfirmOrderClicked)
+            ConfirmOrderButton(
+                onConfirmOrderClicked = listener::onConfirmOrderClicked,
+                isLoading = state.isTransactionLoading
+            )
         },
         overlays = {
             dialog(state.isCheckoutImplementedDialogVisible) {

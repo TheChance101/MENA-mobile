@@ -3,7 +3,8 @@ package net.thechance.mena.admin_panel.presentation.component
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import net.thechance.mena.admin_panel.resources.Res
 import org.apache.batik.transcoder.TranscoderInput
 import org.apache.batik.transcoder.TranscoderOutput
@@ -21,6 +22,7 @@ import org.jxmapviewer.viewer.WaypointPainter
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
+import javax.swing.SwingUtilities
 
 private const val BASE_URL = "https://a.basemaps.cartocdn.com/rastertiles/voyager_labels_under"
 private const val FACTORY_NAME = "cartocdn"
@@ -36,18 +38,30 @@ fun OSMMapView(
     initialZoom: Int = 7,
     modifier: Modifier = Modifier
 ) {
-    val markerIcon = runBlocking {
-        val bytes = Res.readBytes(IMAGE_PATH)
-        svgToBufferedImage(bytes, markerWidth, markerHeight)
+    var markerIcon by remember { mutableStateOf<BufferedImage?>(null) }
+
+    LaunchedEffect(Unit) {
+        markerIcon = withContext(Dispatchers.IO) {
+            val bytes = Res.readBytes(IMAGE_PATH)
+            svgToBufferedImage(bytes, markerWidth, markerHeight)
+        }
     }
 
-    val markerPosition = GeoPosition(latitude, longitude)
+    val markerPosition = remember(latitude, longitude) {
+        GeoPosition(latitude, longitude)
+    }
 
-    SwingPanel(
-        factory = { createMapViewer(markerIcon, markerPosition, initialZoom) },
-        modifier = modifier,
-        update = { updateMarkerPosition(it, markerPosition) }
-    )
+    if (markerIcon != null) {
+        SwingPanel(
+            factory = {
+                createMapViewer(markerIcon!!, markerPosition, initialZoom)
+            },
+            modifier = modifier,
+            update = { mapViewer ->
+                updateMapViewerPosition(mapViewer, markerPosition, initialZoom)
+            }
+        )
+    }
 }
 
 private fun createMapViewer(
@@ -57,13 +71,22 @@ private fun createMapViewer(
 ): JXMapViewer {
     val mapViewer = JXMapViewer()
 
-    mapViewer.tileFactory = DefaultTileFactory(OSMTileFactoryInfo(FACTORY_NAME, BASE_URL))
+    mapViewer.tileFactory = DefaultTileFactory(
+        OSMTileFactoryInfo(FACTORY_NAME, BASE_URL)
+    )
+
     mapViewer.addressLocation = markerPosition
     mapViewer.zoom = initialZoom
 
     mapViewer.addPanAndZoomListeners()
+
     mapViewer.overlayPainter = CustomWaypointPainter(markerIcon).apply {
         setMarkerPosition(markerPosition)
+    }
+
+    SwingUtilities.invokeLater {
+        mapViewer.addressLocation = markerPosition
+        mapViewer.repaint()
     }
 
     return mapViewer
@@ -78,17 +101,25 @@ private fun JXMapViewer.addPanAndZoomListeners() {
     addMouseWheelListener(zoomAdapter)
 }
 
-private fun updateMarkerPosition(
+private fun updateMapViewerPosition(
     mapViewer: JXMapViewer,
-    markerPosition: GeoPosition
+    markerPosition: GeoPosition,
+    initialZoom: Int
 ) {
     (mapViewer.overlayPainter as? CustomWaypointPainter)?.setMarkerPosition(markerPosition)
-    mapViewer.repaint()
+
+    SwingUtilities.invokeLater {
+        mapViewer.addressLocation = markerPosition
+        mapViewer.zoom = initialZoom
+        mapViewer.repaint()
+    }
 }
 
-private fun svgToBufferedImage(svgBytes: ByteArray, markerWidth: Int, markerHeight: Int)
-: BufferedImage {
-
+private fun svgToBufferedImage(
+    svgBytes: ByteArray,
+    markerWidth: Int,
+    markerHeight: Int
+): BufferedImage {
     val image = BufferedImage(markerWidth, markerHeight, BufferedImage.TYPE_INT_ARGB)
 
     try {
@@ -130,7 +161,12 @@ class CustomWaypointPainter(private val markerIcon: BufferedImage) : WaypointPai
             val x = (point.x - map.viewportBounds.x).toInt()
             val y = (point.y - map.viewportBounds.y).toInt()
 
-            g.drawImage(markerIcon, x - markerIcon.width / 2, y - markerIcon.height, null)
+            g.drawImage(
+                markerIcon,
+                x - markerIcon.width / 2,
+                y - markerIcon.height,
+                null
+            )
         }
     }
 }

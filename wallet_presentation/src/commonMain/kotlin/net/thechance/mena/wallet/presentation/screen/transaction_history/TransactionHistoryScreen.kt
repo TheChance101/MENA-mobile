@@ -4,7 +4,6 @@ package net.thechance.mena.wallet.presentation.screen.transaction_history
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,24 +11,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.back_button
-import mena.wallet_presentation.generated.resources.ic_arrow_left
 import mena.wallet_presentation.generated.resources.ic_share
-import mena.wallet_presentation.generated.resources.pick_end_date
-import mena.wallet_presentation.generated.resources.pick_start_date
 import mena.wallet_presentation.generated.resources.share
 import mena.wallet_presentation.generated.resources.transactions_history
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -46,7 +38,6 @@ import net.thechance.mena.wallet.presentation.screen.transaction_history.compone
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionHistoryEmpty
 import net.thechance.mena.wallet.presentation.screen.transaction_history.component.TransactionsListContent
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import net.thechance.mena.wallet.presentation.utils.orToday
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -107,31 +98,16 @@ fun TransactionHistoryContent(
             bottomSheet(isVisible = state.filterState.isDateBottomSheetVisible) { isVisible ->
                 DatePickerBottomSheet(
                     isVisible = isVisible,
-                    defaultSelectedDate = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE ->
-                            state.filterState.defaultStartDate.orToday()
-
-                        TransactionFilterState.DatePickerMode.END_DATE ->
-                            state.filterState.defaultEndDate.orToday()
-                    },
-                    title = when (state.filterState.datePickerMode) {
-                        TransactionFilterState.DatePickerMode.START_DATE ->
-                            stringResource(Res.string.pick_start_date)
-
-                        TransactionFilterState.DatePickerMode.END_DATE ->
-                            stringResource(Res.string.pick_end_date)
-                    },
-                    onPickClick = { day, month, year ->
-                        val pickedDate = LocalDate(year, month, day)
-                        interactionListener.onPickDateClicked(pickedDate)
-                    },
+                    defaultSelectedDate = state.filterState.defaultSelectedDate,
+                    title = stringResource(state.filterState.datePickerMode.titleRes),
+                    onPickClick = interactionListener::onPickDateClicked,
                     onDismiss = interactionListener::onDismissDatePicker
                 )
             }
         },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
         errorState = state.errorState,
-        isLoading = state.isLoading,
+        isLoading = state.isLoading && state.filterState.isApplyButtonLoading.not(),
         onRetry = { interactionListener.onRetryLoadTransactionHistoryClicked() })
     {
         when {

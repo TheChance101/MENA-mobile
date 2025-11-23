@@ -13,6 +13,7 @@ data class DukanRequestsScreenState(
     val pageInfo: DukanPageInfo = DukanPageInfo(),
     val sort: SortState = SortState(),
     val isLoading: Boolean = false,
+    val isInitialLoading: Boolean = true,
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isRejectDialogShown: Boolean = false,
@@ -21,6 +22,7 @@ data class DukanRequestsScreenState(
     val isDukanDetailsShown: Boolean = false,
     val selectedDukan: DukanItem? = null
 ) {
+    val isSortingDisabled = totalDukanRequests < 2
     val isRejectButtonEnabled: Boolean
         get() = rejectReason.length > 1
 

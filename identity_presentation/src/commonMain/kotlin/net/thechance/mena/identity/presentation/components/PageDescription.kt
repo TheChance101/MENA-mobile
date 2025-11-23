@@ -10,16 +10,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.app_name
 import mena.identity_presentation.generated.resources.mena_logo
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -31,26 +28,12 @@ internal fun PageDescription(
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Box(
-            modifier = modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.mena_logo),
-                    contentDescription = null,
-                    modifier = Modifier.size(88.dp)
-                )
-                Text(
-                    text = stringResource(Res.string.app_name),
-                    textAlign = TextAlign.Center,
-                    style = Theme.typography.appName,
-                    color = Theme.colorScheme.shadePrimary
-                )
-            }
-        }
+        Image(
+            painter = painterResource(Res.drawable.mena_logo),
+            contentDescription = "mena_logo",
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+                .size(width = 91.dp, height = 127.dp)
+        )
         Text(
             text = title,
             style = Theme.typography.title.medium,

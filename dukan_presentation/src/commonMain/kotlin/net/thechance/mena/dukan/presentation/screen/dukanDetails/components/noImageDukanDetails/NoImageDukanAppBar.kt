@@ -17,9 +17,7 @@ import mena.dukan_presentation.generated.resources.favorite_icon
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.ic_favorite
 import mena.dukan_presentation.generated.resources.ic_favorite_filled
-import mena.dukan_presentation.generated.resources.ic_share
 import mena.dukan_presentation.generated.resources.ic_shopping_basket
-import mena.dukan_presentation.generated.resources.share_icon
 import mena.dukan_presentation.generated.resources.shopping_basket_icon
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBarOptionContainer
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -83,8 +81,7 @@ fun NoImageDukanAppBar(
             AppBarIcon(
                 painter = painterResource(Res.drawable.ic_shopping_basket),
                 contentDescription = stringResource(Res.string.shopping_basket_icon),
-                // when cart contains products
-                isBadgeVisible = isBadgeVisible ,
+                isBadgeVisible = isBadgeVisible,
                 onClick = listener::onViewCartClicked
             )
         }
@@ -95,9 +92,9 @@ fun NoImageDukanAppBar(
 private fun AppBarIcon(
     painter: Painter,
     contentDescription: String,
-    isBadgeVisible: Boolean = false,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isBadgeVisible: Boolean = false
 ) {
     AppBarOptionContainer(
         onClick = onClick,

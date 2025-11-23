@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -80,7 +81,7 @@ fun DukanCartContent(
                 }
             }
 
-            if (products.loadState.refresh is androidx.paging.LoadState.Loading) {
+            if (products.loadState.refresh is LoadState.Loading) {
                 items(count = 8) {
                     LoadingProductCard()
                 }
@@ -102,11 +103,12 @@ fun DukanCartContent(
                         }
                     ) {
                         ProductCard(
-                            productName = product.name,
-                            productDescription = product.description,
-                            productImageUrl = product.imageUrl,
-                            productPrice = product.price,
-                            productCardBackground = Theme.colorScheme.background.surfaceLow,
+                            name = product.name,
+                            description = product.description,
+                            imageUrl = product.imageUrl,
+                            basePrice = product.basePrice,
+                            finalPrice = product.finalPrice,
+                            backgroundColor = Theme.colorScheme.background.surfaceLow,
                             modifier = Modifier.fillMaxWidth(),
                             productAction = {
                                 ProductQuantityButton(
@@ -124,7 +126,8 @@ fun DukanCartContent(
                                     },
                                     inCartQuantity = productQuantityInCart
                                 )
-                            }
+                            },
+                            isOutOfStock = product.isOutOfStock,
                         )
                     }
                 }

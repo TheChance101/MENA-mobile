@@ -18,10 +18,12 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun DukanDetailsInCompactMode(
     state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
+    interactionListener: DukanDetailsInteractionListener,
+    isMapVisible: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 16.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
@@ -31,7 +33,7 @@ internal fun DukanDetailsInCompactMode(
             modifier = Modifier.fillMaxWidth(),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,
-            isMapVisible = state.isMapVisible
+            isMapVisible = isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.fillMaxWidth(),

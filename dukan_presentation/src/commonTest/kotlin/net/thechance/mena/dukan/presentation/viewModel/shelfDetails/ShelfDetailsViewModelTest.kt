@@ -264,9 +264,9 @@ class ShelfDetailsViewModelTest {
         val productsShelfs = shelfDetailsViewModel.state.value.productsShelf.asSnapshot()
 
         // Then
-        assertEquals(1200.0, productsShelfs[0].price)
-        assertEquals(25.0, productsShelfs[1].price)
-        assertEquals(75.0, productsShelfs[2].price)
+        assertEquals(1200.0, productsShelfs[0].basePrice)
+        assertEquals(25.0, productsShelfs[1].basePrice)
+        assertEquals(75.0, productsShelfs[2].basePrice)
     }
 
     @Test

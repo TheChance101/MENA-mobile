@@ -18,10 +18,12 @@ import kotlin.uuid.ExperimentalUuidApi
 @Composable
 internal fun DukanDetailsInFullScreenMode(
     state: DukanDetailsScreenState,
-    interactionListener: DukanDetailsInteractionListener
+    interactionListener: DukanDetailsInteractionListener,
+    isMapVisible: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(bottom = 16.dp)
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -33,7 +35,7 @@ internal fun DukanDetailsInFullScreenMode(
                 .verticalScroll(rememberScrollState()),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,
-            isMapVisible = state.isMapVisible
+            isMapVisible = isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.weight(1f).fillMaxHeight(),
