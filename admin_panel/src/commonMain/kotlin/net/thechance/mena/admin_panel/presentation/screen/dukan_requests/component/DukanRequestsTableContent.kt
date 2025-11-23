@@ -96,12 +96,13 @@ private fun DukanListTable(
         state = listState,
         modifier = modifier
     ) {
-        itemsIndexed(items = dukan) { index, dukanItem ->
+        itemsIndexed(items = dukan, key = { index, item -> index to item.hashCode() }) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(horizontalScrollState),
+                    .horizontalScroll(horizontalScrollState)
+                    .animateItem(),
                 index = dukanItem.index,
                 dukan = dukanItem,
                 isLastItem = isLastItem,

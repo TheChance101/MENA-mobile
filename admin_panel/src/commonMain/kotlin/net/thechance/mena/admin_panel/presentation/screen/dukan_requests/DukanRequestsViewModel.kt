@@ -23,6 +23,7 @@ import net.thechance.mena.admin_panel.resources.status_updated_title
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 @KoinViewModel
@@ -79,7 +80,7 @@ class DukanRequestsViewModel(
                     message = currentState.rejectReason
                 )
             },
-            onSuccess = { onDukanApprovedSuccess() },
+            onSuccess = { onDukanApprovedSuccess(selectedDukanId) },
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -113,7 +114,7 @@ class DukanRequestsViewModel(
             },
             onStart = { updateState { it.copy(isRejectButtonLoading = true) } },
             onFinish = { updateState { it.copy(isRejectButtonLoading = false) } },
-            onSuccess = { onSuccessDukanRejected() },
+            onSuccess = { onSuccessDukanRejected(selectedDukanId) },
             onError = ::onError,
             dispatcher = dispatcher
         )
@@ -136,9 +137,13 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun onDukanApprovedSuccess() {
+    private fun onDukanApprovedSuccess(dukanId: Uuid) {
         onDukanDetailsDismissed()
-        getRequestedDukans()
+        updateState {
+            it.copy(
+                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
+            )
+        }
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -148,9 +153,13 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun onSuccessDukanRejected() {
+    private fun onSuccessDukanRejected(dukanId: Uuid) {
         onRejectDukanDialogDismissed()
-        getRequestedDukans()
+        updateState {
+            it.copy(
+                dukans = it.dukans.filterNot { dukanItem -> dukanItem.id == dukanId }
+            )
+        }
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
