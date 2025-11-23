@@ -1,6 +1,10 @@
 package net.thechance.mena.dukan.presentation.screen.checkout
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +23,10 @@ import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.checkout.component.CheckoutAppBar
@@ -28,6 +36,7 @@ import net.thechance.mena.dukan.presentation.screen.checkout.component.DeliveryA
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutEffect
+import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutUiState
 import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutViewModel
 import org.jetbrains.compose.resources.stringResource
@@ -57,19 +66,52 @@ fun CheckoutScreen(
             }
 
             is CheckoutEffect.NavigateToConfirmPayment -> {
-                navController.navigate(DukanRoute.ConfirmPaymentScreenRoute(effect.transactionId, state.dukanId))
+                navController.navigate(
+                    DukanRoute.ConfirmPaymentScreenRoute(
+                        effect.transactionId,
+                        state.dukanId
+                    )
+                )
             }
         }
     }
-
-    CheckoutContent(
-        state = state,
-        listener = viewModel
-    )
+    CheckoutContent(state, viewModel)
 }
 
 @Composable
 private fun CheckoutContent(
+    state: CheckoutUiState,
+    listener: CheckoutViewModel
+) {
+    AnimatedContent(
+        targetState = state.checkoutStatus
+    ) { targetState ->
+        when (targetState) {
+            CheckoutUiState.CheckoutStatus.LOADING -> {
+                LoadingDots(modifier = Modifier.fillMaxSize())
+            }
+
+            CheckoutUiState.CheckoutStatus.LOADED -> {
+                CheckoutLoadedContent(
+                    state = state,
+                    listener = listener
+                )
+            }
+
+            CheckoutUiState.CheckoutStatus.NO_INTERNET -> {
+                NoInternetContent(
+                    onRetry = {
+                        listener.onRetryClicked()
+                    },
+                    modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CheckoutLoadedContent(
     state: CheckoutUiState,
     listener: CheckoutViewModel
 ) {
@@ -97,7 +139,8 @@ private fun CheckoutContent(
                     actionButtons = {},
                 )
             }
-        }
+        },
+        snakeBar = { CheckoutSnackbar(state.snackBarState, listener) }
     ) {
         Column(
             modifier = Modifier
@@ -122,6 +165,32 @@ private fun CheckoutContent(
                 totalPrice = state.totalAmount,
                 modifier = Modifier.padding(top = Theme.spacing._12)
             )
+        }
+    }
+}
+
+@Composable
+private fun CheckoutSnackbar(
+    snackBarState: SnackBarUiState?,
+    listener: CheckoutInteractionListener
+) {
+    AnimatedContent(
+        targetState = snackBarState != null,
+        transitionSpec = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Down
+            ) togetherWith slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Up
+            )
+        }
+    ) {
+        if (it) {
+            snackBarState?.let {
+                SnackBar(
+                    snackBarUiState = snackBarState,
+                    onDismiss = listener::onSnackBarDismissed
+                )
+            }
         }
     }
 }

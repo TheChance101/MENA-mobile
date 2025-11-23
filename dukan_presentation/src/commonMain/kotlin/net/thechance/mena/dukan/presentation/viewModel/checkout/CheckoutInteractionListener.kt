@@ -5,4 +5,6 @@ interface CheckoutInteractionListener {
     fun onConfirmOrderClicked()
     fun onChangeLocationClicked()
     fun onDismissCheckoutDialog() // TODO: Remove when implement checkout endpoint
+    fun onSnackBarDismissed()
+    fun onRetryClicked()
 }

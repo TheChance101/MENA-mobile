@@ -19,7 +19,8 @@ data class CheckoutUiState(
     val totalAmount: Double = 0.0,
     val snackBarState: SnackBarUiState? = null,
     val transaction: TransactionUiState = TransactionUiState(),
-    val isTransactionLoading: Boolean = false
+    val isTransactionLoading: Boolean = false,
+    val checkoutStatus: CheckoutStatus = CheckoutStatus.LOADING
 ) {
     data class Address(
         val label: AddressLabel = AddressLabel.Home,
@@ -42,4 +43,9 @@ data class CheckoutUiState(
         val transactionId: Uuid = Uuid.random(),
         val amount: Double = 0.0
     )
+    enum class CheckoutStatus {
+        LOADING,
+        LOADED,
+        NO_INTERNET
+    }
 }
