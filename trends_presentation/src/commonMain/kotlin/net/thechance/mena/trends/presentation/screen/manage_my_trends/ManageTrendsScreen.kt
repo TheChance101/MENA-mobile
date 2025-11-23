@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -175,7 +176,6 @@ private fun ManageTrendsScreenBody(
             UserAvatar(
                 profileImageUrl = state.profile.profileImageUrl,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = Theme.spacing._32, bottom = Theme.spacing._8)
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
@@ -296,7 +296,7 @@ private fun UserAvatar(
     }
 
     if (hasImage.not()) {
-        EmptyProfilePicture(modifier, defaultPainter)
+        EmptyProfilePicture(defaultPainter = defaultPainter)
     } else {
         AsyncImage(
             model = profileImageUrl,
@@ -309,17 +309,17 @@ private fun UserAvatar(
 }
 
 @Composable
-private fun EmptyProfilePicture(
-    modifier: Modifier,
-    defaultPainter: Painter
-) {
+private fun EmptyProfilePicture(defaultPainter: Painter) {
     val isDarkTheme = LocalDarkTheme.current
     val backgroundColor = if (isDarkTheme) Theme.colorScheme.stroke else Color.White
     val iconTint = if (isDarkTheme) Color.White else Color.Black
 
-    Box(
-        modifier = modifier
-            .size(88.dp)
+    Icon(
+        painter = defaultPainter,
+        contentDescription = stringResource(Res.string.profile_image_desc),
+        tint = iconTint,
+        modifier = Modifier
+            .requiredSize(88.dp)
             .shadow(
                 elevation = 4.dp,
                 shape = CircleShape,
@@ -328,16 +328,8 @@ private fun EmptyProfilePicture(
             )
             .clip(CircleShape)
             .background(backgroundColor)
-            .padding(16.dp)
-
-    ) {
-        Icon(
-            painter = defaultPainter,
-            contentDescription = stringResource(Res.string.profile_image_desc),
-            tint = iconTint,
-            modifier = Modifier.align(Alignment.Center),
-        )
-    }
+            .padding(16.dp),
+    )
 }
 
 @Composable
