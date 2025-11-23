@@ -18,7 +18,6 @@ import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.mapper.toEntity
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarType
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import kotlin.test.AfterTest
@@ -82,7 +81,7 @@ class MyAddressesScreenViewModelTest {
             viewModel.effect.test {
                 viewModel.onAddButtonClicked()
                 val effect =
-                    awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy
+                    awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen
                 assertEquals(null, effect.addressUIState)
                 cancelAndConsumeRemainingEvents()
             }
@@ -138,7 +137,7 @@ class MyAddressesScreenViewModelTest {
 
         viewModel.effect.test {
             testDispatcher.scheduler.advanceUntilIdle()
-            assertThat(awaitItem()).isInstanceOf(AddressesScreenUIEffect.ShowSnackBarSuccess::class)
+            assertThat(awaitItem()).isInstanceOf(MyAddressesScreenUIEffect.ShowSnackBarSuccess::class)
         }
         assertFalse(viewModel.state.value.deleteDialogUIState.isVisible)
 
@@ -175,7 +174,7 @@ class MyAddressesScreenViewModelTest {
 
         viewModel.effect.test {
             viewModel.onEditAddressClicked(fakeAddressUIState)
-            val effect = awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy
+            val effect = awaitItem() as MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen
             assertEquals(fakeAddressUIState, effect.addressUIState)
             cancelAndConsumeRemainingEvents()
         }
@@ -198,7 +197,7 @@ class MyAddressesScreenViewModelTest {
 
         viewModel.effect.test {
             testDispatcher.scheduler.advanceUntilIdle()
-            assertThat(awaitItem()).isInstanceOf(AddressesScreenUIEffect.ShowSnackBarSuccess::class)
+            assertThat(awaitItem()).isInstanceOf(MyAddressesScreenUIEffect.ShowSnackBarSuccess::class)
         }
     }
 
