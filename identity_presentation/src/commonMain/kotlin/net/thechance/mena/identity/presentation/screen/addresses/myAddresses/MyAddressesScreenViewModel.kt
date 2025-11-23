@@ -41,12 +41,10 @@ class MyAddressesScreenViewModel(
 
     override fun onAddButtonClicked() {
         navigateToAddressDetails(null, isAdding = true)
-        onDismissSnackBar()
     }
 
     override fun onEditAddressClicked(addressUIState: AddressUIState) {
         navigateToAddressDetails(addressUIState, isAdding = false)
-        onDismissSnackBar()
     }
 
     private fun navigateToAddressDetails(addressUIState: AddressUIState?, isAdding: Boolean) {
@@ -56,9 +54,8 @@ class MyAddressesScreenViewModel(
         )
 
         sendNewEffect(
-            MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy(
+            MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen(
                 addressUIState = addressUIState,
-                onSuccess = { snackBar -> onAddEditSuccess(snackBar, isAdding, addressUIState?.id) }
             )
         )
     }
@@ -166,7 +163,7 @@ class MyAddressesScreenViewModel(
 
     private fun onAddressActivationSuccess() {
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarSuccess(
+            MyAddressesScreenUIEffect.ShowSnackBarSuccess(
                 successStringResource = Res.string.address_activated_successfully
             )
         )
@@ -177,7 +174,7 @@ class MyAddressesScreenViewModel(
         delay(300L)
         removeAddress(addressId)
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarSuccess(
+            MyAddressesScreenUIEffect.ShowSnackBarSuccess(
                 successStringResource = Res.string.address_deleted_successfully
             )
         )
@@ -240,7 +237,7 @@ class MyAddressesScreenViewModel(
 
     private fun showErrorSnackBar(message: StringResource) {
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarError(
+            MyAddressesScreenUIEffect.ShowSnackBarError(
                 errorStringResource = message
             )
         )

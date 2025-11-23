@@ -108,14 +108,15 @@ class MyAddressesScreen(
 
     override fun onEffect(
         effect: MyAddressesScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
             MyAddressesScreenUIEffect.NavigateBack -> {
                 onNavigateBack?.invoke() ?: navigator.pop()
             }
 
-            is MyAddressesScreenUIEffect.NavigateToAddressDetailsScreenMy -> {
+            is MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
@@ -123,13 +124,13 @@ class MyAddressesScreen(
                 )
             }
 
-            is AddressesScreenUIEffect.ShowSnackBarError -> {
+            is MyAddressesScreenUIEffect.ShowSnackBarError -> {
                 snackBarController.showSnackBarError(
                     message = effect.errorStringResource
                 )
             }
 
-            is AddressesScreenUIEffect.ShowSnackBarSuccess -> {
+            is MyAddressesScreenUIEffect.ShowSnackBarSuccess -> {
                 snackBarController.showSnackBarSuccess(
                     message = effect.successStringResource
                 )
