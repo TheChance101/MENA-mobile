@@ -138,7 +138,7 @@ class DukanRequestsViewModel(
 
     private fun onDukanApprovedSuccess() {
         onDukanDetailsDismissed()
-        reFetchCurrentPage()
+        refetchCurrentPage()
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -150,7 +150,7 @@ class DukanRequestsViewModel(
 
     private fun onSuccessDukanRejected() {
         onRejectDukanDialogDismissed()
-        reFetchCurrentPage()
+        refetchCurrentPage()
         viewModelScope.launch {
             showSnackBar(
                 title = stringProvider.getString(Res.string.status_updated_title),
@@ -160,7 +160,7 @@ class DukanRequestsViewModel(
         }
     }
 
-    private fun reFetchCurrentPage() {
+    private fun refetchCurrentPage() {
         val queryParams = getDukanQueryParams()
         tryToExecute(
             callee = { dukanRepository.getDukans(queryParams) },
