@@ -16,10 +16,9 @@ import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
@@ -60,13 +59,6 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 targetScreen = initialScreen,
                 defaultScreen = loginScreen
             )
-        }
-    }
-
-    @Composable
-    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        IdentityFeatureRoot {
-            Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
         }
     }
 
@@ -154,24 +146,6 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 authTokens = authTokens,
                 phoneNumber = lastPhoneNumber
             )
-        }
-    }
-
-    @Composable
-    private fun RenderScreenWithNavigator(
-        targetScreen: Any?,
-        defaultScreen: LoginScreen
-    ) {
-        when (targetScreen) {
-            is UploadProfileImageScreen -> {
-                Navigator(targetScreen)
-            }
-            is AccountCreatedScreen -> {
-                Navigator(targetScreen)
-            }
-            else -> {
-                Navigator(defaultScreen)
-            }
         }
     }
 
