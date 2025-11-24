@@ -184,30 +184,33 @@ private fun MainContent(
             targetState = state.isConnected,
             transitionSpec = { fadeTransitionSpec() }
         ) { isConnected ->
-            if (isConnected) return@AnimatedContent
-            NoInternetContent(
-                onRetry = listener::onRetryClicked,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (!isConnected) {
+                NoInternetContent(
+                    onRetry = listener::onRetryClicked,
+                    modifier = Modifier.fillMaxSize()
+                )
+                return@AnimatedContent
+            }
         }
-
-        AnimatedContent(
-            targetState = isEmptyContent,
-            transitionSpec = { fadeTransitionSpec() }
-        ) { isEmptyContent ->
-            if (isEmptyContent) {
-                EmptyStateContent(
-                    image = Res.drawable.dukan_pending,
-                    title = Res.string.dukan_main_content_empty_error_title,
-                    body = Res.string.dukan_main_content_empty_error_body
-                )
-            } else {
-                MainScreenSections(
-                    state = state,
-                    bestNearestDukan = bestNearestDukan,
-                    dukans = dukans,
-                    listener = listener
-                )
+        if (state.isConnected) {
+            AnimatedContent(
+                targetState = isEmptyContent,
+                transitionSpec = { fadeTransitionSpec() }
+            ) { isEmptyContent ->
+                if (isEmptyContent) {
+                    EmptyStateContent(
+                        image = Res.drawable.dukan_pending,
+                        title = Res.string.dukan_main_content_empty_error_title,
+                        body = Res.string.dukan_main_content_empty_error_body
+                    )
+                } else {
+                    MainScreenSections(
+                        state = state,
+                        bestNearestDukan = bestNearestDukan,
+                        dukans = dukans,
+                        listener = listener
+                    )
+                }
             }
         }
     }
