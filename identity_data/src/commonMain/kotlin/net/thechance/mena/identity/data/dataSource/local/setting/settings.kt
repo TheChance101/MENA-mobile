@@ -31,7 +31,7 @@ internal var Settings.appLanguage: String
     set(value) = putString(APP_LANGUAGE, value)
 
 internal var Settings.appTheme: String
-    get() = getString(APP_THEME, AppTheme.DEFAULT.name)
+    get() = getString(APP_THEME, AppTheme.SYSTEM.name)
     set(value) = putString(APP_THEME, value)
 
 //region keys

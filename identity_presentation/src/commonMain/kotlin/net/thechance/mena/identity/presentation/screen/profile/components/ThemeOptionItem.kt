@@ -67,7 +67,7 @@ fun ThemeOptionItem(
             modifier = Modifier.size(Theme.spacing._24),
             tint = animatedIconTint
         )
-        if (selectedAppTheme!= AppTheme.DEFAULT) {
+        if (selectedAppTheme!= AppTheme.SYSTEM) {
             Text(
                 text = stringResource(mapThemeStringResource(selectedAppTheme.name)),
                 color = animatedTextColor,

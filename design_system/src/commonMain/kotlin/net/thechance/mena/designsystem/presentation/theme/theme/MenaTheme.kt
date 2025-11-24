@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.InternalResourceApi
 @Composable
 fun MenaTheme(
     language: String = AppLanguage.English.iso,
-    appTheme: String = AppTheme.DEFAULT.name,
+    appTheme: String = AppTheme.SYSTEM.name,
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
@@ -38,7 +38,7 @@ fun MenaTheme(
         when (appTheme) {
             AppTheme.LIGHT.name -> LightColorScheme
             AppTheme.DARK.name -> DarkColorScheme
-            AppTheme.DEFAULT.name -> if (isSystemInDarkTheme) DarkColorScheme else LightColorScheme
+            AppTheme.SYSTEM.name -> if (isSystemInDarkTheme) DarkColorScheme else LightColorScheme
             else -> LightColorScheme
         }
     }

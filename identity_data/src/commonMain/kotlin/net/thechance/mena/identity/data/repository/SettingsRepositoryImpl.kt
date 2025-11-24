@@ -55,7 +55,7 @@ class SettingsRepositoryImpl(
         return when (this) {
             AppTheme.DARK.name -> AppTheme.DARK
             AppTheme.LIGHT.name -> AppTheme.LIGHT
-            else -> AppTheme.DEFAULT
+            else -> AppTheme.SYSTEM
         }
     }
 }

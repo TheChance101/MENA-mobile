@@ -15,7 +15,7 @@ fun mapThemeStringResource(name: String): StringResource {
     return when (name) {
         AppTheme.LIGHT.name -> Res.string.profile_theme_light
         AppTheme.DARK.name -> Res.string.profile_theme_dark
-        AppTheme.DEFAULT.name -> Res.string.profile_theme_system
+        AppTheme.SYSTEM.name -> Res.string.profile_theme_system
         else -> Res.string.profile_theme_light
     }
 }
@@ -23,7 +23,7 @@ fun mapThemeDrawableResource(name: String): DrawableResource {
     return when (name) {
         AppTheme.LIGHT.name -> Res.drawable.ic_theme
         AppTheme.DARK.name -> Res.drawable.ic_dark_theme
-        AppTheme.DEFAULT.name -> Res.drawable.ic_system_theme
+        AppTheme.SYSTEM.name -> Res.drawable.ic_system_theme
         else -> Res.drawable.ic_theme
     }
 }

@@ -24,7 +24,7 @@ actual fun SetSystemBarsAppearance(appTheme: AppTheme, isSystemInDarkTheme: Bool
             when (appTheme) {
                 AppTheme.LIGHT -> true
                 AppTheme.DARK -> false
-                AppTheme.DEFAULT -> !isSystemInDarkTheme
+                AppTheme.SYSTEM -> !isSystemInDarkTheme
             }
         controller.isAppearanceLightStatusBars = theme
         controller.isAppearanceLightNavigationBars = theme
