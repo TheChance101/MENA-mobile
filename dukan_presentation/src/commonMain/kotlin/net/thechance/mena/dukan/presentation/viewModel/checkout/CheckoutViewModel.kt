@@ -116,9 +116,10 @@ class CheckoutViewModel(
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
+        val cartDetails = cart.toUiState()
         updateState {
             copy(
-                totalAmount = cart.totalPrice,
+               cartDetails = cartDetails,
                 cartId = cart.id,
                 isConfirmOrderButtonEnabled = true
             )
@@ -129,7 +130,7 @@ class CheckoutViewModel(
         updateState { copy(isConfirmOrderButtonEnabled = false) }
         when (throwable) {
             is NoSuchItemException -> updateState {
-                copy(totalAmount = 0.0)
+                copy(cartDetails = CheckoutUiState.CartDetails())
             }
 
             is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
