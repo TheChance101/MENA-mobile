@@ -53,7 +53,7 @@ fun BestSellingSection(
                             BestSellingItem(
                                 imageUrl = product.imageUrl,
                                 title = product.name,
-                                price = product.price.toString(),
+                                price = product.finalPrice.toString(),
                                 isOutOfStock = product.isOutOfStock,
                                 onClick = { listener.onProductClicked(product.id) },
                                 productAction = {

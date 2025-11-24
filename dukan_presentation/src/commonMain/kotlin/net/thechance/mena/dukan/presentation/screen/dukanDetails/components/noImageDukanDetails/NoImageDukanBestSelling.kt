@@ -156,7 +156,7 @@ private fun BestSellingItem(
             )
             PriceWithIcon(
                 modifier = Modifier.fillMaxWidth(),
-                price = product.price.toString(),
+                price = product.finalPrice.toString(),
                 iconRes = Res.drawable.silver_tc,
                 contentDescription = stringResource(Res.string.koin_icon),
             )
