@@ -31,9 +31,11 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
+import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.component.BackIcon
 import net.thechance.mena.trends.presentation.shared.component.CategoryItem
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
+import net.thechance.mena.trends.presentation.shared.component.NoConnection
 import net.thechance.mena.trends.presentation.shared.component.TrendsAnimatedVisibility
 import net.thechance.mena.trends.presentation.shared.component.UploadPageNumber
 import net.thechance.mena.trends.presentation.shared.util.ObserveAsEffect
@@ -73,22 +75,26 @@ private fun CategoryPublishContent(
         Scaffold(
             topBar = { CategoryPublishAppBar(listener::onClickBack) },
             bottomBar = {
-                PrimaryButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            start = Theme.spacing._16,
-                            end = Theme.spacing._16,
-                            bottom = Theme.spacing._24
-                        ),
-                    text = stringResource(resource = Res.string.upload_video),
-                    onClick = listener::onClickPublish,
-                    isEnabled = state.isPublishButtonEnabled,
-                    isLoading = state.isPublishButtonLoadingVisible,
-                    contentPadding = PaddingValues(vertical = 13.dp)
-                )
+                if (state.error == null)
+                    PrimaryButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = Theme.spacing._16,
+                                end = Theme.spacing._16,
+                                bottom = Theme.spacing._24
+                            ),
+                        text = stringResource(resource = Res.string.upload_video),
+                        onClick = listener::onClickPublish,
+                        isEnabled = state.isPublishButtonEnabled,
+                        isLoading = state.isPublishButtonLoadingVisible,
+                        contentPadding = PaddingValues(vertical = 13.dp)
+                    )
             },
-            content = { CategoryPublishScreenBody(state = state, listener = listener) }
+            content = {
+                if (state.error == ErrorState.NoInternet) NoConnection(onRetry = listener::onClickRetry)
+                else CategoryPublishScreenBody(state = state, listener = listener)
+            }
         )
     }
 
@@ -187,6 +193,7 @@ private fun CategoryPublishScreenPreview() {
                 override fun onClickBack() {}
                 override fun onClickCategory(categoryId: String) {}
                 override fun onClickPublish() {}
+                override fun onClickRetry() {}
             }
         )
     }
