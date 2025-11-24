@@ -3,7 +3,6 @@ package net.thechance.mena.designsystem.presentation.component.textField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -107,15 +106,16 @@ fun MobileNumberLeadingContent(
         )
 
         Text(
-            text = countryCode,
+            text = "\u200E$countryCode",
             style = Theme.typography.label.medium,
             modifier = Modifier.padding(start = 4.dp, end = 2.dp),
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_down),
             contentDescription = "arrow down",
+            tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier.size(16.dp)
         )
     }
