@@ -335,7 +335,7 @@ class MainViewModel(
         emitEffect(MainScreenEffect.NavigateToSelectedDukan(dukanId.toString()))
     }
 
-    private fun setFavoriteState(
+    fun setFavoriteState(
         dukanId: String,
     ) {
         val currentData = editorPickState.value

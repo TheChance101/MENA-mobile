@@ -66,7 +66,7 @@ class DukanDetailsViewModel(
 
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState { copy(hasProductInCart = cart.totalPrice > 0.0) }
+        updateState { copy(hasProductInCart = cart.totalPriceAfterDiscount > 0.0) }
     }
 
 
@@ -224,7 +224,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onBackClicked() {
-        emitEffect(DukanDetailsEffects.NavigateBack)
+        emitEffect(DukanDetailsEffects.NavigateBackWithDukanId)
     }
 
     override fun onShelfClicked(id: String) {
@@ -362,7 +362,12 @@ class DukanDetailsViewModel(
     override fun onFavoriteDukanClicked(dukanId: String) {
         val currentProduct = state.value.dukanInfo
         val isCurrentlyFavorite = currentProduct.isFavorite
-        updateState { copy(dukanInfo.copy(isFavorite = !isCurrentlyFavorite)) }
+        updateState {
+            copy(
+                dukanInfo.copy(isFavorite = !isCurrentlyFavorite),
+                isFavoritePressed = true
+            )
+        }
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(currentProduct.dukanId) },
             onError = ::onErrorUpdateDukanFavorite
