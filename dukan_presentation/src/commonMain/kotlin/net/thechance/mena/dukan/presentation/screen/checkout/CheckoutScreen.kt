@@ -81,7 +81,8 @@ private fun CheckoutContent(
             state.snackBarState?.let {
                 SnackBar(
                     snackBarUiState = it,
-                    onDismiss = listener::onDismissSnackBar
+                    onDismiss = listener::onDismissSnackBar,
+                    onClick = listener::onDismissSnackBar
                 )
             }
         },

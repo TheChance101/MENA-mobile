@@ -324,7 +324,8 @@ private fun ManageDukanSnackbar(
             snackBarState?.let {
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = listener::onSnackBarDismissed
+                    onDismiss = listener::onSnackBarDismissed,
+                    onClick = listener::onSnackBarDismissed
                 )
             }
         }

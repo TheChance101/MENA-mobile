@@ -16,12 +16,12 @@ import mena.dukan_presentation.generated.resources.start_search
 import mena.dukan_presentation.generated.resources.start_search_body
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.shared.SearchHeader
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchCompleteContent
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchEmptyContent
-import net.thechance.mena.dukan.presentation.screen.sharedComponents.SearchHeader
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener
@@ -82,7 +82,8 @@ private fun SearchContent(
             state.snackBarUiState?.let { snackBarUiState ->
                 SnackBar(
                     snackBarUiState = snackBarUiState,
-                    onDismiss = listener::onSnackBarDismissed
+                    onDismiss = listener::onSnackBarDismissed,
+                    onClick = listener::onSnackBarDismissed
                 )
             }
         }

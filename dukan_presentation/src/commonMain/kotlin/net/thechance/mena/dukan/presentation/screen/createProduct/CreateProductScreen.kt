@@ -187,11 +187,9 @@ private fun CreateProductSnackBar(
 ) {
     state.snackBarUiState?.let { snackBarState ->
         SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = interactionListener::onDismissSnackBar),
+            snackBarUiState = snackBarState,
             onDismiss = interactionListener::onDismissSnackBar,
-            snackBarUiState = snackBarState
+            onClick = interactionListener::onDismissSnackBar
         )
     }
 }
