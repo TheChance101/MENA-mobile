@@ -117,7 +117,6 @@ private fun CheckoutDiscountItem(
         Text(
             modifier = Modifier
                 .padding(start = Theme.spacing._8)
-                .fillMaxWidth()
                 .weight(1f),
             text = productName,
             maxLines = 1,
@@ -248,7 +247,6 @@ private fun CheckoutFeeItem(
         Text(
             modifier = Modifier
                 .padding(start = Theme.spacing._8)
-                .fillMaxWidth()
                 .weight(1f),
             text = productName,
             maxLines = 1,
