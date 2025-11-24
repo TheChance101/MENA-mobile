@@ -297,7 +297,7 @@ class DukanDetailsViewModelTest {
         dukanDetailsViewModel.effect.test {
             // When
             dukanDetailsViewModel.onBackClicked()
-            assertEquals(DukanDetailsEffects.NavigateBackWithFavorite, awaitItem())
+            assertEquals(DukanDetailsEffects.NavigateBackWithDukanId, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }

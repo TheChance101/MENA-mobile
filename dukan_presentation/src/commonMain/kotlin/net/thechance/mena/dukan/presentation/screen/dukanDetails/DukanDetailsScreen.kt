@@ -34,7 +34,7 @@ fun DukanDetailsScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            DukanDetailsEffects.NavigateBackWithFavorite -> {
+            DukanDetailsEffects.NavigateBackWithDukanId -> {
                 if (state.isFavoritePressed) {
                     navController.previousBackStackEntry?.savedStateHandle?.set(
                         DukanDetailsArgs.DUKAN_ID,

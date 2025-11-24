@@ -224,7 +224,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onBackClicked() {
-        emitEffect(DukanDetailsEffects.NavigateBackWithFavorite)
+        emitEffect(DukanDetailsEffects.NavigateBackWithDukanId)
     }
 
     override fun onShelfClicked(id: String) {
