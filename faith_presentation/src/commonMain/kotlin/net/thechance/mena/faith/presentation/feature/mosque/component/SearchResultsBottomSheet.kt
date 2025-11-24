@@ -37,7 +37,6 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -167,7 +166,7 @@ private fun Preview() {
                             name = "Al Eman Mosque",
                             imageUrl = "",
                             distance = 12.4,
-                            coordinate = Coordinate(0.0, 0.0)
+                            coordinate = MosqueUiState.Coordinate(0.0, 0.0)
                         )
                     )
                 }

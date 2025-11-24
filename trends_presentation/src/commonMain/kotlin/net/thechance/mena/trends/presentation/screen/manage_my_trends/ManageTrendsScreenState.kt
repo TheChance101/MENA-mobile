@@ -10,14 +10,14 @@ import org.jetbrains.compose.resources.StringResource
 internal data class ManageTrendsScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
-    val reels: Flow<PagingData<ReelUiState>> = flowOf(),
-    val favoriteReels: Flow<PagingData<ReelUiState>> = flowOf(),
+    val trends: Flow<PagingData<TrendUiState>> = flowOf(),
+    val favoriteTrends: Flow<PagingData<TrendUiState>> = flowOf(),
     val profile: UserInfoUiState = UserInfoUiState(),
     val currentTab: String = "",
     val errorMessage: StringResource? = null,
     val selectedTab: SelectTab = SelectTab.MyTrends
 )
-internal data class ReelUiState(
+internal data class TrendUiState(
     val id: String,
     val thumbnailUrl: String,
 )

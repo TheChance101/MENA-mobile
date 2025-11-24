@@ -19,7 +19,7 @@ import app.cash.paging.compose.LazyPagingItems
 import app.cash.paging.compose.collectAsLazyPagingItems
 import app.cash.paging.compose.itemKey
 import mena.trends_presentation.generated.resources.Res
-import mena.trends_presentation.generated.resources.add_reel
+import mena.trends_presentation.generated.resources.add_trend
 import mena.trends_presentation.generated.resources.edit_tags
 import mena.trends_presentation.generated.resources.ic_account_setting
 import mena.trends_presentation.generated.resources.ic_add_real
@@ -36,7 +36,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.navigation.LocalNavController
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.home.component.EmptyTrends
-import net.thechance.mena.trends.presentation.screen.home.component.FeedReelCard
+import net.thechance.mena.trends.presentation.screen.home.component.FeedTrendCard
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
 import net.thechance.mena.trends.presentation.shared.base.toErrorState
 import net.thechance.mena.trends.presentation.shared.component.LoadingProgressBar
@@ -57,21 +57,21 @@ internal fun HomeScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            is HomeUiEffect.NavigateToReelDetails ->
-                navController.navigate(Route.ReelDetails(effect.trendId, source = Route.ReelSource.Home.name))
+            is HomeUiEffect.NavigateToTrendDetails ->
+                navController.navigate(Route.TrendDetails(effect.trendId, source = Route.TrendSource.Home.name))
 
-            is HomeUiEffect.NavigateToAddReel ->
-                navController.navigate(Route.UploadReel)
+            is HomeUiEffect.NavigateToAddTrend ->
+                navController.navigate(Route.UploadTrend)
 
             is HomeUiEffect.NavigateToChangeTags ->
                 navController.navigate(Route.UpdateCategories)
 
             is HomeUiEffect.NavigateToManageMyTrends ->
-                navController.navigate(Route.ManageReels)
+                navController.navigate(Route.ManageTrends)
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.getFeedReels() }
+    LaunchedEffect(Unit) { viewModel.getFeedTrends() }
 
     HomeScreenContent(
         state = state,
@@ -94,19 +94,19 @@ private fun HomeScreenContent(
             }
         }
     ) {
-        val reels = state.reels.collectAsLazyPagingItems()
+        val trends = state.trends.collectAsLazyPagingItems()
         val listState = rememberLazyListState()
 
-        val hasNetworkError = reels.loadState.refresh.toErrorState() == ErrorState.NoInternet
-                && reels.itemSnapshotList.isEmpty()
+        val hasNetworkError = trends.loadState.refresh.toErrorState() == ErrorState.NoInternet
+                && trends.itemSnapshotList.isEmpty()
 
-        val shouldShowEmptyState = reels.itemSnapshotList.isEmpty() &&
-                reels.loadState.refresh is LoadState.NotLoading &&
-                reels.loadState.refresh.toErrorState() == null
+        val shouldShowEmptyState = trends.itemSnapshotList.isEmpty() &&
+                trends.loadState.refresh is LoadState.NotLoading &&
+                trends.loadState.refresh.toErrorState() == null
 
         Box(modifier = Modifier.fillMaxSize()) {
             TrendsAnimatedVisibility(
-                visible = reels.loadState.refresh is LoadState.Loading,
+                visible = trends.loadState.refresh is LoadState.Loading,
                 content = { LoadingProgressBar() }
             )
 
@@ -121,12 +121,12 @@ private fun HomeScreenContent(
             )
 
             TrendsAnimatedVisibility(
-                visible = reels.itemSnapshotList.isNotEmpty() && reels.loadState.refresh !is LoadState.Loading,
+                visible = trends.itemSnapshotList.isNotEmpty() && trends.loadState.refresh !is LoadState.Loading,
                 content = {
-                    ReelsListSection(
-                        reels = reels,
+                    TrendsListSection(
+                        trends = trends,
                         onClickLike = listener::onClickLike,
-                        onClickReel = listener::onClickReel,
+                        onClickTrend = listener::onClickTrend,
                         onExpandDescription = listener::onClickExpandDescription,
                         listState = listState,
                         onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail,
@@ -136,8 +136,8 @@ private fun HomeScreenContent(
 
             TrendsAnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomEnd),
-                visible = !hasNetworkError && reels.loadState.refresh !is LoadState.Loading,
-                content = { AddTrendFAB(onClickFab = { listener.onClickAddReel() }) }
+                visible = !hasNetworkError && trends.loadState.refresh !is LoadState.Loading,
+                content = { AddTrendFAB(onClickFab = { listener.onClickAddTrend() }) }
             )
         }
     }
@@ -150,7 +150,7 @@ private fun AddTrendFAB(
 ) {
     FabButton(
         painter = painterResource(Res.drawable.ic_add_real),
-        contentDescription = stringResource(Res.string.add_reel),
+        contentDescription = stringResource(Res.string.add_trend),
         onClick = onClickFab,
         modifier = modifier
             .padding(Theme.spacing._16),
@@ -158,13 +158,13 @@ private fun AddTrendFAB(
 }
 
 @Composable
-private fun ReelsListSection(
-    reels: LazyPagingItems<ReelUiState>,
+private fun TrendsListSection(
+    trends: LazyPagingItems<TrendUiState>,
     listState: LazyListState,
-    onClickLike: (reelId: String, isLiked: Boolean) -> Unit,
-    onClickReel: (reelId: String) -> Unit,
-    onGetRefreshedThumbnail: (reelId: String) -> Unit,
-    onExpandDescription: (reelId: String) -> Unit
+    onClickLike: (trendId: String, isLiked: Boolean) -> Unit,
+    onClickTrend: (trendId: String) -> Unit,
+    onGetRefreshedThumbnail: (trendId: String) -> Unit,
+    onExpandDescription: (trendId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -173,16 +173,16 @@ private fun ReelsListSection(
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._16)
     ) {
         items(
-            count = reels.itemCount,
-            key = reels.itemKey { it.id }
+            count = trends.itemCount,
+            key = trends.itemKey { it.id }
         ) { index ->
-            reels[index]?.let { reel ->
-                FeedReelCard(
-                    reel = reel,
-                    onClickLike = { onClickLike(reel.id, reel.isLiked) },
-                    onClickReel = { onClickReel(reel.id) },
-                    onExpandDescription = { onExpandDescription(reel.id) },
-                    onRequestRefresh = { onGetRefreshedThumbnail(reel.id) },
+            trends[index]?.let { trend ->
+                FeedTrendCard(
+                    trend = trend,
+                    onClickLike = { onClickLike(trend.id, trend.isLiked) },
+                    onClickTrend = { onClickTrend(trend.id) },
+                    onExpandDescription = { onExpandDescription(trend.id) },
+                    onRequestRefresh = { onGetRefreshedThumbnail(trend.id) },
                 )
             }
         }
@@ -230,14 +230,14 @@ private fun HomeScreenPreview() {
             HomeScreenContent(
                 state = HomeScreenState(),
                 listener = object : HomeInteractionListener {
-                    override fun onClickLike(reelId: String, isLiked: Boolean) {}
-                    override fun onClickAddReel() {}
+                    override fun onClickLike(trendId: String, isLiked: Boolean) {}
+                    override fun onClickAddTrend() {}
                     override fun onClickEditTags() {}
                     override fun onClickManageMyTrends() {}
-                    override fun onClickReel(reelId: String) {}
+                    override fun onClickTrend(trendId: String) {}
                     override fun onClickRetry() {}
-                    override fun onClickExpandDescription(reelId: String) {}
-                    override fun onGetRefreshedThumbnail(reelId: String) {}
+                    override fun onClickExpandDescription(trendId: String) {}
+                    override fun onGetRefreshedThumbnail(trendId: String) {}
                 }
             )
         }

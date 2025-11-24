@@ -34,7 +34,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
             Navigator(initialScreen) { navigator ->
                 val current = navigator.lastItem
                 LaunchedEffect(current.key) {
-                    updateBottomNavigationVisibility(current == initialScreen)
+                    updateBottomNavigationVisibility(current is ProfileScreen)
                 }
 
                 FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
@@ -59,6 +59,13 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 targetScreen = initialScreen,
                 defaultScreen = loginScreen
             )
+        }
+    }
+
+    @Composable
+    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
+        IdentityFeatureRoot {
+            Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
         }
     }
 
@@ -147,10 +154,5 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 phoneNumber = lastPhoneNumber
             )
         }
-    }
-
-    @Composable
-    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
     }
 }

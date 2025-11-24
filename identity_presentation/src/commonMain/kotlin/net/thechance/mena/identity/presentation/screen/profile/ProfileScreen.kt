@@ -205,8 +205,12 @@ class ProfileScreen : BaseScreen<
         snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
-            ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
-                navigator.push(EditUserProfileScreen())
+            is ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
+                navigator.push(
+                    EditUserProfileScreen(
+                        userInfo = effect.userInfo
+                    )
+                )
             }
 
             ProfileScreenUIEffect.NavigateToLocationPickerScreen -> {

@@ -196,7 +196,7 @@ private fun Content(
                 ) {
                     SearchMosquesButton(onClick = {
                         listener.onSearchByCoordinates(
-                            coordinate = Coordinate(
+                            coordinate = MosqueUiState.Coordinate(
                                 latitude = uiState.centerOfMap?.latitude ?: 0.0,
                                 longitude = uiState.centerOfMap?.longitude ?: 0.0
                             )
@@ -263,8 +263,8 @@ private fun Preview() {
                     override fun onAddMosqueClick() {}
                     override fun getUserLocation() {}
                     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-                    override fun onViewOnMapClick(coordinate: Coordinate) {}
-                    override fun onSearchByCoordinates(coordinate: Coordinate) {}
+                    override fun onViewOnMapClick(coordinate: MosqueUiState.Coordinate) {}
+                    override fun onSearchByCoordinates(coordinate: MosqueUiState.Coordinate) {}
                     override fun onSearchResultClick(mosque: MosqueUiState) {}
                     override fun onQueryChange(query: String) {}
                     override fun onSearchSubmit() {}

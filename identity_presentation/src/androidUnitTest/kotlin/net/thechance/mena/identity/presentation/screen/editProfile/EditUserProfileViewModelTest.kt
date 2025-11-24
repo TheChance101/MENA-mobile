@@ -63,28 +63,11 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     }
 
     @Test
-    fun `user information should be updated, when init called`() = runTest {
-        coEvery { userRepository.getUser() } returns flowOf(fakeUser)
-
-        viewModel
+    fun `user information should be updated, when getInitialUserInfo called`() = runTest {
+        viewModel.getInitialUserInfo(user = fakeUser)
         testDispatcher.scheduler.advanceUntilIdle()
 
         assertThat(viewModel.state.value.firstName).isEqualTo("User")
-        coVerify(exactly = 1) { userRepository.getUser() }
-    }
-
-    @Test
-    fun `ShowSnackBarError should be sent, when init throws Exception`() = runTest {
-        coEvery { userRepository.getUser() } throws Exception()
-
-        viewModel
-
-        viewModel.effect.test {
-            testDispatcher.scheduler.advanceUntilIdle()
-            assertThat(awaitItem()).isInstanceOf(EditUserProfileUIEffect.ShowSnackBarError::class)
-        }
-
-        coVerify(exactly = 1) { userRepository.getUser() }
     }
 
     @Test
