@@ -50,6 +50,7 @@ import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.exception.SendMessageFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
+import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.service.QuranService
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -164,7 +165,7 @@ class MessageRepositoryImpl(
                 }
             }
 
-            val page = response.toPagedListOfMessages(quranService)
+            val page = response.toPagedListOfMessages()
 
             updateLocalMessages(chatId, page.data)
 
