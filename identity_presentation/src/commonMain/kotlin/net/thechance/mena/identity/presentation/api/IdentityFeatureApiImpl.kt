@@ -63,6 +63,13 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
     }
 
     @Composable
+    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
+        IdentityFeatureRoot {
+            Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
+        }
+    }
+
+    @Composable
     private fun IdentityFeatureRoot(content: @Composable () -> Unit) {
         val snackBarController = remember { IdentitySnackBarController() }
 
@@ -147,10 +154,5 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 phoneNumber = lastPhoneNumber
             )
         }
-    }
-
-    @Composable
-    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
     }
 }
