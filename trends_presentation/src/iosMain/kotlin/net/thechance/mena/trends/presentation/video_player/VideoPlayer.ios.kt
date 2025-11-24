@@ -35,7 +35,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
-import net.thechance.mena.trends.presentation.screen.user_reel.ReelWatchSessionState
+import net.thechance.mena.trends.presentation.screen.user_trend.TrendWatchSessionState
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.utils.getCurrentTime
 import org.jetbrains.compose.resources.painterResource
@@ -73,13 +73,13 @@ private const val DELAY_TIME = 250L
 @Composable
 actual fun VideoPlayer(
     url: String,
-    isReelVisible: Boolean,
+    isTrendVisible: Boolean,
     modifier: Modifier,
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
     onNetworkError: () -> Unit,
-    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
+    saveTrendWatchSession: (TrendWatchSessionState) -> Unit,
     content: @Composable (() -> Unit)
 ) {
     var lastPosition by rememberSaveable(url) { mutableStateOf(0.0) }
@@ -102,7 +102,7 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-    val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val trendWatchSessionState = remember(url) { TrendWatchSessionState() }
     val isWatchedToEnd = remember { mutableStateOf(false) }
 
     val headers = mapOf("X-ACCESS-KEY" to trendStorageAccessSecret)
@@ -166,22 +166,22 @@ actual fun VideoPlayer(
         }
     }
 
-    LaunchedEffect(url, isReelVisible) {
+    LaunchedEffect(url, isTrendVisible) {
         replayReelWhenFinishedAutomatic(player) { isWatchedToEnd.value = true }
 
-        if (isReelVisible) {
+        if (isTrendVisible) {
             if (lastPosition > 0.0) {
                 val time = CMTimeMakeWithSeconds(lastPosition, PREFERRED_TIME_SCALE)
                 player.seekToTime(time)
             }
             player.play()
             isPaused = false
-            reelWatchSessionState.watchStartTime = getCurrentTime()
+            trendWatchSessionState.watchStartTime = getCurrentTime()
         } else {
             lastPosition = CMTimeGetSeconds(player.currentTime())
             player.pause()
             isPaused = true
-            reelWatchSessionState.watchEndTime = getCurrentTime()
+            trendWatchSessionState.watchEndTime = getCurrentTime()
         }
 
         onVideoPlaying()
@@ -217,7 +217,7 @@ actual fun VideoPlayer(
             val currentItem = player.currentItem
             if (currentItem != null) {
                 val totalSeconds = CMTimeGetSeconds(currentItem.duration)
-                reelWatchSessionState.videoDurationInMilliseconds = duration.toLong()
+                trendWatchSessionState.videoDurationInMilliseconds = duration.toLong()
                 if (!totalSeconds.isNaN() && totalSeconds > 0.0) {
                     duration = totalSeconds
                     val currentSeconds = CMTimeGetSeconds(player.currentTime())
@@ -304,10 +304,10 @@ actual fun VideoPlayer(
     DisposableEffect(Unit) {
         onDispose {
             lastPosition = CMTimeGetSeconds(player.currentTime())
-            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+            if (!isWatchedToEnd.value) trendWatchSessionState.watchedDurationInMilliseconds =
                 lastPosition.toLong()
-            reelWatchSessionState.watchEndTime = getCurrentTime()
-            saveReelWatchSession(reelWatchSessionState)
+            trendWatchSessionState.watchEndTime = getCurrentTime()
+            saveTrendWatchSession(trendWatchSessionState)
             player.pause()
         }
     }

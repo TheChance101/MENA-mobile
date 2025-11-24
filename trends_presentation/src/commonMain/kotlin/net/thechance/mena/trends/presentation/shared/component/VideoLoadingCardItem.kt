@@ -38,7 +38,7 @@ import net.thechance.mena.designsystem.presentation.component.progressBar.Progre
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState
+import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendScreenState
 import net.thechance.mena.trends.presentation.shared.model.VideoAction
 import net.thechance.mena.trends.presentation.shared.util.isFailed
 import net.thechance.mena.trends.presentation.shared.util.isSuccess
@@ -52,7 +52,7 @@ fun VideoLoadingCardItem(
     title: String,
     sizeUploaded: String,
     videoSize: String,
-    uploadingState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadTrendScreenState.UploadingTrendState,
     progress: Float,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
@@ -129,7 +129,7 @@ private fun VideoInfoSection(
     title: String,
     sizeUploaded: String,
     videoSize: String,
-    uploadingState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadTrendScreenState.UploadingTrendState,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -144,8 +144,8 @@ private fun VideoInfoSection(
         )
 
         when (uploadingState) {
-            UploadReelScreenState.UploadingReelState.UPLOADING,
-            UploadReelScreenState.UploadingReelState.SUCCESS -> {
+            UploadTrendScreenState.UploadingTrendState.UPLOADING,
+            UploadTrendScreenState.UploadingTrendState.SUCCESS -> {
                 Text(
                     text = "$sizeUploaded/$videoSize",
                     color = Theme.colorScheme.shadeSecondary,
@@ -154,7 +154,7 @@ private fun VideoInfoSection(
 
             }
 
-            UploadReelScreenState.UploadingReelState.FAILED -> {
+            UploadTrendScreenState.UploadingTrendState.FAILED -> {
                 Text(
                     text = stringResource(Res.string.upload_failed),
                     color = Theme.colorScheme.border.error,
@@ -162,14 +162,14 @@ private fun VideoInfoSection(
                 )
             }
 
-            UploadReelScreenState.UploadingReelState.IDLE -> {}
+            UploadTrendScreenState.UploadingTrendState.IDLE -> {}
         }
     }
 }
 
 @Composable
 private fun VideoActionsSection(
-    uploadingState: UploadReelScreenState.UploadingReelState,
+    uploadingState: UploadTrendScreenState.UploadingTrendState,
     modifier: Modifier = Modifier,
     onAction: (VideoAction) -> Unit
 ) {
@@ -231,10 +231,10 @@ private fun VideoActionsSection(
 fun VideoUploadSuccessPreview() {
     MenaTheme {
         VideoLoadingCardItem(
-            title = "Upload Reel",
+            title = "Upload Trend",
             sizeUploaded = "20 MB",
             videoSize = "20 MB",
-            uploadingState = UploadReelScreenState.UploadingReelState.SUCCESS,
+            uploadingState = UploadTrendScreenState.UploadingTrendState.SUCCESS,
             progress = 1f,
             onAction = {}
         )

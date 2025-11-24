@@ -5,10 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.trends.domain.entity.Category
 import net.thechance.mena.trends.domain.repository.CategoryRepository
-import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.repository.TrendsRepository
 import net.thechance.mena.trends.presentation.screen.category_publish.args.CategoryPublishArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
-import net.thechance.mena.trends.presentation.shared.model.mapper.toReelCategoryUiState
+import net.thechance.mena.trends.presentation.shared.model.mapper.toTrendCategoryUiState
 import net.thechance.mena.trends.presentation.shared.model.toggleCategory
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -17,7 +17,7 @@ import org.koin.core.annotation.Provided
 internal class CategoryPublishViewModel(
     @Provided private val categoryPublishArgs: CategoryPublishArgs,
     @Provided private val categoryRepository: CategoryRepository,
-    @Provided private val reelsRepository: ReelsRepository,
+    @Provided private val trendsRepository: TrendsRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<CategoryPublishState, CategoryPublishEffect>(
     initialState = CategoryPublishState()
@@ -39,7 +39,7 @@ internal class CategoryPublishViewModel(
     }
 
     private fun handleLoadCategoriesSuccess(categories: List<Category>) {
-        updateState { copy(categories = categories.toReelCategoryUiState()) }
+        updateState { copy(categories = categories.toTrendCategoryUiState()) }
     }
 
     override fun onClickBack() = sendEffect(CategoryPublishEffect.NavigateBack)
@@ -50,7 +50,7 @@ internal class CategoryPublishViewModel(
 
     override fun onClickPublish() {
         tryToExecute(
-            block = { updateReel() },
+            block = { updateTrend() },
             onSuccess = { sendEffect(CategoryPublishEffect.NavigateToHome) },
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isPublishButtonLoadingVisible = true) } },
@@ -59,13 +59,13 @@ internal class CategoryPublishViewModel(
         )
     }
 
-    private suspend fun updateReel() {
+    private suspend fun updateTrend() {
         val selectedIds =  state.value.categories
             .filter { it.isSelected }
             .mapNotNull { it.value.id }
 
         if (selectedIds.isNotEmpty()) {
-            reelsRepository.updateReelById(
+            trendsRepository.updateTrendById(
                 id = categoryPublishArgs.trendId,
                 description = categoryPublishArgs.description,
                 categoryIds = selectedIds

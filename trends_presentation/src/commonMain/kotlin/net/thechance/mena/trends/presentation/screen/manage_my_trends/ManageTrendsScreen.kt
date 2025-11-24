@@ -1,7 +1,6 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -93,7 +91,7 @@ internal fun ManageTrendsScreen(
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
                 navController.navigate(
-                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource.name)
+                    Route.TrendDetails(trendId = effect.trendId, source = effect.trendSource.name)
                 )
             }
         }
@@ -123,8 +121,8 @@ private fun ManageTrendsScreenContent(
         },
         content = {
             val trends = when (state.selectedTab) {
-                SelectTab.MyTrends -> state.reels
-                SelectTab.Favorites -> state.favoriteReels
+                SelectTab.MyTrends -> state.trends
+                SelectTab.Favorites -> state.favoriteTrends
             }.collectAsLazyPagingItems()
 
             TrendsAnimatedVisibility(
@@ -149,7 +147,7 @@ private fun ManageTrendsScreenContent(
 private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
     state: ManageTrendsScreenState,
-    trends: LazyPagingItems<ReelUiState>
+    trends: LazyPagingItems<TrendUiState>
 ) {
     val cardWidth = 106.dp
     val gridState = rememberLazyGridState()
@@ -223,7 +221,7 @@ private fun ManageTrendsScreenBody(
                 trends[index]?.let { trend ->
                     TrendItem(
                         item = trend,
-                        onTrendClick = listener::onClickReel,
+                        onTrendClick = listener::onClickTrend,
                         onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
@@ -334,9 +332,9 @@ private fun EmptyProfilePicture(defaultPainter: Painter) {
 
 @Composable
 private fun TrendItem(
-    item: ReelUiState,
+    item: TrendUiState,
     onTrendClick: (id: String) -> Unit,
-    onGetRefreshedThumbnail: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: (trendId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f

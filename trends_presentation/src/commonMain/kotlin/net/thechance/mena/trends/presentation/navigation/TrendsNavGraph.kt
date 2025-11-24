@@ -27,8 +27,8 @@ import net.thechance.mena.trends.presentation.screen.home.HomeScreen
 import net.thechance.mena.trends.presentation.screen.main_container.MainContainerScreen
 import net.thechance.mena.trends.presentation.screen.manage_my_trends.ManageTrendsScreen
 import net.thechance.mena.trends.presentation.screen.update_categories.UpdateCategoriesScreen
-import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreen
-import net.thechance.mena.trends.presentation.screen.user_reel.UserReelScreen
+import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendScreen
+import net.thechance.mena.trends.presentation.screen.user_trend.UserTrendScreen
 import net.thechance.mena.trends.presentation.screen.video_description.VideoDescriptionScreen
 import net.thechance.mena.trends.presentation.shared.component.snackbar.TrendsSnackBar
 import net.thechance.mena.trends.presentation.shared.util.LocalImageLoader
@@ -81,16 +81,16 @@ fun TrendsNavHost(
                     CategoryPickScreen()
                 }
 
-                composable<Route.ManageReels> {
+                composable<Route.ManageTrends> {
                     ManageTrendsScreen()
                 }
 
-                composable<Route.ReelDetails> {
-                    UserReelScreen()
+                composable<Route.TrendDetails> {
+                    UserTrendScreen()
                 }
 
-                composable<Route.UploadReel> {
-                    UploadReelScreen()
+                composable<Route.UploadTrend> {
+                    UploadTrendScreen()
                 }
 
                 composable<Route.VideoDescription> {
