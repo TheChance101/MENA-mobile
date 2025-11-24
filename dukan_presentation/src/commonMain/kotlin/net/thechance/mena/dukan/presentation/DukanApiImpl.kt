@@ -10,8 +10,10 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 class DukanApiImpl : DukanApi {
     @Composable
-    override fun TabEntry() {
-        DukanNavHost()
+    override fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
+        DukanNavHost(
+            updateBottomNavigationVisibility = updateBottomNavigationVisibility
+        )
     }
 
     @Composable

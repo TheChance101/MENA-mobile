@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
@@ -69,7 +70,8 @@ fun LazyGridScope.wideImageProductsGrid(
             ProductCard(
                 imageUrl = product.imageUrl,
                 title = product.name,
-                price = "${product.price}",
+                basePrice = product.basePrice,
+                finalPrice = product.finalPrice,
                 isOutOfStock = product.isOutOfStock,
                 onClick = { listener.onProductClicked(product.id) },
                 productAction = {
@@ -109,7 +111,8 @@ fun LazyGridScope.wideImageProductsGrid(
 private fun ProductCard(
     imageUrl: String,
     title: String,
-    price: String,
+    basePrice: Double,
+    finalPrice: Double,
     isOutOfStock: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
@@ -184,8 +187,19 @@ private fun ProductCard(
                     tint = Theme.colorScheme.shadePrimary,
                     modifier = Modifier.padding(end = Theme.spacing._4)
                 )
+                if (basePrice > finalPrice) {
+                    Text(
+                        text = basePrice.toString(),
+                        style = Theme.typography.label.extraSmall.copy(
+                            textDecoration = TextDecoration.LineThrough
+                        ),
+                        color = Theme.colorScheme.shadeTertiary,
+                        modifier = Modifier.padding(end = Theme.spacing._4)
+                    )
+                }
+
                 PriceWithIcon(
-                    price = price,
+                    price = finalPrice.toString(),
                     iconRes = Res.drawable.silver_tc,
                     contentDescription = stringResource(Res.string.koin_icon),
                 )
@@ -199,47 +213,47 @@ private fun ProductCard(
 @Composable
 private fun BoxScope.OutOfStockLabel() {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = Theme.spacing._8)
-                .offset(x = -Theme.spacing._8)
-                .clip(SquircleShape(topStart = 6.dp, bottomEnd = 6.dp, topEnd = 6.dp))
-                .background(Theme.colorScheme.brand.brand)
-                .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._8)
-        ) {
-            Text(
-                text = stringResource(Res.string.out_of_stock),
-                style = Theme.typography.label.extraSmall,
-                color = Theme.colorScheme.primary.onPrimary,
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopStart)
+            .padding(top = Theme.spacing._8)
+            .offset(x = -Theme.spacing._8)
+            .clip(SquircleShape(topStart = 6.dp, bottomEnd = 6.dp, topEnd = 6.dp))
+            .background(Theme.colorScheme.brand.brand)
+            .padding(vertical = Theme.spacing._4, horizontal = Theme.spacing._8)
+    ) {
+        Text(
+            text = stringResource(Res.string.out_of_stock),
+            style = Theme.typography.label.extraSmall,
+            color = Theme.colorScheme.primary.onPrimary,
+        )
+    }
+    Box(
+        modifier = Modifier
+            .padding(top = 30.dp)
+            .align(Alignment.TopStart)
+            .size(8.dp)
+            .offset(x = (-8).dp, y = ((-1).dp))
+    ) {
+        val badgeColor = Theme.colorScheme.brand.brand
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val path = Path().apply {
+                if (isRtl) {
+                    moveTo(0f, 0f)
+                    lineTo(0f, size.height)
+                    lineTo(size.width, 0f)
+                } else {
+                    moveTo(size.width, 0f)
+                    lineTo(size.width, size.height)
+                    lineTo(0f, 0f)
+                }
+                close()
+            }
+            drawPath(
+                path = path,
+                color = badgeColor
             )
         }
-        Box(
-            modifier = Modifier
-                .padding(top = 30.dp)
-                .align(Alignment.TopStart)
-                .size(8.dp)
-                .offset(x = (-8).dp, y = ((-1).dp))
-        ) {
-            val badgeColor = Theme.colorScheme.brand.brand
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val path = Path().apply {
-                    if (isRtl) {
-                        moveTo(0f, 0f)
-                        lineTo(0f, size.height)
-                        lineTo(size.width, 0f)
-                    } else {
-                        moveTo(size.width, 0f)
-                        lineTo(size.width, size.height)
-                        lineTo(0f, 0f)
-                    }
-                    close()
-                }
-                drawPath(
-                    path = path,
-                    color = badgeColor
-                )
-            }
     }
 }
 
@@ -252,7 +266,8 @@ private fun ProductCardPreview() {
         ProductCard(
             imageUrl = "https://via.placeholder.com/160x240",
             title = "Fresh Red Apples",
-            price = "$1.99",
+            basePrice = 1.99,
+            finalPrice = 0.99,
             modifier = Modifier.padding(8.dp),
             productAction = {
                 SmallAndWideImageDukanProductAction(

@@ -166,7 +166,8 @@ class UsersManagementViewModel(
                     page = result.currentPage,
                     totalPages = result.totalPages
                 ),
-                errorState = null
+                errorState = null,
+                totalUsers = result.totalElements
             )
         }
     }

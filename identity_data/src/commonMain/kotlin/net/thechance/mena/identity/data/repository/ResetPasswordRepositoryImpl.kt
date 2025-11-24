@@ -22,7 +22,7 @@ class ResetPasswordRepositoryImpl(
                     OtpRequestDto(
                         phoneNumber.getFormattedPhoneNumber(),
                         countryCodeName
-                    ), REQUEST_OTP
+                    ), RESET_PASSWORD_REQUEST_OTP
                 )
             sessionId = response.sessionId
         }
@@ -34,7 +34,7 @@ class ResetPasswordRepositoryImpl(
                 VerifyOtpRequestDto(
                     otpCode,
                     sessionId
-                ), VERIFY_OTP
+                ), RESET_PASSWORD_VERIFY_OTP
             )
         }
     }
@@ -49,8 +49,8 @@ class ResetPasswordRepositoryImpl(
     }
 
     companion object {
-        const val REQUEST_OTP = "identity/authentication/request-reset-password-otp"
-        const val VERIFY_OTP = "identity/authentication/verify-reset-password-otp"
+        const val RESET_PASSWORD_REQUEST_OTP = "identity/authentication/request-reset-password-otp"
+        const val RESET_PASSWORD_VERIFY_OTP = "identity/authentication/verify-reset-password-otp"
         const val RESET_PASSWORD = "identity/authentication/reset-password"
     }
 }

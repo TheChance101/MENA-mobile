@@ -38,11 +38,12 @@ fun ManageDukanProductsList(
             products[index]?.let { product ->
                 ProductCard(
                     modifier = Modifier.animateItem(),
-                    productName = product.name,
-                    productImageUrl = product.imageUrl,
-                    productDescription = product.description.orEmpty(),
-                    productPrice = product.price,
-                    productCardBackground = Theme.colorScheme.background.surfaceLow,
+                    name = product.name,
+                    imageUrl = product.imageUrl,
+                    description = product.description.orEmpty(),
+                    basePrice = product.basePrice,
+                    finalPrice = product.finalPrice,
+                    backgroundColor = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = { onEditProductClick(product.id) }) },
                     onProductClick = { onProductClick(product) },
                     isOutOfStock = product.isOutOfStock
@@ -61,11 +62,12 @@ private fun ManageDukanProductsLayoutPreview() {
                 val product = fakeProducts[index]
                 ProductCard(
                     modifier = Modifier.padding(vertical = Theme.spacing._4),
-                    productName = product.name,
-                    productImageUrl = product.imageUrl,
-                    productDescription = product.description,
-                    productPrice = product.price,
-                    productCardBackground = Theme.colorScheme.background.surfaceLow,
+                    name = product.name,
+                    imageUrl = product.imageUrl,
+                    description = product.description,
+                    basePrice = product.basePrice,
+                    finalPrice = product.finalPrice,
+                    backgroundColor = Theme.colorScheme.background.surfaceLow,
                     productAction = { EditProductIcon(onClick = {}) },
                     onProductClick = {},
                     isOutOfStock = product.isOutOfStock

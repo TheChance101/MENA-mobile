@@ -18,8 +18,11 @@ data class UsersManagementScreenState(
     val errorState: ErrorState? = null,
     val snackBar: SnackBarState = SnackBarState(),
     val isBlockDialogShown: Boolean = false,
-    val selectedUserId: Uuid? = null
+    val selectedUserId: Uuid? = null,
+    val totalUsers : Int = 0,
 ) {
+    val isSortingDisabled = totalUsers < 2
+
     data class UserPageInfo(
         val page: Int = 0,
         val totalPages: Int = 1

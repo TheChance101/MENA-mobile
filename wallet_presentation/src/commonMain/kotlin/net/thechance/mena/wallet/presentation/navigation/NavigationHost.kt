@@ -7,13 +7,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import net.thechance.mena.identity.domain.service.AppThemeService
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.wallet.domain.exceptions.UnknownNetworkException
 import net.thechance.mena.wallet.presentation.navigation.navType.StorageLocationNavType
 import net.thechance.mena.wallet.presentation.screen.confirm_payment.ConfirmPaymentScreen
@@ -25,6 +28,7 @@ import net.thechance.mena.wallet.presentation.screen.transaction_details.Transac
 import net.thechance.mena.wallet.presentation.screen.transaction_history.TransactionHistoryScreen
 import net.thechance.mena.wallet.presentation.screen.wallet.WalletMainScreen
 import net.thechance.mena.wallet.presentation.utils.StorageLocation
+import org.koin.compose.koinInject
 import kotlin.reflect.typeOf
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -36,10 +40,12 @@ fun NavigationHost(
     startDestination: WalletRoute = WalletMainScreenRoute,
     navigateBack: () -> Unit = {},
     updateBottomNavigationVisibility: (Boolean) -> Unit,
+    appThemeService: AppThemeService = koinInject()
 ) {
     val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryAsState()
-
+    val currentTheme by appThemeService.observeAppTheme().collectAsStateWithLifecycle()
+    val isDarkTheme = currentTheme == AppTheme.DARK
     LaunchedEffect(currentRoute) {
         currentRoute?.destination?.route.let { route ->
             updateBottomNavigationVisibility(RoutesWithBottomNavigation.contains(route))
@@ -47,7 +53,8 @@ fun NavigationHost(
     }
 
     CompositionLocalProvider(
-        LocalNavController provides navController
+        LocalNavController provides navController,
+        LocalDarkTheme provides isDarkTheme
     ) {
         NavHost(
             navController = navController,
@@ -94,6 +101,7 @@ fun NavigationHost(
     }
 }
 
+val LocalDarkTheme = compositionLocalOf { false }
 val LocalNavController = compositionLocalOf<NavController> {
     throw UnknownNetworkException("nav controller not provided")
 }

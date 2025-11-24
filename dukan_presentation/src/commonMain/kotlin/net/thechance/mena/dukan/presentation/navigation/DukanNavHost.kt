@@ -2,10 +2,12 @@ package net.thechance.mena.dukan.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.dukan.presentation.screen.categoryDukans.CategoryDukansScreen
 import net.thechance.mena.dukan.presentation.screen.checkout.CheckoutScreen
 import net.thechance.mena.dukan.presentation.screen.createDukan.CreateDukanScreen
@@ -35,10 +37,22 @@ import net.thechance.mena.identity.api.IdentityFeatureApi as IdentityApi
 @Composable
 fun DukanNavHost(
     walletApi: WalletApi = koinInject(),
-    identityApi: IdentityApi = koinInject()
+    identityApi: IdentityApi = koinInject(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
     val coilImageLoader = provideImageLoader()
+
+    LaunchedEffect(Unit) {
+        navController.currentBackStack.collectLatest {
+            if (navController.currentDestination?.route in routsWithBottomNavigation) {
+                updateBottomNavigationVisibility(true)
+            } else {
+                updateBottomNavigationVisibility(false)
+            }
+        }
+    }
+
     CompositionLocalProvider(
         LocalNavController provides navController, LocalImageLoader provides coilImageLoader
     ) {
@@ -124,3 +138,7 @@ fun DukanNavHost(
         }
     }
 }
+
+private val routsWithBottomNavigation = listOf(
+    DukanRoute.MainScreenRoute::class.qualifiedName
+)

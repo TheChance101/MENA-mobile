@@ -48,8 +48,8 @@ class EffectMapperTest {
 
     @Test
     fun `createNavigateToEditProfileEffect should return NavigateToEditProfileScreen effect`() {
-        val result = createNavigateToEditProfileEffect()
+        val result = createNavigateToEditProfileEffect(null)
 
-        assertEquals(ProfileScreenUIEffect.NavigateToEditProfileScreen, result)
+        assertEquals(ProfileScreenUIEffect.NavigateToEditProfileScreen(), result)
     }
 }

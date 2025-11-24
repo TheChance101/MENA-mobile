@@ -12,7 +12,7 @@ interface QuranRepository {
     suspend fun getAyatOfSurah(surahId: Int): List<Ayah>
     suspend fun getLastAyahForTilawah(): LastAyahForTilawah
     suspend fun saveLastAyahForTilawah(savedAyah: LastAyahForTilawah)
-    suspend fun getDownloadedSur(): List<DownlodedSur>
+    suspend fun getDownloadedSur(): Flow<List<DownlodedSur>>
     suspend fun searchForAyahInSurah(surahId: Int, query: String): List<Ayah>
     suspend fun searchForAyahInQuran(query: String): List<Ayah>
     suspend fun searchForReciter(query: String): List<Reciter>
@@ -21,12 +21,12 @@ interface QuranRepository {
     suspend fun getSurahById(surahId: Int): Surah
     suspend fun getSurahAudioCachePath(surahId: Int, reciterId: Int): String?
     suspend fun saveSurahAudioToCache(surahId: Int, reciterId: Int, localPath: String)
-    suspend fun deleteSurahWithSpecificReciter(surahId: Int)
+    suspend fun deleteSurahAudioByReciter(surahId: Int)
     suspend fun getRemoteSurahSoundUrl(surahId: Int, reciterId: Int): String
     suspend fun getReciters(): List<Reciter>
     suspend fun getReciterById(reciterId: Int): Reciter
     suspend fun saveDefaultReciter(reciterId: Int)
+    suspend fun deleteDownlodedReciterAudio(surahId: Int, reciterId: Int)
     suspend fun getDefaultReciter(): Flow<Int>
-    suspend fun deleteSurahAudioByReciter(surahId: Int, reciterId: Int)
 
 }

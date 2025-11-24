@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsViewModel
@@ -53,7 +53,7 @@ val identityScreensModule = module {
     factoryOf(::ResetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
     factoryOf(::SetNewPasswordScreenViewModel)
-    factoryOf(::AddressesScreenViewModel)
+    factoryOf(::MyAddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::ShareDialogViewModel)
     factoryOf(::RegisterPhoneEntryViewModel)

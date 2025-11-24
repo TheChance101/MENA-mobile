@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 interface DukanApi {
     @Composable
-    fun TabEntry()
+    fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit)
 
     @Composable
     fun OrderDetailsEntry(orderId: Uuid, onNavigateBack: () -> Unit)

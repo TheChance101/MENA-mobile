@@ -197,4 +197,8 @@
     <string name="order_error_unauthorized_access">لا يحق لك عرض تفاصيل هذا الطلب.</string>
     <string name="order_error_not_found">هذاالطلب غير موجود.</string>
     <string name="order_error_general">حدث خطأ أثناء جلب تفاصيل الطلب. يرجي المحاولة لاحقا</string>
+    <string name="deactivated_dukan">الدكان غير مفعل</string>
+    <string name="your_dukan_has_been_deactivated">الدكان بتاعك موقوف لاجل :</string>
+    <string name="wrong_information_provided">وجود بيانات خاطئة</string>
+    <string name="no_active_location">لم يتم العثور علي وجهه</string>
 </resources>

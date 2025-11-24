@@ -101,7 +101,6 @@ fun ReciterItem(
         }
     }
 }
-
 @Composable
 private fun RecitersDetails(
     recitingType: String,

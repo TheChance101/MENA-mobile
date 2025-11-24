@@ -8,7 +8,7 @@ import net.thechance.mena.admin_panel.presentation.base.ErrorState
 import net.thechance.mena.admin_panel.presentation.model.SnackBarState
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.activate_dukan
-import net.thechance.mena.admin_panel.resources.deactivate_dukan
+import net.thechance.mena.admin_panel.resources.deactivate
 import net.thechance.mena.admin_panel.resources.ic_activate
 import net.thechance.mena.admin_panel.resources.ic_block
 import org.jetbrains.compose.resources.DrawableResource
@@ -52,6 +52,6 @@ data class DukanDetailsScreenState(
         val icon: DrawableResource
     ) {
         DEACTIVE(text = Res.string.activate_dukan, icon = Res.drawable.ic_activate),
-        ACTIVE(text = Res.string.deactivate_dukan, icon = Res.drawable.ic_block)
+        ACTIVE(text = Res.string.deactivate, icon = Res.drawable.ic_block)
     }
 }
