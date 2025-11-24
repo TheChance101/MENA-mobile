@@ -18,7 +18,7 @@ import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
@@ -59,13 +59,6 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 targetScreen = initialScreen,
                 defaultScreen = loginScreen
             )
-        }
-    }
-
-    @Composable
-    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
-        IdentityFeatureRoot {
-            Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
         }
     }
 
@@ -154,5 +147,10 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
                 phoneNumber = lastPhoneNumber
             )
         }
+    }
+
+    @Composable
+    override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
+        Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
     }
 }

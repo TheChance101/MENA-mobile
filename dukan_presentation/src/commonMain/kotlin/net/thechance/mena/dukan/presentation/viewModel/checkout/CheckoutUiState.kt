@@ -13,14 +13,14 @@ data class CheckoutUiState(
     val dukanId: String = "",
     val deliveryAddress: Address = Address(),
     val items: Flow<PagingData<CartItem>> = emptyFlow(),
-    val isCheckoutImplementedDialogVisible: Boolean = false,
     val discountPercentage: Int = 0,
     val platformFees: Double = 0.0,
     val totalAmount: Double = 0.0,
     val snackBarState: SnackBarUiState? = null,
     val transaction: TransactionUiState = TransactionUiState(),
     val isTransactionLoading: Boolean = false,
-    val checkoutStatus: CheckoutStatus = CheckoutStatus.LOADING
+    val checkoutStatus: CheckoutStatus = CheckoutStatus.LOADING,
+    val isConfirmOrderButtonEnabled: Boolean = false
 ) {
     data class Address(
         val label: AddressLabel = AddressLabel.Home,

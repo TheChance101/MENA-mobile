@@ -33,7 +33,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
@@ -210,7 +210,7 @@ class ProfileScreen : BaseScreen<
             }
 
             ProfileScreenUIEffect.NavigateToLocationPickerScreen -> {
-                navigator.push(AddressesScreen())
+                navigator.push(MyAddressesScreen())
             }
 
             ProfileScreenUIEffect.NavigateContactUsScreen -> {

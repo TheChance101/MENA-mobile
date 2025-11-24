@@ -35,13 +35,13 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class AddressesScreen(
+class MyAddressesScreen(
     private val onNavigateBack: (() -> Unit)? = null
 ) : BaseScreen<
-    AddressesScreenViewModel,
-    AddressesScreenUIState,
-    AddressesScreenUIEffect,
-    AddressesScreenInteractionListener>() {
+        MyAddressesScreenViewModel,
+        MyAddressesScreenUIState,
+        MyAddressesScreenUIEffect,
+        MyAddressesScreenInteractionListener>() {
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -50,7 +50,7 @@ class AddressesScreen(
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun OnRender(
-        state: AddressesScreenUIState, listener: AddressesScreenInteractionListener
+        state: MyAddressesScreenUIState, listener: MyAddressesScreenInteractionListener
     ) {
         Scaffold(
             overlays = {
@@ -107,16 +107,16 @@ class AddressesScreen(
     }
 
     override fun onEffect(
-        effect: AddressesScreenUIEffect,
+        effect: MyAddressesScreenUIEffect,
         navigator: Navigator,
-        snackBarController: IdentitySnackBarController
+        snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
-            AddressesScreenUIEffect.NavigateBack -> {
+            MyAddressesScreenUIEffect.NavigateBack -> {
                 onNavigateBack?.invoke() ?: navigator.pop()
             }
 
-            is AddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
+            is MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen -> {
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
@@ -124,13 +124,13 @@ class AddressesScreen(
                 )
             }
 
-            is AddressesScreenUIEffect.ShowSnackBarError -> {
+            is MyAddressesScreenUIEffect.ShowSnackBarError -> {
                 snackBarController.showSnackBarError(
                     message = effect.errorStringResource
                 )
             }
 
-            is AddressesScreenUIEffect.ShowSnackBarSuccess -> {
+            is MyAddressesScreenUIEffect.ShowSnackBarSuccess -> {
                 snackBarController.showSnackBarSuccess(
                     message = effect.successStringResource
                 )
@@ -187,6 +187,6 @@ private fun AddressesSection(
 @Composable
 fun PreviewRegisterScreen() {
     MenaTheme {
-        AddressesScreen().Content()
+        MyAddressesScreen().Content()
     }
 }

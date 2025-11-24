@@ -15,14 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.checkout_dialog_description
-import mena.dukan_presentation.generated.resources.checkout_dialog_title
 import mena.dukan_presentation.generated.resources.summary_details
-import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
@@ -121,26 +119,14 @@ private fun CheckoutLoadedContent(
         topBar = {
             CheckoutAppBar(listener)
         },
+        snakeBar = { CheckoutSnackbar(state.snackBarState, listener) },
         bottomBar = {
             ConfirmOrderButton(
                 onConfirmOrderClicked = listener::onConfirmOrderClicked,
+                isEnabled = state.isConfirmOrderButtonEnabled,
                 isLoading = state.isTransactionLoading
             )
-        },
-        overlays = {
-            dialog(state.isCheckoutImplementedDialogVisible) {
-                Dialog(
-                    title = stringResource(Res.string.checkout_dialog_title),
-                    message = stringResource(Res.string.checkout_dialog_description),
-                    isVisible = state.isCheckoutImplementedDialogVisible,
-                    onDismiss = listener::onDismissCheckoutDialog,
-                    onCancelClick = listener::onDismissCheckoutDialog,
-                    hasDismissButton = true,
-                    actionButtons = {},
-                )
-            }
-        },
-        snakeBar = { CheckoutSnackbar(state.snackBarState, listener) }
+        }
     ) {
         Column(
             modifier = Modifier

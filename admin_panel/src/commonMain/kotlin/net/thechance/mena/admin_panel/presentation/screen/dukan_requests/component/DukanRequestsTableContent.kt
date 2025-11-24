@@ -40,6 +40,7 @@ import net.thechance.mena.designsystem.presentation.component.button.OutlinedBut
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DukanRequestsTableContent(
@@ -83,6 +84,7 @@ fun DukanRequestsTableContent(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun DukanListTable(
     dukan: List<DukanRequestsScreenState.DukanItem>,
@@ -96,12 +98,15 @@ private fun DukanListTable(
         state = listState,
         modifier = modifier
     ) {
-        itemsIndexed(items = dukan) { index, dukanItem ->
+        itemsIndexed(
+            items = dukan,
+            key = { _, item -> item.id }) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(horizontalScrollState),
+                    .horizontalScroll(horizontalScrollState)
+                    .animateItem(),
                 index = dukanItem.index,
                 dukan = dukanItem,
                 isLastItem = isLastItem,

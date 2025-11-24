@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.manage_my_trends
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -173,7 +176,6 @@ private fun ManageTrendsScreenBody(
             UserAvatar(
                 profileImageUrl = state.profile.profileImageUrl,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = Theme.spacing._32, bottom = Theme.spacing._8)
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
@@ -271,15 +273,19 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
-    val errorPainter = painterResource(Res.drawable.ic_placeholder_profile)
+private fun UserAvatar(
+    profileImageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    val defaultPainter = painterResource(Res.drawable.ic_placeholder_profile)
     val tintColor = Theme.colorScheme.shadePrimary
-    val tintedErrorPainter = remember(errorPainter) {
+    val hasImage = profileImageUrl.isNotBlank()
+    val tintedErrorPainter = remember(defaultPainter) {
         object : Painter() {
-            override val intrinsicSize = errorPainter.intrinsicSize
+            override val intrinsicSize = defaultPainter.intrinsicSize
 
             override fun DrawScope.onDraw() {
-                with(errorPainter) {
+                with(defaultPainter) {
                     draw(
                         size = size,
                         colorFilter = ColorFilter.tint(tintColor)
@@ -288,12 +294,41 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
             }
         }
     }
-    AsyncImage(
-        model = profileImageUrl,
+
+    if (hasImage.not()) {
+        EmptyProfilePicture(defaultPainter = defaultPainter)
+    } else {
+        AsyncImage(
+            model = profileImageUrl,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            error = tintedErrorPainter,
+            modifier = modifier.size(100.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+private fun EmptyProfilePicture(defaultPainter: Painter) {
+    val isDarkTheme = LocalDarkTheme.current
+    val backgroundColor = if (isDarkTheme) Theme.colorScheme.stroke else Color.White
+    val iconTint = if (isDarkTheme) Color.White else Color.Black
+
+    Icon(
+        painter = defaultPainter,
         contentDescription = stringResource(Res.string.profile_image_desc),
-        error = tintedErrorPainter,
-        modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop
+        tint = iconTint,
+        modifier = Modifier
+            .requiredSize(88.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                ambientColor = iconTint.copy(alpha = 0.70f),
+                spotColor = iconTint.copy(alpha = 0.70f)
+            )
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .padding(16.dp),
     )
 }
 
