@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.ic_arrow_down
@@ -106,8 +107,10 @@ fun MobileNumberLeadingContent(
         )
 
         Text(
-            text = "\u200E$countryCode",
-            style = Theme.typography.label.medium,
+            text = countryCode,
+            style = Theme.typography.label.medium.copy(
+                textDirection = TextDirection.Ltr
+            ),
             modifier = Modifier.padding(start = 4.dp, end = 2.dp),
             color = Theme.colorScheme.shadePrimary,
         )
