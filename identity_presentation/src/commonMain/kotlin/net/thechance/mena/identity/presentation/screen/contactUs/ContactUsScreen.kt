@@ -124,7 +124,7 @@ class ContactUsScreen : BaseScreen<
                     ContactCard(
                         icon = Res.drawable.ic_telephone,
                         title = Res.string.contact_phone_number,
-                        info = state.phoneNumber,
+                        info = "\u200E${state.phoneNumber}",
                         onClick = listener::onClickPhoneNumber
                     )
 
