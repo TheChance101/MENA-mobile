@@ -22,7 +22,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
-import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
