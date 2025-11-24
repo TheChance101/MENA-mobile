@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.no_active_location
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
@@ -21,6 +22,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.exception.InvalidCredentialsException
 import net.thechance.mena.identity.domain.service.LocationService
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -82,12 +84,19 @@ class CheckoutViewModel(
     }
 
     private fun getActiveAddressSuccess(activeAddress: Address?) {
-        updateState { copy(deliveryAddress = activeAddress.toUiState()) }
+        updateState {
+            copy(
+                deliveryAddress = activeAddress.toUiState(),
+                isConfirmOrderButtonEnabled = true
+            )
+        }
     }
 
     private fun getActiveAddressError(throwable: Throwable) {
+        updateState { copy(isConfirmOrderButtonEnabled = false) }
         when (throwable) {
             is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
+            is InvalidCredentialsException -> showSnackBar(message = Res.string.no_active_location)
             else -> showSnackBar(message = Res.string.something_went_wrong)
         }
     }
@@ -110,12 +119,14 @@ class CheckoutViewModel(
         updateState {
             copy(
                 totalAmount = cart.totalPrice,
-                cartId = cart.id
+                cartId = cart.id,
+                isConfirmOrderButtonEnabled = true
             )
         }
     }
 
     private fun onCartInfoError(throwable: Throwable) {
+        updateState { copy(isConfirmOrderButtonEnabled = false) }
         when (throwable) {
             is NoSuchItemException -> updateState {
                 copy(totalAmount = 0.0)
@@ -149,19 +160,19 @@ class CheckoutViewModel(
 
     private fun onConfirmOrderSuccess(transaction: Transaction) {
         emitEffect(CheckoutEffect.NavigateToConfirmPayment(transaction.transactionId.toString()))
-        updateState { copy(isTransactionLoading = false)}
+        updateState { copy(isTransactionLoading = false, isConfirmOrderButtonEnabled = true) }
     }
 
     private fun onConfirmOrderError(throwable: Throwable) {
-        updateState { copy(isTransactionLoading = false)}
+        updateState { copy(isTransactionLoading = false, isConfirmOrderButtonEnabled = false) }
         when (throwable) {
             is NoInternetException -> showSnackBar(message = Res.string.no_internet_connection)
             else -> showSnackBar(message = Res.string.something_went_wrong)
         }
     }
 
-    override fun onDismissCheckoutDialog() {
-        updateState { copy(isCheckoutImplementedDialogVisible = false) }
+    override fun onDismissSnackBar() {
+        updateState { copy(snackBarState = null) }
     }
 
     override fun onChangeLocationClicked() {

@@ -159,7 +159,7 @@ class DownloadedRecitersViewModelTest {
             skipItems(1)
 
             val updated = awaitItem()
-            assertEquals(SELECTED_RECITER_ID, updated.selectedReciterId)
+            assertEquals(SELECTED_RECITER_ID, updated.reciterId)
         }
     }
 

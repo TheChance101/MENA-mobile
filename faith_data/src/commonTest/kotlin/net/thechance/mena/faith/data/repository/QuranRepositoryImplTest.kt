@@ -539,7 +539,7 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `deleteSurahWithSpecificReciter should call dao with correct surah id`() = runTest {
-        repository.deleteSurahWithSpecificReciter(SURAH_ID_1)
+        repository.deleteSurahAudioByReciter(SURAH_ID_1)
 
         verifySuspend {
             recitersDao.deleteSurahAudioByReciter(SURAH_ID_1)
@@ -548,8 +548,8 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `deleteSurahWithSpecificReciter should handle multiple deletions`() = runTest {
-        repository.deleteSurahWithSpecificReciter(SURAH_ID_1)
-        repository.deleteSurahWithSpecificReciter(SURAH_ID_2)
+        repository.deleteSurahAudioByReciter(SURAH_ID_1)
+        repository.deleteSurahAudioByReciter(SURAH_ID_2)
 
         verifySuspend {
             recitersDao.deleteSurahAudioByReciter(SURAH_ID_1)

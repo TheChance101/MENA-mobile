@@ -1,21 +1,25 @@
 package net.thechance.mena.dukan.presentation.viewModel.categoryDukans
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.error_updating_favorites
+import mena.dukan_presentation.generated.resources.no_internet_connection
+import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.repository.DukanDiscoveryRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.SearchRepository
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
+import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.categoryDukans.CategoryDukansUiState.DukanUiState
+import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class CategoryDukansViewModel(
@@ -45,9 +49,10 @@ class CategoryDukansViewModel(
     }
 
     override fun onFavoriteDukanClicked(dukanId: String) {
-        updateFavoriteDukanPagingData(dukanId = dukanId )
+        updateFavoriteDukanPagingData(dukanId = dukanId)
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(dukanId) },
+            onError = ::onErrorUpdateDukanFavoriteStatus
         )
     }
 
@@ -60,6 +65,14 @@ class CategoryDukansViewModel(
         }
         dukansState.value = updatedData
         updateState { copy(dukans = dukansState) }
+    }
+
+    private fun onErrorUpdateDukanFavoriteStatus(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
     override fun onRetryClicked() {
@@ -75,13 +88,13 @@ class CategoryDukansViewModel(
         searchWithQuery(query = query)
     }
 
-    private fun searchWithQuery(query: String){
+    private fun searchWithQuery(query: String) {
         if (query.trim().isBlank()) loadCategory()
         val categoryId = savedStateHandle.get<String>("categoryId").orEmpty()
         tryToCollect(
             block = {
                 createPagingSourceFlow(
-                    mapper = {it.toUiState()},
+                    mapper = { it.toUiState() },
                 ) { pageNumber, pageSize ->
                     searchRepository.finDukansByQueryInCategory(
                         categoryId = categoryId,
@@ -108,6 +121,17 @@ class CategoryDukansViewModel(
         updateState {
             copy(
                 snackBarUiState = null
+            )
+        }
+    }
+
+    private fun showSnackBar(message: StringResource, type: SnackBarType) {
+        updateState {
+            copy(
+                snackBarUiState = SnackBarUiState(
+                    message = message,
+                    snackBarType = type
+                )
             )
         }
     }

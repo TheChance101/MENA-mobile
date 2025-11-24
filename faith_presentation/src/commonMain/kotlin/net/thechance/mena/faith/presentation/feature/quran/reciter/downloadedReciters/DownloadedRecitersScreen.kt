@@ -136,7 +136,7 @@ fun RecitersListContent(
                             onDownloadClick = {},
                             isSelectReciter = false,
                             isDownloadIconVisible = false,
-                            modifier = contentModifier
+                            modifier = contentModifier,
                         )
                     },
                     modifier = Modifier.animateItem(
@@ -176,7 +176,7 @@ private fun Preview() {
                             isDownloaded = false
                         )
                     ),
-                    selectedReciterId = 1,
+                    reciterId = 1,
                     surahId = 1
                 ),
                 listener = object : DownloadedRecitersListener {

@@ -42,6 +42,7 @@ class DownloadedRecitersViewModel(
     override fun onDeleteReciterAudioClick(reciterId: Int) {
         updateState {
             it.copy(
+                reciterId = reciterId,
                 isDeleteConfirmationDialogVisible = true,
             )
         }
@@ -49,7 +50,25 @@ class DownloadedRecitersViewModel(
     }
 
     override fun onConfirmDeleteReciterClick() {
-        // TODO CONFIRM DELETE
+        val surahId = surahArgs.surahId ?: return
+        val reciterId = uiState.value.reciterId ?: return
+        tryToExecute(
+            execute = {
+                quranRepository.deleteDownlodedReciterAudio(
+                    surahId = surahId,
+                    reciterId = reciterId
+                )
+            },
+            onSuccess = {
+                updateState {
+                    it.copy(
+                        reciters = it.reciters.filter { reciter -> reciter.id != reciterId },
+                        isDeleteConfirmationDialogVisible = false,
+                        reciterId = null
+                    )
+                }
+            }
+        )
     }
 
     override fun onDismissDeleteDialog() {
@@ -75,7 +94,7 @@ class DownloadedRecitersViewModel(
     }
 
     private fun updateSelectedReciter(reciterId: Int) {
-        updateState { it.copy(selectedReciterId = reciterId) }
+        updateState { it.copy(reciterId = reciterId) }
     }
 
     private fun getAllReciters() {

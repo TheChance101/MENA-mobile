@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -38,9 +37,7 @@ fun SearchHeader(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(space = Theme.spacing._8),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(paddingValues = contentPadding)
+        modifier = modifier.padding(paddingValues = contentPadding)
     ) {
 
         AppBarOptionContainer(
@@ -55,7 +52,7 @@ fun SearchHeader(
         )
 
         TextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
             value = query,
             onValueChanged = onQueryChange,
             hint = stringResource(resource = Res.string.search_in_dukans),

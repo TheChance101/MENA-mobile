@@ -27,17 +27,17 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-class AddressesScreenViewModel(
+class MyAddressesScreenViewModel(
     private val addressesRepository: AddressesRepository,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : BaseScreenModel<AddressesScreenUIState, AddressesScreenUIEffect>(AddressesScreenUIState()),
-    AddressesScreenInteractionListener {
+) : BaseScreenModel<MyAddressesScreenUIState, MyAddressesScreenUIEffect>(MyAddressesScreenUIState()),
+    MyAddressesScreenInteractionListener {
 
     init {
         getUserAddresses()
     }
 
-    override fun onBackButtonClicked() = sendNewEffect(AddressesScreenUIEffect.NavigateBack)
+    override fun onBackButtonClicked() = sendNewEffect(MyAddressesScreenUIEffect.NavigateBack)
 
     override fun onAddButtonClicked() {
         navigateToAddressDetails(null, isAdding = true)
@@ -54,7 +54,9 @@ class AddressesScreenViewModel(
         )
 
         sendNewEffect(
-            AddressesScreenUIEffect.NavigateToAddressDetailsScreen(addressUIState = addressUIState)
+            MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen(
+                addressUIState = addressUIState,
+            )
         )
     }
 
@@ -161,7 +163,7 @@ class AddressesScreenViewModel(
 
     private fun onAddressActivationSuccess() {
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarSuccess(
+            MyAddressesScreenUIEffect.ShowSnackBarSuccess(
                 successStringResource = Res.string.address_activated_successfully
             )
         )
@@ -172,7 +174,7 @@ class AddressesScreenViewModel(
         delay(300L)
         removeAddress(addressId)
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarSuccess(
+            MyAddressesScreenUIEffect.ShowSnackBarSuccess(
                 successStringResource = Res.string.address_deleted_successfully
             )
         )
@@ -235,7 +237,7 @@ class AddressesScreenViewModel(
 
     private fun showErrorSnackBar(message: StringResource) {
         sendNewEffect(
-            AddressesScreenUIEffect.ShowSnackBarError(
+            MyAddressesScreenUIEffect.ShowSnackBarError(
                 errorStringResource = message
             )
         )

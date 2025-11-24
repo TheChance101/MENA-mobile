@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.data.repository
 
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanManagementRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.createDukanRepository
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultCreateResponse
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.defaultDukanActivationStatusResponse
@@ -21,7 +20,7 @@ import kotlin.uuid.Uuid
 
 class DukanManagementRepositoryTest {
     private val dukanManagementRepository: DukanManagementRepositoryImpl =
-        createDukanManagementRepository()
+        createDukanRepository()
 
     @OptIn(ExperimentalUuidApi::class)
     @Test

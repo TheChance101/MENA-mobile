@@ -9,7 +9,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
-data class AddressesScreenUIState(
+data class MyAddressesScreenUIState(
     val addresses: List<AddressUIState> = emptyList(),
     val deleteDialogUIState: DeleteDialogUIState = DeleteDialogUIState(),
     val errorMessage: StringResource? = null,
