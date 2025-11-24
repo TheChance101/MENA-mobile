@@ -43,7 +43,7 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
 import net.thechance.mena.core_chat.domain.entity.User
-import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
+import net.thechance.mena.core_chat.domain.exception.NoInternetException
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
@@ -56,11 +56,11 @@ import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.now
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import net.thechance.mena.wallet.domain.exceptions.NoInternetException as WalletNoInternetException
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
@@ -380,11 +380,11 @@ class ChatViewModel(
     private fun observeDeleteChat() {
         tryToCollect(
             collect = { messageRepository.observeDeleteChat() },
-            onCollect = ::onCollectDeleteChatEvent
+            onCollect = { onCollectDeleteChatEvent() }
         )
     }
 
-    private fun onCollectDeleteChatEvent(deleteChatEvent: DeleteChatEvent) {
+    private fun onCollectDeleteChatEvent() {
         onDeleteChatSuccess()
         emitEffect(ChatScreenEffect.NavigateBack)
     }
@@ -438,7 +438,7 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.deleteChatById(state.value.chatId!!) },
             onSuccess = { onDeleteChatSuccess() },
-            onError = { onDeleteChatFailure() }
+            onError = ::onDeleteChatFailure
         )
         updateState { it.copy(isConfirmDeleteChatDialogVisible = false) }
     }
@@ -451,12 +451,24 @@ class ChatViewModel(
         )
     }
 
-    private fun onDeleteChatFailure() {
-        showSnackBar(
-            titleStringResource = Res.string.error,
-            messageStringResource = Res.string.could_not_delete_chat,
-            isError = true
-        )
+    private fun onDeleteChatFailure(t: Throwable) {
+        when (t) {
+            is NoInternetException -> {
+                showSnackBar(
+                    titleStringResource = Res.string.no_internet,
+                    messageStringResource = Res.string.no_internet_connected,
+                    isError = true
+                )
+            }
+
+            else -> {
+                showSnackBar(
+                    titleStringResource = Res.string.error,
+                    messageStringResource = Res.string.could_not_delete_chat,
+                    isError = true
+                )
+            }
+        }
     }
 
     override fun onMessageLongClicked(message: MessageUiState) {
@@ -862,7 +874,7 @@ class ChatViewModel(
         tryToExecute(
             onStart = { updateState { it.copy(isLoadingSendMoneyButton = true) } },
             execute = ::sendMoney,
-            onSuccess = { transactionId -> onSendMoneySuccess(transactionId) },
+            onSuccess = ::onSendMoneySuccess,
             onError = ::onSendMoneyFailed,
         )
     }
@@ -899,7 +911,7 @@ class ChatViewModel(
     private fun onSendMoneyFailed(e: Throwable) {
         updateState { it.copy(isLoadingSendMoneyButton = false) }
         when (e) {
-            is NoInternetException -> {
+            is WalletNoInternetException -> {
                 showSnackBar(
                     titleStringResource = Res.string.no_internet,
                     messageStringResource = Res.string.no_internet_connected,
