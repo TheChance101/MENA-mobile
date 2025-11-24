@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.api
 
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -10,7 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.transitions.FadeTransition
+import cafe.adriel.voyager.transitions.CrossfadeTransition
 import net.thechance.mena.identity.api.IdentityFeatureApi
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
@@ -29,15 +29,17 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
 
     @Composable
     override fun ProfileTabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
-        val initialScreen = ProfileScreen()
         IdentityFeatureRoot {
-            Navigator(initialScreen) { navigator ->
+            Navigator(ProfileScreen()) { navigator ->
                 val current = navigator.lastItem
                 LaunchedEffect(current.key) {
                     updateBottomNavigationVisibility(current is ProfileScreen)
                 }
 
-                FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
+                CrossfadeTransition(
+                    navigator = navigator,
+                    animationSpec = tween(easing = EaseOut)
+                )
             }
         }
     }
@@ -127,10 +129,10 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         registrationDraftRepository: RegistrationDraftRepository
     ): Any {
         val authTokens = authenticationRepository.getAuthTokens()
-                         ?: return LoginScreen()
+            ?: return LoginScreen()
 
         val lastPhoneNumber = registrationDraftRepository.getLastPhoneNumber()
-                              ?: return LoginScreen()
+            ?: return LoginScreen()
 
         return getRegistrationFlowScreen(
             authTokens = authTokens,

@@ -2,7 +2,7 @@ package net.thechance.mena.appEntryPoint
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -54,11 +54,11 @@ fun LoggedInContainer(
     state: MainEntryState,
     listener: MainEntryInteractionListener,
 ) {
-    val animationSpec = tween<Float>(durationMillis = 100, easing = LinearEasing)
-    val animationSpecs = tween<IntOffset>(durationMillis = 100, easing = LinearEasing)
+    val animationSpec = tween<Float>(easing = EaseOut)
+    val animationSpecs = tween<IntOffset>(easing = EaseOut)
     val bottomPadding by animateDpAsState(
         targetValue = if (state.showBottomNavigation) 74.dp else 0.dp,
-        animationSpec = tween(if (state.showBottomNavigation) 500 else 100)
+        animationSpec = tween(easing = EaseOut)
     )
 
     Box(
