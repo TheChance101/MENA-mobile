@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
 import mena.dukan_presentation.generated.resources.something_went_wrong
@@ -248,8 +249,18 @@ class ProductDetailsViewModel(
         updateState { copy(isFavorite = !isCurrentlyFavorite) }
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
+            onError = ::onErrorUpdateDukanFavorite
         )
     }
+
+    private fun onErrorUpdateDukanFavorite(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
 
     fun refreshCartInfo(){
         loadCartInfo()
