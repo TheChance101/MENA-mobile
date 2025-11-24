@@ -83,7 +83,7 @@ class ChatViewModel(
 
     private val pendingMessages = MutableStateFlow<List<Message>>(emptyList())
 
-    private val pageFlows = mutableMapOf<Int, Flow<List<Message>>>()
+    private val pagesFlows = mutableMapOf<Int, Flow<List<Message>>>()
     private val pageSnapshots = mutableMapOf<Int, List<Message>>()
 
     private var firstUnReadByMeMessageTime: LocalDateTime? = null
@@ -105,16 +105,16 @@ class ChatViewModel(
     private fun loadPage(page: Int) {
         val chatId = state.value.chatId ?: return
 
-        if (pageFlows.containsKey(page)) return
+        if (pagesFlows.containsKey(page)) return
 
         if (page > 0) {
             val previousSnapshot = pageSnapshots[page - 1]
 
-            if (previousSnapshot == null || previousSnapshot.isEmpty()) return
+            if (previousSnapshot == null || previousSnapshot.size < PAGE_SIZE) return
         }
 
         val pageFlow = messageRepository.observeMessagesPage(chatId, page, PAGE_SIZE)
-        pageFlows[page] = pageFlow
+        pagesFlows[page] = pageFlow
 
         pageFlow
             .onEach { messages ->
@@ -122,12 +122,11 @@ class ChatViewModel(
             }
             .launchIn(viewModelScope)
 
-        combine(pageFlows.values + pendingMessages) { pagesArray ->
+        combine(pagesFlows.values + pendingMessages) { pagesArray ->
             pagesArray
                 .asList()
                 .flatten()
                 .distinctBy { it.id }
-                .sortedByDescending { it.sendAt }
         }
             .onEach { _messages.value = it }
             .launchIn(viewModelScope)
@@ -148,7 +147,6 @@ class ChatViewModel(
     }
 
     private fun startUiDerivation() {
-
         viewModelScope.launch(dispatcher) {
             messages
                 .collectLatest { messageList ->
@@ -217,16 +215,16 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.getChatById(chatId) },
             onSuccess = { chat ->
-        updateState { state ->
-            state.copy(
-                chatId = chat.id,
-                chatName = chat.name,
-                chatAvatarUrl = chat.imageUrl.orEmpty(),
-                chatRequesterId = chat.requesterId,
-                receiverId = chat.receiverId
-            )
-        }
-},
+                updateState { state ->
+                    state.copy(
+                        chatId = chat.id,
+                        chatName = chat.name,
+                        chatAvatarUrl = chat.imageUrl.orEmpty(),
+                        chatRequesterId = chat.requesterId,
+                        receiverId = chat.receiverId
+                    )
+                }
+            },
             onError = { onGetChatError() }
         )
     }
@@ -829,6 +827,7 @@ class ChatViewModel(
     override fun onGalleryClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
+
     override fun onSurahClicked(surahId: Int) {
         emitEffect(ChatScreenEffect.NavigateToSurah(surahId))
     }
@@ -944,7 +943,7 @@ class ChatViewModel(
     }
 
     override fun onMessagesScrolled() {
-        loadPage(pageFlows.size)
+        loadPage(pagesFlows.size)
     }
 
     override fun onViewOrderDetailsClicked(orderId: Uuid) {
@@ -971,6 +970,7 @@ class ChatViewModel(
             )
         }
     }
+
     override fun onLinkClicked(url: String) {
         emitEffect(ChatScreenEffect.OpenUrl(url))
     }
