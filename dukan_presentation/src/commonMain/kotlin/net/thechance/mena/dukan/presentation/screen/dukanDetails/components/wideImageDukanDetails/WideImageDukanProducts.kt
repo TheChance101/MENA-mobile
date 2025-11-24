@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -124,7 +126,8 @@ private fun ProductCard(
 
     Box(
         modifier = modifier
-            .size(width = 160.dp, height = 240.dp)
+            .width(160.dp)
+            .wrapContentHeight()
     ) {
         Column(
             modifier = Modifier
