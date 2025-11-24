@@ -224,7 +224,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onBackClicked() {
-        emitEffect(DukanDetailsEffects.NavigateBack)
+        emitEffect(DukanDetailsEffects.NavigateBackWithFavorite)
     }
 
     override fun onShelfClicked(id: String) {
@@ -365,7 +365,12 @@ class DukanDetailsViewModel(
     override fun onFavoriteDukanClicked(dukanId: String) {
         val currentProduct = state.value.dukanInfo
         val isCurrentlyFavorite = currentProduct.isFavorite
-        updateState { copy(dukanInfo.copy(isFavorite = !isCurrentlyFavorite)) }
+        updateState {
+            copy(
+                dukanInfo.copy(isFavorite = !isCurrentlyFavorite),
+                isFavoritePressed = true
+            )
+        }
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(currentProduct.dukanId) },
             onError = ::onErrorUpdateDukanFavorite
