@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.map
 
-import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -33,11 +32,11 @@ class MosqueClusterer {
         return clusters.firstOrNull { cluster ->
             val representative = cluster.first()
             val distance = calculateDistance(
-                firstCoordinate = Coordinate(
+                firstCoordinate = MosqueUiState.Coordinate(
                     latitude = mosque.coordinate.latitude,
                     longitude = mosque.coordinate.longitude
                 ),
-                secondCoordinate = Coordinate(
+                secondCoordinate = MosqueUiState.Coordinate(
                     latitude = representative.coordinate.latitude,
                     longitude = representative.coordinate.longitude
                 )
@@ -47,8 +46,8 @@ class MosqueClusterer {
     }
 
     private fun calculateDistance(
-        firstCoordinate: Coordinate,
-        secondCoordinate: Coordinate
+        firstCoordinate: MosqueUiState.Coordinate,
+        secondCoordinate: MosqueUiState.Coordinate
     ): Double {
         val latRadians1 = firstCoordinate.latitude * PI / 180.0
         val longRadians1 = firstCoordinate.longitude * PI / 180.0

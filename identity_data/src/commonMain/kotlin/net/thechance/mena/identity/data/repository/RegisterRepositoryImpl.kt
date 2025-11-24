@@ -28,7 +28,7 @@ class RegisterRepositoryImpl(
             val response: OtpResponse = client.postJson(
                 OtpRequestDto(
                     phoneNumber.getFormattedPhoneNumber(), countryCodeName
-                ), REQUEST_OTP
+                ), REGISTER_REQUEST_OTP
             )
             sessionId = response.sessionId
         }
@@ -37,7 +37,7 @@ class RegisterRepositoryImpl(
     override suspend fun verifyOTPCode(otpCode: String) {
         safeWrapper {
             client.postJson<VerifyOtpRequestDto, Unit>(
-                VerifyOtpRequestDto(otpCode, sessionId), VERIFY_OTP
+                VerifyOtpRequestDto(otpCode, sessionId), REGISTER_VERIFY_OTP
             )
         }
     }
@@ -57,7 +57,7 @@ class RegisterRepositoryImpl(
     private suspend fun fetchUsernameExistence(username: String): Boolean {
         return client.getJsonWithBody<CheckUserExistenceRequestDto, Boolean>(
             requestDto = CheckUserExistenceRequestDto(username = username),
-            path = CHECK_USER_EXISTENCE
+            path = REGISTER_CHECK_USER_EXISTENCE
         )
     }
 
@@ -89,9 +89,9 @@ class RegisterRepositoryImpl(
     }
 
     companion object {
-        const val REQUEST_OTP = "identity/authentication/register/request-otp"
-        const val VERIFY_OTP = "identity/authentication/register/verify-otp"
-        const val CHECK_USER_EXISTENCE = "identity/authentication/register/check-user-existence"
+        const val REGISTER_REQUEST_OTP = "identity/authentication/register/request-otp"
+        const val REGISTER_VERIFY_OTP = "identity/authentication/register/verify-otp"
+        const val REGISTER_CHECK_USER_EXISTENCE = "identity/authentication/register/check-user-existence"
         const val REGISTER = "identity/authentication/register"
     }
 }

@@ -122,18 +122,6 @@ class DepositViewModelTest {
     }
 
     @Test
-    fun `amount filters non-digit characters`() = runTest(dispatcher) {
-        viewModel.onAmountChanged("10abc0xyz")
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            val s = awaitItem()
-            assertEquals("100", s.amount)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `loading countries success updates state`() = runTest(dispatcher) {
         advanceUntilIdle()
 

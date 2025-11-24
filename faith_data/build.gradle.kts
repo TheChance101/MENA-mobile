@@ -21,9 +21,6 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.room.sqlite.wrapper)
             implementation(libs.ktor.client.cio)
-            implementation(libs.androidx.media3.exoplayer.v180)
-            implementation(libs.androidx.media3.session)
-            implementation(libs.androidx.media3.ui)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

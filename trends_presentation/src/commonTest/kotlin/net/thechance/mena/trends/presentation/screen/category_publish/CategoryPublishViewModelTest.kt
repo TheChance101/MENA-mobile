@@ -17,7 +17,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.repository.CategoryRepository
-import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.repository.TrendsRepository
 import net.thechance.mena.trends.presentation.screen.category_publish.args.CategoryPublishArgs
 import net.thechance.mena.trends.presentation.utils.categories
 import net.thechance.mena.trends.presentation.utils.category
@@ -33,7 +33,7 @@ class CategoryPublishViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val categoryPublishArgs = mock<CategoryPublishArgs>()
     private val categoryRepository = mock<CategoryRepository>()
-    private val reelsRepository = mock<ReelsRepository>()
+    private val trendsRepository = mock<TrendsRepository>()
 
     @BeforeTest
     fun setup() {
@@ -42,13 +42,13 @@ class CategoryPublishViewModelTest {
         every { categoryPublishArgs.trendId } returns TREND_ID
         every { categoryPublishArgs.description } returns DESCRIPTION
         everySuspend {
-            reelsRepository.updateReelById(any(), any(), any())
+            trendsRepository.updateTrendById(any(), any(), any())
         } returns Unit
 
         viewModel = CategoryPublishViewModel(
             categoryPublishArgs = categoryPublishArgs,
             categoryRepository = categoryRepository,
-            reelsRepository = reelsRepository,
+            trendsRepository = trendsRepository,
             defaultDispatcher = testDispatcher
         )
     }
@@ -90,7 +90,7 @@ class CategoryPublishViewModelTest {
     fun `onClickPublish should update error state when updateReelById throws exception`() =
         runTest {
             everySuspend {
-                reelsRepository.updateReelById(any(), any(), any())
+                trendsRepository.updateTrendById(any(), any(), any())
             } throws Exception()
 
             viewModel.onClickCategory(category.id)
@@ -113,7 +113,7 @@ class CategoryPublishViewModelTest {
         val viewModel = CategoryPublishViewModel(
             categoryPublishArgs = categoryPublishArgs,
             categoryRepository = categoryRepository,
-            reelsRepository = reelsRepository,
+            trendsRepository = trendsRepository,
             defaultDispatcher = testDispatcher
         )
 
@@ -135,7 +135,7 @@ class CategoryPublishViewModelTest {
             testDispatcher.scheduler.advanceUntilIdle()
 
             verifySuspend {
-                reelsRepository.updateReelById(
+                trendsRepository.updateTrendById(
                     id = TREND_ID,
                     description = DESCRIPTION,
                     categoryIds = listOf(category.id)

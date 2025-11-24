@@ -18,7 +18,7 @@ import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
@@ -34,7 +34,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
             Navigator(initialScreen) { navigator ->
                 val current = navigator.lastItem
                 LaunchedEffect(current.key) {
-                    updateBottomNavigationVisibility(current == initialScreen)
+                    updateBottomNavigationVisibility(current is ProfileScreen)
                 }
 
                 FadeTransition(navigator = navigator, animationSpec = tween(easing = LinearEasing))
@@ -65,7 +65,7 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
     @Composable
     override fun NavigateToAddressesScreen(onNavigateBack: (() -> Unit)?) {
         IdentityFeatureRoot {
-            Navigator(AddressesScreen(onNavigateBack = onNavigateBack))
+            Navigator(MyAddressesScreen(onNavigateBack = onNavigateBack))
         }
     }
 

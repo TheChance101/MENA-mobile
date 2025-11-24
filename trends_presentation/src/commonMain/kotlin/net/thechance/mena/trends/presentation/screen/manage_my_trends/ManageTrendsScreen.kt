@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -90,7 +91,7 @@ internal fun ManageTrendsScreen(
             is ManageTrendsUiEffect.NavigateBack -> navController.navigateUp()
             is ManageTrendsUiEffect.NavigateToTrend -> {
                 navController.navigate(
-                    Route.ReelDetails(reelId = effect.reelId, source = effect.reelSource.name)
+                    Route.TrendDetails(trendId = effect.trendId, source = effect.trendSource.name)
                 )
             }
         }
@@ -120,8 +121,8 @@ private fun ManageTrendsScreenContent(
         },
         content = {
             val trends = when (state.selectedTab) {
-                SelectTab.MyTrends -> state.reels
-                SelectTab.Favorites -> state.favoriteReels
+                SelectTab.MyTrends -> state.trends
+                SelectTab.Favorites -> state.favoriteTrends
             }.collectAsLazyPagingItems()
 
             TrendsAnimatedVisibility(
@@ -146,7 +147,7 @@ private fun ManageTrendsScreenContent(
 private fun ManageTrendsScreenBody(
     listener: ManageTrendsInteractionListener,
     state: ManageTrendsScreenState,
-    trends: LazyPagingItems<ReelUiState>
+    trends: LazyPagingItems<TrendUiState>
 ) {
     val cardWidth = 106.dp
     val gridState = rememberLazyGridState()
@@ -173,7 +174,6 @@ private fun ManageTrendsScreenBody(
             UserAvatar(
                 profileImageUrl = state.profile.profileImageUrl,
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = Theme.spacing._32, bottom = Theme.spacing._8)
                     .wrapContentWidth(Alignment.CenterHorizontally)
             )
@@ -221,7 +221,7 @@ private fun ManageTrendsScreenBody(
                 trends[index]?.let { trend ->
                     TrendItem(
                         item = trend,
-                        onTrendClick = listener::onClickReel,
+                        onTrendClick = listener::onClickTrend,
                         onGetRefreshedThumbnail = listener::onGetRefreshedThumbnail
                     )
                 }
@@ -271,15 +271,19 @@ private fun ManageMyTrendsAppBar(onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
-    val errorPainter = painterResource(Res.drawable.ic_placeholder_profile)
+private fun UserAvatar(
+    profileImageUrl: String,
+    modifier: Modifier = Modifier
+) {
+    val defaultPainter = painterResource(Res.drawable.ic_placeholder_profile)
     val tintColor = Theme.colorScheme.shadePrimary
-    val tintedErrorPainter = remember(errorPainter) {
+    val hasImage = profileImageUrl.isNotBlank()
+    val tintedErrorPainter = remember(defaultPainter) {
         object : Painter() {
-            override val intrinsicSize = errorPainter.intrinsicSize
+            override val intrinsicSize = defaultPainter.intrinsicSize
 
             override fun DrawScope.onDraw() {
-                with(errorPainter) {
+                with(defaultPainter) {
                     draw(
                         size = size,
                         colorFilter = ColorFilter.tint(tintColor)
@@ -288,20 +292,49 @@ private fun UserAvatar(profileImageUrl: String, modifier: Modifier = Modifier) {
             }
         }
     }
-    AsyncImage(
-        model = profileImageUrl,
+
+    if (hasImage.not()) {
+        EmptyProfilePicture(defaultPainter = defaultPainter)
+    } else {
+        AsyncImage(
+            model = profileImageUrl,
+            contentDescription = stringResource(Res.string.profile_image_desc),
+            error = tintedErrorPainter,
+            modifier = modifier.size(100.dp).clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+private fun EmptyProfilePicture(defaultPainter: Painter) {
+    val isDarkTheme = LocalDarkTheme.current
+    val backgroundColor = if (isDarkTheme) Theme.colorScheme.stroke else Color.White
+    val iconTint = if (isDarkTheme) Color.White else Color.Black
+
+    Icon(
+        painter = defaultPainter,
         contentDescription = stringResource(Res.string.profile_image_desc),
-        error = tintedErrorPainter,
-        modifier = modifier.size(100.dp).clip(CircleShape),
-        contentScale = ContentScale.Crop
+        tint = iconTint,
+        modifier = Modifier
+            .requiredSize(88.dp)
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                ambientColor = iconTint.copy(alpha = 0.70f),
+                spotColor = iconTint.copy(alpha = 0.70f)
+            )
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .padding(16.dp),
     )
 }
 
 @Composable
 private fun TrendItem(
-    item: ReelUiState,
+    item: TrendUiState,
     onTrendClick: (id: String) -> Unit,
-    onGetRefreshedThumbnail: (reelId: String) -> Unit,
+    onGetRefreshedThumbnail: (trendId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val cardWidthRatio = 106f / 164f

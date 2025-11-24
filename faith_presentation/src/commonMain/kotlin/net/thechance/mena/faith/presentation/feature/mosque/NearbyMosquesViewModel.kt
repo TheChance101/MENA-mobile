@@ -46,13 +46,13 @@ internal class NearbyMosquesViewModel(
     private fun onGetUserLocationSuccess(address: Address) {
         updateState {
             it.copy(
-                userLocation = Coordinate(address.latitude, address.longitude),
-                centerOfMap = Coordinate(address.latitude, address.longitude),
+                userLocation = MosqueUiState.Coordinate(address.latitude, address.longitude),
+                centerOfMap = MosqueUiState.Coordinate(address.latitude, address.longitude),
                 canMove = true,
                 isLoading = false
             )
         }
-        onSearchByCoordinates(Coordinate(address.latitude, address.longitude))
+        onSearchByCoordinates(MosqueUiState.Coordinate(address.latitude, address.longitude))
     }
 
     private fun createMosquesPagingSource(query: String): Flow<PagingData<MosqueUiState>> {
@@ -126,7 +126,7 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-    override fun onSearchByCoordinates(coordinate: Coordinate) {
+    override fun onSearchByCoordinates(coordinate: MosqueUiState.Coordinate) {
         tryToExecute(
             execute = {
                 mosqueRepository.getNearbyMosques(
@@ -204,7 +204,7 @@ internal class NearbyMosquesViewModel(
             it.copy(
                 isSearchButtonVisible = true,
                 canMove = false,
-                centerOfMap = Coordinate(
+                centerOfMap = MosqueUiState.Coordinate(
                     latitude = latitude,
                     longitude = longitude
                 )
@@ -212,7 +212,7 @@ internal class NearbyMosquesViewModel(
         }
     }
 
-    override fun onViewOnMapClick(coordinate: Coordinate) {
+    override fun onViewOnMapClick(coordinate: MosqueUiState.Coordinate) {
         sendEffect(NearbyMosquesEffect.NavigateToMap(coordinate))
     }
 

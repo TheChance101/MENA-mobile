@@ -12,8 +12,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
-import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.repository.TrendsRepository
 import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.createPager
@@ -23,7 +23,7 @@ import org.koin.core.annotation.Provided
 
 @KoinViewModel
 internal class ManageTrendsViewModel(
-    @Provided private val reelsRepository: ReelsRepository,
+    @Provided private val trendsRepository: TrendsRepository,
     @Provided private val userRepository: UserRepository,
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseViewModel<ManageTrendsScreenState, ManageTrendsUiEffect>(ManageTrendsScreenState()),
@@ -33,15 +33,15 @@ internal class ManageTrendsViewModel(
         getCurrentUserInfo()
     }
 
-    fun getReels() {
+    fun getTrends() {
         tryToExecute(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    loadPage = { page -> reelsRepository.getAllCurrentUserReels(page) }
+                    loadPage = { page -> trendsRepository.getAllCurrentUserTrends(page) }
                 )
             },
-            onSuccess = ::onGetReelsSuccess,
+            onSuccess = ::onGetTrendsSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
@@ -69,20 +69,20 @@ internal class ManageTrendsViewModel(
             }.launchIn(viewModelScope)
     }
 
-    private fun onGetReelsSuccess(reelsFlow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = reelsFlow
-            .map { pagingData: PagingData<Reel> ->
-            pagingData.map { reel -> reel.toUiState() }
+    private fun onGetTrendsSuccess(trendsFlow: Flow<PagingData<Trend>>) {
+        val uiTrendsFlow = trendsFlow
+            .map { pagingData: PagingData<Trend> ->
+            pagingData.map { trend -> trend.toUiState() }
         }
-        updateState { copy(isLoading = false, reels = uiReelsFlow) }
+        updateState { copy(isLoading = false, trends = uiTrendsFlow) }
     }
 
-    override fun onClickReel(reelId: String) {
-        val reelSource = when (state.value.selectedTab) {
-            SelectTab.MyTrends -> Route.ReelSource.MyTrends
-            SelectTab.Favorites -> Route.ReelSource.Favorites
+    override fun onClickTrend(trend: String) {
+        val trendSource = when (state.value.selectedTab) {
+            SelectTab.MyTrends -> Route.TrendSource.MyTrends
+            SelectTab.Favorites -> Route.TrendSource.Favorites
         }
-        sendEffect(ManageTrendsUiEffect.NavigateToTrend(reelId, reelSource))
+        sendEffect(ManageTrendsUiEffect.NavigateToTrend(trend, trendSource))
     }
 
     override fun onClickBack() {
@@ -105,47 +105,47 @@ internal class ManageTrendsViewModel(
 
     fun loadSelectedTabData(tab: SelectTab) {
         when (tab) {
-            SelectTab.MyTrends -> getReels()
-            SelectTab.Favorites -> getFavoriteReels()
+            SelectTab.MyTrends -> getTrends()
+            SelectTab.Favorites -> getFavoriteTrends()
         }
     }
 
-    override fun onGetRefreshedThumbnail(reelId: String) {
+    override fun onGetRefreshedThumbnail(trendId: String) {
         tryToExecute(
-            block = { reelsRepository.getReelUrls(reelId).thumbnailUrl },
-            onSuccess = { refreshedUrl -> onGetRefreshedThumbnailSuccess(refreshedUrl, reelId) }
+            block = { trendsRepository.getTrendUrls(trendId).thumbnailUrl },
+            onSuccess = { refreshedUrl -> onGetRefreshedThumbnailSuccess(refreshedUrl, trendId) }
         )
     }
 
-    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, reelId: String) {
+    private fun onGetRefreshedThumbnailSuccess(refreshedUrl: String, trendId: String) {
         updateState {
             copy(
-                reels = state.value.reels.updateThumbnail(reelId, refreshedUrl),
-                favoriteReels = state.value.favoriteReels.updateThumbnail(reelId, refreshedUrl)
+                trends = state.value.trends.updateThumbnail(trendId, refreshedUrl),
+                favoriteTrends = state.value.favoriteTrends.updateThumbnail(trendId, refreshedUrl)
             )
         }
     }
 
-    private fun Flow<PagingData<ReelUiState>>.updateThumbnail(
-        reelId: String,
+    private fun Flow<PagingData<TrendUiState>>.updateThumbnail(
+        trendId: String,
         url: String
-    ): Flow<PagingData<ReelUiState>> {
+    ): Flow<PagingData<TrendUiState>> {
         return this.map { pagingData ->
-            pagingData.map { reel ->
-                reel.takeIf { it.id != reelId } ?: reel.copy(thumbnailUrl = url)
+            pagingData.map { trend ->
+                trend.takeIf { it.id != trendId } ?: trend.copy(thumbnailUrl = url)
             }
         }
     }
 
-    fun getFavoriteReels() {
+    fun getFavoriteTrends() {
         tryToExecute(
             block = {
                 createPager(
                     scope = viewModelScope,
-                    loadPage = { page -> reelsRepository.getFavoriteReels(page) }
+                    loadPage = { page -> trendsRepository.getFavoriteTrends(page) }
                 )
             },
-            onSuccess = ::onGetFavoriteReelsSuccess,
+            onSuccess = ::onGetFavoriteTrendsSuccess,
             onError = { errorState -> updateState { copy(error = errorState) } },
             onStart = { updateState { copy(isLoading = true) } },
             onEnd = { updateState { copy(isLoading = false) } },
@@ -153,8 +153,8 @@ internal class ManageTrendsViewModel(
         )
     }
 
-    private fun onGetFavoriteReelsSuccess(flow: Flow<PagingData<Reel>>) {
-        val uiReelsFlow = flow.map { pagingData -> pagingData.map { it.toUiState() } }
-        updateState { copy(favoriteReels = uiReelsFlow, isLoading = false) }
+    private fun onGetFavoriteTrendsSuccess(flow: Flow<PagingData<Trend>>) {
+        val uiTrendsFlow = flow.map { pagingData -> pagingData.map { it.toUiState() } }
+        updateState { copy(favoriteTrends = uiTrendsFlow, isLoading = false) }
     }
 }

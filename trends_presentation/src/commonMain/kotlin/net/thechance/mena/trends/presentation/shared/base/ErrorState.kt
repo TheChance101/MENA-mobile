@@ -6,7 +6,7 @@ sealed class ErrorState {
     object RequestTimeout : ErrorState()
 }
 
-sealed class UploadReelErrorState : ErrorState() {
-    object FileTooLarge : UploadReelErrorState()
-    object DurationTooLarge : UploadReelErrorState()
+sealed class UploadTrendErrorState : ErrorState() {
+    object FileTooLarge : UploadTrendErrorState()
+    object DurationTooLarge : UploadTrendErrorState()
 }

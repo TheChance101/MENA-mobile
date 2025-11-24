@@ -12,12 +12,12 @@ import org.jetbrains.compose.resources.StringResource
 data class HomeScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
-    val reels: Flow<PagingData<ReelUiState>> = flowOf(),
-    val reelsStateFlow: MutableStateFlow<PagingData<ReelUiState>> = MutableStateFlow(PagingData.empty()),
+    val trends: Flow<PagingData<TrendUiState>> = flowOf(),
+    val trendsStateFlow: MutableStateFlow<PagingData<TrendUiState>> = MutableStateFlow(PagingData.empty()),
     val errorMessage: StringResource? = null,
 )
 
-data class ReelUiState(
+data class TrendUiState(
     val id: String,
     val profileImageUrl: String = "",
     val thumbnailUrl: String = "",
