@@ -5,7 +5,7 @@ import net.thechance.mena.trends.presentation.navigation.Route
 internal sealed interface ManageTrendsUiEffect {
     object NavigateBack : ManageTrendsUiEffect
     data class NavigateToTrend(
-        val reelId: String,
-        val reelSource: Route.ReelSource
+        val trendId: String,
+        val trendSource: Route.TrendSource
     ) : ManageTrendsUiEffect
 }

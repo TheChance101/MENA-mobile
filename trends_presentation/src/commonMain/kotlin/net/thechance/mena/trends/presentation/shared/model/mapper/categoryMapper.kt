@@ -13,7 +13,7 @@ internal fun List<Category>.toUserCategoryUiState(): List<Selectable<CategoryUiS
     }
 }
 
-internal fun List<Category>.toReelCategoryUiState(): List<Selectable<CategoryUiState>> {
+internal fun List<Category>.toTrendCategoryUiState(): List<Selectable<CategoryUiState>> {
     return map { category ->
         Selectable(
             value = category.toUiState(),
