@@ -14,6 +14,7 @@ data class ProductDetailsUiState(
     val hasProductInCart: Boolean = false,
     val isButtonEnable: Boolean = false,
     val dukanColor: Long = 0,
+    val isProductQuantityChanged: Boolean = false,
 ) {
     data class ProductInfo(
         val id: String = "",

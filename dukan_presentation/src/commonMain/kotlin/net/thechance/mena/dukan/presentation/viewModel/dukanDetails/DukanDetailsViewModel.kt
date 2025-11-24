@@ -237,7 +237,6 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewAllProductsShelfClicked(id: String, name: String) {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
@@ -347,12 +346,10 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
@@ -380,7 +377,7 @@ class DukanDetailsViewModel(
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
+     fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
         updateState {
             copy(
                 productQuantity = productQuantity + (productId to newQuantity)
@@ -388,15 +385,5 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
-
-    fun refreshProducts() {
-        loadCartInfo()
-        if (!state.value.isConfigurationChanges) {
-            loadShelvesPaging()
-            updateState { copy(isConfigurationChanges = true) }
-        }
-    }
+    private fun isWideImageStyle() = state.value.dukanInfo.style == Style.WIDE_IMAGE
 }

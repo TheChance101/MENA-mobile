@@ -21,13 +21,16 @@ fun ProductDetailsScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
-    LaunchedEffect(Unit){
-        viewModel.refreshCartInfo()
-    }
 
     ObserveAsEffect(viewModel.effect) { effects ->
         when (effects) {
-            ProductDetailsEffects.NavigateBack -> navController.popBackStack()
+            ProductDetailsEffects.NavigateBack -> {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY,
+                    state.product.id to state.product.inCartQuantity
+                )
+                navController.popBackStack()
+            }
             is ProductDetailsEffects.NavigateToCart -> {
                 navController.navigate(DukanRoute.DukanCart(effects.dukanId))
             }
