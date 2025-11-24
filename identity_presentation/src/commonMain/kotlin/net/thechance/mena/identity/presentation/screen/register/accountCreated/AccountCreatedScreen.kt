@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,6 +81,15 @@ class AccountCreatedScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(
+                                    Theme.colorScheme.background.surface,
+                                    Theme.colorScheme.background.surface,
+                                    Theme.colorScheme.background.surface.copy(alpha = 0.6f),
+                                )
+                            )
+                        )
                         .padding(horizontal = Theme.spacing._24)
                         .padding(top = Theme.spacing._24)
                 ) {
