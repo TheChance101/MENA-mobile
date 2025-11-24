@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -44,7 +46,8 @@ import sv.lib.squircleshape.SquircleShape
 fun BestSellingItem(
     imageUrl: String,
     title: String,
-    price: String,
+    basePrice: String,
+    finalPrice: String,
     isOutOfStock: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
@@ -113,15 +116,32 @@ fun BestSellingItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start,
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.discount_icon),
-                    contentDescription = stringResource(Res.string.discount_icon),
-                    tint = Theme.colorScheme.shadePrimary,
-                    modifier = Modifier.padding(end = Theme.spacing._4)
-                )
+                if (basePrice > finalPrice) {
+                    Icon(
+                        painter = painterResource(Res.drawable.discount_icon),
+                        contentDescription = stringResource(Res.string.discount_icon),
+                        tint = Theme.colorScheme.shadePrimary,
+                        modifier = Modifier.padding(end = Theme.spacing._4)
+                            .size(12.dp)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(end = Theme.spacing._4)
+                            .weight(1f),
+                        text = basePrice,
+                        style = Theme.typography.label.small.copy(
+                            textDecoration = TextDecoration.LineThrough
+                        ),
+                        maxLines = 1,
+                        color = Theme.colorScheme.shadeTertiary,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
                 PriceWithIcon(
-                    price = price,
+                    price = finalPrice,
                     iconRes = Res.drawable.silver_tc,
+                    iconSize = 16.dp,
+                    priceStyle = Theme.typography.label.small,
                     contentDescription = stringResource(Res.string.koin_icon),
                 )
             }

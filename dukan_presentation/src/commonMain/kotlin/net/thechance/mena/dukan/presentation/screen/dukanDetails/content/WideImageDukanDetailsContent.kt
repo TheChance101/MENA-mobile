@@ -79,13 +79,19 @@ fun WideImageDukanDetailsContent(
                     onFavoriteClicked = listener::onFavoriteDukanClicked,
                 )
             }
-            if (state.bestSellingProducts.isNotEmpty()) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    BestSellingSection(
-                        state = state,
-                        listener = listener,
-                        shelves = shelves
-                    )
+            when (productShelf.loadState.refresh) {
+                is LoadState.Error -> {}
+                LoadState.Loading -> {}
+                is LoadState.NotLoading -> {
+                    if (state.bestSellingProducts.isNotEmpty()) {
+                        item(span = { GridItemSpan(maxLineSpan) }) {
+                            BestSellingSection(
+                                state = state,
+                                listener = listener,
+                                shelves = shelves
+                            )
+                        }
+                    }
                 }
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
