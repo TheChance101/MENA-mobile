@@ -120,6 +120,7 @@ class MyAddressesScreen(
                 navigator.push(
                     AddEditLocationScreen(
                         addressModel = effect.addressUIState,
+                        onAddLocationSuccess = effect.onAddLocationSuccess
                     )
                 )
             }

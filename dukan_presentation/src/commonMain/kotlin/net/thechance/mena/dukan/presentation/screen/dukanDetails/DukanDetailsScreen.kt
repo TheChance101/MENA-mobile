@@ -3,7 +3,6 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -15,7 +14,9 @@ import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetailsContent
+import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsArgs
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.ObserveSavedStateEvent
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -28,13 +29,30 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-    LaunchedEffect(Unit) {
-        viewModel.refreshProducts()
+
+    navController.currentBackStackEntry?.apply {
+        ObserveSavedStateEvent<Pair<String, Int>>(
+            ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY
+        ) { (id, quantity) ->
+            viewModel.updateProductQuantityInCart(id, quantity)
+        }
+        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART){
+            viewModel.setHasProductInCart(it)
+        }
     }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            DukanDetailsEffects.NavigateBack -> navController.popBackStack()
+            DukanDetailsEffects.NavigateBackWithDukanId -> {
+                if (state.isFavoritePressed) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        DukanDetailsArgs.DUKAN_ID,
+                        state.dukanInfo.dukanId
+                    )
+                }
+                navController.popBackStack()
+            }
+
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
                 ShelfDetails(effect.id, effect.name, effect.dukanId)
             )

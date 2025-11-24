@@ -421,7 +421,9 @@ class ProductDetailsViewModelTest {
 @OptIn(ExperimentalUuidApi::class)
 private fun dummyCart() = Cart(
     id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
-    totalPrice = 500.0,
+    totalPriceBeforeDiscount = 500.0,
+    discount = 0.0,
+    totalPriceAfterDiscount = 500.0
 )
 
 @OptIn(ExperimentalUuidApi::class)

@@ -17,7 +17,7 @@
     <string name="trend_image_desc">Trend Image</string>
     <string name="back_arrow">Back arrow</string>
 
-    <string name="delete_reel">Delete Reel</string>
+    <string name="delete_trend">Delete Reel</string>
     <string name="confirmation_message">Are you sure you want to delete this reel?</string>
     <string name="delete">Delete</string>
     <string name="react">React icon</string>
@@ -67,7 +67,7 @@
     <string name="trends_title">Trends</string>
     <string name="manage_trends">Manage Trends</string>
     <string name="edit_tags">Edit Tags</string>
-    <string name="add_reel">Add Reel</string>
+    <string name="add_trend">Add Reel</string>
     <string name="profile_image">Profile Image</string>
     <string name="more_options">More Options</string>
     <string name="video_thumbnail">Video Thumbnail</string>
