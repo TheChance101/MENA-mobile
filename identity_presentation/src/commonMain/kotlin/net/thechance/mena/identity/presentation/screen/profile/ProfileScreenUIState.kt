@@ -27,6 +27,6 @@ data class LanguageDialogUiState(
 
 data class ThemeDialogUiState(
     val isVisible: Boolean = false,
-    val selectedAppTheme: AppTheme = AppTheme.LIGHT,
-    val options: List<AppTheme> = AppTheme.entries.filterNot { it == AppTheme.DEFAULT }
+    val selectedAppTheme: AppTheme = AppTheme.DEFAULT,
+    val options: List<AppTheme> = AppTheme.entries
 )

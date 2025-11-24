@@ -1,5 +1,6 @@
 package net.thechance.mena
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -17,12 +18,14 @@ fun App() {
     val appThemeService = koinInject<AppThemeService>()
     val currentLanguage by localizationService.observeLanguage().collectAsStateWithLifecycle()
     val currentTheme by appThemeService.observeAppTheme().collectAsStateWithLifecycle()
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+
     MenaTheme(
         language = currentLanguage.iso,
         appTheme = currentTheme.name ,
+        isSystemInDarkTheme = isSystemInDarkTheme,
         content = {
-            SetStatusBarAppearance(currentTheme)
-            SetNavigationBarAppearance(currentTheme)
+            SetSystemBarsAppearance(currentTheme,isSystemInDarkTheme)
             EntryPoint()
         }
     )

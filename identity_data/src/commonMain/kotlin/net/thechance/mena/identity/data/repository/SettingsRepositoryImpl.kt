@@ -24,7 +24,6 @@ class SettingsRepositoryImpl(
     override suspend fun applyLanguage(appLanguage: AppLanguage) {
         settings.appLanguage = appLanguage.iso.also { observableLanguage.emit(appLanguage.iso) }
     }
-
     override fun observeAppLanguage(): StateFlow<AppLanguage> {
       return  observableLanguage.map { it.toAppLanguage() }
             .stateIn(
@@ -33,14 +32,10 @@ class SettingsRepositoryImpl(
                 initialValue = observableLanguage.value.toAppLanguage()
             )
     }
-
     override fun getCurrentAppLanguage(): AppLanguage = settings.appLanguage.toAppLanguage()
-
-
     override suspend fun applyAppTheme(appTheme: AppTheme) {
         settings.appTheme = appTheme.name.also { observableTheme.emit(appTheme.name) }
     }
-
     override fun observeAppTheme(): StateFlow<AppTheme> {
         return  observableTheme.map { it.toAppTheme() }
             .stateIn(
@@ -49,7 +44,6 @@ class SettingsRepositoryImpl(
                 initialValue = observableTheme.value.toAppTheme()
             )
     }
-
     private fun String.toAppLanguage(): AppLanguage {
         return when (this) {
             AppLanguage.ENGLISH.iso -> AppLanguage.ENGLISH
