@@ -202,10 +202,6 @@ class CheckoutViewModel(
         }
     }
 
-    override fun onDismissSnackBar() {
-        updateState { copy(snackBarState = null) }
-    }
-
     override fun onSnackBarDismissed() {
         updateState {
             copy(snackBarState = null)
