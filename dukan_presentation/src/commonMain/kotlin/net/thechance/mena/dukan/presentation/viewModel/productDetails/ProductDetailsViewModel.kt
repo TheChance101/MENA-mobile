@@ -201,7 +201,6 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isProductQuantityChanged = false,
                 isButtonEnable = product.inCartQuantity != previousProductQuantity
             )
         }
@@ -213,7 +212,6 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isProductQuantityChanged = true,
                 isButtonEnable = product.inCartQuantity != previousProductQuantity
             )
         }
