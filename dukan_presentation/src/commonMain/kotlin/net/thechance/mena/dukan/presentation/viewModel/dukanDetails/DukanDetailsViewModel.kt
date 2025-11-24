@@ -61,15 +61,17 @@ class DukanDetailsViewModel(
     }
 
     private fun onCartInfoError(throwable: Throwable) {
-        updateState { copy(hasProductInCart = false) }
+        setHasProductInCart(hasProductInCart = false)
     }
 
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState { copy(hasProductInCart = cart.totalPriceAfterDiscount > 0.0) }
+        setHasProductInCart(hasProductInCart = cart.totalPriceAfterDiscount > 0.0)
     }
 
-
+     fun setHasProductInCart(hasProductInCart: Boolean){
+        updateState { copy(hasProductInCart = hasProductInCart) }
+    }
     private fun loadDukanDetails() {
         tryToExecute(
             onStart = ::onLoadDukanDetailsStart,
@@ -254,7 +256,7 @@ class DukanDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
-        updateState { copy(hasProductInCart = true) }
+        setHasProductInCart(true)
         updateProductQuantityInCart(productId, productQuantity)
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
@@ -271,7 +273,7 @@ class DukanDetailsViewModel(
         productQuantity: Int,
     ) {
         updateProductQuantityInCart(productId, productQuantity)
-        updateState { copy(hasProductInCart = true) }
+        setHasProductInCart(true)
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)

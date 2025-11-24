@@ -36,6 +36,9 @@ fun DukanDetailsScreen(
         ) { (id, quantity) ->
             viewModel.updateProductQuantityInCart(id, quantity)
         }
+        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART){
+            viewModel.setHasProductInCart(it)
+        }
     }
 
     ObserveAsEffect(viewModel.effect) { effect ->
