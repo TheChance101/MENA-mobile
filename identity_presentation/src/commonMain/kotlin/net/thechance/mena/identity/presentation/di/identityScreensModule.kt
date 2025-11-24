@@ -2,7 +2,7 @@ package net.thechance.mena.identity.presentation.di
 
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsViewModel
@@ -13,7 +13,7 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
@@ -53,7 +53,7 @@ val identityScreensModule = module {
     factoryOf(::ResetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
     factoryOf(::SetNewPasswordScreenViewModel)
-    factoryOf(::AddressesScreenViewModel)
+    factoryOf(::MyAddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::ShareDialogViewModel)
     factoryOf(::RegisterPhoneEntryViewModel)

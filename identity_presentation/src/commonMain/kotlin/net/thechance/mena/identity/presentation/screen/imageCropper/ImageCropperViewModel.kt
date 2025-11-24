@@ -33,10 +33,6 @@ class ImageCropperViewModel(
         sendNewEffect(ImageCropperScreenEffect.NavigateBackToEditProfile)
     }
 
-    override fun onDismissSnackBar() {
-        updateState { copy(errorMessage = null) }
-    }
-
     private fun encodeAndCacheImage(imageByteArray: ByteArray) {
         imagesRepository.cacheImage(imageKey, imageByteArray)
     }
@@ -47,6 +43,10 @@ class ImageCropperViewModel(
 
     private fun handleCropImageException(throwable: Throwable) {
         throwable.printStackTrace()
-        updateState { copy(errorMessage = Res.string.image_crop_failed) }
+        sendNewEffect(
+            ImageCropperScreenEffect.ShowSnackBarError(
+                errorStringResource = Res.string.image_crop_failed
+            )
+        )
     }
 }

@@ -54,6 +54,7 @@ class MainViewModel(
             },
             onStart = { updateState { it.copy(isLoading = true) } },
             onSuccess = ::onGetPrayerTimesSuccess,
+            onError = ::handleErrorSnackBar,
             onFinally = { updateState { it.copy(isLoading = false) } },
             dispatcher = dispatcher
         )

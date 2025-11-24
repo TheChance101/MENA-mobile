@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
@@ -49,13 +50,12 @@ fun TransactionsListContent(
         loadNextItems = interactionListener::onNextPageRequested
     )
 
-    Column(
+    Column (
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (state.history.isNotEmpty() || state.filterState.activeFilterCount != 0) {
             FilterButton(
                 activeFilterCount = state.filterState.activeFilterCount,
-                hasActiveFilters = state.filterState.hasActiveFilters,
                 onClick = interactionListener::onFilterClicked,
                 modifier = Modifier.padding(top = 12.dp).padding(horizontal = 16.dp)
             )
@@ -66,6 +66,7 @@ fun TransactionsListContent(
                 .background(Theme.colorScheme.background.surface)
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             state = listState
         ) {
 

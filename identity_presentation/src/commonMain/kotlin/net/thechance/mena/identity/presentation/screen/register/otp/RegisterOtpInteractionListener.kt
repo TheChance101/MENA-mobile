@@ -6,5 +6,4 @@ interface RegisterOtpInteractionListener : BaseInteractionListener {
     fun onClickVerify()
     fun onClickResend()
     fun onChangeOtp(otp: String)
-    fun onClearErrorMessage()
 }

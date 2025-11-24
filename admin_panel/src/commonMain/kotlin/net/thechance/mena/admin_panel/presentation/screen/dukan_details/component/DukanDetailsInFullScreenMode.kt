@@ -19,6 +19,7 @@ import kotlin.uuid.ExperimentalUuidApi
 internal fun DukanDetailsInFullScreenMode(
     state: DukanDetailsScreenState,
     interactionListener: DukanDetailsInteractionListener,
+    isMapVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -34,7 +35,7 @@ internal fun DukanDetailsInFullScreenMode(
                 .verticalScroll(rememberScrollState()),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,
-            isMapVisible = state.isMapVisible
+            isMapVisible = isMapVisible
         )
         ShelvesDetailsCard(
             modifier = Modifier.weight(1f).fillMaxHeight(),

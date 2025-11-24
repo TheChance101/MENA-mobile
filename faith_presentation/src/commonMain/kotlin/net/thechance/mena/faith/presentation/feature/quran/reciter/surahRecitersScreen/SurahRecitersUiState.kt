@@ -4,7 +4,6 @@ import net.thechance.mena.faith.domain.model.Reciter
 
 data class SurahRecitersUiState(
     val surahId: Int? = null,
-    val allReciters: List<ReciterUi> = emptyList(),
     val reciters: List<ReciterUi> = emptyList(),
     val query: String = "",
     val queryHint: String = "",

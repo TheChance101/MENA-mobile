@@ -196,4 +196,8 @@
     <string name="order_error_unauthorized_access">You are not authorized to display this order details.</string>
     <string name="order_error_not_found">Order not found.</string>
     <string name="order_error_general">Failed to load order details. Please try again.</string>
+    <string name="deactivated_dukan">dukan is deactivated </string>
+    <string name="your_dukan_has_been_deactivated">Your dukan has been deactivated because:</string>
+    <string name="wrong_information_provided">Wrong information provided.</string>
+    <string name="no_active_location">No active location found</string>
 </resources>

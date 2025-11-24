@@ -73,7 +73,8 @@ class DukanDetailsMapperTest {
 
         assertEquals("Phone", uiState.name)
         assertEquals("Android device", uiState.description)
-        assertEquals(15000.0, uiState.price, 0.0)
+        assertEquals(15000.0, uiState.basePrice, 0.0)
+        assertEquals(15000.0, uiState.finalPrice, 0.0)
         assertEquals("img.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
     }
@@ -106,7 +107,7 @@ class DukanDetailsMapperTest {
             id = "10",
             name = "Tablet",
             description = "Description",
-            price = 10000.0,
+            basePrice = 10000.0,
             imageUrl = "tablet.png",
             inCartQuantity = 5
         )

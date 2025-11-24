@@ -1,5 +1,7 @@
 package net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry
 
+import org.jetbrains.compose.resources.StringResource
+
 sealed interface ResetPasswordPhoneEntryScreenUIEffect {
     data class NavigateToOTP(
         val phoneNumber: String,
@@ -8,4 +10,7 @@ sealed interface ResetPasswordPhoneEntryScreenUIEffect {
     ) : ResetPasswordPhoneEntryScreenUIEffect
 
     data object NavigateBack : ResetPasswordPhoneEntryScreenUIEffect
+
+    data class ShowSnackBarError(val errorStringResource: StringResource) :
+        ResetPasswordPhoneEntryScreenUIEffect
 }

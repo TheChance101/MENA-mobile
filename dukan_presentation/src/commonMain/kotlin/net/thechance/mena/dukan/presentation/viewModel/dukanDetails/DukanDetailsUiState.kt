@@ -18,7 +18,8 @@ data class DukanDetailsUiState(
     val hasProductInCart: Boolean = false,
     val shelfProductsLimited: Map<String, List<ProductUiState>> = emptyMap(),
     val productQuantity: Map<String, Int> = emptyMap(),
-    val isConfigurationChanges: Boolean = true
+    val isConfigurationChanges: Boolean = true,
+    val isFavoritePressed: Boolean = false
 ) {
     data class DukanInfo(
         val dukanId: String = "",
@@ -51,7 +52,8 @@ data class DukanDetailsUiState(
         val id: String = "",
         val name: String = "",
         val imageUrl: String = "",
-        val price: Double = 0.0,
+        val basePrice: Double = 0.0,
+        val finalPrice: Double = 0.0,
         val description: String = "",
         val showProductQuantity: Boolean = false,
         val inCartQuantity: Int = 1,

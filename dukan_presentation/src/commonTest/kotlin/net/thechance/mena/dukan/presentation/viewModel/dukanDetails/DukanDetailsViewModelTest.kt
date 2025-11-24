@@ -297,7 +297,7 @@ class DukanDetailsViewModelTest {
         dukanDetailsViewModel.effect.test {
             // When
             dukanDetailsViewModel.onBackClicked()
-            assertEquals(DukanDetailsEffects.NavigateBack, awaitItem())
+            assertEquals(DukanDetailsEffects.NavigateBackWithDukanId, awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -329,7 +329,7 @@ class DukanDetailsViewModelTest {
 
             everySuspend {
                 dukanManagementRepository.updateFavoriteDukanStatus(dukanId)
-            } returns true
+            }
 
             // When
             dukanDetailsViewModel.onFavoriteDukanClicked(dukanId)
@@ -337,7 +337,7 @@ class DukanDetailsViewModelTest {
 
             // Then
             val updatedState = dukanDetailsViewModel.state.value
-            assertEquals(initialFavorite, updatedState.dukanInfo.isFavorite)
+            assertEquals(!initialFavorite, updatedState.dukanInfo.isFavorite)
         }
 
     @Test
@@ -488,7 +488,9 @@ class DukanDetailsViewModelTest {
 @OptIn(ExperimentalUuidApi::class)
 private fun dummyCart() = Cart(
     id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
-    totalPrice = 500.0,
+    totalPriceBeforeDiscount = 500.0,
+    discount = 0.0,
+    totalPriceAfterDiscount = 500.0
 )
 
 

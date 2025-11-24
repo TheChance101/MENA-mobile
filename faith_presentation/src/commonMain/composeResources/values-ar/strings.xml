@@ -145,7 +145,7 @@
     <string name="downloaded_sur">السور التي تم تنزيلها</string>
     <string name="reciter_list">قائمة القرآء</string>
     <string name="delete_surah">حذف السورة</string>
-    <string name="delete">حذف</string>
+    <string name="remove">حذف</string>
     <string name="delete_surah_dialog_message">هل انت متأكد من انك تريد حذف هذة السورة من التنزيلات؟</string>
     <string name="surah_deleted_successfully">تم حذف السورة بنجاح</string>
     <string name="listen">استماع</string>
@@ -197,4 +197,7 @@
     <string name="empty_download_icon">أيقونة التحميل فارغة</string>
     <string name="empty_download_text">لا توجد تنزيلات</string>
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
+    <string name="remove_audio">حذف الصوت</string>
+    <string name="remove_audio_message">هل أنت متأكد أنك تريد حذف صوت هذا القارئ؟</string>
+
 </resources>

@@ -11,13 +11,13 @@ import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toUiState
-import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import org.jetbrains.compose.resources.StringResource
@@ -77,14 +77,25 @@ class PickLocationScreenViewModel(
     }
 
     private fun onLocationNameError(throwable: Throwable) {
-        updateState { copy(isGpsButtonLoading = false, address = "", errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isGpsButtonLoading = false, address = "") }
+        sendNewEffect(
+            PickLocationScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
         changeIsConfirmEnabled()
     }
 
     override fun onMoveCamera(
         coordinates: CoordinatesUiState
     ) {
-        updateState { copy(currentLocation = coordinates, animateToCurrentLocation = false, showAnchor = true) }
+        updateState {
+            copy(
+                currentLocation = coordinates,
+                animateToCurrentLocation = false,
+                showAnchor = true
+            )
+        }
         getLocationName()
     }
 
@@ -134,10 +145,14 @@ class PickLocationScreenViewModel(
             PermissionState.GRANTED -> {
                 updateState {
                     copy(
-                        errorMessage = Res.string.error_location_is_turned_off,
                         isGpsButtonLoading = false
                     )
                 }
+                sendNewEffect(
+                    PickLocationScreenUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_location_is_turned_off
+                    )
+                )
             }
 
             PermissionState.DENIED -> {
@@ -155,7 +170,17 @@ class PickLocationScreenViewModel(
     }
 
     private fun onPermissionCheckError(throwable: Throwable) {
-        updateState { copy(isGpsButtonLoading = false, address = "" , errorMessage = mapErrorMessage(throwable)) }
+        updateState {
+            copy(
+                isGpsButtonLoading = false,
+                address = "",
+            )
+        }
+        sendNewEffect(
+            PickLocationScreenUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
         changeIsConfirmEnabled()
     }
 
@@ -183,10 +208,6 @@ class PickLocationScreenViewModel(
         )
     }
 
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
-    }
-
     override fun onClickBack() {
         sendNewEffect(PickLocationScreenUIEffect.NavigateBack)
     }
@@ -202,7 +223,7 @@ class PickLocationScreenViewModel(
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
             is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
-            else ->  mapErrorToMessage(ErrorState.GenericError(throwable))
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
         }
     }
 }

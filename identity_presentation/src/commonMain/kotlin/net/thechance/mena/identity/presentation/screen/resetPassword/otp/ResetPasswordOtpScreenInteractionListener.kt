@@ -7,5 +7,4 @@ interface ResetPasswordOtpScreenInteractionListener: BaseInteractionListener {
     fun onClickVerify()
     fun onClickResend()
     fun onChangeOtp(otp: String)
-    fun onClearErrorMessage()
 }

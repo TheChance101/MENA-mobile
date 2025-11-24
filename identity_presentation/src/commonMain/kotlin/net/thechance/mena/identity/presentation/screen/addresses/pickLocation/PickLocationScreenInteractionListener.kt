@@ -8,7 +8,6 @@ interface PickLocationScreenInteractionListener : BaseInteractionListener {
     fun onMoveCamera(coordinates: CoordinatesUiState)
     fun onClickGps()
     fun onClickConfirm()
-    fun onClearErrorMessage()
     fun onClickBack()
 }
 

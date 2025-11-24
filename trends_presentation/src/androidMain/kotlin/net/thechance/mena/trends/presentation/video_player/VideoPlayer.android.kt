@@ -48,7 +48,7 @@ import kotlinx.coroutines.delay
 import net.thechance.mena.designsystem.presentation.component.progressBar.ProgressBar
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.trends.presentation.di.trendStorageAccessSecret
-import net.thechance.mena.trends.presentation.screen.user_reel.ReelWatchSessionState
+import net.thechance.mena.trends.presentation.screen.user_trend.TrendWatchSessionState
 import net.thechance.mena.trends.presentation.video_player.composable.LoadingItem
 import net.thechance.mena.trends.presentation.video_player.composable.PauseIcon
 import net.thechance.mena.trends.presentation.video_player.util.Constants.BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
@@ -65,13 +65,13 @@ private const val HTTP_UNAUTHORIZED_STATUS_EXCEPTION = 403
 @Composable
 actual fun VideoPlayer(
     url: String,
-    isReelVisible: Boolean,
+    isTrendVisible: Boolean,
     modifier: Modifier,
     cacheKey: String?,
     onVideoPlaying: () -> Unit,
     onRequestRefresh: () -> Unit,
     onNetworkError: () -> Unit,
-    saveReelWatchSession: (ReelWatchSessionState) -> Unit,
+    saveTrendWatchSession: (TrendWatchSessionState) -> Unit,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -119,7 +119,7 @@ actual fun VideoPlayer(
         else Color.Transparent,
     )
 
-    val reelWatchSessionState = remember(url) { ReelWatchSessionState() }
+    val trendWatchSessionState = remember(url) { TrendWatchSessionState() }
     val isWatchedToEnd = remember { mutableStateOf(false) }
 
     val exoPlayer = remember {
@@ -183,24 +183,24 @@ actual fun VideoPlayer(
         exoPlayer.setMediaItem(mediaItem, false)
         exoPlayer.prepare()
         exoPlayer.seekTo(savedPosition)
-        if (isReelVisible) {
+        if (isTrendVisible) {
             exoPlayer.playWhenReady = true
             exoPlayer.play()
         }
     }
 
-    LaunchedEffect(isReelVisible) {
-        if (isReelVisible) {
+    LaunchedEffect(isTrendVisible) {
+        if (isTrendVisible) {
             exoPlayer.setMediaItem(mediaItem)
             exoPlayer.prepare()
             if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
             exoPlayer.playWhenReady = true
             exoPlayer.play()
-            reelWatchSessionState.watchStartTime = getCurrentTime()
+            trendWatchSessionState.watchStartTime = getCurrentTime()
         } else {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
-            reelWatchSessionState.watchEndTime = getCurrentTime()
+            trendWatchSessionState.watchEndTime = getCurrentTime()
         }
 
         onVideoPlaying()
@@ -209,7 +209,7 @@ actual fun VideoPlayer(
     LaunchedEffect(exoPlayer.isPlaying) {
         while (true) {
             duration = exoPlayer.duration.coerceAtLeast(1L)
-            reelWatchSessionState.videoDurationInMilliseconds = duration
+            trendWatchSessionState.videoDurationInMilliseconds = duration
             val position = exoPlayer.currentPosition
             currentProgress = position.toFloat() / duration.toFloat()
             delay(SEEK_BAR_DURATION_MS)
@@ -293,7 +293,7 @@ actual fun VideoPlayer(
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    if (isReelVisible) {
+                    if (isTrendVisible) {
                         if (lastPosition > 0) exoPlayer.seekTo(lastPosition)
                         if (!isPause) exoPlayer.play()
                     }
@@ -308,10 +308,10 @@ actual fun VideoPlayer(
         onDispose {
             lastPosition = exoPlayer.currentPosition
             exoPlayer.pause()
-            if (!isWatchedToEnd.value) reelWatchSessionState.watchedDurationInMilliseconds =
+            if (!isWatchedToEnd.value) trendWatchSessionState.watchedDurationInMilliseconds =
                 lastPosition
-            reelWatchSessionState.watchEndTime = getCurrentTime()
-            saveReelWatchSession(reelWatchSessionState)
+            trendWatchSessionState.watchEndTime = getCurrentTime()
+            saveTrendWatchSession(trendWatchSessionState)
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }

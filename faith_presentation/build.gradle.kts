@@ -33,6 +33,7 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.osmdroid.android)
+            implementation(libs.androidx.media3.exoplayer.v180)
         }
         commonMain.dependencies {
             implementation(libs.koin.core)
@@ -104,9 +105,9 @@ kover.reports {
                 "net.thechance.mena.faith.presentation.feature.main.MainViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.search.SearchViewModel",
                 "net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.reciter.surahRecitersScreen.SurahRecitersViewModel",
                 "net.thechance.mena.faith.presentation.feature.quran.reciter.reciterSelection.ReciterSelectionViewModel",
-                "net.thechance.mena.faith.presentation.feature.quran.reciter.manageDownloadsReciters.ManageDownloadsRecitersViewModel",
-                "net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedSurahRecitersScreen.DownloadedSurahRecitersViewModel",
+                "net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters.DownloadedRecitersViewModel",
                 "*MapperKt",
             )
         }

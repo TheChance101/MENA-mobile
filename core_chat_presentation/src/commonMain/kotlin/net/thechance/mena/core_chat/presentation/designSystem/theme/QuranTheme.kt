@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import net.thechance.mena.core_chat.presentation.designSystem.typography.LocalQuranTypography
 import net.thechance.mena.core_chat.presentation.designSystem.typography.QuranTypography
 import net.thechance.mena.core_chat.presentation.designSystem.typography.QuranTypography.Companion.getFontFamily
@@ -16,9 +18,11 @@ internal fun QuranTheme(content: @Composable () -> Unit) {
         val fontFamily = getFontFamily()
         val quranTypography = remember { QuranTypography.create(fontFamily) }
         CompositionLocalProvider(
-            value = LocalQuranTypography provides quranTypography,
-            content = content
-        )
+            LocalQuranTypography provides quranTypography,
+            LocalLayoutDirection provides LayoutDirection.Rtl
+        ) {
+            content()
+        }
     }
 }
 

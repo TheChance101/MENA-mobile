@@ -7,5 +7,4 @@ interface ContactUsInteractionListener : BaseInteractionListener {
     fun onClickEmailAddress()
     fun onClickPhoneNumber()
     fun onClickFacebookAccount()
-    fun onClearErrorMessage()
 }

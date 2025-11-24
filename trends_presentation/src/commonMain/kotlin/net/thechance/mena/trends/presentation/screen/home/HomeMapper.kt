@@ -1,10 +1,10 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.entity.Trend
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 
-fun Reel.toUiState(): ReelUiState {
-    return ReelUiState(
+fun Trend.toUiState(): TrendUiState {
+    return TrendUiState(
         id = id,
         profileImageUrl = profileImageUrl,
         userName = userName,

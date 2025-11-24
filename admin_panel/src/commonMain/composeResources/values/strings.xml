@@ -17,7 +17,7 @@
 
     <!-- Users Management -->
     <string name="users_management">Users management</string>
-    <string name="search_hint">Search by user name, phone number,...</string>
+    <string name="search_user_hint">Search by user name, phone number,...</string>
     <string name="no_users_yet">There are no users yet.</string>
     <string name="users_will_appear">All users will be displayed here after added.</string>
 
@@ -38,7 +38,7 @@
     <!-- Dukan Requests -->
     <string name="requests">Requests</string>
     <string name="view_details">View details</string>
-
+    <string name="no_dukan_requests">There is no dukan Requests right now!</string>
 
     <!-- User Status -->
     <string name="active">Active</string>
@@ -113,5 +113,6 @@
     <string name="reject_dukan_header">Reject Dukan request?</string>
     <string name="reject_dukan_content">Are you sure you want to continue with rejecting?</string>
     <string name="reject_dukan_reason">Add reject reason here</string>
+    <string name="search_dukan_hint">Search by dukan name, location,...</string>
 
 </resources>

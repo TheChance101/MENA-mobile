@@ -4,17 +4,19 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.ExperimentalUuidApi
 
 class CheckoutUiStateTest {
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `default state SHOULD have empty values`() = runTest {
         val state = CheckoutUiState()
         assertEquals(CheckoutUiState.Address(), state.deliveryAddress)
         assertEquals(emptyFlow(), state.items)
-        assertEquals(0, state.discountPercentage)
-        assertEquals(0.0, state.platformFees)
-        assertEquals(0.0, state.totalAmount)
+        assertEquals(0.0, state.cartDetails.discountPercentage)
+        assertEquals(0.0, state.cartDetails.platformFees)
+        assertEquals(0.0, state.cartDetails.totalPriceAfterDiscount)
     }
 
     @Test
