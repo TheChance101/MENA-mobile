@@ -34,7 +34,16 @@ fun DukanDetailsScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            DukanDetailsEffects.NavigateBack -> navController.popBackStack()
+            DukanDetailsEffects.NavigateBackWithDukanId -> {
+                if (state.isFavoritePressed) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        DukanDetailsArgs.DUKAN_ID,
+                        state.dukanInfo.dukanId
+                    )
+                }
+                navController.popBackStack()
+            }
+
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
                 ShelfDetails(effect.id, effect.name, effect.dukanId)
             )

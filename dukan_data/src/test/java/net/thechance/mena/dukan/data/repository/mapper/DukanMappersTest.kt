@@ -1,14 +1,19 @@
 package net.thechance.mena.dukan.data.repository.mapper
 
 import junit.framework.TestCase.assertTrue
+import kotlinx.coroutines.test.runTest
+import net.thechance.mena.dukan.data.dto.dukan.DukanActivationStatusResponse
 import net.thechance.mena.dukan.data.dto.dukan.DukanCategoryDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanColorDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanDetailsDto
 import net.thechance.mena.dukan.data.dto.dukan.MyDukanStatusDto
+import net.thechance.mena.dukan.data.dto.dukan.TopDiscountedDukanDto
+import net.thechance.mena.dukan.data.mapper.toActivationStatus
 import net.thechance.mena.dukan.data.mapper.toCategoryList
 import net.thechance.mena.dukan.data.mapper.toColorsList
 import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.mapper.toDukan
+import net.thechance.mena.dukan.data.mapper.toEntity
 import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
@@ -125,5 +130,32 @@ class DukanMappersTest {
 
         val dukan = dto.toDukan()
         assertTrue(dukan.isFavorite)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `Top dukan details are mapped correctly`() = runTest {
+        val dto = TopDiscountedDukanDto(
+            id = Uuid.random(),
+            discount = 50.3,
+            imageUrl = "top.png"
+        )
+
+        val dukanDiscountPreview = dto.toEntity()
+        assertEquals(50, dukanDiscountPreview.discount)
+        assertEquals("top.png", dukanDiscountPreview.imageUrl)
+        assertEquals(dto.id, dukanDiscountPreview.id)
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `Dukan activation status is mapped correctly`() = runTest {
+       val dto = DukanActivationStatusResponse(
+            status = "ACTIVATED",
+        )
+
+        val dukanActivationStatus = dto.toActivationStatus()
+        assertEquals(Dukan.ActivationStatus.ACTIVATED.name, dukanActivationStatus.name)
+
     }
 }

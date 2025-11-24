@@ -4,9 +4,8 @@ import net.thechance.mena.dukan.presentation.viewModel.checkout.CheckoutInteract
 
 object PreviewCheckoutInteractionListener : CheckoutInteractionListener {
     override fun onBackClicked() {}
-
     override fun onConfirmOrderClicked() {}
-
     override fun onChangeLocationClicked() {}
-    override fun onDismissCheckoutDialog() {}
+    override fun onSnackBarDismissed() {}
+    override fun onRetryClicked() {}
 }

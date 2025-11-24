@@ -40,6 +40,7 @@ import net.thechance.mena.designsystem.presentation.component.button.OutlinedBut
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun DukanRequestsTableContent(
@@ -55,7 +56,8 @@ fun DukanRequestsTableContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked,
             horizontalScrollState = horizontalScrollState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isSortingDisabled = state.isSortingDisabled
         )
         if (state.isLoading) {
             AdminPanelContentLoading()
@@ -82,6 +84,7 @@ fun DukanRequestsTableContent(
     }
 }
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun DukanListTable(
     dukan: List<DukanRequestsScreenState.DukanItem>,
@@ -95,12 +98,15 @@ private fun DukanListTable(
         state = listState,
         modifier = modifier
     ) {
-        itemsIndexed(items = dukan) { index, dukanItem ->
+        itemsIndexed(
+            items = dukan,
+            key = { _, item -> item.id }) { index, dukanItem ->
             val isLastItem = index == dukan.lastIndex
             DukanItemRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(horizontalScrollState),
+                    .horizontalScroll(horizontalScrollState)
+                    .animateItem(),
                 index = dukanItem.index,
                 dukan = dukanItem,
                 isLastItem = isLastItem,
@@ -155,6 +161,11 @@ private fun DukanItemRow(
 
         DukanLocation(
             location = dukan.address,
+            iconSize = 20.dp,
+            iconTint = Theme.colorScheme.shadePrimary,
+            textColor = Theme.colorScheme.shadePrimary,
+            textStyle = Theme.typography.label.large,
+            spacing = 8.dp,
             modifier = Modifier.width(315.dp)
         )
 

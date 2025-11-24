@@ -15,4 +15,4 @@ fun getCurrentDate(): LocalDate {
     return LocalDate(currentDate.year, currentDate.month, currentDate.day)
 }
 
-fun LocalDate?.orCurrent() = this ?: getCurrentDate()
+fun LocalDate?.orCurrentDate() = this ?: getCurrentDate()

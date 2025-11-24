@@ -177,7 +177,10 @@ class ChangePasswordScreenViewModel(
                     newPasswordErrorMessage = if (!isPasswordSecure)
                         Res.string.error_password_validation
                     else null,
-                    isSaveEnabled = isPasswordMatch && isPasswordSecure
+                    isSaveEnabled = isPasswordMatch && isPasswordSecure,
+                    confirmPasswordErrorMessage = if (confirmPassword.isNotBlank() && !isPasswordMatch)
+                        Res.string.error_password_mismatch
+                    else null
                 )
             )
         }

@@ -6,7 +6,7 @@ val fakeProductDetails = ProductDetailsUiState(
     product = ProductDetailsUiState.ProductInfo(
         id = "p123",
         name = "Classic Leather Jacket",
-        price = 149.99,
+        basePrice = 149.99,
         description = "A high-quality classic leather jacket, perfect for all seasons. Made from 100% genuine leather with a comfortable inner lining.",
         images = listOf(
             "https.example.com/images/jacket1.jpg",

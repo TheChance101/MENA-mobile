@@ -60,7 +60,7 @@ class ShelfDetailsViewModel(
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState { copy(hasProductInCart = cart.totalPrice > 0) }
+        updateState { copy(hasProductInCart = cart.totalPriceAfterDiscount > 0) }
     }
 
     private fun loadDukanDetails() {

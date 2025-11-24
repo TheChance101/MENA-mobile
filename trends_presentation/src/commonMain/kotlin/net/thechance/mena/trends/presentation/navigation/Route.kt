@@ -10,22 +10,22 @@ internal sealed interface Route {
     data object UpdateCategories : Route
 
     @Serializable
-    data class ReelDetails(
-        val reelId: String,
+    data class TrendDetails(
+        val trendId: String,
         val source: String
     ) : Route
 
     @Serializable
-    enum class ReelSource { Home, MyTrends, Favorites }
+    enum class TrendSource { Home, MyTrends, Favorites }
 
     @Serializable
-    data object ManageReels : Route
+    data object ManageTrends : Route
 
     @Serializable
     data object MainContainer : Route
 
     @Serializable
-    data object UploadReel : Route
+    data object UploadTrend : Route
 
     @Serializable
     data class VideoDescription(val trendId: String) : Route

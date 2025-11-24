@@ -2,6 +2,8 @@ package net.thechance.mena.dukan.data.repository.mockEngine.dukan_cart
 
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.cart.CartDto
+import net.thechance.mena.dukan.data.dto.order.OrderDto
+import net.thechance.mena.dukan.data.dto.order.OrderItemDto
 import net.thechance.mena.dukan.data.dto.product.PriceDto
 import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.mapper.toDomain
@@ -56,3 +58,34 @@ val demoPagedResultProductCart: PagedResult<Product> = PageResponseDto(
     first = true,
     last = true
 ).toDomain { it.toDomain() }
+
+@OptIn(ExperimentalUuidApi::class)
+val cartOdrerDto = OrderDto(
+    id = Uuid.random(),
+    orderNumber = 10,
+    time = "",
+    orderItemResponse = listOf(
+        OrderItemDto(
+            productId = Uuid.random(),
+            productName = "Demo Product 1",
+            imageUrl = "https://picsum.photos/200/200?random=1",
+            quantity = 10,
+            price = net.thechance.mena.dukan.data.dto.order.PriceDto(
+                original = 100.0,
+                finalPrice = 100.0
+            )
+        )
+    ),
+    discount = 50.2,
+    platformFees = 60.4,
+    totalAmount = 20.8,
+    addersLine = "",
+    customerLatitude = 2524.2,
+    customerLongitude = 2452.5,
+    dukanLatitude = 50.25,
+    dukanLongitude = 2581.4,
+    customerName = "",
+    customerNumber = "",
+    customerImage = "dukan image.png",
+    isDukanOwner = true
+)

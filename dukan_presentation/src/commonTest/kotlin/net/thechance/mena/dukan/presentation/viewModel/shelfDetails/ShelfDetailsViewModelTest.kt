@@ -98,7 +98,9 @@ class ShelfDetailsViewModelTest {
     @OptIn(ExperimentalUuidApi::class)
     private fun dummyCart() = Cart(
         id = Uuid.parse("123e4567-e89b-12d3-a456-426614174003"),
-        totalPrice = 500.0,
+        totalPriceBeforeDiscount = 500.0,
+        discount = 0.0,
+        totalPriceAfterDiscount = 500.0
     )
 
 
@@ -264,9 +266,9 @@ class ShelfDetailsViewModelTest {
         val productsShelfs = shelfDetailsViewModel.state.value.productsShelf.asSnapshot()
 
         // Then
-        assertEquals(1200.0, productsShelfs[0].price)
-        assertEquals(25.0, productsShelfs[1].price)
-        assertEquals(75.0, productsShelfs[2].price)
+        assertEquals(1200.0, productsShelfs[0].basePrice)
+        assertEquals(25.0, productsShelfs[1].basePrice)
+        assertEquals(75.0, productsShelfs[2].basePrice)
     }
 
     @Test

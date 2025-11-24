@@ -16,7 +16,7 @@
 
     <!-- Users Management -->
     <string name="users_management">إدارة المستخدمين</string>
-    <string name="search_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
+    <string name="search_user_hint">ابحث باسم المستخدم، رقم الهاتف،...</string>
     <string name="dukan_management">إدارة الدكان</string>
     <string name="no_users_yet">لا يوجد مستخدمون بعد.</string>
     <string name="users_will_appear">سيتم عرض جميع المستخدمين هنا بعد إضافتهم.</string>
@@ -38,6 +38,7 @@
     <!-- Dukan Requests -->
     <string name="requests">طلبات</string>
     <string name="view_details">عرض التفاصيل</string>
+    <string name="no_dukan_requests">لا يوجد طلبات إضافة دكاكين حاليا!</string>
     <!-- User Status -->
     <string name="active">نشط</string>
     <string name="blocked">محظور</string>
@@ -112,5 +113,6 @@
     <string name="reject_dukan_header">هل تريد رفض طلب الدكان؟</string>
     <string name="reject_dukan_content">هل أنت متأكد أنك تريد الاستمرار في الرفض؟</string>
     <string name="reject_dukan_reason">أضف سبب الرفض هنا</string>
+    <string name="search_dukan_hint">ابحث باسم الدكان، الموقع،...</string>
 
 </resources>

@@ -13,10 +13,14 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.cart.CartDto
+import net.thechance.mena.dukan.data.dto.order.OrderDto
 import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.repository.CartRepositoryImpl
+import net.thechance.mena.dukan.data.repository.OrderRepositoryImpl
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun MockRequestHandleScope.defaultAddOrUpdateProductQuantityResponse() = respond(
     content = """{}""",
@@ -56,11 +60,21 @@ fun MockRequestHandleScope.defaultProductCartResponse() = respond(
     headers = jsonHeaders
 )
 
+fun MockRequestHandleScope.defaultCartOrdersResponse() = respond(
+    content = jsonSerialization.encodeToString(
+        OrderDto.serializer(),
+        cartOdrerDto
+    ),
+    status = HttpStatusCode.OK,
+    headers = jsonHeaders
+)
+
+@OptIn(ExperimentalUuidApi::class)
 fun dukanCartHttpClient(
     addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     getCartInfoResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): HttpClient {
     val dukanId = "123e4567-e89b-12d3-a456-426614174003"
     val productId = "5"
@@ -92,14 +106,56 @@ fun dukanCartRepository(
     addOrUpdateProductCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     getCartInfoResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
 ): CartRepositoryImpl {
     return CartRepositoryImpl(
         client = dukanCartHttpClient(
             addOrUpdateProductCartResponse = addOrUpdateProductCartResponse,
             deleteProductFromCartResponse = deleteProductFromCartResponse,
             getCartInfoResponse = getCartInfoResponse,
-            productCartResponse = productCartResponse
+            productCartResponse = productCartResponse,
+        )
+    )
+}
+
+@OptIn(ExperimentalUuidApi::class)
+fun orderHttpClient(
+    orderId : Uuid,
+    cartOrdersResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): HttpClient {
+    return HttpClient(
+        MockEngine { request ->
+            when (request.url.encodedPath) {
+                "/dukan/orders/$orderId" -> cartOrdersResponse?.invoke(this)
+                    ?: defaultCartOrdersResponse()
+
+                else -> respond(
+                    content = "",
+                    status = HttpStatusCode.BadRequest,
+                    headers = jsonHeaders
+                )
+            }
+        }
+    ) {
+        install(ContentNegotiation) {
+            json(jsonSerialization)
+        }
+
+        install(DefaultRequest) {
+            contentType(ContentType.Application.Json)
+        }
+    }
+}
+
+@OptIn(ExperimentalUuidApi::class)
+fun dukanCartOrdersRepository(
+    orerId: Uuid,
+    cartOrdersResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
+): OrderRepositoryImpl {
+    return OrderRepositoryImpl(
+        client = orderHttpClient(
+            orderId = orerId,
+            cartOrdersResponse = cartOrdersResponse
         )
     )
 }

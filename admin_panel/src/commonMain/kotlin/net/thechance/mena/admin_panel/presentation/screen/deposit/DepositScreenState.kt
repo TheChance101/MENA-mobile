@@ -10,7 +10,8 @@ data class DepositScreenState(
     val snackBar: SnackBarState = SnackBarState(),
     val isCountriesLoading: Boolean = false,
     val isDepositProcessLoading :Boolean = false,
-    val availableCountries : List<CountryUiState> =emptyList()
+    val availableCountries : List<CountryUiState> =emptyList(),
+    val errorState: ErrorState? = null
 ) {
     val isFillWalletButtonEnabled: Boolean
         get() {

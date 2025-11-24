@@ -41,6 +41,8 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
 ) : ViewModel(), KoinComponent {
 
     private val snackbarHandler: SnackbarHandler by inject()
+    private var snackbarJob: Job? = null
+    private val debounceDelay = 200L
 
     val snackBarState = snackbarHandler.snackBarState
 
@@ -63,7 +65,7 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     protected fun <T> tryToExecute(
         execute: suspend () -> T,
         onSuccess: (suspend (T) -> Unit)? = null,
-        onError: (ErrorState) -> Unit = ::handleErrorSnackBar,
+        onError: (ErrorState) -> Unit = {},
         onStart: suspend () -> Unit = {},
         onFinally: () -> Unit = {},
         dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -127,19 +129,27 @@ abstract class BaseViewModel<UI_STATE, UI_EFFECT>(
     }
 
     protected fun handleSuccessSnackBar(message: StringResource) {
-        snackbarHandler.showSnackBar(
-            message = { getString(message) },
-            status = SnackBarState.Status.Success,
-            scope = viewModelScope
-        )
+        snackbarJob?.cancel()
+        snackbarJob = viewModelScope.launch {
+            delay(debounceDelay)
+            snackbarHandler.showSnackBar(
+                message = { getString(message) },
+                status = SnackBarState.Status.Success,
+                scope = viewModelScope
+            )
+        }
     }
 
     protected fun handleErrorSnackBar(error: ErrorState) {
-        snackbarHandler.showSnackBar(
-            message = error.message,
-            status = SnackBarState.Status.Error,
-            scope = viewModelScope,
-        )
+        snackbarJob?.cancel()
+        snackbarJob = viewModelScope.launch {
+            delay(debounceDelay)
+            snackbarHandler.showSnackBar(
+                message = error.message,
+                status = SnackBarState.Status.Error,
+                scope = viewModelScope,
+            )
+        }
     }
 
 }

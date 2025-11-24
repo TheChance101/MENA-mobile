@@ -224,9 +224,12 @@
     <string name="downloaded_sur">Downloaded sur</string>
     <string name="reciter_list">Reciters list</string>
     <string name="delete_surah">Delete surah</string>
-    <string name="delete">Delete</string>
+    <string name="remove">Remove</string>
     <string name="delete_surah_dialog_message">Are you sure you want to delete this surah from downloading?</string>
     <string name="surah_deleted_successfully">Surah deleted successfully</string>
+    <string name="surah_deleted_successfully_downloading">Deleted surah from downloading</string>
+    <string name="reciter_deleted_successfully_downloading">Deleted reciter from downloading</string>
+    <string name="re_deleted_successfully_downloading">Deleted surah from downloading</string>
     <string name="download_icon">download icon</string>
     <string name="prayer_time"> Prayer time</string>
     <string name="kilometer_unit">km</string>
@@ -236,8 +239,8 @@
     <string name="remove_aya">Remove Aya</string>
     <string name="empty_download_icon">empty download icon</string>
     <string name="empty_download_text">There is no downloaded sur yet!</string>
-    <string name="remove_aya_message">"Are you sure you want to remove this aya from bookmarks?"</string>
+    <string name="remove_aya_message">Are you sure you want to remove this aya from bookmarks?</string>
     <string name="remove_audio">Remove Audio</string>
-    <string name="remove_audio_message">Are you sure you want to remove this audio from downloading?</string>
+    <string name="remove_audio_message">Are you sure you want to delete this audio from downloading?</string>
 
 </resources>

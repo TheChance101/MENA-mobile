@@ -32,7 +32,7 @@ class ProductDetailsMapperTest {
 
         assertEquals(product.name, uiState.name)
         assertEquals(product.description, uiState.description)
-        assertEquals(product.price.base, uiState.price, 0.0)
+        assertEquals(product.price.base, uiState.basePrice, 0.0)
         assertEquals("image.png", uiState.imageUrl)
         assertEquals(0, uiState.inCartQuantity)
     }
@@ -43,7 +43,7 @@ class ProductDetailsMapperTest {
             id = "123",
             name = "Product",
             description = "Desc",
-            price = 9.99,
+            basePrice = 9.99,
             images = emptyList(),
             inCartQuantity = 4,
         )

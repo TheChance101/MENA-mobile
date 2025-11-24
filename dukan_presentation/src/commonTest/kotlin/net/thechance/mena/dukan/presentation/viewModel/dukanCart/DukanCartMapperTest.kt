@@ -33,7 +33,8 @@ class DukanCartMapperTest {
         assertEquals(product.id.toString(), uiState.id)
         assertEquals("Headphones", uiState.name)
         assertEquals("Wireless Bluetooth Headphones", uiState.description)
-        assertEquals(999.99, uiState.price, 0.0)
+        assertEquals(999.99, uiState.basePrice, 0.0)
+        assertEquals(999.99, uiState.finalPrice, 0.0)
         assertEquals("headphones.png", uiState.imageUrl)
         assertEquals(2, uiState.quantity)
     }

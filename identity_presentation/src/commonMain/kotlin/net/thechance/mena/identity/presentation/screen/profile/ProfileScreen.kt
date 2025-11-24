@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -32,7 +33,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.ProfileImage
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreen
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreen
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsScreen
 import net.thechance.mena.identity.presentation.screen.editProfile.EditUserProfileScreen
@@ -134,17 +135,20 @@ class ProfileScreen : BaseScreen<
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box {
+                                Box(
+                                    modifier = Modifier.offset(y = 4.dp)
+                                ) {
                                     ProfileImage(
                                         profileImageUrl = state.profileImageUrl,
                                         profileImageBitmap = null
                                     )
                                     Box(
                                         modifier = Modifier
-                                            .padding(end = 15.dp, bottom = 3.dp)
                                             .align(Alignment.BottomEnd)
+                                            .padding(end = 15.dp, bottom = 3.dp)
                                             .size(10.dp)
                                             .border(1.dp, Theme.colorScheme.stroke, CircleShape)
+                                            .padding(1.dp)
                                             .background(Theme.colorScheme.success, CircleShape)
                                     )
                                 }
@@ -201,12 +205,16 @@ class ProfileScreen : BaseScreen<
         snackBarController: IdentitySnackBarController,
     ) {
         when (effect) {
-            ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
-                navigator.push(EditUserProfileScreen())
+            is ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
+                navigator.push(
+                    EditUserProfileScreen(
+                        userInfo = effect.userInfo
+                    )
+                )
             }
 
             ProfileScreenUIEffect.NavigateToLocationPickerScreen -> {
-                navigator.push(AddressesScreen())
+                navigator.push(MyAddressesScreen())
             }
 
             ProfileScreenUIEffect.NavigateContactUsScreen -> {

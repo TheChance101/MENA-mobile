@@ -48,7 +48,9 @@ private fun DepositScreenContent(
     PanelScaffold(
         topBar = { DepositTopBar() },
         snackBar = { SnackBarContainer(snackBarState = state.snackBar) },
-        isLoading = state.isCountriesLoading
+        isLoading = state.isCountriesLoading,
+        errorState = state.errorState,
+        onRetry = interactionListener::onRetryClicked
     ) {
         Box(
             modifier = Modifier
