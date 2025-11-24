@@ -227,7 +227,7 @@ class DukanDetailsViewModel(
         updateState { copy(productsShelf = flowOf(products)) }
     }
 
-    private fun loadBestSellingProducts() {
+    fun loadBestSellingProducts() {
         tryToExecute(
             block = ::LoadBestSellingProductsBlock,
             onSuccess = ::loadBestSellingProductsSuccess,
