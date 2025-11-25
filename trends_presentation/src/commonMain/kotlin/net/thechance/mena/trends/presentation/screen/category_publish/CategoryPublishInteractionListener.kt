@@ -4,4 +4,5 @@ interface CategoryPublishInteractionListener {
     fun onClickBack()
     fun onClickCategory(categoryId: String)
     fun onClickPublish()
+    fun onClickRetry()
 }

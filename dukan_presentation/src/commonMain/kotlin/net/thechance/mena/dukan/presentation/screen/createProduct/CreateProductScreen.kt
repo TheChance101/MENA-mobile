@@ -1,7 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.createProduct
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -187,11 +186,9 @@ private fun CreateProductSnackBar(
 ) {
     state.snackBarUiState?.let { snackBarState ->
         SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = interactionListener::onDismissSnackBar),
+            snackBarUiState = snackBarState,
             onDismiss = interactionListener::onDismissSnackBar,
-            snackBarUiState = snackBarState
+            onClick = interactionListener::onDismissSnackBar
         )
     }
 }

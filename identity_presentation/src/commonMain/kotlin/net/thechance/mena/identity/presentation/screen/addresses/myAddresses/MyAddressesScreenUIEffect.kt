@@ -6,6 +6,7 @@ import org.jetbrains.compose.resources.StringResource
 sealed interface MyAddressesScreenUIEffect {
     object NavigateBack : MyAddressesScreenUIEffect
     data class NavigateToAddressDetailsScreen(
+        val onAddLocationSuccess: () -> Unit,
         val addressUIState: AddressUIState?,
     ) : MyAddressesScreenUIEffect
 

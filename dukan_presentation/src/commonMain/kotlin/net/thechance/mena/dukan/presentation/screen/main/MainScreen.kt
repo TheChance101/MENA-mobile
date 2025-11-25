@@ -54,6 +54,7 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ManageDukanSc
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.PendingScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.SearchScreenRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.DukanDetailsArgs
 import net.thechance.mena.dukan.presentation.screen.main.components.TopAppBar
 import net.thechance.mena.dukan.presentation.screen.main.components.bestNersetDukanSection.BestNearestDukanSection
 import net.thechance.mena.dukan.presentation.screen.main.components.categorySection.CategorySection
@@ -61,6 +62,7 @@ import net.thechance.mena.dukan.presentation.screen.main.components.categorySect
 import net.thechance.mena.dukan.presentation.screen.main.components.dukansDiscountSection.DukansDiscountSection
 import net.thechance.mena.dukan.presentation.screen.main.components.editorPickDukanSection.editorPickDukanItems
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.ObserveSavedStateEvent
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewMainScreenInteractionListener
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeBestNearestDuknas
@@ -81,6 +83,13 @@ fun MainScreen(
 ) {
     val state: State<MainScreenUiState> = viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
+
+    navController.currentBackStackEntry?.apply {
+        ObserveSavedStateEvent<String>(DukanDetailsArgs.DUKAN_ID) { dukanId ->
+            viewModel.setFavoriteState(dukanId)
+        }
+    }
+
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
             MainScreenEffect.NavigateToAddDukanScreen -> {
@@ -118,10 +127,6 @@ fun MainScreen(
                 navController.navigate(route = SearchScreenRoute)
             }
         }
-    }
-
-    LaunchedEffect(state.value.editorPickDukans) {
-        viewModel.loadEditorPicksDukans()
     }
 
     LaunchedEffect(state) {
@@ -184,30 +189,33 @@ private fun MainContent(
             targetState = state.isConnected,
             transitionSpec = { fadeTransitionSpec() }
         ) { isConnected ->
-            if (isConnected) return@AnimatedContent
-            NoInternetContent(
-                onRetry = listener::onRetryClicked,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (!isConnected) {
+                NoInternetContent(
+                    onRetry = listener::onRetryClicked,
+                    modifier = Modifier.fillMaxSize()
+                )
+                return@AnimatedContent
+            }
         }
-
-        AnimatedContent(
-            targetState = isEmptyContent,
-            transitionSpec = { fadeTransitionSpec() }
-        ) { isEmptyContent ->
-            if (isEmptyContent) {
-                EmptyStateContent(
-                    image = Res.drawable.dukan_pending,
-                    title = Res.string.dukan_main_content_empty_error_title,
-                    body = Res.string.dukan_main_content_empty_error_body
-                )
-            } else {
-                MainScreenSections(
-                    state = state,
-                    bestNearestDukan = bestNearestDukan,
-                    dukans = dukans,
-                    listener = listener
-                )
+        if (state.isConnected) {
+            AnimatedContent(
+                targetState = isEmptyContent,
+                transitionSpec = { fadeTransitionSpec() }
+            ) { isEmptyContent ->
+                if (isEmptyContent) {
+                    EmptyStateContent(
+                        image = Res.drawable.dukan_pending,
+                        title = Res.string.dukan_main_content_empty_error_title,
+                        body = Res.string.dukan_main_content_empty_error_body
+                    )
+                } else {
+                    MainScreenSections(
+                        state = state,
+                        bestNearestDukan = bestNearestDukan,
+                        dukans = dukans,
+                        listener = listener
+                    )
+                }
             }
         }
     }
@@ -324,7 +332,8 @@ private fun ManageDukanSnackbar(
             snackBarState?.let {
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = listener::onSnackBarDismissed
+                    onDismiss = listener::onSnackBarDismissed,
+                    onClick = listener::onSnackBarDismissed
                 )
             }
         }

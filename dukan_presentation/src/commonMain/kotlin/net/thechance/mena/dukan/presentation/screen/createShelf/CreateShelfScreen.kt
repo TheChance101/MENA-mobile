@@ -102,7 +102,8 @@ private fun CreateShelfContent(
             state.snackBarState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = interactionListener::onDismissSnackBar
+                    onDismiss = interactionListener::onDismissSnackBar,
+                    onClick = interactionListener::onDismissSnackBar
                 )
             }
         }

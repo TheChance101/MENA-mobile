@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.unit.dp
 import app.cash.paging.compose.LazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
+import mena.dukan_presentation.generated.resources.discount
+import mena.dukan_presentation.generated.resources.platform_fees
 import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.silver_tier_icon
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -43,7 +45,7 @@ import sv.lib.squircleshape.SquircleShape
 @Composable
 fun CheckoutSummaryCard(
     products: LazyPagingItems<CheckoutUiState.CartItem>,
-    totalPrice: Double,
+    cartDetails: CheckoutUiState.CartDetails,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -61,15 +63,18 @@ fun CheckoutSummaryCard(
             .background(Theme.colorScheme.background.surfaceLow)
     ) {
         Box(modifier = Modifier.wrapContentHeight()) {
-            SummaryItemsList(products = products)
+            SummaryItemsList(cartDetails = cartDetails, products = products)
             SummaryTopCircles()
         }
-        SummaryBottomSection(totalPrice)
+        SummaryBottomSection(cartDetails.totalPriceAfterDiscount)
     }
 }
 
 @Composable
-private fun SummaryItemsList(products: LazyPagingItems<CheckoutUiState.CartItem>) {
+private fun SummaryItemsList(
+   cartDetails: CheckoutUiState.CartDetails,
+    products: LazyPagingItems<CheckoutUiState.CartItem>
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,10 +88,45 @@ private fun SummaryItemsList(products: LazyPagingItems<CheckoutUiState.CartItem>
                 CheckoutProductItem(cartItem = cartItem)
             }
         }
+        CheckoutDiscountItem(
+            productName = stringResource(Res.string.discount),
+            discountPercentage = cartDetails.discountPercentage
+        )
+        CheckoutFeeItem(
+            productName = stringResource(Res.string.platform_fees),
+            price = cartDetails.platformFees
+        )
         DashedSeparator(
             modifier = Modifier
                 .padding(bottom = 11.dp)
                 .padding(horizontal = 2.dp)
+        )
+    }
+}
+
+@Composable
+private fun CheckoutDiscountItem(
+    productName: String,
+    discountPercentage: Double,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(start = Theme.spacing._8)
+                .weight(1f),
+            text = productName,
+            maxLines = 1,
+            style = Theme.typography.label.medium,
+            color = Theme.colorScheme.shadePrimary
+        )
+        Text(
+            text = "-${discountPercentage} %",
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary
         )
     }
 }
@@ -207,7 +247,6 @@ private fun CheckoutFeeItem(
         Text(
             modifier = Modifier
                 .padding(start = Theme.spacing._8)
-                .fillMaxWidth()
                 .weight(1f),
             text = productName,
             maxLines = 1,
