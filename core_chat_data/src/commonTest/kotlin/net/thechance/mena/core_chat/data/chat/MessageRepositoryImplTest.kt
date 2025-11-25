@@ -18,6 +18,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
@@ -104,7 +105,7 @@ class MessageRepositoryImplTest {
                 audioMessageSender,
                 ayahMessageSender
             )
-
+        every { authRepository.observeTokenChange() } returns MutableStateFlow("fake_token")
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
             pendingMessageDao = pendingMessageDao,

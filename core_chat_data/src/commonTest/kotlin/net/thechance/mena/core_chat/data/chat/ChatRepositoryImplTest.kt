@@ -12,12 +12,14 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isTrue
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -76,6 +78,7 @@ class ChatRepositoryImplTest {
         cachedChatSummaryDao = mock<CachedChatSummaryDao>()
         dataStore = mock<DataStore<Preferences>>()
         val emptyPrefs = emptyPreferences()
+        every { authRepository.observeTokenChange() } returns MutableStateFlow("fake_token")
         everySuspend { dataStore.data } returns flowOf(emptyPrefs)
         everySuspend { dataStore.updateData(any()) } returns emptyPreferences()
         cachedChatDao = mock<CachedChatDao>()
@@ -84,7 +87,9 @@ class ChatRepositoryImplTest {
         everySuspend { cachedChatDao.insertChat(any()) } returns Unit
         everySuspend { cachedChatDao.insertAllChats(any()) } returns Unit
         everySuspend { cachedChatDao.deleteChatById(any()) } returns Unit
-
+        everySuspend { cachedChatSummaryDao.clearAllChatSummaries() } returns Unit
+        everySuspend { cachedChatDao.clearAllChats() } returns Unit
+        everySuspend { webSocketManager.disconnect() } returns Unit
         httpClient = createHttpClient()
         repository = createChatRepository(
             httpClient = httpClient,
