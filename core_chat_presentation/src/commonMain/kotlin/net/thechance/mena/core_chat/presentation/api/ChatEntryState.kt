@@ -7,5 +7,6 @@ import kotlin.uuid.Uuid
 data class ChatEntryState(
     val chatId: Uuid? = null,
     val chatName: String? = null,
-    val isContentVisible: Boolean = false
+    val isContentVisible: Boolean = false,
+    val error: Boolean = false
 )

@@ -11,11 +11,20 @@ class ChatEntryViewModel(private val chatRepository: ChatRepository) :
     fun getChatByUserId(userId: String) {
         tryToExecute(
             execute = {
-                updateState { it.copy(isContentVisible = false) }
+                updateState { it.copy(isContentVisible = false, error = false) }
                 chatRepository.getChatByOtherUserId(Uuid.parse(userId))
             },
-            onSuccess = { chat -> updateState { it.copy(chatId = chat.id, chatName = chat.name, isContentVisible = true) } },
-            onError = { chat -> updateState { it.copy(isContentVisible = false) } }
+            onSuccess = { chat ->
+                updateState {
+                    it.copy(
+                        chatId = chat.id,
+                        chatName = chat.name,
+                        isContentVisible = true,
+                        error = false
+                    )
+                }
+            },
+            onError = { chat -> updateState { it.copy(isContentVisible = false, error = true) } }
         )
     }
 }
