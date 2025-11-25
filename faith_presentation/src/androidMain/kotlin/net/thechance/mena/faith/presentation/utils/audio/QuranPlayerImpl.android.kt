@@ -23,7 +23,7 @@ actual class QuranPlayerImpl(
     private var currentUrl: String? = null
     private var completedListener: (() -> Unit)? = null
 
-    private val playerServiceConnection = PlayerServiceConnection()
+    private val playerServiceConnection by lazy { PlayerServiceConnection() }
 
     private val playerListener = object : Player.Listener {
         override fun onPlaybackStateChanged(state: Int) {
@@ -32,6 +32,7 @@ actual class QuranPlayerImpl(
             }
         }
     }
+
     init {
         bindToService()
     }
@@ -57,6 +58,19 @@ actual class QuranPlayerImpl(
     private fun bindToService() {
         val intent = Intent(context, QuranPlayerService::class.java)
         context.bindService(intent, playerServiceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    actual override fun playAyah(ayahUrl: String) {
+        if (ayahUrl.isEmpty()) return
+        quranPlayer?.let { player ->
+            val isNewAyah = ayahUrl != currentUrl
+            if (isNewAyah) {
+                currentUrl = ayahUrl
+                player.setMediaItem(MediaItem.fromUri(ayahUrl), true)
+                player.prepare()
+            }
+            player.play()
+        }
     }
 
     @OptIn(UnstableApi::class)

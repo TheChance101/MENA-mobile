@@ -17,6 +17,21 @@ actual class QuranPlayerImpl : QuranPlayer {
     private var completedListener: (() -> Unit)? = null
     private var completionObserver: NSObject? = null
 
+    actual override fun playAyah(ayahUrl: String) {
+        if (ayahUrl.isEmpty()) return
+
+        player?.pause()
+        completionObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+        player = null
+
+        val ayahURL = NSURL.URLWithString(ayahUrl)
+        if (ayahURL != null) {
+            val item = AVPlayerItem.playerItemWithURL(ayahURL)
+            player = AVPlayer(item)
+            player?.play()
+        }
+    }
+
     actual override fun playAyah(
         ayahUrl: String,
         surahName: String,
