@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,18 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.emptyFlow
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.add_mosque_message
-import mena.faith_presentation.generated.resources.arrow_left
-import mena.faith_presentation.generated.resources.ic_add
 import mena.faith_presentation.generated.resources.ic_gps
 import mena.faith_presentation.generated.resources.ic_outline_search
 import mena.faith_presentation.generated.resources.icon_location
-import mena.faith_presentation.generated.resources.nearby_mosques
 import mena.faith_presentation.generated.resources.no_nearby_mosques_found
 import mena.faith_presentation.generated.resources.search_area
 import mena.faith_presentation.generated.resources.search_hint
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -52,6 +46,7 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
+import net.thechance.mena.faith.presentation.feature.mosque.component.NearbyMosqueTopbar
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
 import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResultsBottomSheet
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
@@ -105,25 +100,9 @@ private fun Content(
     Scaffold(
         statusBarColor = Theme.colorScheme.background.surfaceLow,
         topBar = {
-            AppBar(
-                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),
-                title = stringResource(Res.string.nearby_mosques),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.arrow_left),
-                        contentDescription = stringResource(Res.string.arrow_left)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable(onClick = listener::onAddMosqueClick),
-                        painter = painterResource(Res.drawable.ic_add),
-                        contentDescription = stringResource(Res.string.add),
-                    )
-                },
-                onLeadingClick = listener::onBackClick
+            NearbyMosqueTopbar(
+                onBackClick = listener::onBackClick,
+                onAddMosqueClick = listener::onAddMosqueClick,
             )
         },
         overlays = {
