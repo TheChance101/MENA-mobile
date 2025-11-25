@@ -222,12 +222,23 @@ class SurahViewModel(
     }
 
     private fun playAyah(ayahNumber: Int) {
-        loadAndPlayAyahSound(
-            surahNumber = surahArgs.surahId,
-            ayahNumber = ayahNumber,
-            reciterId = uiState.value.currentReciter.id,
-        )
-        updateState { it.copy(selectedAyahNumber = ayahNumber) }
+        tryToExecute(
+            execute = {
+                updateState { it.copy(selectedAyahNumber = ayahNumber) }
+                loadAndPlayAyahSound(
+                    surahNumber = surahArgs.surahId,
+                    ayahNumber = ayahNumber,
+                    reciterId = uiState.value.currentReciter.id,
+                )
+            },
+            onFinally = {
+                updateState {
+                    it.copy(
+                        selectedAyahNumber = ayahNumber,
+                        initialAyahToScroll = ayahNumber
+                    )
+                }
+            })
     }
 
     private fun moveToAyah(offset: Int) {
