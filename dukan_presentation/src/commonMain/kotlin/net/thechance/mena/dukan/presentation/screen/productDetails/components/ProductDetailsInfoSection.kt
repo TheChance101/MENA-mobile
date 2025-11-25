@@ -26,6 +26,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -98,7 +99,8 @@ private fun ProductDetailsInfoContent(
         maxLines = 2,
     )
     ProductDetailsPriceRow(
-        price = state.basePrice.toString(),
+        price = state.finalPrice,
+        discountPrice = state.basePrice,
         modifier = Modifier.padding(top = Theme.spacing._2)
     )
     ProductDescription(
@@ -108,7 +110,8 @@ private fun ProductDetailsInfoContent(
 
 @Composable
 private fun ProductDetailsPriceRow(
-    price: String,
+    price: Double,
+    discountPrice: Double,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -123,7 +126,15 @@ private fun ProductDetailsPriceRow(
             modifier = Modifier.padding(end = Theme.spacing._4)
         )
         Text(
-            text = price,
+            text = "$${discountPrice}",
+            style = Theme.typography.label.extraSmall.copy(
+                textDecoration = TextDecoration.LineThrough
+            ),
+            color = Theme.colorScheme.shadeTertiary,
+            modifier = Modifier.padding(end = 2.dp)
+        )
+        Text(
+            text = price.toString(),
             style = Theme.typography.label.large,
             color = Theme.colorScheme.shadePrimary,
             textAlign = TextAlign.Center,
@@ -176,7 +187,7 @@ private fun ProductDescription(
         style = Theme.typography.body.small,
         maxLines = maxLine,
         modifier = modifier
-            .then(Modifier.bringIntoViewRequester(bringIntoViewRequester))
+            .bringIntoViewRequester(bringIntoViewRequester)
             .padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
             .clickable (
                 indication = null,
@@ -186,7 +197,7 @@ private fun ProductDescription(
             .animateContentSize(TweenSpec()),
         onTextLayout = { textLayoutResult ->
             if (textLayoutResult.hasVisualOverflow) {
-                val lastIndex = minOf(maxLine-1 , textLayoutResult.lineCount - 1)
+                val lastIndex = minOf(maxLine - 1, textLayoutResult.lineCount - 1)
                 val lastCharIndex = textLayoutResult.getLineEnd(lastIndex, visibleEnd = true)
                 visibleDescription.value = description.take(lastCharIndex).dropLast(12)
             }
