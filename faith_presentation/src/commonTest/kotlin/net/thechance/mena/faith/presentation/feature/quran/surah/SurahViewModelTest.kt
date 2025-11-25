@@ -23,6 +23,7 @@ import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
+import net.thechance.mena.faith.presentation.utils.permission.FaithPermissionsManager
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
@@ -43,6 +44,7 @@ class SurahViewModelTest {
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
     private val quranPlayer: QuranPlayer = mock(mode = MockMode.autofill)
+    private val permissionManager: FaithPermissionsManager = mock(mode = MockMode.autofill)
     private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
 
     @BeforeTest
@@ -59,7 +61,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            quranPlayer = quranPlayer
+            quranPlayer = quranPlayer,
+            permissionManager = permissionManager,
         )
     }
 
@@ -194,7 +197,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            quranPlayer = quranPlayer
+            quranPlayer = quranPlayer,
+            permissionManager = permissionManager,
         )
 
         advanceUntilIdle()
@@ -331,7 +335,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            quranPlayer = quranPlayer
+            quranPlayer = quranPlayer,
+            permissionManager = permissionManager,
         )
         advanceUntilIdle()
 
@@ -396,7 +401,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            quranPlayer = quranPlayer
+            quranPlayer = quranPlayer,
+            permissionManager = permissionManager,
         )
         advanceUntilIdle()
 
@@ -416,7 +422,8 @@ class SurahViewModelTest {
             quranRepository = quranRepository,
             clipboardManager = clipboardManager,
             bookmarkRepository = bookmarkRepository,
-            quranPlayer = quranPlayer
+            quranPlayer = quranPlayer,
+            permissionManager = permissionManager,
         )
         advanceUntilIdle()
 
