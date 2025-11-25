@@ -13,19 +13,20 @@ import org.koin.compose.koinInject
 
 @Composable
 @Preview
-fun App() {
+fun App(
+    isSystemDarkTheme: Boolean = isSystemInDarkTheme()
+) {
     val localizationService = koinInject<LocalizationService>()
     val appThemeService = koinInject<AppThemeService>()
     val currentLanguage by localizationService.observeLanguage().collectAsStateWithLifecycle()
     val currentTheme by appThemeService.observeAppTheme().collectAsStateWithLifecycle()
-    val isSystemInDarkTheme = isSystemInDarkTheme()
 
     MenaTheme(
         language = currentLanguage.iso,
-        appTheme = currentTheme.name ,
-        isSystemInDarkTheme = isSystemInDarkTheme,
+        appTheme = currentTheme.name,
+        isSystemInDarkTheme = isSystemDarkTheme,
         content = {
-            SetSystemBarsAppearance(currentTheme,isSystemInDarkTheme)
+            SetSystemBarsAppearance(currentTheme, isSystemDarkTheme)
             EntryPoint()
         }
     )
