@@ -44,6 +44,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.AnnotatedText
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.util.ShimmerBox
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
+import net.thechance.mena.dukan.presentation.util.text.buildExpandableText
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -166,10 +167,10 @@ private fun ProductDescription(
 
     val displayedText = remember(isDescriptionExpanded.value, visibleDescription.value) {
         buildExpandableText(
-            description = description,
-            isDescriptionExpanded = isDescriptionExpanded.value,
-            visiblePartOfDescription = visibleDescription.value,
-            descriptionColor = descriptionColor,
+            fullText = description,
+            isTextExpanded = isDescriptionExpanded.value,
+            visiblePartOfText = visibleDescription.value,
+            textColor = descriptionColor,
             seeLessAndMoreColor = seeLessAndMoreColor,
             seeLessText = seeLessText,
             seeMoreText = seeMoreText
@@ -206,40 +207,6 @@ private fun ProductDescription(
             }
         }
     )
-}
-
-private fun buildExpandableText(
-    description: String,
-    isDescriptionExpanded: Boolean,
-    seeLessText: String,
-    seeMoreText: String,
-    visiblePartOfDescription: String,
-    descriptionColor: Color,
-    seeLessAndMoreColor: Color,
-): AnnotatedString {
-    return when {
-        visiblePartOfDescription.isNotEmpty() && isDescriptionExpanded.not() -> buildAnnotatedString {
-            withStyle(style = SpanStyle(color = descriptionColor)) {
-                append(visiblePartOfDescription)
-            }
-            withStyle(style = SpanStyle(color = seeLessAndMoreColor, fontWeight = FontWeight.Bold)) {
-                append(seeMoreText)
-            }
-        }
-        isDescriptionExpanded -> buildAnnotatedString {
-            withStyle(style = SpanStyle(color = descriptionColor)) {
-                append(description)
-            }
-            withStyle(style = SpanStyle(color = seeLessAndMoreColor,fontWeight = FontWeight.Bold)) {
-                append(seeLessText)
-            }
-        }
-        else -> buildAnnotatedString {
-            withStyle(style = SpanStyle(color = descriptionColor)) {
-                append(description)
-            }
-        }
-    }
 }
 
 @Preview
