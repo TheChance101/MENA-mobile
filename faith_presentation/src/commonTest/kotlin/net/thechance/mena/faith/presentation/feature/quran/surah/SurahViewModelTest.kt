@@ -46,7 +46,7 @@ class SurahViewModelTest {
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
     private val quranPlayer: QuranPlayer = mock(mode = MockMode.autofill)
     private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
-    private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill) // Add this
+    private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
