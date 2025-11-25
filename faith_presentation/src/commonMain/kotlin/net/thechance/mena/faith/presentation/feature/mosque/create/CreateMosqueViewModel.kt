@@ -82,33 +82,51 @@ internal class CreateMosqueViewModel(
         checkIfFormIsComplete()
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     override fun onAddClick() {
         tryToExecute(
-            execute = {
-                repository.addMosque(
-                    Mosque(
-                        id = Uuid.random(),
-                        name = uiState.value.name,
-                        coordinates = Mosque.Coordinates(
-                            latitude = uiState.value.mosqueLocation?.latitude ?: 0.0,
-                            longitude = uiState.value.mosqueLocation?.longitude ?: 0.0
-                        ),
-                        address = uiState.value.address,
-                        imageUrl = "",
-                    ),
-                    imageBytes = uiState.value.croppedImage?.toByteArray() ?: ByteArray(0)
-                )
-                val addMosqueMessage = getString(Res.string.add_mosque_message)
-                updateState { it.copy(successMessage = addMosqueMessage) }
-
-            },
+            execute = ::createMosque,
+            onError = ::handleErrorSnackBar,
             onFinally = {
                 sharedImageViewModel.clearImage()
                 sendEffect(CreateMosqueEffect.NavigateBack)
-            },
-            onError = ::handleErrorSnackBar
+            }
         )
+    }
+
+    private suspend fun createMosque() {
+        val mosque = buildMosqueFromState()
+        val imageBytes = getImageBytes()
+
+        repository.addMosque(mosque, imageBytes)
+
+        handleSuccessfulMosqueCreation()
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun buildMosqueFromState(): Mosque {
+        val state = uiState.value
+        return Mosque(
+            id = Uuid.random(),
+            name = state.name,
+            coordinates = buildMosqueCoordinates(state.mosqueLocation),
+            address = state.address,
+            imageUrl = "",
+        )
+    }
+
+    private fun buildMosqueCoordinates(location: Coordinate?) = Mosque.Coordinates(
+        latitude = location?.latitude ?: 0.0,
+        longitude = location?.longitude ?: 0.0
+    )
+
+
+    private fun getImageBytes(): ByteArray {
+        return uiState.value.croppedImage?.toByteArray() ?: ByteArray(0)
+    }
+
+    private suspend fun handleSuccessfulMosqueCreation() {
+        val addMosqueMessage = getString(Res.string.add_mosque_message)
+        updateState { it.copy(successMessage = addMosqueMessage) }
     }
 
     override fun onNameChange(name: String) {
