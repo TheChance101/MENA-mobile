@@ -139,7 +139,7 @@ private fun FeatureContent(
                 Feature.CHAT -> chatApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.DUKAN -> dukanApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.TREND -> trendsApi.TabEntry(updateBottomNavigationVisibility)
-                Feature.FAITH -> faithApi.TabEntry()
+                Feature.FAITH -> faithApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.PROFILE -> identityApi.ProfileTabEntry(updateBottomNavigationVisibility)
                 Feature.WALLET -> walletApi.WalletEntry(
                     navigateBack = {},
