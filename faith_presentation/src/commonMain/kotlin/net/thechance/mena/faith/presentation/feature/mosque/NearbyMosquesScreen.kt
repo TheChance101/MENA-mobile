@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -111,15 +110,14 @@ private fun Content(
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.arrow_left),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.arrow_left)
                     )
                 },
                 trailingContent = {
                     Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable(onClick = listener::onAddMosqueClick),
                         painter = painterResource(Res.drawable.ic_add),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.add),
                     )
                 },
@@ -221,13 +219,12 @@ private fun Content(
                 modifier = Modifier
                     .padding(Theme.spacing._16)
                     .clip(RoundedCornerShape(Theme.radius.md))
-                    .background(color = Theme.colorScheme.primary.primary)
-                    .clickable {
-                        listener.getUserLocation()
-                    }
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .clickable { listener.getUserLocation() }
                     .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
                     .align(Alignment.BottomStart),
                 painter = painterResource(Res.drawable.ic_gps),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.icon_location)
             )
         }

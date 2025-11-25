@@ -26,6 +26,7 @@ internal fun SurahAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.arrow_left)
             )
         },
@@ -41,6 +42,7 @@ internal fun SurahAppBar(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_search),
+                    tint = Theme.colorScheme.primary.primary,
                     contentDescription = stringResource(Res.string.arrow_left)
                 )
             }
