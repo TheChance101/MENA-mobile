@@ -207,7 +207,8 @@ private fun Content(
                     .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
                     .align(Alignment.BottomStart),
                 painter = painterResource(Res.drawable.ic_gps),
-                contentDescription = stringResource(Res.string.icon_location)
+                contentDescription = stringResource(Res.string.icon_location),
+                tint = Theme.colorScheme.shadeTertiary
             )
         }
     }
