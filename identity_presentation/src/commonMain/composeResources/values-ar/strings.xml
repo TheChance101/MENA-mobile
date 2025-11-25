@@ -80,6 +80,8 @@
     <string name="profile_theme">المظهر</string>
     <string name="profile_theme_light">فاتح</string>
     <string name="profile_theme_dark">داكن</string>
+    <string name="profile_theme_system">النظام</string>
+    <string name="profile_theme_system_hint">سيتم ضبط المظهر تبعا لإعدادات جهازك</string>
     <string name="profile_other_header">أخرى</string>
     <string name="profile_privacy_and_policy">الخصوصية والسياسات</string>
     <string name="profile_contact_us">اتصل بنا</string>

@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         PermissionManager.init(this)
         AndroidFaithPermissionsManagerImpl.init(this)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 

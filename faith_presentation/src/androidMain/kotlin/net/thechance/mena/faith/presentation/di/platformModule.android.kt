@@ -22,6 +22,6 @@ internal actual fun platformModule(): Module = module {
     singleOf(::IslamicDateCalculatorImpl).bind<IslamicDateCalculator>()
     singleOf(::AzimuthProviderImpl).bind<AzimuthProvider>()
     singleOf(::MapNavigatorImpl).bind<MapNavigator>()
-    singleOf(::QuranPlayerImpl).bind<QuranPlayer>()
+    singleOf(::QuranPlayerImpl) bind QuranPlayer::class
     singleOf(::AndroidFaithPermissionsManagerImpl).bind<FaithPermissionsManager>()
 }

@@ -14,7 +14,7 @@ internal data class NearbyMosquesMapUiState(
     val centerOfMap: MosqueUiState.Coordinate? = null,
     val isLoading: Boolean = true,
     val canMove: Boolean = true,
-    val isMosqueBottomSheetVisible: Boolean = true,
+    val isMosqueBottomSheetVisible: Boolean = false,
     val isSearchResultsBottomSheetVisible: Boolean = false,
     val isSearchButtonVisible: Boolean = false,
     val isNoMosquesCardVisible: Boolean = false,

@@ -86,7 +86,7 @@ class DukanCartViewModel(
     private fun onLoadCartSuccess(cart: Cart) {
         updateState {
             copy(
-                totalPrice = cart.totalPrice,
+                totalPrice = cart.totalPriceAfterDiscount,
                 cartState = CartState.LOADED
             )
         }

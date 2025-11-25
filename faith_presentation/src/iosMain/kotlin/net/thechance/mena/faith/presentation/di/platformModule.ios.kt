@@ -22,6 +22,6 @@ actual fun platformModule(): Module = module {
     singleOf(::ClipboardManagerImpl).bind<ClipboardManager>()
     singleOf(::AzimuthProviderImpl).bind<AzimuthProvider>()
     singleOf(::MapNavigatorImpl).bind<MapNavigator>()
-    singleOf(::QuranPlayerImpl).bind<QuranPlayer>()
+    singleOf(::QuranPlayerImpl) bind QuranPlayer::class
     singleOf(::IOSFaithPermissionsManagerImpl).bind<FaithPermissionsManager>()
 }

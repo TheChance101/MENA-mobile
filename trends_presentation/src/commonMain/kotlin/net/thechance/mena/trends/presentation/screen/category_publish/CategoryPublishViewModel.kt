@@ -59,6 +59,11 @@ internal class CategoryPublishViewModel(
         )
     }
 
+    override fun onClickRetry() {
+        updateState { copy(error = null) }
+        loadCategories()
+    }
+
     private suspend fun updateTrend() {
         val selectedIds =  state.value.categories
             .filter { it.isSelected }

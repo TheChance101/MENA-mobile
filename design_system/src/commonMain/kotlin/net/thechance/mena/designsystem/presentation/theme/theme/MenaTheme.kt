@@ -1,5 +1,6 @@
 package net.thechance.mena.designsystem.presentation.theme.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
@@ -28,14 +29,27 @@ import org.jetbrains.compose.resources.InternalResourceApi
 @Composable
 fun MenaTheme(
     language: String = AppLanguage.English.iso,
-    appTheme: String = AppTheme.DARK.name,
+    appTheme: String = AppTheme.SYSTEM.name,
+    isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = remember(appTheme) { if (appTheme== AppTheme.DARK.name) DarkColorScheme else LightColorScheme }
+    val isFollowingSystemDarkMode = remember(appTheme, isSystemInDarkTheme) {
+        appTheme == AppTheme.SYSTEM.name && isSystemInDarkTheme
+    }
+
+    val colorScheme = remember(appTheme, isFollowingSystemDarkMode) {
+        when (appTheme) {
+            AppTheme.LIGHT.name -> LightColorScheme
+            AppTheme.DARK.name -> DarkColorScheme
+            AppTheme.SYSTEM.name -> if (isSystemInDarkTheme) DarkColorScheme else LightColorScheme
+            else -> LightColorScheme
+        }
+    }
     val typography = createThemeTypography(language)
     val layoutDirection = remember(language) {
         if (language == AppLanguage.Arabic.iso) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
+
     CompositionLocalProvider(
         LocalColorScheme provides colorScheme,
         LocalSpacing provides MenaSpacing,

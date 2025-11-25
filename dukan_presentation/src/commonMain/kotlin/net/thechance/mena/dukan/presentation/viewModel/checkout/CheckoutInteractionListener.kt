@@ -4,5 +4,6 @@ interface CheckoutInteractionListener {
     fun onBackClicked()
     fun onConfirmOrderClicked()
     fun onChangeLocationClicked()
-    fun onDismissSnackBar()
+    fun onSnackBarDismissed()
+    fun onRetryClicked()
 }

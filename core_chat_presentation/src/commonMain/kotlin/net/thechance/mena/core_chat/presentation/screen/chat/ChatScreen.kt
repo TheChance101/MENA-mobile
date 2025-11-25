@@ -41,11 +41,11 @@ import kotlinx.coroutines.launch
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.you
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.LocalSnackBarHostController
-import net.thechance.mena.core_chat.presentation.navigation.ConfirmPaymentRoute
 import net.thechance.mena.core_chat.presentation.navigation.AyahRoute
+import net.thechance.mena.core_chat.presentation.navigation.ConfirmPaymentRoute
 import net.thechance.mena.core_chat.presentation.navigation.LocalNavController
-import net.thechance.mena.core_chat.presentation.navigation.SurahRoute
 import net.thechance.mena.core_chat.presentation.navigation.OrderDetailsRoute
+import net.thechance.mena.core_chat.presentation.navigation.SurahRoute
 import net.thechance.mena.core_chat.presentation.screen.chat.components.AttachmentsBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHeader
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
@@ -119,7 +119,7 @@ fun ChatScreenContent(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().imePadding(),
         contentAlignment = Alignment.Center
     ) {
         Scaffold(
@@ -162,7 +162,6 @@ fun ChatScreenContent(
                     isLoading = state.isLoadingSendMoneyButton,
                 )
             },
-            modifier = Modifier.imePadding()
         ) {
             ChatList(
                 chatName = state.chatName,

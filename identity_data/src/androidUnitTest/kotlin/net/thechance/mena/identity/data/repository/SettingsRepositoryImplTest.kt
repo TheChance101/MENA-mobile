@@ -48,7 +48,7 @@ class SettingsRepositoryImplTest {
 
     @Test
     fun `observeAppTheme() should return default theme when no theme is set`() = runTest {
-        val expected = AppTheme.DEFAULT
+        val expected = AppTheme.SYSTEM
         val result = settingsRepository.observeAppTheme()
         assertEquals(expected, result.value)
     }
