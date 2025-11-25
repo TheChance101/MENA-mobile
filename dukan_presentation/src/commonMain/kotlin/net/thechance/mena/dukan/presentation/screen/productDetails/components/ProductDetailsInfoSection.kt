@@ -20,14 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -191,7 +185,7 @@ private fun ProductDescription(
         modifier = modifier
             .bringIntoViewRequester(bringIntoViewRequester)
             .padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
-            .clickable (
+            .clickable(
                 enabled = isDescriptionClickable.value,
                 indication = null,
                 interactionSource = null,
