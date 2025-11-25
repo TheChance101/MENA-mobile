@@ -108,17 +108,14 @@ internal class CreateMosqueViewModel(
         return Mosque(
             id = Uuid.random(),
             name = state.name,
-            coordinates = buildMosqueCoordinates(state.mosqueLocation),
+            coordinates = Mosque.Coordinates(
+                latitude = state.mosqueLocation?.latitude ?: 0.0,
+                longitude = state.mosqueLocation?.longitude ?: 0.0
+            ),
             address = state.address,
             imageUrl = "",
         )
     }
-
-    private fun buildMosqueCoordinates(location: Coordinate?) = Mosque.Coordinates(
-        latitude = location?.latitude ?: 0.0,
-        longitude = location?.longitude ?: 0.0
-    )
-
 
     private fun getImageBytes(): ByteArray {
         return uiState.value.croppedImage?.toByteArray() ?: ByteArray(0)
