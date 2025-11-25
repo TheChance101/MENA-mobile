@@ -241,26 +241,26 @@ Each feature module follows a strict three-layer architecture
 > [!Note]
 > ### 🕌 Core Worship Features
 > - **Prayer Times**: Accurate notifications with countdown to the next prayer, displayed in both Hijri and Gregorian calendars.
-    >   - Browse past and upcoming schedules.
-    >   - Worldwide support with automatic location-based calculations.
+>   - Browse past and upcoming schedules.
+>   - Worldwide support with automatic location-based calculations.
 > - **Qiblah Direction**: Real-time compass to find the precise Qiblah direction, with calibration support.
 > ### 📖 Quran Experience
 > - **Browse & Read**: Navigate all Surahs with Makki/Madani classification and a seamless reading interface.
 > - **Interactive Tools**:
-    >   - Select Ayah: Tap any verse to share instantly.
-    >   - Bookmark: Save positions, manage multiple bookmarks, and organize by Surah.
+>   - Select Ayah: Tap any verse to share instantly.
+>   - Bookmark: Save positions, manage multiple bookmarks, and organize by Surah.
 >   - Copy: Copy verses to clipboard for easy sharing.
 > - **Listen & Recite**:
-    >   - Stream or download Surahs for offline listening.
-    >   - Choose from multiple Qaris, preview voices, and control playback (play, pause, skip, repeat).
+>   - Stream or download Surahs for offline listening.
+>   - Choose from multiple Qaris, preview voices, and control playback (play, pause, skip, repeat).
 > - **Search**:
-    >   - Search within a Surah or globally across the Quran.
-    >   - Jump directly to verses from search results.
+>   - Search within a Surah or globally across the Quran.
+>   - Jump directly to verses from search results.
 > ### 🌍 Community
 > - **Nearby Mosques**: Discover mosques on an interactive map, view details, and contribute new prayer spaces.
 > - **Personalized Islamic dashboard with**:
-    >   - Today’s prayer times at a glance (next prayer highlighted).
-    >   - Quran reading progress tracking (current page & Surah).
+>   - Today’s prayer times at a glance (next prayer highlighted).
+>   - Quran reading progress tracking (current page & Surah).
 >   - Quick shortcuts to Quran reader, Qiblah finder, mosque locator, and Tilawah player.
   
 ---
