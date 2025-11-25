@@ -4,6 +4,7 @@ import android.graphics.BitmapFactory
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.PlayerNotificationManager
+import net.thechance.mena.faith.presentation.R
 
 @UnstableApi
 class MediaDescriptionAdapter(
@@ -25,6 +26,6 @@ class MediaDescriptionAdapter(
         callback: PlayerNotificationManager.BitmapCallback
     ): android.graphics.Bitmap? = BitmapFactory.decodeResource(
         context.resources,
-        android.R.drawable.ic_media_play
+        R.drawable.ic_column_mosque,
     )
 }

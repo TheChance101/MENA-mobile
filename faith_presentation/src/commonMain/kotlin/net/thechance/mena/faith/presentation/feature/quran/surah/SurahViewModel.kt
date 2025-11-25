@@ -22,6 +22,9 @@ import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.base.ErrorState
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
+import net.thechance.mena.faith.presentation.utils.permission.FaithPermissionsManager
+import net.thechance.mena.faith.presentation.utils.permission.PermissionState
+import net.thechance.mena.faith.presentation.utils.permission.PermissionType
 
 class SurahViewModel(
     private val surahArgs: SurahArgs,
@@ -30,6 +33,7 @@ class SurahViewModel(
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val bookmarkRepository: BookmarkRepository,
     private val quranPlayer: QuranPlayer,
+    private val permissionManager: FaithPermissionsManager,
 ) : BaseViewModel<SurahUiState, SurahScreenEffect>(
     initialState = SurahUiState(surahId = surahArgs.surahId),
 ), SurahInteractionListener {
@@ -139,6 +143,33 @@ class SurahViewModel(
     }
 
     override fun onListenClick() {
+        tryToExecute(
+            execute = {
+                println("STD: Check permission")
+                permissionManager.checkPermission(PermissionType.NOTIFICATIONS)
+            },
+            onSuccess = ::handleNotificationPermissionResult,
+            onError = { println("STD: Error: ${it}") }
+        )
+    }
+
+    private suspend fun handleNotificationPermissionResult(permissionState: PermissionState) {
+        when {
+            permissionState.granted -> playSelectedAyah()
+            permissionState.shouldShowRationale -> {
+                // TODO: should shows rationale
+                println("STD: Show rationale")
+            }
+
+            else -> requestNotificationPermission()
+        }
+    }
+
+    private suspend fun requestNotificationPermission() {
+        permissionManager.requestPermission(PermissionType.NOTIFICATIONS)
+    }
+
+    private fun playSelectedAyah() {
         updateState { it.copy(isAutoPlayEnabled = false) }
         playAyah(uiState.value.selectedAyahNumber ?: 1)
     }

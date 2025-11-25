@@ -82,7 +82,7 @@ class QuranPlayerService : Service() {
             .setChannelImportance(IMPORTANCE_LOW)
             .setMediaDescriptionAdapter(mediaDescriptionAdapter)
             .setNotificationListener(createNotificationListener())
-            .setSmallIconResourceId(android.R.drawable.ic_media_play)
+            .setSmallIconResourceId(R.drawable.ic_quran)
             .setPlayActionIconResourceId(R.drawable.icon_play)
             .setPauseActionIconResourceId(R.drawable.icon_pause)
             .setNextActionIconResourceId(R.drawable.icon_next)

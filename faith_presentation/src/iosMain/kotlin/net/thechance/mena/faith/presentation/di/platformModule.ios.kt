@@ -10,6 +10,8 @@ import net.thechance.mena.faith.presentation.utils.IslamicDateCalculatorImpl
 import net.thechance.mena.faith.presentation.utils.MapNavigator
 import net.thechance.mena.faith.presentation.utils.MapNavigatorImpl
 import net.thechance.mena.faith.presentation.utils.audio.QuranPlayerImpl
+import net.thechance.mena.faith.presentation.utils.permission.FaithPermissionsManager
+import net.thechance.mena.faith.presentation.utils.permission.IOSFaithPermissionsManagerImpl
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -20,5 +22,6 @@ actual fun platformModule(): Module = module {
     singleOf(::ClipboardManagerImpl).bind<ClipboardManager>()
     singleOf(::AzimuthProviderImpl).bind<AzimuthProvider>()
     singleOf(::MapNavigatorImpl).bind<MapNavigator>()
-    singleOf(::QuranPlayerImpl) bind QuranPlayer::class
+    singleOf(::QuranPlayerImpl).bind<QuranPlayer>()
+    singleOf(::IOSFaithPermissionsManagerImpl).bind<FaithPermissionsManager>()
 }
