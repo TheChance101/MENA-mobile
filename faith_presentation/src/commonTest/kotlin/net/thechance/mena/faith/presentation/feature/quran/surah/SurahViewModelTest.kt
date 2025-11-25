@@ -10,6 +10,7 @@ import dev.mokkery.mock
 import dev.mokkery.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -44,12 +45,17 @@ class SurahViewModelTest {
     private val clipboardManager: ClipboardManager = mock(mode = MockMode.autofill)
     private val quranPlayer: QuranPlayer = mock(mode = MockMode.autofill)
     private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
+    private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
+        every { snackbarHandler.snackBarState } returns MutableStateFlow(SnackBarState())
+
         startKoin {
             modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+            modules(module { single { snackbarHandler } })
         }
+
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
