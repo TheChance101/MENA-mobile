@@ -183,7 +183,7 @@ Each feature module follows a strict three-layer architecture
 > [!Note]
 > ### 🎯 Personalized Content Discovery (The Trend)
 > - On first use, users select their interests; categories are fetched dynamically for a tailored experience.
-> - The Reel updates instantly as interests change, ensuring fresh and relevant content.
+> - The Trend updates instantly as interests change, ensuring fresh and relevant content.
 > - Smart playback analytics continuously refine recommendations for higher quality discovery.
 >
 > ### 🎬 Trend Video Creation & Publishing
