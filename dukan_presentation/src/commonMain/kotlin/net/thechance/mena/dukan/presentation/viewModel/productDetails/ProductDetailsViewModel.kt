@@ -172,7 +172,7 @@ class ProductDetailsViewModel(
     override fun onMinusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
             val product = state.value.product
-            if (product.inCartQuantity > 1) setProductQuantity(product.inCartQuantity - 1)
+            if (product.inCartQuantity > 0) setProductQuantity(product.inCartQuantity - 1)
             updateAddToCartButtonIsEnable()
         }
     }
@@ -187,7 +187,6 @@ class ProductDetailsViewModel(
     fun setProductQuantity(productQuantity: Int?) {
         updateState { copy(product = product.copy(inCartQuantity = productQuantity ?: state.value.product.inCartQuantity)) }
     }
-
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = when (throwable) {
