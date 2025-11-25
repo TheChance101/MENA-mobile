@@ -28,4 +28,7 @@ interface CachedChatSummaryDao {
 
     @Query("SELECT * FROM cached_chat_summary WHERE id = :chatId")
     suspend fun getChatSummaryById(chatId: String): CachedChatSummaryDto?
+
+    @Query("DELETE FROM cached_chat_summary")
+    suspend fun clearAllChatSummaries()
 }

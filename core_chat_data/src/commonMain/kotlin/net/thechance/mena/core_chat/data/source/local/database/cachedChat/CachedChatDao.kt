@@ -18,4 +18,7 @@ interface CachedChatDao {
 
     @Query("DELETE FROM cached_chats WHERE id = :id")
     suspend fun deleteChatById(id: String)
+
+    @Query("DELETE FROM cached_chats")
+    suspend fun clearAllChats()
 }
