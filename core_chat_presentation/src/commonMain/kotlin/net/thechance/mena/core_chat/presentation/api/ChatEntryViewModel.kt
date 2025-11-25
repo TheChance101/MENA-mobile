@@ -15,7 +15,7 @@ class ChatEntryViewModel(private val chatRepository: ChatRepository) :
                 chatRepository.getChatByOtherUserId(Uuid.parse(userId))
             },
             onSuccess = { chat -> updateState { it.copy(chatId = chat.id, chatName = chat.name, isContentVisible = true) } },
-            onError = { chat -> updateState { it.copy(isContentVisible = true) } }
+            onError = { chat -> updateState { it.copy(isContentVisible = false) } }
         )
     }
 }
