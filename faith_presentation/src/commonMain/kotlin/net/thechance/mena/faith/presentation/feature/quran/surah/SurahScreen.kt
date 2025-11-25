@@ -103,19 +103,25 @@ private fun Content(
             modifier = modifier
                 .fillMaxSize()
                 .background(Theme.colorScheme.background.surface)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) {
-                    if (state.isAyahActionButtonsVisible) {
-                        listener.onDismissActionButtons()
-                    }
-                }
         ) {
-            AyatOfSurah(
-                listener = listener,
-                state = state
-            )
+            Box(
+                modifier = Modifier.fillMaxSize()
+                    .then(
+                        if (state.isAyahActionButtonsVisible) {
+                            Modifier.clickable(
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) {
+                                listener.onDismissActionButtons()
+                            }
+                        } else Modifier
+                    )
+            ) {
+                AyatOfSurah(
+                    listener = listener,
+                    state = state
+                )
+            }
 
             AnimatedQuranPlayer(
                 state = state,

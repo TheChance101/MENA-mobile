@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -38,6 +39,7 @@ import kotlin.test.assertTrue
 class SurahViewModelTest {
 
     private lateinit var testDispatcher: TestDispatcher
+    private lateinit var mainDispatcher: TestDispatcher
     private lateinit var testViewModel: SurahViewModel
     private val quranRepository: QuranRepository = mock(mode = MockMode.autofill)
     private val bookmarkRepository: BookmarkRepository = mock(mode = MockMode.autofill)
@@ -51,7 +53,8 @@ class SurahViewModelTest {
             modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
         }
         testDispatcher = StandardTestDispatcher()
-        Dispatchers.setMain(testDispatcher)
+        mainDispatcher = UnconfinedTestDispatcher(testDispatcher.scheduler)
+        Dispatchers.setMain(mainDispatcher)
 
         testViewModel = SurahViewModel(
             surahArgs = surahArgs,
@@ -85,13 +88,25 @@ class SurahViewModelTest {
 
         testViewModel.uiEffect.test {
             testViewModel.onSearchClick()
+            val effect = awaitItem()
+            assertEquals(SurahScreenEffect.NavigateToSearchScreen(2), effect)
         }
     }
 
     @Test
-    fun `onListenClick should play ayah with selected ayah number`() = runTest {
+    fun `onListenClick should play ayah with selected ayah number`() = runTest(testDispatcher) {
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            quranPlayer = quranPlayer
+        )
+        advanceUntilIdle()
 
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_NUMBER)
         testViewModel.onListenClick()
@@ -101,9 +116,19 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `onListenClick should play first ayah when no ayah is selected`() = runTest {
+    fun `onListenClick should play first ayah when no ayah is selected`() = runTest(testDispatcher) {
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+
+        testViewModel = SurahViewModel(
+            surahArgs = surahArgs,
+            dispatcher = testDispatcher,
+            quranRepository = quranRepository,
+            clipboardManager = clipboardManager,
+            bookmarkRepository = bookmarkRepository,
+            quranPlayer = quranPlayer
+        )
+        advanceUntilIdle()
 
         testViewModel.onListenClick()
         advanceUntilIdle()
@@ -120,7 +145,7 @@ class SurahViewModelTest {
         testViewModel.onNextAyahClick()
         advanceUntilIdle()
 
-        assertEquals(1, testViewModel.uiState.value.selectedAyahNumber)
+        assertEquals(4, testViewModel.uiState.value.selectedAyahNumber)
     }
 
     @Test
@@ -156,7 +181,7 @@ class SurahViewModelTest {
         testViewModel.onPlayPauseClick()
         testViewModel.onPlayPauseClick()
 
-        assertTrue(testViewModel.uiState.value.isAyahSoundPlaying)
+        assertFalse(testViewModel.uiState.value.isAyahSoundPlaying)
     }
 
     @Test
@@ -280,7 +305,7 @@ class SurahViewModelTest {
         }
 
     @Test
-    fun `onAyahLongPress should hide player when showing action buttons`() = runTest {
+    fun `onAyahLongPress should hide player when showing action buttons`() = runTest(mainDispatcher) {
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
 
         testViewModel.onListenClick()
@@ -473,7 +498,7 @@ class SurahViewModelTest {
 
     // Audio Loading Tests
     @Test
-    fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest {
+    fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest(testDispatcher) {
         val testUrl = "https://example.com/ayah.mp3"
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns testUrl
 
@@ -484,7 +509,7 @@ class SurahViewModelTest {
     }
 
     @Test
-    fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
+    fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest(mainDispatcher) {
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
 
         testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)

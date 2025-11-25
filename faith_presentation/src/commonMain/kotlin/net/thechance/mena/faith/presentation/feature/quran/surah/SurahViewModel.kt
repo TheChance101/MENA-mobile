@@ -124,10 +124,12 @@ class SurahViewModel(
     }
 
     override fun onAyahLongPress(ayahContent: String, ayahIndex: Int) {
+        if (uiState.value.isAyahSoundPlaying) quranPlayer.pauseAyah()
         updateState {
             it.copy(
                 isPlayerVisible = false,
                 isAyahActionButtonsVisible = true,
+                isAyahSoundPlaying = false,
                 selectedAyah = ayahContent,
                 selectedAyahNumber = ayahIndex
             )
@@ -214,11 +216,13 @@ class SurahViewModel(
                 selectedAyahNumber = null
             )
         }
-        sendEffect(SurahScreenEffect.ShareAyah(
-            surahId = surahId.toString(),
-            ayahNumber = ayahNumber,
-            ayahContent = content,
-        ))
+        sendEffect(
+            SurahScreenEffect.ShareAyah(
+                surahId = surahId.toString(),
+                ayahNumber = ayahNumber,
+                ayahContent = content,
+            )
+        )
     }
 
     private fun playAyah(ayahNumber: Int) {
