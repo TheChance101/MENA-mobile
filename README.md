@@ -176,7 +176,7 @@ Each feature module follows a strict three-layer architecture
 
 ## Trends Feature
 
-> A short-video module offering a personalized Reel feed and simple tools to create, publish, and manage 1-minute trends.
+> A short-video module offering a personalized Trend feed and simple tools to create, publish, and manage 1-minute trends.
 
 <img width="1436" height="805" alt="trends" src="https://github.com/user-attachments/assets/65e5fb7e-e482-4ff3-a6f5-e016a0fabadb" /><br>
 
