@@ -3,7 +3,6 @@ package net.thechance.mena.designsystem.presentation.component.textField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,6 +20,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import mena.design_system.generated.resources.Res
 import mena.design_system.generated.resources.ic_arrow_down
@@ -108,14 +108,17 @@ fun MobileNumberLeadingContent(
 
         Text(
             text = countryCode,
-            style = Theme.typography.label.medium,
+            style = Theme.typography.label.medium.copy(
+                textDirection = TextDirection.Ltr
+            ),
             modifier = Modifier.padding(start = 4.dp, end = 2.dp),
-            color = Theme.colorScheme.shadePrimary
+            color = Theme.colorScheme.shadePrimary,
         )
 
         Icon(
             painter = painterResource(Res.drawable.ic_arrow_down),
             contentDescription = "arrow down",
+            tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier.size(16.dp)
         )
     }

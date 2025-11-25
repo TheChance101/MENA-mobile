@@ -29,6 +29,10 @@ class MainActivity : ComponentActivity() {
         val localizer: AppLocalizer by inject()
         localizer.applyLocaleToContext()
 
+        mainEntryViewModel.onDeepLinkChange(
+            deepLink = parseDeepLinkFromIntent(intent)
+        )
+
         setContent {
             App()
         }

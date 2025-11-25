@@ -1,18 +1,18 @@
 package net.thechance.mena.trends.data.remote.mapper
 
-import net.thechance.mena.trends.data.remote.dto.ReelDto
-import net.thechance.mena.trends.data.remote.dto.ReelPathUrlsDto
+import net.thechance.mena.trends.data.remote.dto.TrendDto
+import net.thechance.mena.trends.data.remote.dto.TrendPathUrlsDto
 import net.thechance.mena.trends.data.util.orFalse
 import net.thechance.mena.trends.data.util.orZero
 import net.thechance.mena.trends.data.util.parseDateStringOrNull
-import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.model.ReelUrls
+import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUrls
 
 
-internal fun ReelDto.toEntity(): Reel {
-    return Reel(
+internal fun TrendDto.toEntity(): Trend {
+    return Trend(
         id = id.orEmpty(),
-        thumbnailUrl = reelImageUrl.orEmpty(),
+        thumbnailUrl = trendImageUrl.orEmpty(),
         videoUrl = videoUrl.orEmpty(),
         description = description.orEmpty(),
         likesCount = likesCount.orZero(),
@@ -25,8 +25,8 @@ internal fun ReelDto.toEntity(): Reel {
     )
 }
 
-internal fun ReelPathUrlsDto.toReelUrls(): ReelUrls{
-    return ReelUrls(
+internal fun TrendPathUrlsDto.toTrendUrls(): TrendUrls{
+    return TrendUrls(
         videoUrl = videoPath.orEmpty(),
         thumbnailUrl = thumbnailPath.orEmpty()
     )

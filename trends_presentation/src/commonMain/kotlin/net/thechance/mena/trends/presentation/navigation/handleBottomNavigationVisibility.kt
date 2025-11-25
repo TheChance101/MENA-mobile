@@ -26,7 +26,8 @@ internal fun handleBottomNavigationVisibility(
 private fun isBottomNavigationVisible(destination: NavDestination?): Boolean {
     val routeWithBottomNavigation = listOf(
         Route.MainContainer::class,
-        Route.Home::class
+        Route.Home::class,
+        Route.Categories::class,
     )
 
     return destination?.hierarchy?.any { destination ->

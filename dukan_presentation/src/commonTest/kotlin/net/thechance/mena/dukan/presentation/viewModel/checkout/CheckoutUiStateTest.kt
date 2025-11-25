@@ -14,9 +14,9 @@ class CheckoutUiStateTest {
         val state = CheckoutUiState()
         assertEquals(CheckoutUiState.Address(), state.deliveryAddress)
         assertEquals(emptyFlow(), state.items)
-        assertEquals(0, state.discountPercentage)
-        assertEquals(0.0, state.platformFees)
-        assertEquals(0.0, state.totalAmount)
+        assertEquals(0.0, state.cartDetails.discountPercentage)
+        assertEquals(0.0, state.cartDetails.platformFees)
+        assertEquals(0.0, state.cartDetails.totalPriceAfterDiscount)
     }
 
     @Test

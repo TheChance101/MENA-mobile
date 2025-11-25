@@ -61,15 +61,17 @@ class DukanDetailsViewModel(
     }
 
     private fun onCartInfoError(throwable: Throwable) {
-        updateState { copy(hasProductInCart = false) }
+        setHasProductInCart(hasProductInCart = false)
     }
 
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState { copy(hasProductInCart = cart.totalPrice > 0.0) }
+        setHasProductInCart(hasProductInCart = cart.totalPriceAfterDiscount > 0.0)
     }
 
-
+     fun setHasProductInCart(hasProductInCart: Boolean){
+        updateState { copy(hasProductInCart = hasProductInCart) }
+    }
     private fun loadDukanDetails() {
         tryToExecute(
             onStart = ::onLoadDukanDetailsStart,
@@ -224,7 +226,7 @@ class DukanDetailsViewModel(
     }
 
     override fun onBackClicked() {
-        emitEffect(DukanDetailsEffects.NavigateBack)
+        emitEffect(DukanDetailsEffects.NavigateBackWithDukanId)
     }
 
     override fun onShelfClicked(id: String) {
@@ -237,7 +239,6 @@ class DukanDetailsViewModel(
     }
 
     override fun onViewAllProductsShelfClicked(id: String, name: String) {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(
             DukanDetailsEffects.NavigateToViewAllShelfProducts(
                 id = id,
@@ -255,7 +256,7 @@ class DukanDetailsViewModel(
         productId: String,
         productQuantity: Int,
     ) {
-        updateState { copy(hasProductInCart = true) }
+        setHasProductInCart(true)
         updateProductQuantityInCart(productId, productQuantity)
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
@@ -272,7 +273,7 @@ class DukanDetailsViewModel(
         productQuantity: Int,
     ) {
         updateProductQuantityInCart(productId, productQuantity)
-        updateState { copy(hasProductInCart = true) }
+        setHasProductInCart(true)
 
         val uiRequest = ProductUiState(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(args.dukanId)
@@ -347,12 +348,10 @@ class DukanDetailsViewModel(
     }
 
     override fun onProductClicked(productId: String) {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToProductDetails(productId, args.dukanId))
     }
 
     override fun onViewCartClicked() {
-        updateState { copy(isConfigurationChanges = false) }
         emitEffect(DukanDetailsEffects.NavigateToCart(args.dukanId))
     }
 
@@ -365,7 +364,12 @@ class DukanDetailsViewModel(
     override fun onFavoriteDukanClicked(dukanId: String) {
         val currentProduct = state.value.dukanInfo
         val isCurrentlyFavorite = currentProduct.isFavorite
-        updateState { copy(dukanInfo.copy(isFavorite = !isCurrentlyFavorite)) }
+        updateState {
+            copy(
+                dukanInfo.copy(isFavorite = !isCurrentlyFavorite),
+                isFavoritePressed = true
+            )
+        }
         tryToExecute(
             block = { dukanManagementRepository.updateFavoriteDukanStatus(currentProduct.dukanId) },
             onError = ::onErrorUpdateDukanFavorite
@@ -380,7 +384,7 @@ class DukanDetailsViewModel(
         showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
 
-    private fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
+     fun updateProductQuantityInCart(productId: String, newQuantity: Int) {
         updateState {
             copy(
                 productQuantity = productQuantity + (productId to newQuantity)
@@ -388,15 +392,5 @@ class DukanDetailsViewModel(
         }
     }
 
-    private fun isWideImageStyle() =
-        state.value.dukanInfo.style == Style.WIDE_IMAGE
-
-
-    fun refreshProducts() {
-        loadCartInfo()
-        if (!state.value.isConfigurationChanges) {
-            loadShelvesPaging()
-            updateState { copy(isConfigurationChanges = true) }
-        }
-    }
+    private fun isWideImageStyle() = state.value.dukanInfo.style == Style.WIDE_IMAGE
 }

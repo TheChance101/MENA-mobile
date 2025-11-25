@@ -6,5 +6,7 @@ import kotlin.uuid.Uuid
 @OptIn(ExperimentalUuidApi::class)
 data class Cart(
     val id: Uuid,
-    val totalPrice: Double
+    val totalPriceBeforeDiscount: Double,
+    val totalPriceAfterDiscount: Double,
+    val discount: Double
 )

@@ -4,36 +4,36 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.domain.entity.Category
-import net.thechance.mena.trends.domain.entity.Reel
+import net.thechance.mena.trends.domain.entity.Trend
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 import kotlin.test.Test
 
-class ReelExtensionTest {
+class TrendExtensionTest {
 
     @Test
     fun `toUiState should convert Reel to TrendUiState correctly`() {
-        val result = testReel1.toUiState()
+        val result = testTrend1.toUiState()
 
         assertThat(result).isEqualTo(testTrendUiState1)
     }
 
     @Test
     fun `toUiState should handle null createdAt correctly`() {
-        val result = testReel2.toUiState()
+        val result = testTrend2.toUiState()
 
         assertThat(result).isEqualTo(testTrendUiState2)
     }
 
     @Test
     fun `toUiState should handle categories correctly`() {
-        val result = testReel3.toUiState()
+        val result = testTrend3.toUiState()
 
         assertThat(result).isEqualTo(testTrendUiState3)
     }
 
     @Test
     fun `toUiState should handle empty strings correctly`() {
-        val result = testReel4.toUiState()
+        val result = testTrend4.toUiState()
 
         assertThat(result).isEqualTo(testTrendUiState4)
     }
@@ -47,7 +47,7 @@ class ReelExtensionTest {
         )
 
         // Test Reels
-        val testReel1 = Reel(
+        val testTrend1 = Trend(
             id = "1",
             thumbnailUrl = "thumb1.jpg",
             videoUrl = "video1.mp4",
@@ -61,7 +61,7 @@ class ReelExtensionTest {
             isLiked = false
         )
 
-        val testReel2 = Reel(
+        val testTrend2 = Trend(
             id = "2",
             thumbnailUrl = "thumb2.jpg",
             videoUrl = "video2.mp4",
@@ -75,7 +75,7 @@ class ReelExtensionTest {
             isLiked = false
         )
 
-        val testReel3 = Reel(
+        val testTrend3 = Trend(
             id = "3",
             thumbnailUrl = "thumb3.jpg",
             videoUrl = "video3.mp4",
@@ -89,7 +89,7 @@ class ReelExtensionTest {
             isLiked = false
         )
 
-        val testReel4 = Reel(
+        val testTrend4 = Trend(
             id = "4",
             thumbnailUrl = "",
             videoUrl = "",
@@ -105,7 +105,7 @@ class ReelExtensionTest {
 
 
         // Expected ReelUiStates
-        val testTrendUiState1 = ReelUiState(
+        val testTrendUiState1 = TrendUiState(
             id = "1",
             profileImageUrl = "https://example.com/alice.jpg",
             userName = "Alice",
@@ -117,7 +117,7 @@ class ReelExtensionTest {
             viewsCount = 100
         )
 
-        val testTrendUiState2 = ReelUiState(
+        val testTrendUiState2 = TrendUiState(
             id = "2",
             profileImageUrl = "https://example.com/bob.jpg",
             userName = "Bob",
@@ -129,7 +129,7 @@ class ReelExtensionTest {
             viewsCount = 200
         )
 
-        val testTrendUiState3 = ReelUiState(
+        val testTrendUiState3 = TrendUiState(
             id = "3",
             profileImageUrl = "https://example.com/charlie.jpg",
             userName = "Charlie",
@@ -141,7 +141,7 @@ class ReelExtensionTest {
             viewsCount = 300
         )
 
-        val testTrendUiState4 = ReelUiState(
+        val testTrendUiState4 = TrendUiState(
             id = "4",
             profileImageUrl = "",
             userName = "",

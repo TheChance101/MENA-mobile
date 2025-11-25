@@ -47,6 +47,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -63,18 +64,28 @@ import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
 
-class EditUserProfileScreen : BaseScreen<
+class EditUserProfileScreen(
+    val userInfo: User?
+) : BaseScreen<
     EditUserProfileViewModel,
     EditUserProfileUIState,
     EditUserProfileUIEffect,
     EditUserProfileInteractionListener>() {
+
+    @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun Content() {
         val factory = rememberPermissionsControllerFactory()
         val controller = remember(factory) { factory.createPermissionsController() }
         val viewModel: EditUserProfileViewModel =
             getScreenModel(parameters = { parametersOf(controller) })
+
+        LaunchedEffect(Unit) {
+            viewModel.getInitialUserInfo(user = userInfo)
+        }
+
         InitScreen(viewModel)
         BindEffect(viewModel.permissionsController)
     }
@@ -226,11 +237,13 @@ class EditUserProfileScreen : BaseScreen<
                     style = Theme.typography.title.small
                 )
 
-                GregorianDatePicker(
-                    modifier = Modifier.padding(top = Theme.spacing._4),
-                    selectedDate = state.birthDate,
-                    onDateChange = listener::onChangeDate,
-                )
+                state.birthDate?.let { birthDate ->
+                    GregorianDatePicker(
+                        modifier = Modifier.padding(top = Theme.spacing._4),
+                        selectedDate = birthDate,
+                        onDateChange = listener::onChangeDate,
+                    )
+                }
 
                 GenderToggleSection(
                     gender = state.gender,

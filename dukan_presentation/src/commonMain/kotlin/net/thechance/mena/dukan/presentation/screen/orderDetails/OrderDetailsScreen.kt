@@ -112,7 +112,8 @@ private fun OrderDetailsContent(
             state.snackBarUiState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = interactionListener::onSnackBarDismissed
+                    onDismiss = interactionListener::onSnackBarDismissed,
+                    onClick = interactionListener::onSnackBarDismissed
                 )
             }
         }

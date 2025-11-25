@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
@@ -7,6 +9,7 @@ import dev.icerock.moko.permissions.Permission
 import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
 import kotlinx.datetime.LocalDate
 import mena.identity_presentation.generated.resources.Res
@@ -24,8 +27,7 @@ import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
-import net.thechance.mena.identity.domain.util.getCurrentDate
-import net.thechance.mena.identity.domain.util.orCurrent
+import net.thechance.mena.identity.domain.util.orCurrentDate
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
@@ -35,6 +37,7 @@ import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EditUserProfileViewModel(
     val permissionsController: PermissionsController,
     private val ageValidator: AgeValidator,
@@ -43,29 +46,19 @@ class EditUserProfileViewModel(
     private val imageDecoder: ImageDecoder,
     private val authenticationRepository: AuthenticationRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
+
     @OptIn(ExperimentalUuidApi::class)
     var userId: Uuid? = null
 
-    init {
-        getUserInfo()
-    }
+    fun getInitialUserInfo(user: User?) {
+        if (user == null)
+            return
 
-    private fun getUserInfo() {
-        tryToCollect(
-            function = { userRepository.getUser() },
-            onNewValue = ::updateUserInfo,
-            onError = ::onGetUserInfoError,
-            dispatcher = dispatcher
-        )
-    }
-
-    @OptIn(ExperimentalUuidApi::class)
-    private fun updateUserInfo(user: User) {
+        userId = user.id
         updateState {
-            userId = user.id
             copy(
                 username = user.username.lowercase(),
                 firstName = user.firstName,
@@ -228,14 +221,6 @@ class EditUserProfileViewModel(
         )
     }
 
-    private fun onGetUserInfoError(throwable: Throwable) {
-        sendNewEffect(
-            EditUserProfileUIEffect.ShowSnackBarError(
-                errorStringResource = mapErrorMessage(throwable)
-            )
-        )
-    }
-
     private fun validateFormInputs(): Boolean {
         val currentState = state.value
 
@@ -267,7 +252,7 @@ class EditUserProfileViewModel(
                 false
             }
 
-            !ageValidator.isValid(currentState.birthDate.orCurrent()) -> {
+            currentState.birthDate != null && !ageValidator.isValid(currentState.birthDate) -> {
                 sendNewEffect(
                     EditUserProfileUIEffect.ShowSnackBarError(
                         errorStringResource = Res.string.error_age_restriction
@@ -286,16 +271,18 @@ class EditUserProfileViewModel(
             throw Exception("User ID not found")
         }
 
-        val value = state.value
-        val user = User(
-            id = userId!!,
-            firstName = value.firstName,
-            lastName = value.lastName,
-            username = value.username.lowercase(),
-            profileImageUrl = value.profileImageUrl,
-            birthDate = value.birthDate ?: getCurrentDate(),
-            gender = value.gender,
-        )
+        val user = with(state.value) {
+            User(
+                id = userId!!,
+                firstName = firstName,
+                lastName = lastName,
+                username = username.lowercase(),
+                profileImageUrl = profileImageUrl,
+                birthDate = birthDate.orCurrentDate(),
+                gender = gender,
+            )
+        }
+
         updateProfileImage()
         userRepository.updateUser(user = user)
     }

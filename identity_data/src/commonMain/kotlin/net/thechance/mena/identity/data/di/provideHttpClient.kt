@@ -16,9 +16,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl.Companion.LOGIN_ENDPOINT
 import net.thechance.mena.identity.data.repository.AuthenticationRepositoryImpl.Companion.REFRESH_ENDPOINT
-import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.REQUEST_OTP
+import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl.Companion.REGISTER
+import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl.Companion.REGISTER_CHECK_USER_EXISTENCE
+import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl.Companion.REGISTER_REQUEST_OTP
+import net.thechance.mena.identity.data.repository.RegisterRepositoryImpl.Companion.REGISTER_VERIFY_OTP
 import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.RESET_PASSWORD
-import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.VERIFY_OTP
+import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.RESET_PASSWORD_REQUEST_OTP
+import net.thechance.mena.identity.data.repository.ResetPasswordRepositoryImpl.Companion.RESET_PASSWORD_VERIFY_OTP
 import net.thechance.mena.identity.domain.service.AuthorizationService
 
 internal fun provideHttpClient(
@@ -77,5 +81,13 @@ internal fun provideCoilClient(engine: HttpClientEngine): HttpClient {
 
 const val NETWORK_TIMEOUT_MS = 15_000L
 private val whiteListEndPoints = listOf(
-    LOGIN_ENDPOINT, REFRESH_ENDPOINT, REQUEST_OTP, VERIFY_OTP, RESET_PASSWORD
+    LOGIN_ENDPOINT,
+    REFRESH_ENDPOINT,
+    RESET_PASSWORD_REQUEST_OTP,
+    RESET_PASSWORD_VERIFY_OTP,
+    RESET_PASSWORD,
+    REGISTER_REQUEST_OTP,
+    REGISTER_VERIFY_OTP,
+    REGISTER_CHECK_USER_EXISTENCE,
+    REGISTER
 )

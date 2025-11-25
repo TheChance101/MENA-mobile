@@ -56,6 +56,15 @@ class MyAddressesScreenViewModel(
         sendNewEffect(
             MyAddressesScreenUIEffect.NavigateToAddressDetailsScreen(
                 addressUIState = addressUIState,
+                onAddLocationSuccess = {
+                    updateState {
+                        copy(
+                            isLoading = true,
+                            addresses = emptyList()
+                        )
+                    }
+                    getUserAddresses()
+                }
             )
         )
     }

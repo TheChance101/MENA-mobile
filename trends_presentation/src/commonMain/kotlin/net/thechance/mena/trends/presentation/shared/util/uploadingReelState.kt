@@ -1,15 +1,15 @@
 package net.thechance.mena.trends.presentation.shared.util
 
-import net.thechance.mena.trends.presentation.screen.upload_reel.UploadReelScreenState.UploadingReelState
+import net.thechance.mena.trends.presentation.screen.upload_trend.UploadTrendScreenState.UploadingTrendState
 
-val UploadingReelState.isIdle: Boolean
-    get() = this == UploadingReelState.IDLE
+val UploadingTrendState.isIdle: Boolean
+    get() = this == UploadingTrendState.IDLE
 
-val UploadingReelState.isUploading: Boolean
-    get() = this == UploadingReelState.UPLOADING
+val UploadingTrendState.isUploading: Boolean
+    get() = this == UploadingTrendState.UPLOADING
 
-val UploadingReelState.isFailed: Boolean
-    get() = this == UploadingReelState.FAILED
+val UploadingTrendState.isFailed: Boolean
+    get() = this == UploadingTrendState.FAILED
 
-val UploadingReelState.isSuccess: Boolean
-    get() = this == UploadingReelState.SUCCESS
+val UploadingTrendState.isSuccess: Boolean
+    get() = this == UploadingTrendState.SUCCESS

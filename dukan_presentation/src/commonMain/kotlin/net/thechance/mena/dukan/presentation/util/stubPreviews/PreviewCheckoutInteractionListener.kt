@@ -6,5 +6,6 @@ object PreviewCheckoutInteractionListener : CheckoutInteractionListener {
     override fun onBackClicked() {}
     override fun onConfirmOrderClicked() {}
     override fun onChangeLocationClicked() {}
-    override fun onDismissSnackBar() {}
+    override fun onSnackBarDismissed() {}
+    override fun onRetryClicked() {}
 }
