@@ -44,6 +44,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.faith.domain.service.QuranService
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -205,6 +206,7 @@ fun createChatRepository(
     dataStore: DataStore<Preferences>,
     cachedChatSummaryDao: CachedChatSummaryDao,
     cachedChatDao: CachedChatDao,
+    authRepository: AuthenticationRepository,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -223,7 +225,8 @@ fun createChatRepository(
         webSocketManager = webSocketManager,
         dataStore = dataStore,
         cachedChatSummaryDao = cachedChatSummaryDao,
-        cachedChatDao = cachedChatDao
+        cachedChatDao = cachedChatDao,
+        authRepository = authRepository
     )
 
 }
@@ -234,6 +237,7 @@ fun createMessageRepository(
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
     cachedMessageDao: CachedMessageDao,
+    authRepository: AuthenticationRepository,
     quranService: QuranService,
     chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
@@ -245,6 +249,7 @@ fun createMessageRepository(
         messageSenderFactory = messageSenderFactory,
         cachedMessageDao = cachedMessageDao,
         quranService = quranService,
+        authRepository = authRepository,
         json = jsonSerialization
     )
 }
