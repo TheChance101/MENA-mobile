@@ -144,10 +144,7 @@ class SurahViewModel(
 
     override fun onListenClick() {
         tryToExecute(
-            execute = {
-                println("STD: Check permission")
-                permissionManager.checkPermission(PermissionType.NOTIFICATIONS)
-            },
+            execute = { permissionManager.checkPermission(PermissionType.NOTIFICATIONS) },
             onSuccess = ::handleNotificationPermissionResult,
             onError = { println("STD: Error: ${it}") }
         )
