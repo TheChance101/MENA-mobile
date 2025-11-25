@@ -213,8 +213,8 @@ Each feature module follows a strict three-layer architecture
 > - **Create Your Dukan**: Design your store with custom styles and colors — *Your Dukan, Your Vibe*.
 > - **Organize Products**: Build shelves to neatly categorize and display your items.
 > - **Product Management**:
-    >   - Add products to shelves with full details.
-    >   - Mark items as **Out of Stock** when unavailable.
+>   - Add products to shelves with full details.
+>   - Mark items as **Out of Stock** when unavailable.
 >   - Apply discounts to encourage purchases.
 >   - Remove products easily when you stop selling them.
 >
