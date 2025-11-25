@@ -6,8 +6,8 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_message
@@ -31,6 +31,9 @@ class SearchViewModel(
     initialState = SearchUiState(),
     defaultDispatcher = defaultDispatcher
 ), SearchInteractionListener {
+
+    private var dukanSearchResultsFlow: MutableStateFlow<PagingData<SearchUiState.DukanUiState>> =
+        MutableStateFlow(PagingData.empty())
 
     override fun onSearchChanged(query: String) {
         updateState {
@@ -56,6 +59,8 @@ class SearchViewModel(
     }
 
     override fun onDukansSelected() {
+        if (state.value.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Dukans)
+            return
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans
@@ -65,6 +70,8 @@ class SearchViewModel(
     }
 
     override fun onProductsSelected() {
+        if (state.value.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Products)
+            return
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products
@@ -140,9 +147,10 @@ class SearchViewModel(
     }
 
     private fun onGetDukansByQueryCollect(dukanPagingData: PagingData<SearchUiState.DukanUiState>) {
+        dukanSearchResultsFlow.value = dukanPagingData
         updateState {
             copy(
-                dukanPagingFlow = flowOf(value = dukanPagingData),
+                dukanPagingFlow = dukanSearchResultsFlow,
             )
         }
     }
@@ -196,13 +204,13 @@ class SearchViewModel(
     }
 
     private fun onDukanFavoriteToggleSuccess( dukanId: Uuid) {
-        val favoriteToggledDukanPagingFlow = state.value.dukanPagingFlow.map { pagingData ->
-            pagingData.map { dukanItem ->
+        val currentSearchDukans = dukanSearchResultsFlow.value
+        val updatedSearchDukans = currentSearchDukans.map { dukanItem ->
                 if (dukanItem.id == dukanId) dukanItem.copy(isFavorite = !dukanItem.isFavorite)
                 else dukanItem
             }
-        }
-        updateState { copy(dukanPagingFlow = favoriteToggledDukanPagingFlow ) }
+        dukanSearchResultsFlow.value = updatedSearchDukans
+        updateState { copy(dukanPagingFlow = dukanSearchResultsFlow ) }
     }
 
     private fun onDukanFavoriteToggleError(exception: Exception) {

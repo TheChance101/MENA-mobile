@@ -166,6 +166,7 @@ private fun DukansList(
                 ) {
                     items(
                         count = dukanPagingItems.itemCount,
+                        key = { index -> dukanPagingItems[index]?.id ?: index },
                         contentType = { "Dukan Search Card" }
                     ) { index ->
                         dukanPagingItems[index]?.let { dukan ->

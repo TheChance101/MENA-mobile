@@ -12,6 +12,7 @@ import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.dialogs.init
 import net.thechance.mena.appEntryPoint.DeepLink
 import net.thechance.mena.appEntryPoint.MainEntryViewModel
+import net.thechance.mena.faith.presentation.utils.permission.AndroidFaithPermissionsManagerImpl
 import net.thechance.mena.identity.presentation.util.AppLocalizer
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import org.koin.android.ext.android.inject
@@ -21,6 +22,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         PermissionManager.init(this)
+        AndroidFaithPermissionsManagerImpl.init(this)
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 

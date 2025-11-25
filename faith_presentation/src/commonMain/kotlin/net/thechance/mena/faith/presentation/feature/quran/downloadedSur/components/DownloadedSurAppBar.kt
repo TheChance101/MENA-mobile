@@ -27,6 +27,7 @@ fun DownloadedSurAppBar(
         leadingContent = {
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.arrow_left),
             )
         },
@@ -42,6 +43,7 @@ fun DownloadedSurAppBar(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.ic_setting),
+                    tint = Theme.colorScheme.primary.primary,
                     contentDescription = stringResource(Res.string.reciters_settings),
                 )
             }

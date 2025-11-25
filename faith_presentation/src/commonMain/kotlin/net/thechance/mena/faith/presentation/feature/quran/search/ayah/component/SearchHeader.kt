@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.quran.search.ayah.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +17,7 @@ import mena.faith_presentation.generated.resources.back
 import mena.faith_presentation.generated.resources.ic_arrow_left
 import mena.faith_presentation.generated.resources.ic_clear
 import mena.faith_presentation.generated.resources.ic_outline_search
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -48,11 +48,11 @@ fun SearchHeader(
                 .clickable(onClick = onBackClick),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                modifier = Modifier
-                    .size(20.dp),
+            Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
-                contentDescription = stringResource(Res.string.back)
+                tint = Theme.colorScheme.primary.primary,
+                contentDescription = stringResource(Res.string.back),
+                modifier = Modifier.size(20.dp)
             )
         }
         TextField(

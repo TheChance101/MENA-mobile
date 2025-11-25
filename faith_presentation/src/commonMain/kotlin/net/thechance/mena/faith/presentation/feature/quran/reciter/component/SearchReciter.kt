@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -93,6 +92,7 @@ private fun SearchModeBar(
             Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_arrow_left),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.back)
             )
         }
@@ -121,9 +121,10 @@ private fun NormalAppBar(
         modifier = modifier,
         title = title,
         leadingContent = {
-            Image(
+            Icon(
                 modifier = Modifier.size(20.dp),
                 painter = painterResource(Res.drawable.ic_arrow_left),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.back)
             )
         },
@@ -132,9 +133,10 @@ private fun NormalAppBar(
             AppBarOptionContainer(
                 onClick = onSearchClick
             ) {
-                Image(
+                Icon(
                     modifier = Modifier.size(20.dp),
                     painter = painterResource(Res.drawable.ic_outline_search),
+                    tint = Theme.colorScheme.primary.primary,
                     contentDescription = "Search"
                 )
             }

@@ -93,6 +93,7 @@ fun ReciterItem(
         if (!isDownloaded && isDownloadIconVisible) {
             Icon(
                 painterResource(Res.drawable.icon_download),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.success),
                 modifier = Modifier
                     .size(size = 20.dp)

@@ -7,8 +7,8 @@ import net.thechance.mena.faith.presentation.navigation.SurahNavHost
 
 class FaithApiImpl : FaithApi {
     @Composable
-    override fun TabEntry() {
-        FaithNavigation()
+    override fun TabEntry(updateBottomNavigationVisibility: (Boolean) -> Unit) {
+        FaithNavigation(updateBottomNavigationVisibility = updateBottomNavigationVisibility)
     }
 
     @Composable
