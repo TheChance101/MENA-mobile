@@ -34,6 +34,7 @@ internal val repositoryModule = module {
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
             dataStore = get(),
+            authRepository = get(),
             cachedChatDao = get()
         )
     }
@@ -47,6 +48,7 @@ internal val repositoryModule = module {
             json = get(named(CHAT_JSON)),
             cachedMessageDao = get(),
             quranService = get(),
+            authRepository = get(),
             chatSyncTimeDao = get()
         )
     }
