@@ -11,6 +11,7 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartArgs
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetailsContent
@@ -36,8 +37,16 @@ fun DukanDetailsScreen(
         ) { (id, quantity) ->
             viewModel.updateProductQuantityInCart(id, quantity)
         }
-        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART){
+        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART) {
             viewModel.setHasProductInCart(it)
+        }
+
+        ObserveSavedStateEvent<Map<String, Int>>(DukanCartArgs.PRODUCTS_CART) {
+            val updatedProducts = viewModel.updateQuantityProductPaging(
+                state.productsShelf,
+                it
+            )
+            viewModel.setUpdatedProductsFlow(updatedProducts)
         }
     }
 
