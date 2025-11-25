@@ -5,6 +5,7 @@ package net.thechance.mena.dukan.presentation.viewModel.search
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -224,12 +225,17 @@ class SearchViewModel(
     }
 
     private fun handleNoInternetException() {
+//        updateState {
+//            copy(
+//                snackBarUiState = SnackBarUiState(
+//                    message = Res.string.no_internet_message,
+//                    snackBarType = SnackBarType.ERROR
+//                )
+//            )
+//        }
         updateState {
             copy(
-                snackBarUiState = SnackBarUiState(
-                    message = Res.string.no_internet_message,
-                    snackBarType = SnackBarType.ERROR
-                )
+                searchContentState = SearchUiState.SearchContentState.NoInternet
             )
         }
     }
