@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
@@ -15,9 +14,8 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartArgs.PRODUCTS_CART
 import net.thechance.mena.dukan.presentation.screen.dukanCart.content.DukanCartContent
-import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY
+import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsArgs
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
-import net.thechance.mena.dukan.presentation.util.ObserveSavedStateEvent
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartUiState.CartState
@@ -37,6 +35,10 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     PRODUCTS_CART,
                     state.productQuantity
+                )
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    ProductDetailsArgs.HAS_PRODUCT_IN_CART,
+                    state.totalPrice > 0
                 )
                 navController.popBackStack()
             }
