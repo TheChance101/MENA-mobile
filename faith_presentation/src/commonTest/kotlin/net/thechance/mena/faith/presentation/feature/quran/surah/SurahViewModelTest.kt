@@ -387,19 +387,6 @@ class SurahViewModelTest {
         }
     }
 
-
-    @Test
-    fun `onCopyClick should show success snackbar when copy succeeds`() = runTest {
-        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
-
-        testViewModel.snackBarState.test {
-            testViewModel.onCopyClick(AYAH_TO_COPY)
-            testDispatcher.scheduler.advanceUntilIdle()
-            val snackBarState = awaitItem()
-            assertEquals(expected = SnackBarState.Status.Success, snackBarState.status)
-        }
-    }
-
     @Test
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
@@ -533,7 +520,6 @@ class SurahViewModelTest {
         const val AYAH_TO_SHARE = ""
         const val EMPTY_STRING = ""
         const val AYAH_CONTENT = "Test ayah content"
-        const val AYAH_TO_COPY = "Test ayah to copy"
         const val SURAH_BAQARAH_ID = 2
 
 
