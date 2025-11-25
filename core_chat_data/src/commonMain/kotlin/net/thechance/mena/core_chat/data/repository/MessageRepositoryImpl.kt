@@ -370,6 +370,7 @@ class MessageRepositoryImpl(
             webSocketManager.disconnect()
             cachedMessageDao.clearAllMessages()
             pendingMessageDao.clearAllPendingMessages()
+            chatSyncTimeDao.clearAllSyncTimes()
 
         } catch (e:Throwable) {
             println("MessageRepository ERROR: Failed to clear cache. Error: ${e.message}")
