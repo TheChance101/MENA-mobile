@@ -12,6 +12,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -50,6 +51,7 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.service.QuranService
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -64,6 +66,7 @@ class MessageRepositoryImpl(
     private val cachedMessageDao: CachedMessageDao,
     private val chatSyncTimeDao: ChatSyncTimeDao,
     private val quranService: QuranService,
+    private val authRepository: AuthenticationRepository,
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
@@ -74,6 +77,9 @@ class MessageRepositoryImpl(
     private val deleteReactionFlow = MutableSharedFlow<MessageReaction>()
     private val scope = CoroutineScope(Dispatchers.IO)
 
+    init {
+        observeAuthenticationState()
+    }
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
 
         val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
@@ -347,6 +353,27 @@ class MessageRepositoryImpl(
     private suspend fun getSurahNameById(surahId: Int): String {
         val surah: Surah = quranService.getSurahDetails(surahId)
         return surah.name
+    }
+
+    private fun observeAuthenticationState() {
+        scope.launch {
+            authRepository.observeTokenChange().collectLatest { token ->
+                if (token.isEmpty()) {
+                    clearAllMessagesCache()
+                }
+            }
+        }
+    }
+
+    private suspend fun clearAllMessagesCache() {
+        try {
+            webSocketManager.disconnect()
+            cachedMessageDao.clearAllMessages()
+            pendingMessageDao.clearAllPendingMessages()
+
+        } catch (e:Throwable) {
+            println("MessageRepository ERROR: Failed to clear cache. Error: ${e.message}")
+        }
     }
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"

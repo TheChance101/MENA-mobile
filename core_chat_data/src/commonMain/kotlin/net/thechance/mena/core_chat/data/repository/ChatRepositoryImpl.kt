@@ -9,10 +9,16 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.util.reflect.typeInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.toCached
@@ -32,6 +38,7 @@ import net.thechance.mena.core_chat.domain.exception.OperationFailedException
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.model.SyncState
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -45,12 +52,17 @@ class ChatRepositoryImpl(
     private val webSocketManager: WebSocketManager,
     private val cachedChatDao: CachedChatDao,
     private val cachedChatSummaryDao: CachedChatSummaryDao,
+    private val authRepository: AuthenticationRepository,
     private val dataStore: DataStore<Preferences>
 ) : ChatRepository {
 
     private val _syncState = MutableSharedFlow<SyncState>()
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState
+    }
+
+    init {
+        observeAuthenticationState()
     }
 
     @OptIn(ExperimentalTime::class)
@@ -118,6 +130,7 @@ class ChatRepositoryImpl(
             _syncState.emit(SyncState.DeletedChatsSynced(deletedChatsId))
         }
     }
+
     override suspend fun getChatSummaryById(chatId: Uuid): ChatSummary {
         return tryNetworkCall<ChatSummaryDto>(
             bodyType = typeInfo<ChatSummaryDto>()
@@ -183,6 +196,30 @@ class ChatRepositoryImpl(
 
     override suspend fun disconnect() {
         webSocketManager.disconnect()
+    }
+
+    private fun observeAuthenticationState() {
+        CoroutineScope(Dispatchers.IO).launch {
+            authRepository.observeTokenChange().collectLatest { token ->
+                if (token.isEmpty()) {
+                    clearAllChatCache()
+                }
+            }
+        }
+    }
+
+    private suspend fun clearAllChatCache() {
+        try {
+            webSocketManager.disconnect()
+            cachedChatDao.clearAllChats()
+            cachedChatSummaryDao.clearAllChatSummaries()
+            dataStore.edit { preferences ->
+                preferences.remove(LAST_TIME_CHAT_SUMMARIES_SYNCED_KEY)
+            }
+
+        } catch (e: Exception) {
+            println("ChatRepository ERROR: Failed to clear cache. Error: ${e.message}")
+        }
     }
 
     private companion object {
