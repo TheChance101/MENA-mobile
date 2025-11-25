@@ -394,7 +394,7 @@ class SurahViewModelTest {
 
         testViewModel.snackBarState.test {
             testViewModel.onCopyClick(AYAH_TO_COPY)
-            testDispatcher.scheduler.advanceUntilIdle() // Process all coroutines
+            testDispatcher.scheduler.advanceUntilIdle()
             val snackBarState = awaitItem()
             assertEquals(expected = SnackBarState.Status.Success, snackBarState.status)
         }
