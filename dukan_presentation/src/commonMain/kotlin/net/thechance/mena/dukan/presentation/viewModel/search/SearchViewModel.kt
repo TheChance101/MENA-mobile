@@ -56,6 +56,8 @@ class SearchViewModel(
     }
 
     override fun onDukansSelected() {
+        if (state.value.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Dukans)
+            return
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Dukans
@@ -65,6 +67,8 @@ class SearchViewModel(
     }
 
     override fun onProductsSelected() {
+        if (state.value.userSelectionSearchList == SearchUiState.UserSelectionSearchList.Products)
+            return
         updateState {
             copy(
                 userSelectionSearchList = SearchUiState.UserSelectionSearchList.Products
