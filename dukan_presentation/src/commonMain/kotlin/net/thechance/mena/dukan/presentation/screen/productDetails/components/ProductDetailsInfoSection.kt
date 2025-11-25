@@ -155,6 +155,7 @@ private fun ProductDescription(
 ) {
 
     val isDescriptionExpanded = remember { mutableStateOf(false) }
+    val isDescriptionClickable = remember { mutableStateOf(false) }
     val visibleDescription = remember { mutableStateOf("") }
     val seeLessText = stringResource(Res.string.see_less)
     val seeMoreText = stringResource(Res.string.see_more)
@@ -167,7 +168,7 @@ private fun ProductDescription(
         buildExpandableText(
             description = description,
             isDescriptionExpanded = isDescriptionExpanded.value,
-            availableText = visibleDescription.value,
+            visiblePartOfDescription = visibleDescription.value,
             descriptionColor = descriptionColor,
             seeLessAndMoreColor = seeLessAndMoreColor,
             seeLessText = seeLessText,
@@ -190,6 +191,7 @@ private fun ProductDescription(
             .bringIntoViewRequester(bringIntoViewRequester)
             .padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
             .clickable (
+                enabled = isDescriptionClickable.value,
                 indication = null,
                 interactionSource = null,
                 onClick = { isDescriptionExpanded.value = !isDescriptionExpanded.value }
@@ -200,6 +202,7 @@ private fun ProductDescription(
                 val lastIndex = minOf(maxLine - 1, textLayoutResult.lineCount - 1)
                 val lastCharIndex = textLayoutResult.getLineEnd(lastIndex, visibleEnd = true)
                 visibleDescription.value = description.take(lastCharIndex).dropLast(12)
+                isDescriptionClickable.value = true
             }
         }
     )
@@ -210,11 +213,19 @@ private fun buildExpandableText(
     isDescriptionExpanded: Boolean,
     seeLessText: String,
     seeMoreText: String,
-    availableText: String,
+    visiblePartOfDescription: String,
     descriptionColor: Color,
     seeLessAndMoreColor: Color,
 ): AnnotatedString {
     return when {
+        visiblePartOfDescription.isNotEmpty() && isDescriptionExpanded.not() -> buildAnnotatedString {
+            withStyle(style = SpanStyle(color = descriptionColor)) {
+                append(visiblePartOfDescription)
+            }
+            withStyle(style = SpanStyle(color = seeLessAndMoreColor, fontWeight = FontWeight.Bold)) {
+                append(seeMoreText)
+            }
+        }
         isDescriptionExpanded -> buildAnnotatedString {
             withStyle(style = SpanStyle(color = descriptionColor)) {
                 append(description)
@@ -223,16 +234,6 @@ private fun buildExpandableText(
                 append(seeLessText)
             }
         }
-
-        availableText.isNotEmpty() -> buildAnnotatedString {
-            withStyle(style = SpanStyle(color = descriptionColor)) {
-                append(availableText)
-            }
-            withStyle(style = SpanStyle(color = seeLessAndMoreColor, fontWeight = FontWeight.Bold)) {
-                append(seeMoreText)
-            }
-        }
-
         else -> buildAnnotatedString {
             withStyle(style = SpanStyle(color = descriptionColor)) {
                 append(description)
