@@ -68,7 +68,6 @@ class ChatRepositoryImplTest {
     private lateinit var cachedChatDao: CachedChatDao
     private val authRepository = mock<AuthenticationRepository>()
 
-
     @BeforeTest
     fun setUp() {
         everySuspend { authRepository.getAccessToken() } returns "token"
@@ -92,6 +91,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatDao = cachedChatDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
     }
@@ -104,6 +104,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -122,6 +123,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatDao = cachedChatDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatSummaryDao = cachedChatSummaryDao,
         )
 
@@ -149,6 +151,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -172,6 +175,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
 
         )
@@ -196,6 +200,7 @@ class ChatRepositoryImplTest {
                 webSocketManager = webSocketManager,
                 cachedChatSummaryDao = cachedChatSummaryDao,
                 dataStore = dataStore,
+                authRepository = authRepository,
                 cachedChatDao = cachedChatDao
             )
 
@@ -215,6 +220,7 @@ class ChatRepositoryImplTest {
                 webSocketManager = webSocketManager,
                 cachedChatSummaryDao = cachedChatSummaryDao,
                 dataStore = dataStore,
+                authRepository = authRepository,
                 cachedChatDao = cachedChatDao
             )
 
@@ -240,6 +246,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -261,6 +268,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -283,6 +291,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -305,6 +314,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             cachedChatSummaryDao = cachedChatSummaryDao,
             dataStore = dataStore,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -344,6 +354,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -373,6 +384,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -402,6 +414,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -458,6 +471,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -495,6 +509,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
@@ -517,6 +532,7 @@ class ChatRepositoryImplTest {
             webSocketManager = webSocketManager,
             dataStore = dataStore,
             cachedChatSummaryDao = cachedChatSummaryDao,
+            authRepository = authRepository,
             cachedChatDao = cachedChatDao
         )
 
