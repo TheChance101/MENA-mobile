@@ -34,6 +34,7 @@ internal class CreateMosqueViewModel(
 
 
     init {
+        sharedImageViewModel.clearImage()
         setInitialLocation()
         observeCroppedImage()
     }
@@ -100,6 +101,9 @@ internal class CreateMosqueViewModel(
                 )
                 val addMosqueMessage = getString(Res.string.add_mosque_message)
                 updateState { it.copy(successMessage = addMosqueMessage) }
+
+            },
+            onFinally = {
                 sharedImageViewModel.clearImage()
                 sendEffect(CreateMosqueEffect.NavigateBack)
             },
