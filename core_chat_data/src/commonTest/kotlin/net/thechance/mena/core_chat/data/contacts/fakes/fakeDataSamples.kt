@@ -117,21 +117,13 @@ fun createMessageDto(
     receiverId = receiverId
 )
 
-fun createLastMessageDto(
-    content: String = "Hello there",
-    sentAt: String = "2025-10-01T12:00:00Z",
-    isMine: Boolean = false
-) = ChatSummaryDto.LastMessageDto(
-    content = content,
-    sentAt = sentAt,
-    isMine = isMine
-)
+
 
 fun createChatSummaryDto(
     id: String = Uuid.random().toString(),
     imageUrl: String? = "http://example.com/image.jpg",
     name: String = "Test Chat",
-    lastMessage: ChatSummaryDto.LastMessageDto = createLastMessageDto(),
+    lastMessage: MessageDto = createMessageDto(),
     unReadMessagesCount: Int = 1
 ) = ChatSummaryDto(
     id = id,
@@ -151,7 +143,8 @@ fun createCachedChatSummaryDto(
     imageUrl = imageUrl ?: "",
     name = name,
     unReadMessagesCount = unReadMessagesCount,
-    lastMessageContent = "hello",
+    lastMessageType = "TEXT",
+    lastMessageText = "hello",
     lastMessageSentAt = "2025-10-01T12:00:00",
     lastMessageIsMine = false
 )

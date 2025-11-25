@@ -33,6 +33,7 @@ import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.weather_clear_sky
 import net.thechance.mena.core_chat.domain.entity.ChatSummary
+import net.thechance.mena.core_chat.domain.entity.LastMessageType
 import net.thechance.mena.core_chat.domain.entity.WeatherDetails
 import net.thechance.mena.core_chat.domain.entity.WeatherType
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
@@ -43,6 +44,7 @@ import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.WeatherRepository
 import net.thechance.mena.core_chat.presentation.screen.home.HomeScreenState.ChatUiState
+import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.service.PrayerTimeService
 import net.thechance.mena.identity.domain.entity.Address
@@ -710,7 +712,7 @@ class HomeViewModelTest {
             name = name,
             imageUrl = imageUrl,
             lastMessage = ChatSummary.Message(
-                content = content,
+                type = LastMessageType.Text(content),
                 sendAt = sendAt,
                 isMine = isMine
             ),
@@ -735,7 +737,7 @@ class HomeViewModelTest {
                 name = chatName,
                 imageUrl = null,
                 lastMessage = ChatUiState.MessageUiState(
-                    text = "Hello",
+                    text = UiText.DynamicString("Hello"),
                     isMine = true,
                     time = LocalDateTime(2024, 1, 1, 12, 0)
                 ),

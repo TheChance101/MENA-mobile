@@ -120,4 +120,9 @@
     <string name="weather_moderate_thunderstorm">عاصفة رعدية معتدلة</string>
     <string name="weather_slight_hail_thunderstorm">عاصفة رعدية مع بَرَد خفيف</string>
     <string name="weather_heavy_hail_thunderstorm">عاصفة رعدية مع بَرَد كثيف</string>
+    <string name="last_message_image">صورة</string>
+    <string name="last_message_audio">مقطع صوتي</string>
+    <string name="last_message_money">مالاً</string>
+    <string name="last_message_ayah">آية</string>
+    <string name="last_message_order">طلباً</string>
 </resources>
