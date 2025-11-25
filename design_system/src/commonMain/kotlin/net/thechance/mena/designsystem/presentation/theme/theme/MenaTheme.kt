@@ -33,8 +33,11 @@ fun MenaTheme(
     isSystemInDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = remember(appTheme) {
+    val isFollowingSystemDarkMode = remember(appTheme, isSystemInDarkTheme) {
+        appTheme == AppTheme.SYSTEM.name && isSystemInDarkTheme
+    }
 
+    val colorScheme = remember(appTheme, isFollowingSystemDarkMode) {
         when (appTheme) {
             AppTheme.LIGHT.name -> LightColorScheme
             AppTheme.DARK.name -> DarkColorScheme
@@ -46,6 +49,7 @@ fun MenaTheme(
     val layoutDirection = remember(language) {
         if (language == AppLanguage.Arabic.iso) LayoutDirection.Rtl else LayoutDirection.Ltr
     }
+
     CompositionLocalProvider(
         LocalColorScheme provides colorScheme,
         LocalSpacing provides MenaSpacing,
