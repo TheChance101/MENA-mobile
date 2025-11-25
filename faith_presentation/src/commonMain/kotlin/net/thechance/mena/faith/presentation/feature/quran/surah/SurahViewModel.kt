@@ -274,10 +274,10 @@ class SurahViewModel(
 
         if (isPlaying) quranPlayer.pauseAyah()
         else quranPlayer.playAyah(
-            currentUrl,
-            uiState.value.surahName,
-            uiState.value.selectedAyahNumber ?: 0,
-            uiState.value.currentReciter.name,
+            ayahUrl = currentUrl,
+            surahName = uiState.value.surahName,
+            ayahNumber = uiState.value.selectedAyahNumber ?: 0,
+            reciterName = uiState.value.currentReciter.name,
         )
 
         updateState { it.copy(isAyahSoundPlaying = !isPlaying) }
@@ -338,10 +338,10 @@ class SurahViewModel(
             )
         }
         quranPlayer.playAyah(
-            ayahSoundUrl,
-            uiState.value.surahName,
-            uiState.value.selectedAyahNumber ?: 0,
-            uiState.value.currentReciter.name,
+            ayahUrl = ayahSoundUrl,
+            surahName = uiState.value.surahName,
+            ayahNumber = uiState.value.selectedAyahNumber ?: 0,
+            reciterName = uiState.value.currentReciter.name,
         )
         updatePlayPause()
     }
@@ -359,10 +359,10 @@ class SurahViewModel(
                     )
                 }
                 quranPlayer.playAyah(
-                    ayahSoundUrl,
-                    uiState.value.surahName,
-                    uiState.value.selectedAyahNumber ?: 0,
-                    uiState.value.currentReciter.name,
+                    ayahUrl = ayahSoundUrl,
+                    surahName = uiState.value.surahName,
+                    ayahNumber = uiState.value.selectedAyahNumber ?: 0,
+                    reciterName = uiState.value.currentReciter.name,
                 )
             },
             onSuccess = { updateSurahPlayback() },
