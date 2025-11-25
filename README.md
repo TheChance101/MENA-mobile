@@ -133,7 +133,7 @@ Each feature module follows a strict three-layer architecture
 
 > [!Note]
 > ### 💬 Communication
-> - **1:1 Messaging**: Start conversations with any synced contact and exchange text, photos, and voice messages.
+> - **Messaging**: Start conversations with any synced contact and exchange text, photos, and voice messages.
 > - **Message Reactions**: React to messages, photos, and voice notes for quick and expressive communication.
 > - **Share Quran Ayat**: Send any selected Ayah from any Surah directly inside the chat.
 >
