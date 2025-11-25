@@ -1,6 +1,9 @@
 package net.thechance.mena.dukan.presentation.screen.productDetails.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.TweenSpec
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,20 +12,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.koin_icon
+import mena.dukan_presentation.generated.resources.see_less
+import mena.dukan_presentation.generated.resources.see_more
 import mena.dukan_presentation.generated.resources.silver_tc
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.component.shared.AnnotatedText
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.util.ShimmerBox
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
@@ -83,13 +101,8 @@ private fun ProductDetailsInfoContent(
         price = state.basePrice.toString(),
         modifier = Modifier.padding(top = Theme.spacing._2)
     )
-    Text(
-        text = state.description,
-        style = Theme.typography.body.small,
-        color = Theme.colorScheme.shadeSecondary,
-        textAlign = TextAlign.Start,
-        maxLines = 5,
-        modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
+    ProductDescription(
+        description = state.description
     )
 }
 
@@ -124,6 +137,98 @@ private fun ProductDetailsPriceRow(
     }
 }
 
+@Composable
+private fun ProductDescription(
+    description: String,
+    modifier: Modifier = Modifier
+) {
+
+    val isDescriptionExpanded = remember { mutableStateOf(false) }
+    val visibleDescription = remember { mutableStateOf("") }
+    val seeLessText = stringResource(Res.string.see_less)
+    val seeMoreText = stringResource(Res.string.see_more)
+    val descriptionColor = Theme.colorScheme.shadeSecondary
+    val seeLessAndMoreColor = Theme.colorScheme.primary.primary
+    val maxLine = if (isDescriptionExpanded.value) Int.MAX_VALUE else 5
+    val bringIntoViewRequester = BringIntoViewRequester()
+
+    val displayedText = remember(isDescriptionExpanded.value, visibleDescription.value) {
+        buildExpandableText(
+            description = description,
+            isDescriptionExpanded = isDescriptionExpanded.value,
+            availableText = visibleDescription.value,
+            descriptionColor = descriptionColor,
+            seeLessAndMoreColor = seeLessAndMoreColor,
+            seeLessText = seeLessText,
+            seeMoreText = seeMoreText
+        )
+    }
+
+    LaunchedEffect(isDescriptionExpanded.value) {
+        if (isDescriptionExpanded.value) {
+            delay(300)
+            bringIntoViewRequester.bringIntoView()
+        }
+    }
+
+    AnnotatedText(
+        text = displayedText,
+        style = Theme.typography.body.small,
+        maxLines = maxLine,
+        modifier = modifier
+            .then(Modifier.bringIntoViewRequester(bringIntoViewRequester))
+            .padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
+            .clickable (
+                indication = null,
+                interactionSource = null,
+                onClick = { isDescriptionExpanded.value = !isDescriptionExpanded.value }
+            )
+            .animateContentSize(TweenSpec()),
+        onTextLayout = { textLayoutResult ->
+            if (textLayoutResult.hasVisualOverflow) {
+                val lastIndex = minOf(maxLine-1 , textLayoutResult.lineCount - 1)
+                val lastCharIndex = textLayoutResult.getLineEnd(lastIndex, visibleEnd = true)
+                visibleDescription.value = description.take(lastCharIndex).dropLast(12)
+            }
+        }
+    )
+}
+
+private fun buildExpandableText(
+    description: String,
+    isDescriptionExpanded: Boolean,
+    seeLessText: String,
+    seeMoreText: String,
+    availableText: String,
+    descriptionColor: Color,
+    seeLessAndMoreColor: Color,
+): AnnotatedString {
+    return when {
+        isDescriptionExpanded -> buildAnnotatedString {
+            withStyle(style = SpanStyle(color = descriptionColor)) {
+                append(description)
+            }
+            withStyle(style = SpanStyle(color = seeLessAndMoreColor,fontWeight = FontWeight.Bold)) {
+                append(seeLessText)
+            }
+        }
+
+        availableText.isNotEmpty() -> buildAnnotatedString {
+            withStyle(style = SpanStyle(color = descriptionColor)) {
+                append(availableText)
+            }
+            withStyle(style = SpanStyle(color = seeLessAndMoreColor, fontWeight = FontWeight.Bold)) {
+                append(seeMoreText)
+            }
+        }
+
+        else -> buildAnnotatedString {
+            withStyle(style = SpanStyle(color = descriptionColor)) {
+                append(description)
+            }
+        }
+    }
+}
 
 @Preview
 @Composable
