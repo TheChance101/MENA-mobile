@@ -56,7 +56,8 @@ fun ProductDetailsContent(
             state.snackBarState?.let { snackBarUiState ->
                 SnackBar(
                     snackBarUiState = snackBarUiState,
-                    onDismiss = listener::onDismissSnackBar
+                    onDismiss = listener::onDismissSnackBar,
+                    onClick = listener::onDismissSnackBar
                 )
             }
         }

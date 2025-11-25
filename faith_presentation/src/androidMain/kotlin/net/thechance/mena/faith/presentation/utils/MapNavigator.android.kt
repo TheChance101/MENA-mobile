@@ -3,12 +3,12 @@ package net.thechance.mena.faith.presentation.utils
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
-import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
+import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 
 internal actual class MapNavigatorImpl(
     private val context: Context
 ) : MapNavigator {
-    actual override fun openMapAtCoordinate(coordinate: Coordinate) {
+    actual override fun openMapAtCoordinate(coordinate: MosqueUiState.Coordinate) {
         val lat = coordinate.latitude
         val lon = coordinate.longitude
 

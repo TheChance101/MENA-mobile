@@ -14,7 +14,7 @@ data class ProfileScreenUIState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val currentLanguage: AppLanguage = AppLanguage.DEFAULT,
-    val currentTheme: AppTheme = AppTheme.DEFAULT,
+    val currentTheme: AppTheme = AppTheme.SYSTEM,
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState(),
     val themeDialogUiState: ThemeDialogUiState = ThemeDialogUiState()
 )
@@ -27,6 +27,6 @@ data class LanguageDialogUiState(
 
 data class ThemeDialogUiState(
     val isVisible: Boolean = false,
-    val selectedAppTheme: AppTheme = AppTheme.LIGHT,
-    val options: List<AppTheme> = AppTheme.entries.filterNot { it == AppTheme.DEFAULT }
+    val selectedAppTheme: AppTheme = AppTheme.SYSTEM,
+    val options: List<AppTheme> = AppTheme.entries
 )

@@ -13,7 +13,7 @@ import mena.faith_presentation.generated.resources.add_mosque_message
 import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
-import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
+import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
 import net.thechance.mena.faith.presentation.utils.extentions.toByteArray
 import net.thechance.mena.identity.domain.entity.Address
@@ -52,7 +52,7 @@ internal class CreateMosqueViewModel(
         address?.let { address ->
             updateState {
                 it.copy(
-                    location = Coordinate(
+                    location = MosqueUiState.Coordinate(
                         latitude = address.latitude,
                         longitude = address.longitude
                     )
@@ -141,7 +141,7 @@ internal class CreateMosqueViewModel(
 
     override fun onMapClick(position: Position, offset: DpOffset) {
         if (uiState.value.offset != null) return
-        val coordinate = Coordinate(
+        val coordinate = MosqueUiState.Coordinate(
             latitude = position.latitude,
             longitude = position.longitude
         )

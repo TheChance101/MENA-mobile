@@ -29,6 +29,8 @@ class ProfileScreenViewModel(
     ),
     ProfileScreenInteractionListener {
 
+    private var userInfo: User? = null
+
     init {
         getUserInfo()
         setAppVersion()
@@ -76,6 +78,7 @@ class ProfileScreenViewModel(
                 inviteLinkUrl = "$SHARE_URL${user.id}"
             )
         }
+        userInfo = user
     }
 
     private fun onUserInfoError(throwable: Throwable) {
@@ -88,7 +91,11 @@ class ProfileScreenViewModel(
     }
 
     override fun onEditProfileInfoClicked() =
-        sendNewEffect(createNavigateToEditProfileEffect())
+        sendNewEffect(
+            createNavigateToEditProfileEffect(
+                userInfo = userInfo
+            )
+        )
 
     override fun onShareClicked() =
         updateState { copy(showShareProfileDialog = true) }

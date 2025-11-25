@@ -32,7 +32,8 @@ fun DukanTableHeaderRow(
     sortState: DukanManagementScreenState.SortState,
     onSortClicked: (DukansSortType) -> Unit,
     horizontalScrollState: ScrollState = rememberScrollState(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSortingDisabled: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -68,7 +69,8 @@ fun DukanTableHeaderRow(
             sortType = DukansSortType.NAME,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 200.dp)
+            modifier = Modifier.widthIn(min = 200.dp),
+            isSortingDisabled = isSortingDisabled
         )
         Text(
             text = stringResource(Res.string.location),
@@ -81,14 +83,16 @@ fun DukanTableHeaderRow(
             sortType = DukansSortType.ACTIVATION_STATUS,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 157.dp)
+            modifier = Modifier.widthIn(min = 157.dp),
+            isSortingDisabled = isSortingDisabled
         )
         SortableHeaderCell(
             text = stringResource(Res.string.added_date),
             sortType = DukansSortType.CREATED_AT,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 168.dp)
+            modifier = Modifier.widthIn(min = 168.dp),
+            isSortingDisabled = isSortingDisabled
         )
         Text(
             text = "",

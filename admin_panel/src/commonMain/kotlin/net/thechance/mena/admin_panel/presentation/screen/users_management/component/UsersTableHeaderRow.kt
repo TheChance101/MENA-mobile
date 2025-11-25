@@ -31,7 +31,8 @@ fun TableHeaderRow(
     sortState: UsersManagementScreenState.SortState,
     onSortClicked: (UsersManagementScreenState.SortType) -> Unit,
     horizontalScrollState: ScrollState = rememberScrollState(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSortingDisabled: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -58,7 +59,8 @@ fun TableHeaderRow(
             sortType = UsersManagementScreenState.SortType.USERNAME,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.width(268.dp)
+            modifier = Modifier.width(268.dp),
+            isSortingDisabled = isSortingDisabled
         )
         Text(
             text = stringResource(Res.string.phone_number),
@@ -72,21 +74,24 @@ fun TableHeaderRow(
             sortType = UsersManagementScreenState.SortType.LAST_LOGIN_DATE,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 175.dp)
+            modifier = Modifier.widthIn(min = 175.dp),
+            isSortingDisabled = isSortingDisabled
         )
         SortableHeaderCell(
             text = stringResource(Res.string.last_visit_date),
             sortType = UsersManagementScreenState.SortType.LAST_VISIT_DATE,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 167.dp)
+            modifier = Modifier.widthIn(min = 167.dp),
+            isSortingDisabled = isSortingDisabled
         )
         SortableHeaderCell(
             text = stringResource(Res.string.status),
             sortType = UsersManagementScreenState.SortType.ACTIVATION_STATUS,
             currentSortType = sortState.type,
             onSortClicked = onSortClicked,
-            modifier = Modifier.widthIn(min = 126.dp)
+            modifier = Modifier.widthIn(min = 126.dp),
+            isSortingDisabled = isSortingDisabled
         )
         Text(
             text = "",

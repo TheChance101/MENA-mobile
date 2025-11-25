@@ -1,6 +1,5 @@
 package net.thechance.mena.trends.presentation.screen.home
 
-import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
 import assertk.assertThat
@@ -20,31 +19,31 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.trends.domain.entity.Reel
-import net.thechance.mena.trends.domain.model.ReelUrls
-import net.thechance.mena.trends.domain.repository.ReelsRepository
+import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUrls
+import net.thechance.mena.trends.domain.repository.TrendsRepository
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModelTest {
 
-    private val repository: ReelsRepository = mock(MockMode.autofill)
+    private val repository: TrendsRepository = mock(MockMode.autofill)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: HomeViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { repository.getFeedReels(any()) } returns reels
+        everySuspend { repository.getFeedTrends(any()) } returns trends
         viewModel = HomeViewModel(repository, testDispatcher)
     }
 
     @Test
     fun `onClickReel should send NavigateToReelDetails effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onClickReel("1")
-            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToReelDetails("1"))
+            viewModel.onClickTrend("1")
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToTrendDetails("1"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -52,8 +51,8 @@ class HomeViewModelTest {
     @Test
     fun `onClickAddReel should send NavigateToAddReel effect`() = runTest {
         viewModel.effect.test {
-            viewModel.onClickAddReel()
-            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToAddReel)
+            viewModel.onClickAddTrend()
+            assertThat(awaitItem()).isEqualTo(HomeUiEffect.NavigateToAddTrend)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -80,27 +79,27 @@ class HomeViewModelTest {
     fun `getTrends should update state when success`() = runTest {
         viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
-        val items = viewModel.state.value.reels.asSnapshot()
-        assertThat(items.first().id).isEqualTo(reels[0].id)
+        val items = viewModel.state.value.trends.asSnapshot()
+        assertThat(items.first().id).isEqualTo(trends[0].id)
     }
 
     @Test
     fun `onAddReelLike method should add like to Reel when called`() = runTest {
-        everySuspend { repository.addReelLike("1") } returns reels[0].copy(
+        everySuspend { repository.addTrendLike("1") } returns trends[0].copy(
             isLiked = true,
-            likesCount = reels[0].likesCount + 1
+            likesCount = trends[0].likesCount + 1
         )
 
         viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
 
-        val initial = viewModel.state.value.reels.asSnapshot().first()
-        viewModel.addReelLike("1")
+        val initial = viewModel.state.value.trends.asSnapshot().first()
+        viewModel.addTrendLike("1")
         advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
-            val updated = state.reels.asSnapshot().first()
+            val updated = state.trends.asSnapshot().first()
 
             assertThat(updated.likesCount).isEqualTo(initial.likesCount + 1)
             assertThat(updated.isLiked).isTrue()
@@ -111,16 +110,16 @@ class HomeViewModelTest {
 
     @Test
     fun `onRemoveReelLike method should remove like from Reel when called`() = runTest {
-        everySuspend { repository.removeReelLike("2") } returns Unit
+        everySuspend { repository.removeTrendLike("2") } returns Unit
         advanceUntilIdle()
 
-        val initial = viewModel.state.value.reels.asSnapshot().first { it.id == "2" }
-        viewModel.removeReelLike("2")
+        val initial = viewModel.state.value.trends.asSnapshot().first { it.id == "2" }
+        viewModel.removeTrendLike("2")
         advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
-            val updated = state.reels.asSnapshot().first { it.id == "2" }
+            val updated = state.trends.asSnapshot().first { it.id == "2" }
 
             assertThat(updated.likesCount).isEqualTo(initial.likesCount - 1)
             assertThat(updated.isLiked).isFalse()
@@ -135,7 +134,7 @@ class HomeViewModelTest {
         viewModel.onClickLike("1", false)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend { repository.addReelLike("1") }
+        verifySuspend { repository.addTrendLike("1") }
     }
 
     @Test
@@ -143,7 +142,7 @@ class HomeViewModelTest {
         viewModel.onClickLike("1", true)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        verifySuspend { repository.removeReelLike("1") }
+        verifySuspend { repository.removeTrendLike("1") }
     }
 
     @Test
@@ -154,7 +153,7 @@ class HomeViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.error).isNull()
-            verifySuspend { viewModel.getFeedReels() }
+            verifySuspend { viewModel.getFeedTrends() }
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -163,13 +162,13 @@ class HomeViewModelTest {
         viewModel = HomeViewModel(repository, testDispatcher)
         advanceUntilIdle()
 
-        val initial = viewModel.state.value.reels.asSnapshot().first { it.id == "1" }
+        val initial = viewModel.state.value.trends.asSnapshot().first { it.id == "1" }
         viewModel.onClickExpandDescription("1")
         advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
-            val updated = state.reels.asSnapshot().first { it.id == "1" }
+            val updated = state.trends.asSnapshot().first { it.id == "1" }
 
             assertThat(updated.isDescriptionExpanded).isEqualTo(!initial.isDescriptionExpanded)
 
@@ -179,7 +178,7 @@ class HomeViewModelTest {
 
     @Test
     fun `onGetRefreshVideoUrl should update the specific reel video url to new value by id`() = runTest {
-        everySuspend { repository.getReelUrls("1") } returns ReelUrls(
+        everySuspend { repository.getTrendUrls("1") } returns TrendUrls(
             videoUrl = "video3.mp4",
             thumbnailUrl = "thumb1.jpg"
         )
@@ -190,7 +189,7 @@ class HomeViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            val reelsSnapshot = state.reels.asSnapshot().first()
+            val reelsSnapshot = state.trends.asSnapshot().first()
 
             assertThat(reelsSnapshot.thumbnailUrl).isEqualTo("thumb1.jpg")
             cancelAndIgnoreRemainingEvents()
@@ -200,8 +199,8 @@ class HomeViewModelTest {
 
     companion object {
 
-        private val reels = listOf(
-            Reel(
+        private val trends = listOf(
+            Trend(
                 id = "1",
                 thumbnailUrl = "thumb.jpg",
                 videoUrl = "video.mp4",
@@ -214,7 +213,7 @@ class HomeViewModelTest {
                 isCurrentUserOwner = false,
                 isLiked = false
             ),
-            Reel(
+            Trend(
                 id = "2",
                 thumbnailUrl = "thumb.jpg",
                 videoUrl = "video.mp4",

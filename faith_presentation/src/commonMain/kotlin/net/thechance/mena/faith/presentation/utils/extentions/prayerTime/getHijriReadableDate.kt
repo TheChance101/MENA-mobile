@@ -13,6 +13,12 @@ fun getHijriReadableDate(prayerTimes: List<PrayerTime>): String {
     return "$day $monthName $year"
 }
 
+fun getHijriDay(prayerTime: PrayerTime): Int {
+    val parts = prayerTime.hijriDate.split("-")
+    if (parts.size != 3) return 0
+    return parts[DAY_INDEX].toInt()
+}
+
 private val hijriMonths: Map<Int, String> = mapOf(
     1 to "Muharram",
     2 to "Safar",

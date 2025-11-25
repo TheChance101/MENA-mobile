@@ -22,6 +22,7 @@ import sv.lib.squircleshape.SquircleShape
 fun ConfirmOrderButton(
     onConfirmOrderClicked: () -> Unit,
     isLoading: Boolean,
+    isEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -44,7 +45,7 @@ fun ConfirmOrderButton(
             onClick = onConfirmOrderClicked,
             contentPadding = PaddingValues(vertical = Theme.spacing._12),
             isLoading = isLoading,
-            isEnabled = !isLoading
+            isEnabled = isEnabled
         )
     }
 }
@@ -53,6 +54,6 @@ fun ConfirmOrderButton(
 @Composable
 private fun ConfirmOrderButtonPreview() {
     MenaTheme {
-        ConfirmOrderButton({}, true)
+        ConfirmOrderButton({}, true, isEnabled = true)
     }
 }

@@ -23,7 +23,7 @@ internal fun MainContainerScreen(
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            MainContainerEffect.NavigateToReelHome -> {
+            MainContainerEffect.NavigateToTrendHome -> {
                 navController.navigate(Route.Home) {
                     popUpTo(Route.MainContainer) { inclusive = true }
                 }

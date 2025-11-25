@@ -63,13 +63,16 @@ class DepositViewModel (
                 updateState { it.copy(phoneNumber = newPhoneNumber) }
             }
     }
-
-    override fun onAmountChanged(amount : String) {
-        amount
-            .filter { char -> char.isDigit() ||char ==  '.'}
-            .let { newAmount->
-                updateState { it.copy(amount =  newAmount) }
+        override fun onAmountChanged(amount: String) {
+            val regex = Regex("^\\d*\\.?\\d*$")
+            if (regex.matches(amount)) {
+                updateState { it.copy(amount = amount) }
             }
+        }
+
+    override fun onRetryClicked() {
+        updateState { it.copy(errorState = null) }
+        getAvailableCountries()
     }
 
     override fun onCountryCodeChanged(country: DepositScreenState.CountryUiState) {
@@ -85,15 +88,13 @@ class DepositViewModel (
     }
 
     private suspend fun onDepositSuccess(){
-        updateState { it.copy(isDepositProcessLoading = false) }
-
+        updateState { it.copy(isDepositProcessLoading = false , phoneNumber = "", amount ="") }
         showSnackBar(
             title = stringProvider.getString(Res.string.success_deposit_title),
             message = stringProvider.getString(Res.string.success_deposit_description),
             isSuccess = true
         )
 
-        updateState { it.copy(phoneNumber = "", amount ="") }
     }
 
     private suspend fun showSnackBar(
@@ -146,6 +147,7 @@ class DepositViewModel (
     private fun onGetCountriesSuccess(availableCountries: List<Country>) {
         updateState {
             it.copy(
+                errorState = null,
                 availableCountries = availableCountries.map { it.toUiState() },
                 selectedCountry = availableCountries.map{it.toUiState()}.firstOrNull() ?: it.selectedCountry
             )
@@ -153,6 +155,7 @@ class DepositViewModel (
     }
 
     private suspend fun onGetCountriesError(errorState: ErrorState) {
+        updateState { it.copy(errorState = errorState) }
         showSnackBar(
             title = stringProvider.getString(errorState.getErrorSnackBarTitle()),
             message = stringProvider.getString(errorState.getErrorSnackBarMsg()),

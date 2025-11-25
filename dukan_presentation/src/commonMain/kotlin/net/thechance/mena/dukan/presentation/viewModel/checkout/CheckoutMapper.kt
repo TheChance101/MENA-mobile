@@ -2,6 +2,7 @@
 
 package net.thechance.mena.dukan.presentation.viewModel.checkout
 
+import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.model.CheckoutParams
 import net.thechance.mena.identity.domain.entity.Address
@@ -14,6 +15,15 @@ fun Product.toUiState(): CheckoutUiState.CartItem {
         name = this.name,
         price = this.price.base,
         quantity = this.quantityInCart
+    )
+}
+
+fun Cart.toUiState(): CheckoutUiState.CartDetails {
+    return CheckoutUiState.CartDetails(
+        discountPercentage = discount,
+        totalPriceAfterDiscount = totalPriceAfterDiscount,
+        totalPriceBeforeDiscount = totalPriceBeforeDiscount,
+        platformFees = 1.99
     )
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
@@ -45,6 +47,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -61,18 +64,28 @@ import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
+import kotlin.uuid.ExperimentalUuidApi
 
-class EditUserProfileScreen : BaseScreen<
+class EditUserProfileScreen(
+    val userInfo: User?
+) : BaseScreen<
     EditUserProfileViewModel,
     EditUserProfileUIState,
     EditUserProfileUIEffect,
     EditUserProfileInteractionListener>() {
+
+    @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun Content() {
         val factory = rememberPermissionsControllerFactory()
         val controller = remember(factory) { factory.createPermissionsController() }
         val viewModel: EditUserProfileViewModel =
             getScreenModel(parameters = { parametersOf(controller) })
+
+        LaunchedEffect(Unit) {
+            viewModel.getInitialUserInfo(user = userInfo)
+        }
+
         InitScreen(viewModel)
         BindEffect(viewModel.permissionsController)
     }
@@ -188,8 +201,11 @@ class EditUserProfileScreen : BaseScreen<
                 EditProfileImage(
                     profileImageUrl = state.profileImageUrl,
                     profileImageBitmap = state.profileImageBitmap,
-                    modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
                     onEditClicked = listener::onClickEditImage,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .offset(y = 4.dp)
                 )
 
                 ProfileEditText(
@@ -221,11 +237,13 @@ class EditUserProfileScreen : BaseScreen<
                     style = Theme.typography.title.small
                 )
 
-                GregorianDatePicker(
-                    modifier = Modifier.padding(top = Theme.spacing._4),
-                    selectedDate = state.birthDate,
-                    onDateChange = listener::onChangeDate,
-                )
+                state.birthDate?.let { birthDate ->
+                    GregorianDatePicker(
+                        modifier = Modifier.padding(top = Theme.spacing._4),
+                        selectedDate = birthDate,
+                        onDateChange = listener::onChangeDate,
+                    )
+                }
 
                 GenderToggleSection(
                     gender = state.gender,
