@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.di
 import android.content.Context
 import android.location.LocationManager
 import net.thechance.mena.identity.presentation.util.AppLocalizer
-import net.thechance.mena.identity.presentation.util.AppThemeChanger
 import net.thechance.mena.identity.presentation.util.GalleryPermission
 import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
 import net.thechance.mena.identity.presentation.util.PermissionManager
@@ -19,14 +18,6 @@ internal actual fun platformModule(): Module = module {
         createdAtStart = true
     ) {
         AppLocalizer(
-            context = get(),
-            settingsRepository = get()
-        )
-    }
-    single<AppThemeChanger>(
-        createdAtStart = true
-    ) {
-        AppThemeChanger(
             context = get(),
             settingsRepository = get()
         )

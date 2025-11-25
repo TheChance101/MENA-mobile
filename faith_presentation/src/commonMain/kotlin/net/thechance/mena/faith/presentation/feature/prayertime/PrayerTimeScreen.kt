@@ -117,7 +117,7 @@ private fun Content(
                 PrayerItem(
                     prayerNameResource = getPrayerDisplayNameResource(prayer.name),
                     prayerTime = prayer.time.formatInstantToTimeString(withISPM = true),
-                    isNextPrayer = (prayer.name == uiState.nextPrayerName && uiState.isTodayPrayer)
+                    isNextPrayer = (prayer.name == uiState.nextPrayerName)
                 )
             }
         }

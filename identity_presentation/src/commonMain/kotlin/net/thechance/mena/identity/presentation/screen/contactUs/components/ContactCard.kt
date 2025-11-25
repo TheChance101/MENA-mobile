@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -81,7 +82,9 @@ internal fun ContactCard(
 
             Text(
                 text = info,
-                style = Theme.typography.label.medium,
+                style = Theme.typography.label.medium.copy(
+                    textDirection = TextDirection.Ltr
+                ),
                 color = Theme.colorScheme.shadePrimary,
             )
         }

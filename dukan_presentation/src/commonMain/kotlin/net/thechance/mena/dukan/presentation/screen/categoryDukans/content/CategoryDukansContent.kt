@@ -40,7 +40,8 @@ fun CategoryDukansContent(
             state.snackBarUiState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = listener::onSnackBarDismissed
+                    onDismiss = listener::onSnackBarDismissed,
+                    onClick = listener::onSnackBarDismissed
                 )
             }
         }

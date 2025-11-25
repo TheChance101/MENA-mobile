@@ -99,6 +99,8 @@
     <string name="profile_theme">Theme</string>
     <string name="profile_theme_light">Light</string>
     <string name="profile_theme_dark">Dark</string>
+    <string name="profile_theme_system">System</string>
+    <string name="profile_theme_system_hint">We Will adjust your appearance based on your device's system settings.</string>
     <string name="profile_other_header">Other</string>
     <string name="profile_privacy_and_policy">Privacy and policy</string>
     <string name="profile_contact_us">Contact us</string>

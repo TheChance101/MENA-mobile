@@ -37,6 +37,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class AddEditLocationScreen(
     private val addressModel: AddressUIState?,
+    private val onAddLocationSuccess: () -> Unit
 ) : BaseScreen<
     AddEditLocationScreenViewModel,
     AddEditLocationScreenUIState,
@@ -147,6 +148,8 @@ class AddEditLocationScreen(
                     snackBarController.showSnackBarSuccess(
                         message = successMessage
                     )
+
+                    onAddLocationSuccess()
                 }
 
                 effect.errorStringResource?.let { errorMessage ->

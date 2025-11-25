@@ -1,6 +1,7 @@
 package net.thechance.mena.identity.data.dataSource.local.setting
 
 import com.russhwolf.settings.Settings
+import net.thechance.mena.identity.domain.util.AppTheme
 
 internal var Settings.accessToken: String
     get() = getString(ACCESS_TOKEN, "")
@@ -30,7 +31,7 @@ internal var Settings.appLanguage: String
     set(value) = putString(APP_LANGUAGE, value)
 
 internal var Settings.appTheme: String
-    get() = getString(APP_THEME, "")
+    get() = getString(APP_THEME, AppTheme.SYSTEM.name)
     set(value) = putString(APP_THEME, value)
 
 //region keys
