@@ -184,6 +184,9 @@ class ProductDetailsViewModel(
     fun setProductQuantity(productQuantity: Int) {
         updateState { copy(product = product.copy(inCartQuantity = productQuantity)) }
     }
+    fun setProductQuantity(productQuantity: Int?) {
+        updateState { copy(product = product.copy(inCartQuantity = productQuantity ?: state.value.product.inCartQuantity)) }
+    }
 
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }

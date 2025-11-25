@@ -23,7 +23,7 @@ fun ProductDetailsScreen(
     val navController = LocalNavController.current
     navController.currentBackStackEntry?.apply {
         ObserveSavedStateEvent<Map<String, Int>>(DukanCartArgs.PRODUCTS_CART) {
-          viewModel.setProductQuantity(it[state.product.id] ?: 0)
+          viewModel.setProductQuantity(it[state.product.id])
         }
     }
     ObserveAsEffect(viewModel.effect) { effects ->
