@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.manageDukan
 
+import net.thechance.mena.dukan.domain.entity.Dukan
 import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.entity.Shelf
 import kotlin.uuid.ExperimentalUuidApi
@@ -18,8 +19,17 @@ fun Product.toUiState(): ManageDukanUiState.ProductUiState {
         id = id.toString(),
         name = name,
         description = description,
-        price = price.base,
+        basePrice = price.base,
+        finalPrice = price.final ?: price.base,
         imageUrl = imageUrls.firstOrNull().orEmpty(),
         isOutOfStock = isOutOfStock
     )
+}
+
+fun Dukan.ActivationStatus.toUiState(): ManageDukanUiState.ActivationStatus {
+    return when (this) {
+        Dukan.ActivationStatus.ACTIVATED -> ManageDukanUiState.ActivationStatus.ACTIVATED
+        Dukan.ActivationStatus.DEACTIVATED -> ManageDukanUiState.ActivationStatus.DEACTIVATED
+        Dukan.ActivationStatus.ONHOLD -> ManageDukanUiState.ActivationStatus.ONHOLD
+    }
 }

@@ -8,7 +8,9 @@ import kotlin.uuid.Uuid
 
 
 interface ChatInteractionListener : MessageListInteractionListener,
-    FullImageViewInteractionListener, AttachmentsInteractionListener, ActionsMenuInteractionListener {
+    FullImageViewInteractionListener, AttachmentsInteractionListener,
+    AttachmentsSendMoneyInteractionListener,
+    ActionsMenuInteractionListener {
 
     fun onBackClicked()
     fun onAttachmentClicked()
@@ -26,6 +28,11 @@ interface ChatInteractionListener : MessageListInteractionListener,
     fun onSendRecordClicked()
 
     fun onStopAudioPlayback()
+
+    fun onLinkClicked(url: String)
+
+    fun onSurahClicked(surahId: Int)
+    fun onAyahClicked(surahId: Int, ayahNumber: Int)
 }
 
 interface MessageListInteractionListener {
@@ -36,6 +43,7 @@ interface MessageListInteractionListener {
     fun onResendMessageDialogDismissed()
 
     fun onMessagesScrolled()
+    fun onViewOrderDetailsClicked(orderId: Uuid)
 }
 
 interface AttachmentsInteractionListener {
@@ -44,6 +52,13 @@ interface AttachmentsInteractionListener {
     fun onCameraClicked()
     fun onCameraResult(image: ImageBitmap?)
     fun onCloseAttachmentClicked()
+    fun onSendMoneyClicked()
+}
+
+interface AttachmentsSendMoneyInteractionListener {
+    fun onValueChanged(value: String)
+    fun onSendClicked()
+    fun onDismissSendMoneyDialog()
 }
 
 interface FullImageViewInteractionListener {

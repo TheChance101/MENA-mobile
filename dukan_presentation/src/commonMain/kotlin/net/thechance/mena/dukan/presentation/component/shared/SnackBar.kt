@@ -1,17 +1,6 @@
 package net.thechance.mena.dukan.presentation.component.shared
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import kotlinx.coroutines.delay
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error
 import mena.dukan_presentation.generated.resources.ic_error
@@ -27,53 +16,35 @@ import org.jetbrains.compose.resources.stringResource
 fun SnackBar(
     snackBarUiState: SnackBarUiState,
     onDismiss: () -> Unit,
-    autoDismissMillis: Long = 3000L,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
     val messageText = stringResource(snackBarUiState.message)
 
-    LaunchedEffect(Unit) {
-        delay(autoDismissMillis)
-        onDismiss()
-    }
+    when (snackBarUiState.snackBarType) {
+        SnackBarType.SUCCESS -> {
+            SnackBar(
+                isVisible = true,
+                title = stringResource(Res.string.success),
+                message = messageText,
+                leadingIcon = painterResource(Res.drawable.ic_success),
+                tint = Theme.colorScheme.success,
+                contentDescription = stringResource(Res.string.success),
+                onDismiss = onDismiss,
+                onClick = onClick
+            )
+        }
 
-    AnimatedVisibility(
-        modifier = modifier.fillMaxWidth()
-            .padding(
-                start = Theme.spacing._16,
-                end = Theme.spacing._16,
-                top = Theme.spacing._12
-            ),
-        visible = true,
-        enter = slideInVertically(
-            initialOffsetY = { -it },
-            animationSpec = tween(400)
-        ) + fadeIn(animationSpec = tween(400)),
-        exit = slideOutVertically(
-            targetOffsetY = { -it },
-            animationSpec = tween(300)
-        ) + fadeOut(animationSpec = tween(300))
-    ) {
-        when (snackBarUiState.snackBarType) {
-            SnackBarType.SUCCESS -> {
-                SnackBar(
-                    title = stringResource(Res.string.success),
-                    message = messageText,
-                    leadingIcon = painterResource(Res.drawable.ic_success),
-                    contentDescription = stringResource(Res.string.success),
-                    tint = Theme.colorScheme.success,
-                )
-            }
-
-            SnackBarType.ERROR -> {
-                SnackBar(
-                    title = stringResource(Res.string.error),
-                    message = messageText,
-                    leadingIcon = painterResource(Res.drawable.ic_error),
-                    contentDescription = stringResource(Res.string.error),
-                    tint = Theme.colorScheme.error,
-                )
-            }
+        SnackBarType.ERROR -> {
+            SnackBar(
+                isVisible = true,
+                title = stringResource(Res.string.error),
+                message = messageText,
+                leadingIcon = painterResource(Res.drawable.ic_error),
+                contentDescription = stringResource(Res.string.error),
+                tint = Theme.colorScheme.error,
+                onDismiss = onDismiss,
+                onClick = onClick
+            )
         }
     }
 }

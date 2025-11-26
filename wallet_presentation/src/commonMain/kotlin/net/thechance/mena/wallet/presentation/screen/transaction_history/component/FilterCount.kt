@@ -15,11 +15,8 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun FilterCount(
-    activeFilterCount: Int,
-    hasActiveFilters: Boolean
-) {
-    if (hasActiveFilters && activeFilterCount != 0) {
+fun FilterCount(activeFilterCount: Int) {
+    if (activeFilterCount != 0) {
         Box(
             modifier = Modifier
                 .padding(start = 4.dp)
@@ -41,7 +38,6 @@ fun FilterCount(
 @Preview
 private fun FilterCountPreview(){
     FilterCount(
-        activeFilterCount = 1,
-        hasActiveFilters = true
+        activeFilterCount = 1
     )
 }

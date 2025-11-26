@@ -46,6 +46,6 @@ class DukanCartMapperKtTest {
         val status = dto.toDomain()
 
         assertEquals(id, status.id)
-        assertEquals(150.0, status.totalPrice)
+        assertEquals(150.0, status.totalPriceAfterDiscount)
     }
 }

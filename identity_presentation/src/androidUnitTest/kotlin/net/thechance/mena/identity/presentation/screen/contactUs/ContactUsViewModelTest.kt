@@ -1,6 +1,8 @@
 package net.thechance.mena.identity.presentation.screen.contactUs
 
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +18,6 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,28 +51,15 @@ class ContactUsViewModelTest {
     }
 
     @Test
-    fun `getContactInfo should update error message on failure`() = runTest {
-        val error = NoNetworkException()
-        coEvery { applicationInfoRepository.getContactInfo() } throws error
+    fun `getContactInfo should send effect with error message on failure`() = runTest {
+        coEvery { applicationInfoRepository.getContactInfo() } throws NoNetworkException()
+
         viewModel = ContactUsViewModel(applicationInfoRepository, testDispatcher)
 
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val currentState = viewModel.state.value
-        assertFalse(currentState.isLoading)
-        assertNotNull(currentState.errorMessage)
-    }
-
-    @Test
-    fun `onClearErrorMessage should set errorMessage to null`() = runTest {
-        val error = NoNetworkException()
-        coEvery { applicationInfoRepository.getContactInfo() } throws error
-        viewModel = ContactUsViewModel(applicationInfoRepository, testDispatcher)
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertNotNull(viewModel.state.value.errorMessage)
-
-        viewModel.onClearErrorMessage()
-        assertNull(viewModel.state.value.errorMessage)
+        viewModel.effect.test {
+            testDispatcher.scheduler.advanceUntilIdle()
+            assertThat(awaitItem()).isInstanceOf(ContactUsUIEffect.ShowSnackBarError::class)
+        }
     }
 
     @Test
@@ -120,7 +107,7 @@ class ContactUsViewModelTest {
             val effect = awaitItem()
             assertTrue {
                 effect is ContactUsUIEffect.OpenUrl &&
-                        isValidFacebookUrl(effect.url)
+                isValidFacebookUrl(effect.url)
             }
         }
     }

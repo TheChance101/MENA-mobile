@@ -49,6 +49,7 @@ fun ReciterBox(
 
         Icon(
             painter = painterResource(Res.drawable.icon_cancel),
+            tint = Theme.colorScheme.primary.primary,
             contentDescription = stringResource(Res.string.cancel_icon),
             modifier = modifier.size(24.dp)
                 .clickable(onClick = onCancelClick)

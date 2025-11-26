@@ -81,6 +81,7 @@ private fun CreateShelfContent(
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
                         contentDescription = stringResource(Res.string.back_arrow),
+                        tint = Theme.colorScheme.primary.primary
                     )
                 }
             )
@@ -101,7 +102,8 @@ private fun CreateShelfContent(
             state.snackBarState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = interactionListener::onDismissSnackBar
+                    onDismiss = interactionListener::onDismissSnackBar,
+                    onClick = interactionListener::onDismissSnackBar
                 )
             }
         }

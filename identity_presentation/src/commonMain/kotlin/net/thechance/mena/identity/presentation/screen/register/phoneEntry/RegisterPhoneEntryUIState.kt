@@ -1,7 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.register.phoneEntry
 
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
-import org.jetbrains.compose.resources.StringResource
 
 data class RegisterPhoneEntryUIState(
     val phoneNumber: String = "",
@@ -9,5 +8,4 @@ data class RegisterPhoneEntryUIState(
     val currentCountry: MenaCountry = MenaCountry.IRAQ,
     val isRegisterEnabled: Boolean = false,
     val isLoading: Boolean = false,
-    val errorMessage: StringResource? = null
 )

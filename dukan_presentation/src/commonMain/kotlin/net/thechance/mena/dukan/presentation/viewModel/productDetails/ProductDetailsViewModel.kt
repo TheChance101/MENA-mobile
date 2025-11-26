@@ -9,6 +9,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_product_success
+import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
 import mena.dukan_presentation.generated.resources.something_went_wrong
@@ -76,7 +77,7 @@ class ProductDetailsViewModel(
     }
 
     private fun onLoadCartSuccess(cart: Cart) {
-        updateState { copy(hasProductInCart = cart.totalPrice > 0.0) }
+        updateState { copy(hasProductInCart = cart.totalPriceAfterDiscount > 0.0) }
     }
 
     private fun loadProductDetails() {
@@ -163,16 +164,15 @@ class ProductDetailsViewModel(
 
     override fun onPlusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            updateState { copy(product.copy(inCartQuantity = product.inCartQuantity + 1)) }
+            setProductQuantity(state.value.product.inCartQuantity + 1)
             updateAddToCartButtonIsEnable()
         }
     }
 
     override fun onMinusClicked(productId: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            updateState {
-                copy(product.copy(inCartQuantity = if (product.inCartQuantity > 0) product.inCartQuantity - 1 else product.inCartQuantity))
-            }
+            val product = state.value.product
+            if (product.inCartQuantity > 0) setProductQuantity(product.inCartQuantity - 1)
             updateAddToCartButtonIsEnable()
         }
     }
@@ -181,6 +181,12 @@ class ProductDetailsViewModel(
         updateState { copy(isButtonEnable = product.inCartQuantity != previousProductQuantity) }
     }
 
+    fun setProductQuantity(productQuantity: Int) {
+        updateState { copy(product = product.copy(inCartQuantity = productQuantity)) }
+    }
+    fun setProductQuantity(productQuantity: Int?) {
+        updateState { copy(product = product.copy(inCartQuantity = productQuantity ?: state.value.product.inCartQuantity)) }
+    }
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = when (throwable) {
@@ -201,7 +207,8 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity
+                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
         val messageRes = Res.string.add_product_success
@@ -212,7 +219,8 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity
+                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
         val messageRes = Res.string.remove_product_successfully
@@ -239,7 +247,8 @@ class ProductDetailsViewModel(
     }
 
     override fun onViewCartClicked() {
-        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId))
+        updateState { copy(snackBarState = null) }
+        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId , args.productId))
     }
 
     override fun onToggleProductToFavoriteClicked() {
@@ -248,10 +257,20 @@ class ProductDetailsViewModel(
         updateState { copy(isFavorite = !isCurrentlyFavorite) }
         tryToExecute(
             block = { productRepository.toggleProductToFavorites(currentProduct.id) },
+            onError = ::onErrorUpdateDukanFavorite
         )
     }
 
-    fun refreshCartInfo(){
+    private fun onErrorUpdateDukanFavorite(throwable: Throwable) {
+        val messageRes = when (throwable) {
+            is NoInternetException -> Res.string.no_internet_connection
+            else -> Res.string.error_updating_favorites
+        }
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
+    }
+
+
+  private fun refreshCartInfo() {
         loadCartInfo()
     }
 }

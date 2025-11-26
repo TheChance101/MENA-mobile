@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SurahAudioDao {
@@ -15,6 +16,6 @@ interface SurahAudioDao {
     suspend fun getCachedAudioPath(surahId: Int?, reciterId: Int): String?
 
     @Query("SELECT * FROM surah_audio")
-    suspend fun getDownloadedSurahInfo(): List<SurahAudioDto>
+    fun getDownloadedSurahInfoFlow(): Flow<List<SurahAudioDto>>
 
 }

@@ -13,6 +13,7 @@ import net.thechance.mena.faith.presentation.utils.IslamicDateCalculator
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.calculateNextIslamicDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.calculatePreviousIslamicDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatCountdown
+import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriDay
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.time.Clock
@@ -54,6 +55,7 @@ class PrayerTimeViewModel(
         tryToExecute(
             execute = { prayerTimeRepository.getPrayerTimes(date = date, address = address) },
             onSuccess = { onPrayerTimesSuccess(prayerTimes = it, address = address) },
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }
@@ -84,6 +86,10 @@ class PrayerTimeViewModel(
             onEmitNewValue =
                 { nextPrayer ->
                     nextPrayer?.let {
+                        if (nextPrayer.name == PrayerName.FAJR && uiState.value.isTodayPrayer) {
+                            updateToNextDayIfNeeded(nextPrayer)
+                        }
+
                         startCountdownTimer(nextPrayer = it, address = address)
                     } ?: run {
                         updateState { state ->
@@ -94,8 +100,26 @@ class PrayerTimeViewModel(
                         }
                     }
                 },
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
+    }
+
+    private fun updateToNextDayIfNeeded(nextPrayerTime: PrayerTime) {
+        if (shouldLoadNextDay(nextPrayerTime).not()) return
+        updateToNextDay()
+    }
+
+    private fun updateToNextDay() {
+        val currentDate = uiState.value.currentDate
+        val nextIslamicDate = currentDate.copy(day = currentDate.day.inc())
+        updateState { it.copy(currentDate = nextIslamicDate) }
+        getPrayerTimesForIslamicDate(nextIslamicDate)
+    }
+
+    private fun shouldLoadNextDay(nextPrayerTime: PrayerTime): Boolean {
+        val prayerTimeDay = getHijriDay(nextPrayerTime)
+        return uiState.value.currentDate.day < prayerTimeDay
     }
 
     private fun startCountdownTimer(nextPrayer: PrayerTime, address: Address) {
@@ -111,7 +135,8 @@ class PrayerTimeViewModel(
                     )
                 }
             },
-            onSuccess = { startNextPrayerObserver(address) })
+            onSuccess = { startNextPrayerObserver(address) }
+        )
     }
 
     override fun onBackClick() = sendEffect(PrayerTimeEffect.NavigateBack)
@@ -120,7 +145,7 @@ class PrayerTimeViewModel(
         val currentDate = uiState.value.currentDate
         val previousIslamicDate = calculatePreviousIslamicDate(currentDate)
 
-        updateState { it.copy(currentDate = previousIslamicDate) }
+        updateState { it.copy(currentDate = previousIslamicDate, isTodayPrayer = false) }
 
         getPrayerTimesForIslamicDate(previousIslamicDate)
     }
@@ -129,7 +154,7 @@ class PrayerTimeViewModel(
         val currentDate = uiState.value.currentDate
         val nextIslamicDate = calculateNextIslamicDate(currentDate)
 
-        updateState { it.copy(currentDate = nextIslamicDate) }
+        updateState { it.copy(currentDate = nextIslamicDate, isTodayPrayer = false) }
 
         getPrayerTimesForIslamicDate(nextIslamicDate)
     }
@@ -196,13 +221,14 @@ class PrayerTimeViewModel(
 
         tryToExecute(
             execute = {
-                prayerTimeRepository.getPrayerTimeWithHijriDate(
+                prayerTimeRepository.getPrayerTimesByHijriDate(
                     date = formatIslamicDate(islamicDate),
                     isHijri = true,
                     address = address
                 )
             },
             onSuccess = ::onHijriPrayerTimesSuccess,
+            onError = ::handleErrorSnackBar,
             dispatcher = dispatcher
         )
     }

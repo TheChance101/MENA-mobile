@@ -9,11 +9,13 @@ fun Product.toUiState(): ProductDetailsUiState.ProductInfo {
     return ProductDetailsUiState.ProductInfo(
         id = id.toString(),
         name = name,
-        price = price.base,
+        basePrice = price.base,
+        finalPrice = price.final ?: price.base,
         description = description,
         images = imageUrls,
         inCartQuantity = quantityInCart,
-        isOutOfStock = isOutOfStock
+        isOutOfStock = isOutOfStock,
+        finalProductQuantity = quantityInCart
     )
 }
 
@@ -24,4 +26,5 @@ fun ProductDetailsUiState.ProductInfo.toDomainParams(dukanId: String): UpdatePro
         dukanId = dukanId
     )
 }
+
 fun parseHexColor(color: String): Long = color.removePrefix("#").toLong(16) or 0xFF000000

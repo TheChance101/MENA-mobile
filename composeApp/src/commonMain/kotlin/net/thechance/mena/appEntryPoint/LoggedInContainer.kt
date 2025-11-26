@@ -2,7 +2,7 @@ package net.thechance.mena.appEntryPoint
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -54,11 +54,11 @@ fun LoggedInContainer(
     state: MainEntryState,
     listener: MainEntryInteractionListener,
 ) {
-    val animationSpec = tween<Float>(durationMillis = 100, easing = LinearEasing)
-    val animationSpecs = tween<IntOffset>(durationMillis = 100, easing = LinearEasing)
+    val animationSpec = tween<Float>(easing = EaseOut)
+    val animationSpecs = tween<IntOffset>(easing = EaseOut)
     val bottomPadding by animateDpAsState(
         targetValue = if (state.showBottomNavigation) 74.dp else 0.dp,
-        animationSpec = tween(if (state.showBottomNavigation) 500 else 100)
+        animationSpec = tween(easing = EaseOut)
     )
 
     Box(
@@ -136,12 +136,15 @@ private fun FeatureContent(
     Box(modifier) {
         Crossfade(targetState = activeFeature) { feature ->
             when (feature) {
-                Feature.CHAT -> chatApi.TabEntry()
-                Feature.DUKAN -> dukanApi.TabEntry()
-                Feature.TREND -> trendsApi.TabEntry()
-                Feature.FAITH -> faithApi.TabEntry()
+                Feature.CHAT -> chatApi.TabEntry(updateBottomNavigationVisibility)
+                Feature.DUKAN -> dukanApi.TabEntry(updateBottomNavigationVisibility)
+                Feature.TREND -> trendsApi.TabEntry(updateBottomNavigationVisibility)
+                Feature.FAITH -> faithApi.TabEntry(updateBottomNavigationVisibility)
                 Feature.PROFILE -> identityApi.ProfileTabEntry(updateBottomNavigationVisibility)
-                Feature.WALLET -> walletApi.WalletEntry(navigateBack = {})
+                Feature.WALLET -> walletApi.WalletEntry(
+                    navigateBack = {},
+                    updateBottomNavigationVisibility,
+                )
             }
         }
     }

@@ -33,10 +33,12 @@ fun SmallAndWideImageDukanProductAction(
     onPlusClick: () -> Unit,
     onMinusClick: () -> Unit,
     cartIcon: Painter,
-    dukanColor: Color
+    dukanColor: Color,
+    modifier: Modifier = Modifier
 ) {
 
     AnimatedContent(
+        modifier = modifier,
         targetState = showProductQuantity,
         transitionSpec = { fadeTransitionSpec() },
         label = "CartToQuantity"

@@ -1,8 +1,11 @@
 package net.thechance.mena.identity.presentation.di
 
-import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddressOperationStrategyFactory
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.CreateAddressStrategy
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.LocationManagementViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.UpdateAddressStrategy
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.AddressesScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.changePassword.ChangePasswordScreenViewModel
 import net.thechance.mena.identity.presentation.screen.contactUs.ContactUsViewModel
@@ -11,10 +14,9 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperUiState
 import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperViewModel
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenViewModel
-import net.thechance.mena.identity.presentation.screen.notImplemented.NotImplementedScreenViewModel
 import net.thechance.mena.identity.presentation.screen.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenViewModel
-import net.thechance.mena.identity.presentation.screen.profile.components.dialog.ShareDialogViewModel
+import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareDialogViewModel
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedViewModel
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordViewModel
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
@@ -48,14 +50,13 @@ val identityScreensModule = module {
     factory { ProfileScreenViewModel(get(), get(), get(named(APP_VERSION)), get()) }
     factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
-    factoryOf(::NotImplementedScreenViewModel)
     factoryOf(::CreatePasswordViewModel)
     factoryOf(::AccountCreatedViewModel)
     factoryOf(::ResetPasswordPhoneEntryScreenViewModel)
     factoryOf(::ResetPasswordOtpScreenViewModel)
     factoryOf(::EditUserProfileViewModel)
     factoryOf(::SetNewPasswordScreenViewModel)
-    factoryOf(::AddressesScreenViewModel)
+    factoryOf(::MyAddressesScreenViewModel)
     factoryOf(::EnableLocationScreenViewModel)
     factoryOf(::ShareDialogViewModel)
     factoryOf(::RegisterPhoneEntryViewModel)
@@ -67,12 +68,14 @@ val identityScreensModule = module {
     factoryOf(::ChangePasswordScreenViewModel)
     factoryOf(::PrivacyAndPolicyScreenViewModel)
     factoryOf(::ContactUsViewModel)
-
+    factoryOf(::AddressOperationStrategyFactory)
+    factoryOf(::UpdateAddressStrategy)
+    factoryOf(::CreateAddressStrategy)
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->
         ImageCropperComponentViewModel(minScale, maxScale, initialState)
     }
-    factoryOfOrNull(::AddEditLocationScreenViewModel)
+    factoryOfOrNull(::LocationManagementViewModel)
 
     factory {
         PickLocationScreenViewModel(

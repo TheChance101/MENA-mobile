@@ -8,11 +8,13 @@ import com.bilalazzam.contacts_provider.ContactsProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.ContentType
+import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
@@ -41,6 +43,8 @@ import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
+import net.thechance.mena.faith.domain.service.QuranService
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -202,6 +206,7 @@ fun createChatRepository(
     dataStore: DataStore<Preferences>,
     cachedChatSummaryDao: CachedChatSummaryDao,
     cachedChatDao: CachedChatDao,
+    authRepository: AuthenticationRepository,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -220,7 +225,8 @@ fun createChatRepository(
         webSocketManager = webSocketManager,
         dataStore = dataStore,
         cachedChatSummaryDao = cachedChatSummaryDao,
-        cachedChatDao = cachedChatDao
+        cachedChatDao = cachedChatDao,
+        authRepository = authRepository
     )
 
 }
@@ -231,6 +237,8 @@ fun createMessageRepository(
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
     cachedMessageDao: CachedMessageDao,
+    authRepository: AuthenticationRepository,
+    quranService: QuranService,
     chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
@@ -240,6 +248,8 @@ fun createMessageRepository(
         client = httpClient,
         messageSenderFactory = messageSenderFactory,
         cachedMessageDao = cachedMessageDao,
+        quranService = quranService,
+        authRepository = authRepository,
         json = jsonSerialization
     )
 }
@@ -318,6 +328,23 @@ fun createHttpClient(
         }
     }
 }
+
+fun mockClient(handler: MockRequestHandler): HttpClient {
+    val mockEngine = MockEngine(handler)
+    return HttpClient(mockEngine) {
+        install(ContentNegotiation) { json(jsonSerialization) }
+    }
+}
+
+inline fun <reified T> MockRequestHandleScope.mockRespond(
+    value: T,
+    status: HttpStatusCode = HttpStatusCode.OK,
+    headers: Headers = jsonHeaders
+) = respond(
+    content = jsonSerialization.encodeToString<T>(value),
+    status = status,
+    headers = headers
+)
 
 
 private const val CONTACTS_ENDPOINT = "/chat/contacts"

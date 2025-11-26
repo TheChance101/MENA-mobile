@@ -2,12 +2,10 @@ package net.thechance.mena.dukan.presentation.screen.dukanCategories
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -84,10 +82,10 @@ private fun DukanCategoriesContent(
         snakeBar = { DukanCategoriesSnackBar(state, interactionListener::onDismissSnackBar) }
     ) {
         AnimatedContent(
-            targetState = state.dukanCategoriesState ,
+            targetState = state.dukanCategoriesState,
             transitionSpec = { fadeWithSlideTransition() }
         ) { currentState ->
-            when (currentState){
+            when (currentState) {
                 DukanCategoriesUiState.DukanCategoriesState.LOADING -> LoadingDots(modifier = Modifier.fillMaxSize())
                 DukanCategoriesUiState.DukanCategoriesState.ERROR -> {
                     NoInternetContent(
@@ -95,6 +93,7 @@ private fun DukanCategoriesContent(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+
                 DukanCategoriesUiState.DukanCategoriesState.LOADED -> CategoriesList(
                     categories = state.categories,
                     onCategoryClick = interactionListener::onCategoryClicked
@@ -111,15 +110,9 @@ private fun DukanCategoriesSnackBar(
 ) {
     state.snackBarUiState?.let { snackBarState ->
         SnackBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    onClick = onDismissSnackBar,
-                    indication = null,
-                    interactionSource = null
-                ),
+            snackBarUiState = snackBarState,
             onDismiss = onDismissSnackBar,
-            snackBarUiState = snackBarState
+            onClick = onDismissSnackBar
         )
     }
 }

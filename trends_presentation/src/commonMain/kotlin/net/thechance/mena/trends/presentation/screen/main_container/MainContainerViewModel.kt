@@ -36,7 +36,7 @@ internal class MainContainerViewModel(
 
     private fun navigateBasedOnCategoryState(hasUserSelectedCategories: Boolean) {
         if (hasUserSelectedCategories) {
-            sendEffect(MainContainerEffect.NavigateToReelHome)
+            sendEffect(MainContainerEffect.NavigateToTrendHome)
         } else {
             sendEffect(MainContainerEffect.NavigateToCategoryPick)
         }

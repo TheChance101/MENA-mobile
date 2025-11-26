@@ -26,6 +26,12 @@ fun ChatEntryPoint(
         viewModel.getChatByUserId(userId)
     }
 
+    LaunchedEffect(state.error) {
+        if (state.error) {
+            onNavigateBack()
+        }
+    }
+
     AnimatedContent(
         targetState = state.isContentVisible,
         modifier = Modifier.fillMaxSize()

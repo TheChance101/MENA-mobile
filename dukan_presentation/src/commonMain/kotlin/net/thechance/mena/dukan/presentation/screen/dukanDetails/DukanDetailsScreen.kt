@@ -12,10 +12,13 @@ import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.DukanCart
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute.ShelfDetails
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartArgs
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.NoImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.SmallImageDukanDetailsContent
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.content.WideImageDukanDetailsContent
+import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsArgs
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
+import net.thechance.mena.dukan.presentation.util.ObserveSavedStateEvent
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsEffects
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
@@ -28,13 +31,38 @@ fun DukanDetailsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
-    LaunchedEffect(Unit) {
-        viewModel.refreshProducts()
+
+    navController.currentBackStackEntry?.apply {
+        ObserveSavedStateEvent<Pair<String, Int>>(
+            ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY
+        ) { (id, quantity) ->
+            viewModel.updateProductQuantityInCart(id, quantity)
+        }
+        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART) {
+            viewModel.setHasProductInCart(it)
+        }
+
+        ObserveSavedStateEvent<Map<String, Int>>(DukanCartArgs.PRODUCTS_CART) {
+            val updatedProducts = viewModel.updateQuantityProductPaging(
+                state.productsShelf,
+                it
+            )
+            viewModel.setUpdatedProductsFlow(updatedProducts)
+        }
     }
 
     ObserveAsEffect(viewModel.effect) { effect ->
         when (effect) {
-            DukanDetailsEffects.NavigateBack -> navController.popBackStack()
+            DukanDetailsEffects.NavigateBackWithDukanId -> {
+                if (state.isFavoritePressed) {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        DukanDetailsArgs.DUKAN_ID,
+                        state.dukanInfo.dukanId
+                    )
+                }
+                navController.popBackStack()
+            }
+
             is DukanDetailsEffects.NavigateToViewAllShelfProducts -> navController.navigate(
                 ShelfDetails(effect.id, effect.name, effect.dukanId)
             )
@@ -53,6 +81,10 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToCart ->
                 navController.navigate(DukanCart(effect.dukanId))
         }
+    }
+
+    LaunchedEffect(state) {
+        viewModel.loadBestSellingProducts()
     }
 
     AnimatedContent(

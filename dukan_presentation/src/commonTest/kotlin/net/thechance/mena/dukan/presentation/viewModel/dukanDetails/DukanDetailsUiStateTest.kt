@@ -25,7 +25,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(emptyFlow(), state.bestSellingProducts)
+        assertEquals(emptyList(), state.bestSellingProducts)
     }
 
     @Test
@@ -126,12 +126,15 @@ class DukanDetailsUiStateTest {
             id = "p1",
             name = "Banana",
             imageUrl = "banana.png",
-            price = 5.0,
+            basePrice = 5.0,
+            finalPrice = 3.0,
             description = "Fresh bananas"
         )
         // Then
         assertEquals("p1", product.id)
         assertEquals("Banana", product.name)
+        assertEquals(5.0, product.basePrice)
+        assertEquals(3.0, product.finalPrice)
     }
 
     @Test

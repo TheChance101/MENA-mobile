@@ -62,7 +62,8 @@ fun DukanManagementTableContent(
             sortState = state.sort,
             onSortClicked = listener::onSortClicked,
             horizontalScrollState = horizontalScrollState,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            isSortingDisabled = state.isSortingDisabled
         )
         if (state.isLoading) {
             AdminPanelContentLoading()
@@ -160,6 +161,11 @@ private fun DukanItemRow(
 
         DukanLocation(
             location = dukan.location,
+            iconSize = 20.dp,
+            iconTint = Theme.colorScheme.shadePrimary,
+            textColor = Theme.colorScheme.shadePrimary,
+            textStyle = Theme.typography.label.large,
+            spacing = 8.dp,
             modifier = Modifier.widthIn(min = 244.dp, max = 244.dp)
         )
 

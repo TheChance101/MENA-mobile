@@ -12,7 +12,9 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingDots
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
+import net.thechance.mena.dukan.presentation.screen.dukanCart.DukanCartArgs.PRODUCTS_CART
 import net.thechance.mena.dukan.presentation.screen.dukanCart.content.DukanCartContent
+import net.thechance.mena.dukan.presentation.screen.productDetails.ProductDetailsArgs
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.dukanCart.DukanCartEffects
@@ -29,7 +31,17 @@ fun DukanCartScreen(viewModel: DukanCartViewModel = koinViewModel()) {
 
     ObserveAsEffect(viewModel.effect) {
         when (it) {
-            DukanCartEffects.NavigateBack -> navController.popBackStack()
+            DukanCartEffects.NavigateBack -> {
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    PRODUCTS_CART,
+                    state.productQuantity
+                )
+                navController.previousBackStackEntry?.savedStateHandle?.set(
+                    ProductDetailsArgs.HAS_PRODUCT_IN_CART,
+                    state.totalPrice > 0
+                )
+                navController.popBackStack()
+            }
 
             is DukanCartEffects.NavigateToCheckout ->
                 navController.navigate(DukanRoute.CheckoutScreenRoute(it.dukanId))

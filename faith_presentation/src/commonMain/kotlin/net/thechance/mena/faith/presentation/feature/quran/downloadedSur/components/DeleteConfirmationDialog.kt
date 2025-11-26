@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.delete
+import mena.faith_presentation.generated.resources.remove
 import net.thechance.mena.designsystem.presentation.component.dialog.Dialog
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -35,7 +35,7 @@ fun ScaffoldScope.DeleteConfirmationDialog(
         onCancelClick = onDismiss,
         actionButtons = {
             Text(
-                text = stringResource(Res.string.delete),
+                text = stringResource(Res.string.remove),
                 color = Theme.colorScheme.error,
                 style = Theme.typography.label.medium,
                 modifier = Modifier

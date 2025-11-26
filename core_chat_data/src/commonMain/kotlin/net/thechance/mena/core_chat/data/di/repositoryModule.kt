@@ -5,6 +5,7 @@ import net.thechance.mena.core_chat.data.repository.ChatRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.ContactsRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.MessageRepositoryImpl
 import net.thechance.mena.core_chat.data.repository.UserRepositoryImpl
+import net.thechance.mena.core_chat.data.repository.WeatherDetailsRepositoryImpl
 import net.thechance.mena.core_chat.data.utils.audio.AudioRecorder
 import net.thechance.mena.core_chat.data.utils.audio.AudioRecorderImpl
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
@@ -12,6 +13,7 @@ import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
 import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.core_chat.domain.repository.WeatherRepository
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import kotlin.uuid.ExperimentalUuidApi
@@ -32,6 +34,7 @@ internal val repositoryModule = module {
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
             dataStore = get(),
+            authRepository = get(),
             cachedChatDao = get()
         )
     }
@@ -44,6 +47,8 @@ internal val repositoryModule = module {
             messageSenderFactory = get(),
             json = get(named(CHAT_JSON)),
             cachedMessageDao = get(),
+            quranService = get(),
+            authRepository = get(),
             chatSyncTimeDao = get()
         )
     }
@@ -62,4 +67,10 @@ internal val repositoryModule = module {
         )
     }
     single<AudioRecorder> { AudioRecorderImpl() }
+
+    single<WeatherRepository> {
+        WeatherDetailsRepositoryImpl(
+            client = get(named(CHAT_CLIENT))
+        )
+    }
 }

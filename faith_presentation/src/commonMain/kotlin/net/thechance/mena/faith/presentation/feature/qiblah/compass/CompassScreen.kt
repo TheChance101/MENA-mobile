@@ -2,7 +2,6 @@ package net.thechance.mena.faith.presentation.feature.qiblah.compass
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +34,7 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.arrow_left
 import mena.faith_presentation.generated.resources.device_angle_to_qiblah
 import mena.faith_presentation.generated.resources.ic_arrow_left
-import mena.faith_presentation.generated.resources.ic_direction
+import mena.faith_presentation.generated.resources.ic_directions
 import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_qiblah
 import mena.faith_presentation.generated.resources.qibla_direction
@@ -51,7 +50,6 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.qiblah.component.IslamicPattern
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
-import net.thechance.mena.faith.presentation.utils.extentions.takeCityAndCountry
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -92,6 +90,7 @@ private fun Content(
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.arrow_left)
                     )
                 },
@@ -157,8 +156,9 @@ private fun CompassView(
             contentAlignment = Alignment.Center
         ) {
             DirectionPlaceHolder(modifier = rotateModifier)
-            Image(
-                painter = painterResource(Res.drawable.ic_direction),
+            Icon(
+                painter = painterResource(Res.drawable.ic_directions),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = "direction_arrow",
                 modifier = rotateModifier
                     .size(128.dp)
@@ -248,8 +248,9 @@ private fun QiblahImage(qiblahDirection: Float, compassBearing: Float) {
             },
         contentAlignment = Alignment.TopCenter
     ) {
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.ic_qiblah),
+            tint = Theme.colorScheme.primary.primary,
             contentDescription = stringResource(Res.string.qibla_direction),
             modifier = Modifier
                 .size(40.dp)
@@ -273,8 +274,9 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
         horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.ic_location),
+            tint = Theme.colorScheme.shadePrimary,
             contentDescription = "icon_location",
             modifier = Modifier
                 .padding(start = Theme.spacing._4)
@@ -282,7 +284,7 @@ private fun QiblahTopBar(uiState: CompassUiState, onChangeLocation: () -> Unit) 
         )
 
         Text(
-            text = uiState.address.takeCityAndCountry(),
+            text = uiState.address,
             color = Theme.colorScheme.shadePrimary,
             style = Theme.typography.label.small,
             modifier = Modifier.padding(end = Theme.spacing._8),

@@ -13,7 +13,7 @@ internal fun ErrorState.toStringResource(): StringResource {
         ErrorState.NoInternet -> Res.string.error_no_internet
         is ErrorState.RequestFailed -> Res.string.error_generic
         ErrorState.RequestTimeout -> Res.string.error_request_timeout
-        UploadReelErrorState.FileTooLarge -> Res.string.max_file_size_exceeded
-        UploadReelErrorState.DurationTooLarge -> Res.string.max_file_duration_exceeded
+        UploadTrendErrorState.FileTooLarge -> Res.string.max_file_size_exceeded
+        UploadTrendErrorState.DurationTooLarge -> Res.string.max_file_duration_exceeded
     }
 }

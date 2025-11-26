@@ -50,7 +50,7 @@ class MainContainerViewModelTest {
             viewModel.onUserCategoryStatusReceived(isUserCategorySet = true)
             viewModel.effect.test {
                 val effect = awaitItem()
-                assertThat(effect).isEqualTo(MainContainerEffect.NavigateToReelHome)
+                assertThat(effect).isEqualTo(MainContainerEffect.NavigateToTrendHome)
                 cancelAndIgnoreRemainingEvents()
             }
         }

@@ -71,7 +71,8 @@ private fun CreateDukanScaffold(
             state.snackBarState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = listener::onDismissSnackBar
+                    onDismiss = listener::onDismissSnackBar,
+                    onClick = listener::onDismissSnackBar
                 )
             }
         },
@@ -120,6 +121,7 @@ private fun CreateDukanAppBar(
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.back_arrow),
+                tint = Theme.colorScheme.primary.primary
             )
         }
     )

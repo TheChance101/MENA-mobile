@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -103,6 +102,7 @@ private fun Content(
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     Scaffold(
+        statusBarColor = Theme.colorScheme.background.surfaceLow,
         topBar = {
             AppBar(
                 modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),
@@ -110,15 +110,14 @@ private fun Content(
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.arrow_left),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.arrow_left)
                     )
                 },
                 trailingContent = {
                     Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable(onClick = listener::onAddMosqueClick),
                         painter = painterResource(Res.drawable.ic_add),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.add),
                     )
                 },
@@ -149,25 +148,23 @@ private fun Content(
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            MapView(
-                modifier = Modifier.fillMaxSize(),
-                centerLatitude = uiState.centerOfMap?.latitude ?: 0.0,
-                centerLongitude = uiState.centerOfMap?.longitude ?: 0.0,
-                zoomLevel = 15.0,
-                markers = uiState.mosques,
-                canMove = uiState.canMove,
-                onMarkerClick = {
-                    listener.selectMosque(it)
-                },
-                onCameraMove = { _, _ ->
-                    listener.changeSearchButtonVisibility(false)
-                },
-                onMapIdle = { lat, lon ->
-                    listener.changeSearchButtonVisibility(true)
-                    listener.changeMapMovement(false)
-                    listener.changeCenterOfMap(Coordinate(lat, lon))
-                }
-            )
+            if (uiState.centerOfMap?.latitude != null && uiState.centerOfMap?.longitude != null) {
+                MapView(
+                    modifier = Modifier.fillMaxSize(),
+                    centerLatitude = uiState.centerOfMap.latitude,
+                    centerLongitude = uiState.centerOfMap.longitude,
+                    zoomLevel = 18.0,
+                    markers = uiState.mosques,
+                    canMove = uiState.canMove,
+                    onMarkerClick = {
+                        listener.selectMosque(it)
+                    },
+                    onCameraMove = { _, _ ->
+                        listener.onCameraMove()
+                    },
+                    onMapIdle = listener::onMapIdle
+                )
+            }
             Column(
                 modifier = Modifier
                     .padding(horizontal = Theme.spacing._12, vertical = 10.dp)
@@ -197,7 +194,7 @@ private fun Content(
                 ) {
                     SearchMosquesButton(onClick = {
                         listener.onSearchByCoordinates(
-                            coordinate = Coordinate(
+                            coordinate = MosqueUiState.Coordinate(
                                 latitude = uiState.centerOfMap?.latitude ?: 0.0,
                                 longitude = uiState.centerOfMap?.longitude ?: 0.0
                             )
@@ -222,13 +219,12 @@ private fun Content(
                 modifier = Modifier
                     .padding(Theme.spacing._16)
                     .clip(RoundedCornerShape(Theme.radius.md))
-                    .background(color = Theme.colorScheme.primary.primary)
-                    .clickable {
-                        listener.getUserLocation()
-                    }
+                    .background(Theme.colorScheme.background.surfaceLow)
+                    .clickable { listener.getUserLocation() }
                     .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
                     .align(Alignment.BottomStart),
                 painter = painterResource(Res.drawable.ic_gps),
+                tint = Theme.colorScheme.primary.primary,
                 contentDescription = stringResource(Res.string.icon_location)
             )
         }
@@ -264,18 +260,17 @@ private fun Preview() {
                     override fun onAddMosqueClick() {}
                     override fun getUserLocation() {}
                     override fun onViewMosqueDetailsClick(mosque: MosqueUiState) {}
-                    override fun onViewOnMapClick(coordinate: Coordinate) {}
-                    override fun onSearchByCoordinates(coordinate: Coordinate) {}
+                    override fun onViewOnMapClick(coordinate: MosqueUiState.Coordinate) {}
+                    override fun onSearchByCoordinates(coordinate: MosqueUiState.Coordinate) {}
                     override fun onSearchResultClick(mosque: MosqueUiState) {}
-                    override fun changeCenterOfMap(coordinate: Coordinate) {}
                     override fun onQueryChange(query: String) {}
                     override fun onSearchSubmit() {}
-                    override fun changeSearchButtonVisibility(isVisible: Boolean) {}
                     override fun onDismissSearchBottomSheet() {}
                     override fun selectMosque(mosque: MosqueUiState) {}
                     override fun unselectMosque() {}
-                    override fun changeMapMovement(canMove: Boolean) {}
                     override fun showSuccessMessage(message: StringResource) {}
+                    override fun onCameraMove() {}
+                    override fun onMapIdle(latitude: Double, longitude: Double) {}
                 }
             )
         }

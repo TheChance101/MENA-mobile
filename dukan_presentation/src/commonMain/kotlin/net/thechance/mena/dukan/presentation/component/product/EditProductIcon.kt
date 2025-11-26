@@ -24,6 +24,7 @@ fun EditProductIcon(
     Icon(
         painter = painterResource(Res.drawable.edit_product_pencil),
         contentDescription = stringResource(Res.string.edit_product_pencil),
+        tint = Theme.colorScheme.primary.onPrimary,
         modifier = modifier
             .clip(CircleShape)
             .background(Theme.colorScheme.primary.primary)

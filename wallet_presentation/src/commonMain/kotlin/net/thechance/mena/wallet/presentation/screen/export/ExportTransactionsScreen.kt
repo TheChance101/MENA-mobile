@@ -13,11 +13,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.datetime.LocalDate
 import mena.wallet_presentation.generated.resources.Res
-import mena.wallet_presentation.generated.resources.back_button
 import mena.wallet_presentation.generated.resources.export_transactions
-import mena.wallet_presentation.generated.resources.ic_arrow_left
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
-import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.wallet.presentation.component.BackIcon
 import net.thechance.mena.wallet.presentation.component.DatePickerBottomSheet
@@ -29,7 +26,6 @@ import net.thechance.mena.wallet.presentation.navigation.StatementDetailsScreenR
 import net.thechance.mena.wallet.presentation.screen.export.component.DownloadingToast
 import net.thechance.mena.wallet.presentation.screen.export.component.ExportTransactionContentBody
 import net.thechance.mena.wallet.presentation.utils.ObserveAsEffect
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -76,10 +72,7 @@ private fun ExportTransactionScreenContent(
                     isVisible = isVisible,
                     defaultSelectedDate = state.defaultSelectedDate,
                     title = stringResource(state.dateState.datePickerMode.titleRes),
-                    onPickClick = { day, month, year ->
-                        val pickedDate = LocalDate(year, month, day)
-                        interactionListener.onPickDateClicked(pickedDate)
-                    },
+                    onPickClick = interactionListener::onPickDateClicked,
                     onDismiss = interactionListener::onDismissDatePicker
                 )
             }

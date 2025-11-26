@@ -1,0 +1,253 @@
+package net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
+
+import io.github.dellisd.spatialk.geojson.Position
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import mena.identity_presentation.generated.resources.Res
+import mena.identity_presentation.generated.resources.add_location_successfully
+import mena.identity_presentation.generated.resources.edit_location_successfully
+import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
+import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.LocationException
+import net.thechance.mena.identity.presentation.base.BaseScreenModel
+import net.thechance.mena.identity.presentation.base.errorState.ErrorState
+import net.thechance.mena.identity.presentation.mapper.createNavigateToMapEffect
+import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
+import net.thechance.mena.identity.presentation.mapper.toAddressInput
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIState.AddEditAddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationAuthenticationException
+import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
+import net.thechance.mena.identity.presentation.util.isSaveEnabled
+import org.jetbrains.compose.resources.StringResource
+import org.maplibre.compose.camera.CameraPosition
+import kotlin.uuid.ExperimentalUuidApi
+
+@OptIn(ExperimentalUuidApi::class)
+class LocationManagementViewModel(
+    private val addressOperationStrategyFactory: AddressOperationStrategyFactory,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    addressModel: AddressUIState? = null,
+) : BaseScreenModel<AddEditLocationScreenUIState, AddEditLocationScreenUIEffect>(
+    AddEditLocationScreenUIState()
+), AddEditLocationScreenInteractionListener {
+
+    init {
+        addressModel?.let {
+            updateAddressState(
+                newAddress = it,
+                updateOriginals = true
+            )
+        }
+    }
+
+    override fun onClickBack() {
+        sendNewEffect(newEffect = AddEditLocationScreenUIEffect.NavigateBack())
+    }
+
+    override fun onClickAddressType(addressType: AddressType) {
+
+        if (addressType == state.value.addressUIState.addressType) return
+
+        updateState {
+            copy(
+                addressUIState.copy(
+                    addressType = addressType,
+                    otherAddressType = addressUIState.otherAddressType
+                )
+            )
+        }
+
+        changeIsSaveEnabled()
+
+    }
+
+    override fun onClickSave() {
+        updateState { copy(isLoading = true) }
+        tryToExecute(
+            function = ::saveAddress,
+            onSuccess = { onSaveAddressSuccess() },
+            onError = ::onSaveAddressError,
+            dispatcher = dispatcher
+        )
+    }
+
+    override fun onChangeOtherAddressType(newType: String) {
+        updateState {
+            copy(
+                addressUIState.copy(
+                    addressType = AddressType.Other(newType),
+                    otherAddressType = newType
+                )
+            )
+        }
+
+        changeIsSaveEnabled()
+    }
+
+    override fun onClickMap() {
+        sendNewEffect(
+            createNavigateToMapEffect(
+                addressModel = null,
+                onSuccess = ::onAddressFromPickLocation
+            )
+        )
+    }
+
+    override fun onClickEdit() {
+        val addressUIState = state.value.addressUIState
+        val addressModel = createAddressModelFromCurrentState(addressUIState)
+        sendNewEffect(
+            createNavigateToMapEffect(
+                addressModel = addressModel,
+                onSuccess = ::onAddressFromPickLocation
+            )
+        )
+    }
+
+    private suspend fun saveAddress() {
+        val addressUIState = state.value.addressUIState
+
+        val strategy = addressOperationStrategyFactory.getStrategy(
+            addressUIState.addressID
+        )
+        strategy.execute(
+            addressData = if (addressUIState.addressID == null)
+                AddressData.New(input = addressUIState.toAddressInput())
+            else
+                AddressData.Existing(
+                    id = addressUIState.addressID,
+                    input = addressUIState.toAddressInput(),
+                    isMain = addressUIState.isMainAddress
+                )
+        )
+    }
+
+    private fun onSaveAddressSuccess() {
+        updateState { copy(isLoading = false) }
+
+        val isEditMode = state.value.addressUIState.addressID != null
+        val successMessage =
+            if (isEditMode)
+                Res.string.edit_location_successfully
+            else
+                Res.string.add_location_successfully
+
+        sendNewEffect(
+            AddEditLocationScreenUIEffect.NavigateBack(
+                successStringResource = successMessage
+            )
+        )
+    }
+
+    private fun onAddressFromPickLocation(newAddress: AddressUIState) {
+        updateAddressState(newAddress, updateOriginals = false)
+    }
+
+    private fun onSaveAddressError(throwable: Throwable) {
+        sendNewEffect(
+            AddEditLocationScreenUIEffect.NavigateBack(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
+    }
+
+    private fun createAddressModelFromCurrentState(addressUIState: AddEditAddressUIState): AddressUIState {
+        return AddressUIState(
+            id = addressUIState.addressID,
+            coordinates = CoordinatesUiState(
+                latitude = addressUIState.coordinates.latitude,
+                longitude = addressUIState.coordinates.longitude
+            ),
+            addressType = addressUIState.addressType ?: AddressType.Home,
+            addressDetails = addressUIState.addressDetails,
+            isMainAddress = addressUIState.isMainAddress
+        )
+    }
+
+    private fun updateAddressState(newAddress: AddressUIState, updateOriginals: Boolean) {
+        updateAddressUIState(newAddress, updateOriginals)
+        if (updateOriginals) updateOriginalAddressUIState(newAddress)
+        updateMapState(newAddress)
+        changeIsSaveEnabled()
+    }
+
+    private fun updateAddressUIState(newAddress: AddressUIState, updateOriginals: Boolean) {
+        updateState {
+            copy(
+                addressUIState = addressUIState.copy(
+                    coordinates = newAddress.coordinates,
+                    addressDetails = newAddress.addressDetails,
+                    addressType = if (updateOriginals)
+                        newAddress.addressType
+                    else
+                        addressUIState.addressType,
+                    otherAddressType = if (updateOriginals && newAddress.addressType is AddressType.Other)
+                        newAddress.addressType.getAddressType()
+                    else
+                        addressUIState.otherAddressType,
+                    addressID = if (updateOriginals)
+                        newAddress.id ?: addressUIState.addressID
+                    else
+                        addressUIState.addressID,
+                    isMainAddress = if (updateOriginals)
+                        newAddress.isMainAddress
+                    else
+                        addressUIState.isMainAddress
+                )
+            )
+        }
+    }
+
+    private fun updateOriginalAddressUIState(newAddress: AddressUIState) {
+        updateState {
+            copy(
+                originalAddressUIState = originalAddressUIState.copy(
+                    coordinates = newAddress.coordinates,
+                    addressDetails = newAddress.addressDetails,
+                    addressType = newAddress.addressType,
+                    otherAddressType = if (newAddress.addressType is AddressType.Other)
+                        newAddress.addressType.getAddressType() else null
+                )
+            )
+        }
+    }
+
+    private fun updateMapState(newAddress: AddressUIState) {
+        updateState {
+            copy(
+                animateToCurrentLocation = true,
+                cameraPosition = CameraPosition(
+                    target = Position(
+                        latitude = newAddress.coordinates.latitude,
+                        longitude = newAddress.coordinates.longitude,
+                    ),
+                    zoom = 15.0
+                )
+            )
+        }
+    }
+
+    private fun changeIsSaveEnabled() {
+        updateState { copy(isSaveEnabled = isSaveEnabled()) }
+    }
+
+    private fun mapErrorMessage(throwable: Throwable): StringResource {
+        return when (throwable) {
+            is LocationException -> mapLocationErrorToMessage(
+                handleLocationException(throwable)
+            )
+
+            is AuthenticationException -> mapAuthenticationErrorToMessage(
+                handleLocationAuthenticationException(throwable)
+            )
+
+            else -> mapErrorToMessage(ErrorState.GenericError(throwable))
+        }
+    }
+}

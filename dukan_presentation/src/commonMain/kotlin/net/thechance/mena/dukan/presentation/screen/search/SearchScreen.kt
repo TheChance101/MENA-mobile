@@ -2,10 +2,11 @@ package net.thechance.mena.dukan.presentation.screen.search
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
@@ -17,12 +18,13 @@ import mena.dukan_presentation.generated.resources.start_search
 import mena.dukan_presentation.generated.resources.start_search_body
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
+import net.thechance.mena.dukan.presentation.component.shared.SearchHeader
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
+import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchCompleteContent
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchEmptyContent
-import net.thechance.mena.dukan.presentation.screen.search.component.SearchHeader
 import net.thechance.mena.dukan.presentation.util.ObserveAsEffect
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener
@@ -37,7 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = koinViewModel()) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state: SearchUiState by viewModel.state.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(effects = viewModel.effect) { effect ->
@@ -72,18 +74,27 @@ private fun SearchContent(
     Scaffold(
         modifier = Modifier,
         topBar = {
-            SearchHeader(
-                query = state.searchQuery,
-                onQueryChange = listener::onSearchChanged,
-                onBackClick = listener::onBackClicked,
-                onClearClick = listener::onClearSearchClicked,
-            )
+            AnimatedContent(
+                targetState = state.searchContentState ,
+                label = "Search Bar",
+                transitionSpec = { fadeTransitionSpec() }
+            ){searchState->
+                if (searchState != SearchUiState.SearchContentState.NoInternet){
+                    SearchHeader(
+                        query = state.searchQuery,
+                        onQueryChange = listener::onSearchChanged,
+                        onBackClick = listener::onBackClicked,
+                        onClearClick = listener::onClearSearchClicked,
+                    )
+                }
+            }
         },
         snakeBar = {
             state.snackBarUiState?.let { snackBarUiState ->
                 SnackBar(
                     snackBarUiState = snackBarUiState,
-                    onDismiss = listener::onSnackBarDismissed
+                    onDismiss = listener::onSnackBarDismissed,
+                    onClick = listener::onSnackBarDismissed
                 )
             }
         }
@@ -105,12 +116,17 @@ private fun SearchContent(
                     listener = listener
                 )
 
-                SearchUiState.SearchContentState.Empty -> {
-                    SearchEmptyContent(
-                        icon = painterResource(resource = Res.drawable.img_not_found_search),
-                        title = stringResource(resource = Res.string.no_result_found),
-                        body = stringResource(resource = Res.string.no_result_found_body)
-                    )
+                SearchUiState.SearchContentState.NoInternet -> {
+                    Box (
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        NoInternetContent(
+                            onRetry = {listener.onSearchChanged(state.searchQuery)},
+                            isLoading = false
+                        )
+                    }
+
                 }
             }
         }

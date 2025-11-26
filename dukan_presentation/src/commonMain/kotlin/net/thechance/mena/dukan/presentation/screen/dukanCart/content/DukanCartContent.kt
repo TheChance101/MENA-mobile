@@ -54,7 +54,8 @@ fun DukanCartContent(
             state.snackBarState?.let { snackBarState ->
                 SnackBar(
                     snackBarUiState = snackBarState,
-                    onDismiss = listener::onDismissSnackBar
+                    onDismiss = listener::onDismissSnackBar,
+                    onClick = listener::onDismissSnackBar
                 )
             }
         }
@@ -103,11 +104,12 @@ fun DukanCartContent(
                         }
                     ) {
                         ProductCard(
-                            productName = product.name,
-                            productDescription = product.description,
-                            productImageUrl = product.imageUrl,
-                            productPrice = product.price,
-                            productCardBackground = Theme.colorScheme.background.surfaceLow,
+                            name = product.name,
+                            description = product.description,
+                            imageUrl = product.imageUrl,
+                            basePrice = product.basePrice,
+                            finalPrice = product.finalPrice,
+                            backgroundColor = Theme.colorScheme.background.surfaceLow,
                             modifier = Modifier.fillMaxWidth(),
                             productAction = {
                                 ProductQuantityButton(
@@ -126,7 +128,7 @@ fun DukanCartContent(
                                     inCartQuantity = productQuantityInCart
                                 )
                             },
-                            isOutOfStock =  product.isOutOfStock,
+                            isOutOfStock = product.isOutOfStock,
                         )
                     }
                 }

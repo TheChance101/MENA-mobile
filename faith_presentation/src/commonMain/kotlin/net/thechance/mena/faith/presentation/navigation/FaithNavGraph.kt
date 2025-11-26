@@ -2,12 +2,14 @@ package net.thechance.mena.faith.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import kotlinx.coroutines.flow.collectLatest
 import net.thechance.mena.core_chat.api.CoreChatApi
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.main.MainScreen
@@ -31,9 +33,21 @@ import org.koin.compose.getKoin
 @Composable
 fun FaithNavigation(
     identityApi: IdentityFeatureApi = getKoin().get(),
-    chatApi: CoreChatApi = getKoin().get()
+    chatApi: CoreChatApi = getKoin().get(),
+    updateBottomNavigationVisibility: (Boolean) -> Unit = {}
     ) {
     val navController = rememberNavController()
+    
+    LaunchedEffect(Unit) {
+        navController.currentBackStack.collectLatest {
+            if (navController.currentDestination?.route in routesWithBottomNavigation) {
+                updateBottomNavigationVisibility(true)
+            } else {
+                updateBottomNavigationVisibility(false)
+            }
+        }
+    }
+    
     CompositionLocalProvider(
         LocalNavController provides navController
     ) {
@@ -112,3 +126,7 @@ fun FaithNavigation(
 val LocalNavController = staticCompositionLocalOf<NavHostController> {
     error("No nav controller provided")
 }
+
+private val routesWithBottomNavigation = listOf(
+    Route.MainRoute::class.qualifiedName
+)

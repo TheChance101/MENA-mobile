@@ -27,4 +27,24 @@ sealed class MessageContentDto {
     @SerialName("MONEY")
     data class Money(val amount: Double) : MessageContentDto()
 
+    @Serializable
+    @SerialName("AYAH")
+    data class Ayah(
+        @SerialName("suraNumber")
+        val surahNumber: Int,
+        @SerialName("ayahNumber")
+        val ayahNumber: Int,
+        @SerialName("ayahText")
+        val ayahContent: String
+    ) : MessageContentDto()
+
+    @Serializable
+    @SerialName("ORDER")
+    data class Order(
+        val orderId: String,
+        val totalProducts: Int,
+        val totalPrice: String,
+        val deliverToAddress: String
+    ) : MessageContentDto()
+
 }

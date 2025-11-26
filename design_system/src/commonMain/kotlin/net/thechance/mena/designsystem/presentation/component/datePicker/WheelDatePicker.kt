@@ -140,7 +140,13 @@ fun WheelDatePicker(
         }
             .distinctUntilChanged()
             .collect { (dayIndex, monthIndex, yearIndex) ->
-                onDateChange(dayIndex, monthIndex, yearIndex)
+                val userIsScrolling = dayPagerState.isScrollInProgress ||
+                        monthPagerState.isScrollInProgress ||
+                        yearPagerState.isScrollInProgress
+
+                if (userIsScrolling) {
+                    onDateChange(dayIndex, monthIndex, yearIndex)
+                }
             }
     }
 }

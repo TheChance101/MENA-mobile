@@ -30,7 +30,6 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
-import net.thechance.mena.faith.presentation.feature.mosque.Coordinate
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -117,21 +116,21 @@ private fun MosqueDetailsContent(
     }
 }
 
-@OptIn(ExperimentalUuidApi::class)
 @Preview
 @Composable
+@OptIn(ExperimentalUuidApi::class)
 private fun Preview() {
     MenaTheme {
         QuranTheme {
             MosqueDetailsContent(
                 mosque = MosqueUiState(
-                    id = Uuid.parse("1e6f8a10-7dec-11d0-a765-00a0c91e6bf1"),
-                    name = "Al Eman Mosque",
-                    imageUrl = "",
-                    distance = 12.4,
-                    coordinate = Coordinate(
-                        latitude = 0.0,
-                        longitude = 0.0
+                    id = Uuid.parse("8d0440c0-8a20-4c65-98f2-94b5a0f9bca4"),
+                    name = "Al Noor Grand Mosque",
+                    imageUrl = "https://images.unsplash.com/photo-1524499982521-1ffd58dd89ea?auto=format&fit=crop&w=1200&q=80",
+                    distance = 0.4,
+                    coordinate = MosqueUiState.Coordinate(
+                        latitude = 25.2048,
+                        longitude = 55.2708
                     )
                 )
             )

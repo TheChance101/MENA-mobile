@@ -38,14 +38,15 @@ fun TransactionFilterParams.toStatementRequest(): HttpRequestBuilder.() -> Unit 
 }
 
 @OptIn(ExperimentalUuidApi::class)
-fun Statement.toLocal(): LocalStatement {
+fun Statement.toLocal(userId: String): LocalStatement {
     return LocalStatement(
         id = id.toString(),
         startDate = startDate.toString(),
         endDate = endDate.toString(),
         totalInflows = totalInflows,
         totalOutflows = totalOutflows,
-        fileName = fileName
+        fileName = fileName,
+        userId = userId
     )
 }
 

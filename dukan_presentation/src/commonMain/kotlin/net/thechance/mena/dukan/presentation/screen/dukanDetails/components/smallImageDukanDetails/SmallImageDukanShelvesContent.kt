@@ -75,6 +75,11 @@ private fun ShelfContent(
             bottom = Theme.spacing._16
         ),
     ) {
+        if (state.bestSellingProducts.isNotEmpty()) {
+            item(key = "BestSelling") {
+                SmallImageDukanBestSellingSection(state, listener)
+            }
+        }
         items(
             count = shelves.itemCount,
             key = shelves.itemKey { it.id }
@@ -161,12 +166,13 @@ private fun ProductItem(
     quantity: Int
 ) {
     ProductCard(
-        productName = product.name,
-        productImageUrl = product.imageUrl,
-        productDescription = product.description,
+        name = product.name,
+        imageUrl = product.imageUrl,
+        description = product.description,
         isOutOfStock = product.isOutOfStock,
-        productPrice = product.price,
-        productCardBackground = Theme.colorScheme.background.surfaceLow,
+        basePrice = product.basePrice,
+        finalPrice = product.finalPrice,
+        backgroundColor = Theme.colorScheme.background.surfaceLow,
         onProductClick = { listener.onProductClicked(product.id) },
         productAction = {
             if (product.isOutOfStock.not()) {

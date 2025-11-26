@@ -28,7 +28,9 @@ import mena.core_chat_presentation.generated.resources.camera
 import mena.core_chat_presentation.generated.resources.ic_camera
 import mena.core_chat_presentation.generated.resources.ic_cancel
 import mena.core_chat_presentation.generated.resources.ic_gallery
+import mena.core_chat_presentation.generated.resources.ic_money_send
 import mena.core_chat_presentation.generated.resources.photo
+import mena.core_chat_presentation.generated.resources.send_money
 import net.thechance.mena.core_chat.presentation.screen.chat.AttachmentsInteractionListener
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
@@ -102,6 +104,12 @@ private fun AttachmentBottomSheetContent(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         AttachmentsBottomSheetItem(
+            iconRes = Res.drawable.ic_money_send,
+            titleRes = Res.string.send_money,
+            onClick = attachmentsInteractionListener::onSendMoneyClicked
+        )
+
+        AttachmentsBottomSheetItem(
             iconRes = Res.drawable.ic_gallery,
             titleRes = Res.string.photo,
             onClick = { imagePickerLauncher.launch() }
@@ -130,8 +138,12 @@ private fun PreviewAddPhotoBottomSheet() {
                     override fun onSendImageClicked(imageByteArrays: List<ByteArray>) {}
                     override fun onGalleryClicked() {}
                     override fun onCameraClicked() {}
+                    override fun onSendMoneyClicked() {}
+
+
                     override fun onCameraResult(image: ImageBitmap?) {}
                     override fun onCloseAttachmentClicked() {}
+
                 }
             )
         }

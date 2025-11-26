@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.navigator.Navigator
+import kotlinx.coroutines.delay
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.add_location
 import mena.identity_presentation.generated.resources.address
@@ -18,12 +21,13 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthAppBar
+import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.AddressTypeSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.MapSection
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.components.OtherAddressType
-import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.SnackBarUiState
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreen
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import org.jetbrains.compose.resources.painterResource
@@ -32,13 +36,13 @@ import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 class AddEditLocationScreen(
-    val onSuccess: (SnackBarUiState?) -> Unit,
     private val addressModel: AddressUIState?,
-    ) : BaseScreen<
-        AddEditLocationScreenViewModel,
-        AddEditLocationScreenUIState,
-        AddEditLocationScreenUIEffect,
-        AddEditLocationScreenInteractionListener>() {
+    private val onAddLocationSuccess: () -> Unit
+) : BaseScreen<
+        LocationManagementViewModel,
+    AddEditLocationScreenUIState,
+    AddEditLocationScreenUIEffect,
+    AddEditLocationScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -51,6 +55,14 @@ class AddEditLocationScreen(
         state: AddEditLocationScreenUIState,
         listener: AddEditLocationScreenInteractionListener
     ) {
+        val listState = rememberLazyListState()
+        LaunchedEffect(state.addressUIState.addressType) {
+            if (state.addressUIState.addressType is AddressType.Other && addressModel == null) {
+                delay(300)
+                listState.animateScrollToItem(3)
+
+            }
+        }
         Scaffold(
             topBar = {
                 AuthAppBar(
@@ -75,6 +87,7 @@ class AddEditLocationScreen(
             }
         ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .background(color = Theme.colorScheme.background.surface)
                     .padding(horizontal = Theme.spacing._16),
@@ -126,11 +139,25 @@ class AddEditLocationScreen(
 
     override fun onEffect(
         effect: AddEditLocationScreenUIEffect,
-        navigator: Navigator
+        navigator: Navigator,
+        snackBarController: IdentitySnackBarController
     ) {
         when (effect) {
             is AddEditLocationScreenUIEffect.NavigateBack -> {
-                onSuccess(effect.snackBarUiState)
+                effect.successStringResource?.let { successMessage ->
+                    snackBarController.showSnackBarSuccess(
+                        message = successMessage
+                    )
+
+                    onAddLocationSuccess()
+                }
+
+                effect.errorStringResource?.let { errorMessage ->
+                    snackBarController.showSnackBarError(
+                        message = errorMessage
+                    )
+                }
+
                 navigator.pop()
             }
 
@@ -142,8 +169,6 @@ class AddEditLocationScreen(
             )
         }
     }
-
-
 }
 
 

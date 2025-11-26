@@ -56,7 +56,7 @@ class RegisterPhoneEntryViewModel(
     }
 
     private fun findCountryByCallingCode(callingCode: String): MenaCountry {
-        return MenaCountry.values().find { it.callingCode == callingCode } ?: MenaCountry.IRAQ
+        return MenaCountry.entries.find { it.callingCode == callingCode } ?: MenaCountry.IRAQ
     }
 
     override fun onSelectCountryItem(country: MenaCountry) {
@@ -73,7 +73,7 @@ class RegisterPhoneEntryViewModel(
     }
 
     override fun onClickRegister() {
-        updateState { copy(isLoading = true, errorMessage = null) }
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = ::requestOTP,
             onSuccess = { onOTPRequestSuccess() },
@@ -112,7 +112,12 @@ class RegisterPhoneEntryViewModel(
     }
 
     private fun onOTPRequestError(throwable: Throwable) {
-        updateState { copy(isLoading = false, errorMessage = mapErrorMessage(throwable)) }
+        updateState { copy(isLoading = false) }
+        sendNewEffect(
+            RegisterPhoneEntryUIEffect.ShowSnackBarError(
+                errorStringResource = mapErrorMessage(throwable)
+            )
+        )
     }
 
     override fun onClickCountry() {
@@ -140,10 +145,6 @@ class RegisterPhoneEntryViewModel(
                 dispatcher = dispatcher
             )
         }
-    }
-
-    override fun onClearErrorMessage() {
-        updateState { copy(errorMessage = null) }
     }
 
     override fun onClickLogin() {
