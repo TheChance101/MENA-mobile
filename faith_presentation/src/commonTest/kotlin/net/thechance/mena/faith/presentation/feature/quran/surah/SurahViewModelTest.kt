@@ -95,6 +95,19 @@ class SurahViewModelTest {
     }
 
     @Test
+    fun `onListenClick should play first ayah when no ayah is selected`() = runTest {
+        everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
+        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+        everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(true)
+
+        testViewModel.onListenClick()
+        advanceUntilIdle()
+
+        verifySuspend { permissionManager.checkPermission(any()) }
+        assertEquals(1, testViewModel.uiState.value.selectedAyahNumber)
+    }
+
+    @Test
     fun `onNextAyahClick should wrap to first ayah when at last ayah`() = runTest {
         everySuspend { quranRepository.getAyatOfSurah(any()) } returns dummyAyat
         everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
@@ -473,6 +486,21 @@ class SurahViewModelTest {
         advanceUntilIdle()
 
         assertEquals(testUrl, testViewModel.uiState.value.currentPlayingAyahUrl)
+    }
+
+    @Test
+    fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
+        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+        everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(true)
+
+        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+        testViewModel.onListenClick()
+        verifySuspend { permissionManager.checkPermission(any()) }
+        advanceUntilIdle()
+
+        assertTrue(testViewModel.uiState.value.isPlayerVisible)
+        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+
     }
 
     @Test
