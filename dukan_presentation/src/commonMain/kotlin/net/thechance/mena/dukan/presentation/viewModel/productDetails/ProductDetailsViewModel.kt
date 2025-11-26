@@ -207,7 +207,8 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity
+                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
         val messageRes = Res.string.add_product_success
@@ -218,7 +219,8 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity
+                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
         val messageRes = Res.string.remove_product_successfully
@@ -268,7 +270,7 @@ class ProductDetailsViewModel(
     }
 
 
-    fun refreshCartInfo() {
+  private fun refreshCartInfo() {
         loadCartInfo()
     }
 }

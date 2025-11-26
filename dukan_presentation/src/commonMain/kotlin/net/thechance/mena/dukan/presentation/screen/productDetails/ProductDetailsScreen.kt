@@ -31,7 +31,7 @@ fun ProductDetailsScreen(
             ProductDetailsEffects.NavigateBack -> {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY,
-                    state.product.id to state.product.inCartQuantity
+                    state.product.id to state.product.finalProductQuantity
                 )
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     ProductDetailsArgs.HAS_PRODUCT_IN_CART,
@@ -42,7 +42,7 @@ fun ProductDetailsScreen(
             is ProductDetailsEffects.NavigateToCart -> {
                 navController.previousBackStackEntry?.savedStateHandle?.set(
                     ProductDetailsArgs.PRODUCT_ID_AND_QUANTITY,
-                    state.product.id to state.product.inCartQuantity
+                    state.product.id to state.product.finalProductQuantity
                 )
                 navController.navigate(DukanRoute.DukanCart(effects.dukanId))
             }

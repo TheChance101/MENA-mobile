@@ -23,6 +23,7 @@ data class ProductDetailsUiState(
         val description: String = "",
         val images: List<String> = emptyList(),
         val inCartQuantity: Int = 0,
+        val finalProductQuantity: Int = 0,
         val isOutOfStock: Boolean = false,
     )
 }
