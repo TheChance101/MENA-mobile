@@ -507,9 +507,9 @@ class SurahViewModelTest {
     fun `onListenClick should integrate with the permission manager`() = runTest {
         everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(false)
         testViewModel.onListenClick()
+        verifySuspend { permissionManager.checkPermission(any()) }
         advanceUntilIdle()
 
-        verifySuspend { permissionManager.checkPermission(any()) }
         verifySuspend { permissionManager.requestPermission(any()) }
     }
 
@@ -517,9 +517,9 @@ class SurahViewModelTest {
     fun `onListenClick should not request a permission when it's already granted`() = runTest {
         everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(true)
         testViewModel.onListenClick()
+        verifySuspend { permissionManager.checkPermission(any()) }
         advanceUntilIdle()
 
-        verifySuspend { permissionManager.checkPermission(any()) }
         verifySuspend(mode = VerifyMode.not) { permissionManager.requestPermission(any()) }
     }
 
