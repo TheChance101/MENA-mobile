@@ -13,6 +13,9 @@ import mena.wallet_presentation.generated.resources.Res
 import mena.wallet_presentation.generated.resources.img_no_internet
 import mena.wallet_presentation.generated.resources.no_internet_content
 import mena.wallet_presentation.generated.resources.no_internet_title
+import mena.wallet_presentation.generated.resources.transaction_failed
+import mena.wallet_presentation.generated.resources.unknown_error_description
+import mena.wallet_presentation.generated.resources.unknown_error_title
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -52,6 +55,15 @@ fun WalletScaffold(
                             onRetry = onRetry ?: {}
                         )
                     }
+                    errorState is ErrorState.UnknownError->{
+                        ErrorView(
+                            image = painterResource(Res.drawable.transaction_failed),
+                            title = stringResource(Res.string.unknown_error_title),
+                            description = stringResource(Res.string.unknown_error_description),
+                            onRetry = onRetry ?: {}
+                        )
+
+                        }
                     isLoading -> {
                         Box(modifier = Modifier.fillMaxSize()) {
                             ThreeDotsLoadingIndicator(modifier = Modifier.align(Alignment.Center))
