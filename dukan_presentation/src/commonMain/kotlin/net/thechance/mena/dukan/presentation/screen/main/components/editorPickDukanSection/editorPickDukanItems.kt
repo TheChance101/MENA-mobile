@@ -44,7 +44,6 @@ fun LazyGridScope.editorPickDukanItems(
         is LoadState.NotLoading -> {
             items(
                 count = dukans.itemCount,
-                key = { index -> dukans[index]?.id ?: index },
                 contentType = { "EditorPickDukanItem" }
             ) { index ->
                 val dukan = dukans[index] ?: return@items
