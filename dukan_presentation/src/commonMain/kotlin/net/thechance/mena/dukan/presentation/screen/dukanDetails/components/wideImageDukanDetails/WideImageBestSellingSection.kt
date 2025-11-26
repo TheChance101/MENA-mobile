@@ -42,54 +42,50 @@ fun BestSellingSection(
         AnimatedContent(
             targetState = shelves.loadState.refresh,
         ) {
-            when (it) {
-                is LoadState.NotLoading -> {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
+            if (it is LoadState.NotLoading) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
 
-                        ) {
-                        items(state.bestSellingProducts.size) {
-                            val product = state.bestSellingProducts[it]
-                            BestSellingItem(
-                                imageUrl = product.imageUrl,
-                                title = product.name,
-                                basePrice = product.basePrice.toString(),
-                                finalPrice = product.finalPrice.toString(),
-                                isOutOfStock = product.isOutOfStock,
-                                onClick = { listener.onProductClicked(product.id) },
-                                productAction = {
-                                    val quantity = state.productQuantity[product.id] ?: 0
-                                    SmallAndWideImageDukanProductAction(
-                                        showProductQuantity = quantity > 0,
-                                        inCartQuantity = quantity,
-                                        dukanColor = Color(state.dukanInfo.color),
-                                        cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
-                                        onAddToCartClick = {
-                                            listener.onAddToCartClicked(
-                                                productId = product.id,
-                                                productQuantity = quantity + 1
-                                            )
-                                        },
-                                        onPlusClick = {
-                                            listener.onPlusClicked(
-                                                productId = product.id,
-                                                productQuantity = quantity + 1
-                                            )
-                                        },
-                                        onMinusClick = {
-                                            listener.onMinusClicked(
-                                                productId = product.id,
-                                                productQuantity = quantity - 1
-                                            )
-                                        }
-                                    )
-                                },
-                            )
-                        }
+                    ) {
+                    items(state.bestSellingProducts.size) {
+                        val product = state.bestSellingProducts[it]
+                        BestSellingItem(
+                            imageUrl = product.imageUrl,
+                            title = product.name,
+                            basePrice = product.basePrice,
+                            finalPrice = product.finalPrice,
+                            isOutOfStock = product.isOutOfStock,
+                            onClick = { listener.onProductClicked(product.id) },
+                            productAction = {
+                                val quantity = state.productQuantity[product.id] ?: 0
+                                SmallAndWideImageDukanProductAction(
+                                    showProductQuantity = quantity > 0,
+                                    inCartQuantity = quantity,
+                                    dukanColor = Color(state.dukanInfo.color),
+                                    cartIcon = painterResource(Res.drawable.wide_image_shoppingcart),
+                                    onAddToCartClick = {
+                                        listener.onAddToCartClicked(
+                                            productId = product.id,
+                                            productQuantity = quantity + 1
+                                        )
+                                    },
+                                    onPlusClick = {
+                                        listener.onPlusClicked(
+                                            productId = product.id,
+                                            productQuantity = quantity + 1
+                                        )
+                                    },
+                                    onMinusClick = {
+                                        listener.onMinusClicked(
+                                            productId = product.id,
+                                            productQuantity = quantity - 1
+                                        )
+                                    }
+                                )
+                            },
+                        )
                     }
                 }
-
-                else -> {}
             }
         }
     }

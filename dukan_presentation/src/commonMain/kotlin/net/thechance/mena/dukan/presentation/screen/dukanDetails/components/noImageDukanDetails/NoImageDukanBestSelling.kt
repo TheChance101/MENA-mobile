@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,23 +23,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.best_selling
-import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.ic_add_shopping_basket
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
-import mena.dukan_presentation.generated.resources.koin_icon
-import mena.dukan_presentation.generated.resources.silver_tc
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
 import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
+import net.thechance.mena.dukan.presentation.component.shared.ProductPrice
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
@@ -60,14 +54,14 @@ fun BestSellingNoImageDukan(
             text = stringResource(Res.string.best_selling),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._8, start = 16.dp)
+            modifier = Modifier.padding(top = Theme.spacing._8, start = Theme.spacing._16)
         )
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Theme.colorScheme.background.surfaceHigh),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 12.dp)
+            contentPadding = PaddingValues(horizontal = Theme.spacing._8, vertical = Theme.spacing._12)
         ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
@@ -96,7 +90,7 @@ private fun BestSellingItem(
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
     ) {
         Box(
             modifier = Modifier.size(100.dp)
@@ -158,41 +152,7 @@ private fun BestSellingItem(
                 maxLines = 1,
                 textAlign = TextAlign.Center
             )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                if (product.basePrice > product.finalPrice) {
-                    Icon(
-                        painter = painterResource(Res.drawable.discount_icon),
-                        contentDescription = stringResource(Res.string.discount_icon),
-                        tint = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(end = Theme.spacing._4)
-                            .size(12.dp)
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(end = Theme.spacing._4)
-                            .weight(1f),
-                        text = product.basePrice.toString(),
-                        style = Theme.typography.label.small.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ),
-                        color = Theme.colorScheme.shadeTertiary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-
-                PriceWithIcon(
-                    price = product.finalPrice.toString(),
-                    iconRes = Res.drawable.silver_tc,
-                    priceStyle = Theme.typography.label.small,
-                    iconSize = 16.dp,
-                    contentDescription = stringResource(Res.string.koin_icon),
-                )
-            }
+            ProductPrice(product.basePrice, product.finalPrice)
         }
     }
 }

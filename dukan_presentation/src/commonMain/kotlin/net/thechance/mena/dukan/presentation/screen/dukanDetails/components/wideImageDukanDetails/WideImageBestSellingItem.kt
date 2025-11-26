@@ -2,10 +2,8 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wid
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,21 +20,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.ic_no_image_loaded
-import mena.dukan_presentation.generated.resources.koin_icon
-import mena.dukan_presentation.generated.resources.silver_tc
 import mena.dukan_presentation.generated.resources.wide_product_image
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.dukan.presentation.component.product.PriceWithIcon
+import net.thechance.mena.dukan.presentation.component.shared.ProductPrice
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import sv.lib.squircleshape.SquircleShape
@@ -46,8 +39,8 @@ import sv.lib.squircleshape.SquircleShape
 fun BestSellingItem(
     imageUrl: String,
     title: String,
-    basePrice: String,
-    finalPrice: String,
+    basePrice: Double,
+    finalPrice: Double,
     isOutOfStock: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
@@ -112,39 +105,8 @@ fun BestSellingItem(
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                if (basePrice > finalPrice) {
-                    Icon(
-                        painter = painterResource(Res.drawable.discount_icon),
-                        contentDescription = stringResource(Res.string.discount_icon),
-                        tint = Theme.colorScheme.shadePrimary,
-                        modifier = Modifier.padding(end = Theme.spacing._4)
-                            .size(12.dp)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(end = Theme.spacing._4)
-                            .weight(1f),
-                        text = basePrice,
-                        style = Theme.typography.label.small.copy(
-                            textDecoration = TextDecoration.LineThrough
-                        ),
-                        maxLines = 1,
-                        color = Theme.colorScheme.shadeTertiary,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                PriceWithIcon(
-                    price = finalPrice,
-                    iconRes = Res.drawable.silver_tc,
-                    iconSize = 16.dp,
-                    priceStyle = Theme.typography.label.small,
-                    contentDescription = stringResource(Res.string.koin_icon),
-                )
-            }
+            ProductPrice(basePrice, finalPrice)
+
         }
         if (isOutOfStock)
             OutOfStockLabel()
