@@ -65,16 +65,8 @@ fun ChatSummary.toUi(): ChatUiState {
 
     val statusMessages = getStatusMessages(lastMessage, unReadMessagesCount)
     val lastMessage = lastMessage?.let { msg ->
-        val uiText = when (val type = msg.type) {
-            is LastMessageType.Text -> UiText.DynamicString(type.text)
-            is LastMessageType.Image -> UiText.StringRes(Res.string.last_message_image)
-            is LastMessageType.Audio -> UiText.StringRes(Res.string.last_message_audio)
-            is LastMessageType.Money -> UiText.StringRes(Res.string.last_message_money)
-            is LastMessageType.Ayah -> UiText.StringRes(Res.string.last_message_ayah)
-            is LastMessageType.Order -> UiText.StringRes(Res.string.last_message_order)
-        }
         ChatUiState.MessageUiState(
-            text = uiText,
+            text = msg.type.toUiText(),
             isMine = msg.isMine,
             time = msg.sendAt,
         )
@@ -86,6 +78,17 @@ fun ChatSummary.toUi(): ChatUiState {
         lastMessage = lastMessage,
         status = statusMessages
     )
+}
+
+private fun LastMessageType.toUiText(): UiText {
+    return when (this) {
+        is LastMessageType.Text -> UiText.DynamicString(text)
+        is LastMessageType.Image -> UiText.StringRes(Res.string.last_message_image)
+        is LastMessageType.Audio -> UiText.StringRes(Res.string.last_message_audio)
+        is LastMessageType.Money -> UiText.StringRes(Res.string.last_message_money)
+        is LastMessageType.Ayah -> UiText.StringRes(Res.string.last_message_ayah)
+        is LastMessageType.Order -> UiText.StringRes(Res.string.last_message_order)
+    }
 }
 
 private fun getStatusMessages(lastMessage: ChatSummary.Message?, unReadMessagesCount: Int): Status {

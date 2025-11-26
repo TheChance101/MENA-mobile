@@ -30,19 +30,20 @@ private fun List<ChatSummaryDto>.toListOfChatSummary(): List<ChatSummary> {
     return mapNotNull { it.toDomain() }
 }
 
+private fun MessageContentDto.toLastMessageType(): LastMessageType = when (this) {
+    is MessageContentDto.Text -> LastMessageType.Text(text)
+    is MessageContentDto.Image -> LastMessageType.Image
+    is MessageContentDto.Audio -> LastMessageType.Audio
+    is MessageContentDto.Money -> LastMessageType.Money
+    is MessageContentDto.Ayah -> LastMessageType.Ayah
+    is MessageContentDto.Order -> LastMessageType.Order
+}
+
 @OptIn(ExperimentalTime::class)
 fun ChatSummaryDto.toDomain(): ChatSummary {
     val lastMessage = lastMessage?.let {
-        val messageType = when (val messageContent = it.content) {
-            is MessageContentDto.Text -> LastMessageType.Text(messageContent.text)
-            is MessageContentDto.Image -> LastMessageType.Image
-            is MessageContentDto.Audio -> LastMessageType.Audio
-            is MessageContentDto.Money -> LastMessageType.Money
-            is MessageContentDto.Ayah -> LastMessageType.Ayah
-            is MessageContentDto.Order -> LastMessageType.Order
-        }
         ChatSummary.Message(
-            type = messageType,
+            type = it.content.toLastMessageType(),
             sendAt = Instant.parse(it.sendAt).toLocalDateTime(TimeZone.currentSystemDefault()),
             isMine = it.isMine
         )
