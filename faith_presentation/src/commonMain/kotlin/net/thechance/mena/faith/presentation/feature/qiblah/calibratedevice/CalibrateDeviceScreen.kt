@@ -68,18 +68,15 @@ private fun Content(listener: CalibrateDeviceInteractionListener) {
                 leadingContent = {
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_left),
+                        tint = Theme.colorScheme.primary.primary,
                         contentDescription = stringResource(Res.string.arrow_left)
                     )
                 },
                 onLeadingClick = listener::onBackClick
             )
         },
-        bottomBar = {
-            ContinueButton(listener = listener)
-        }
-    ) {
-        ConfigurationMessage()
-    }
+        bottomBar = { ContinueButton(listener = listener) }
+    ) { ConfigurationMessage() }
 }
 
 @Composable

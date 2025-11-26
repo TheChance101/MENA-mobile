@@ -3,7 +3,6 @@ package net.thechance.mena.identity.presentation.screen.register.accountCreated
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,14 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.go_to_home
 import mena.identity_presentation.generated.resources.ic_account_shield
-import mena.identity_presentation.generated.resources.login_background
 import mena.identity_presentation.generated.resources.success_account_created_description
 import mena.identity_presentation.generated.resources.success_account_created_title
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -32,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
+import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -68,40 +66,25 @@ class AccountCreatedScreen(
                 .fillMaxSize()
                 .background(Theme.colorScheme.background.surface)
         ) {
-            Box(modifier = Modifier.fillMaxSize())
-            {
-                Image(
-                    painter = painterResource(Res.drawable.login_background),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.fillMaxSize().align(Alignment.Center)
-                )
-
+            AuthScreenContainer(horizontalPadding = Theme.spacing._24) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = Theme.spacing._24)
-                        .padding(top = Theme.spacing._24)
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        SuccessMessageBlock()
-                    }
-
-                    PrimaryButton(
-                        text = stringResource(Res.string.go_to_home),
-                        onClick = listener::onClickGoToHome,
-                        isLoading = false,
-                        contentPadding = PaddingValues(vertical = 13.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = Theme.spacing._24)
-                            .imePadding()
-                    )
+                    SuccessMessageBlock()
                 }
+
+                PrimaryButton(
+                    text = stringResource(Res.string.go_to_home),
+                    onClick = listener::onClickGoToHome,
+                    isLoading = false,
+                    contentPadding = PaddingValues(vertical = 13.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = Theme.spacing._24)
+                        .imePadding()
+                )
             }
         }
     }
