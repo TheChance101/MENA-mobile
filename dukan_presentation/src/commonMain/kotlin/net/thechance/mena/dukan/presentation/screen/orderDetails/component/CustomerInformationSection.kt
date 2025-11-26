@@ -70,12 +70,13 @@ private fun UserProfileIcon() {
         modifier = Modifier
             .size(40.dp)
             .clip(SquircleShape(Theme.spacing._12))
-            .background(Theme.colorScheme.background.surface)
+            .background(Theme.colorScheme.background.surfaceHigh)
     ) {
         Icon(
             modifier = Modifier.align(Alignment.Center),
             painter = painterResource(Res.drawable.ic_profile),
-            contentDescription = stringResource(Res.string.profile_icon)
+            contentDescription = stringResource(Res.string.profile_icon),
+            tint = Theme.colorScheme.primary.primary
         )
     }
 }
