@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.wallet.data.database.StatementDao
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
@@ -42,6 +43,7 @@ class StatementRepositoryImplTest {
     private lateinit var networkClient: NetworkClient
     private lateinit var statementDao: StatementDao
     private val testDispatcher = StandardTestDispatcher()
+    private val userRepository: UserRepository = mock()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
@@ -54,7 +56,7 @@ class StatementRepositoryImplTest {
     fun `getStatementWithMetadata should return statement with metadata when API call is successful`() =
         runTest(testDispatcher) {
             networkClient = createNetworkClient(getRespond = successPdfResponse)
-            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+            statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
             val result = statementRepository.getStatementWithMetadata()
 
@@ -70,7 +72,7 @@ class StatementRepositoryImplTest {
     fun `getStatementWithMetadata should fetch new data after expiration time`() =
         runTest(testDispatcher) {
             networkClient = createNetworkClient(getRespond = successPdfResponse)
-            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+            statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
             val firstResult = statementRepository.getStatementWithMetadata()
             advanceUntilIdle()
@@ -90,10 +92,11 @@ class StatementRepositoryImplTest {
         everySuspend {
             statementDao.getAllStatement(
                 limit = any(),
-                offset = any()
+                offset = any(),
+                userId = "123"
             )
         } throws Exception("db error")
-        statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+        statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
         // act & assert
         assertFailsWith<Exception> {
@@ -109,7 +112,7 @@ class StatementRepositoryImplTest {
             networkClient = createNetworkClient()
             statementDao = mock(mode = MockMode.autofill)
             everySuspend { statementDao.insertStatement(any()) } throws Exception("insert failed")
-            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+            statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
             // act & assert
             assertFailsWith<Exception> {
@@ -125,7 +128,7 @@ class StatementRepositoryImplTest {
             networkClient = createNetworkClient()
             statementDao = mock(mode = MockMode.autofill)
             everySuspend { statementDao.deleteStatementById(any()) } throws Exception("delete failed")
-            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+            statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
             // act & assert
             assertFailsWith<Exception> {
@@ -141,7 +144,7 @@ class StatementRepositoryImplTest {
             networkClient = createNetworkClient()
             statementDao = mock(mode = MockMode.autofill)
             everySuspend { statementDao.getStatementById(any()) } throws Exception("get by id failed")
-            statementRepository = StatementRepositoryImpl(networkClient, statementDao)
+            statementRepository = StatementRepositoryImpl(networkClient, userRepository,statementDao)
 
             // act & assert
             assertFailsWith<Exception> {
