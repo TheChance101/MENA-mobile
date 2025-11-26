@@ -84,8 +84,8 @@ private fun ProductDetailsInfoContent(
         maxLines = 2,
     )
     ProductDetailsPriceRow(
-        price = state.finalPrice,
-        discountPrice = state.basePrice,
+        price = state.basePrice,
+        discountPrice = state.finalPrice,
         modifier = Modifier.padding(top = Theme.spacing._2)
     )
     ExpandableText(
@@ -110,29 +110,38 @@ private fun ProductDetailsPriceRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.discount_icon),
-            contentDescription = stringResource(Res.string.discount_icon),
-            tint = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(end = Theme.spacing._4)
-        )
-        if ( discountPrice > price ) {
+        if ( price > discountPrice ) {
+            Icon(
+                painter = painterResource(Res.drawable.discount_icon),
+                contentDescription = stringResource(Res.string.discount_icon),
+                tint = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
             Text(
-                text = "$${discountPrice}",
+                text = "$${price}",
                 style = Theme.typography.label.extraSmall.copy(
                     textDecoration = TextDecoration.LineThrough
                 ),
                 color = Theme.colorScheme.shadeTertiary,
                 modifier = Modifier.padding(end = 2.dp)
             )
+            Text(
+                text = discountPrice.toString(),
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
+        }else {
+            Text(
+                text = price.toString(),
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
         }
-        Text(
-            text = price.toString(),
-            style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(end = Theme.spacing._4)
-        )
+
         Image(
             painter = painterResource(Res.drawable.silver_tc),
             contentDescription = stringResource(Res.string.koin_icon),
