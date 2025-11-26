@@ -1,6 +1,7 @@
 package net.thechance.mena.trends.presentation.screen.user_trend
 
 import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUpdates
 import net.thechance.mena.trends.domain.model.TrendWatchSession
 import net.thechance.mena.trends.presentation.shared.util.timeAgoValue
 
@@ -24,5 +25,15 @@ internal fun TrendWatchSessionState.toEntity(percentageOfVideoWatched: Float): T
         watchEndTime = watchEndTime,
         videoDurationInMilliseconds = videoDurationInMilliseconds,
         percentageOfVideoWatched = percentageOfVideoWatched
+    )
+}
+
+internal fun UserTrendUiState.toTrendUpdates(isDeleted: Boolean): TrendUpdates {
+    return TrendUpdates(
+        trendId = id,
+        isLiked = isLiked,
+        likesCount = likesCount,
+        viewsCount = viewsCount,
+        isDeleted = isDeleted
     )
 }
