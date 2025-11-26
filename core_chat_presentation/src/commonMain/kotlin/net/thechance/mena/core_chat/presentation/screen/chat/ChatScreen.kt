@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
@@ -117,6 +118,18 @@ fun ChatScreenContent(
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(state) {
+        if (state.isAttachmentsOverlayVisible
+            || state.isReactionDialogVisible
+            || state.isChatActionsDialogVisible
+            || state.isImagePagerVisible) {
+            focusManager.clearFocus()
+            keyboardController?.hide()
+        }
+    }
+
 
     Box(
         modifier = Modifier.fillMaxSize().imePadding(),
