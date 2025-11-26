@@ -361,7 +361,7 @@ class CreateProductViewModel(
         const val IMAGE_MAX_LIMIT = 10
         const val IMAGE_MAX_SIZE_IN_MB = 5
         const val BYTES_PER_MEGABYTE = 1024 * 1024
-        const val MIN_DESCRIPTION_LENGTH = 100
+        const val MIN_DESCRIPTION_LENGTH = 25
         const val MAX_DESCRIPTION_LENGTH = 3000
         const val PRICE_EXCLUSIVE_LOWER_BOUND = 0.0
     }

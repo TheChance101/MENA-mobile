@@ -103,7 +103,7 @@
     <string name="error_general">حدث خطأ، الرجاء المحاولة مرة أخرى.</string>
     <string name="error_price_invalid">السعر غير صالح.</string>
     <string name="error_price_not_positive">يجب أن يكون السعر أكبر من 0.0.</string>
-    <string name="error_description_length">يجب أن يكون الوصف بين 100 و3000 حرفًا.</string>
+    <string name="error_description_length">يجب أن يكون طول الوصف بين ٢٥ و٣٠٠٠ حرفًا.</string>
     <string name="best_selling">الأكثر مبيعًا</string>
     <string name="shopping_basket_icon">أيقونة سلة التسوق</string>
     <string name="favorite_icon">أيقونة المفضلة</string>

@@ -104,7 +104,7 @@
     <string name="error_general">Something went wrong, please try again.</string>
     <string name="error_price_invalid">Price is invalid.</string>
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
-    <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
+    <string name="error_description_length">Description must be between 25 and 3000 letters.</string>
     <string name="all">All</string>
     <string name="arrow_right_icon">arrow right icon</string>
     <string name="best_selling">Best Selling</string>
