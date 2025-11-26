@@ -95,7 +95,7 @@ private fun HideAyahActionButtonsOnScroll(
     state: SurahUiState,
     listener: SurahInteractionListener
 ) {
-    LaunchedEffect(lazyListState, state.isAyahActionButtonsVisible) {
+    LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.isScrollInProgress }
             .collect { isScrolling ->
                 if (isScrolling && state.isAyahActionButtonsVisible) listener.onDismissActionButtons()
