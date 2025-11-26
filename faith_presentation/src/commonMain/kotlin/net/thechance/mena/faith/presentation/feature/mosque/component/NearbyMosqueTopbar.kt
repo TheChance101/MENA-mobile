@@ -1,6 +1,5 @@
 package net.thechance.mena.faith.presentation.feature.mosque.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -35,17 +34,17 @@ fun NearbyMosqueTopbar(
                 painter = painterResource(Res.drawable.arrow_left),
                 contentDescription = stringResource(Res.string.arrow_left),
                 tint = Theme.colorScheme.primary.primary,
-                modifier = Modifier.size(20.dp).clickable(onClick = onBackClick)
+                modifier = Modifier.size(20.dp)
             )
         },
+        onLeadingClick = onBackClick,
         trailingContent = {
             AppBarIcon(
                 iconRes = painterResource(Res.drawable.ic_add),
                 contentDescription = stringResource(Res.string.add),
                 onClick = onAddMosqueClick
             )
-        },
-        onLeadingClick = onBackClick
+        }
     )
 }
 
@@ -61,9 +60,7 @@ private fun AppBarIcon(
         modifier = modifier
     ) {
         Icon(
-            modifier = Modifier
-                .size(20.dp)
-                .clickable(onClick = onClick),
+            modifier = Modifier.size(20.dp),
             painter = iconRes,
             contentDescription = contentDescription,
             tint = Theme.colorScheme.primary.primary
