@@ -5,13 +5,11 @@ package net.thechance.mena.dukan.presentation.viewModel.search
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_updating_favorites
-import mena.dukan_presentation.generated.resources.no_internet_message
 import mena.dukan_presentation.generated.resources.search_general_error
 import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
@@ -33,7 +31,7 @@ class SearchViewModel(
     defaultDispatcher = defaultDispatcher
 ), SearchInteractionListener {
 
-    private var dukanSearchResultsFlow: MutableStateFlow<PagingData<SearchUiState.DukanUiState>> =
+    private val dukanSearchResultsFlow: MutableStateFlow<PagingData<SearchUiState.DukanUiState>> =
         MutableStateFlow(PagingData.empty())
 
     override fun onSearchChanged(query: String) {
@@ -233,14 +231,6 @@ class SearchViewModel(
     }
 
     private fun handleNoInternetException() {
-//        updateState {
-//            copy(
-//                snackBarUiState = SnackBarUiState(
-//                    message = Res.string.no_internet_message,
-//                    snackBarType = SnackBarType.ERROR
-//                )
-//            )
-//        }
         updateState {
             copy(
                 searchContentState = SearchUiState.SearchContentState.NoInternet
