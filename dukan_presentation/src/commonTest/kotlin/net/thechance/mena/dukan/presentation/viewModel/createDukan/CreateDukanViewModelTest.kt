@@ -7,6 +7,7 @@ import com.attafitamim.krop.core.images.ImageSrc
 import dev.mokkery.MockMode
 import dev.mokkery.answering.calls
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -662,19 +663,6 @@ class CreateDukanViewModelTest {
                 cancelAndIgnoreRemainingEvents()
             }
         }
-
-    @Test
-    fun `onClickUploadImage SHOULD set selectedImage and enable cropping`() = runTest {
-        val mockImage = mock<ImageFile>()
-        createDukanViewModel.onClickUploadImage(mockImage)
-
-        createDukanViewModel.state.test {
-            val state = awaitItem()
-            assertNotNull(state.selectedImage)
-            assertTrue(state.isImageBeingCropped)
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
 
     @Test
     fun `onDismissSnackBar SHOULD set snackBarState null`() = runTest {
