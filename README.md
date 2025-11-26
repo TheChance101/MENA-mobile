@@ -236,11 +236,12 @@ Each feature module follows a strict three-layer architecture
 
 > Faith serves as your comprehensive Islamic companion, bringing together essential tools for daily worship, Quran study, and spiritual growth. Whether you're at home or traveling, stay connected to your faith with accurate prayer times, the complete Quran, and helpful features designed for modern Muslim life.
 
-<img width="1431" height="800" alt="faith" src="https://github.com/user-attachments/assets/ed3ee61c-71f4-440c-96c5-942a8a65ba78" /><br>
+
+<img width="1423" height="798" alt="faith" src="https://github.com/user-attachments/assets/aad4474f-b9fe-4d49-8fa8-8859f8ef82e9" />><br>
 
 > [!Note]
 > ### 🕌 Core Worship Features
-> - **Prayer Times**: Accurate notifications with countdown to the next prayer, displayed in both Hijri and Gregorian calendars.
+> - **Prayer Times**: Accurate notifications with countdown to the next prayer, displayed in Hijri calendar.
 >   - Browse past and upcoming schedules.
 >   - Worldwide support with automatic location-based calculations.
 > - **Qiblah Direction**: Real-time compass to find the precise Qiblah direction, with calibration support.
@@ -248,16 +249,16 @@ Each feature module follows a strict three-layer architecture
 > - **Browse & Read**: Navigate all Surahs with Makki/Madani classification and a seamless reading interface.
 > - **Interactive Tools**:
 >   - Select Ayah: Tap any verse to share instantly.
->   - Bookmark: Save positions, manage multiple bookmarks, and organize by Surah.
+>   - Bookmark: Save positions, manage multiple bookmarks.
 >   - Copy: Copy verses to clipboard for easy sharing.
 > - **Listen & Recite**:
 >   - Stream or download Surahs for offline listening.
->   - Choose from multiple Qaris, preview voices, and control playback (play, pause, skip, repeat).
+>   - Choose from multiple Reciters, preview voices, and control playback (play, pause, repeat, and continue).
 > - **Search**:
 >   - Search within a Surah or globally across the Quran.
 >   - Jump directly to verses from search results.
 > ### 🌍 Community
-> - **Nearby Mosques**: Discover mosques on an interactive map, view details, and contribute new prayer spaces.
+> - **Nearby Mosques**: Discover mosques around you on an interactive map. Search any location, tap the map to find nearby mosques, view mosque details, and navigate to them directly through your device's map app. You can also contribute by adding new prayer spaces.
 > - **Personalized Islamic dashboard with**:
 >   - Today’s prayer times at a glance (next prayer highlighted).
 >   - Quran reading progress tracking (current page & Surah).
