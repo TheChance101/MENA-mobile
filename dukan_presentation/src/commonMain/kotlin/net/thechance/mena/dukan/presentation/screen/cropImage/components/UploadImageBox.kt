@@ -28,8 +28,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.attafitamim.krop.core.images.ImageSrc
-import com.attafitamim.krop.filekit.toImageSrc
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import kotlinx.coroutines.launch
@@ -43,6 +41,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.util.file.ImageFile
+import net.thechance.mena.dukan.presentation.util.file.PlatformImageFile
 import net.thechance.mena.identity.domain.util.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -56,7 +56,7 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun UploadImageContainer(
-    onClick: (image: ImageSrc) -> Unit,
+    onClick: (imageFile: ImageFile) -> Unit,
     image: ImageBitmap?,
     modifier: Modifier = Modifier,
 ) {
@@ -72,9 +72,7 @@ fun UploadImageContainer(
         isFilePickerLaunching.value = false
         file?.let { image ->
             scope.launch {
-                image.toImageSrc()?.let { src ->
-                    onClick(src)
-                }
+                onClick(PlatformImageFile(image))
             }
         }
     }
@@ -181,6 +179,6 @@ fun UploadImageContainer(
 @Composable
 private fun UploadImageContainerPreview() {
     MenaTheme(appTheme = AppTheme.DARK.name) {
-        UploadImageContainer(onClick = {}, null)
+        UploadImageContainer(onClick = {}, image = null)
     }
 }

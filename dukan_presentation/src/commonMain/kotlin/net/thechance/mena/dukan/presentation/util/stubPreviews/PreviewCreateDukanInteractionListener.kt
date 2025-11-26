@@ -2,7 +2,7 @@ package net.thechance.mena.dukan.presentation.util.stubPreviews
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
-import com.attafitamim.krop.core.images.ImageSrc
+import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.ColorUiState
@@ -14,7 +14,7 @@ object PreviewCreateDukanInteractionListener : CreateDukanInteractionListener {
     override fun onBackClicked() {}
     override fun onColorClicked(color: ColorUiState) {}
     override fun onStyleClicked(style: CreateDukanUiState.Style) {}
-    override fun onClickUploadImage(image: ImageSrc) {}
+    override fun onClickUploadImage(image: ImageFile) {}
     override fun onNameChanged(name: String) {}
     override fun onCategoryEnabled(category: DukanCategoryUiState): Boolean = true
     override fun isCategorySelected(): (DukanCategoryUiState) -> Boolean = { false }
