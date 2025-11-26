@@ -116,14 +116,16 @@ private fun ProductDetailsPriceRow(
             tint = Theme.colorScheme.shadePrimary,
             modifier = Modifier.padding(end = Theme.spacing._4)
         )
-        Text(
-            text = "$${discountPrice}",
-            style = Theme.typography.label.extraSmall.copy(
-                textDecoration = TextDecoration.LineThrough
-            ),
-            color = Theme.colorScheme.shadeTertiary,
-            modifier = Modifier.padding(end = 2.dp)
-        )
+        if ( discountPrice > price ) {
+            Text(
+                text = "$${discountPrice}",
+                style = Theme.typography.label.extraSmall.copy(
+                    textDecoration = TextDecoration.LineThrough
+                ),
+                color = Theme.colorScheme.shadeTertiary,
+                modifier = Modifier.padding(end = 2.dp)
+            )
+        }
         Text(
             text = price.toString(),
             style = Theme.typography.label.large,
