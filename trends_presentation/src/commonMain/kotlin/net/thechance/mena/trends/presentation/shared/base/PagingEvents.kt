@@ -28,10 +28,10 @@ fun <T : Any> PagingData<T>.applyEvent(
         }
         is PagingEvents.Remove<T> -> {
             this.filter { item ->
-                val shouldFilter = getItemId(item) == event.itemId
-                if(shouldFilter) event.action(item)
-
-                !shouldFilter
+                if(getItemId(item) == event.itemId) {
+                    event.action(item)
+                    false
+                } else true
             }
         }
     }
