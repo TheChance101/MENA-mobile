@@ -11,6 +11,7 @@ import net.thechance.mena.core_chat.data.source.local.database.ChatDatabase
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChat.CachedChatDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedMessage.CachedMessageDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.CachedWeatherDao
 import net.thechance.mena.core_chat.data.source.local.database.chatSyncTime.ChatSyncTimeDao
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageDao
 import org.koin.core.qualifier.named
@@ -28,6 +29,7 @@ internal val localDataModule = module {
     single<CachedMessageDao> { get<ChatDatabase>().getCachedMessageDao() }
     single<CachedChatDao> { get<ChatDatabase>().getChatDao() }
     single<ChatSyncTimeDao> { get<ChatDatabase>().getChatSyncTimeDao() }
+    single<CachedWeatherDao> { get<ChatDatabase>().getWeatherDao() }
 }
 
 expect fun Scope.createContactsProvider(): ContactsProvider
