@@ -74,7 +74,7 @@ fun DukanDetailsScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(state) {
         viewModel.loadBestSellingProducts()
     }
 
