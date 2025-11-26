@@ -75,6 +75,11 @@ private fun ShelfContent(
             bottom = Theme.spacing._16
         ),
     ) {
+        if (state.bestSellingProducts.isNotEmpty()) {
+            item(key = "BestSelling") {
+                SmallImageDukanBestSellingSection(state, listener)
+            }
+        }
         items(
             count = shelves.itemCount,
             key = shelves.itemKey { it.id }

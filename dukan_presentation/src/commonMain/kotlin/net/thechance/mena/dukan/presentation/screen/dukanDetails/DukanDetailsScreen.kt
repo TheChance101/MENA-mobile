@@ -3,6 +3,7 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,7 +37,7 @@ fun DukanDetailsScreen(
         ) { (id, quantity) ->
             viewModel.updateProductQuantityInCart(id, quantity)
         }
-        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART){
+        ObserveSavedStateEvent<Boolean>(ProductDetailsArgs.HAS_PRODUCT_IN_CART) {
             viewModel.setHasProductInCart(it)
         }
     }
@@ -71,6 +72,10 @@ fun DukanDetailsScreen(
             is DukanDetailsEffects.NavigateToCart ->
                 navController.navigate(DukanCart(effect.dukanId))
         }
+    }
+
+    LaunchedEffect(state) {
+        viewModel.loadBestSellingProducts()
     }
 
     AnimatedContent(

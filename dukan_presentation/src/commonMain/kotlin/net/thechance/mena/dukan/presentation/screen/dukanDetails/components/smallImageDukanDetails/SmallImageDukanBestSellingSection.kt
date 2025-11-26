@@ -1,17 +1,15 @@
-package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
+package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -40,9 +37,10 @@ import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetails
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import sv.lib.squircleshape.SquircleShape
 
 @Composable
-fun BestSellingNoImageDukan(
+fun SmallImageDukanBestSellingSection(
     state: DukanDetailsUiState,
     listener: DukanDetailsInteractionListener
 ) {
@@ -54,19 +52,16 @@ fun BestSellingNoImageDukan(
             text = stringResource(Res.string.best_selling),
             style = Theme.typography.title.medium,
             color = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(top = Theme.spacing._8, start = Theme.spacing._16)
+            modifier = Modifier.padding(top = Theme.spacing._16, start = 16.dp)
         )
         LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Theme.colorScheme.background.surfaceHigh),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._8, vertical = Theme.spacing._12)
+            contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
                 BestSellingItem(
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.width(140.dp),
                     product = product,
                     listener = listener,
                     dukanColor = Color(state.dukanInfo.color),
@@ -88,18 +83,18 @@ private fun BestSellingItem(
     var isError by remember { mutableStateOf(false) }
     var isLoading by remember { mutableStateOf(false) }
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+        modifier = modifier
     ) {
         Box(
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.fillMaxWidth()
+                .height(164.dp)
         ) {
             AsyncImage(
                 model = product.imageUrl,
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-                    .clip(CircleShape),
+                modifier = Modifier
+                    .clip(SquircleShape(Theme.radius.md))
+                    .size(136.dp, 160.dp),
                 onState = {
                     isError = it is AsyncImagePainter.State.Error
                     isLoading = it is AsyncImagePainter.State.Loading
@@ -118,7 +113,7 @@ private fun BestSellingItem(
                 )
             }
             SmallAndWideImageDukanProductAction(
-                modifier = Modifier.align(Alignment.TopEnd),
+                modifier = Modifier.align(Alignment.BottomEnd),
                 showProductQuantity = quantity > 0,
                 inCartQuantity = quantity,
                 dukanColor = dukanColor,
@@ -143,16 +138,12 @@ private fun BestSellingItem(
                 }
             )
         }
-        Column {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = product.name,
-                style = Theme.typography.label.small,
-                color = Theme.colorScheme.shadePrimary,
-                maxLines = 1,
-                textAlign = TextAlign.Center
-            )
-            ProductPrice(product.basePrice, product.finalPrice)
-        }
+        Text(
+            text = product.name,
+            style = Theme.typography.label.small,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1
+        )
+        ProductPrice(product.basePrice, product.finalPrice)
     }
 }

@@ -16,6 +16,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
+import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.BestSellingSection
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanAppBar
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanHeader
 import net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wideImageDukanDetails.WideImageDukanShelves
@@ -78,6 +79,18 @@ fun WideImageDukanDetailsContent(
                     state = state.dukanInfo,
                     onFavoriteClicked = listener::onFavoriteDukanClicked,
                 )
+            }
+            if (productShelf.loadState.refresh is LoadState.NotLoading) {
+
+                if (state.bestSellingProducts.isNotEmpty()) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        BestSellingSection(
+                            state = state,
+                            listener = listener,
+                            shelves = shelves
+                        )
+                    }
+                }
             }
             item(span = { GridItemSpan(maxLineSpan) }) {
                 WideImageDukanShelves(

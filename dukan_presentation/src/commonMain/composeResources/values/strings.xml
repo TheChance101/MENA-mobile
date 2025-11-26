@@ -200,4 +200,6 @@
     <string name="your_dukan_has_been_deactivated">Your dukan has been deactivated because:</string>
     <string name="wrong_information_provided">Wrong information provided.</string>
     <string name="no_active_location">No active location found</string>
+    <string name="see_more">...SeeMore</string>
+    <string name="see_less">.SeeLess</string>
 </resources>
