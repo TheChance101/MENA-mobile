@@ -48,7 +48,7 @@ class WeatherDetailsRepositoryImpl(
         val localWeather = weatherDao.getWeatherByLocation(latitude = latitude, longitude = longitude)
         if (localWeather != null){
             val currentTime = Clock.System.now().toEpochMilliseconds()
-            val oneHourInMillis = TIME_TO_DELETE_IN_MS
+            val oneHourInMillis = TIME_TO_UPDATE_IN_MS
             val timeDiff = currentTime - localWeather.addedAt
             if (timeDiff <= oneHourInMillis) return localWeather
         }
@@ -56,7 +56,7 @@ class WeatherDetailsRepositoryImpl(
     }
 
     companion object {
-        const val TIME_TO_DELETE_IN_MS =  60 * 1000
+        const val TIME_TO_UPDATE_IN_MS = 60 * 60 * 1000
         const val CURRENT_WEATHER_END_POINT = "/weather/current"
     }
 }
