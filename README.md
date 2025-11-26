@@ -191,12 +191,11 @@ Each feature module follows a strict three-layer architecture
 > - Each trend requires selecting 1–3 categories, with an optional description to boost discoverability.
 >
 > ### 📂 Content Management & Favorites
-> - **My Trends** provides a centralized hub to view, edit, and manage all your published content.
-> - Users retain full control, with the ability to delete their own trends anytime.
+> - **My Trends** provides a centralized hub where users can view or delete all their own published content.
 > - Liked trends are automatically saved to **Favorites** for quick access later.
 >
 > ### 🤝 User Interaction & Engagement
-> - Engage with the community by liking or reacting to any trend.
+> - Engage with the community by liking any trend.
 > - For your own trends: manage, delete, or jump directly to your profile.
 > - For others’ trends: express yourself through reactions and support creators.
 
@@ -237,7 +236,7 @@ Each feature module follows a strict three-layer architecture
 > Faith serves as your comprehensive Islamic companion, bringing together essential tools for daily worship, Quran study, and spiritual growth. Whether you're at home or traveling, stay connected to your faith with accurate prayer times, the complete Quran, and helpful features designed for modern Muslim life.
 
 
-<img width="1423" height="798" alt="faith" src="https://github.com/user-attachments/assets/aad4474f-b9fe-4d49-8fa8-8859f8ef82e9" />><br>
+<img width="1423" height="798" alt="faith" src="https://github.com/user-attachments/assets/aad4474f-b9fe-4d49-8fa8-8859f8ef82e9"/><br>
 
 > [!Note]
 > ### 🕌 Core Worship Features
@@ -270,7 +269,7 @@ Each feature module follows a strict three-layer architecture
 
 > The Admin Panel is a desktop application designed to give administrators full control over user management, Dukan onboarding, and operational workflows across the MENA platform. It provides secure access, comprehensive data visibility, and powerful management tools to ensure smooth platform operations.
 
-<img width="1431" height="800" alt="admin" src="https://github.com/user-attachments/assets/e262a2ed-fba6-451f-988c-4fa73f379b3d" /><br>
+<img width="1620" height="1450" alt="Untitled design (5)" src="https://github.com/user-attachments/assets/5b5f6228-a209-4a1d-98a8-108a77fd6cc4" /> <br>
 
 > [!Note]
 > ### 🔐 Secure Authentication
