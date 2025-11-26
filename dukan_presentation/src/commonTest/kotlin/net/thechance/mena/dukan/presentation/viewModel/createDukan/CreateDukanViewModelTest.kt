@@ -25,6 +25,7 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -664,7 +665,7 @@ class CreateDukanViewModelTest {
 
     @Test
     fun `onClickUploadImage SHOULD set selectedImage and enable cropping`() = runTest {
-        val mockImage = mock<ImageSrc>()
+        val mockImage = mock<ImageFile>()
         createDukanViewModel.onClickUploadImage(mockImage)
 
         createDukanViewModel.state.test {
@@ -712,7 +713,7 @@ class CreateDukanViewModelTest {
     @Test
     fun `onCancelCrop SHOULD clear selectedImage and disable cropping`() = runTest {
 
-        val fakeImageSrc = mock<ImageSrc>()
+        val fakeImageSrc = mock<ImageFile>()
         createDukanViewModel.onClickUploadImage(fakeImageSrc)
 
         createDukanViewModel.onCancelCrop()
