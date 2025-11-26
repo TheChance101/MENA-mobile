@@ -13,5 +13,6 @@ data class LocalStatement @OptIn(ExperimentalTime::class) constructor(
     val totalInflows: Double,
     val totalOutflows: Double,
     val createdAt: Long = Clock.System.now().toEpochMilliseconds(),
-    val fileName: String
+    val fileName: String,
+    val userId :String
 )
