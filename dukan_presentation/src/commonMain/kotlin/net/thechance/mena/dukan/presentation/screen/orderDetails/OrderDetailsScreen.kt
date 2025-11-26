@@ -67,8 +67,10 @@ fun OrderDetailsScreen(
         }
     }
 
-    LaunchedEffect(key1 = orderId) {
-        viewModel.loadOrderDetails(orderId)
+    LaunchedEffect(key1 = orderId, key2 = state.orderDetailsScreenState) {
+        if (state.orderDetailsScreenState == OrderDetailsUiState.OrderDetailsScreenState.Loading) {
+            viewModel.loadOrderDetails(orderId)
+        }
     }
 
     OrderDetailsContent(
