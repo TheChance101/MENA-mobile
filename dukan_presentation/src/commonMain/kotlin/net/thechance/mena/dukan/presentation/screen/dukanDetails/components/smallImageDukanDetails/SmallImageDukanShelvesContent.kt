@@ -112,7 +112,9 @@ private fun ShelfProducts(
     listener: DukanDetailsInteractionListener,
 ) {
 
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         val productPairs = remember(products) { products.chunked(2) }
         val lazyListState = rememberLazyListState()
         val flingBehavior = rememberSnapFlingBehavior(
@@ -121,13 +123,11 @@ private fun ShelfProducts(
         )
 
         val screenWidth = maxWidth
-        val horizontalSpacing =
-            Theme.spacing._8 * 2 + Theme.spacing._16 * 2
-        val cardWidth = when {
-            screenWidth < 500.dp -> screenWidth - horizontalSpacing - 40.dp
-            screenWidth < 800.dp -> screenWidth * 0.45f
-            else -> screenWidth * 0.3f
-        }
+        val cardMinWidth = 320.dp
+        val spacing = Theme.spacing._8
+        val cardsInRow = (screenWidth / (cardMinWidth + spacing)).toInt().coerceAtLeast(1)
+        val cardWidth = if (cardsInRow == 1) screenWidth * 0.8f else
+            (screenWidth - spacing * (cardsInRow - 1)) / cardsInRow
 
         LazyRow(
             modifier = Modifier.padding(bottom = Theme.spacing._8),
