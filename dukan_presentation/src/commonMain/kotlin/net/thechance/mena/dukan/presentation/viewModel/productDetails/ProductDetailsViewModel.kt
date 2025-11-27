@@ -130,7 +130,7 @@ class ProductDetailsViewModel(
 
     override fun onAddToCartClicked(productId: String) {
 
-        if (state.value.isSameQuantity.not()) {
+        if (state.value.isNotSameQuantity.not()) {
             showSnackBar(message = Res.string.same_quantity, type = SnackBarType.ERROR)
             return
         }
@@ -182,7 +182,7 @@ class ProductDetailsViewModel(
     }
 
     private fun updateAddToCartButtonIsEnable() {
-        updateState { copy(isSameQuantity = product.inCartQuantity != previousProductQuantity) }
+        updateState { copy(isNotSameQuantity = product.inCartQuantity != previousProductQuantity) }
     }
 
     fun setProductQuantity(productQuantity: Int) {
@@ -219,7 +219,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isSameQuantity = product.inCartQuantity != previousProductQuantity,
+                isNotSameQuantity = product.inCartQuantity != previousProductQuantity,
                 isFirstQuantityOne = false,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
@@ -232,7 +232,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isSameQuantity = product.inCartQuantity != previousProductQuantity,
+                isNotSameQuantity = product.inCartQuantity != previousProductQuantity,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
