@@ -10,6 +10,6 @@ import kotlin.uuid.Uuid
 object PreviewOrderDetailsInteractionListener: OrderDetailsInteractionListener {
     override fun onBackClicked() {}
     override fun onAddressDeliveryClicked(address: OrderDetailsUiState.AddressDeliveryUiState) {}
-    override fun onRetryLoadingOrderDetailsClicked(orderId: Uuid) {}
+    override fun onRetryLoadingOrderDetailsClicked() {}
     override fun onSnackBarDismissed() {}
 }

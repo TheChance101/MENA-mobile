@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.dukan_presentation.generated.resources.Res
-import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.order_error_general
 import mena.dukan_presentation.generated.resources.order_error_not_found
 import mena.dukan_presentation.generated.resources.order_error_unauthorized_access
@@ -22,6 +21,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class OrderDetailsViewModel(
+    private val orderId: Uuid,
     private val orderRepository: OrderRepository,
     defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : OrderDetailsInteractionListener,
@@ -29,8 +29,11 @@ class OrderDetailsViewModel(
         initialState = OrderDetailsUiState(),
         defaultDispatcher = defaultDispatcher
     ) {
+    init {
+        loadOrderDetails(orderId)
+    }
 
-    fun loadOrderDetails(orderId: Uuid) {
+    private fun loadOrderDetails(orderId: Uuid) {
         tryToExecute(
             onStart = ::onLoadOrderDetailsStart,
             block = { loadOrderDetailsBlock(orderId) },
@@ -54,8 +57,8 @@ class OrderDetailsViewModel(
         )
     }
 
-    override fun onRetryLoadingOrderDetailsClicked(orderId: Uuid) {
-        loadOrderDetails(orderId = orderId)
+    override fun onRetryLoadingOrderDetailsClicked() {
+        loadOrderDetails(orderId)
     }
 
     override fun onSnackBarDismissed() {
@@ -82,15 +85,18 @@ class OrderDetailsViewModel(
     }
 
     private fun onLoadOrderDetailsError(exception: Throwable) {
-        updateState { copy(orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.Error) }
+        updateState { copy(orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.Empty) }
         when (exception) {
-            is NoInternetException -> showErrorSnackbar(resErrorMessage = Res.string.no_internet_connection)
+            is NoInternetException -> handleNoInternetException()
             is UnAuthorizedException -> showErrorSnackbar(resErrorMessage = Res.string.order_error_unauthorized_access)
             is NoSuchItemException -> showErrorSnackbar(resErrorMessage = Res.string.order_error_not_found)
             else -> showErrorSnackbar(resErrorMessage = Res.string.order_error_general)
         }
     }
 
+    private fun handleNoInternetException() {
+        updateState { copy(orderDetailsScreenState = OrderDetailsUiState.OrderDetailsScreenState.NoInternet) }
+    }
 
     private fun showErrorSnackbar(resErrorMessage: StringResource) {
         updateState {
