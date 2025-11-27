@@ -152,7 +152,7 @@ private fun BestSellingItem(
                 maxLines = 1,
                 textAlign = TextAlign.Center
             )
-            ProductPrice(product.basePrice, product.finalPrice)
+            ProductPrice(product.basePrice, product.finalPrice, Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }

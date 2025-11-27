@@ -102,6 +102,7 @@ fun BestSellingItem(
                 style = Theme.typography.label.small,
                 color = Theme.colorScheme.shadePrimary,
                 maxLines = 2,
+                minLines = 2,
                 modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4)
             )
 
