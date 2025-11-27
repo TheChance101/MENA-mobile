@@ -153,28 +153,24 @@ class ChatViewModel(
     private fun getUserInfo() {
         tryToExecute(
             execute = { userRepository.getUser() },
-            onSuccess = { userFlow ->
-                userFlow.collect { user ->
-                    if (user == null)
-                        onGetUserDataError()
-                    else
-                        onGetUserDataSuccess(user)
-
-                }
-            },
+            onSuccess = { userFlow -> userFlow.collect { user -> onGetUserDataSuccess(user) } },
             onError = { onGetUserDataError() }
         )
     }
 
-    private fun onGetUserDataSuccess(user: User) {
-        updateState { state ->
-            state.copy(
-                userData = UserData(
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    imageUrl = user.profileImageUrl
+    private fun onGetUserDataSuccess(user: User?) {
+        if (user == null)
+            onGetUserDataError()
+        else{
+            updateState { state ->
+                state.copy(
+                    userData = UserData(
+                        firstName = user.firstName,
+                        lastName = user.lastName,
+                        imageUrl = user.profileImageUrl
+                    )
                 )
-            )
+            }
         }
     }
 
