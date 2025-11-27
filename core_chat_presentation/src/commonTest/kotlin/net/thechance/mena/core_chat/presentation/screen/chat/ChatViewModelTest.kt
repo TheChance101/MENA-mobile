@@ -24,12 +24,15 @@ import dev.mokkery.verify.VerifyMode.Companion.exactly
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.chat_deleted_successfully
@@ -37,6 +40,7 @@ import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
+import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.error_invalid_recording
 import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
@@ -50,20 +54,18 @@ import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageContent
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.domain.entity.User
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
-import net.thechance.mena.core_chat.presentation.screen.chat.components.NoInternetConnection
 import net.thechance.mena.core_chat.presentation.utils.AudioPlayer
 import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.now
-import net.thechance.mena.faith.domain.exception.FaithException
-import net.thechance.mena.wallet.domain.exceptions.NoInternetException
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -120,27 +122,39 @@ class ChatViewModelTest {
 
     @Test
     fun `init should update user data when receive user data from repository`() = runTest {
-        everySuspend { userRepository.getUserInfo() } returns user
+        everySuspend { userRepository.getUser() } returns user
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        assertThat(viewModel.state.value.userData.firstName).isEqualTo(user.firstName)
-        assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.lastName)
-        assertThat(viewModel.state.value.userData.imageUrl).isEqualTo(user.imageUrl)
+        assertThat(viewModel.state.value.userData.firstName).isEqualTo(user.first()!!.firstName)
+        assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.first()!!.lastName)
+        assertThat(viewModel.state.value.userData.imageUrl).isEqualTo(user.first()!!.profileImageUrl)
     }
 
     @Test
-    fun `init should update user data when receive user data with null imageUrl from repository`() = runTest {
-        everySuspend { userRepository.getUserInfo() } returns user.copy(imageUrl = null)
+    fun `show show fail to get user snack bar id user is null`() =
+        runTest {
+            everySuspend { userRepository.getUser() } returns flowOf(null)
 
-        val viewModel = createViewModel()
-        advanceUntilIdle()
+            val viewModel = createViewModel()
 
-        assertThat(viewModel.state.value.userData.firstName).isEqualTo(user.firstName)
-        assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.lastName)
-        assertThat(viewModel.state.value.userData.imageUrl).isEmpty()
-    }
+
+            viewModel.effect.test {
+                advanceUntilIdle()
+
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.error_get_user_info),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `onBackClicked should emit NavigateBack effect`() = runTest {
@@ -1335,10 +1349,16 @@ class ChatViewModelTest {
 
     private companion object {
 
-        val user: User = User(
-            firstName = "ali",
-            lastName = "nawar",
-            imageUrl = "https://image.com",
+        val user: Flow<User?> = flowOf(
+            User(
+                id = Uuid.random(),
+                firstName = "ali",
+                lastName = "nawar",
+                profileImageUrl = "https://image.com",
+                username = "ali-nawar",
+                birthDate = LocalDate(2000, 1, 1),
+                gender = Gender.MALE
+            )
         )
         val chatId = Uuid.parse("11111111-1111-1111-1111-111111111111")
         val chatRequesterId = Uuid.parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")

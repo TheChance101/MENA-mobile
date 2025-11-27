@@ -2,13 +2,14 @@ package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.DpOffset
-import com.attafitamim.krop.core.images.ImageSrc
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.awaitCancellation
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukan_creation_failed
 import mena.dukan_presentation.generated.resources.dukan_name_is_already_exist
+import mena.dukan_presentation.generated.resources.error_image_size
 import mena.dukan_presentation.generated.resources.error_upload_failed
 import mena.dukan_presentation.generated.resources.invalid_image_format
 import mena.dukan_presentation.generated.resources.no_internet_connection
@@ -23,6 +24,7 @@ import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.LocationRepository
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
+import net.thechance.mena.dukan.presentation.util.file.ImageFile
 import net.thechance.mena.dukan.presentation.util.imageCrop.toPngByteArray
 import net.thechance.mena.dukan.presentation.viewModel.base.BaseViewModel
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState.CreateDukanStep
@@ -112,14 +114,46 @@ class CreateDukanViewModel(
     private fun updateScreenStateWithColors(dukanColors: List<Color>) =
         updateState { copy(dukanColors = dukanColors.map { it.toUiColor() }) }
 
-    override fun onClickUploadImage(image: ImageSrc) {
+    override fun onClickUploadImage(image: ImageFile) {
+        tryToExecute(
+            block = { onUploadImageBlock(image) },
+        )
+    }
+
+    private suspend fun onUploadImageBlock(image: ImageFile) {
+        if (!isUploadImageValidToCrop(image))
+           awaitCancellation()
+
+        val imageSrc = image.toImageSrc()
         updateState {
             copy(
-                selectedImage = image,
+                selectedImage = imageSrc,
                 isImageBeingCropped = true
             )
         }
-        updateNextButtonEnableState()
+    }
+
+    private suspend fun isUploadImageValidToCrop(image: ImageFile): Boolean {
+        val imageSizeInMegabyte = image.size().toDouble() / BYTES_PER_MEGABYTE
+        val imageSrc = image.toImageSrc()
+
+        return when {
+            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB ->{
+                showErrorUpload( Res.string.error_image_size)
+                false
+            }
+
+            imageSrc == null -> {
+                showErrorUpload(Res.string.error_upload_failed)
+                false
+            }
+
+            else -> true
+        }
+    }
+
+    private fun showErrorUpload(errorMessage: StringResource) {
+        showSnackBar(message = errorMessage, type = SnackBarType.ERROR)
     }
 
     override fun onNextClicked() {
@@ -430,5 +464,7 @@ class CreateDukanViewModel(
         private const val MIN_CATEGORIES = 1
         private const val MAX_CATEGORIES = 3
         private const val MAX_NAME_LENGTH = 40
+        const val BYTES_PER_MEGABYTE = 1024 * 1024
+        const val IMAGE_MAX_SIZE_IN_MB = 5
     }
 }

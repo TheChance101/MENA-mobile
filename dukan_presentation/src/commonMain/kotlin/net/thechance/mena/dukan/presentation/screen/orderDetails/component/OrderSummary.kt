@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -48,6 +49,7 @@ import net.thechance.mena.dukan.presentation.viewModel.orderDetails.OrderDetails
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import sv.lib.squircleshape.SquircleShape
 import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
@@ -261,11 +263,8 @@ private fun PlatformFeesSection(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
-        Text(
-            text = "$platformFeesAmount%",
-            style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadePrimary
-        )
+
+        PriceWithCoin(totalPrice = platformFeesAmount)
     }
 }
 
@@ -288,9 +287,11 @@ private fun ProductInOrderItem(
             contentDescription = stringResource(Res.string.product_order_image),
             placeholder = painterResource(resource = Res.drawable.ic_no_image_loaded),
             error = painterResource(resource = Res.drawable.ic_no_image_loaded),
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(40.dp)
                 .padding(end = Theme.spacing._8)
+                .clip(SquircleShape(radius = Theme.radius.sm))
         )
         Text(
             modifier = Modifier
@@ -301,22 +302,7 @@ private fun ProductInOrderItem(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-        ) {
-            Text(
-                text = totalPrice.toString(),
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadePrimary,
-                maxLines = 1
-            )
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.silver_tc),
-                contentDescription = stringResource(Res.string.silver_tier_icon)
-            )
-        }
+        PriceWithCoin(totalPrice = totalPrice)
     }
 }
 
@@ -400,23 +386,31 @@ private fun TotalAmountInOrder(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-        ) {
-            Text(
-                text = totalAmount.toString(),
-                maxLines = 1,
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadePrimary,
-            )
-            Icon(
-                modifier = Modifier
-                    .size(20.dp),
-                painter = painterResource(Res.drawable.silver_tc),
-                contentDescription = stringResource(Res.string.silver_tier_icon)
-            )
-        }
+        PriceWithCoin(totalPrice = totalAmount)
+    }
+}
+
+@Composable
+private fun PriceWithCoin(
+    totalPrice: Double,
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+    ) {
+        Text(
+            text = totalPrice.toString(),
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1
+        )
+        Icon(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(Res.drawable.silver_tc),
+            contentDescription = stringResource(Res.string.silver_tier_icon)
+        )
     }
 }
 

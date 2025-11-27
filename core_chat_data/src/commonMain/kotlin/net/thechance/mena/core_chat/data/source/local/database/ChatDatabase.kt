@@ -17,9 +17,11 @@ import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.Pe
 import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.PendingMessageLocalDto
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedChatSummary.CachedChatSummaryDto
+import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.CachedWeatherDao
+import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.CachedWeatherLocalDto
 
 @Database(
-    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class, CachedChatSummaryDto::class],
+    entities = [PendingMessageLocalDto::class, CachedMessageLocalDto::class, CachedChatLocalDto::class, ChatSyncTime::class, CachedChatSummaryDto::class, CachedWeatherLocalDto::class],
     version = 1
 )
 @ConstructedBy(ChatDatabaseConstructor::class)
@@ -30,6 +32,7 @@ abstract class ChatDatabase : RoomDatabase() {
     abstract fun getCachedMessageDao(): CachedMessageDao
     abstract fun getChatDao(): CachedChatDao
     abstract fun getChatSyncTimeDao(): ChatSyncTimeDao
+    abstract fun getWeatherDao(): CachedWeatherDao
 }
 
 @Suppress("KotlinNoActualForExpect")

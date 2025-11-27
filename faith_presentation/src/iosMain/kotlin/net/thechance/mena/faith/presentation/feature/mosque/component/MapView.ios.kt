@@ -47,7 +47,10 @@ actual fun MapView(
     onCameraMove: (Double, Double) -> Unit,
     onMapIdle: (Double, Double) -> Unit
 ) {
-    val markerImage = remember { UIImage.imageNamed("ic_mosque_marker") }
+    val markerImage = remember(markerUri) {
+        val filePath = markerUri.removePrefix("file://") + "/ic_mo.webp"
+        UIImage.imageWithContentsOfFile(filePath)
+    }
     var currentZoom by remember { mutableDoubleStateOf(zoomLevel) }
     val mapMarkerManager = MapMarkerManager()
     val mapKitController = remember {
@@ -217,7 +220,7 @@ private fun configureAnnotationImage(
         markerImage.drawInRect(CGRectMake(x = 0.0, y = 0.0, width, height))
     }
     annotationView.image = resizedImage
-    annotationView.centerOffset = CGPointMake(x = 0.0, y = 0.0)
+    annotationView.centerOffset = CGPointMake(x = 0.0, y = -height / 2)
 }
 
 private fun calculateZoomLevel(spanValue: CLLocationDegrees): Double {

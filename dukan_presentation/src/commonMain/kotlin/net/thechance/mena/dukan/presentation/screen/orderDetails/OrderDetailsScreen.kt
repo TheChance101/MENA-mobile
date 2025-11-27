@@ -6,7 +6,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +37,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -45,7 +45,7 @@ import kotlin.uuid.Uuid
 fun OrderDetailsScreen(
     orderId: Uuid,
     onNavigationBackToChat: () -> Unit,
-    viewModel: OrderDetailsViewModel = koinViewModel(),
+    viewModel: OrderDetailsViewModel = koinViewModel{ parametersOf(orderId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val localContext = LocalPlatformContext.current
@@ -67,12 +67,7 @@ fun OrderDetailsScreen(
         }
     }
 
-    LaunchedEffect(key1 = orderId) {
-        viewModel.loadOrderDetails(orderId)
-    }
-
     OrderDetailsContent(
-        orderId = orderId,
         state = state,
         interactionListener = viewModel
     )
@@ -81,7 +76,6 @@ fun OrderDetailsScreen(
 
 @Composable
 private fun OrderDetailsContent(
-    orderId: Uuid,
     state: OrderDetailsUiState,
     interactionListener: OrderDetailsInteractionListener
 ) {
@@ -126,42 +120,42 @@ private fun OrderDetailsContent(
         ) { orderDetailsState ->
             when (orderDetailsState) {
                 OrderDetailsUiState.OrderDetailsScreenState.Loading -> LoadingDots(Modifier.fillMaxSize())
-                OrderDetailsUiState.OrderDetailsScreenState.Error -> NoInternetContent(
-                    onRetry = { interactionListener.onRetryLoadingOrderDetailsClicked(orderId) },
+                OrderDetailsUiState.OrderDetailsScreenState.NoInternet -> NoInternetContent(
+                    onRetry = { interactionListener.onRetryLoadingOrderDetailsClicked() },
                     modifier = Modifier.fillMaxSize()
                 )
                 OrderDetailsUiState.OrderDetailsScreenState.Success -> OrderDetailsSuccessContent(
                     state = state,
                     interactionListener = interactionListener
                 )
+                OrderDetailsUiState.OrderDetailsScreenState.Empty -> {}
             }
         }
     }
 }
 
-@Preview(name = "Order Details english",locale = "en")
-@Preview(name = "Order Details arabic",locale = "ar")
+@Preview(name = "Order Details english", locale = "en")
+@Preview(name = "Order Details arabic", locale = "ar")
 @Composable
 private fun OrderDetailsScreenPreviewLightTheme() {
-    MenaTheme (
+    MenaTheme(
         appTheme = AppTheme.LIGHT.name
-    ){
+    ) {
         OrderDetailsContent(
             state = PreviewOrderDetailsUiState.orderDetailsUiState,
             interactionListener = PreviewOrderDetailsInteractionListener,
-            orderId = Uuid.random()
         )
     }
 }
-@Preview(name = "Order Details english",locale = "en")
-@Preview(name = "Order Details arabic",locale = "ar")
+
+@Preview(name = "Order Details english", locale = "en")
+@Preview(name = "Order Details arabic", locale = "ar")
 @Composable
 private fun OrderDetailsScreenPreviewDarkTheme() {
     MenaTheme {
         OrderDetailsContent(
             state = PreviewOrderDetailsUiState.orderDetailsUiState,
             interactionListener = PreviewOrderDetailsInteractionListener,
-            orderId = Uuid.random()
         )
     }
 }

@@ -40,14 +40,14 @@ import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.core_chat.domain.entity.User
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.core_chat.domain.repository.UserRepository
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -152,25 +152,29 @@ class ChatViewModel(
 
     private fun getUserInfo() {
         tryToExecute(
-            execute = { userRepository.getUserInfo() },
-            onSuccess = ::onGetUserDataSuccess,
-            onError = ::onGetUserDataError
+            execute = { userRepository.getUser() },
+            onSuccess = { userFlow -> userFlow.collect { user -> onGetUserDataSuccess(user) } },
+            onError = { onGetUserDataError() }
         )
     }
 
-    private fun onGetUserDataSuccess(user: User) {
-        updateState { state ->
-            state.copy(
-                userData = UserData(
-                    firstName = user.firstName,
-                    lastName = user.lastName,
-                    imageUrl = user.imageUrl.orEmpty()
+    private fun onGetUserDataSuccess(user: User?) {
+        if (user == null)
+            onGetUserDataError()
+        else{
+            updateState { state ->
+                state.copy(
+                    userData = UserData(
+                        firstName = user.firstName,
+                        lastName = user.lastName,
+                        imageUrl = user.profileImageUrl
+                    )
                 )
-            )
+            }
         }
     }
 
-    private fun onGetUserDataError(t: Throwable) {
+    private fun onGetUserDataError(t: Throwable? = null) {
         showSnackBar(
             titleStringResource = Res.string.error,
             messageStringResource = Res.string.error_get_user_info,
