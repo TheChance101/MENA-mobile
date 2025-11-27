@@ -202,4 +202,6 @@
     <string name="no_active_location">No active location found</string>
     <string name="see_more">...SeeMore</string>
     <string name="see_less">.SeeLess</string>
+    <string name="remove_product_from_cart">Remove product from cart</string>
+    <string name="same_quantity">We already have one with the same quantity</string>
 </resources>

@@ -12,6 +12,7 @@ import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
+import mena.dukan_presentation.generated.resources.same_quantity
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -129,10 +130,12 @@ class ProductDetailsViewModel(
 
     override fun onAddToCartClicked(productId: String) {
 
+        if(state.value.isSameQuantity.not()){
+            showSnackBar(message = Res.string.same_quantity, type = SnackBarType.ERROR)
+            return
+        }
         val productQuantity = state.value.product.inCartQuantity
-
-        val uiRequest =
-            ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
+        val uiRequest = ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(dukanId = args.dukanId)
 
         tryToExecute(
@@ -178,7 +181,7 @@ class ProductDetailsViewModel(
     }
 
     private fun updateAddToCartButtonIsEnable() {
-        updateState { copy(isButtonEnable = product.inCartQuantity != previousProductQuantity) }
+        updateState { copy(isSameQuantity = product.inCartQuantity != previousProductQuantity) }
     }
 
     fun setProductQuantity(productQuantity: Int) {
@@ -207,7 +210,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                isSameQuantity = product.inCartQuantity != previousProductQuantity,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
@@ -219,7 +222,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                isSameQuantity = product.inCartQuantity != previousProductQuantity,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
