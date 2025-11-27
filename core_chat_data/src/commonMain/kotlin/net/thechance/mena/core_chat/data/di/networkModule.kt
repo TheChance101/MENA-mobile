@@ -7,6 +7,7 @@ import net.thechance.mena.core_chat.data.messagesender.AyahMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
+import net.thechance.mena.core_chat.data.source.remote.network.CustomHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
@@ -47,6 +48,14 @@ internal val networkModule = module {
     }
 
     single<ImageDownloaderService> { ImageDownloaderImp() }
+    single(named(CUSTOM_HTTP_CLIENT)){
+        CustomHttpClient(
+            get(named(BASE_URL)),
+            get(),
+            httpClientEngineFactory,
+            get(named(CHAT_JSON))
+        )
+    }
 
     single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT))) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
@@ -70,6 +79,7 @@ internal val networkModule = module {
 
 private const val BASE_URL = "baseUrl"
 const val CHAT_CLIENT = "chatClient"
+const val CUSTOM_HTTP_CLIENT = "customHttpClient"
 const val MEDIA_CLIENT = "mediaClient"
 const val CHAT_JSON = "chatJson"
 const val IMAGE_MESSAGE_SENDER = "image_message_sender"
