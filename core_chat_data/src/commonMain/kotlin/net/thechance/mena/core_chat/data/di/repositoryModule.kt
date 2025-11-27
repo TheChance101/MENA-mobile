@@ -22,7 +22,7 @@ import kotlin.uuid.ExperimentalUuidApi
 internal val repositoryModule = module {
     single<ContactsRepository> {
         ContactsRepositoryImpl(
-            customHttpClient = get(named(CUSTOM_HTTP_CLIENT)),
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT)),
             contactsProvider = get(),
             dataStore = get()
         )
@@ -30,7 +30,7 @@ internal val repositoryModule = module {
 
     single<ChatRepository> {
         ChatRepositoryImpl(
-            customHttpClient = get(named(CUSTOM_HTTP_CLIENT)),
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT)),
             webSocketManager = get(),
             cachedChatSummaryDao = get(),
             dataStore = get(),
@@ -41,7 +41,7 @@ internal val repositoryModule = module {
 
     single<MessageRepository> {
         MessageRepositoryImpl(
-            customHttpClient = get(named(CUSTOM_HTTP_CLIENT)),
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT)),
             webSocketManager = get(),
             pendingMessageDao = get(),
             messageSenderFactory = get(),
@@ -55,7 +55,7 @@ internal val repositoryModule = module {
 
     single<UserRepository> {
         UserRepositoryImpl(
-            customHttpClient = get(named(CUSTOM_HTTP_CLIENT)),
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT)),
         )
     }
 
@@ -70,7 +70,7 @@ internal val repositoryModule = module {
 
     single<WeatherRepository> {
         WeatherDetailsRepositoryImpl(
-            customHttpClient = get(named(CUSTOM_HTTP_CLIENT)),
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT)),
             weatherDao = get()
         )
     }

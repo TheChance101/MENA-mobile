@@ -12,7 +12,6 @@ import io.ktor.util.reflect.typeInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -29,7 +28,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
-import net.thechance.mena.core_chat.data.source.remote.network.CustomHttpClient
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
@@ -49,7 +48,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class ChatRepositoryImpl(
-    private val customHttpClient: CustomHttpClient,
+    private val clientHolder: HttpClientHolder,
     private val webSocketManager: WebSocketManager,
     private val cachedChatDao: CachedChatDao,
     private val cachedChatSummaryDao: CachedChatSummaryDao,
@@ -58,7 +57,8 @@ class ChatRepositoryImpl(
 ) : ChatRepository {
 
     private val _syncState = MutableSharedFlow<SyncState>()
-    private var client = customHttpClient.getClient()
+    private val client: HttpClient
+        get() = clientHolder.getClient()
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState
     }
@@ -206,8 +206,7 @@ class ChatRepositoryImpl(
                 if (token.isEmpty()) {
                     clearAllChatCache()
                 }else{
-                    customHttpClient.reset()
-                    client = customHttpClient.getClient()
+                    clientHolder.reset()
                 }
             }
         }
