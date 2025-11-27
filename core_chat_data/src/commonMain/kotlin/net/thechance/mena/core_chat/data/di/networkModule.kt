@@ -7,12 +7,11 @@ import net.thechance.mena.core_chat.data.messagesender.AyahMessageSender
 import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
-import net.thechance.mena.core_chat.data.source.remote.network.CustomHttpClient
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
 import net.thechance.mena.core_chat.data.source.remote.network.createChatCoilClient
-import net.thechance.mena.core_chat.data.source.remote.network.createHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.createMediaHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.httpClientEngineFactory
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
@@ -27,14 +26,7 @@ internal val networkModule = module {
             isLenient = true
         }
     }
-    single(named(CHAT_CLIENT)) {
-        createHttpClient(
-            get(named(BASE_URL)),
-            get(),
-            httpClientEngineFactory,
-            get(named(CHAT_JSON))
-        )
-    }
+
     single(named(MEDIA_CLIENT)) {
         createMediaHttpClient(
             httpClientEngineFactory
@@ -43,13 +35,14 @@ internal val networkModule = module {
     single<WebSocketManager> {
         WebSocketManagerImpl(
             baseUrl = get(named(BASE_URL)),
-            client = get(named(CHAT_CLIENT))
+            clientHolder = get(named(CUSTOM_HTTP_CLIENT))
         )
     }
 
     single<ImageDownloaderService> { ImageDownloaderImp() }
+
     single(named(CUSTOM_HTTP_CLIENT)){
-        CustomHttpClient(
+        HttpClientHolder(
             get(named(BASE_URL)),
             get(),
             httpClientEngineFactory,
@@ -57,9 +50,9 @@ internal val networkModule = module {
         )
     }
 
-    single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CHAT_CLIENT))) }
+    single(named(IMAGE_MESSAGE_SENDER)) { ImageMessageSender(get(named(CUSTOM_HTTP_CLIENT))) }
     single(named(TEXT_MESSAGE_SENDER)) { TextMessageSender(get(), get(named(CHAT_JSON))) }
-    single(named(AUDIO_MESSAGE_SENDER)) { AudioMessageSender(get(named(CHAT_CLIENT))) }
+    single(named(AUDIO_MESSAGE_SENDER)) { AudioMessageSender(get(named(CUSTOM_HTTP_CLIENT))) }
     single(named(AYAH_MESSAGE_SENDER)) { AyahMessageSender(get(), get(named(CHAT_JSON))) }
 
 

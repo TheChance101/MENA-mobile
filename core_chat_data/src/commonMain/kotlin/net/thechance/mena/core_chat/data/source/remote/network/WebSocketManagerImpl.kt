@@ -26,8 +26,11 @@ import kotlin.coroutines.cancellation.CancellationException
 
 class WebSocketManagerImpl(
     private val baseUrl: String,
-    private val client: HttpClient,
+    private val clientHolder: HttpClientHolder,
 ) : WebSocketManager {
+
+    private val client: HttpClient
+        get() = clientHolder.getClient()
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var session: DefaultClientWebSocketSession? = null
     private var isActiveSession = false
