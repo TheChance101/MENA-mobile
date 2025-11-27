@@ -29,6 +29,7 @@ import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfChatSummary
+import net.thechance.mena.core_chat.data.source.remote.network.CustomHttpClient
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Chat
@@ -48,7 +49,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class ChatRepositoryImpl(
-    private val client: HttpClient,
+    private val customHttpClient: CustomHttpClient,
     private val webSocketManager: WebSocketManager,
     private val cachedChatDao: CachedChatDao,
     private val cachedChatSummaryDao: CachedChatSummaryDao,
@@ -57,6 +58,7 @@ class ChatRepositoryImpl(
 ) : ChatRepository {
 
     private val _syncState = MutableSharedFlow<SyncState>()
+    private var client = customHttpClient.getClient()
     override fun observeChatSummariesSyncState(): Flow<SyncState> {
         return _syncState
     }
@@ -203,6 +205,9 @@ class ChatRepositoryImpl(
             authRepository.observeTokenChange().collectLatest { token ->
                 if (token.isEmpty()) {
                     clearAllChatCache()
+                }else{
+                    customHttpClient.reset()
+                    client = customHttpClient.getClient()
                 }
             }
         }
