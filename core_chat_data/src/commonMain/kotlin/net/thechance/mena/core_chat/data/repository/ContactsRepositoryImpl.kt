@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import com.bilalazzam.contacts_provider.ContactField
 import com.bilalazzam.contacts_provider.ContactsProvider
-import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -27,12 +26,15 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import kotlin.uuid.ExperimentalUuidApi
 import net.thechance.mena.core_chat.data.source.local.datastore.tryCall
+import net.thechance.mena.core_chat.data.source.remote.network.CustomHttpClient
 
 class ContactsRepositoryImpl(
-    private val client: HttpClient,
+    private val customHttpClient: CustomHttpClient,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
 ) : ContactsRepository{
+
+    private val client = customHttpClient.getClient()
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {
