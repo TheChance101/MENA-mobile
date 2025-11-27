@@ -41,6 +41,7 @@ import mena.core_chat_presentation.generated.resources.could_not_delete_chat
 import mena.core_chat_presentation.generated.resources.error
 import mena.core_chat_presentation.generated.resources.error_failed_to_download_image
 import mena.core_chat_presentation.generated.resources.error_failed_to_process_audio
+import mena.core_chat_presentation.generated.resources.error_get_user_info
 import mena.core_chat_presentation.generated.resources.error_invalid_recording
 import mena.core_chat_presentation.generated.resources.error_recording_failed
 import mena.core_chat_presentation.generated.resources.image_saved_successfully
@@ -134,6 +135,30 @@ class ChatViewModelTest {
         assertThat(viewModel.state.value.userData.lastName).isEqualTo(user.first()!!.lastName)
         assertThat(viewModel.state.value.userData.imageUrl).isEqualTo(user.first()!!.profileImageUrl)
     }
+
+    @Test
+    fun `show show fail to get user snack bar id user is null`() =
+        runTest {
+            everySuspend { userRepository.getUser() } returns flowOf(null)
+
+            val viewModel = createViewModel()
+
+
+            viewModel.effect.test {
+                advanceUntilIdle()
+
+                assertEquals(
+                    ChatScreenEffect.ShowSnackBar(
+                        SnackBarData(
+                            title = UiText.StringRes(Res.string.error),
+                            message = UiText.StringRes(Res.string.error_get_user_info),
+                            isError = true
+                        )
+                    ), awaitItem()
+                )
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 
     @Test
     fun `onBackClicked should emit NavigateBack effect`() = runTest {
