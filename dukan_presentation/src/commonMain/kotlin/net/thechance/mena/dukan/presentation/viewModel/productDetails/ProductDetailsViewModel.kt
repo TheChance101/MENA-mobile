@@ -130,12 +130,13 @@ class ProductDetailsViewModel(
 
     override fun onAddToCartClicked(productId: String) {
 
-        if(state.value.isSameQuantity.not()){
+        if (state.value.isSameQuantity.not()) {
             showSnackBar(message = Res.string.same_quantity, type = SnackBarType.ERROR)
             return
         }
         val productQuantity = state.value.product.inCartQuantity
-        val uiRequest = ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
+        val uiRequest =
+            ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(dukanId = args.dukanId)
 
         tryToExecute(
@@ -187,9 +188,17 @@ class ProductDetailsViewModel(
     fun setProductQuantity(productQuantity: Int) {
         updateState { copy(product = product.copy(inCartQuantity = productQuantity)) }
     }
+
     fun setProductQuantity(productQuantity: Int?) {
-        updateState { copy(product = product.copy(inCartQuantity = productQuantity ?: state.value.product.inCartQuantity)) }
+        updateState {
+            copy(
+                product = product.copy(
+                    inCartQuantity = productQuantity ?: state.value.product.inCartQuantity
+                )
+            )
+        }
     }
+
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = when (throwable) {
@@ -211,6 +220,7 @@ class ProductDetailsViewModel(
             copy(
                 isAddToCartLoading = false,
                 isSameQuantity = product.inCartQuantity != previousProductQuantity,
+                isFirstQuantityOne = false,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
@@ -251,7 +261,7 @@ class ProductDetailsViewModel(
 
     override fun onViewCartClicked() {
         updateState { copy(snackBarState = null) }
-        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId , args.productId))
+        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId, args.productId))
     }
 
     override fun onToggleProductToFavoriteClicked() {
@@ -273,7 +283,7 @@ class ProductDetailsViewModel(
     }
 
 
-  private fun refreshCartInfo() {
+    private fun refreshCartInfo() {
         loadCartInfo()
     }
 }

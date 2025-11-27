@@ -267,7 +267,7 @@ class ProductDetailsViewModelTest {
             val productId = "1"
 
             productDetailsViewModel.updateState {
-                copy(isFirstQuantityOne = false)
+                copy(isFirstQuantityOne = false, isSameQuantity = false)
             }
 
             everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
@@ -292,7 +292,7 @@ class ProductDetailsViewModelTest {
             // Given
             val productId = "1"
             productDetailsViewModel.updateState {
-                copy(isFirstQuantityOne = true)
+                copy(isFirstQuantityOne = true, isSameQuantity = false)
             }
 
             everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
