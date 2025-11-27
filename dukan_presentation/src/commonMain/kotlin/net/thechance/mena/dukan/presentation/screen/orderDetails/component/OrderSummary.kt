@@ -263,11 +263,8 @@ private fun PlatformFeesSection(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
-        Text(
-            text = "$platformFeesAmount%",
-            style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadePrimary
-        )
+
+        PriceWithCoin(totalPrice = platformFeesAmount)
     }
 }
 
@@ -305,22 +302,7 @@ private fun ProductInOrderItem(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadePrimary
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-        ) {
-            Text(
-                text = totalPrice.toString(),
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadePrimary,
-                maxLines = 1
-            )
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(Res.drawable.silver_tc),
-                contentDescription = stringResource(Res.string.silver_tier_icon)
-            )
-        }
+        PriceWithCoin(totalPrice = totalPrice)
     }
 }
 
@@ -404,23 +386,31 @@ private fun TotalAmountInOrder(
             style = Theme.typography.label.medium,
             color = Theme.colorScheme.shadeSecondary
         )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
-        ) {
-            Text(
-                text = totalAmount.toString(),
-                maxLines = 1,
-                style = Theme.typography.label.large,
-                color = Theme.colorScheme.shadePrimary,
-            )
-            Icon(
-                modifier = Modifier
-                    .size(20.dp),
-                painter = painterResource(Res.drawable.silver_tc),
-                contentDescription = stringResource(Res.string.silver_tier_icon)
-            )
-        }
+        PriceWithCoin(totalPrice = totalAmount)
+    }
+}
+
+@Composable
+private fun PriceWithCoin(
+    totalPrice: Double,
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing._4)
+    ) {
+        Text(
+            text = totalPrice.toString(),
+            style = Theme.typography.label.large,
+            color = Theme.colorScheme.shadePrimary,
+            maxLines = 1
+        )
+        Icon(
+            modifier = Modifier.size(20.dp),
+            painter = painterResource(Res.drawable.silver_tc),
+            contentDescription = stringResource(Res.string.silver_tier_icon)
+        )
     }
 }
 
