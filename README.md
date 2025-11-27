@@ -4,7 +4,7 @@
 <p align="center">
     <b>MENA Project:</b> The biggest Kotlin & Compose Multiplatform (KMP - CMP) open-source initiative.
     <br><br>
-    The Chance MENA App is an application crafted for the Middle Eastern and North African community.
+    The Chance MENA App is a super app crafted for the Middle Eastern and North African community - empowering you to do everything you need, all while nurturing a genuine sense of belonging.<br>
     Built with <b>layered architecture, modularized by feature</b>, with <b>MVVM pattern used for the UI layer.</b>
     It consolidates six distinct business domains: <b>Identity, Chat, Wallet, Dukan, Trend, and Faith</b>
     into a unified platform optimized for large-scale distributed team development with support of an Admin panel that oversees
@@ -269,7 +269,7 @@ Each feature module follows a strict three-layer architecture
 
 > The Admin Panel is a desktop application designed to give administrators full control over user management, Dukan onboarding, and operational workflows across the MENA platform. It provides secure access, comprehensive data visibility, and powerful management tools to ensure smooth platform operations.
 
-<img width="1620" height="1450" alt="Untitled design (5)" src="https://github.com/user-attachments/assets/5b5f6228-a209-4a1d-98a8-108a77fd6cc4" /> <br>
+<img width="6864" height="5100" alt="MENA-Admin-min" src="https://github.com/user-attachments/assets/8308c4db-3271-4cdd-b2db-4432bc1bb819" /><br>
 
 > [!Note]
 > ### 🔐 Secure Authentication
