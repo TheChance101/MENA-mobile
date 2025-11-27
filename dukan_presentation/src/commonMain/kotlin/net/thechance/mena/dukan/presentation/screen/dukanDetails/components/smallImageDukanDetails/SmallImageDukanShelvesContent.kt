@@ -126,7 +126,7 @@ private fun ShelfProducts(
         val cardMinWidth = 320.dp
         val spacing = Theme.spacing._8
         val cardsInRow = (screenWidth / (cardMinWidth + spacing)).toInt().coerceAtLeast(1)
-        val cardWidth = if (cardsInRow == 1) screenWidth * 0.8f else
+        val cardWidth = if (cardsInRow == 1) screenWidth * 0.98f else
             (screenWidth - spacing * (cardsInRow - 1)) / cardsInRow
 
         LazyRow(
