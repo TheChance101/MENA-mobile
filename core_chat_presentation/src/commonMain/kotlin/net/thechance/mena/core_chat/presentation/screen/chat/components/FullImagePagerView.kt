@@ -48,18 +48,25 @@ import net.thechance.mena.core_chat.presentation.screen.chat.ImageMessageUiState
 import net.thechance.mena.core_chat.presentation.screen.contacts.components.CircularAvatar
 import net.thechance.mena.core_chat.presentation.utils.formatAsPastDateTime
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
+import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalUuidApi::class)
 @Composable
 fun FullImagePagerView(
     messages: List<ImageMessageUiState>,
     senderName: String,
     senderImageUrl: String,
     initialPage: Int,
+    isReactionDialogVisible: Boolean,
+    currentUserId: Uuid?,
+    onDismissReactionDialog: () -> Unit,
+    onReactionSelected: (messageId: Uuid, emoji: String) -> Unit,
     onCloseClick: () -> Unit,
     onImageLongClick: (message: ImageMessageUiState) -> Unit,
     onDownloadClick: (String) -> Unit,
@@ -71,43 +78,56 @@ fun FullImagePagerView(
         pageCount = { messages.size }
     )
     val message = messages[pagerState.currentPage]
-    Box(
+    val messageToReact = messages[pagerState.currentPage]
+    Scaffold(
         modifier = Modifier.fillMaxSize().background(Theme.colorScheme.background.surface)
             .combinedClickable(
                 onClick = {},
                 onLongClick = { onImageLongClick(message) },
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
+            ),
+        fullScreen = true,
+        overlays = {
+            messageReactionDialog(
+                isVisible = isReactionDialogVisible,
+                onDismiss = onDismissReactionDialog,
+                message = messageToReact,
+                currentUserId = currentUserId,
+                onReactionClicked = onReactionSelected
             )
+        }
     ) {
+        Box(modifier = Modifier.fillMaxSize()) {
 
-        val images = messages.map { it.imageDate }
-        HorizontalImagePager(state = pagerState, images = images)
-        FabButton(
-            painter = painterResource(Res.drawable.ic_cancel),
-            shape = RoundedCornerShape(Theme.spacing._12),
-            iconSize = 20.dp,
-            contentPadding = PaddingValues(10.dp),
-            containerColor = Theme.colorScheme.background.surfaceLow,
-            contentColor = Theme.colorScheme.primary.primary,
-            onClick = onCloseClick,
-            modifier = Modifier.padding(
-                vertical = Theme.spacing._8,
-                horizontal = Theme.spacing._16
-            ).statusBarsPadding(),
-        )
-        val message = messages[pagerState.currentPage]
-        val isUrlImage = message.imageDate is ImageData.ImageUrl
+            val images = messages.map { it.imageDate }
+            HorizontalImagePager(state = pagerState, images = images)
+            FabButton(
+                painter = painterResource(Res.drawable.ic_cancel),
+                shape = RoundedCornerShape(Theme.spacing._12),
+                iconSize = 20.dp,
+                contentPadding = PaddingValues(10.dp),
+                containerColor = Theme.colorScheme.background.surfaceLow,
+                contentColor = Theme.colorScheme.primary.primary,
+                onClick = onCloseClick,
+                modifier = Modifier.padding(
+                    vertical = Theme.spacing._8,
+                    horizontal = Theme.spacing._16
+                ).statusBarsPadding(),
+            )
+            val message = messages[pagerState.currentPage]
+            val isUrlImage = message.imageDate is ImageData.ImageUrl
 
-        PagerOverlay(
-            senderName = senderName,
-            senderImageUrl = senderImageUrl,
-            time = message.messageDetails.sendTime,
-            isDownloadButtonVisible = isUrlImage,
-            message = message,
-            onDownloadClicked = { if (isUrlImage) onDownloadClick((message.imageDate).url) },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+            PagerOverlay(
+                senderName = senderName,
+                senderImageUrl = senderImageUrl,
+                time = message.messageDetails.sendTime,
+                isDownloadButtonVisible = isUrlImage,
+                message = message,
+                onDownloadClicked = { if (isUrlImage) onDownloadClick((message.imageDate).url) },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
     }
 
     BackHandler(
@@ -220,7 +240,10 @@ private fun PagerOverlay(
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(
+                Theme.spacing._8,
+                Alignment.CenterHorizontally
+            )
         ) {
             if (message.messageDetails.reactions.isNotEmpty()) {
                 ReactionBubble(reactions = message.messageDetails.reactions)
