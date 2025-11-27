@@ -91,6 +91,7 @@ fun AddToCartSection(
                     .heightIn(min = 48.dp)
                     .fillMaxWidth(),
                 onClick = onAddToCartClick,
+                isEnabled = state.isFirstQuantityOne.not()|| state.product.inCartQuantity>0,
                 isLoading = state.isAddToCartLoading,
                 loadingColors = listOf(
                     Theme.colorScheme.stroke,
