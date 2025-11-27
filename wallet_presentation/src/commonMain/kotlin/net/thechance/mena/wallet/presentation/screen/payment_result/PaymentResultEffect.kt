@@ -8,5 +8,5 @@ import kotlin.uuid.Uuid
 sealed interface PaymentResultEffect {
     data object NavigateBack : PaymentResultEffect
     data class NavigateToTransactionDetails(val transactionId: Uuid) : PaymentResultEffect
-    data object NavigateToPrePaymentScreen : PaymentResultEffect
+    data class NavigateToPrePaymentScreen(val isSuccess: Boolean) : PaymentResultEffect
 }

@@ -39,7 +39,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @Composable
 fun PaymentResultScreen(
-    navigateBack: () -> Unit,
+    navigateBack: (Boolean) -> Unit,
     viewModel: PaymentResultViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -114,14 +114,14 @@ private fun PaymentResultScreenContent(
 private fun onPaymentResultEffect(
     effect: PaymentResultEffect,
     navController: NavController,
-    navigateBack: () -> Unit
+    navigateBack: (Boolean) -> Unit
 ) {
     when (effect) {
         is PaymentResultEffect.NavigateBack -> navController.popBackStack()
         is PaymentResultEffect.NavigateToTransactionDetails -> {
             navController.navigate(TransactionDetailsScreenRoute(effect.transactionId.toString()))
         }
-        is PaymentResultEffect.NavigateToPrePaymentScreen -> navigateBack()
+        is PaymentResultEffect.NavigateToPrePaymentScreen -> navigateBack(effect.isSuccess)
     }
 }
 

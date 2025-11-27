@@ -55,7 +55,8 @@ class PaymentResultViewModel(
     }
 
     override fun onCloseClicked() {
-        sendEffect(PaymentResultEffect.NavigateToPrePaymentScreen)
+        val success = currentState.paymentStatus == SubmissionStatus.SUCCESS
+        sendEffect(PaymentResultEffect.NavigateToPrePaymentScreen(success))
     }
 
     override fun onShowTransactionDetailsClicked() {
