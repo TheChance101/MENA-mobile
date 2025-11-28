@@ -98,7 +98,7 @@ internal class CreateMosqueViewModel(
     }
 
     override fun onClickMap() {
-        //todo
+        //todo add the logic here effect to PickLocationScreen
     }
 
     override fun onEditMarkerClick() {
