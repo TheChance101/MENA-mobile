@@ -5,7 +5,7 @@ import io.ktor.client.request.parameter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanResponseDto
@@ -27,6 +27,7 @@ class DukanDiscoveryRepositoryImpl(
     private val locationService: LocationService,
     private val authorizationService: AuthorizationService,
 ) : DukanDiscoveryRepository {
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
         observeAuthenticationState()
@@ -88,8 +89,8 @@ class DukanDiscoveryRepositoryImpl(
     }
 
     private fun observeAuthenticationState() {
-        CoroutineScope(Dispatchers.IO).launch {
-            authorizationService.observeAccessToken().collectLatest { token ->
+        repositoryScope.launch {
+            authorizationService.observeAccessToken().collect { token ->
                 if (token.isNotEmpty()) {
                     client.reset()
                 }
