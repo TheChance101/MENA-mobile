@@ -109,7 +109,6 @@ private fun CreateProductContent(
                     .background(color = Theme.colorScheme.background.surface)
                     .padding(bottom = Theme.spacing._16)
                     .fillMaxWidth()
-                    .wrapContentHeight()
                     .padding(horizontal = Theme.spacing._16)
             )
         },
