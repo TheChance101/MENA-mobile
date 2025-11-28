@@ -1,9 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.mosque.create
 
-import androidx.compose.ui.unit.DpOffset
 import androidx.lifecycle.viewModelScope
 import com.attafitamim.krop.core.images.ImageSrc
-import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -99,19 +97,8 @@ internal class CreateMosqueViewModel(
         checkIfFormIsComplete()
     }
 
-    override fun onMapClick(position: Position, offset: DpOffset) {
-        if (uiState.value.offset != null) return
-        val coordinate = MosqueUiState.Coordinate(
-            latitude = position.latitude,
-            longitude = position.longitude
-        )
-        updateState {
-            it.copy(
-                mosqueLocation = coordinate,
-                offset = offset,
-            )
-        }
-        checkIfFormIsComplete()
+    override fun onClickMap() {
+        //todo add the logic here effect to PickLocationScreen
     }
 
     override fun onEditMarkerClick() {
