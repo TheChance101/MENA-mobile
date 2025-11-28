@@ -6,6 +6,4 @@ sealed interface PickLocationScreenUIEffect {
     data class NavigateBackWithLocation(val mosqueLocation: CoordinatesUiState) :
         PickLocationScreenUIEffect
 
-    data object NavigateToEnableLocation : PickLocationScreenUIEffect
-
 }
