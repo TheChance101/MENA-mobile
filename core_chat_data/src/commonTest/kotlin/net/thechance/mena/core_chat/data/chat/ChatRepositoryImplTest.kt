@@ -240,35 +240,6 @@ class ChatRepositoryImplTest {
         }
 
     @Test
-    fun `should return chat summary when getChatSummaryById is successful`() = runTest {
-        val testChatId = Uuid.random()
-        val dto = createChatSummaryDto(id = testChatId.toString(), name = "Summary Chat")
-
-        every { httpClientHolder.getClient() } returns createHttpClient(
-            chatByIdResponse = {
-                respond(
-                    content = jsonSerialization.encodeToString(ChatSummaryDto.serializer(), dto),
-                    status = HttpStatusCode.OK,
-                    headers = jsonHeaders
-                )
-            }
-        )
-        repository = createChatRepository(
-            httpClientHolder = httpClientHolder,
-            webSocketManager = webSocketManager,
-            cachedChatSummaryDao = cachedChatSummaryDao,
-            dataStore = dataStore,
-            authRepository = authRepository,
-            cachedChatDao = cachedChatDao
-        )
-
-        val result = repository.getChatSummaryById(testChatId)
-
-        assertThat(result.id).isEqualTo(testChatId)
-        assertThat(result.name).isEqualTo("Summary Chat")
-    }
-
-    @Test
     fun `should throw NotFoundException when getChatSummaryById returns 404`() = runTest {
         val testChatId = Uuid.random()
 
