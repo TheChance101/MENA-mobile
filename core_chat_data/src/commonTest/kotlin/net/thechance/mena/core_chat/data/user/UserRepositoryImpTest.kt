@@ -2,6 +2,9 @@ package net.thechance.mena.core_chat.data.user
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import dev.mokkery.answering.returns
+import dev.mokkery.every
+import dev.mokkery.mock
 import dev.mokkery.verify
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.ContentType
@@ -15,16 +18,28 @@ import net.thechance.mena.core_chat.data.jsonHeaders
 import net.thechance.mena.core_chat.data.repository.UserRepositoryImpl
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toDomain
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.domain.exception.NotFoundException
+import net.thechance.mena.core_chat.domain.repository.UserRepository
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
 
 class UserRepositoryImpTest {
 
+    private lateinit var httpClientHolder: HttpClientHolder
+    private lateinit var userRepository: UserRepository
+
+    @BeforeTest
+    fun setUp() {
+        httpClientHolder = mock<HttpClientHolder>()
+        userRepository = UserRepositoryImpl(clientHolder = httpClientHolder)
+    }
+
     @Test
     fun `should get user info from remote source when getUserInfo is called`() = runTest {
 
-        val httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             userResponse = {
                 respond(
                     content = Json.encodeToString(UserDto.serializer(), user),
@@ -37,10 +52,6 @@ class UserRepositoryImpTest {
             }
         )
 
-        val userRepository = UserRepositoryImpl(
-            client = httpClient,
-        )
-
         val result = userRepository.getUserInfo()
         assertThat(result).isEqualTo(user.toDomain())
     }
@@ -48,15 +59,12 @@ class UserRepositoryImpTest {
     @Test
     fun `should throw NotFoundException when getUserInfo returns 404`() = runTest {
 
-        val httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             userResponse = {
                 respond("", HttpStatusCode.NotFound, jsonHeaders)
             }
         )
 
-        val userRepository = UserRepositoryImpl(
-            client = httpClient,
-        )
         assertFailsWith<NotFoundException> {
             userRepository.getUserInfo()
         }
@@ -67,7 +75,7 @@ class UserRepositoryImpTest {
     @Test
     fun `should map user dto to user when getUserInfo is called`() = runTest {
 
-        val httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             userResponse = {
                 respond(
                     content = Json.encodeToString(UserDto.serializer(), user),
@@ -77,9 +85,6 @@ class UserRepositoryImpTest {
             }
         )
 
-        val userRepository = UserRepositoryImpl(
-            client = httpClient,
-        )
         userRepository.getUserInfo()
         verify { user.toDomain() }
     }
