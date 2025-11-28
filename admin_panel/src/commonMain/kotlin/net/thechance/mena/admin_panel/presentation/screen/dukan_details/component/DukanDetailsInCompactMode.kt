@@ -1,5 +1,6 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,9 +37,9 @@ internal fun DukanDetailsInCompactMode(
 
     LazyColumn(
         modifier = modifier
-            .padding(bottom = 16.dp)
             .fillMaxSize(),
-        state = listState
+        state = listState,
+        contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         item {
             DukanDetailsCard(

@@ -24,7 +24,8 @@ internal fun DukanDetailsInFullScreenMode(
 ) {
     Row(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
         DukanDetailsCard(
