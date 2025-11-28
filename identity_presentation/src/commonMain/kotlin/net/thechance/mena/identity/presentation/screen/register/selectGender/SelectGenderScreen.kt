@@ -18,9 +18,11 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
+import net.thechance.mena.identity.presentation.components.GenderToggle
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.components.GenderToggle
+import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
+import net.thechance.mena.identity.presentation.screen.register.selectGender.components.SessionExpiredDialog
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.jetbrains.compose.resources.stringResource
@@ -29,10 +31,10 @@ import org.koin.core.parameter.parametersOf
 class SelectGenderScreen(
     private val registerUIState: RegisterUIState
 ) : BaseScreen<
-    SelectGenderScreenViewModel,
-    SelectGenderScreenUIState,
-    SelectGenderScreenUIEffect,
-    SelectGenderScreenInteractionListener>() {
+        SelectGenderScreenViewModel,
+        SelectGenderScreenUIState,
+        SelectGenderScreenUIEffect,
+        SelectGenderScreenInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -44,7 +46,16 @@ class SelectGenderScreen(
         state: SelectGenderScreenUIState,
         listener: SelectGenderScreenInteractionListener
     ) {
-        Scaffold {
+        Scaffold(
+            overlays = {
+                dialog(state.showSessionExpiredDialog) {
+                    SessionExpiredDialog(
+                        it,
+                        onClick = listener::onClickOkSessionExpired,
+                    )
+                }
+            }
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -93,6 +104,11 @@ class SelectGenderScreen(
                 snackBarController.showSnackBarError(
                     message = effect.errorStringResource
                 )
+            }
+
+            SelectGenderScreenUIEffect.NavigateBackToRegister -> {
+                navigator.popUntilRoot()
+                navigator.push(RegisterPhoneEntryScreen())
             }
         }
     }

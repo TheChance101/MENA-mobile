@@ -12,4 +12,6 @@ sealed interface SelectGenderScreenUIEffect {
 
     data class ShowSnackBarError(val errorStringResource: StringResource) :
         SelectGenderScreenUIEffect
+
+    data object NavigateBackToRegister: SelectGenderScreenUIEffect
 }

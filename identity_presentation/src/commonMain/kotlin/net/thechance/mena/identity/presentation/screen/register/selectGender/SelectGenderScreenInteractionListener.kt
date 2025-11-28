@@ -6,4 +6,5 @@ import net.thechance.mena.identity.presentation.base.BaseInteractionListener
 interface SelectGenderScreenInteractionListener : BaseInteractionListener {
     fun onClickRegister()
     fun onChangeGender(gender: Gender)
+    fun onClickOkSessionExpired()
 }
