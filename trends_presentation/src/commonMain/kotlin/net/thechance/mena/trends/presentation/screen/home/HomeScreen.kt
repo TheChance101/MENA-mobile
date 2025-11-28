@@ -71,8 +71,6 @@ internal fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.getFeedTrends() }
-
     HomeScreenContent(
         state = state,
         listener = viewModel,

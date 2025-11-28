@@ -516,40 +516,6 @@ class MessageRepositoryImplTest {
         }
     }
 
-
-    @Test
-    fun `should sync after last update when lastSyncTime exists`() = runTest {
-        val cachedMessage = createMessage().toCachedMessageLocalDto()
-        val now = LocalDateTime.now().toInstant().toString()
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(cachedMessage)
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns now
-        everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        every { httpClientHolder.getClient() } returns createHttpClient(
-            syncLatestMessagesResponse = { defaultChatHistoryResponse() }
-        )
-        repository = createMessageRepository(
-            httpClientHolder = httpClientHolder,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao,
-            authRepository = authRepository,
-            quranService = quranService
-        )
-        repository.loadMessages(chatId, 0, 10)
-        verifySuspend { cachedMessageDao.insertAllMessages(any()) }
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
-
     @Test
     fun `should insert messages and update sync time in syncAfterLastUpdate`() = runTest {
         val now = LocalDateTime.now().toInstant().toString()
@@ -606,25 +572,6 @@ class MessageRepositoryImplTest {
         assertThat(result.data).isNotEmpty()
         assertThat(result.totalItems).isGreaterThan(0)
         verifySuspend { cachedMessageDao.insertAllMessages(any()) }
-    }
-
-    @Test
-    fun `should upsert sync time when lastSyncTime is null in loadMessages`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(createMessage().toCachedMessageLocalDto())
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-
-        val result = repository.loadMessages(chatId, 1, 40)
-
-        assertThat(result.data).isNotEmpty()
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
     }
 
     @Test

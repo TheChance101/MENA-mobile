@@ -1,5 +1,6 @@
 package net.thechance.mena.trends.data.repository
 
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
@@ -14,6 +15,7 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -37,6 +39,7 @@ import net.thechance.mena.trends.data.repository.util.toggleLikeReelResponse
 import net.thechance.mena.trends.data.repository.util.updateReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelResponse
 import net.thechance.mena.trends.data.repository.util.uploadReelThumbnailResponse
+import net.thechance.mena.trends.domain.model.TrendUpdates
 import net.thechance.mena.trends.domain.model.TrendWatchSession
 import net.thechance.mena.trends.domain.model.UploadTrendProgress
 import kotlin.test.Test
@@ -443,6 +446,14 @@ internal class TrendRepositoryImplTest {
         verifySuspend { userEngagementDao.deleteUserEngagementsBeforeGivenTime(any(), any()) }
     }
 
+    @Test
+    fun `observeTrendUpdates should emit values when sendTrendUpdates is called`() = runTest {
+        repository.observeTrendUpdates().test {
+            repository.sendTrendUpdates(trendUpdates)
+            assertThat(awaitItem()).isEqualTo(trendUpdates)
+        }
+    }
+
     private companion object {
         const val FAKE_SIZE = 1000L
         val FAKE_BYTES = ByteArray(FAKE_SIZE.toInt()) { 1 }
@@ -480,6 +491,14 @@ internal class TrendRepositoryImplTest {
                 percentageOfVideoWatched = 100f,
                 videoDurationInMilliseconds = 1000L
             )
+        )
+
+        val trendUpdates = TrendUpdates(
+            trendId = "1",
+            isLiked = true,
+            likesCount = 5,
+            viewsCount = 10,
+            isDeleted = false
         )
     }
 }

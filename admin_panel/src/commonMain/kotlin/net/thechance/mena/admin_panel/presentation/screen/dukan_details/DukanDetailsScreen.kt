@@ -19,12 +19,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import net.thechance.mena.admin_panel.navigation.DukanManagement
 import net.thechance.mena.admin_panel.navigation.LocalNavController
+import net.thechance.mena.admin_panel.presentation.component.DukanStatusChangeDialog
 import net.thechance.mena.admin_panel.presentation.component.PanelScaffold
 import net.thechance.mena.admin_panel.presentation.component.SnackBarContainer
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsAppBar
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInCompactMode
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.component.DukanDetailsInFullScreenMode
-import net.thechance.mena.admin_panel.presentation.component.DukanStatusChangeDialog
 import net.thechance.mena.admin_panel.presentation.utils.ObserveAsEffect
 import net.thechance.mena.admin_panel.resources.Res
 import net.thechance.mena.admin_panel.resources.deactivate
@@ -107,7 +107,7 @@ private fun DukanDetailsScreenContent(
         onRetry = interactionListener::onRetry
     ) {
         BoxWithConstraints(
-            modifier = Modifier.fillMaxSize().padding(top = 16.dp, start = 16.dp, end = 16.dp)
+            modifier = Modifier.fillMaxSize().padding(start = 16.dp, end = 16.dp)
         ) {
             val isCompact = maxWidth < 800.dp
 

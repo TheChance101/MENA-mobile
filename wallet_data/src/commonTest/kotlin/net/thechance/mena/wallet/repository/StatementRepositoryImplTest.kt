@@ -3,10 +3,13 @@
 package net.thechance.mena.wallet.repository
 
 import dev.mokkery.MockMode
+import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import dev.mokkery.verifySuspend
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
@@ -17,13 +20,17 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.entity.Gender
+import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.wallet.data.database.StatementDao
+import net.thechance.mena.wallet.data.dto.local.LocalStatement
 import net.thechance.mena.wallet.data.network_client.NetworkClient
 import net.thechance.mena.wallet.data.repository.statement.StatementRepositoryImpl
 import net.thechance.mena.wallet.domain.entity.Statement
@@ -82,6 +89,26 @@ class StatementRepositoryImplTest {
             assertContentEquals(pdfBytes, firstResult.byteArray)
             assertContentEquals(pdfBytes, secondResult.byteArray)
         }
+
+    @Test
+    fun `getStatements should return statements from dao successfully`() = runTest(testDispatcher) {
+        networkClient = createNetworkClient()
+        statementDao = mock(mode = MockMode.autofill)
+
+        val mockStatements = listOf(localStatement)
+
+        everySuspend {
+            statementDao.getAllStatement(userId = any(), limit = 10, offset = 0)
+        } returns mockStatements
+
+        everySuspend { userRepository.getUser() } returns user
+
+        statementRepository = StatementRepositoryImpl(networkClient, userRepository, statementDao)
+
+        val result = statementRepository.getStatements(page = 1, pageSize = 10)
+
+        assertEquals(mockStatements.size, result.size)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -160,6 +187,28 @@ class StatementRepositoryImplTest {
         totalInflows = 100.0,
         totalOutflows = 50.0,
         fileName = "test-statement.pdf"
+    )
+
+    private val localStatement = LocalStatement(
+        id = Uuid.random().toString(),
+        startDate ="2025-01-01",
+        endDate = "2025-01-31",
+        totalInflows = 100.0,
+        totalOutflows = 50.0,
+        fileName = "test-statement.pdf",
+        userId = "1"
+    )
+
+    val user = flowOf(
+        User(
+            id = Uuid.random(),
+            firstName = "Ahmed",
+            lastName = "Sayed",
+            profileImageUrl = "https://example.com/profile.jpg",
+            username = "Ahmed123",
+            birthDate = LocalDate(1995, 11, 15),
+            gender = Gender.MALE
+        )
     )
 
     private companion object {
