@@ -6,7 +6,6 @@ import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.InvalidRequestException
-import net.thechance.mena.identity.domain.exception.UnAuthorizedException
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
