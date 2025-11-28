@@ -32,7 +32,7 @@ fun ContactDto.toDomain(): Contact {
         lastName = lastName.orEmpty(),
         phone = phoneNumber.orEmpty(),
         menaUserId = getUuidOrNull(menaUserId),
-        imageUrl = imageUrl
+        imageUrl = BASE_CONTACT_IMAGE_URL + imageUrl
     )
 }
 
@@ -49,3 +49,6 @@ fun DeviceContact.toListOfContactCreationRequestDto(): List<ContactCreationReque
 fun List<DeviceContact>.toListOfContactCreationRequestDto(): List<ContactCreationRequestDto> {
     return flatMap ( DeviceContact::toListOfContactCreationRequestDto )
 }
+
+private const val BASE_CONTACT_IMAGE_URL =
+    "https://menastorage.fra1.cdn.digitaloceanspaces.com/identity/profile/image/"
