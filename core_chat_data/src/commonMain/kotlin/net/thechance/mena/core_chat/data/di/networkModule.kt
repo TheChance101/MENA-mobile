@@ -8,6 +8,7 @@ import net.thechance.mena.core_chat.data.messagesender.ImageMessageSender
 import net.thechance.mena.core_chat.data.messagesender.MessageSenderFactory
 import net.thechance.mena.core_chat.data.messagesender.TextMessageSender
 import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolderImp
 import net.thechance.mena.core_chat.data.source.remote.network.ImageDownloaderImp
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManagerImpl
@@ -41,8 +42,8 @@ internal val networkModule = module {
 
     single<ImageDownloaderService> { ImageDownloaderImp() }
 
-    single(named(CUSTOM_HTTP_CLIENT)){
-        HttpClientHolder(
+    single<HttpClientHolder>(named(CUSTOM_HTTP_CLIENT)){
+        HttpClientHolderImp(
             get(named(BASE_URL)),
             get(),
             httpClientEngineFactory,
@@ -71,7 +72,6 @@ internal val networkModule = module {
 }
 
 private const val BASE_URL = "baseUrl"
-const val CHAT_CLIENT = "chatClient"
 const val CUSTOM_HTTP_CLIENT = "customHttpClient"
 const val MEDIA_CLIENT = "mediaClient"
 const val CHAT_JSON = "chatJson"

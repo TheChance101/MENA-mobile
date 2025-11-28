@@ -22,19 +22,24 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
 
 
-class HttpClientHolder(
+interface HttpClientHolder {
+    fun getClient(): HttpClient
+    fun reset()
+}
+
+class HttpClientHolderImp(
     private val baseUrl: String,
     private val authorizationService: AuthorizationService,
     private val httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>,
     private val json: Json
-) {
+) : HttpClientHolder {
     private var client: HttpClient = createHttpClient()
 
-    fun getClient(): HttpClient{
+    override fun getClient(): HttpClient {
         return client
     }
 
-    fun reset(){
+    override fun reset() {
         client.close()
         client = createHttpClient()
     }
