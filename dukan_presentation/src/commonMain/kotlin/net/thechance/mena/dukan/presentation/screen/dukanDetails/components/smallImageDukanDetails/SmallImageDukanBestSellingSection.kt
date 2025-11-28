@@ -32,6 +32,7 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.shared.ProductPrice
+import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
@@ -55,6 +56,8 @@ fun SmallImageDukanBestSellingSection(
             modifier = Modifier.padding(top = Theme.spacing._16, start = 16.dp)
         )
         LazyRow(
+            modifier = Modifier
+            .fillWidthOfParent(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
