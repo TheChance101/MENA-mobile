@@ -6,6 +6,7 @@
     <string name="makki">Makki</string>
     <string name="madani">Madani</string>
     <string name="ayat">Ayat</string>
+    <string name="confirm">Confirm</string>
 
     <!-- Icons -->
     <string name="bookmark_icon">bookmark icon</string>
@@ -133,6 +134,7 @@
     <string name="faith_title">Faith</string>
     <string name="sunrise_time_label">Sunrise time</string>
     <string name="location">location</string>
+    <string name="pick_on_map">( pick on map )</string>
     <string name="am_label">AM</string>
     <string name="pm_label">PM</string>
     <string name="tilawah">Tilawah</string>
