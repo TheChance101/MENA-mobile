@@ -32,7 +32,7 @@ fun ContactDto.toDomain(): Contact {
         lastName = lastName.orEmpty(),
         phone = phoneNumber.orEmpty(),
         menaUserId = getUuidOrNull(menaUserId),
-        imageUrl = BASE_CONTACT_IMAGE_URL + imageUrl
+        imageUrl = imageUrl?.let { BASE_CONTACT_IMAGE_URL + it }
     )
 }
 
@@ -47,7 +47,7 @@ fun DeviceContact.toListOfContactCreationRequestDto(): List<ContactCreationReque
 }
 
 fun List<DeviceContact>.toListOfContactCreationRequestDto(): List<ContactCreationRequestDto> {
-    return flatMap ( DeviceContact::toListOfContactCreationRequestDto )
+    return flatMap(DeviceContact::toListOfContactCreationRequestDto)
 }
 
 private const val BASE_CONTACT_IMAGE_URL =
