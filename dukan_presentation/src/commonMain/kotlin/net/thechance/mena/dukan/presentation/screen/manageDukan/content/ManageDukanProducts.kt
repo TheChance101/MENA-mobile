@@ -11,8 +11,6 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.empty_shelf
 import mena.dukan_presentation.generated.resources.empty_shelf_dark
-import mena.dukan_presentation.generated.resources.no_internet
-import mena.dukan_presentation.generated.resources.no_internet_dark
 import mena.dukan_presentation.generated.resources.shelf_empty_body
 import mena.dukan_presentation.generated.resources.shelf_empty_title
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
