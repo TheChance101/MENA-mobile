@@ -28,11 +28,7 @@ class HttpClientHolder(
     private val httpClientEngineFactory: HttpClientEngineFactory<HttpClientEngineConfig>,
     private val json: Json
 ) {
-    private var client: HttpClient = buildClient()
-
-    private fun buildClient(): HttpClient {
-        return createHttpClient()
-    }
+    private var client: HttpClient = createHttpClient()
 
     fun getClient(): HttpClient{
         return client
@@ -40,7 +36,7 @@ class HttpClientHolder(
 
     fun reset(){
         client.close()
-        client = buildClient()
+        client = createHttpClient()
     }
 
     private fun createHttpClient(): HttpClient {
