@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.smallImageDukanDetails
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,14 +58,19 @@ fun SmallImageDukanBestSellingSection(
         )
         LazyRow(
             modifier = Modifier
-            .fillWidthOfParent(16.dp),
+                .fillWidthOfParent(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
                 BestSellingItem(
-                    modifier = Modifier.width(140.dp),
+                    modifier = Modifier.width(140.dp)
+                        .clickable(
+                            onClick = { listener.onProductClicked(product.id) },
+                            indication = null,
+                            interactionSource = null
+                        ),
                     product = product,
                     listener = listener,
                     dukanColor = Color(state.dukanInfo.color),
