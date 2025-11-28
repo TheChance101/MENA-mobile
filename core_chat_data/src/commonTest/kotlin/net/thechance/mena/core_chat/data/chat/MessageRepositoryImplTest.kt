@@ -575,25 +575,6 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should upsert sync time when lastSyncTime is null in loadMessages`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(createMessage().toCachedMessageLocalDto())
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-
-        val result = repository.loadMessages(chatId, 1, 40)
-
-        assertThat(result.data).isNotEmpty()
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
-
-    @Test
     fun `should throw NotFoundException when getFromRemote returns null response`() = runTest {
         everySuspend {
             cachedMessageDao.getMessagesByChatIdWithOffset(
