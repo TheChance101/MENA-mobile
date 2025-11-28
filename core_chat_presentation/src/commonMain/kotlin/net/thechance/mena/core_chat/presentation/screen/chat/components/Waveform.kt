@@ -71,12 +71,6 @@ fun VoiceMessageWaveform(
     val activeColor = Theme.colorScheme.primary.primary
     val inactiveColor = Theme.colorScheme.shadeTertiary
 
-    val animatedProgress by animateFloatAsState(
-        targetValue = progress,
-        animationSpec = tween(durationMillis = 300),
-        label = "WaveformProgress"
-    )
-
     Canvas(
         modifier = modifier
             .clipToBounds(),
@@ -87,7 +81,7 @@ fun VoiceMessageWaveform(
             val barWidthPx = totalBarAndSpacingPx * 0.6f
             val spacingPx = totalBarAndSpacingPx * 0.4f
 
-            val coercedProgress = animatedProgress.coerceIn(0f, 1f)
+            val coercedProgress = progress.coerceIn(0f, 1f)
 
             val activeBarThreshold = waveData.size * coercedProgress
 
