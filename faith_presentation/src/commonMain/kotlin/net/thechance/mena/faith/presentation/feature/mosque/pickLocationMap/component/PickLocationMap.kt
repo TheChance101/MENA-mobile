@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.mosque_pin
-import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueUiState
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.CoordinatesUiState
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.toCoordinatesUiState
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.toPosition
 import net.thechance.mena.faith.presentation.utils.MapStyle
@@ -38,11 +38,11 @@ import org.maplibre.compose.util.ClickResult
 
 @Composable
 fun PickLocationMap(
-    currentLocation: CreateMosqueUiState,
+    currentLocation: CoordinatesUiState,
     animateToCurrentLocation: Boolean,
     showAnchor: Boolean,
-    onClickMap: (CreateMosqueUiState) -> Unit,
-    onMoveCamera: (CreateMosqueUiState) -> Unit,
+    onClickMap: (CoordinatesUiState) -> Unit,
+    onMoveCamera: (CoordinatesUiState) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {

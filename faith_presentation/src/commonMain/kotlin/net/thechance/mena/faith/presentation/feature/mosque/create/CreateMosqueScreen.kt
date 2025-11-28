@@ -3,14 +3,11 @@ package net.thechance.mena.faith.presentation.feature.mosque.create
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.attafitamim.krop.core.images.ImageSrc
@@ -23,9 +20,7 @@ import mena.faith_presentation.generated.resources.ic_location
 import mena.faith_presentation.generated.resources.ic_mosque
 import mena.faith_presentation.generated.resources.image_size_required
 import mena.faith_presentation.generated.resources.mosque_address
-import mena.faith_presentation.generated.resources.mosque_image_description
 import mena.faith_presentation.generated.resources.mosque_name
-import mena.faith_presentation.generated.resources.mosque_pin
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
@@ -130,74 +125,6 @@ private fun MosqueLocationHeader(
         hint = "",
         leadingIcon = painterResource(Res.drawable.ic_mosque),
     )
-}
-
-//@Composable
-//private fun MosqueLocationMapSection(
-//    uiState: CreateMosqueUiState,
-//    listener: CreateMosqueInteractionListener
-//) {
-//    uiState.location?.let { coordinate ->
-//        val initialCameraPosition = CameraPosition(
-//            target = Position(
-//                longitude = coordinate.longitude,
-//                latitude = coordinate.latitude
-//            ),
-//            zoom = 14.0
-//        )
-//        val cameraState = rememberCameraState(firstPosition = initialCameraPosition)
-//
-//        Text(
-//            modifier = Modifier.padding(top = Theme.spacing._16, bottom = Theme.spacing._4),
-//            text = stringResource(Res.string.location),
-//            style = Theme.typography.title.small,
-//            color = Theme.colorScheme.shadePrimary
-//        )
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(244.dp),
-//            contentAlignment = Alignment.TopStart
-//        ) {
-//            MaplibreMap(
-//                cameraState = cameraState,
-//                baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
-//                onMapClick = { position, offset ->
-//                    listener.onMapClick(position = position, offset = offset)
-//                    ClickResult.Pass
-//                },
-//                options = MapOptions(
-//                    gestureOptions = if (uiState.offset == null) GestureOptions.Standard else GestureOptions.AllDisabled,
-//                )
-//            )
-//            MosqueMarker(uiState)
-//            FabButton(
-//                painter = painterResource(Res.drawable.ic_edit),
-//                contentPadding = PaddingValues(horizontal = Theme.spacing._16, vertical = 14.dp),
-//                modifier = Modifier
-//                    .padding(bottom = Theme.spacing._4, end = Theme.spacing._4)
-//                    .align(Alignment.BottomEnd),
-//                onClick = listener::onEditMarkerClick
-//            )
-//        }
-//    }
-//}
-
-@Composable
-private fun MosqueMarker(uiState: CreateMosqueUiState) {
-    uiState.offset?.let { offset ->
-        val sizeIcon = DpSize(width = 45.dp, height = 58.dp)
-        Icon(
-            painter = painterResource(Res.drawable.mosque_pin),
-            contentDescription = stringResource(Res.string.mosque_image_description),
-            modifier = Modifier
-                .size(sizeIcon)
-                .offset(
-                    x = offset.x - (sizeIcon.width / 2),
-                    y = offset.y - sizeIcon.height
-                )
-        )
-    }
 }
 
 @Composable

@@ -1,29 +1,33 @@
 package net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap
 
 import io.github.dellisd.spatialk.geojson.Position
-import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
-import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueUiState
+import net.thechance.mena.identity.domain.model.Coordinates
 
 data class PickLocationScreenUIState(
-    val mosqueLocation: MosqueUiState.Coordinate? = null,
+    val mosqueLocation: CoordinatesUiState = CoordinatesUiState(0.0, 0.0),
     val animateToCurrentLocation: Boolean = false,
     val showAnchor: Boolean = false,
     val address: String = "",
-    val isLoading: Boolean = false,
     val isConfirmEnabled: Boolean = false,
-    val isGpsButtonLoading: Boolean = false,
-    val isMainAddress: Boolean = false
+    val isGpsButtonLoading: Boolean = false
 )
 
-
-fun CreateMosqueUiState.toPosition() = Position(
-    latitude = this.mosqueLocation?.latitude ?: 0.0,
-    longitude = this.mosqueLocation?.longitude ?: 0.0
+data class CoordinatesUiState(
+    val latitude: Double,
+    val longitude: Double
 )
 
-fun Position.toCoordinatesUiState() = CreateMosqueUiState(
-    mosqueLocation = MosqueUiState.Coordinate(
-        latitude = latitude,
-        longitude = longitude
-    )
+fun Coordinates.toUiState() = CoordinatesUiState(
+    latitude = latitude,
+    longitude = longitude
+)
+
+fun CoordinatesUiState.toPosition() = Position(
+    latitude = latitude,
+    longitude = longitude
+)
+
+fun Position.toCoordinatesUiState() = CoordinatesUiState(
+    latitude = latitude,
+    longitude = longitude
 )

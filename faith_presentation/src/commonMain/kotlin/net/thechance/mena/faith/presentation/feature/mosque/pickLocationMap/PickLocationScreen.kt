@@ -53,7 +53,6 @@ fun PickLocationScreen(
                     text = stringResource(Res.string.confirm),
                     onClick = listener::onClickConfirm,
                     isEnabled = state.isConfirmEnabled,
-                    isLoading = state.isLoading,
                     contentPadding = PaddingValues(vertical = 13.dp),
                     modifier = Modifier.fillMaxWidth()
                 )
