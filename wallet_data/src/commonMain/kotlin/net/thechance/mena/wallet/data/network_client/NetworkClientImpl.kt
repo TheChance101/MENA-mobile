@@ -17,12 +17,14 @@ import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.accept
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
 import net.thechance.mena.wallet.data.utils.invalidateAuthTokens
@@ -78,6 +80,7 @@ class NetworkClientImpl(
                 url(baseUrl)
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
+                header("Accept-Timezone", TimeZone.currentSystemDefault().id)
             }
 
             install(Logging) {
