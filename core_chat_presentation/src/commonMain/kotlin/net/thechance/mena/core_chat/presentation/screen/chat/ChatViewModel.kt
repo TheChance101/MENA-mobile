@@ -764,9 +764,13 @@ class ChatViewModel(
 
         val remainingMs = totalDuration - currentPosition
         val isNearEnd = currentPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+
+        val wasNearEnd = lastPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+        val positionReset = currentPosition == 0L && wasNearEnd
+
         val isStagnant = currentPosition == lastPosition && isNearEnd
 
-        return remainingMs <= 0 || isStagnant
+        return remainingMs <= 0 || isStagnant || positionReset
     }
 
     private fun stopAnyPlayingVoiceMessage(excludeMessageId: Uuid) {
