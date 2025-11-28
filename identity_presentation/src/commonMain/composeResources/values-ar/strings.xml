@@ -197,6 +197,7 @@
     <!-- select gender -->
     <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
     <string name="select_gender_screen_prompt">اختر جنسك</string>
+    <string name="session_expired">انتهت الجلسة، يرجى المحاولة مرة أخرى.</string>
 
     <string name="address_type_home">المنزل</string>
     <string name="address_type_office">العمل</string>
