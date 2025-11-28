@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -16,6 +15,7 @@ import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toRequest
 import net.thechance.mena.dukan.data.mapper.toShelf
 import net.thechance.mena.dukan.data.util.constants.EndPoints.SHELF_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Shelf
 import net.thechance.mena.dukan.domain.model.UpdateShelfName
@@ -23,12 +23,12 @@ import net.thechance.mena.dukan.domain.repository.ShelfRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 
 class ShelfRepositoryImpl(
-    private val client: HttpClient
+    private val client: DukanApi
 ) : ShelfRepository {
 
     override suspend fun createShelf(shelf: Shelf) {
         safeApiCall<Unit> {
-            client.post("$SHELF_BASE_PATH/create") {
+            client.getClient().post("$SHELF_BASE_PATH/create") {
                 contentType(ContentType.Application.Json)
                 setBody(shelf.toCreateShelfRequest())
             }
@@ -37,7 +37,7 @@ class ShelfRepositoryImpl(
 
     override suspend fun getMyDukanShelves(): List<Shelf> {
         return safeApiCall<List<ShelfDto>> {
-            client.get(SHELF_BASE_PATH)
+            client.getClient().get(SHELF_BASE_PATH)
         }.map {
             it.toShelf()
         }
@@ -45,13 +45,13 @@ class ShelfRepositoryImpl(
 
     override suspend fun deleteShelf(shelfId: String) {
         safeApiCall<Unit> {
-            client.delete(urlString = "$SHELF_BASE_PATH/$shelfId")
+            client.getClient().delete(urlString = "$SHELF_BASE_PATH/$shelfId")
         }
     }
 
     override suspend fun updateShelf(shelfId: String, newShelfName: String) {
         safeApiCall<Unit> {
-            client.put(urlString = "$SHELF_BASE_PATH/$shelfId") {
+            client.getClient().put(urlString = "$SHELF_BASE_PATH/$shelfId") {
                 contentType(ContentType.Application.Json)
                 setBody(UpdateShelfName(newShelfName).toRequest())
             }
@@ -64,7 +64,7 @@ class ShelfRepositoryImpl(
         pageSize: Int
     ): PagedResult<Shelf> {
         return safeApiCall<PageResponseDto<ShelfDto>> {
-            client.get("$SHELF_BASE_PATH/$dukanId") {
+            client.getClient().get("$SHELF_BASE_PATH/$dukanId") {
                 parameter("page", pageNumber)
                 parameter("size", pageSize)
             }
