@@ -97,20 +97,20 @@ class MessageRepositoryImpl(
             return getFromRemote(chatId, page, pageSize)
         }
 
-        val now = Clock.System.now().toString()
-        val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
-        if (lastSyncTime != null) {
-            syncAfterLastUpdate(chatId)
-        } else {
-            chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
-        }
-
         val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
         return PagedData(
             data = messages,
             totalItems = totalCachedItems,
             isLastPage = false,
-        )
+        ).also {
+            val now = Clock.System.now().toString()
+            val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
+            if (lastSyncTime != null) {
+                syncAfterLastUpdate(chatId)
+            } else {
+                chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
+            }
+        }
     }
 
     private suspend fun getFromRemote(
@@ -138,6 +138,9 @@ class MessageRepositoryImpl(
 
         val messagesIds = messages.map{ it.id.toString() }
         pendingMessageDao.deleteMessagesByIds(messagesIds)
+
+        val now = Clock.System.now()
+        chatSyncTimeDao.upsert(ChatSyncTime(messages.firstOrNull()?.chatId.toString(), now.toString()))
     }
 
     suspend fun syncAfterLastUpdate(chatId: Uuid) {
