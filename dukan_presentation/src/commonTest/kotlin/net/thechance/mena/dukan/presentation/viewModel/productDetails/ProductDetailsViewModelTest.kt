@@ -267,7 +267,7 @@ class ProductDetailsViewModelTest {
             val productId = "1"
 
             productDetailsViewModel.updateState {
-                copy(isFirstQuantityOne = false)
+                copy(isFirstQuantityOne = false, isNotSameQuantity = true)
             }
 
             everySuspend { dukanCartRepository.updateProductQuantity(any()) } returns Unit
@@ -292,7 +292,7 @@ class ProductDetailsViewModelTest {
             // Given
             val productId = "1"
             productDetailsViewModel.updateState {
-                copy(isFirstQuantityOne = true)
+                copy(isFirstQuantityOne = true, isNotSameQuantity = true)
             }
 
             everySuspend { dukanCartRepository.addProductQuantity(any()) } returns Unit
@@ -325,6 +325,12 @@ class ProductDetailsViewModelTest {
         runTest {
             // Given
             val productId = "1"
+            productDetailsViewModel.updateState {
+                copy(
+                    isNotSameQuantity = true,
+                    isFirstQuantityOne = false
+                )
+            }
 
             everySuspend { dukanCartRepository.updateProductQuantity(any()) } throws NoInternetException()
 

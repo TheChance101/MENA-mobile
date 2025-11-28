@@ -24,7 +24,6 @@ internal fun DukanDetailsInFullScreenMode(
 ) {
     Row(
         modifier = modifier
-            .padding(bottom = 16.dp)
             .fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
@@ -32,6 +31,7 @@ internal fun DukanDetailsInFullScreenMode(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
+                .padding(bottom = 16.dp)
                 .verticalScroll(rememberScrollState()),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,

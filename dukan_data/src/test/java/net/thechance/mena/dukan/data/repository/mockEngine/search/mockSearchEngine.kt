@@ -11,8 +11,10 @@ import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.dukan.DukanSearchDto
 import net.thechance.mena.dukan.data.dto.product.ProductSearchDto
 import net.thechance.mena.dukan.data.repository.SearchRepositoryImpl
+import net.thechance.mena.dukan.data.repository.mockEngine.MockDukanApiClient
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
+import net.thechance.mena.dukan.data.util.network.DukanApi
 
 fun MockRequestHandleScope.defaultPaginatedSearchResponse() = respond(
     content = jsonSerialization.encodeToString(
@@ -52,8 +54,8 @@ fun MockRequestHandleScope.defaultPaginatedProductsResponse() = respond(
 fun createSearchHttpClient(
     searchDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     searchProductsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
-): HttpClient {
-    return HttpClient(MockEngine) {
+): DukanApi {
+    val httpClient =  HttpClient(MockEngine) {
         install(ContentNegotiation) {
             json()
         }
@@ -78,6 +80,7 @@ fun createSearchHttpClient(
             }
         }
     }
+    return MockDukanApiClient(httpClient)
 }
 
 fun createSearchRepository(

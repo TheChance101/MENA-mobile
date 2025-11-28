@@ -22,6 +22,7 @@ import mena.identity_presentation.generated.resources.success_profile_info_updat
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
@@ -46,6 +47,7 @@ class EditUserProfileViewModel(
     private val imageDecoder: ImageDecoder,
     private val authenticationRepository: AuthenticationRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
+    private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
@@ -150,6 +152,7 @@ class EditUserProfileViewModel(
     private suspend fun performLogout() {
         authenticationRepository.logout()
         registrationDraftRepository.clearLastPhoneNumber()
+        addressesRepository.clearAddresses()
     }
 
     private fun onLogoutSuccess() {

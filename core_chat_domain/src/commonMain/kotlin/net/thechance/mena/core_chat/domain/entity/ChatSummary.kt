@@ -14,8 +14,17 @@ data class ChatSummary(
     val unReadMessagesCount: Int
 ) {
     data class Message(
-        val content: String,
+        val type: LastMessageType,
         val sendAt: LocalDateTime,
         val isMine: Boolean
     )
+}
+
+sealed class LastMessageType {
+    data class Text(val text: String) : LastMessageType()
+    data object Image : LastMessageType()
+    data object Audio : LastMessageType()
+    data object Money : LastMessageType()
+    data object Ayah : LastMessageType()
+    data object Order : LastMessageType()
 }

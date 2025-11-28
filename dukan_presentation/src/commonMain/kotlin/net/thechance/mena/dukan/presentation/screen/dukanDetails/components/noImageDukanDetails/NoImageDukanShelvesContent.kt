@@ -85,12 +85,13 @@ private fun NoImageDukanShelvesContentLoaded(
         contentPadding = PaddingValues(vertical = Theme.spacing._8),
         state = lazyColumnListState
     ) {
-
-        item(key = "BestSelling") {
-            BestSellingNoImageDukan(
-                state = state,
-                listener = listener
-            )
+        if (state.bestSellingProducts.isNotEmpty()) {
+            item(key = "BestSelling") {
+                BestSellingNoImageDukan(
+                    state = state,
+                    listener = listener
+                )
+            }
         }
         stickyHeader(key = "ShelvesChips") {
             val SHELVES_OFFSET = 2 // BestSelling + ShelvesChips

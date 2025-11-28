@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import net.thechance.mena.dukan.data.dto.PageResponseDto
@@ -9,16 +8,16 @@ import net.thechance.mena.dukan.data.dto.product.ProductSearchDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toEntity
 import net.thechance.mena.dukan.data.util.constants.EndPoints
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.ProductSearch
 import net.thechance.mena.dukan.domain.model.DukanPreview
 import net.thechance.mena.dukan.domain.repository.SearchRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class SearchRepositoryImpl(
-    private val client: HttpClient
+    private val client: DukanApi
 ): SearchRepository {
     override suspend fun findDukansByQuery(
         query: String,
@@ -26,7 +25,7 @@ class SearchRepositoryImpl(
         size: Int
     ): PagedResult<DukanPreview> {
        return safeApiCall<PageResponseDto<DukanSearchDto>>{
-           client.get(DUKAN_SEARCH_ENDPOINT) {
+           client.getClient().get(DUKAN_SEARCH_ENDPOINT) {
                parameter("query", query)
                parameter("page", page)
                parameter("size", size)
@@ -42,7 +41,7 @@ class SearchRepositoryImpl(
         size: Int
     ): PagedResult<DukanPreview> {
         return safeApiCall<PageResponseDto<DukanSearchDto>>{
-            client.get("${DUKAN_IN_CATEGORY_SEARCH_ENDPOINT}/$categoryId") {
+            client.getClient().get("${DUKAN_IN_CATEGORY_SEARCH_ENDPOINT}/$categoryId") {
                 parameter("query", query)
                 parameter("page", page)
                 parameter("size", size)
@@ -56,7 +55,7 @@ class SearchRepositoryImpl(
         size: Int
     ): PagedResult<ProductSearch> {
         return safeApiCall<PageResponseDto<ProductSearchDto>>{
-            client.get(PRODUCT_SEARCH_ENDPOINT) {
+            client.getClient().get(PRODUCT_SEARCH_ENDPOINT) {
                 parameter("query", query)
                 parameter("page", page)
                 parameter("size", size)

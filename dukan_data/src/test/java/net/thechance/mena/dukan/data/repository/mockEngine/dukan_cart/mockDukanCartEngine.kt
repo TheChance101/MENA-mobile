@@ -17,8 +17,10 @@ import net.thechance.mena.dukan.data.dto.order.OrderDto
 import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.repository.CartRepositoryImpl
 import net.thechance.mena.dukan.data.repository.OrderRepositoryImpl
+import net.thechance.mena.dukan.data.repository.mockEngine.MockDukanApiClient
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -75,10 +77,10 @@ fun dukanCartHttpClient(
     deleteProductFromCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     getCartInfoResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productCartResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient {
+): DukanApi {
     val dukanId = "123e4567-e89b-12d3-a456-426614174003"
     val productId = "5"
-    return HttpClient(MockEngine { request ->
+    val httpClient = HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/cart/items" -> addOrUpdateProductCartResponse?.invoke(this)
                 ?: defaultAddOrUpdateProductQuantityResponse()
@@ -98,7 +100,7 @@ fun dukanCartHttpClient(
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
-
+    return MockDukanApiClient(httpClient)
 }
 
 
@@ -120,10 +122,10 @@ fun dukanCartRepository(
 
 @OptIn(ExperimentalUuidApi::class)
 fun orderHttpClient(
-    orderId : Uuid,
+    orderId: Uuid,
     cartOrdersResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient {
-    return HttpClient(
+): DukanApi {
+    val httpClient = HttpClient(
         MockEngine { request ->
             when (request.url.encodedPath) {
                 "/dukan/orders/$orderId" -> cartOrdersResponse?.invoke(this)
@@ -145,6 +147,7 @@ fun orderHttpClient(
             contentType(ContentType.Application.Json)
         }
     }
+    return MockDukanApiClient(httpClient)
 }
 
 @OptIn(ExperimentalUuidApi::class)

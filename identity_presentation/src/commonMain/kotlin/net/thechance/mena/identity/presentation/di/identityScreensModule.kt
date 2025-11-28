@@ -1,6 +1,9 @@
 package net.thechance.mena.identity.presentation.di
 
-import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddressOperationStrategyFactory
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.CreateAddressStrategy
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.LocationManagementViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.UpdateAddressStrategy
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreenViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
@@ -65,12 +68,14 @@ val identityScreensModule = module {
     factoryOf(::ChangePasswordScreenViewModel)
     factoryOf(::PrivacyAndPolicyScreenViewModel)
     factoryOf(::ContactUsViewModel)
-
+    factoryOf(::AddressOperationStrategyFactory)
+    factoryOf(::UpdateAddressStrategy)
+    factoryOf(::CreateAddressStrategy)
     factoryOf(::ImageDecoderImpl) bind ImageDecoder::class
     viewModel { (minScale: Float, maxScale: Float, initialState: ImageCropperUiState) ->
         ImageCropperComponentViewModel(minScale, maxScale, initialState)
     }
-    factoryOfOrNull(::AddEditLocationScreenViewModel)
+    factoryOfOrNull(::LocationManagementViewModel)
 
     factory {
         PickLocationScreenViewModel(

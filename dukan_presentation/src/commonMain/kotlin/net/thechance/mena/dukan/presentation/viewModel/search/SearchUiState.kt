@@ -20,7 +20,7 @@ data class SearchUiState(
     enum class SearchContentState {
         Idle,
         Complete,
-        Empty,
+        NoInternet,
     }
     enum class UserSelectionSearchList {
         Dukans,

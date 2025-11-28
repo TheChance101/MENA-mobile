@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.Lifecycle
@@ -51,10 +52,10 @@ import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatHead
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatInputBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.ChatList
 import net.thechance.mena.core_chat.presentation.screen.chat.components.FullImagePagerView
-import net.thechance.mena.core_chat.presentation.screen.chat.components.MessageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.RecordingBar
 import net.thechance.mena.core_chat.presentation.screen.chat.components.attachmentsSendMoneyBottomSheet
 import net.thechance.mena.core_chat.presentation.screen.chat.components.chatActionsMenuDialog
+import net.thechance.mena.core_chat.presentation.screen.chat.components.messageReactionDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.components.resendFailedMessageDialog
 import net.thechance.mena.core_chat.presentation.utils.EffectHandler
 import net.thechance.mena.core_chat.presentation.utils.PaginationTrigger
@@ -117,6 +118,18 @@ fun ChatScreenContent(
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(state) {
+        if (state.isAttachmentsOverlayVisible
+            || state.isReactionDialogVisible
+            || state.isChatActionsDialogVisible
+            || state.isImagePagerVisible) {
+            focusManager.clearFocus()
+            keyboardController?.hide()
+        }
+    }
+
 
     Box(
         modifier = Modifier.fillMaxSize().imePadding(),
@@ -161,6 +174,13 @@ fun ChatScreenContent(
                     value = state.amountToTransfer,
                     isLoading = state.isLoadingSendMoneyButton,
                 )
+                messageReactionDialog(
+                    isVisible = state.isReactionDialogVisible,
+                    message = state.messageToReactTo,
+                    currentUserId = state.chatRequesterId,
+                    onDismiss = interactions::onReactionDialogDismissed,
+                    onReactionClicked = interactions::onReactionSelected
+                )
             },
         ) {
             ChatList(
@@ -186,7 +206,6 @@ fun ChatScreenContent(
 
         AnimatedVisibility(
             visible = state.isImagePagerVisible,
-            modifier = Modifier.fillMaxSize(),
         ) {
             val isMine =
                 state.selectedImageMessages.isNotEmpty() && state.selectedImageMessages[0].messageDetails.isMine
@@ -198,6 +217,10 @@ fun ChatScreenContent(
                 senderName = senderName,
                 senderImageUrl = senderImageUrl,
                 initialPage = state.currentImageIndexForPreview,
+                isReactionDialogVisible = state.isReactionDialogVisible,
+                currentUserId = state.chatRequesterId,
+                onDismissReactionDialog = interactions::onReactionDialogDismissed,
+                onReactionSelected = { messageId, emoji -> interactions.onReactionSelected(messageId, emoji) },
                 onCloseClick = interactions::onCloseImageViewClicked,
                 onImageLongClick = interactions::onMessageLongClicked,
                 onDownloadClick = interactions::onDownloadImageClicked,
@@ -221,14 +244,6 @@ fun ChatScreenContent(
         listState = chatLazyListState,
         remainingItemsToLoadNextPage = 15,
         loadNextItems = interactions::onMessagesScrolled
-    )
-
-    MessageReactionDialog(
-        isVisible = state.isReactionDialogVisible,
-        message = state.messageToReactTo,
-        currentUserId = state.chatRequesterId,
-        onDismiss = interactions::onReactionDialogDismissed,
-        onReactionClicked = interactions::onReactionSelected
     )
 }
 

@@ -25,6 +25,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.service.AuthorizationService
+import net.thechance.mena.wallet.data.utils.invalidateAuthTokens
 import org.koin.core.annotation.Named
 import org.koin.core.annotation.Provided
 import org.koin.core.annotation.Single
@@ -65,6 +66,10 @@ class NetworkClientImpl(
         requestBuilder: HttpRequestBuilder.() -> Unit
     ): HttpResponse {
         return client.delete(urlString, requestBuilder)
+    }
+
+    override fun clearCachedToken() {
+        client.invalidateAuthTokens()
     }
 
     private fun buildClient(): HttpClient {

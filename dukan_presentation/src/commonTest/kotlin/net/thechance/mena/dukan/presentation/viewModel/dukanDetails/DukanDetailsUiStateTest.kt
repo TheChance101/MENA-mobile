@@ -25,7 +25,7 @@ class DukanDetailsUiStateTest {
         // When
         val state = DukanDetailsUiState()
         // Then
-        assertEquals(emptyFlow(), state.bestSellingProducts)
+        assertEquals(emptyList(), state.bestSellingProducts)
     }
 
     @Test

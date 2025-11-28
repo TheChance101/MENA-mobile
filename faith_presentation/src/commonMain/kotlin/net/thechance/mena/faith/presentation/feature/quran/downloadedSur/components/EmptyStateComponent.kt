@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
@@ -37,6 +38,7 @@ fun EmptyDownloadState(
 
         Image(
             painter = painterResource(Res.drawable.icon_empty_download),
+            colorFilter = ColorFilter.tint(Theme.colorScheme.primary.primary),
             contentDescription = stringResource(Res.string.empty_download_icon),
             modifier = Modifier.fillMaxWidth()
                 .size(128.dp)
@@ -45,6 +47,7 @@ fun EmptyDownloadState(
 
         Text(
             text = stringResource(Res.string.empty_download_text),
+            color = Theme.colorScheme.primary.primary,
             style = Theme.typography.title.small,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()

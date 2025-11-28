@@ -15,7 +15,8 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.model.AddressInput
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddEditLocationScreenViewModel
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.AddressOperationStrategyFactory
+import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation.LocationManagementViewModel
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import kotlin.test.AfterTest
@@ -27,7 +28,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
-class AddEditLocationScreenViewModelTest {
+class LocationManagementViewModelTest {
 
     private val latitude = 30.12
     private val longitude = 33.14
@@ -41,8 +42,9 @@ class AddEditLocationScreenViewModelTest {
         coordinates = CoordinatesUiState(latitude, longitude),
         addressDetails = addressLine
     )
-    private lateinit var viewModel: AddEditLocationScreenViewModel
+    private lateinit var viewModel: LocationManagementViewModel
     private val addressesRepository: AddressesRepository = mockk()
+    private val saveAddressStrategyFactory: AddressOperationStrategyFactory = mockk()
     private val testDispatcher = StandardTestDispatcher()
 
 
@@ -50,7 +52,11 @@ class AddEditLocationScreenViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         viewModel =
-            AddEditLocationScreenViewModel(addressesRepository, testDispatcher, null)
+            LocationManagementViewModel(
+                saveAddressStrategyFactory,
+                testDispatcher,
+                null
+            )
     }
 
     @AfterTest
@@ -153,7 +159,11 @@ class AddEditLocationScreenViewModelTest {
                 addressDetails = "Test Address"
             )
             viewModel =
-                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, testAddress)
+                LocationManagementViewModel(
+                    saveAddressStrategyFactory,
+                    testDispatcher,
+                    testAddress
+                )
 
             testDispatcher.scheduler.advanceUntilIdle()
 
@@ -176,7 +186,11 @@ class AddEditLocationScreenViewModelTest {
         runTest {
 
             viewModel =
-                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+                LocationManagementViewModel(
+                    saveAddressStrategyFactory,
+                    testDispatcher,
+                    addressUIState,
+                )
             viewModel.onClickAddressType(addressType)
 
             coEvery { addressesRepository.updateAddress(any(), any<AddressInput>()) } returns Unit
@@ -194,7 +208,11 @@ class AddEditLocationScreenViewModelTest {
         runTest {
 
             viewModel =
-                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+                LocationManagementViewModel(
+                    saveAddressStrategyFactory,
+                    testDispatcher,
+                    addressUIState
+                )
             testDispatcher.scheduler.advanceUntilIdle()
 
             viewModel.onClickAddressType(addressType)
@@ -272,7 +290,11 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be true in edit mode when addressType is changed`() =
         runTest {
             viewModel =
-                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+                LocationManagementViewModel(
+                    saveAddressStrategyFactory,
+                    testDispatcher,
+                    addressUIState
+                )
 
             viewModel.onClickAddressType(AddressType.Office)
 
@@ -284,7 +306,11 @@ class AddEditLocationScreenViewModelTest {
     fun `changeIsSaveEnabled() should be true in edit mode when otherAddressType is changed`() =
         runTest {
             viewModel =
-                AddEditLocationScreenViewModel(addressesRepository, testDispatcher, addressUIState)
+                LocationManagementViewModel(
+                    saveAddressStrategyFactory,
+                    testDispatcher,
+                    addressUIState
+                )
 
             viewModel.onClickAddressType(AddressType.Other("Apartment"))
 

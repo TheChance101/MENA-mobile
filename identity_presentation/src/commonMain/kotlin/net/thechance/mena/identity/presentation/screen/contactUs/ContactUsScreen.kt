@@ -25,6 +25,7 @@ import mena.identity_presentation.generated.resources.contact_facebook_account
 import mena.identity_presentation.generated.resources.contact_info
 import mena.identity_presentation.generated.resources.contact_phone_number
 import mena.identity_presentation.generated.resources.contact_us
+import mena.identity_presentation.generated.resources.error_cant_open_link
 import mena.identity_presentation.generated.resources.ic_arrow_left
 import mena.identity_presentation.generated.resources.ic_facebook
 import mena.identity_presentation.generated.resources.ic_mailbox
@@ -37,6 +38,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.base.util.collectAsEffectWithLifeCycle
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
+import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactCard
 import net.thechance.mena.identity.presentation.screen.contactUs.components.ContactUsScreenShimmer
 import org.jetbrains.compose.resources.painterResource
@@ -51,10 +53,17 @@ class ContactUsScreen : BaseScreen<
     override fun Content() {
         val viewModel = getScreenModel<ContactUsViewModel>()
         val uriHandler = LocalUriHandler.current
+        val snackBarController = LocalSnackBarController.current
 
         viewModel.effect.collectAsEffectWithLifeCycle { effect ->
             if (effect is ContactUsUIEffect.OpenUrl) {
-                uriHandler.openUri(effect.url)
+                runCatching {
+                    uriHandler.openUri(effect.url)
+                }.onFailure {
+                    snackBarController.showSnackBarError(
+                        message = Res.string.error_cant_open_link
+                    )
+                }
             }
         }
 

@@ -42,5 +42,6 @@ interface CachedMessageDao {
         readerId: String,
         newStatus: MessageStatus = MessageStatus.READ
     )
-
+    @Query("DELETE FROM cached_messages")
+    suspend fun clearAllMessages()
 }

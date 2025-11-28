@@ -6,9 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -53,10 +55,11 @@ internal fun ShelvesDetailsCard(
             )
     ) {
 
-        when{
+        when {
             isShelvesLoading && shelves.isEmpty() -> {
                 AdminPanelContentLoading()
             }
+
             else -> {
                 ShelfHeader(
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp),
@@ -73,12 +76,65 @@ internal fun ShelvesDetailsCard(
                 )
 
                 ProductsList(
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(vertical = 12.dp),
                     products = products,
                     onNextPageRequested = onNextProductsPageRequested,
                     isProductLoading = isProductLoading
                 )
             }
+        }
+    }
+}
+
+internal fun LazyListScope.lazyShelvesDetailsCard(
+    totalShelves: String,
+    shelves: List<Shelf>,
+    selectedShelf: String,
+    onShelfClicked: (Uuid) -> Unit,
+    onNextShelvesPageRequested: () -> Unit,
+    products: List<Product>,
+    isProductLoading: Boolean,
+    isShelvesLoading: Boolean,
+) {
+
+    when {
+        isShelvesLoading && shelves.isEmpty() -> {
+            item {
+                AdminPanelContentLoading()
+            }
+        }
+
+        else -> {
+            item {
+                ShelfHeader(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = Theme.colorScheme.background.surfaceLow,
+                            shape = RoundedCornerShape(Theme.radius.xl, Theme.radius.xl)
+                        ).padding(top = 16.dp, start = 16.dp, bottom = 8.dp),
+                    totalShelves = totalShelves
+                )
+            }
+
+            item {
+                Shelves(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Theme.colorScheme.background.surfaceLow)
+                        .padding(top = 12.dp, bottom = 8.dp),
+                    shelves = shelves,
+                    selectedShelf = selectedShelf,
+                    onShelfClicked = onShelfClicked,
+                    onNextPageRequested = onNextShelvesPageRequested,
+                    isShelvesLoading = isShelvesLoading
+                )
+            }
+
+            lazyProductsList(
+                products = products,
+                isProductLoading = isProductLoading
+            )
         }
     }
 }
@@ -97,7 +153,7 @@ private fun ShelfHeader(
             style = Theme.typography.title.large,
             color = Theme.colorScheme.shadePrimary
         )
-        if (totalShelves.isNotEmpty()){
+        if (totalShelves.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .padding(start = 8.dp)
@@ -131,7 +187,6 @@ private fun Shelves(
     val listState = rememberLazyListState()
 
     PaginationTrigger(
-        list = shelves,
         listState = listState,
         buffer = 5,
         loadNextItems = onNextPageRequested
@@ -149,7 +204,7 @@ private fun Shelves(
                 onClick = { onShelfClicked(shelf.id) }
             )
         }
-        if (isShelvesLoading){
+        if (isShelvesLoading) {
             item { DotsProgressIndicator(dotSize = 4.dp, spaceBetween = 2.dp) }
         }
     }

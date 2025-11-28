@@ -1,17 +1,17 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsInteractionListener
 import net.thechance.mena.admin_panel.presentation.screen.dukan_details.DukanDetailsScreenState
+import net.thechance.mena.admin_panel.presentation.utils.PaginationTrigger
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
@@ -22,28 +22,39 @@ internal fun DukanDetailsInCompactMode(
     isMapVisible: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(state.products.isEmpty()) {
+        listState.scrollToItem(2)
+    }
+
+    PaginationTrigger(
+        listState = listState,
+        buffer = 5,
+        loadNextItems = interactionListener::onNextProductsPageRequested
+    )
+
+    LazyColumn(
         modifier = modifier
             .padding(bottom = 16.dp)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .fillMaxSize(),
+        state = listState
     ) {
-        DukanDetailsCard(
-            modifier = Modifier.fillMaxWidth(),
-            dukan = state.dukan,
-            isLoading = state.isDukanDetailsLoading,
-            isMapVisible = isMapVisible
-        )
-        ShelvesDetailsCard(
-            modifier = Modifier.fillMaxWidth(),
+        item {
+            DukanDetailsCard(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                dukan = state.dukan,
+                isLoading = state.isDukanDetailsLoading,
+                isMapVisible = isMapVisible
+            )
+        }
+        lazyShelvesDetailsCard(
             totalShelves = state.totalShelves,
             shelves = state.shelves,
             selectedShelf = state.selectedShelfId,
             onShelfClicked = interactionListener::onShelfSelected,
             onNextShelvesPageRequested = interactionListener::onNextShelvesPageRequested,
             products = state.products,
-            onNextProductsPageRequested = interactionListener::onNextProductsPageRequested,
             isProductLoading = state.isProductsLoading,
             isShelvesLoading = state.isShelvesLoading
         )

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
@@ -42,6 +43,8 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     private val imageDecoder = mockk<ImageDecoder>()
     private val authenticationRepository = mockk<AuthenticationRepository>()
     private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
+
+    private val addressesRepository = mockk<AddressesRepository>()
     private val testDispatcher = StandardTestDispatcher()
 
     val viewModel by lazy {
@@ -52,6 +55,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             dispatcher = testDispatcher,
             ageValidator = ageValidator,
+            addressesRepository = addressesRepository,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository
         )

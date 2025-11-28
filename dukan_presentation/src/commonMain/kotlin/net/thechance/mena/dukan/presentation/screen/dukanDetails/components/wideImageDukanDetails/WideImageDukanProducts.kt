@@ -214,7 +214,7 @@ private fun ProductCard(
 }
 
 @Composable
-private fun BoxScope.OutOfStockLabel() {
+fun BoxScope.OutOfStockLabel() {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     Box(
         modifier = Modifier

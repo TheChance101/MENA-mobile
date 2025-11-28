@@ -13,11 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.discount_icon
 import mena.dukan_presentation.generated.resources.koin_icon
+import mena.dukan_presentation.generated.resources.see_less
+import mena.dukan_presentation.generated.resources.see_more
 import mena.dukan_presentation.generated.resources.silver_tc
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.text.Text
@@ -25,6 +28,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.screen.productDetails.components.util.ShimmerBox
 import net.thechance.mena.dukan.presentation.util.stubPreviews.fakeProductDetails
+import net.thechance.mena.dukan.presentation.util.text.ExpandableText
 import net.thechance.mena.dukan.presentation.viewModel.productDetails.ProductDetailsUiState
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -80,22 +84,25 @@ private fun ProductDetailsInfoContent(
         maxLines = 2,
     )
     ProductDetailsPriceRow(
-        price = state.basePrice.toString(),
+        price = state.basePrice,
+        discountPrice = state.finalPrice,
         modifier = Modifier.padding(top = Theme.spacing._2)
     )
-    Text(
+    ExpandableText(
         text = state.description,
+        seeLessText = stringResource(Res.string.see_less),
+        seeMoreText = stringResource(Res.string.see_more),
+        textColor = Theme.colorScheme.shadeSecondary,
+        seeLessAndMoreColor = Theme.colorScheme.primary.primary,
+        initialMaxLine = 5,
         style = Theme.typography.body.small,
-        color = Theme.colorScheme.shadeSecondary,
-        textAlign = TextAlign.Start,
-        maxLines = 5,
-        modifier = Modifier.padding(top = Theme.spacing._8, bottom = Theme.spacing._8)
     )
 }
 
 @Composable
 private fun ProductDetailsPriceRow(
-    price: String,
+    price: Double,
+    discountPrice: Double,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -103,19 +110,38 @@ private fun ProductDetailsPriceRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
-        Icon(
-            painter = painterResource(Res.drawable.discount_icon),
-            contentDescription = stringResource(Res.string.discount_icon),
-            tint = Theme.colorScheme.shadePrimary,
-            modifier = Modifier.padding(end = Theme.spacing._4)
-        )
-        Text(
-            text = price,
-            style = Theme.typography.label.large,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(end = Theme.spacing._4)
-        )
+        if ( price > discountPrice ) {
+            Icon(
+                painter = painterResource(Res.drawable.discount_icon),
+                contentDescription = stringResource(Res.string.discount_icon),
+                tint = Theme.colorScheme.shadePrimary,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
+            Text(
+                text = "$${price}",
+                style = Theme.typography.label.extraSmall.copy(
+                    textDecoration = TextDecoration.LineThrough
+                ),
+                color = Theme.colorScheme.shadeTertiary,
+                modifier = Modifier.padding(end = 2.dp)
+            )
+            Text(
+                text = discountPrice.toString(),
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
+        }else {
+            Text(
+                text = price.toString(),
+                style = Theme.typography.label.large,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(end = Theme.spacing._4)
+            )
+        }
+
         Image(
             painter = painterResource(Res.drawable.silver_tc),
             contentDescription = stringResource(Res.string.koin_icon),
@@ -123,7 +149,6 @@ private fun ProductDetailsPriceRow(
         )
     }
 }
-
 
 @Preview
 @Composable

@@ -197,6 +197,7 @@
     <!-- select gender -->
     <string name="select_gender_screen_prompt_title">أكمل ملفك الشخصي</string>
     <string name="select_gender_screen_prompt">اختر جنسك</string>
+    <string name="session_expired">انتهت الجلسة، يرجى المحاولة مرة أخرى.</string>
 
     <string name="address_type_home">المنزل</string>
     <string name="address_type_office">العمل</string>
@@ -263,6 +264,7 @@
     <string name="contact_email_address">البريد الإلكتروني</string>
     <string name="contact_phone_number">رقم الهاتف</string>
     <string name="contact_facebook_account">حساب فيسبوك</string>
+    <string name="error_cant_open_link">تعذر فتح الرابط. يرجى التحقق من وجود تطبيق مناسب مثبت على جهازك.</string>
 
     <!-- Privacy and policy-->
     <string name="last_update">آخر تحديث: %1$s</string>

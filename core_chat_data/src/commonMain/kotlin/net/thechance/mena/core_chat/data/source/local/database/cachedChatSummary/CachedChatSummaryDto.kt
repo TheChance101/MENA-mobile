@@ -11,8 +11,10 @@ data class CachedChatSummaryDto(
     val name: String,
     @ColumnInfo(name = "image_url")
     val imageUrl: String,
-    @ColumnInfo(name = "last_message")
-    val lastMessageContent: String?,
+    @ColumnInfo(name = "last_message_type")
+    val lastMessageType: String?,
+    @ColumnInfo(name = "last_message_text")
+    val lastMessageText: String?,
     @ColumnInfo(name = "last_message_send_at")
     val lastMessageSentAt: String?,
     @ColumnInfo(name = "last_message_is_mine")

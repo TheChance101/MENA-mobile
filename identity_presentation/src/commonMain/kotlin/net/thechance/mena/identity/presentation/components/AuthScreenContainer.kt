@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.img_auth_background
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
@@ -25,10 +26,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 internal fun AuthScreenContainer(
     modifier: Modifier = Modifier,
+    verticalPadding: Dp = Theme.spacing._24,
+    horizontalPadding: Dp = Theme.spacing._16,
     content: @Composable ColumnScope.() -> Unit
 ) {
     Box(
-        modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Theme.colorScheme.background.surface)
     ) {
@@ -43,7 +46,7 @@ internal fun AuthScreenContainer(
             alignment = Alignment.BottomCenter
         )
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
@@ -56,7 +59,7 @@ internal fun AuthScreenContainer(
                         )
                     )
                 )
-                .padding(vertical = Theme.spacing._24, horizontal = Theme.spacing._16),
+                .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             content = content
         )
     }

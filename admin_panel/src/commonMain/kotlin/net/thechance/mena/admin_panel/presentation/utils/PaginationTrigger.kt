@@ -7,20 +7,22 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun <T> PaginationTrigger(
-    list: List<T>,
+fun PaginationTrigger(
     listState: LazyListState,
     buffer: Int,
     loadNextItems: () -> Unit
 ) {
-    LaunchedEffect(list) {
+    LaunchedEffect(listState) {
         snapshotFlow {
-            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalCount = listState.layoutInfo.totalItemsCount
+            lastVisible to totalCount
         }
             .distinctUntilChanged()
-            .collect { lastVisibleIndex ->
-                lastVisibleIndex?.let {lastVisibleIndex ->
-                    if (lastVisibleIndex >= list.lastIndex - buffer) {
+            .collect { (lastVisibleIndex, totalCount) ->
+                lastVisibleIndex?.let {
+                    val lastIndex = if (totalCount > 0) totalCount - 1 else -1
+                    if (it >= lastIndex - buffer) {
                         loadNextItems()
                     }
                 }

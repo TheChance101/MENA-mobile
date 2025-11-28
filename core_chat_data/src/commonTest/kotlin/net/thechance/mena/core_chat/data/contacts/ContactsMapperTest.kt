@@ -143,7 +143,7 @@ class ContactMappersTest {
         assertThat(contact.lastName).isEqualTo("Azzam")
         assertThat(contact.phone).isEqualTo("456")
         assertThat(contact.menaUserId).isNotNull()
-        assertThat(contact.imageUrl).isEqualTo("url")
+        assertThat(contact.imageUrl).isEqualTo("https://menastorage.fra1.cdn.digitaloceanspaces.com/identity/profile/image/url")
     }
 
 

@@ -14,7 +14,8 @@ data class OrderDetailsUiState(
     enum class OrderDetailsScreenState() {
         Loading,
         Success,
-        Error,
+        NoInternet,
+        Empty,
     }
 
     data class OrderUiState(

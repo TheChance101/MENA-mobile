@@ -9,18 +9,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
+import net.thechance.mena.dukan.domain.entity.Product
 import net.thechance.mena.dukan.domain.exceptions.NoInternetException
 import net.thechance.mena.dukan.domain.model.UpdateProductCartQuantityParams
 import net.thechance.mena.dukan.domain.repository.CartRepository
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.repository.ShelfRepository
+import net.thechance.mena.dukan.domain.util.PagedResult
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarType
 import net.thechance.mena.dukan.presentation.component.shared.SnackBarUiState
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
@@ -50,6 +53,7 @@ class DukanDetailsViewModel(
         loadDukanDetails()
         loadCartInfo()
         loadShelvesPaging()
+        loadBestSellingProducts()
     }
 
     private fun loadCartInfo() {
@@ -214,16 +218,71 @@ class DukanDetailsViewModel(
     }
 
     private fun updateQuantityProductPaging(products: PagingData<ProductUiState>): PagingData<ProductUiState> {
-        return products.map {
-            if (state.value.productQuantity[it.id] == null)
-                updateProductQuantityInCart(it.id, it.inCartQuantity)
-            it
+        return products.map { product ->
+            val quantity = state.value.productQuantity[product.id] ?: product.inCartQuantity
+            product.copy(inCartQuantity = quantity)
         }
+    }
+
+    fun updateQuantityProductPaging(
+        productsFlow: Flow<PagingData<ProductUiState>>,
+        productQuantity: Map<String, Int>
+    ): Flow<PagingData<ProductUiState>> {
+
+        return productsFlow.map { pagingData ->
+            pagingData.map { product ->
+                val newQty = productQuantity[product.id]
+                if (newQty != null) {
+                    updateProductQuantityInCart(product.id, newQty)
+                    product.copy(inCartQuantity = newQty)
+                } else product
+            }
+        }
+    }
+
+    fun setUpdatedProductsFlow(newFlow: Flow<PagingData<ProductUiState>>) {
+        updateState { copy(productsShelf = newFlow) }
     }
 
     private fun updateQuantityProductPagingSuccess(products: PagingData<ProductUiState>) {
         updateState { copy(productsShelf = flowOf(products)) }
     }
+
+    fun loadBestSellingProducts() {
+        tryToExecute(
+            block = ::LoadBestSellingProductsBlock,
+            onSuccess = ::loadBestSellingProductsSuccess,
+            onError = ::loadBestSellingProductsError
+
+        )
+    }
+
+    private fun loadBestSellingProductsError(throwable: Throwable) {
+        updateState {
+            copy(
+                error = throwable,
+                isDukanInfoLoading = false,
+                dukanDetailsState = DukanDetailsUiState.DukanDetailsState.ERROR
+            )
+        }
+    }
+
+    private fun loadBestSellingProductsSuccess(products: PagedResult<Product>) {
+        updateState {
+            copy(
+                bestSellingProducts = products.items
+                    .map { it.toUiState() }
+                    .distinctBy { it.id }
+            )
+        }
+    }
+
+    private suspend fun LoadBestSellingProductsBlock(): PagedResult<Product> =
+        productRepository.getBestSellingProducts(
+            dukanId = args.dukanId,
+            page = 0,
+            size = 10
+        )
 
     override fun onBackClicked() {
         emitEffect(DukanDetailsEffects.NavigateBackWithDukanId)

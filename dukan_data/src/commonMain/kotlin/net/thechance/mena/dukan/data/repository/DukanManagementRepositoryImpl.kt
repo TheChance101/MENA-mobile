@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
@@ -22,6 +21,7 @@ import net.thechance.mena.dukan.data.mapper.toCreateDukanRequest
 import net.thechance.mena.dukan.data.mapper.toDukan
 import net.thechance.mena.dukan.data.mapper.toMyDukanStatus
 import net.thechance.mena.dukan.data.util.constants.EndPoints.DUKAN_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Category
@@ -31,11 +31,11 @@ import net.thechance.mena.dukan.domain.model.MyDukanStatus
 import net.thechance.mena.dukan.domain.repository.DukanManagementRepository
 
 class DukanManagementRepositoryImpl(
-    private val client: HttpClient,
+    private val client: DukanApi,
 ) : DukanManagementRepository {
     override suspend fun createDukan(dukan: Dukan) {
         safeApiCall<Unit> {
-            client.post(
+            client.getClient().post(
                 urlString = "$DUKAN_BASE_PATH/create"
             ) {
                 contentType(ContentType.Application.Json)
@@ -46,7 +46,7 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun isDukanNameTaken(name: String): Boolean {
         return safeApiCall<DukanNameResponse> {
-            client.get("$DUKAN_BASE_PATH/available") {
+            client.getClient().get("$DUKAN_BASE_PATH/available") {
                 parameter("name", name)
             }.body()
         }.available.not()
@@ -54,7 +54,7 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun getMyDukanStatus(): MyDukanStatus {
         return safeApiCall<MyDukanStatusDto> {
-            client.get(
+            client.getClient().get(
                 urlString = "$DUKAN_BASE_PATH/statues"
             )
         }.toMyDukanStatus()
@@ -62,13 +62,13 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun getDukanDetailsByDukanId(dukanId: String): Dukan {
         return safeApiCall<DukanDetailsDto> {
-            client.get("$DUKAN_BASE_PATH/$dukanId")
+            client.getClient().get("$DUKAN_BASE_PATH/$dukanId")
         }.toDukan()
     }
 
     override suspend fun getDukanStyles(): List<Dukan.Style> {
         return safeApiCall<DukanStylesResponse> {
-            client.get(
+            client.getClient().get(
                 urlString = "$DUKAN_BASE_PATH/styles"
             )
         }.styles.map {
@@ -78,7 +78,7 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun getDukanColors(): List<Color> {
         return safeApiCall<DukanColorsResponse> {
-            client.get(
+            client.getClient().get(
                 urlString = "$DUKAN_BASE_PATH/colors"
             )
         }.colors.toColorsList()
@@ -86,7 +86,7 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun getCategories(): List<Category> {
         return safeApiCall<DukanCategoryResponse> {
-            client.get("$DUKAN_BASE_PATH/categories")
+            client.getClient().get("$DUKAN_BASE_PATH/categories")
         }.categories.toCategoryList()
     }
 
@@ -94,7 +94,7 @@ class DukanManagementRepositoryImpl(
         fileName: String, fileBytes: ByteArray
     ): String {
         return safeApiCall {
-            client.post("$DUKAN_BASE_PATH/image") {
+            client.getClient().post("$DUKAN_BASE_PATH/image") {
                 setBody(
                     buildSinglePartFormData(fileName, fileBytes, "file")
                 )
@@ -104,13 +104,13 @@ class DukanManagementRepositoryImpl(
 
     override suspend fun updateFavoriteDukanStatus(dukanId: String) {
         return safeApiCall<Unit> {
-            client.post("$DUKAN_BASE_PATH/$dukanId/toggle_favorite")
+            client.getClient().post("$DUKAN_BASE_PATH/$dukanId/toggle_favorite")
         }
     }
 
     override suspend fun getDukanActivationStatus(): Dukan.ActivationStatus {
         return safeApiCall<DukanActivationStatusResponse> {
-            client.get("$DUKAN_BASE_PATH/activation-status")
+            client.getClient().get("$DUKAN_BASE_PATH/activation-status")
         }.toActivationStatus()
     }
 }

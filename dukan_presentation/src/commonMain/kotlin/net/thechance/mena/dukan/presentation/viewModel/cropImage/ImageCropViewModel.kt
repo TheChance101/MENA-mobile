@@ -40,6 +40,7 @@ class ImageCropViewModel() : BaseViewModel<
     override fun onUploadAnotherImageClicked(
         imageSrc: ImageSrc?
     ) {
+        state.value.cropper.cropState?.reset()
         onSelectImage(imageSrc)
     }
 

@@ -52,16 +52,23 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import org.jetbrains.compose.resources.StringResource
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
+import net.thechance.mena.core_chat.presentation.utils.UiText
+import mena.core_chat_presentation.generated.resources.last_message_image
+import mena.core_chat_presentation.generated.resources.last_message_audio
+import mena.core_chat_presentation.generated.resources.last_message_money
+import mena.core_chat_presentation.generated.resources.last_message_ayah
+import mena.core_chat_presentation.generated.resources.last_message_order
+import net.thechance.mena.core_chat.domain.entity.LastMessageType
 
 @OptIn(ExperimentalUuidApi::class)
 fun ChatSummary.toUi(): ChatUiState {
 
     val statusMessages = getStatusMessages(lastMessage, unReadMessagesCount)
-    val lastMessage = lastMessage?.let {
+    val lastMessage = lastMessage?.let { msg ->
         ChatUiState.MessageUiState(
-            text = it.content,
-            isMine = it.isMine,
-            time = it.sendAt,
+            text = msg.type.toUiText(),
+            isMine = msg.isMine,
+            time = msg.sendAt,
         )
     }
     return ChatUiState(
@@ -71,6 +78,17 @@ fun ChatSummary.toUi(): ChatUiState {
         lastMessage = lastMessage,
         status = statusMessages
     )
+}
+
+private fun LastMessageType.toUiText(): UiText {
+    return when (this) {
+        is LastMessageType.Text -> UiText.DynamicString(text)
+        is LastMessageType.Image -> UiText.StringRes(Res.string.last_message_image)
+        is LastMessageType.Audio -> UiText.StringRes(Res.string.last_message_audio)
+        is LastMessageType.Money -> UiText.StringRes(Res.string.last_message_money)
+        is LastMessageType.Ayah -> UiText.StringRes(Res.string.last_message_ayah)
+        is LastMessageType.Order -> UiText.StringRes(Res.string.last_message_order)
+    }
 }
 
 private fun getStatusMessages(lastMessage: ChatSummary.Message?, unReadMessagesCount: Int): Status {

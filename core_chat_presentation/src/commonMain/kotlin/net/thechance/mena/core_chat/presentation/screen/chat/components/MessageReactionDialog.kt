@@ -23,9 +23,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import mena.core_chat_presentation.generated.resources.Res
 import mena.core_chat_presentation.generated.resources.react_to_message
-import net.thechance.mena.core_chat.presentation.components.ChatBasicDialog
 import net.thechance.mena.core_chat.presentation.screen.chat.MessageUiState
 import net.thechance.mena.core_chat.presentation.screen.chat.TextMessageUiState
+import net.thechance.mena.designsystem.presentation.component.dialog.BasicDialog
+import net.thechance.mena.designsystem.presentation.component.scaffold.ScaffoldScope
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.stringResource
@@ -43,9 +44,8 @@ private val availableReactions = listOf(
     "\uD83D\uDE4F\uD83C\uDFFB"
 )
 
-@Composable
 @OptIn(ExperimentalUuidApi::class)
-fun MessageReactionDialog(
+fun ScaffoldScope.messageReactionDialog(
     isVisible: Boolean,
     onDismiss: () -> Unit = { },
     message: MessageUiState? = null,
@@ -53,35 +53,38 @@ fun MessageReactionDialog(
     onReactionClicked: (messageId: Uuid, emoji: String) -> Unit
 ) {
     if (message == null) return
+    dialog(isVisible = isVisible) {
 
-    ChatBasicDialog(
-        isVisible = isVisible,
-        onDismiss = onDismiss,
-        onCancelClick = onDismiss,
-        contentPadding = PaddingValues(Theme.spacing._16),
-        actionButtons = {
-            MessageToReactDisplay(message = message)
+        BasicDialog(
+            isVisible = isVisible,
+            onDismiss = onDismiss,
+            onCancelClick = onDismiss,
+            contentPadding = PaddingValues(Theme.spacing._16),
+            actionButtons = {
+                MessageToReactDisplay(message = message)
 
-            val selected = message.messageDetails.reactions.firstOrNull { it.userId == currentUserId }?.emoji
+                val selected =
+                    message.messageDetails.reactions.firstOrNull { it.userId == currentUserId }?.emoji
 
-            ReactionContent(
-                selectedReaction = selected,
-                onReactionSelected = { emoji ->
-                    onReactionClicked(message.messageDetails.id, emoji)
-                    onDismiss()
-                }
+                ReactionContent(
+                    selectedReaction = selected,
+                    onReactionSelected = { emoji ->
+                        onReactionClicked(message.messageDetails.id, emoji)
+                        onDismiss()
+                    }
+                )
+            }
+        ) {
+            Text(
+                text = stringResource(Res.string.react_to_message),
+                style = Theme.typography.title.small,
+                color = Theme.colorScheme.shadePrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Theme.spacing._12)
             )
         }
-    ) {
-        Text(
-            text = stringResource(Res.string.react_to_message),
-            style = Theme.typography.title.small,
-            color = Theme.colorScheme.shadePrimary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = Theme.spacing._12)
-        )
     }
 }
 

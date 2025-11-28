@@ -14,7 +14,8 @@ fun Product.toUiState(): ProductDetailsUiState.ProductInfo {
         description = description,
         images = imageUrls,
         inCartQuantity = quantityInCart,
-        isOutOfStock = isOutOfStock
+        isOutOfStock = isOutOfStock,
+        finalProductQuantity = quantityInCart
     )
 }
 

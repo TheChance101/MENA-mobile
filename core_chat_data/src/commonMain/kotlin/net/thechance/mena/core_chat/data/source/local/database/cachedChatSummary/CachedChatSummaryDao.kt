@@ -10,7 +10,7 @@ interface CachedChatSummaryDao {
     @Upsert
     suspend fun insertChatSummary(chatSummary: CachedChatSummaryDto)
 
-    @Query("SELECT * FROM cached_chat_summary WHERE last_message IS NOT NULL ORDER BY last_message_send_at DESC LIMIT :pageSize OFFSET :offset")
+    @Query("SELECT * FROM cached_chat_summary WHERE last_message_type IS NOT NULL ORDER BY last_message_send_at DESC LIMIT :pageSize OFFSET :offset")
     suspend fun getChatSummaries(pageSize: Int, offset: Int): List<CachedChatSummaryDto>
 
     @Query("SELECT COUNT(*) FROM cached_chat_summary")
@@ -28,4 +28,7 @@ interface CachedChatSummaryDao {
 
     @Query("SELECT * FROM cached_chat_summary WHERE id = :chatId")
     suspend fun getChatSummaryById(chatId: String): CachedChatSummaryDto?
+
+    @Query("DELETE FROM cached_chat_summary")
+    suspend fun clearAllChatSummaries()
 }

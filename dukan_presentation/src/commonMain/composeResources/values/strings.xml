@@ -104,7 +104,7 @@
     <string name="error_general">Something went wrong, please try again.</string>
     <string name="error_price_invalid">Price is invalid.</string>
     <string name="error_price_not_positive">Price must be greater than 0.0.</string>
-    <string name="error_description_length">Description must be between 100 and 3000 letters.</string>
+    <string name="error_description_length">Description must be between 25 and 3000 letters.</string>
     <string name="all">All</string>
     <string name="arrow_right_icon">arrow right icon</string>
     <string name="best_selling">Best Selling</string>
@@ -200,4 +200,8 @@
     <string name="your_dukan_has_been_deactivated">Your dukan has been deactivated because:</string>
     <string name="wrong_information_provided">Wrong information provided.</string>
     <string name="no_active_location">No active location found</string>
+    <string name="see_more">...SeeMore</string>
+    <string name="see_less">.SeeLess</string>
+    <string name="remove_product_from_cart">Remove product from cart</string>
+    <string name="same_quantity">We already have one with the same quantity</string>
 </resources>

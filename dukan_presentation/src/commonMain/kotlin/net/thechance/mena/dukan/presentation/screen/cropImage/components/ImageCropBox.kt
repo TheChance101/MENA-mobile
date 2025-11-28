@@ -54,6 +54,7 @@ fun ImageCropBox(
     cornerSize: Float = 0.1f,
     handleColor: Color = Theme.colorScheme.primary.onPrimary,
     enableZoomGestures: Boolean = true,
+    imageKey: Any = cropState.src,
 ) {
     val strokeWidthPx = LocalDensity.current.run { strokeWidth.toPx() }
     val style = remember(backgroundColor, overlayColor, strokeWidthPx) {
@@ -71,7 +72,7 @@ fun ImageCropBox(
     val imgMat = remember(imgTransform, cropState.src.size) {
         imgTransform.asMatrix(cropState.src.size)
     }
-    val viewMat = remember { viewMat() }
+    val viewMat = remember(imageKey) { viewMat() }
     var view by remember { mutableStateOf(IntSize.Zero) }
     var pendingDrag by remember { mutableStateOf<DragHandle?>(null) }
     val zooming = remember { mutableStateOf(false) }
@@ -117,7 +118,7 @@ fun ImageCropBox(
         ZoomLimits(cropState.src.size, view)
     }
 
-    LaunchedEffect(view, aspectRatio) {
+    LaunchedEffect(view, aspectRatio, cropState.src.size) {
         if (view.width > 0 && view.height > 0) {
             val outer = view.toSize().toRect()
             viewMat.fit(cropState.src.size.toSize().toRect(), outer)

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.mena.dukan.presentation.di
 
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,6 +25,7 @@ import net.thechance.mena.dukan.presentation.viewModel.search.SearchViewModel
 import net.thechance.mena.dukan.presentation.viewModel.shelfDetails.ShelfDetailsViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
+import kotlin.uuid.ExperimentalUuidApi
 
 internal val dukanViewModelModule = module {
     single<CoroutineDispatcher> { Dispatchers.IO }

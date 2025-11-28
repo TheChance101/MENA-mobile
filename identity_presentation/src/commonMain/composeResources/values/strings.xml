@@ -263,6 +263,8 @@
     <!-- select gender   -->
     <string name="select_gender_screen_prompt_title">Complete your profile</string>
     <string name="select_gender_screen_prompt">Select your gender</string>
+    <string name="session_expired">Your session has expired. Please try again.</string>
+
     <!-- EnterName -->
     <string name="complete_profile_title">Complete your profile</string>
     <string name="complete_profile_description">Please fill your informations</string>
@@ -280,4 +282,6 @@
     <string name="contact_email_address">Email address</string>
     <string name="contact_phone_number">Phone number</string>
     <string name="contact_facebook_account">Facebook account</string>
+    <string name="error_cant_open_link">Could not open the link. Please check if you have a supported app installed.</string>
+
 </resources>

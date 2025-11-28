@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 
 interface StatementRepository {
     suspend fun getStatementWithMetadata(filterRequestParams: TransactionFilterParams? = null): StatementWithMetaData
-    suspend fun getStatements(page: Int, pageSize: Int, ): List<Statement>
+    suspend fun getStatements(page: Int, pageSize: Int): List<Statement>
     suspend fun insertStatement(statement: Statement)
     suspend fun deleteStatementById(id: Uuid)
     suspend fun getStatementById(id: Uuid): Statement

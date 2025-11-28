@@ -27,12 +27,16 @@ import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.ContactsRepository
 import kotlin.uuid.ExperimentalUuidApi
 import net.thechance.mena.core_chat.data.source.local.datastore.tryCall
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 
 class ContactsRepositoryImpl(
-    private val client: HttpClient,
+    private val clientHolder: HttpClientHolder,
     private val contactsProvider: ContactsProvider,
     private val dataStore: DataStore<Preferences>
 ) : ContactsRepository{
+
+    private val client: HttpClient
+        get() = clientHolder.getClient()
 
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun getUserContacts(pageNumber: Int): PagedData<Contact> {

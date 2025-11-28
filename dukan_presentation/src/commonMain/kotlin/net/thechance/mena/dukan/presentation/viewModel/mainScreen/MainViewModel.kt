@@ -351,8 +351,9 @@ class MainViewModel(
             is NoInternetException -> Res.string.no_internet_connection
             else -> Res.string.error_updating_favorites
         }
-        showSnackBar(message = messageRes,type = SnackBarType.ERROR)
+        showSnackBar(message = messageRes, type = SnackBarType.ERROR)
     }
+
     override fun onSearchButtonClicked() {
         emitEffect(MainScreenEffect.NavigateToSearchScreen)
     }

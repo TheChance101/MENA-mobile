@@ -12,6 +12,7 @@ import dev.mokkery.verify.VerifyMode
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -22,6 +23,7 @@ import net.thechance.mena.faith.domain.entity.Ayah
 import net.thechance.mena.faith.domain.mediaPlayer.QuranPlayer
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.faith.presentation.feature.quran.surah.args.SurahArgs
 import net.thechance.mena.faith.presentation.utils.ClipboardManager
@@ -49,12 +51,17 @@ class SurahViewModelTest {
     private val quranPlayer: QuranPlayer = mock(mode = MockMode.autofill)
     private val permissionManager: FaithPermissionsManager = mock(mode = MockMode.autofill)
     private val surahArgs = mock<SurahArgs>(mode = MockMode.autofill)
+    private val snackbarHandler: SnackbarHandler = mock(mode = MockMode.autofill)
 
     @BeforeTest
     fun setup() {
+        every { snackbarHandler.snackBarState } returns MutableStateFlow(SnackBarState())
+
         startKoin {
             modules(module { single { mock<SnackbarHandler>(MockMode.autofill) } })
+            modules(module { single { snackbarHandler } })
         }
+
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
 
@@ -294,22 +301,24 @@ class SurahViewModelTest {
 
     // Action Buttons Tests
     @Test
-    fun `onDismissActionButtons should hide action buttons when it called`() = runTest {
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+    fun `onDismissActionButtons should hide action buttons when it called`() =
+        runTest {
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        testViewModel.onDismissActionButtons()
+            testViewModel.onDismissActionButtons()
 
-        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
-    }
+            assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+        }
 
     @Test
-    fun `onDismissActionButtons should clear selectedAyah when called`() = runTest {
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+    fun `onDismissActionButtons should clear selectedAyah when called`() =
+        runTest {
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
 
-        testViewModel.onDismissActionButtons()
+            testViewModel.onDismissActionButtons()
 
-        assertEquals(EMPTY_STRING, testViewModel.uiState.value.selectedAyah)
-    }
+            assertEquals(EMPTY_STRING, testViewModel.uiState.value.selectedAyah)
+        }
 
     // Bookmark Tests
     @Test
@@ -370,12 +379,14 @@ class SurahViewModelTest {
 
             assertEquals(
                 SurahScreenEffect.ShareAyah(
-                    surahId = 0.toString(), ayahNumber = 1, ayahContent = AYAH_TO_SHARE
-                ), awaitItem()
+                    surahId = 0.toString(),
+                    ayahNumber = 1,
+                    ayahContent = AYAH_TO_SHARE
+                ),
+                awaitItem()
             )
         }
     }
-
 
     @Test
     fun `onCopyClick should update state correctly when copy operation succeeds`() = runTest {
@@ -453,54 +464,53 @@ class SurahViewModelTest {
                 ), effect
             )
         }
-    }
 
-    @Test
-    fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
-        testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
-
-        assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.selectedAyahNumber)
-        assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.initialAyahToScroll)
-    }
-
-    @Test
-    fun `onInitialAyahScrolled should clear selection after delay when not playing`() =
-        runTest {
+        @Test
+        fun `highlightAyah should update initialAyahToScroll and selectedAyahNumber`() = runTest {
             testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
-            testViewModel.onInitialAyahScrolled()
-            advanceUntilIdle()
 
-            assertNull(testViewModel.uiState.value.selectedAyahNumber)
-            assertNull(testViewModel.uiState.value.initialAyahToScroll)
+            assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.selectedAyahNumber)
+            assertEquals(TRACKED_AYAH_NUMBER, testViewModel.uiState.value.initialAyahToScroll)
         }
 
-    // Audio Loading Tests
-    @Test
-    fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest {
-        val testUrl = "https://example.com/ayah.mp3"
-        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns testUrl
+        @Test
+        fun `onInitialAyahScrolled should clear selection after delay when not playing`() =
+            runTest {
+                testViewModel.highlightAyah(TRACKED_AYAH_NUMBER)
+                testViewModel.onInitialAyahScrolled()
+                advanceUntilIdle()
+
+                assertNull(testViewModel.uiState.value.selectedAyahNumber)
+                assertNull(testViewModel.uiState.value.initialAyahToScroll)
+            }
+
+        // Audio Loading Tests
+        @Test
+        fun `loadAndPlayAyahSound should update current playing ayah url`() = runTest {
+            val testUrl = "https://example.com/ayah.mp3"
+            everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns testUrl
         everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(true)
 
-        testViewModel.onListenClick()
-        verifySuspend { permissionManager.checkPermission(any()) }
+            testViewModel.onListenClick()
+            verifySuspend { permissionManager.checkPermission(any()) }
         advanceUntilIdle()
 
-        assertEquals(testUrl, testViewModel.uiState.value.currentPlayingAyahUrl)
-    }
+            assertEquals(testUrl, testViewModel.uiState.value.currentPlayingAyahUrl)
+        }
 
-    @Test
-    fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
-        everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
+        @Test
+        fun `loadAndPlayAyahSound should show player and hide action buttons`() = runTest {
+            everySuspend { quranRepository.getAyahSoundUrl(any(), any(), any()) } returns "test_url"
         everySuspend { permissionManager.checkPermission(any()) } returns PermissionState(true)
 
-        testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
-        testViewModel.onListenClick()
-        verifySuspend { permissionManager.checkPermission(any()) }
+            testViewModel.onAyahLongPress(TEST_AYAH_CONTENT, TEST_AYAH_INDEX)
+            testViewModel.onListenClick()
+            verifySuspend { permissionManager.checkPermission(any()) }
         advanceUntilIdle()
 
-        assertTrue(testViewModel.uiState.value.isPlayerVisible)
-        assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
-
+            assertTrue(testViewModel.uiState.value.isPlayerVisible)
+            assertFalse(testViewModel.uiState.value.isAyahActionButtonsVisible)
+        }
     }
 
     @Test
@@ -546,17 +556,20 @@ class SurahViewModelTest {
                 surahId = 1,
                 content = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
                 plainContent = "بسم الله الرحمن الرحيم"
-            ), Ayah(
+            ),
+            Ayah(
                 number = 2,
                 surahId = 1,
                 content = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
                 plainContent = "الحمد لله العالمين"
-            ), Ayah(
+            ),
+            Ayah(
                 number = 3,
                 surahId = 1,
                 content = "الرَّحْمَٰنِ الرَّحِيمِ",
                 plainContent = "الرحمن الرحيم"
-            ), Ayah(
+            ),
+            Ayah(
                 number = 4,
                 surahId = 1,
                 content = "مَالِكِ يَوْمِ الدِّينِ",

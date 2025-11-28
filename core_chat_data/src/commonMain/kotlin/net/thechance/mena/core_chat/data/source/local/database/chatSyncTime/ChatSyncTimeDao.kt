@@ -12,4 +12,7 @@ interface ChatSyncTimeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(chatSyncTime: ChatSyncTime)
+
+    @Query("DELETE FROM chat_sync_times")
+    suspend fun clearAllSyncTimes()
 }

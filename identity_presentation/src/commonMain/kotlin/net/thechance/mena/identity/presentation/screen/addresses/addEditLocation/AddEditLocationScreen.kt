@@ -39,7 +39,7 @@ class AddEditLocationScreen(
     private val addressModel: AddressUIState?,
     private val onAddLocationSuccess: () -> Unit
 ) : BaseScreen<
-    AddEditLocationScreenViewModel,
+        LocationManagementViewModel,
     AddEditLocationScreenUIState,
     AddEditLocationScreenUIEffect,
     AddEditLocationScreenInteractionListener>() {

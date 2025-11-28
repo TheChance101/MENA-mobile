@@ -6,6 +6,7 @@ import io.ktor.client.request.setBody
 import io.ktor.util.reflect.typeInfo
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.data.utils.buildAudioMultiPartFormData
 import net.thechance.mena.core_chat.data.utils.now
@@ -17,8 +18,11 @@ import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
 class AudioMessageSender(
-    private val client: HttpClient
+    private val clientHolder: HttpClientHolder
 ) : MessageSender {
+
+    private val client: HttpClient
+        get() = clientHolder.getClient()
 
     override suspend fun send(message: Message) {
         val content = message.content

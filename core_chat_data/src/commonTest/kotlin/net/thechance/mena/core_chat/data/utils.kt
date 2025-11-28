@@ -42,8 +42,10 @@ import net.thechance.mena.core_chat.data.source.remote.dto.ContactDto
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.dto.PagedDataDto
 import net.thechance.mena.core_chat.data.source.remote.dto.UserDto
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.faith.domain.service.QuranService
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import kotlin.uuid.ExperimentalUuidApi
 
 val jsonSerialization = Json { ignoreUnknownKeys = true }
@@ -183,28 +185,25 @@ fun MockRequestHandleScope.defaultAudioDownloadResponse(audioBytes: ByteArray) =
     headers = headersOf(HttpHeaders.ContentType, "audio/m4a")
 )
 
-fun createRepository(
+fun createContactsRepository(
     contactsProvider: ContactsProvider,
     contactsDataStore: DataStore<Preferences>,
-    contactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-    syncContactsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
+    httpClientHolder: HttpClientHolder,
 ): ContactsRepositoryImpl {
     return ContactsRepositoryImpl(
-        client = createHttpClient(
-            contactsResponse = contactsResponse,
-            syncContactsResponse = syncContactsResponse
-        ),
+        clientHolder = httpClientHolder,
         contactsProvider = contactsProvider,
         dataStore = contactsDataStore
     )
 }
 
 fun createChatRepository(
-    httpClient: HttpClient? = null,
+    httpClientHolder: HttpClientHolder,
     webSocketManager: WebSocketManager,
     dataStore: DataStore<Preferences>,
     cachedChatSummaryDao: CachedChatSummaryDao,
     cachedChatDao: CachedChatDao,
+    authRepository: AuthenticationRepository,
     chatHistoryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     chatSummaryResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
@@ -219,32 +218,35 @@ fun createChatRepository(
         deleteChatResponse = deleteChatResponse
     )
     return ChatRepositoryImpl(
-        client = httpClient ?: defaultClient,
+        clientHolder = httpClientHolder,
         webSocketManager = webSocketManager,
         dataStore = dataStore,
         cachedChatSummaryDao = cachedChatSummaryDao,
-        cachedChatDao = cachedChatDao
+        cachedChatDao = cachedChatDao,
+        authRepository = authRepository
     )
 
 }
 
 fun createMessageRepository(
-    httpClient: HttpClient,
+    httpClientHolder: HttpClientHolder,
     webSocketManager: WebSocketManager,
     messageSenderFactory: MessageSenderFactory,
     pendingMessageDao: PendingMessageDao,
     cachedMessageDao: CachedMessageDao,
+    authRepository: AuthenticationRepository,
     quranService: QuranService,
     chatSyncTimeDao: ChatSyncTimeDao
 ): MessageRepositoryImpl {
     return MessageRepositoryImpl(
+        clientHolder = httpClientHolder,
         webSocketManager = webSocketManager,
         pendingMessageDao = pendingMessageDao,
         chatSyncTimeDao = chatSyncTimeDao,
-        client = httpClient,
         messageSenderFactory = messageSenderFactory,
         cachedMessageDao = cachedMessageDao,
         quranService = quranService,
+        authRepository = authRepository,
         json = jsonSerialization
     )
 }

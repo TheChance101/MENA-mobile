@@ -44,8 +44,8 @@ fun WeatherAndNextPrayerCard(
     AnimatedContent(
         targetState = isLoading,
         modifier = modifier
-    ) {
-        if (isLoading) {
+    ) { animatedLoading ->
+        if (animatedLoading) {
             WeatherAndNextPrayerCardSkeleton()
         } else {
             WeatherAndPrayerContent(

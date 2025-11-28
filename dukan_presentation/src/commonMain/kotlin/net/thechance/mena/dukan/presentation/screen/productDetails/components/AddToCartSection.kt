@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.add_to_cart
+import mena.dukan_presentation.generated.resources.remove_product_from_cart
 import mena.dukan_presentation.generated.resources.sold_out
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.button.PrimaryButton
@@ -41,6 +42,9 @@ fun AddToCartSection(
     state: ProductDetailsUiState,
     modifier: Modifier = Modifier
 ) {
+    val buttonText =
+        if (state.isFirstQuantityOne || state.product.inCartQuantity > 0) Res.string.add_to_cart else Res.string.remove_product_from_cart
+
     if (state.product.isOutOfStock) {
         PrimaryButton(
             text = stringResource(Res.string.sold_out),
@@ -87,7 +91,7 @@ fun AddToCartSection(
                     .heightIn(min = 48.dp)
                     .fillMaxWidth(),
                 onClick = onAddToCartClick,
-                isEnabled = state.isButtonEnable,
+                isEnabled = state.isFirstQuantityOne.not()|| state.product.inCartQuantity>0,
                 isLoading = state.isAddToCartLoading,
                 loadingColors = listOf(
                     Theme.colorScheme.stroke,
@@ -106,7 +110,7 @@ fun AddToCartSection(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(Res.string.add_to_cart),
+                        text = stringResource(buttonText),
                         style = Theme.typography.label.medium,
                         color = Theme.colorScheme.primary.onPrimary,
                     )

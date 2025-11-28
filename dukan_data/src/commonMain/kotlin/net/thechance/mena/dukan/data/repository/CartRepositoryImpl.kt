@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -15,6 +14,7 @@ import net.thechance.mena.dukan.data.dto.product.ProductCartDto
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toDto
 import net.thechance.mena.dukan.data.util.constants.EndPoints.CART_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.dukan.data.util.network.safeApiCall
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Product
@@ -28,17 +28,17 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class CartRepositoryImpl(
-    private val client: HttpClient
+    private val client: DukanApi
 ) : CartRepository {
     override suspend fun getCartInfo(dukanId: String): Cart {
         return safeApiCall<CartDto> {
-            client.get("$CART_BASE_PATH/$dukanId/info")
+            client.getClient().get("$CART_BASE_PATH/$dukanId/info")
         }.toDomain()
     }
 
     override suspend fun updateProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {
-            client.put("${CART_BASE_PATH}/items") {
+            client.getClient().put("${CART_BASE_PATH}/items") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toDto())
             }
@@ -51,13 +51,13 @@ class CartRepositoryImpl(
         size: Int
     ): PagedResult<Product> {
         return safeApiCall<PageResponseDto<ProductCartDto>> {
-            client.get("$CART_BASE_PATH/${dukanId}/items")
+            client.getClient().get("$CART_BASE_PATH/${dukanId}/items")
         }.toDomain(mapper = ProductCartDto::toDomain)
     }
 
     override suspend fun checkout(params: CheckoutParams): Transaction {
         return safeApiCall<TransactionDto> {
-            client.post("$CART_BASE_PATH/checkout") {
+            client.getClient().post("$CART_BASE_PATH/checkout") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toDto())
             }
@@ -66,7 +66,7 @@ class CartRepositoryImpl(
 
     override suspend fun addProductQuantity(params: UpdateProductCartQuantityParams) {
         safeApiCall<Unit> {
-            client.post("${CART_BASE_PATH}/items") {
+            client.getClient().post("${CART_BASE_PATH}/items") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toDto())
             }
@@ -75,7 +75,7 @@ class CartRepositoryImpl(
 
     override suspend fun deleteProductFromCart(dukanId: String, productId: String) {
         safeApiCall<Unit> {
-            client.delete("${CART_BASE_PATH}/$dukanId/items/$productId")
+            client.getClient().delete("${CART_BASE_PATH}/$dukanId/items/$productId")
         }
     }
 }

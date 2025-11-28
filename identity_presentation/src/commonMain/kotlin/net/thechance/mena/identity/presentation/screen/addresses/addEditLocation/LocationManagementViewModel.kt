@@ -11,7 +11,6 @@ import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.entity.AddressType.AddressTypeMapper.getAddressType
 import net.thechance.mena.identity.domain.exception.AuthenticationException
 import net.thechance.mena.identity.domain.exception.LocationException
-import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.createNavigateToMapEffect
@@ -30,8 +29,8 @@ import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class)
-class AddEditLocationScreenViewModel(
-    private val addressesRepository: AddressesRepository,
+class LocationManagementViewModel(
+    private val addressOperationStrategyFactory: AddressOperationStrategyFactory,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     addressModel: AddressUIState? = null,
 ) : BaseScreenModel<AddEditLocationScreenUIState, AddEditLocationScreenUIEffect>(
@@ -39,12 +38,16 @@ class AddEditLocationScreenViewModel(
 ), AddEditLocationScreenInteractionListener {
 
     init {
-        if (addressModel != null)
-            updateAddressState(addressModel, true)
+        addressModel?.let {
+            updateAddressState(
+                newAddress = it,
+                updateOriginals = true
+            )
+        }
     }
 
     override fun onClickBack() {
-        sendNewEffect(AddEditLocationScreenUIEffect.NavigateBack())
+        sendNewEffect(newEffect = AddEditLocationScreenUIEffect.NavigateBack())
     }
 
     override fun onClickAddressType(addressType: AddressType) {
@@ -108,21 +111,32 @@ class AddEditLocationScreenViewModel(
     }
 
     private suspend fun saveAddress() {
-        val addressInput = state.value.addressUIState.toAddressInput()
-        val addressId = state.value.addressUIState.addressID
-        val isMainAddress = state.value.addressUIState.isMainAddress
-        if (addressId != null) {
-            addressesRepository.updateAddress(addressId, addressInput, isMainAddress)
-        } else {
-            addressesRepository.createAddress(addressInput)
-        }
+        val addressUIState = state.value.addressUIState
+
+        val strategy = addressOperationStrategyFactory.getStrategy(
+            addressUIState.addressID
+        )
+        strategy.execute(
+            addressData = if (addressUIState.addressID == null)
+                AddressData.New(input = addressUIState.toAddressInput())
+            else
+                AddressData.Existing(
+                    id = addressUIState.addressID,
+                    input = addressUIState.toAddressInput(),
+                    isMain = addressUIState.isMainAddress
+                )
+        )
     }
 
     private fun onSaveAddressSuccess() {
         updateState { copy(isLoading = false) }
+
         val isEditMode = state.value.addressUIState.addressID != null
         val successMessage =
-            if (isEditMode) Res.string.edit_location_successfully else Res.string.add_location_successfully
+            if (isEditMode)
+                Res.string.edit_location_successfully
+            else
+                Res.string.add_location_successfully
 
         sendNewEffect(
             AddEditLocationScreenUIEffect.NavigateBack(
@@ -132,7 +146,7 @@ class AddEditLocationScreenViewModel(
     }
 
     private fun onAddressFromPickLocation(newAddress: AddressUIState) {
-        updateAddressState(newAddress, false)
+        updateAddressState(newAddress, updateOriginals = false)
     }
 
     private fun onSaveAddressError(throwable: Throwable) {
@@ -169,7 +183,10 @@ class AddEditLocationScreenViewModel(
                 addressUIState = addressUIState.copy(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
-                    addressType = if (updateOriginals) newAddress.addressType else addressUIState.addressType,
+                    addressType = if (updateOriginals)
+                        newAddress.addressType
+                    else
+                        addressUIState.addressType,
                     otherAddressType = if (updateOriginals && newAddress.addressType is AddressType.Other)
                         newAddress.addressType.getAddressType()
                     else
@@ -178,7 +195,10 @@ class AddEditLocationScreenViewModel(
                         newAddress.id ?: addressUIState.addressID
                     else
                         addressUIState.addressID,
-                    isMainAddress = if (updateOriginals) newAddress.isMainAddress else addressUIState.isMainAddress
+                    isMainAddress = if (updateOriginals)
+                        newAddress.isMainAddress
+                    else
+                        addressUIState.isMainAddress
                 )
             )
         }
@@ -191,7 +211,8 @@ class AddEditLocationScreenViewModel(
                     coordinates = newAddress.coordinates,
                     addressDetails = newAddress.addressDetails,
                     addressType = newAddress.addressType,
-                    otherAddressType = if (newAddress.addressType is AddressType.Other) newAddress.addressType.getAddressType() else null
+                    otherAddressType = if (newAddress.addressType is AddressType.Other)
+                        newAddress.addressType.getAddressType() else null
                 )
             )
         }
@@ -213,13 +234,15 @@ class AddEditLocationScreenViewModel(
     }
 
     private fun changeIsSaveEnabled() {
-        val isEnabled = state.value.isSaveEnabled()
-        updateState { copy(isSaveEnabled = isEnabled) }
+        updateState { copy(isSaveEnabled = isSaveEnabled()) }
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
         return when (throwable) {
-            is LocationException -> mapLocationErrorToMessage(handleLocationException(throwable))
+            is LocationException -> mapLocationErrorToMessage(
+                handleLocationException(throwable)
+            )
+
             is AuthenticationException -> mapAuthenticationErrorToMessage(
                 handleLocationAuthenticationException(throwable)
             )
