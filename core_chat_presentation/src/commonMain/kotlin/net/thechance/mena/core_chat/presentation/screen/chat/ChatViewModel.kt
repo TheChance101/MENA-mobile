@@ -356,9 +356,9 @@ class ChatViewModel(
                 .distinctBy { it.id }
         }
 
+        emitEffect(ChatScreenEffect.ScrollToBottom)
         if (message.isMine) {
             messageRepository.markMessagesOfChatAsRead(message.chatId)
-            emitEffect(ChatScreenEffect.ScrollToBottom)
         }
     }
 
