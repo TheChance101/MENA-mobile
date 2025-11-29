@@ -23,10 +23,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun DeactivatedDukanScreen() {
+fun DeactivatedDukanScreen(
+    reason: String? = null
+) {
 
     val isDark = LocalDarkTheme.current
-    val icon = if(isDark) Res.drawable.deactivated_dukan_dark else Res.drawable.deactivated_dukan
+    val icon = if (isDark) Res.drawable.deactivated_dukan_dark else Res.drawable.deactivated_dukan
 
     Column(
         modifier = Modifier
@@ -45,7 +47,7 @@ fun DeactivatedDukanScreen() {
                         color = Theme.colorScheme.shadePrimary
                     )
             },
-            bodyText = stringResource(Res.string.wrong_information_provided),
+            bodyText = reason ?: stringResource(Res.string.wrong_information_provided),
         )
     }
 }

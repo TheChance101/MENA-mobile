@@ -38,11 +38,10 @@ fun ManageDukanContent(
         topBar = { ManageDukanAppBar(listener) },
         snakeBar = { ManageDukanSnackbar(state, listener) }
     ) {
-        when (state.activationStatus) {
+        when (state.activation.activationStatus) {
             ManageDukanUiState.ActivationStatus.ACTIVATED,
             ManageDukanUiState.ActivationStatus.ONHOLD -> ManageDukanScreenContent(state, listener)
-
-            ManageDukanUiState.ActivationStatus.DEACTIVATED -> DeactivatedDukanScreen()
+            ManageDukanUiState.ActivationStatus.DEACTIVATED -> DeactivatedDukanScreen(state.activation.reason)
         }
     }
 }
@@ -65,7 +64,6 @@ private fun ManageDukanScreenContent(
 
             ManageDukanProducts(
                 state = state,
-
                 onEditProductClicked = listener::onEditProductClicked
             )
 
