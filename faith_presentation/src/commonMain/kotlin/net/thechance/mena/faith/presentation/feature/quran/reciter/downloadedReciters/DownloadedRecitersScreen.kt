@@ -105,9 +105,6 @@ fun EmptyRecitersContent() {
             subtitle = Res.string.search_reciter,
             isStartState = false,
             isResultsState = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Theme.spacing._16)
         )
     }
 }
