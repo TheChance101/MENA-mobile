@@ -71,7 +71,7 @@ private fun Content(
                 listener = listener,
                 uiState = state,
                 results = state.searchResults,
-                modifier = Modifier.fillMaxWidth().padding(top = Theme.spacing._16)
+                modifier = Modifier.fillMaxWidth()
             )
         }
     }
@@ -114,7 +114,8 @@ private fun ResultList(
                 onSelect = { listener.onSelectReciterClick(result.id) },
                 isSelectReciter = result.id == uiState.selectedReciterId,
                 isDownloadIconVisible = false,
-                onDownloadClick = {}
+                onDownloadClick = {},
+                modifier = Modifier.padding(horizontal = Theme.spacing._16)
             )
         }
     }
