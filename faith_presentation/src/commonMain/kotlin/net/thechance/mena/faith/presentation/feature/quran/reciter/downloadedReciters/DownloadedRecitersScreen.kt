@@ -35,6 +35,7 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.utils.extentions.localizedName
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -134,7 +135,7 @@ fun RecitersListContent(
                     backgroundIcon = painterResource(Res.drawable.ic_delete),
                     cardContent = { contentModifier ->
                         ReciterItem(
-                            reciter = it.name,
+                            reciter = it.localizedName(),
                             recitingType = it.recitingType,
                             onSelect = { listener.onSelectReciterClick(it.id) },
                             isDownloaded = false,
@@ -171,19 +172,22 @@ private fun Preview() {
                             id = 1,
                             name = "Mishary Rashid Alafasy",
                             recitingType = "Murattal",
-                            isDownloaded = true
+                            isDownloaded = true,
+                            arabicName = "مشاري العفاسي"
                         ),
                         DownloadedReciterItemUi(
                             id = 2,
                             name = "Abdul Basit Abdul Samad",
                             recitingType = "Mujawwad",
-                            isDownloaded = false
+                            isDownloaded = false,
+                            arabicName = "مشاري العفاسي"
                         ),
                         DownloadedReciterItemUi(
                             id = 3,
                             name = "Saad Al Ghamdi",
                             recitingType = "Murattal",
-                            isDownloaded = false
+                            isDownloaded = false,
+                            arabicName = "مشاري العفاسي"
                         )
                     ),
                     reciterId = 1,

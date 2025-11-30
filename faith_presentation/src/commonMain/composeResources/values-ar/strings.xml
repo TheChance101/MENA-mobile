@@ -199,5 +199,5 @@
     <string name="remove_aya_message">هل أنت متأكد من حذف هذة الاية من الإشارات المرجعية</string>
     <string name="remove_audio">حذف الصوت</string>
     <string name="remove_audio_message">هل أنت متأكد أنك تريد حذف صوت هذا القارئ؟</string>
-
+    <string name="reciter_name_type">ar</string>
 </resources>

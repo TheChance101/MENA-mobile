@@ -30,10 +30,12 @@ fun Reciter.toReciterDto(): ReciterDto = ReciterDto(
 
 fun SurahAudioDto.toDownlodedSurUi(
     surahName: String,
-    reciterName: List<String>
+    reciterName: List<String>,
+    reciterArabicName: List<String>,
 ): DownlodedSur = DownlodedSur(
     id = surahId,
     arabicNameImg = Surah.SurahOrder.entries.first { it.order == surahId },
     surahName = surahName,
-    recitersName = reciterName
+    recitersName = reciterName,
+    reciterArabicName = reciterArabicName
 )
