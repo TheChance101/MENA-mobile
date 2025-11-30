@@ -26,6 +26,13 @@ fun Product.toUiState(): ManageDukanUiState.ProductUiState {
     )
 }
 
+fun Dukan.Activation.toUiState(): ManageDukanUiState.Activation {
+    return ManageDukanUiState.Activation(
+        activationStatus = activationStatus.toUiState(),
+        reason = reason
+    )
+}
+
 fun Dukan.ActivationStatus.toUiState(): ManageDukanUiState.ActivationStatus {
     return when (this) {
         Dukan.ActivationStatus.ACTIVATED -> ManageDukanUiState.ActivationStatus.ACTIVATED

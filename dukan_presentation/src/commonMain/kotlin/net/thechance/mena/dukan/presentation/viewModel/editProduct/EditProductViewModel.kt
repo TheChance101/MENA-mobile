@@ -638,11 +638,16 @@ class EditProductViewModel(
     }
 
     private fun getProductValidationError(productUiState: EditProductUiState): StringResource? {
+        val basePrice = productUiState.price.toDoubleOrNull()
+        val discountPrice = productUiState.priceAfterDiscount.toDoubleOrNull()
+
         return when {
-            productUiState.price.toDoubleOrNull() == null -> Res.string.error_price_invalid
-            productUiState.price.toDouble() <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
-            productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH -> Res.string.error_description_length
-            productUiState.priceAfterDiscount > productUiState.price -> Res.string.price_after_discount_bigger_than_base_price
+            basePrice == null -> Res.string.error_price_invalid
+            basePrice <= PRICE_EXCLUSIVE_LOWER_BOUND -> Res.string.error_price_not_positive
+            productUiState.description.length !in MIN_DESCRIPTION_LENGTH..MAX_DESCRIPTION_LENGTH ->
+                Res.string.error_description_length
+            discountPrice != null && discountPrice > basePrice ->
+                Res.string.price_after_discount_bigger_than_base_price
             else -> null
         }
     }

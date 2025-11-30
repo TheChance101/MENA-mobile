@@ -19,8 +19,12 @@ data class ManageDukanUiState(
     val shelvesState: ShelvesState = ShelvesState.LOADING,
     val snackBarState: SnackBarUiState? = null,
     val deleteDialog: DeleteDialogState? = null,
-    val activationStatus: ActivationStatus = ActivationStatus.ACTIVATED,
+    val activation: Activation = Activation(ActivationStatus.ACTIVATED),
 ) {
+    data class Activation(
+        val activationStatus: ActivationStatus,
+        val reason: String? = null
+    )
     data class DeleteDialogState(
         val title: StringResource,
         val description: StringResource,

@@ -24,4 +24,6 @@ interface NetworkClient {
         urlString: String,
         requestBuilder: HttpRequestBuilder.() -> Unit = {}
     ): HttpResponse
+
+    fun clearCachedToken()
 }

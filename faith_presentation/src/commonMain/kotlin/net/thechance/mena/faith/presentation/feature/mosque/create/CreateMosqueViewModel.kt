@@ -10,14 +10,20 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.add_mosque_message
+import net.thechance.mena.faith.domain.entity.Mosque
+import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
+import net.thechance.mena.faith.presentation.utils.extentions.toByteArray
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import org.jetbrains.compose.resources.getString
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 internal class CreateMosqueViewModel(
+    private val repository: MosqueRepository,
     private val sharedImageViewModel: SharedImageViewModel,
     private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -28,6 +34,7 @@ internal class CreateMosqueViewModel(
 
 
     init {
+        sharedImageViewModel.clearImage()
         setInitialLocation()
         observeCroppedImage()
     }
@@ -77,16 +84,46 @@ internal class CreateMosqueViewModel(
 
     override fun onAddClick() {
         tryToExecute(
-            execute = {
-//        TODO: sent mosque data to the server
-                val addMosqueMessage = getString(Res.string.add_mosque_message)
-                updateState { it.copy(successMessage = addMosqueMessage) }
+            execute = ::createMosque,
+            onError = ::handleErrorSnackBar,
+            onFinally = {
                 sharedImageViewModel.clearImage()
-
-            },
-            onFinally = { sendEffect(CreateMosqueEffect.NavigateBack) },
-            onError = ::handleErrorSnackBar
+                sendEffect(CreateMosqueEffect.NavigateBack)
+            }
         )
+    }
+
+    private suspend fun createMosque() {
+        val mosque = buildMosqueFromState()
+        val imageBytes = getImageBytes()
+
+        repository.addMosque(mosque, imageBytes)
+
+        handleSuccessfulMosqueCreation()
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    private fun buildMosqueFromState(): Mosque {
+        val state = uiState.value
+        return Mosque(
+            id = Uuid.random(),
+            name = state.name,
+            coordinates = Mosque.Coordinates(
+                latitude = state.mosqueLocation?.latitude ?: 0.0,
+                longitude = state.mosqueLocation?.longitude ?: 0.0
+            ),
+            address = state.address,
+            imageUrl = "",
+        )
+    }
+
+    private fun getImageBytes(): ByteArray {
+        return uiState.value.croppedImage?.toByteArray() ?: ByteArray(0)
+    }
+
+    private suspend fun handleSuccessfulMosqueCreation() {
+        val addMosqueMessage = getString(Res.string.add_mosque_message)
+        updateState { it.copy(successMessage = addMosqueMessage) }
     }
 
     override fun onNameChange(name: String) {

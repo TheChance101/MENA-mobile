@@ -50,6 +50,10 @@ class DukanDetailsViewModel(
     private var shelfProductsLimitedMutableMap = mutableMapOf<String, List<ProductUiState>>()
 
     init {
+        loadingDetails()
+    }
+
+    fun loadingDetails() {
         loadDukanDetails()
         loadCartInfo()
         loadShelvesPaging()
@@ -248,12 +252,11 @@ class DukanDetailsViewModel(
         updateState { copy(productsShelf = flowOf(products)) }
     }
 
-    fun loadBestSellingProducts() {
+    private fun loadBestSellingProducts() {
         tryToExecute(
             block = ::LoadBestSellingProductsBlock,
             onSuccess = ::loadBestSellingProductsSuccess,
             onError = ::loadBestSellingProductsError
-
         )
     }
 

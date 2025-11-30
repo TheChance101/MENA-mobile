@@ -60,6 +60,10 @@ class CreateDukanViewModel(
             updateState { copy(isImageBeingCropped = false) }
             return
         }
+        if (state.value.isLocationPickerExpanded) {
+            updateState { copy(isLocationPickerExpanded = false) }
+            return
+        }
         if (current == CreateDukanStep.BASIC_INFORMATION) {
             emitEffect(CreateDukanEffect.NavigateBack)
         } else {
@@ -122,7 +126,7 @@ class CreateDukanViewModel(
 
     private suspend fun onUploadImageBlock(image: ImageFile) {
         if (!isUploadImageValidToCrop(image))
-           awaitCancellation()
+            awaitCancellation()
 
         val imageSrc = image.toImageSrc()
         updateState {
@@ -138,8 +142,8 @@ class CreateDukanViewModel(
         val imageSrc = image.toImageSrc()
 
         return when {
-            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB ->{
-                showErrorUpload( Res.string.error_image_size)
+            imageSizeInMegabyte > IMAGE_MAX_SIZE_IN_MB -> {
+                showErrorUpload(Res.string.error_image_size)
                 false
             }
 
@@ -300,7 +304,11 @@ class CreateDukanViewModel(
         updateState {
             copy(
                 currentLocation = coordinates,
-                pointerLocation = pointerLocation
+                pointerLocation = pointerLocation,
+                cameraPosition = CameraPosition(
+                    target = coordinates.toPosition(),
+                    zoom = cameraPosition.zoom
+                )
             )
         }
         return locationRepository.getCurrentLocationName(coordinates.toEntity())
@@ -326,6 +334,23 @@ class CreateDukanViewModel(
             )
         }
         updateNextButtonEnableState()
+    }
+
+    override fun onExpandLocationPicker() {
+        updateState { copy(isLocationPickerExpanded = true) }
+    }
+
+    override fun onConfirmLocationPicked() {
+        updateState {
+            copy(
+                isLocationPickerExpanded = false,
+                isMapLocked = true
+            )
+        }
+    }
+
+    override fun onCancelLocationPicker() {
+        updateState { copy(isLocationPickerExpanded = false) }
     }
 
     private fun previousStep(step: CreateDukanStep): CreateDukanStep =

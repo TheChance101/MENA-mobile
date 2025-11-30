@@ -108,7 +108,7 @@ class DukanManagementRepositoryImpl(
         }
     }
 
-    override suspend fun getDukanActivationStatus(): Dukan.ActivationStatus {
+    override suspend fun getDukanActivationStatus(): Dukan.Activation {
         return safeApiCall<DukanActivationStatusResponse> {
             client.getClient().get("$DUKAN_BASE_PATH/activation-status")
         }.toActivationStatus()

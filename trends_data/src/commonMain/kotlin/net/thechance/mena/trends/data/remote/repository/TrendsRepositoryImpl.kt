@@ -18,6 +18,7 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.asSource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.io.buffered
 import net.thechance.mena.identity.domain.repository.UserRepository
@@ -53,6 +54,7 @@ import net.thechance.mena.trends.data.util.getLastMidnightTime
 import net.thechance.mena.trends.data.util.observeUploading
 import net.thechance.mena.trends.data.util.safeApiCall
 import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUpdates
 import net.thechance.mena.trends.domain.model.TrendUrls
 import net.thechance.mena.trends.domain.model.TrendWatchSession
 import net.thechance.mena.trends.domain.model.UploadTrendProgress
@@ -74,6 +76,7 @@ internal class TrendsRepositoryImpl(
 ) : TrendsRepository {
 
     private val observableUploadingFlow: MutableSharedFlow<UploadTrendProgress> = MutableSharedFlow()
+    private val trendsUpdates: MutableSharedFlow<TrendUpdates> = MutableSharedFlow()
 
     override suspend fun deleteTrendById(id: String) {
         safeApiCall<Unit> {
@@ -259,5 +262,13 @@ internal class TrendsRepositoryImpl(
         val userId = userRepository.getUser().first()?.id.toString()
         if (trendWatchSession.watchStartTime != null)
             userEngagementDao.insertEngagement(trendWatchSession.toUserEngagement(userId))
+    }
+
+    override suspend fun sendTrendUpdates(trendUpdates: TrendUpdates) {
+        trendsUpdates.emit(trendUpdates)
+    }
+
+    override fun observeTrendUpdates(): SharedFlow<TrendUpdates> {
+        return trendsUpdates.asSharedFlow()
     }
 }

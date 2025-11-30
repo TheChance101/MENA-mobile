@@ -29,5 +29,8 @@ interface CreateDukanInteractionListener {
     fun onAddressChanged(address: String)
     fun onCameraMoved(camera: CameraPosition)
     fun onEditMapLocationClicked()
+    fun onExpandLocationPicker()
+    fun onConfirmLocationPicked()
+    fun onCancelLocationPicker()
     fun onDismissSnackBar()
 }

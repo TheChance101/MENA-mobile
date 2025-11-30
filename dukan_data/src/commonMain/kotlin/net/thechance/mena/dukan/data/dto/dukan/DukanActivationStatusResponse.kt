@@ -6,5 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DukanActivationStatusResponse(
     @SerialName("activationStatus")
-    val status: String
+    val status: String,
+    @SerialName("reason")
+    val reason: String?
 )

@@ -191,7 +191,7 @@ class DukanManagementRepositoryTest {
         val status = repo.getDukanActivationStatus()
 
         assertTrue(called)
-        assertEquals(Dukan.ActivationStatus.ACTIVATED, status)
+        assertEquals(Dukan.ActivationStatus.ACTIVATED, status.activationStatus)
     }
 
 }

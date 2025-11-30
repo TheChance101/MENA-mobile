@@ -75,7 +75,7 @@ class ManageDukanViewModelTest {
         )
         everySuspend {
             dukanManagementRepository.getDukanActivationStatus()
-        } returns Dukan.ActivationStatus.ACTIVATED
+        } returns Dukan.Activation(Dukan.ActivationStatus.ACTIVATED , null)
 
         manageDukanViewModel = ManageDukanViewModel(
             shelfRepository,

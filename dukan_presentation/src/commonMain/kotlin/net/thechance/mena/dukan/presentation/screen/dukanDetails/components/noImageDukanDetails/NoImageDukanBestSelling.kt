@@ -1,6 +1,7 @@
 package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.noImageDukanDetails
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,12 +62,20 @@ fun BestSellingNoImageDukan(
                 .fillMaxWidth()
                 .background(Theme.colorScheme.background.surfaceHigh),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(horizontal = Theme.spacing._8, vertical = Theme.spacing._12)
+            contentPadding = PaddingValues(
+                horizontal = Theme.spacing._8,
+                vertical = Theme.spacing._12
+            )
         ) {
             items(state.bestSellingProducts.size) {
                 val product = state.bestSellingProducts[it]
                 BestSellingItem(
-                    modifier = Modifier.width(120.dp),
+                    modifier = Modifier.width(120.dp)
+                        .clickable(
+                            onClick = { listener.onProductClicked(product.id) },
+                            indication = null,
+                            interactionSource = null
+                        ),
                     product = product,
                     listener = listener,
                     dukanColor = Color(state.dukanInfo.color),
@@ -152,7 +161,11 @@ private fun BestSellingItem(
                 maxLines = 1,
                 textAlign = TextAlign.Center
             )
-            ProductPrice(product.basePrice, product.finalPrice, Modifier.align(Alignment.CenterHorizontally))
+            ProductPrice(
+                product.basePrice,
+                product.finalPrice,
+                Modifier.align(Alignment.CenterHorizontally)
+            )
         }
     }
 }

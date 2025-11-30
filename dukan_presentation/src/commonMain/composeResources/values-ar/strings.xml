@@ -203,4 +203,5 @@
     <string name="no_active_location">لم يتم العثور علي وجهه</string>
     <string name="remove_product_from_cart">حذف المنتج من السلة</string>
     <string name="same_quantity">يوجد منتج بنفس الكميه</string>
+    <string name="confirm">تأكيد</string>
 </resources>

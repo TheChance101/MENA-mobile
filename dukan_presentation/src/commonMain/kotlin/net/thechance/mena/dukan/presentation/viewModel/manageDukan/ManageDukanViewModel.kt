@@ -152,9 +152,9 @@ class ManageDukanViewModel(
         )
     }
 
-    private fun updateActivationStatus(status: Dukan.ActivationStatus) {
+    private fun updateActivationStatus(status: Dukan.Activation) {
         updateState {
-            copy(activationStatus = status.toUiState())
+            copy(activation = status.toUiState())
         }
         loadShelves()
     }

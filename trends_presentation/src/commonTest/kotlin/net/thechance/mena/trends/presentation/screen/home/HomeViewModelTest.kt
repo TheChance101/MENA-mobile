@@ -9,17 +9,20 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUpdates
 import net.thechance.mena.trends.domain.model.TrendUrls
 import net.thechance.mena.trends.domain.repository.TrendsRepository
 import kotlin.test.BeforeTest
@@ -94,7 +97,7 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         val initial = viewModel.state.value.trends.asSnapshot().first()
-        viewModel.addTrendLike("1")
+        viewModel.onClickLike("1", true)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -114,7 +117,7 @@ class HomeViewModelTest {
         advanceUntilIdle()
 
         val initial = viewModel.state.value.trends.asSnapshot().first { it.id == "2" }
-        viewModel.removeTrendLike("2")
+        viewModel.onClickLike("2", true)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -153,7 +156,6 @@ class HomeViewModelTest {
         viewModel.state.test {
             val state = awaitItem()
             assertThat(state.error).isNull()
-            verifySuspend { viewModel.getFeedTrends() }
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -196,6 +198,38 @@ class HomeViewModelTest {
         }
     }
 
+    @Test
+    fun `observeTrendsUpdates should call repository observeTrendUpdates`() = runTest {
+        val updatesFlow = MutableSharedFlow<TrendUpdates>()
+        every { repository.observeTrendUpdates() } returns updatesFlow
+
+        viewModel = HomeViewModel(repository, testDispatcher)
+        advanceUntilIdle()
+
+        verifySuspend { repository.observeTrendUpdates() }
+    }
+
+    @Test
+    fun `observeTrendsUpdates should update trend properties when isDeleted is false`() = runTest(testDispatcher) {
+        val updatesFlow = MutableSharedFlow<TrendUpdates>()
+        everySuspend { repository.getFeedTrends(page = 1) } returns trends
+        every { repository.observeTrendUpdates() } returns updatesFlow
+
+        viewModel = HomeViewModel(repository, testDispatcher)
+        advanceUntilIdle()
+
+        updatesFlow.emit(trendUpdates)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            val snapshot = awaitItem().trends.asSnapshot()
+            val updatedTrend = snapshot.first { it.id == trendUpdates.trendId }
+
+            assertThat(updatedTrend.isLiked).isEqualTo(trendUpdates.isLiked)
+            assertThat(updatedTrend.likesCount).isEqualTo(trendUpdates.likesCount)
+            assertThat(updatedTrend.viewsCount).isEqualTo(trendUpdates.viewsCount)
+        }
+    }
 
     companion object {
 
@@ -226,6 +260,14 @@ class HomeViewModelTest {
                 isCurrentUserOwner = false,
                 isLiked = true
             )
+        )
+
+        val trendUpdates = TrendUpdates(
+            trendId = "1",
+            isLiked = false,
+            likesCount = 6,
+            viewsCount = 51,
+            isDeleted = false
         )
     }
 }

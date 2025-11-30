@@ -18,6 +18,7 @@ data class CreateDukanUiState(
     val cameraPosition: CameraPosition = CameraPosition(target = Position(29.0, 28.0), zoom = 1.0),
     val isMapLocked: Boolean = false,
     val address: String = "",
+    val isLocationPickerExpanded: Boolean = false,
 
     val croppedImage: ImageBitmap? = null,
     val dukanCategories: List<DukanCategoryUiState> = emptyList(),

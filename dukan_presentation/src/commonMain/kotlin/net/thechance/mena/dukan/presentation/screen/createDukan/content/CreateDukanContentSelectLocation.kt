@@ -18,7 +18,9 @@ import mena.dukan_presentation.generated.resources.location
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.component.textField.TextField
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
+import net.thechance.mena.dukan.presentation.screen.createDukan.component.DukanLocationPicker
 import net.thechance.mena.dukan.presentation.screen.createDukan.component.Map
+import net.thechance.mena.dukan.presentation.util.OnSystemBackPressed
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
@@ -27,6 +29,26 @@ import sv.lib.squircleshape.SquircleShape
 
 @Composable
 fun CreateDukanContentSelectLocation(
+    state: CreateDukanUiState,
+    listener: CreateDukanInteractionListener
+) {
+    if (state.isLocationPickerExpanded) {
+        OnSystemBackPressed(listener::onCancelLocationPicker)
+    }
+
+    if (state.isLocationPickerExpanded) {
+        DukanLocationPicker(
+            currentLocation = state.currentLocation,
+            cameraPosition = state.cameraPosition,
+            listener = listener
+        )
+    } else {
+        DukanLocationContent(state, listener)
+    }
+}
+
+@Composable
+private fun DukanLocationContent(
     state: CreateDukanUiState,
     listener: CreateDukanInteractionListener
 ) {
@@ -74,9 +96,8 @@ private fun DukanLocationMapSection(
         isLocked = state.isMapLocked,
         anchorLocation = state.pointerLocation,
         cameraPosition = state.cameraPosition,
-        onMapClick = listener::onMapClicked,
         onCameraMoved = listener::onCameraMoved,
-        onEditClick = listener::onEditMapLocationClicked
+        onEditClick = listener::onExpandLocationPicker
     )
 }
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.img_not_found_search
 import mena.dukan_presentation.generated.resources.img_start_search
+import mena.dukan_presentation.generated.resources.img_start_search_dark
 import mena.dukan_presentation.generated.resources.no_result_found
 import mena.dukan_presentation.generated.resources.no_result_found_body
 import mena.dukan_presentation.generated.resources.start_search
@@ -22,6 +23,7 @@ import net.thechance.mena.dukan.presentation.component.shared.SearchHeader
 import net.thechance.mena.dukan.presentation.component.shared.SnackBar
 import net.thechance.mena.dukan.presentation.component.state.NoInternetContent
 import net.thechance.mena.dukan.presentation.navigation.DukanRoute
+import net.thechance.mena.dukan.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.dukan.presentation.navigation.LocalNavController
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchCompleteContent
 import net.thechance.mena.dukan.presentation.screen.search.component.SearchEmptyContent
@@ -71,6 +73,10 @@ private fun SearchContent(
     state: SearchUiState,
     listener: SearchInteractionListener
 ) {
+
+    val isDark = LocalDarkTheme.current
+    val icon = if(isDark) Res.drawable.img_start_search_dark else Res.drawable.img_start_search
+
     Scaffold(
         modifier = Modifier,
         topBar = {
@@ -106,7 +112,7 @@ private fun SearchContent(
         ) { currentSearchState ->
             when (currentSearchState) {
                 SearchUiState.SearchContentState.Idle -> SearchEmptyContent(
-                    icon = painterResource(resource = Res.drawable.img_start_search),
+                    icon = painterResource(resource = icon),
                     title = stringResource(resource = Res.string.start_search),
                     body = stringResource(resource = Res.string.start_search_body)
                 )

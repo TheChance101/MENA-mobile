@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.PagingEvents
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 import org.jetbrains.compose.resources.StringResource
 
@@ -13,8 +14,8 @@ data class HomeScreenState(
     val isLoading: Boolean = true,
     val error: ErrorState? = null,
     val trends: Flow<PagingData<TrendUiState>> = flowOf(),
-    val trendsStateFlow: MutableStateFlow<PagingData<TrendUiState>> = MutableStateFlow(PagingData.empty()),
     val errorMessage: StringResource? = null,
+    val pagingEvents: MutableStateFlow<List<PagingEvents<TrendUiState>>> = MutableStateFlow(emptyList())
 )
 
 data class TrendUiState(

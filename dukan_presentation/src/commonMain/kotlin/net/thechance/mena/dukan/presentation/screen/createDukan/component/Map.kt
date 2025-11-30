@@ -16,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -30,7 +29,6 @@ import mena.dukan_presentation.generated.resources.anchor
 import mena.dukan_presentation.generated.resources.ic_edit
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.util.map.MapStyle
-import net.thechance.mena.dukan.presentation.viewModel.createDukan.CreateDukanUiState
 import org.jetbrains.compose.resources.painterResource
 import org.maplibre.compose.camera.CameraPosition
 import org.maplibre.compose.camera.rememberCameraState
@@ -48,16 +46,20 @@ fun Map(
     anchorLocation: DpOffset?,
     isLocked: Boolean,
     cameraPosition: CameraPosition,
-    onMapClick: (CreateDukanUiState.CoordinatesUiState, DpOffset) -> Unit,
     onCameraMoved: (CameraPosition) -> Unit,
     onEditClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
-    var locked by rememberSaveable { mutableStateOf(isLocked) }
+    var locked by remember { mutableStateOf(isLocked) }
     val camera = rememberCameraState(firstPosition = cameraPosition)
     var screenSize by remember { mutableStateOf(Pair(0.dp, 0.dp)) }
-    LaunchedEffect(Unit) {
+
+    LaunchedEffect(isLocked) {
+        locked = isLocked
+    }
+
+    LaunchedEffect(cameraPosition) {
         camera.animateTo(
             finalPosition = cameraPosition,
         )
@@ -76,28 +78,20 @@ fun Map(
         LaunchedEffect(maxWidth, maxHeight) {
             if (maxWidth != screenSize.first || maxHeight != screenSize.second) {
                 screenSize = Pair(maxWidth, maxHeight)
-                onEditClick()
-                locked = false
+                if (!isLocked) {
+                    locked = false
+                }
             }
         }
         MaplibreMap(
             modifier = Modifier.fillMaxSize(),
             cameraState = camera,
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
-            onMapClick = { position, offset ->
-                if (locked) {
-                    ClickResult.Consume
-                } else {
-                    onMapClick(
-                        CreateDukanUiState.CoordinatesUiState(
-                            position.latitude,
-                            position.longitude
-                        ),
-                        offset,
-                    )
-                    locked = true
-                    ClickResult.Pass
+            onMapClick = { _, _ ->
+                if (!locked) {
+                    onEditClick()
                 }
+                ClickResult.Pass
             },
             options =
                 MapOptions(
@@ -110,8 +104,15 @@ fun Map(
                     renderOptions = RenderOptions.Standard
                 )
         )
+        val displayAnchor =
+            if (locked && (anchorLocation == null || (anchorLocation.x == 0.dp && anchorLocation.y == 0.dp))) {
+                DpOffset(maxWidth / 2, maxHeight / 2)
+            } else {
+                anchorLocation
+            }
+
         Crossfade(
-            targetState = anchorLocation
+            targetState = displayAnchor
         ) {
             it?.let { offset ->
                 Image(
@@ -126,29 +127,25 @@ fun Map(
                 )
             }
         }
-        Crossfade(
-            modifier = Modifier
-                .align(Alignment.BottomEnd),
-            targetState = anchorLocation != null
-        ) {
-            if (it) {
-                Image(
-                    modifier = Modifier
-                        .padding(Theme.spacing._4)
-                        .clip(RoundedCornerShape(Theme.radius.md))
-                        .clickable {
-                            onEditClick()
-                            locked = false
-                        }
-                        .background(Color.Black)
-                        .padding(
-                            horizontal = Theme.spacing._16,
-                            vertical = Theme.spacing._12
-                        ).size(20.dp),
-                    painter = painterResource(Res.drawable.ic_edit),
-                    contentDescription = null
-                )
-            }
+        if (locked) {
+            Image(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(Theme.spacing._4)
+                    .clip(RoundedCornerShape(Theme.radius.md))
+                    .clickable {
+                        onEditClick()
+                        locked = false
+                    }
+                    .background(Color.Black)
+                    .padding(
+                        horizontal = Theme.spacing._16,
+                        vertical = Theme.spacing._12
+                    )
+                    .size(20.dp),
+                painter = painterResource(Res.drawable.ic_edit),
+                contentDescription = null
+            )
         }
     }
 }

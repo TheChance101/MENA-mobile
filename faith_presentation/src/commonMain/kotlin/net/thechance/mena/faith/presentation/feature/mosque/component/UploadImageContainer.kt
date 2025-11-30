@@ -136,9 +136,10 @@ private fun UploadedImage(image: ImageBitmap) {
 @Composable
 private fun EmptyImagePlaceholder() {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.ic_add_image),
-            contentDescription = stringResource(Res.string.upload_mosque_image)
+            contentDescription = stringResource(Res.string.upload_mosque_image),
+            tint = Theme.colorScheme.primary.primary
         )
         Text(
             text = stringResource(Res.string.click_to_upload),

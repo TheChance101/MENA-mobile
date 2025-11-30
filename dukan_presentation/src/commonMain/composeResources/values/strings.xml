@@ -204,4 +204,5 @@
     <string name="see_less">.SeeLess</string>
     <string name="remove_product_from_cart">Remove product from cart</string>
     <string name="same_quantity">We already have one with the same quantity</string>
+    <string name="confirm">Confirm</string>
 </resources>

@@ -1,6 +1,7 @@
 package net.thechance.mena.admin_panel.presentation.screen.dukan_details.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,7 +58,6 @@ internal fun ProductsList(
     }
 
     PaginationTrigger(
-        list = products,
         listState = listState,
         buffer = 5,
         loadNextItems = onNextPageRequested
@@ -80,8 +81,7 @@ internal fun ProductsList(
         else -> {
             LazyColumn(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .height(600.dp),
+                    .fillMaxWidth(),
                 state = listState,
             ) {
                 items(products) { product ->
@@ -94,6 +94,49 @@ internal fun ProductsList(
                     item {
                         AdminPanelContentLoading()
                     }
+                }
+            }
+        }
+    }
+}
+
+internal fun LazyListScope.lazyProductsList(
+    products: List<Product>,
+    isProductLoading: Boolean,
+    modifier: Modifier = Modifier
+) {
+    when {
+        isProductLoading && products.isEmpty() -> {
+            item {
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .background(Theme.colorScheme.background.surfaceLow)
+                        .padding(vertical = 12.dp)
+                        .height(600.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AdminPanelContentLoading()
+                }
+            }
+        }
+
+        products.isEmpty() -> { item { EmptyProductsState() } }
+
+        else -> {
+            items(products) { product ->
+                ProductCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Theme.colorScheme.background.surfaceLow)
+                        .padding(bottom = 8.dp),
+                    product = product
+                )
+            }
+            if (isProductLoading) {
+                item {
+                    AdminPanelContentLoading()
                 }
             }
         }

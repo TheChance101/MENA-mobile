@@ -286,7 +286,7 @@ fun MockRequestHandleScope.defaultTopDiscountedResponse() = respond(
 fun MockRequestHandleScope.defaultDukanActivationStatusResponse() = respond(
     content = jsonSerialization.encodeToString(
         DukanActivationStatusResponse.serializer(),
-        DukanActivationStatusResponse(status = "ACTIVATED")
+        DukanActivationStatusResponse(status = "ACTIVATED" , null)
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders

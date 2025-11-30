@@ -15,6 +15,7 @@ import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.create
 import mena.dukan_presentation.generated.resources.create_new_dukan
 import mena.dukan_presentation.generated.resources.dukan_image
+import mena.dukan_presentation.generated.resources.dukan_location
 import mena.dukan_presentation.generated.resources.ic_arrow_left
 import mena.dukan_presentation.generated.resources.next
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
@@ -77,7 +78,7 @@ private fun CreateDukanScaffold(
             }
         },
         bottomBar = {
-            if (state.isImageBeingCropped.not())
+            if (state.isImageBeingCropped.not() && state.isLocationPickerExpanded.not())
                 PrimaryButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,11 +108,11 @@ private fun CreateDukanAppBar(
     listener: CreateDukanInteractionListener
 ) {
     AppBar(
-        title = if (state.isImageBeingCropped)
-            stringResource(Res.string.dukan_image)
-        else stringResource(
-            Res.string.create_new_dukan
-        ),
+        title = when {
+            state.isImageBeingCropped -> stringResource(Res.string.dukan_image)
+            state.isLocationPickerExpanded -> stringResource(Res.string.dukan_location)
+            else -> stringResource(Res.string.create_new_dukan)
+        },
         onLeadingClick = listener::onBackClicked,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._12,

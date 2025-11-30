@@ -2,6 +2,7 @@ package net.thechance.mena.trends.domain.repository
 
 import kotlinx.coroutines.flow.SharedFlow
 import net.thechance.mena.trends.domain.entity.Trend
+import net.thechance.mena.trends.domain.model.TrendUpdates
 import net.thechance.mena.trends.domain.model.TrendUrls
 import net.thechance.mena.trends.domain.model.TrendWatchSession
 import net.thechance.mena.trends.domain.model.UploadTrendProgress
@@ -22,4 +23,6 @@ interface TrendsRepository {
     suspend fun getTrendUrls(trendId: String): TrendUrls
     suspend fun saveUserEngagementWithTrend(trendWatchSession: TrendWatchSession)
     suspend fun getFavoriteTrends(pageNumber: Int, trendId: String? = null): List<Trend>
+    suspend fun sendTrendUpdates(trendUpdates: TrendUpdates)
+    fun observeTrendUpdates(): SharedFlow<TrendUpdates>
 }

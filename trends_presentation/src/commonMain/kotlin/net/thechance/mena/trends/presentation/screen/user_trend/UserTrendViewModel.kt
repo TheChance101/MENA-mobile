@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import net.thechance.mena.trends.domain.entity.Trend
 import net.thechance.mena.trends.domain.model.TrendWatchSession
@@ -15,6 +16,8 @@ import net.thechance.mena.trends.presentation.navigation.Route
 import net.thechance.mena.trends.presentation.screen.user_trend.args.UserTrendArgs
 import net.thechance.mena.trends.presentation.shared.base.BaseViewModel
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.PagingEvents
+import net.thechance.mena.trends.presentation.shared.base.applyEvent
 import net.thechance.mena.trends.presentation.shared.base.createPager
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.Provided
@@ -32,13 +35,10 @@ internal class UserTrendViewModel(
     }
 
     private fun getFeedTrends() {
-        tryToCollectFlow(
+        tryToExecute(
             block = ::createPager,
             onStart = { updateState { copy(isLoading = true) } },
-            onNewValue = { uiPagingData ->
-                state.value.trendsStateFlow.value = uiPagingData
-                updateState { copy(trends = trendsStateFlow, isLoading = false) }
-            },
+            onSuccess = { trends -> updateState { copy(trends = trends) } },
             onError = { error -> updateState { copy(error = error, isLoading = false) } },
             onEnd = { updateState { copy(isLoading = false) } },
             dispatcher = defaultDispatcher
@@ -55,6 +55,14 @@ internal class UserTrendViewModel(
                 )
             }
         ).map { pagingData -> pagingData.map { it.toUserTrendUiState() } }
+            .combine(state.value.pagingEvents) { pagingDate, pagingEvents ->
+                pagingEvents.fold(pagingDate) { data, event ->
+                    data.applyEvent(
+                        event = event,
+                        getItemId = { it.id }
+                    )
+                }
+            }
     }
 
     private suspend fun getTrendsBasedOnSource(
@@ -68,25 +76,22 @@ internal class UserTrendViewModel(
         }
     }
 
-    fun addTrendLike(trendId: String) {
+    private fun addTrendLike(trendId: String) {
         tryToExecute(
-            onStart = { updateLikesOnUi(trendId) },
             block = { trendsRepository.addTrendLike(trendId) },
             onError = { error ->
-                onLikeClickFailed(trendId)
+                toggleTrendLike(trendId)
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
-            onSuccess = { updatedTrend -> updateTrendInPagingData(trendId) { updatedTrend.toUserTrendUiState() } }
         )
     }
 
-    fun removeTrendLike(trendId: String) {
+    private fun removeTrendLike(trendId: String) {
         tryToExecute(
-            onStart = { updateLikesOnUi(trendId) },
             block = { trendsRepository.removeTrendLike(trendId) },
             onError = { error ->
-                onLikeClickFailed(trendId)
+                toggleTrendLike(trendId)
                 updateState { copy(error = error) }
             },
             dispatcher = defaultDispatcher,
@@ -113,11 +118,38 @@ internal class UserTrendViewModel(
     }
 
     override fun onClickLike(trendId: String, isLiked: Boolean) {
+        toggleTrendLike(trendId)
         if (isLiked) {
             removeTrendLike(trendId)
         } else {
             addTrendLike(trendId)
         }
+    }
+
+    private fun toggleTrendLike(trendId: String) {
+        sendPagingEvent(
+            event = PagingEvents.Update(
+                itemId = trendId,
+                transform = { trend ->
+                    trend.copy(
+                        isLiked = !trend.isLiked,
+                        likesCount = if(trend.isLiked) trend.likesCount-1 else trend.likesCount+1
+                    ).also(::sendTrendUpdates)
+                }
+            )
+        )
+    }
+
+    private fun sendTrendUpdates(
+        trend: UserTrendUiState,
+        isDeleted: Boolean = false
+    ) {
+        tryToExecute(
+            block = {
+                trendsRepository.sendTrendUpdates(trend.toTrendUpdates(isDeleted = isDeleted))
+            },
+            dispatcher = defaultDispatcher
+        )
     }
 
     override fun onGetRefreshVideoUrl(trendId: String) {
@@ -166,41 +198,14 @@ internal class UserTrendViewModel(
     }
 
     private fun onGetRefreshVideoUrl(refreshedUrl: String, trendId: String) {
-        state.value.trendsStateFlow.value =
-            state.value.trendsStateFlow.value.map { trend ->
-                trend.takeIf { it.id != trendId }
-                    ?: trend.copy(videoUrl = refreshedUrl)
-            }
-    }
-
-    private fun onLikeClickFailed(trendId: String) {
-        updateTrendInPagingData(trendId) { trend ->
-            trend.copy(
-                isLiked = !trend.isLiked,
-                likesCount = if (trend.isLiked) trend.likesCount - 1 else trend.likesCount + 1
+        sendPagingEvent(
+            event = PagingEvents.Update(
+                itemId = trendId,
+                transform = { trend ->
+                    trend.copy(videoUrl = refreshedUrl)
+                }
             )
-        }
-    }
-
-    private fun updateTrendInPagingData(
-        trendId: String,
-        transform: (UserTrendUiState) -> UserTrendUiState
-    ) {
-        val currentData = state.value.trendsStateFlow.value
-        val updatedData = currentData.map { trend ->
-            if (trend.id == trendId) transform(trend) else trend
-        }
-        state.value.trendsStateFlow.value = updatedData
-        updateState { copy(trends = trendsStateFlow) }
-    }
-
-    private fun updateLikesOnUi(trendId: String) {
-        updateTrendInPagingData(trendId) { trend ->
-            trend.copy(
-                isLiked = !trend.isLiked,
-                likesCount = if (trend.isLiked) trend.likesCount - 1 else trend.likesCount + 1
-            )
-        }
+        )
     }
 
     override fun onClickBack() {
@@ -235,6 +240,12 @@ internal class UserTrendViewModel(
 
     private fun onDeleteTrendSuccess() {
         updateState { copy(isConfirmationDialogVisible = false, isTrendDeleted = true) }
+        sendPagingEvent(
+            event = PagingEvents.Remove(
+                itemId = state.value.currentTrendId,
+                action = { trend -> sendTrendUpdates(trend = trend, isDeleted = true) }
+            )
+        )
     }
 
     override fun onDismissSuccessDialog() {
@@ -253,5 +264,9 @@ internal class UserTrendViewModel(
         updateState {
             copy(isTrendDeleted = null, isConfirmationDialogVisible = false, error = null)
         }
+    }
+
+    private fun sendPagingEvent(event: PagingEvents<UserTrendUiState>) {
+        state.value.pagingEvents.value = state.value.pagingEvents.value + event
     }
 }

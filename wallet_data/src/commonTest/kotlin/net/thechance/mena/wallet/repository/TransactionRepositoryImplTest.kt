@@ -110,6 +110,25 @@ class TransactionRepositoryImplTest {
         }
     }
 
+    @Test
+    fun `submitTransaction succeeds when API call is successful`() = runTest {
+        val submitSuccessResponse: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = {
+            respond(
+                content = "",
+                status = HttpStatusCode.OK,
+                headers = headersOf(
+                    HttpHeaders.ContentType,
+                    ContentType.Application.Json.toString()
+                )
+            )
+        }
+
+        networkClient = createNetworkClient(postRespond = submitSuccessResponse)
+        transactionRepository = TransactionRepositoryImpl(networkClient)
+
+        transactionRepository.submitTransaction(transaction1Id)
+    }
+
     private companion object {
         const val PAGE_SIZE = 20
         const val PAGE = 1
