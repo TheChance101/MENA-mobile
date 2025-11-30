@@ -124,38 +124,37 @@ private fun ResultList(
 private fun SearchScreenPreview() {
     MenaTheme {
         QuranTheme {
-//            Content(
-//                state = RecitersSelectionUiState(
-//                    query = "s",
-//                    searchResults = listOf(
-//                        ReciterSearchItemUi(
-//                            id = 1,
-//                            name = "Mishary Rashid Alafasy",
-//                            recitingType = "Murattal",
-//
-//                            ),
-//                        ReciterSearchItemUi(
-//                            id = 2,
-//                            name = "Abdul Basit Abdul Samad",
-//                            recitingType = "Mujawwad",
-//                        ),
-//                        ReciterSearchItemUi(
-//                            id = 3,
-//                            name = "Saad Al Ghamdi",
-//                            recitingType = "Murattal",
-//                        )
-//                    ),
-//                    lastSearchedQuery = "",
-//                    queryHint = "",
-//                    selectedReciterId = 1,
-//                ),
-//                listener = object : ReciterSelectionListener {
-//                    override fun onBackClick() {}
-//                    override fun onClearQueryClick() {}
-//                    override fun onQueryChange(query: String) {}
-//                    override fun onSelectReciterClick(reciterId: Int) {}
-//                })
-            EmptySearchState()
+            Content(
+                state = RecitersSelectionUiState(
+                    query = "s",
+                    searchResults = listOf(
+                        ReciterSearchItemUi(
+                            id = 1,
+                            name = "Mishary Rashid Alafasy",
+                            recitingType = "Murattal",
+
+                            ),
+                        ReciterSearchItemUi(
+                            id = 2,
+                            name = "Abdul Basit Abdul Samad",
+                            recitingType = "Mujawwad",
+                        ),
+                        ReciterSearchItemUi(
+                            id = 3,
+                            name = "Saad Al Ghamdi",
+                            recitingType = "Murattal",
+                        )
+                    ),
+                    lastSearchedQuery = "",
+                    queryHint = "",
+                    selectedReciterId = 1,
+                ),
+                listener = object : ReciterSelectionListener {
+                    override fun onBackClick() {}
+                    override fun onClearQueryClick() {}
+                    override fun onQueryChange(query: String) {}
+                    override fun onSelectReciterClick(reciterId: Int) {}
+                })
         }
     }
 }
