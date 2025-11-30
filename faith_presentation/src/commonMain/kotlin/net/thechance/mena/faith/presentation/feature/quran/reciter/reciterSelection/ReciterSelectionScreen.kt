@@ -23,6 +23,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.utils.extentions.toLocalizedName
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -105,7 +106,7 @@ private fun ResultList(
     ) {
         items(results) { result ->
             ReciterItem(
-                reciter = result.name,
+                reciter = result.toLocalizedName(),
                 recitingType = result.recitingType,
                 isDownloaded = false,
                 onSelect = { listener.onSelectReciterClick(result.id) },
@@ -131,17 +132,20 @@ private fun SearchScreenPreview() {
                         ReciterSearchItemUi(
                             id = 1,
                             name = "Mishary Rashid Alafasy",
+                            arabicName = "",
                             recitingType = "Murattal",
 
                             ),
                         ReciterSearchItemUi(
                             id = 2,
                             name = "Abdul Basit Abdul Samad",
+                            arabicName = "",
                             recitingType = "Mujawwad",
                         ),
                         ReciterSearchItemUi(
                             id = 3,
                             name = "Saad Al Ghamdi",
+                            arabicName = "",
                             recitingType = "Murattal",
                         )
                     ),

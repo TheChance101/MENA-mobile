@@ -1,37 +1,52 @@
 package net.thechance.mena.faith.presentation.utils.extentions
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.input.key.Key.Companion.R
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.reciter_name_type
-import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurUiState
 import net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters.DownloadedReciterItemUi
+import net.thechance.mena.faith.presentation.feature.quran.reciter.reciterSelection.ReciterSearchItemUi
+import net.thechance.mena.faith.presentation.feature.quran.reciter.surahRecitersScreen.SurahRecitersUiState
 import net.thechance.mena.faith.presentation.feature.quran.surah.ReciterUiState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ReciterUiState.localizedName(): String {
-    val type = stringResource(Res.string.reciter_name_type,)
-    return when (type) {
+private fun getLocaleType(): String = stringResource(Res.string.reciter_name_type)
+
+@Composable
+private fun selectLocalizedName(
+    arabicName: String,
+    englishName: String
+): String {
+    return when (getLocaleType()) {
         "ar" -> arabicName
-        else -> name
+        else -> englishName
     }
+}
+
+@Composable
+fun SurahRecitersUiState.ReciterUi.toLocalizedName(): String {
+    return selectLocalizedName(arabicName, name)
+}
+
+@Composable
+fun ReciterSearchItemUi.toLocalizedName(): String {
+    return selectLocalizedName(arabicName, name)
+}
+
+@Composable
+fun ReciterUiState.localizedName(): String {
+    return selectLocalizedName(arabicName, name)
 }
 
 @Composable
 fun DownloadedReciterItemUi.localizedName(): String {
-    val type = stringResource(Res.string.reciter_name_type,)
-    return when (type) {
-        "ar" -> arabicName
-        else -> name
-    }
+    return selectLocalizedName(arabicName, name)
 }
 
 @Composable
 fun DownloadedSurUiState.SurahDetailsUiState.localizedName(): List<String> {
-    val type = stringResource(Res.string.reciter_name_type,)
-    return when (type) {
+    return when (getLocaleType()) {
         "ar" -> reciterArabicName
         else -> recitersName
     }

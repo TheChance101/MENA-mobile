@@ -12,6 +12,7 @@ data class SurahRecitersUiState(
     data class ReciterUi(
         val id: Int,
         val name: String,
+        val arabicName: String,
         val recitingType: String,
         val isDownloaded: Boolean,
     )
@@ -20,6 +21,7 @@ data class SurahRecitersUiState(
 fun Reciter.toUi(isDownloaded: Boolean) = SurahRecitersUiState.ReciterUi(
     id = id,
     name = name,
+    arabicName = arabicName,
     recitingType = tilawahType,
     isDownloaded = isDownloaded
 )

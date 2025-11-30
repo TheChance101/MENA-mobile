@@ -22,6 +22,7 @@ import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import net.thechance.mena.faith.presentation.utils.extentions.toLocalizedName
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -76,7 +77,7 @@ private fun Content(
 
             items(uiState.reciters) { reciter ->
                 ReciterItem(
-                    reciter = reciter.name,
+                        reciter = reciter.toLocalizedName(),
                     recitingType = reciter.recitingType,
                     isDownloaded = reciter.isDownloaded,
                     onSelect = { listener.onSelectReciterClick(reciter.id) },
@@ -105,18 +106,21 @@ private fun Preview() {
                         SurahRecitersUiState.ReciterUi(
                             id = 1,
                             name = "Mishary Rashid Alafasy",
+                            arabicName = "مشاري العفاسي",
                             recitingType = "Murattal",
                             isDownloaded = true
                         ),
                         SurahRecitersUiState.ReciterUi(
                             id = 2,
                             name = "Abdul Basit Abdul Samad",
+                            arabicName = "مشاري العفاسي",
                             recitingType = "Mujawwad",
                             isDownloaded = false
                         ),
                         SurahRecitersUiState.ReciterUi(
                             id = 3,
                             name = "Saad Al Ghamdi",
+                            arabicName = "مشاري العفاسي",
                             recitingType = "Murattal",
                             isDownloaded = true
                         )
