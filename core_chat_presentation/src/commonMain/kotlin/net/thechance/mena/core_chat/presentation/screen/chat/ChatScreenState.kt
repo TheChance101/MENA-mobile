@@ -36,8 +36,12 @@ data class ChatScreenState(
     val selectedImageMessages: List<ImageMessageUiState> = emptyList(),
     val isReactionDialogVisible: Boolean = false,
     val messageToReactTo: MessageUiState? = null,
-    val isRecordingVoice: Boolean = false
-)
+    val isRecordingVoice: Boolean = false,
+) {
+    val isSendMoneyButtonEnabled: Boolean
+        get() = amountToTransfer.isNotBlank() &&
+                amountToTransfer.toDoubleOrNull()?.let { it > 0 } == true
+}
 
 data class UserData(
     val firstName: String = "",
@@ -71,6 +75,7 @@ data class MessageDetailsUiState(
     val isVisibleMessageInfo: Boolean = false,
     val reactions: List<MessageReaction> = emptyList(),
 )
+
 data class TextMessageUiState(
     val text: String,
     override val messageDetails: MessageDetailsUiState,
@@ -78,7 +83,7 @@ data class TextMessageUiState(
 
 data class ImagesGroupChatItem(
     val imagesUiState: List<ImageMessageUiState>
-): ChatListItem
+) : ChatListItem
 
 data class ImageMessageUiState(
     val imageDate: ImageData,
