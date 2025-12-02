@@ -271,7 +271,7 @@ class SurahViewModel(
     private fun togglePlayPause() {
         val currentUrl = uiState.value.currentPlayingAyahUrl ?: return
         val isPlaying = uiState.value.isAyahSoundPlaying
-
+        println("bassant reciter in surah toggle - ${uiState.value.currentReciter.name}")
         if (isPlaying) quranPlayer.pauseAyah()
         else quranPlayer.playAyah(
             ayahUrl = currentUrl,
@@ -358,12 +358,14 @@ class SurahViewModel(
                         currentPlayingAyahNumber = it.selectedAyahNumber
                     )
                 }
+                println("bassant reciter in surah - ${uiState.value.currentReciter.name}")
                 quranPlayer.playAyah(
                     ayahUrl = ayahSoundUrl,
                     surahName = uiState.value.surahName,
                     ayahNumber = uiState.value.selectedAyahNumber ?: 0,
                     reciterName = uiState.value.currentReciter.name,
                 )
+                println("bassant reciter in surah - ${uiState.value.currentReciter.name}")
             },
             onSuccess = { updateSurahPlayback() },
             dispatcher = Main

@@ -10,7 +10,6 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahInteractionListener
 import net.thechance.mena.faith.presentation.feature.quran.surah.SurahUiState
-import net.thechance.mena.faith.presentation.utils.extentions.localizedName
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -35,7 +34,7 @@ fun AnimatedQuranPlayer(
             onRepeatClick = listener::onRepeatAyahClick,
             ayahNumber = state.selectedAyahNumber ?: 1,
             isPlaying = state.isAyahSoundPlaying,
-            reciterName = state.currentReciter.localizedName(),
+            reciterName = state.currentReciter.name,
             onCancelClick = listener::onClosePlayerClick,
             onTilawahClick = { listener.playSurah(surahNumber = surahId) }
         )

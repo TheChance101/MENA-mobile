@@ -37,7 +37,6 @@ import net.thechance.mena.faith.presentation.components.SwappableCard
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.DownloadedSurUiState
 import net.thechance.mena.faith.presentation.feature.quran.sur.getSurahNameDrawableResource
-import net.thechance.mena.faith.presentation.utils.extentions.localizedName
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -136,7 +135,7 @@ private fun SurahDetails(
             )
 
             Text(
-                text = surahDetailsUiState.localizedName().joinToString(", "),
+                text = surahDetailsUiState.recitersName.joinToString(", "),
                 style = Theme.typography.label.medium,
                 color = Theme.colorScheme.shadeSecondary,
                 maxLines = 1,
@@ -158,7 +157,6 @@ private fun PreviewDownloadedSuraItem() {
                     Surah.SurahOrder.AlFajr,
                     "Al-Duha",
                     listOf("Al Minshawi", "Sudais"),
-                    reciterArabicName = listOf(),
                 ),
                 {},
                 {},
