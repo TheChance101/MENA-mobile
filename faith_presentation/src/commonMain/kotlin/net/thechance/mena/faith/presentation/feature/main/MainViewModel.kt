@@ -7,6 +7,7 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.service.QuranService
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getHijriReadableDate
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.getSunriseTime
@@ -18,6 +19,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 class MainViewModel(
     private val quranRepository: QuranRepository,
+    private val quranService: QuranService,
     private val prayerTimeRepository: PrayerTimeRepository,
     private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -80,7 +82,7 @@ class MainViewModel(
     }
 
     private suspend fun onGetLastAyahForTilawahSuccess(ayah: LastAyahForTilawah) {
-        val tilawahState = ayah.toTilawahUiState()
+        val tilawahState = ayah.toTilawahUiState(quranService)
         updateState { it.copy(tilawahUiState = tilawahState) }
     }
 
