@@ -14,13 +14,11 @@ data class RecitersSelectionUiState(
 data class ReciterSearchItemUi(
     val id: Int,
     val name: String,
-    val arabicName: String,
     val recitingType: String,
 )
 
 fun Reciter.toUi() = ReciterSearchItemUi(
     id = id,
     name = name,
-    arabicName = arabicName,
     recitingType = tilawahType,
 )

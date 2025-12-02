@@ -24,6 +24,7 @@ import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.model.Reciter
 import net.thechance.mena.faith.domain.repository.QuranRepository
 import net.thechance.mena.identity.domain.service.LocalizationService
+import net.thechance.mena.identity.domain.util.AppLanguage
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toPath
@@ -37,6 +38,7 @@ class QuranRepositoryImpl(
     private val tilawahDataStore: TilawahDataStore,
     private val localizationService: LocalizationService,
 ) : QuranRepository {
+    val appLanguage = localizationService.getCurrentLanguage()
     override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
             ayahDao.getSur().map { it.toSurah(localizationService.getCurrentLanguage()) }
@@ -60,26 +62,34 @@ class QuranRepositoryImpl(
             .map { items ->
                 items.groupBy { it.surahId }
                     .map { (surahId, surahItems) ->
-                        mapToDownloadedSur(surahId, surahItems)
+                        mapToDownloadedSur(
+                            surahId = surahId,
+                            items = surahItems,
+                            appLanguage = appLanguage
+                        )
                     }
             }
 
     private suspend fun mapToDownloadedSur(
         surahId: Int,
-        items: List<SurahAudioDto>
+        items: List<SurahAudioDto>,
+        appLanguage: AppLanguage
     ): DownlodedSur {
         return items.first().toDownlodedSurUi(
             surahName = getSurahById(surahId).name,
-            reciterName = getRecitersNames(items),
-            reciterArabicName = getRecitersArabicNames(items)
+            reciterName = getRecitersNames(items = items, appLanguage = appLanguage)
         )
     }
 
-    private suspend fun getRecitersNames(items: List<SurahAudioDto>): List<String> =
-        items.map { recitersDao.getReciterById(it.reciterId).name }
-
-    private suspend fun getRecitersArabicNames(items: List<SurahAudioDto>): List<String> =
-        items.map { recitersDao.getReciterById(it.reciterId).nameAr }
+    private suspend fun getRecitersNames(
+        items: List<SurahAudioDto>,
+        appLanguage: AppLanguage
+    ): List<String> {
+        return if (appLanguage == AppLanguage.ENGLISH)
+            items.map { recitersDao.getReciterById(it.reciterId).name }
+        else
+            items.map { recitersDao.getReciterById(it.reciterId).nameAr }
+    }
 
     override suspend fun searchForAyahInSurah(
         surahId: Int,
@@ -141,7 +151,10 @@ class QuranRepositoryImpl(
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
-        executeLocalSafely { recitersDao.searchReciters(query).map { it.toReciter() } }
+        executeLocalSafely {
+            val appLanguage = localizationService.getCurrentLanguage()
+            recitersDao.searchReciters(query).map { it.toReciter(appLanguage = appLanguage) }
+        }
 
     override suspend fun getAyahSoundUrl(
         ayahNumber: Int,
@@ -180,7 +193,6 @@ class QuranRepositoryImpl(
         val files = FileSystem.SYSTEM.list(folder)
         val ayatCount = ayahDao.getSurah(surahNumber).ayahCount ?: 0
 
-
         val preparedFiles = prepareSurahAudioFiles(
             files = files,
             ayatCount = ayatCount
@@ -189,7 +201,6 @@ class QuranRepositoryImpl(
         val fileIndex = calculateFileIndex(ayahNumber, surahNumber)
         return preparedFiles.getOrNull(fileIndex)?.toString()
     }
-
 
     private fun prepareSurahAudioFiles(
         files: List<Path>,
@@ -210,7 +221,7 @@ class QuranRepositoryImpl(
     override suspend fun getReciters(): List<Reciter> = loadFromCacheOrFetch(
         cacheBlock = {
             executeLocalSafely { recitersDao.getAllReciters() }.takeIf { it.isNotEmpty() }
-                ?.map { it.toReciter() }
+                ?.map { it.toReciter(appLanguage) }
         },
         networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toReciter() } },
         syncBlock = { reciters ->
@@ -219,7 +230,9 @@ class QuranRepositoryImpl(
     )
 
     override suspend fun getReciterById(reciterId: Int): Reciter = loadFromCacheOrFetch(
-        cacheBlock = { executeLocalSafely { recitersDao.getReciterById(reciterId) }.toReciter() },
+        cacheBlock = {
+            executeLocalSafely { recitersDao.getReciterById(reciterId) }.toReciter(appLanguage)
+        },
         networkBlock = {
             executeApiSafely { tilawahApiService.getReciters() }
                 .first { it.id == reciterId }

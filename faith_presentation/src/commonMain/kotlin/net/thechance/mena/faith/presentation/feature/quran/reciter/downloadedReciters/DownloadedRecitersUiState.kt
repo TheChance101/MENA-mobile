@@ -15,7 +15,6 @@ data class DownloadedRecitersUiState(
 data class DownloadedReciterItemUi(
     val id: Int,
     val name: String,
-    val arabicName: String,
     val recitingType: String,
     val isDownloaded: Boolean,
 )
@@ -24,6 +23,5 @@ fun Reciter.toUi(isDownloaded: Boolean) = DownloadedReciterItemUi(
     id = id,
     name = name,
     recitingType = tilawahType,
-    isDownloaded = isDownloaded,
-    arabicName = arabicName
+    isDownloaded = isDownloaded
 )

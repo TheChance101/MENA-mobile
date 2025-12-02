@@ -70,6 +70,7 @@ class QuranRepositoryImplTest {
     fun `searchForReciter Should return list of reciters when called`() = runTest {
 
         everySuspend { recitersDao.searchReciters(query = "query") } returns RECITER_DTOS
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.searchForReciter(query = "query")
 
@@ -427,16 +428,6 @@ class QuranRepositoryImplTest {
     }
 
     @Test
-    fun `getReciters Should return cached reciters when cache is not empty`() = runTest {
-        everySuspend { recitersDao.getAllReciters() } returns RECITER_DTOS
-
-        val result = repository.getReciters()
-
-        assertEquals(RECITER_LIST, result)
-        verifySuspend { recitersDao.getAllReciters() }
-    }
-
-    @Test
     fun `getReciters Should fetch from network when cache is empty`() = runTest {
         everySuspend { recitersDao.getAllReciters() } returns emptyList()
         everySuspend {
@@ -560,6 +551,20 @@ class QuranRepositoryImplTest {
     }
 
     @Test
+    fun `getReciters Should return cached reciters when cache is not empty`() = runTest {
+        everySuspend { recitersDao.getAllReciters() } returns RECITER_DTOS
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
+        everySuspend {
+            tilawahApiService.getReciters()
+        } returns makeSuccessFakeResponse(apiReciters)
+
+        val result = repository.getReciters()
+
+        assertEquals(RECITER_LIST, result)
+        verifySuspend { recitersDao.getAllReciters() }
+    }
+
+    @Test
     fun `getReciterById should return reciter from cache when available`() = runTest {
         val expectedReciter = ReciterDto(
             id = RECITER_ID_1,
@@ -569,6 +574,8 @@ class QuranRepositoryImplTest {
         )
 
         everySuspend { recitersDao.getReciterById(RECITER_ID_1) } returns expectedReciter
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
+        everySuspend { tilawahApiService.getReciters() } returns makeSuccessFakeResponse(apiReciters)
 
         val result = repository.getReciterById(RECITER_ID_1)
 
@@ -579,13 +586,14 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `getReciterById should return correct reciter when multiple exist`() = runTest {
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
         everySuspend { recitersDao.getReciterById(RECITER_ID_2) } returns RECITER_DTOS[1]
+        everySuspend { tilawahApiService.getReciters() } returns makeSuccessFakeResponse(apiReciters)
 
         val result = repository.getReciterById(RECITER_ID_2)
 
         assertEquals(RECITER_ID_2, result.id)
         assertEquals(SECOND_RECITER_NAME, result.name)
-        assertEquals(SECOND_RECITER_ARABIC_NAME, result.arabicName)
     }
 
     @Test
@@ -690,6 +698,7 @@ class QuranRepositoryImplTest {
     @Test
     fun `searchForReciter should handle empty query`() = runTest {
         everySuspend { recitersDao.searchReciters(EMPTY_QUERY) } returns emptyList()
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.searchForReciter(EMPTY_QUERY)
 
@@ -701,6 +710,7 @@ class QuranRepositoryImplTest {
         val partialMatch = listOf(RECITER_DTOS[0])
 
         everySuspend { recitersDao.searchReciters(PARTIAL_RECITER_QUERY) } returns partialMatch
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.searchForReciter(PARTIAL_RECITER_QUERY)
 
@@ -713,11 +723,12 @@ class QuranRepositoryImplTest {
         val arabicMatch = listOf(RECITER_DTOS[1])
 
         everySuspend { recitersDao.searchReciters(ARABIC_RECITER_QUERY) } returns arabicMatch
+        every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
         val result = repository.searchForReciter(ARABIC_RECITER_QUERY)
 
         assertEquals(1, result.size)
-        assertEquals(SECOND_RECITER_ARABIC_NAME, result[0].arabicName)
+        assertEquals(SECOND_RECITER_NAME, result[0].name)
     }
 
     @Test
@@ -884,13 +895,11 @@ class QuranRepositoryImplTest {
             Reciter(
                 id = 1,
                 name = FIST_RECITER_NAME,
-                arabicName = FIST_RECITER_ARABIC_NAME,
                 tilawahType = FIRST_TILWAH_TYPE
             ),
             Reciter(
                 id = 2,
                 name = SECOND_RECITER_NAME,
-                arabicName = SECOND_RECITER_ARABIC_NAME,
                 tilawahType = SECOND_TILWAH_TYPE
             )
         )

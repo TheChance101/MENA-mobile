@@ -25,11 +25,9 @@ data class SurahUiState(
 data class ReciterUiState(
     val id: Int = 0,
     val name: String = "Mishari Rashid Alafasy",
-    val arabicName: String = ""
 )
 
 fun Reciter.toUiState() = ReciterUiState(
     id = id,
-    name = name,
-    arabicName = arabicName
+    name = name
 )
