@@ -17,7 +17,7 @@ fun RecitersRequest.toReciter(): Reciter = Reciter(
 fun ReciterDto.toReciter(appLanguage: AppLanguage): Reciter = Reciter(
     id = id,
     name = if (appLanguage == AppLanguage.ENGLISH) name else nameAr,
-    tilawahType = tilawahType
+    tilawahType = handleTilawah(appLanguage = appLanguage, tilawahType = tilawahType)
 )
 
 fun Reciter.toReciterDto(): ReciterDto = ReciterDto(
@@ -36,3 +36,12 @@ fun SurahAudioDto.toDownlodedSurUi(
     surahName = surahName,
     recitersName = reciterName
 )
+
+private fun handleTilawah(appLanguage: AppLanguage, tilawahType: String): String =
+    when (appLanguage) {
+        AppLanguage.ENGLISH -> tilawahType
+        else -> when (tilawahType) {
+            "Mujawwad" -> "مُجود"
+            else -> "مُرتل"
+        }
+    }
