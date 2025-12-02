@@ -68,7 +68,6 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `searchForReciter Should return list of reciters when called`() = runTest {
-
         everySuspend { recitersDao.searchReciters(query = "query") } returns RECITER_DTOS
         every { settingsRepository.getCurrentAppLanguage() } returns AppLanguage.ENGLISH
 
@@ -412,9 +411,9 @@ class QuranRepositoryImplTest {
 
         everySuspend {
             tilawahApiService.getAyahSoundUrl(
-                    reciterId = RECITER_ID_1,
-                    ayahNumber = AYAH_NUMBER_5,
-                    surahNumber = SURAH_ID_1
+                reciterId = RECITER_ID_1,
+                ayahNumber = AYAH_NUMBER_5,
+                surahNumber = SURAH_ID_1
             )
         } returns makeSuccessFakeResponse(REMOTE_URL_SURAH_1)
 
@@ -458,7 +457,7 @@ class QuranRepositoryImplTest {
 
     @Test
     fun `getReciters Should return empty list when both cache and network are empty`() = runTest {
-        everySuspend { mockDao.getAllReciters() } returns emptyList()
+        everySuspend { recitersDao.getAllReciters() } returns emptyList()
         everySuspend {
             tilawahApiService.getReciters()
         } returns makeSuccessFakeResponse(emptyList())
@@ -791,7 +790,7 @@ class QuranRepositoryImplTest {
         const val AL_FATIHAH_NAME_EN = "Al-Fatihah"
         const val AL_FATIHAH_NAME_AR = "الفاتحة"
         const val AL_BAQARAH_NAME_EN = "Al-Baqarah"
-        const val AL_BAQARAH_NAME_AR = "Al-Baqarah"
+        const val AL_BAQARAH_NAME_AR = "البقرة"
         const val FIST_RECITER_NAME = "Abdelbasit"
         const val SECOND_RECITER_NAME = "Mishary"
         const val FIST_RECITER_ARABIC_NAME = "عبدالباسط"

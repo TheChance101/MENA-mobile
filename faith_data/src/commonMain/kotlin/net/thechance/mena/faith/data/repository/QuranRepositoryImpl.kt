@@ -38,7 +38,6 @@ class QuranRepositoryImpl(
     private val tilawahDataStore: TilawahDataStore,
     private val localizationService: LocalizationService,
 ) : QuranRepository {
-    val appLanguage = localizationService.getCurrentLanguage()
     override suspend fun getSur(): List<Surah> =
         executeLocalSafely {
             ayahDao.getSur().map { it.toSurah(localizationService.getCurrentLanguage()) }
@@ -82,6 +81,7 @@ class QuranRepositoryImpl(
     private suspend fun getRecitersNames(
         items: List<SurahAudioDto>
     ): List<String> {
+        val appLanguage = localizationService.getCurrentLanguage()
         return if (appLanguage == AppLanguage.ENGLISH)
             items.map { recitersDao.getReciterById(it.reciterId).name }
         else
@@ -144,11 +144,11 @@ class QuranRepositoryImpl(
 
     override suspend fun getSurahById(surahId: Int): Surah =
         executeLocalSafely {
-            ayahDao.getSurah(surahId).toSurah(appLanguage)
+            ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
-        executeLocalSafely { recitersDao.searchReciters(query).map { it.toReciter(appLanguage = appLanguage) } }
+        executeLocalSafely { recitersDao.searchReciters(query).map { it.toReciter(localizationService.getCurrentLanguage()) } }
 
     override suspend fun getAyahSoundUrl(
         ayahNumber: Int,
@@ -215,7 +215,7 @@ class QuranRepositoryImpl(
     override suspend fun getReciters(): List<Reciter> = loadFromCacheOrFetch(
         cacheBlock = {
             executeLocalSafely { recitersDao.getAllReciters() }.takeIf { it.isNotEmpty() }
-                ?.map { it.toReciter(appLanguage) }
+                ?.map { it.toReciter(localizationService.getCurrentLanguage()) }
         },
         networkBlock = { executeApiSafely { tilawahApiService.getReciters() }.map { it.toReciter() } },
         syncBlock = { reciters ->
@@ -225,7 +225,7 @@ class QuranRepositoryImpl(
 
     override suspend fun getReciterById(reciterId: Int): Reciter = loadFromCacheOrFetch(
         cacheBlock = {
-            executeLocalSafely { recitersDao.getReciterById(reciterId) }.toReciter(appLanguage)
+            executeLocalSafely { recitersDao.getReciterById(reciterId) }.toReciter(localizationService.getCurrentLanguage())
         },
         networkBlock = {
             executeApiSafely { tilawahApiService.getReciters() }
