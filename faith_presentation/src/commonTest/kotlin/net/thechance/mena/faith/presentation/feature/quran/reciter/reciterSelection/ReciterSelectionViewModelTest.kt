@@ -122,10 +122,10 @@ class ReciterSelectionViewModelTest {
         const val EMPTY_STRING = ""
 
         private val dummyReciters = listOf(
-            Reciter(1, "Abdul Basit Abdul Samad", "عبد الباسط عبد الصمد", "Murattal"),
-            Reciter(2, "Mahmoud Khalil Al-Hussary", "محمود خليل الحصري", "Murattal"),
-            Reciter(3, "Mishary Rashid Alafasy", "مشاري بن راشد العفاسي", "Murattal"),
-            Reciter(4, "Abdul Rahman Al-Sudais", "عبد الرحمن السديس", "Murattal")
+            Reciter(1, "Abdul Basit Abdul Samad", "عبد الباسط عبد الصمد"),
+            Reciter(2, "Mahmoud Khalil Al-Hussary", "محمود خليل الحصري"),
+            Reciter(3, "Mishary Rashid Alafasy", "مشاري بن راشد العفاسي"),
+            Reciter(4, "Abdul Rahman Al-Sudais", "عبد الرحمن السديس")
         )
     }
 }

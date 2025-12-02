@@ -360,19 +360,16 @@ class SurahRecitersViewModelTest {
             Reciter(
                 id = 1,
                 name = "Abdul Basit Abdul Samad",
-                arabicName = "عبد الباسط عبد الصمد",
                 tilawahType = "Murattal"
             ),
             Reciter(
                 id = 2,
                 name = "Mahmoud Khalil Al-Hussary",
-                arabicName = "محمود خليل الحصري",
                 tilawahType = "Murattal"
             ),
             Reciter(
                 id = 3,
                 name = "Mishary Rashid Alafasy",
-                arabicName = "مشاري بن راشد العفاسي",
                 tilawahType = "Murattal"
             )
         )
