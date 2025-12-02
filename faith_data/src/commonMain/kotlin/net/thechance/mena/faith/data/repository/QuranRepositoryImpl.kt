@@ -65,25 +65,22 @@ class QuranRepositoryImpl(
                         mapToDownloadedSur(
                             surahId = surahId,
                             items = surahItems,
-                            appLanguage = appLanguage
                         )
                     }
             }
 
     private suspend fun mapToDownloadedSur(
         surahId: Int,
-        items: List<SurahAudioDto>,
-        appLanguage: AppLanguage
+        items: List<SurahAudioDto>
     ): DownlodedSur {
         return items.first().toDownlodedSurUi(
             surahName = getSurahById(surahId).name,
-            reciterName = getRecitersNames(items = items, appLanguage = appLanguage)
+            reciterName = getRecitersNames(items = items)
         )
     }
 
     private suspend fun getRecitersNames(
-        items: List<SurahAudioDto>,
-        appLanguage: AppLanguage
+        items: List<SurahAudioDto>
     ): List<String> {
         return if (appLanguage == AppLanguage.ENGLISH)
             items.map { recitersDao.getReciterById(it.reciterId).name }
