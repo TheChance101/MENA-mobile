@@ -144,14 +144,11 @@ class QuranRepositoryImpl(
 
     override suspend fun getSurahById(surahId: Int): Surah =
         executeLocalSafely {
-            ayahDao.getSurah(surahId).toSurah(localizationService.getCurrentLanguage())
+            ayahDao.getSurah(surahId).toSurah(appLanguage)
         }
 
     override suspend fun searchForReciter(query: String): List<Reciter> =
-        executeLocalSafely {
-            val appLanguage = localizationService.getCurrentLanguage()
-            recitersDao.searchReciters(query).map { it.toReciter(appLanguage = appLanguage) }
-        }
+        executeLocalSafely { recitersDao.searchReciters(query).map { it.toReciter(appLanguage = appLanguage) } }
 
     override suspend fun getAyahSoundUrl(
         ayahNumber: Int,
