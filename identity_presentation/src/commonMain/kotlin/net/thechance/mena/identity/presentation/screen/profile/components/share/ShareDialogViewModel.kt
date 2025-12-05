@@ -67,6 +67,7 @@ class ShareDialogViewModel(
             function = { galleryPermissionHandler.requestPermission(permission = Permissions.GALLERY_IMAGES) },
             onSuccess = { onPermissionSuccess(byteArray = byteArray) },
             onError = ::onPermissionError,
+            dispatcher = dispatcher
         )
     }
 

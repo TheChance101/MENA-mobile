@@ -11,7 +11,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
@@ -19,7 +20,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.shared.Coordina
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toCoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -27,7 +28,7 @@ import kotlin.test.Test
 
 class PickLocationScreenViewModelTest {
     private val mobileLocationRepository = mockk<AddressesRepository>()
-    private val locationPermissionHandler = mockk<PermissionHandler>()
+    private val locationPermissionHandler = mockk<PermissionHandler>(relaxed = true)
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: PickLocationScreenViewModel
 
@@ -67,6 +68,7 @@ class PickLocationScreenViewModelTest {
     fun `onClickGps should update state with current location`() = runTest {
         val coordinates = CoordinatesUiState(28.0, 29.0)
         coEvery { mobileLocationRepository.getCurrentLocation() } returns coordinates.toEntity()
+        coEvery { locationPermissionHandler.checkPermission(Permissions.LOCATION_FOREGROUND) }
 
         viewModel.onClickGps()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -117,8 +119,7 @@ class PickLocationScreenViewModelTest {
     @Test
     fun `onClickGps should show snackbar with error message when locationPermissionHandler throws`() =
         runTest {
-            coEvery { mobileLocationRepository.getCurrentLocation() } throws Exception()
-            coEvery { locationPermissionHandler.checkPermission() } throws Exception()
+            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } throws PermissionDeniedException()
 
             viewModel.onClickGps()
 
@@ -131,10 +132,9 @@ class PickLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickGps should update state with error message and navigate to enable location when location repository throws UnableToFindLocationException`() =
+    fun `onClickGps should navigate to enable location when permission controller throws PermissionDeniedPermanentlyException`() =
         runTest {
-            coEvery { mobileLocationRepository.getCurrentLocation() } throws UnableToFindLocationException()
-            coEvery { locationPermissionHandler.checkPermission() } returns PermissionState.DENIED
+            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } throws PermissionDeniedPermanentlyException()
 
             viewModel.onClickGps()
 
