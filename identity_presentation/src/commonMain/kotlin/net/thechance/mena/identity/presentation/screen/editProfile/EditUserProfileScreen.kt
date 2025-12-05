@@ -11,14 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import dev.icerock.moko.permissions.compose.BindEffect
-import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
@@ -63,31 +60,25 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 class EditUserProfileScreen(
     val userInfo: User?
 ) : BaseScreen<
-    EditUserProfileViewModel,
-    EditUserProfileUIState,
-    EditUserProfileUIEffect,
-    EditUserProfileInteractionListener>() {
+        EditUserProfileViewModel,
+        EditUserProfileUIState,
+        EditUserProfileUIEffect,
+        EditUserProfileInteractionListener>() {
 
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun Content() {
-        val factory = rememberPermissionsControllerFactory()
-        val controller = remember(factory) { factory.createPermissionsController() }
-        val viewModel: EditUserProfileViewModel =
-            getScreenModel(parameters = { parametersOf(controller) })
-
+        val viewModel: EditUserProfileViewModel = getScreenModel()
         LaunchedEffect(Unit) {
             viewModel.getInitialUserInfo(user = userInfo)
         }
 
         InitScreen(viewModel)
-        BindEffect(viewModel.permissionsController)
     }
 
     @Composable

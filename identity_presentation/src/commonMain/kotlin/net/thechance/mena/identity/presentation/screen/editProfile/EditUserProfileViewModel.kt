@@ -3,10 +3,6 @@
 package net.thechance.mena.identity.presentation.screen.editProfile
 
 import androidx.compose.ui.graphics.ImageBitmap
-import dev.icerock.moko.permissions.DeniedAlwaysException
-import dev.icerock.moko.permissions.DeniedException
-import dev.icerock.moko.permissions.Permission
-import dev.icerock.moko.permissions.PermissionsController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,6 +18,8 @@ import mena.identity_presentation.generated.resources.success_profile_info_updat
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
@@ -33,6 +31,8 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
@@ -40,7 +40,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EditUserProfileViewModel(
-    val permissionsController: PermissionsController,
+    private val permissionsController: PermissionHandler,
     private val ageValidator: AgeValidator,
     private val userRepository: UserRepository,
     private val imagesRepository: ImagesRepository,
@@ -369,7 +369,7 @@ class EditUserProfileViewModel(
     }
 
     private suspend fun requestCameraPermission() {
-        permissionsController.providePermission(Permission.CAMERA)
+        permissionsController.requestPermission(Permissions.CAMERA)
     }
 
     private fun onCameraPermissionSuccess() {
@@ -378,13 +378,12 @@ class EditUserProfileViewModel(
     }
 
     private fun handleCameraPermissionError(throwable: Throwable) {
-        throwable.printStackTrace()
         when (throwable) {
-            is DeniedAlwaysException -> {
-                permissionsController.openAppSettings()
+            is PermissionDeniedPermanentlyException -> {
+                permissionsController.openSettingPage(Permissions.CAMERA)
             }
 
-            is DeniedException -> {
+            is PermissionDeniedException -> {
                 sendNewEffect(
                     EditUserProfileUIEffect.ShowSnackBarError(
                         errorStringResource = Res.string.error_camera_permission_required
