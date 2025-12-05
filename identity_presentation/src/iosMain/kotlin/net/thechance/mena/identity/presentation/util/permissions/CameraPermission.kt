@@ -1,24 +1,28 @@
-package net.thechance.mena.identity.presentation.util
+package net.thechance.mena.identity.presentation.util.permissions
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
+import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import platform.Photos.PHAuthorizationStatusAuthorized
-import platform.Photos.PHAuthorizationStatusDenied
-import platform.Photos.PHAuthorizationStatusLimited
-import platform.Photos.PHPhotoLibrary
+import platform.AVFoundation.AVAuthorizationStatus
+import platform.AVFoundation.AVAuthorizationStatusAuthorized
+import platform.AVFoundation.AVAuthorizationStatusDenied
+import platform.AVFoundation.AVAuthorizationStatusNotDetermined
+import platform.AVFoundation.AVAuthorizationStatusRestricted
+import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVMediaTypeVideo
+import platform.AVFoundation.authorizationStatusForMediaType
+import platform.AVFoundation.requestAccessForMediaType
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-private typealias AuthorizeStateLong = Long
-
-internal class GalleryPermission : PermissionController {
-
+internal class CameraPermission: PermissionController {
     override fun getPermissionState(): PermissionState {
-        return PHPhotoLibrary.authorizationStatus().toPermissionState()
+        val status = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+        return status.toPermissionState()
     }
 
     override fun openSettingPage() {
@@ -27,10 +31,8 @@ internal class GalleryPermission : PermissionController {
 
     override suspend fun requestPermission() {
         return suspendCancellableCoroutine { cont ->
-            PHPhotoLibrary.requestAuthorization { _ ->
-                if (cont.isCancelled) {
-                    return@requestAuthorization
-                }
+            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) {
+                if (cont.isCancelled) return@requestAccessForMediaType
 
                 when (getPermissionState()) {
                     PermissionState.GRANTED -> cont.resume(Unit)
@@ -42,11 +44,12 @@ internal class GalleryPermission : PermissionController {
         }
     }
 
-    private fun AuthorizeStateLong.toPermissionState(): PermissionState {
+    private fun AVAuthorizationStatus.toPermissionState(): PermissionState {
         return when (this) {
-            PHAuthorizationStatusAuthorized -> PermissionState.GRANTED
-            PHAuthorizationStatusLimited -> PermissionState.GRANTED
-            PHAuthorizationStatusDenied -> PermissionState.DENIED
+            AVAuthorizationStatusAuthorized -> PermissionState.GRANTED
+            AVAuthorizationStatusNotDetermined -> PermissionState.NOT_DETERMINED
+            AVAuthorizationStatusRestricted -> PermissionState.DENIED_PERMANENTLY
+            AVAuthorizationStatusDenied -> PermissionState.DENIED
             else -> PermissionState.NOT_DETERMINED
         }
     }

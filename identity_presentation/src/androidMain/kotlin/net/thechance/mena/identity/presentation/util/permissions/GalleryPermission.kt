@@ -4,9 +4,6 @@ import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
-import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
