@@ -44,7 +44,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -60,10 +60,17 @@ import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropper
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 class EditUserProfileScreen(
-    val userInfo: User?
+    private val id: String,
+    private val firstName: String,
+    private val lastName: String,
+    private val profileImageUrl: String,
+    private val username: String,
+    private val birthDate: String,
+    private val gender: Gender
 ) : BaseScreen<
         EditUserProfileViewModel,
         EditUserProfileUIState,
@@ -73,11 +80,19 @@ class EditUserProfileScreen(
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun Content() {
-        val viewModel: EditUserProfileViewModel = getScreenModel()
-        LaunchedEffect(Unit) {
-            viewModel.getInitialUserInfo(user = userInfo)
-        }
-
+        val viewModel: EditUserProfileViewModel = getScreenModel(parameters = {
+            parametersOf(
+                UserUIState(
+                    id = id,
+                    firstName = firstName,
+                    lastName = lastName,
+                    profileImageUrl = profileImageUrl,
+                    username = username,
+                    birthDate = birthDate,
+                    gender = gender
+                )
+            )
+        })
         InitScreen(viewModel)
     }
 

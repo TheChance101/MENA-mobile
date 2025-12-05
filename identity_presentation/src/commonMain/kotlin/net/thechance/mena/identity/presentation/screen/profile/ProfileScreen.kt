@@ -49,6 +49,7 @@ import net.thechance.mena.identity.presentation.screen.profile.components.ThemeD
 import net.thechance.mena.identity.presentation.screen.profile.components.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.ShareSheet
 import org.jetbrains.compose.resources.stringResource
+import kotlin.uuid.ExperimentalUuidApi
 
 class ProfileScreen : BaseScreen<
     ProfileScreenViewModel,
@@ -199,6 +200,7 @@ class ProfileScreen : BaseScreen<
     }
 
 
+    @OptIn(ExperimentalUuidApi::class)
     override fun onEffect(
         effect: ProfileScreenUIEffect,
         navigator: Navigator,
@@ -208,7 +210,13 @@ class ProfileScreen : BaseScreen<
             is ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
                 navigator.push(
                     EditUserProfileScreen(
-                        userInfo = effect.userInfo
+                        id = effect.userInfo?.id.toString(),
+                        firstName = effect.userInfo?.firstName.toString(),
+                        lastName = effect.userInfo?.lastName.toString(),
+                        profileImageUrl = effect.userInfo?.profileImageUrl.toString(),
+                        username = effect.userInfo?.username.toString(),
+                        birthDate = effect.userInfo?.birthDate.toString(),
+                        gender = effect.userInfo?.gender!!
                     )
                 )
             }

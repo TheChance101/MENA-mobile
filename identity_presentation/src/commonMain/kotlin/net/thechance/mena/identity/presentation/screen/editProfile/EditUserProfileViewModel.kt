@@ -49,12 +49,15 @@ class EditUserProfileViewModel(
     private val registrationDraftRepository: RegistrationDraftRepository,
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val userUIState: UserUIState
 ) : BaseScreenModel<EditUserProfileUIState, EditUserProfileUIEffect>(EditUserProfileUIState()),
     EditUserProfileInteractionListener {
-
     @OptIn(ExperimentalUuidApi::class)
     var userId: Uuid? = null
 
+    init {
+        getInitialUserInfo(userUIState.toUser())
+    }
     fun getInitialUserInfo(user: User?) {
         if (user == null)
             return
