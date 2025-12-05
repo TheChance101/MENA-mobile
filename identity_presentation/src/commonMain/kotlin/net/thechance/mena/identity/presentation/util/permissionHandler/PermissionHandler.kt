@@ -3,10 +3,8 @@ package net.thechance.mena.identity.presentation.util.permissionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.suspendCancellableCoroutine
 import net.thechance.mena.identity.presentation.util.getKoinPermissionController
 import org.koin.core.component.KoinComponent
-import kotlin.coroutines.resume
 
 class PermissionHandler : KoinComponent {
 

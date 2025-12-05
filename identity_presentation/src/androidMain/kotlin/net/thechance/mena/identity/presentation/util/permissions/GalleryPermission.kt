@@ -30,7 +30,7 @@ internal class GalleryPermission(
 
     override suspend fun requestPermission() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-            permissionManager.requestPermission(listOf(requiredPermission))
+            permissionManager.requestPermissions(listOf(requiredPermission))
                 .values.forEach(::handlePermissionState)
         } else {
             PermissionState.GRANTED

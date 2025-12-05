@@ -28,7 +28,7 @@ class PermissionManager {
         }
     }
 
-    suspend fun requestPermission(permissions: List<String>): Map<String, PermissionState> {
+    suspend fun requestPermissions(permissions: List<String>): Map<String, PermissionState> {
         return suspendCancellableCoroutine { continuation ->
             launcher.launch(permissions.toTypedArray())
             onResult = { results ->
