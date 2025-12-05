@@ -11,6 +11,7 @@ import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
 import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import org.jetbrains.compose.resources.StringResource
 
 class EnableLocationScreenViewModel(
@@ -26,13 +27,13 @@ class EnableLocationScreenViewModel(
     }
 
     override fun onClickEnablePermission() {
-        locationForegroundHandler.openSettingPage()
+        locationForegroundHandler.openSettingPage(Permissions.LOCATION_FOREGROUND)
         checkIfEnabledPermission()
     }
 
     private fun checkIfEnabledPermission() {
         tryToCollect(
-            function = { locationForegroundHandler.checkPermissionFlow() },
+            function = { locationForegroundHandler.checkPermissionFlow(Permissions.LOCATION_FOREGROUND) },
             onNewValue = ::checkIfEnabledPermissionSuccess,
             onError = ::onPermissionError,
             dispatcher = dispatcher
