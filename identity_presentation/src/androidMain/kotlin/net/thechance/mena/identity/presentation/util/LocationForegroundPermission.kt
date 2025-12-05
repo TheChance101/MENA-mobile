@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
+import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 
@@ -24,8 +27,18 @@ internal class LocationForegroundPermission(
         context.openAppSettingsPage()
     }
 
-    override fun requestPermission() {
-        permissionManager.requestPermission(fineLocationPermissions){}
+    override suspend fun requestPermission() {
+        permissionManager.requestPermission(fineLocationPermissions)
+            .values.forEach(::handlePermissionResult)
+    }
+
+    private fun handlePermissionResult(state: PermissionState) {
+        when (state) {
+            PermissionState.NOT_DETERMINED -> throw PermissionNotDeterminedException()
+            PermissionState.GRANTED -> {}
+            PermissionState.DENIED -> throw PermissionDeniedException()
+            PermissionState.DENIED_PERMANENTLY -> throw PermissionDeniedPermanentlyException()
+        }
     }
 }
 

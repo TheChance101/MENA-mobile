@@ -1,5 +1,9 @@
 package net.thechance.mena.identity.presentation.util
 
+import kotlinx.coroutines.suspendCancellableCoroutine
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
+import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import platform.CoreLocation.CLLocationManager
@@ -8,6 +12,8 @@ import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse
 import platform.CoreLocation.kCLAuthorizationStatusDenied
 import platform.CoreLocation.kCLAuthorizationStatusNotDetermined
 import platform.CoreLocation.kCLAuthorizationStatusRestricted
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 private typealias AuthorizeStateInt = Int
 
@@ -22,8 +28,17 @@ internal class LocationForegroundPermission : PermissionController {
         openAppSettingsPage()
     }
 
-    override fun requestPermission() {
-        locationManager.requestWhenInUseAuthorization()
+    override suspend fun requestPermission() {
+        return suspendCancellableCoroutine { cont ->
+            locationManager.requestWhenInUseAuthorization()
+
+            when (getPermissionState()) {
+                PermissionState.GRANTED -> cont.resume(Unit)
+                PermissionState.NOT_DETERMINED -> cont.resumeWithException(PermissionNotDeterminedException())
+                PermissionState.DENIED -> cont.resumeWithException(PermissionDeniedException())
+                PermissionState.DENIED_PERMANENTLY -> cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+        }
     }
 
     private fun AuthorizeStateInt.toPermissionState(): PermissionState {
