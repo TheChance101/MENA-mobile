@@ -1,16 +1,11 @@
-package net.thechance.mena.identity.presentation.util
+package net.thechance.mena.identity.presentation.util.permissions.util
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
-import androidx.core.content.ContextCompat
 import net.thechance.mena.identity.domain.exception.CannotOpenSettingsException
 import androidx.core.net.toUri
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 
 internal fun Context.openPage(
     action: String,

@@ -3,9 +3,9 @@ package net.thechance.mena.identity.presentation.di
 import android.content.Context
 import android.location.LocationManager
 import net.thechance.mena.identity.presentation.util.AppLocalizer
-import net.thechance.mena.identity.presentation.util.CameraPermission
-import net.thechance.mena.identity.presentation.util.GalleryPermission
-import net.thechance.mena.identity.presentation.util.LocationForegroundPermission
+import net.thechance.mena.identity.presentation.util.permissions.CameraPermission
+import net.thechance.mena.identity.presentation.util.permissions.GalleryPermission
+import net.thechance.mena.identity.presentation.util.permissions.LocationForegroundPermission
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions

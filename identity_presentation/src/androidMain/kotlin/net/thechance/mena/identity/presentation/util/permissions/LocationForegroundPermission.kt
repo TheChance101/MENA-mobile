@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.util
+package net.thechance.mena.identity.presentation.util.permissions
 
 import android.Manifest
 import android.content.Context
@@ -7,8 +7,11 @@ import android.os.Build
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
+import net.thechance.mena.identity.presentation.util.PermissionManager
+import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissions.util.handlePermissionState
 
 internal class LocationForegroundPermission(
     private val context: Context,
@@ -29,16 +32,7 @@ internal class LocationForegroundPermission(
 
     override suspend fun requestPermission() {
         permissionManager.requestPermission(fineLocationPermissions)
-            .values.forEach(::handlePermissionResult)
-    }
-
-    private fun handlePermissionResult(state: PermissionState) {
-        when (state) {
-            PermissionState.NOT_DETERMINED -> throw PermissionNotDeterminedException()
-            PermissionState.GRANTED -> {}
-            PermissionState.DENIED -> throw PermissionDeniedException()
-            PermissionState.DENIED_PERMANENTLY -> throw PermissionDeniedPermanentlyException()
-        }
+            .values.forEach(::handlePermissionState)
     }
 }
 

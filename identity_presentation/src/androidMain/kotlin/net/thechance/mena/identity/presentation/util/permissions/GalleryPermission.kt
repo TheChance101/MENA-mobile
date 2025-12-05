@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.util
+package net.thechance.mena.identity.presentation.util.permissions
 
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
@@ -7,8 +7,11 @@ import android.os.Build
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
+import net.thechance.mena.identity.presentation.util.PermissionManager
+import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissions.util.handlePermissionState
 
 internal class GalleryPermission(
     private val context: Context,
@@ -31,7 +34,7 @@ internal class GalleryPermission(
     override suspend fun requestPermission() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
             permissionManager.requestPermission(listOf(requiredPermission))
-                .values.forEach(::handlePermissionResult)
+                .values.forEach(::handlePermissionState)
         } else {
             PermissionState.GRANTED
         }
@@ -42,15 +45,6 @@ internal class GalleryPermission(
             PermissionState.GRANTED
         } else {
             PermissionState.DENIED
-        }
-    }
-
-    private fun handlePermissionResult(state: PermissionState) {
-        when (state) {
-            PermissionState.NOT_DETERMINED -> throw PermissionNotDeterminedException()
-            PermissionState.GRANTED -> {}
-            PermissionState.DENIED -> throw PermissionDeniedException()
-            PermissionState.DENIED_PERMANENTLY -> throw PermissionDeniedPermanentlyException()
         }
     }
 
