@@ -19,7 +19,7 @@ internal actual fun platformModule(): Module = module {
         GalleryPermission()
     }
 
-    single<PermissionController>{
+    single<PermissionController>(named(Permissions.CAMERA.name)){
         CameraPermission()
     }
 
