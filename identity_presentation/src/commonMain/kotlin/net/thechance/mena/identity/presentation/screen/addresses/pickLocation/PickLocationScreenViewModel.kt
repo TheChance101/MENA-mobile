@@ -5,8 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_location_is_turned_off
+import mena.identity_presentation.generated.resources.location_permission_required
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.LocationException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -19,7 +22,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLo
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toUiState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -100,12 +103,39 @@ class PickLocationScreenViewModel(
     }
 
     override fun onClickGps() {
+        requestPermission()
+    }
+
+    private fun requestPermission() {
+        tryToExecute(
+            function = { locationForegroundHandler.requestPermission(permission = Permissions.LOCATION_FOREGROUND) },
+            onSuccess = { onPermissionSuccess() },
+            onError = ::onPermissionError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onPermissionSuccess() {
         tryToExecute(
             function = ::fetchCurrentLocation,
             onSuccess = ::onCurrentLocationSuccess,
             onError = ::onCurrentLocationError,
             dispatcher = Dispatchers.Main
         )
+    }
+
+    private fun onPermissionError(throwable: Throwable) {
+        updateState { copy(isGpsButtonLoading = false) }
+        when (throwable) {
+            is PermissionDeniedPermanentlyException -> navigateToEnableLocation()
+            is PermissionDeniedException -> {
+                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError(Res.string.location_permission_required))
+            }
+
+            else -> {
+                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError(Res.string.error_location_is_turned_off))
+            }
+        }
     }
 
     private suspend fun fetchCurrentLocation(): Coordinates? {
@@ -128,67 +158,15 @@ class PickLocationScreenViewModel(
     }
 
     private fun onCurrentLocationError(throwable: Throwable) {
-        checkLocationEnable()
+        updateState { copy(isGpsButtonLoading = false) }
+        PickLocationScreenUIEffect.ShowSnackBarError(mapErrorMessage(throwable))
     }
 
-    private fun checkLocationEnable() {
-        tryToExecute(
-            function = { locationForegroundHandler.checkPermission() },
-            onSuccess = ::onPermissionCheckSuccess,
-            onError = ::onPermissionCheckError,
-            dispatcher = dispatcher
-        )
-    }
-
-    private fun onPermissionCheckSuccess(permissionState: PermissionState) {
-        when (permissionState) {
-            PermissionState.GRANTED -> {
-                updateState {
-                    copy(
-                        isGpsButtonLoading = false
-                    )
-                }
-                sendNewEffect(
-                    PickLocationScreenUIEffect.ShowSnackBarError(
-                        errorStringResource = Res.string.error_location_is_turned_off
-                    )
-                )
-            }
-
-            PermissionState.DENIED -> {
-                navigateToEnableLocation()
-            }
-
-            PermissionState.NOT_DETERMINED -> {
-                navigateToEnableLocation()
-            }
-
-            PermissionState.DENIED_PERMANENTLY -> {
-                navigateToEnableLocation()
-            }
-        }
-    }
-
-    private fun onPermissionCheckError(throwable: Throwable) {
-        updateState {
-            copy(
-                isGpsButtonLoading = false,
-                address = "",
-            )
-        }
-        sendNewEffect(
-            PickLocationScreenUIEffect.ShowSnackBarError(
-                errorStringResource = mapErrorMessage(throwable)
-            )
-        )
-        changeIsConfirmEnabled()
-    }
 
     private fun navigateToEnableLocation() {
         sendNewEffect(PickLocationScreenUIEffect.NavigateToEnableLocation)
         updateState { copy(isGpsButtonLoading = false) }
     }
-
 
     @OptIn(ExperimentalUuidApi::class)
     override fun onClickConfirm() {

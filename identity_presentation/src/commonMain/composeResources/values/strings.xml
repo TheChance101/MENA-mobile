@@ -126,6 +126,7 @@
     <string name="download_success">Downloaded Successfully</string>
     <string name="download_success_message">Your image is downloaded successfully</string>
     <string name="cant_save_qr_code">Can't save QR code"</string>
+    <string name="gallery_permission_required">Gallery permission required</string>
 
     <string name="enable_location_title">Enable location</string>
     <string name="enable_location_message">Please enable location in settings so we can get accurate prices in your exact location.</string>
@@ -157,7 +158,6 @@
     <string name="confirmation_dialog_delete">Delete</string>
 
     <string name="my_location_app_bar_title">My locations</string>
-
     <string name="address_deleted_successfully">Address deleted successfully</string>
     <string name="address_activated_successfully">Address Activated successfully</string>
 
@@ -198,7 +198,7 @@
     <string name="ok">Ok</string>
 
     <string name="pick_location_title">Pick Location</string>
-
+    <string name="location_permission_required">Location permission required.</string>
     <!-- Change Password Screen -->
     <string name="verify_current_password">Verify current password</string>
     <string name="please_enter_your_password_to_change_it">Please enter your password to change it</string>
