@@ -19,11 +19,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
+import mena.identity_presentation.generated.resources.gallery_permission_required
+import net.thechance.mena.identity.domain.exception.PermissionDeniedException
+import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
@@ -56,30 +59,45 @@ class ShareDialogViewModel(
     }
 
     override fun onClickDownload(byteArray: ByteArray) {
-        val permissionState = galleryPermissionHandler.checkPermission()
-
-        when (permissionState) {
-            PermissionState.GRANTED -> {
-                updateState {
-                    copy(isLoading = true)
-                }
-                tryToExecute(
-                    function = { imagesRepository.saveImageToGallery(byteArray) },
-                    onSuccess = { onDownloadSuccess() },
-                    onError = ::onError,
-                    dispatcher = dispatcher
-                )
-            }
-
-            PermissionState.DENIED_PERMANENTLY -> galleryPermissionHandler.openSettingPage()
-            else -> galleryPermissionHandler.requestPermission()
-        }
+        requestPermission(byteArray)
     }
 
-    override fun onClickCopyToClipboard(clipboard: Clipboard) {
+    private fun requestPermission(byteArray: ByteArray) {
+        tryToExecute(
+            function = { galleryPermissionHandler.requestPermission(permission = Permissions.GALLERY_IMAGES) },
+            onSuccess = { onPermissionSuccess(byteArray = byteArray) },
+            onError = ::onPermissionError,
+        )
+    }
+
+    private fun onPermissionSuccess(byteArray: ByteArray) {
         updateState {
             copy(isLoading = true)
         }
+        tryToExecute(
+            function = { imagesRepository.saveImageToGallery(byteArray) },
+            onSuccess = { onDownloadSuccess() },
+            onError = ::onError,
+            dispatcher = dispatcher
+        )
+    }
+
+    private fun onPermissionError(throwable: Throwable) {
+        when (throwable) {
+            is PermissionDeniedPermanentlyException -> galleryPermissionHandler.openSettingPage(Permissions.GALLERY_IMAGES)
+            is PermissionDeniedException -> {
+                ShareQrCodeUIEffect.ShowSnackBarError(
+                    Res.string.gallery_permission_required
+                )
+            }
+
+            else -> onError(throwable)
+        }
+
+    }
+
+    override fun onClickCopyToClipboard(clipboard: Clipboard) {
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { clipboard.setClipEntry(clipEntryOf(state.value.shareLinkUrl)) },
             onSuccess = { onCopyToClipboardSuccess() },
