@@ -29,7 +29,6 @@ import net.thechance.mena.identity.presentation.screen.resetPassword.otp.ResetPa
 import net.thechance.mena.identity.presentation.screen.resetPassword.phoneEntry.ResetPasswordPhoneEntryScreenViewModel
 import net.thechance.mena.identity.presentation.screen.resetPassword.setNewPassword.SetNewPasswordScreenViewModel
 import net.thechance.mena.identity.presentation.util.factoryOfOrNull
-import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import net.thechance.mena.identity.presentation.utils.ImageDecoderImpl

@@ -27,6 +27,8 @@ internal class GalleryPermission : PermissionController {
     }
 
     override suspend fun requestPermission() {
+        if (getPermissionState().isGranted()) return
+
         return suspendCancellableCoroutine { cont ->
             PHPhotoLibrary.requestAuthorization { _ ->
                 if (cont.isCancelled) return@requestAuthorization

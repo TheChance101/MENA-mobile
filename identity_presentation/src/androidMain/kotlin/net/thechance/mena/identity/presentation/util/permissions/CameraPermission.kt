@@ -29,6 +29,7 @@ internal class CameraPermission(
     }
 
     override suspend fun requestPermission() {
+        if (getPermissionState().isGranted()) return
         permissionManager.requestPermissions(listOf(requiredPermission))
             .values.forEach(::handlePermissionState)
     }

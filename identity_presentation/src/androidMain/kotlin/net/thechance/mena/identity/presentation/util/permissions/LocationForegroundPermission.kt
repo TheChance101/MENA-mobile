@@ -28,6 +28,7 @@ internal class LocationForegroundPermission(
     }
 
     override suspend fun requestPermission() {
+        if (getPermissionState().isGranted()) return
         permissionManager.requestPermissions(fineLocationPermissions)
             .values.forEach(::handlePermissionState)
     }

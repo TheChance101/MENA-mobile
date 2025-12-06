@@ -30,6 +30,8 @@ internal class CameraPermission: PermissionController {
     }
 
     override suspend fun requestPermission() {
+        if (getPermissionState().isGranted()) return
+
         return suspendCancellableCoroutine { cont ->
             AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) {
                 if (cont.isCancelled) return@requestAccessForMediaType
