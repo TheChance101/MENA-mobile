@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
@@ -28,39 +29,11 @@ internal class CameraPermission : PermissionController {
         if (beforeStatus == AVAuthorizationStatusAuthorized) return
 
         return suspendCancellableCoroutine { cont ->
-
             AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
-
                 if (cont.isCancelled) return@requestAccessForMediaType
 
                 val afterStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
-
-                when {
-                    granted || afterStatus == AVAuthorizationStatusAuthorized -> {
-                        cont.resume(Unit)
-                    }
-
-                    beforeStatus == AVAuthorizationStatusNotDetermined &&
-                            afterStatus == AVAuthorizationStatusDenied -> {
-                        cont.resumeWithException(PermissionDeniedException())
-                    }
-
-                    beforeStatus == AVAuthorizationStatusDenied &&
-                            afterStatus == AVAuthorizationStatusDenied -> {
-                        cont.resumeWithException(PermissionDeniedPermanentlyException())
-                    }
-
-                    afterStatus == AVAuthorizationStatusRestricted -> {
-                        cont.resumeWithException(PermissionDeniedPermanentlyException())
-                    }
-
-                    afterStatus == AVAuthorizationStatusNotDetermined -> {
-                        cont.resumeWithException(PermissionNotDeterminedException())
-                    }
-
-                    else -> {
-                        cont.resumeWithException(PermissionDeniedException())
-                    }
+                handleAuthorizationChange(beforeStatus, afterStatus, cont, granted)
                 }
             }
         }
@@ -74,5 +47,39 @@ internal class CameraPermission : PermissionController {
             AVAuthorizationStatusRestricted -> PermissionState.DENIED_PERMANENTLY
             else -> PermissionState.NOT_DETERMINED
         }
+    }
+
+    private fun handleAuthorizationChange(
+        beforeStatus: AVAuthorizationStatus,
+        afterStatus: AVAuthorizationStatus,
+        cont: CancellableContinuation<Unit>,
+        granted: Boolean
+    ){
+        when {
+            granted || afterStatus == AVAuthorizationStatusAuthorized -> {
+                cont.resume(Unit)
+            }
+
+            beforeStatus == AVAuthorizationStatusNotDetermined &&
+                    afterStatus == AVAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
+
+            beforeStatus == AVAuthorizationStatusDenied &&
+                    afterStatus == AVAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+
+            afterStatus == AVAuthorizationStatusRestricted -> {
+                cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+
+            afterStatus == AVAuthorizationStatusNotDetermined -> {
+                cont.resumeWithException(PermissionNotDeterminedException())
+            }
+
+            else -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
     }
 }

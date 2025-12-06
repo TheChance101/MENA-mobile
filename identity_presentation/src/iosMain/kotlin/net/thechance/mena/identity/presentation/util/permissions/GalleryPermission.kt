@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
@@ -7,6 +8,7 @@ import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedExcep
 import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import platform.AVFoundation.AVAuthorizationStatus
 import platform.Photos.PHAuthorizationStatusAuthorized
 import platform.Photos.PHAuthorizationStatusDenied
 import platform.Photos.PHAuthorizationStatusLimited
@@ -38,31 +40,7 @@ internal class GalleryPermission : PermissionController {
 
             PHPhotoLibrary.requestAuthorization { afterStatus ->
                 if (cont.isCancelled) return@requestAuthorization
-
-                when {
-                    afterStatus == PHAuthorizationStatusAuthorized ||
-                            afterStatus == PHAuthorizationStatusLimited -> {
-                        cont.resume(Unit)
-                    }
-
-                    beforeStatus == PHAuthorizationStatusNotDetermined &&
-                            afterStatus == PHAuthorizationStatusDenied -> {
-                        cont.resumeWithException(PermissionDeniedException())
-                    }
-
-                    beforeStatus == PHAuthorizationStatusDenied &&
-                            afterStatus == PHAuthorizationStatusDenied -> {
-                        cont.resumeWithException(PermissionDeniedPermanentlyException())
-                    }
-
-                    afterStatus == PHAuthorizationStatusNotDetermined -> {
-                        cont.resumeWithException(PermissionNotDeterminedException())
-                    }
-
-                    else -> {
-                        cont.resumeWithException(PermissionDeniedException())
-                    }
-                }
+                handleAuthorizationChange(beforeStatus, afterStatus, cont)
             }
         }
     }
@@ -73,6 +51,37 @@ internal class GalleryPermission : PermissionController {
             PHAuthorizationStatusLimited -> PermissionState.GRANTED
             PHAuthorizationStatusDenied -> PermissionState.DENIED
             else -> PermissionState.NOT_DETERMINED
+        }
+    }
+
+    private fun handleAuthorizationChange(
+        beforeStatus: AVAuthorizationStatus,
+        afterStatus: AVAuthorizationStatus,
+        cont: CancellableContinuation<Unit>
+    ){
+        when {
+            afterStatus == PHAuthorizationStatusAuthorized ||
+                    afterStatus == PHAuthorizationStatusLimited -> {
+                cont.resume(Unit)
+            }
+
+            beforeStatus == PHAuthorizationStatusNotDetermined &&
+                    afterStatus == PHAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
+
+            beforeStatus == PHAuthorizationStatusDenied &&
+                    afterStatus == PHAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+
+            afterStatus == PHAuthorizationStatusNotDetermined -> {
+                cont.resumeWithException(PermissionNotDeterminedException())
+            }
+
+            else -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
         }
     }
 }
