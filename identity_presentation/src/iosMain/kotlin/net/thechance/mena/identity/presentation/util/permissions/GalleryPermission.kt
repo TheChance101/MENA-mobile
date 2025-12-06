@@ -10,6 +10,7 @@ import net.thechance.mena.identity.presentation.util.permissionHandler.Permissio
 import platform.Photos.PHAuthorizationStatusAuthorized
 import platform.Photos.PHAuthorizationStatusDenied
 import platform.Photos.PHAuthorizationStatusLimited
+import platform.Photos.PHAuthorizationStatusNotDetermined
 import platform.Photos.PHPhotoLibrary
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -27,17 +28,40 @@ internal class GalleryPermission : PermissionController {
     }
 
     override suspend fun requestPermission() {
-        if (getPermissionState().isGranted()) return
+        val beforeStatus = PHPhotoLibrary.authorizationStatus()
+
+        if (beforeStatus == PHAuthorizationStatusAuthorized ||
+            beforeStatus == PHAuthorizationStatusLimited
+        ) return
 
         return suspendCancellableCoroutine { cont ->
-            PHPhotoLibrary.requestAuthorization { _ ->
+
+            PHPhotoLibrary.requestAuthorization { afterStatus ->
                 if (cont.isCancelled) return@requestAuthorization
 
-                when (getPermissionState()) {
-                    PermissionState.GRANTED -> cont.resume(Unit)
-                    PermissionState.NOT_DETERMINED -> cont.resumeWithException(PermissionNotDeterminedException())
-                    PermissionState.DENIED -> cont.resumeWithException(PermissionDeniedException())
-                    PermissionState.DENIED_PERMANENTLY -> cont.resumeWithException(PermissionDeniedPermanentlyException())
+                when {
+                    afterStatus == PHAuthorizationStatusAuthorized ||
+                            afterStatus == PHAuthorizationStatusLimited -> {
+                        cont.resume(Unit)
+                    }
+
+                    beforeStatus == PHAuthorizationStatusNotDetermined &&
+                            afterStatus == PHAuthorizationStatusDenied -> {
+                        cont.resumeWithException(PermissionDeniedException())
+                    }
+
+                    beforeStatus == PHAuthorizationStatusDenied &&
+                            afterStatus == PHAuthorizationStatusDenied -> {
+                        cont.resumeWithException(PermissionDeniedPermanentlyException())
+                    }
+
+                    afterStatus == PHAuthorizationStatusNotDetermined -> {
+                        cont.resumeWithException(PermissionNotDeterminedException())
+                    }
+
+                    else -> {
+                        cont.resumeWithException(PermissionDeniedException())
+                    }
                 }
             }
         }

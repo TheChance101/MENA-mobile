@@ -7,19 +7,12 @@ import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedExcep
 import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import platform.AVFoundation.AVAuthorizationStatus
-import platform.AVFoundation.AVAuthorizationStatusAuthorized
-import platform.AVFoundation.AVAuthorizationStatusDenied
-import platform.AVFoundation.AVAuthorizationStatusNotDetermined
-import platform.AVFoundation.AVAuthorizationStatusRestricted
-import platform.AVFoundation.AVCaptureDevice
-import platform.AVFoundation.AVMediaTypeVideo
-import platform.AVFoundation.authorizationStatusForMediaType
-import platform.AVFoundation.requestAccessForMediaType
+import platform.AVFoundation.*
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-internal class CameraPermission: PermissionController {
+internal class CameraPermission : PermissionController {
+
     override fun getPermissionState(): PermissionState {
         val status = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
         return status.toPermissionState()
@@ -30,17 +23,44 @@ internal class CameraPermission: PermissionController {
     }
 
     override suspend fun requestPermission() {
-        if (getPermissionState().isGranted()) return
+        val beforeStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+
+        if (beforeStatus == AVAuthorizationStatusAuthorized) return
 
         return suspendCancellableCoroutine { cont ->
-            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) {
+
+            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+
                 if (cont.isCancelled) return@requestAccessForMediaType
 
-                when (getPermissionState()) {
-                    PermissionState.GRANTED -> cont.resume(Unit)
-                    PermissionState.NOT_DETERMINED -> cont.resumeWithException(PermissionNotDeterminedException())
-                    PermissionState.DENIED -> cont.resumeWithException(PermissionDeniedException())
-                    PermissionState.DENIED_PERMANENTLY -> cont.resumeWithException(PermissionDeniedPermanentlyException())
+                val afterStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
+
+                when {
+                    granted || afterStatus == AVAuthorizationStatusAuthorized -> {
+                        cont.resume(Unit)
+                    }
+
+                    beforeStatus == AVAuthorizationStatusNotDetermined &&
+                            afterStatus == AVAuthorizationStatusDenied -> {
+                        cont.resumeWithException(PermissionDeniedException())
+                    }
+
+                    beforeStatus == AVAuthorizationStatusDenied &&
+                            afterStatus == AVAuthorizationStatusDenied -> {
+                        cont.resumeWithException(PermissionDeniedPermanentlyException())
+                    }
+
+                    afterStatus == AVAuthorizationStatusRestricted -> {
+                        cont.resumeWithException(PermissionDeniedPermanentlyException())
+                    }
+
+                    afterStatus == AVAuthorizationStatusNotDetermined -> {
+                        cont.resumeWithException(PermissionNotDeterminedException())
+                    }
+
+                    else -> {
+                        cont.resumeWithException(PermissionDeniedException())
+                    }
                 }
             }
         }
@@ -50,8 +70,8 @@ internal class CameraPermission: PermissionController {
         return when (this) {
             AVAuthorizationStatusAuthorized -> PermissionState.GRANTED
             AVAuthorizationStatusNotDetermined -> PermissionState.NOT_DETERMINED
-            AVAuthorizationStatusRestricted -> PermissionState.DENIED_PERMANENTLY
             AVAuthorizationStatusDenied -> PermissionState.DENIED
+            AVAuthorizationStatusRestricted -> PermissionState.DENIED_PERMANENTLY
             else -> PermissionState.NOT_DETERMINED
         }
     }
