@@ -1,5 +1,6 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.thechance.mena.identity.domain.exception.PermissionDeniedException
 import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
@@ -33,39 +34,21 @@ internal class LocationForegroundPermission : PermissionController {
         ) return
 
         return suspendCancellableCoroutine { cont ->
-            locationManager.delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
+            val delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
 
                 override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
-                    if (!cont.isActive) return
+                    handleAuthorizationChange(beforeStatus, manager.authorizationStatus(), cont)
+                }
 
-                    val afterStatus = manager.authorizationStatus()
-                    when {
-                        afterStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
-                                afterStatus == kCLAuthorizationStatusAuthorizedAlways -> {
-                            cont.resume(Unit)
-                        }
-
-                        beforeStatus == kCLAuthorizationStatusNotDetermined &&
-                                afterStatus == kCLAuthorizationStatusDenied -> {
-                            cont.resumeWithException(PermissionDeniedException())
-                        }
-
-                        afterStatus == kCLAuthorizationStatusRestricted -> {
-                            cont.resumeWithException(PermissionDeniedPermanentlyException())
-                        }
-
-                        beforeStatus == kCLAuthorizationStatusDenied &&
-                                afterStatus == kCLAuthorizationStatusDenied -> {
-                            cont.resumeWithException(PermissionDeniedPermanentlyException())
-                        }
-
-                        else -> {
-                            cont.resumeWithException(PermissionDeniedException())
-                        }
-                    }
+                override fun locationManager(
+                    manager: CLLocationManager,
+                    didChangeAuthorizationStatus: Int
+                ) {
+                    handleAuthorizationChange(beforeStatus, didChangeAuthorizationStatus, cont)
                 }
             }
 
+            locationManager.delegate = delegate
             cont.invokeOnCancellation { locationManager.delegate = null }
             locationManager.requestWhenInUseAuthorization()
         }
@@ -79,6 +62,39 @@ internal class LocationForegroundPermission : PermissionController {
             kCLAuthorizationStatusNotDetermined -> PermissionState.NOT_DETERMINED
             kCLAuthorizationStatusDenied -> PermissionState.DENIED
             else -> PermissionState.NOT_DETERMINED
+        }
+    }
+
+    private fun handleAuthorizationChange(
+        beforeStatus: Int,
+        afterStatus: Int,
+        cont: CancellableContinuation<Unit>
+    ) {
+        if (!cont.isActive) return
+
+        when {
+            afterStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
+                    afterStatus == kCLAuthorizationStatusAuthorizedAlways -> {
+                cont.resume(Unit)
+            }
+
+            beforeStatus == kCLAuthorizationStatusNotDetermined &&
+                    afterStatus == kCLAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
+
+            afterStatus == kCLAuthorizationStatusRestricted -> {
+                cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+
+            beforeStatus == kCLAuthorizationStatusDenied &&
+                    afterStatus == kCLAuthorizationStatusDenied -> {
+                cont.resumeWithException(PermissionDeniedPermanentlyException())
+            }
+
+            else -> {
+                cont.resumeWithException(PermissionDeniedException())
+            }
         }
     }
 }
