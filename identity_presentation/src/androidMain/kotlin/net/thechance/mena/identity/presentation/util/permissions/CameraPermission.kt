@@ -2,7 +2,6 @@ package net.thechance.mena.identity.presentation.util.permissions
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState

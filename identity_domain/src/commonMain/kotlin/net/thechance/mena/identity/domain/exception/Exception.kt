@@ -25,5 +25,3 @@ class InvalidRequestException() : AuthenticationException("Invalid request")
 class UnableToFindLocationException() : LocationException("Unable to find location")
 class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class AddressNotFoundException() : LocationException("Address not found")
-
-

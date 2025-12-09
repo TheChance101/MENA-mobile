@@ -55,14 +55,12 @@ private fun resolvePermissionState(
     activity: ComponentActivity?,
     permission: String
 ): PermissionState {
+    return when {
+        isGranted -> PermissionState.GRANTED
 
-    if (isGranted) return PermissionState.GRANTED
+        activity != null && !shouldShowRequestPermissionRationale(activity, permission) ->
+            PermissionState.DENIED_PERMANENTLY
 
-    if (activity != null &&
-        !shouldShowRequestPermissionRationale(activity, permission)
-    ) {
-        return PermissionState.DENIED_PERMANENTLY
+        else -> PermissionState.DENIED
     }
-
-    return PermissionState.DENIED
 }
