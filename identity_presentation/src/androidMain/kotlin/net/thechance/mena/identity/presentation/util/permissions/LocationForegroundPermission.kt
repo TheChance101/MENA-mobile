@@ -2,14 +2,13 @@ package net.thechance.mena.identity.presentation.util.permissions
 
 import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
 import net.thechance.mena.identity.presentation.util.PermissionManager
-import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.util.permissions.util.handleAfterAndBeforePermissionState
 import net.thechance.mena.identity.presentation.util.permissions.util.handlePermissionState
+import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 
 internal class LocationForegroundPermission(
     private val context: Context,
@@ -17,11 +16,8 @@ internal class LocationForegroundPermission(
 ) : PermissionController {
 
     override fun getPermissionState(): PermissionState {
-        if (fineLocationPermissions.isEmpty()) return PermissionState.GRANTED
-        val allGranted = fineLocationPermissions.all {
-            context.checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED
-        }
-        return if (allGranted) PermissionState.GRANTED else PermissionState.DENIED
+        val states = fineLocationPermissions.map { permissionManager.checkPermission(it) }
+        return handlePermissionState(states)
     }
 
     override fun openSettingPage() {
@@ -32,12 +28,13 @@ internal class LocationForegroundPermission(
         val beforeStatus = getPermissionState()
         if (beforeStatus.isGranted()) return PermissionState.GRANTED
 
-        val afterStatus = handlePermissionState(permissionManager.requestPermissions(fineLocationPermissions).values)
+        val permissionStates = permissionManager.requestPermissions(fineLocationPermissions).values
+        val afterStatus = handlePermissionState(permissionStates)
         return handleAfterAndBeforePermissionState(afterStatus = afterStatus, beforeStatus = beforeStatus)
     }
 }
 
-internal val fineLocationPermissions: List<String> =
+private val fineLocationPermissions: List<String> =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,

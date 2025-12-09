@@ -34,7 +34,8 @@ internal class GalleryPermission(
             val beforeStatus = getPermissionState()
             if (beforeStatus.isGranted()) return PermissionState.GRANTED
 
-            val afterStatus = handlePermissionState(permissionManager.requestPermissions(listOf(requiredPermission)).values)
+            val permissionStates = permissionManager.requestPermissions(listOf(requiredPermission)).values
+            val afterStatus = handlePermissionState(permissionStates)
             handleAfterAndBeforePermissionState(afterStatus = afterStatus, beforeStatus = beforeStatus)
         } else {
             PermissionState.GRANTED
@@ -45,7 +46,7 @@ internal class GalleryPermission(
         return if (isPermissionsGranted()) {
             PermissionState.GRANTED
         } else {
-            PermissionState.DENIED
+            return permissionManager.checkPermission(requiredPermission)
         }
     }
 

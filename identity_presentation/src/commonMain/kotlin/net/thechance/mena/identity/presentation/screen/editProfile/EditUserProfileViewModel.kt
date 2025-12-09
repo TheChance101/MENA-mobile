@@ -18,8 +18,6 @@ import mena.identity_presentation.generated.resources.success_profile_info_updat
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.domain.exception.AuthenticationException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
@@ -32,6 +30,7 @@ import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.jetbrains.compose.resources.StringResource
@@ -58,6 +57,7 @@ class EditUserProfileViewModel(
     init {
         getInitialUserInfo(userUIState.toUser())
     }
+
     fun getInitialUserInfo(user: User?) {
         if (user == null)
             return
@@ -221,7 +221,7 @@ class EditUserProfileViewModel(
     override fun onTakeImageFromCamera() {
         tryToExecute(
             function = ::requestCameraPermission,
-            onSuccess = { onCameraPermissionSuccess() },
+            onSuccess = ::onCameraPermissionSuccess,
             onError = ::handleCameraPermissionError,
             dispatcher = dispatcher
         )
@@ -371,22 +371,17 @@ class EditUserProfileViewModel(
         )
     }
 
-    private suspend fun requestCameraPermission() {
-        permissionsController.requestPermission(Permissions.CAMERA)
+    private suspend fun requestCameraPermission(): PermissionState {
+        return permissionsController.requestPermission(Permissions.CAMERA)
     }
 
-    private fun onCameraPermissionSuccess() {
-        updateState { copy(showCamera = true) }
-
-    }
-
-    private fun handleCameraPermissionError(throwable: Throwable) {
-        when (throwable) {
-            is PermissionDeniedPermanentlyException -> {
-                permissionsController.openSettingPage(Permissions.CAMERA)
+    private fun onCameraPermissionSuccess(permissionState: PermissionState) {
+        when (permissionState) {
+            PermissionState.GRANTED -> {
+                updateState { copy(showCamera = true) }
             }
 
-            is PermissionDeniedException -> {
+            PermissionState.DENIED -> {
                 sendNewEffect(
                     EditUserProfileUIEffect.ShowSnackBarError(
                         errorStringResource = Res.string.error_camera_permission_required
@@ -394,12 +389,23 @@ class EditUserProfileViewModel(
                 )
             }
 
-            else -> sendNewEffect(
-                EditUserProfileUIEffect.ShowSnackBarError(
-                    errorStringResource = mapErrorMessage(throwable)
+            PermissionState.NOT_DETERMINED -> {
+                sendNewEffect(
+                    EditUserProfileUIEffect.ShowSnackBarError(
+                        errorStringResource = Res.string.error_camera_permission_required
+                    )
                 )
-            )
+            }
+
+            PermissionState.DENIED_PERMANENTLY -> {
+                permissionsController.openSettingPage(Permissions.CAMERA)
+            }
         }
+
+    }
+
+    private fun handleCameraPermissionError(throwable: Throwable) {
+        EditUserProfileUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable))
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {

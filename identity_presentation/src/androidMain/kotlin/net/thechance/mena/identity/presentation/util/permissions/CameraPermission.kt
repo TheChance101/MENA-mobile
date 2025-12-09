@@ -18,11 +18,7 @@ internal class CameraPermission(
     private val requiredPermission = Manifest.permission.CAMERA
 
     override fun getPermissionState(): PermissionState {
-        return if (context.checkSelfPermission(requiredPermission) == PackageManager.PERMISSION_GRANTED) {
-            PermissionState.GRANTED
-        } else {
-            PermissionState.DENIED
-        }
+        return permissionManager.checkPermission(requiredPermission)
     }
 
     override fun openSettingPage() {
@@ -33,7 +29,8 @@ internal class CameraPermission(
         val beforeStatus = getPermissionState()
         if (beforeStatus.isGranted()) return PermissionState.GRANTED
 
-        val afterStatus = handlePermissionState(permissionManager.requestPermissions(listOf(requiredPermission)).values)
+        val permissionStates = permissionManager.requestPermissions(listOf(requiredPermission)).values
+        val afterStatus = handlePermissionState(permissionStates)
         return handleAfterAndBeforePermissionState(afterStatus = afterStatus, beforeStatus = beforeStatus)
     }
 }
