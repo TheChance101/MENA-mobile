@@ -8,6 +8,7 @@ import net.thechance.mena.identity.presentation.util.PermissionManager
 import net.thechance.mena.identity.presentation.util.permissions.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
+import net.thechance.mena.identity.presentation.util.permissions.util.handleAfterAndBeforePermissionState
 import net.thechance.mena.identity.presentation.util.permissions.util.handlePermissionState
 
 internal class LocationForegroundPermission(
@@ -27,10 +28,12 @@ internal class LocationForegroundPermission(
         context.openAppSettingsPage()
     }
 
-    override suspend fun requestPermission() {
-        if (getPermissionState().isGranted()) return
-        permissionManager.requestPermissions(fineLocationPermissions)
-            .values.forEach(::handlePermissionState)
+    override suspend fun requestPermission(): PermissionState {
+        val beforeStatus = getPermissionState()
+        if (beforeStatus.isGranted()) return PermissionState.GRANTED
+
+        val afterStatus = handlePermissionState(permissionManager.requestPermissions(fineLocationPermissions).values)
+        return handleAfterAndBeforePermissionState(afterStatus = afterStatus, beforeStatus = beforeStatus)
     }
 }
 
