@@ -1,16 +1,19 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
-import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
 import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import platform.AVFoundation.*
+import platform.AVFoundation.AVAuthorizationStatus
+import platform.AVFoundation.AVAuthorizationStatusAuthorized
+import platform.AVFoundation.AVAuthorizationStatusDenied
+import platform.AVFoundation.AVAuthorizationStatusNotDetermined
+import platform.AVFoundation.AVAuthorizationStatusRestricted
+import platform.AVFoundation.AVCaptureDevice
+import platform.AVFoundation.AVMediaTypeVideo
+import platform.AVFoundation.authorizationStatusForMediaType
+import platform.AVFoundation.requestAccessForMediaType
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 internal class CameraPermission : PermissionController {
 
@@ -23,21 +26,21 @@ internal class CameraPermission : PermissionController {
         openAppSettingsPage()
     }
 
-    override suspend fun requestPermission() {
+    override suspend fun requestPermission(): PermissionState {
         val beforeStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
 
-        if (beforeStatus == AVAuthorizationStatusAuthorized) return
+        if (beforeStatus == AVAuthorizationStatusAuthorized) return PermissionState.GRANTED
 
         return suspendCancellableCoroutine { cont ->
-            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) { granted ->
+            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeVideo) {
                 if (cont.isCancelled) return@requestAccessForMediaType
 
                 val afterStatus = AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeVideo)
-                handleAuthorizationChange(beforeStatus, afterStatus, cont, granted)
-                }
+                cont.resume(handleAuthorizationChange(beforeStatus, afterStatus))
             }
         }
     }
+
 
     private fun AVAuthorizationStatus.toPermissionState(): PermissionState {
         return when (this) {
@@ -52,34 +55,28 @@ internal class CameraPermission : PermissionController {
     private fun handleAuthorizationChange(
         beforeStatus: AVAuthorizationStatus,
         afterStatus: AVAuthorizationStatus,
-        cont: CancellableContinuation<Unit>,
-        granted: Boolean
-    ){
-        when {
-            granted || afterStatus == AVAuthorizationStatusAuthorized -> {
-                cont.resume(Unit)
-            }
+    ): PermissionState {
+
+        return when {
+            afterStatus == AVAuthorizationStatusAuthorized ->
+                PermissionState.GRANTED
 
             beforeStatus == AVAuthorizationStatusNotDetermined &&
-                    afterStatus == AVAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedException())
-            }
+                    afterStatus == AVAuthorizationStatusDenied ->
+                PermissionState.DENIED
 
             beforeStatus == AVAuthorizationStatusDenied &&
-                    afterStatus == AVAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedPermanentlyException())
-            }
+                    afterStatus == AVAuthorizationStatusDenied ->
+                PermissionState.DENIED_PERMANENTLY
 
-            afterStatus == AVAuthorizationStatusRestricted -> {
-                cont.resumeWithException(PermissionDeniedPermanentlyException())
-            }
+            afterStatus == AVAuthorizationStatusRestricted ->
+                PermissionState.DENIED_PERMANENTLY
 
-            afterStatus == AVAuthorizationStatusNotDetermined -> {
-                cont.resumeWithException(PermissionNotDeterminedException())
-            }
+            afterStatus == AVAuthorizationStatusNotDetermined ->
+                PermissionState.DENIED_PERMANENTLY
 
-            else -> {
-                cont.resumeWithException(PermissionDeniedException())
-            }
+            else ->
+                PermissionState.DENIED
+        }
     }
 }

@@ -1,16 +1,18 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
-import platform.CoreLocation.*
+import platform.CoreLocation.CLLocationManager
+import platform.CoreLocation.CLLocationManagerDelegateProtocol
+import platform.CoreLocation.kCLAuthorizationStatusAuthorizedAlways
+import platform.CoreLocation.kCLAuthorizationStatusAuthorizedWhenInUse
+import platform.CoreLocation.kCLAuthorizationStatusDenied
+import platform.CoreLocation.kCLAuthorizationStatusNotDetermined
+import platform.CoreLocation.kCLAuthorizationStatusRestricted
 import platform.darwin.NSObject
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 private typealias AuthorizeStateInt = Int
 
@@ -26,25 +28,26 @@ internal class LocationForegroundPermission : PermissionController {
         openAppSettingsPage()
     }
 
-    override suspend fun requestPermission() {
+    override suspend fun requestPermission(): PermissionState {
         val beforeStatus = locationManager.authorizationStatus()
 
         if (beforeStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
             beforeStatus == kCLAuthorizationStatusAuthorizedAlways
-        ) return
+        ) return PermissionState.GRANTED
+
 
         return suspendCancellableCoroutine { cont ->
             val delegate = object : NSObject(), CLLocationManagerDelegateProtocol {
 
                 override fun locationManagerDidChangeAuthorization(manager: CLLocationManager) {
-                    handleAuthorizationChange(beforeStatus, manager.authorizationStatus(), cont)
+                    cont.resume(handleAuthorizationChange(beforeStatus, manager.authorizationStatus()))
                 }
 
                 override fun locationManager(
                     manager: CLLocationManager,
                     didChangeAuthorizationStatus: Int
                 ) {
-                    handleAuthorizationChange(beforeStatus, didChangeAuthorizationStatus, cont)
+                    cont.resume(handleAuthorizationChange(beforeStatus, didChangeAuthorizationStatus))
                 }
             }
 
@@ -68,32 +71,29 @@ internal class LocationForegroundPermission : PermissionController {
     private fun handleAuthorizationChange(
         beforeStatus: Int,
         afterStatus: Int,
-        cont: CancellableContinuation<Unit>
-    ) {
-        if (!cont.isActive) return
-
-        when {
+    ): PermissionState {
+        return when {
             afterStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
                     afterStatus == kCLAuthorizationStatusAuthorizedAlways -> {
-                cont.resume(Unit)
+                PermissionState.GRANTED
             }
 
             beforeStatus == kCLAuthorizationStatusNotDetermined &&
                     afterStatus == kCLAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedException())
+                PermissionState.DENIED
             }
 
             afterStatus == kCLAuthorizationStatusRestricted -> {
-                cont.resumeWithException(PermissionDeniedPermanentlyException())
+                PermissionState.DENIED_PERMANENTLY
             }
 
             beforeStatus == kCLAuthorizationStatusDenied &&
                     afterStatus == kCLAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedPermanentlyException())
+                PermissionState.DENIED_PERMANENTLY
             }
 
             else -> {
-                cont.resumeWithException(PermissionDeniedException())
+                PermissionState.DENIED
             }
         }
     }

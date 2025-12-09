@@ -1,10 +1,6 @@
 package net.thechance.mena.identity.presentation.util.permissions
 
-import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
-import net.thechance.mena.identity.domain.exception.PermissionNotDeterminedException
 import net.thechance.mena.identity.presentation.util.openAppSettingsPage
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionController
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
@@ -15,7 +11,6 @@ import platform.Photos.PHAuthorizationStatusLimited
 import platform.Photos.PHAuthorizationStatusNotDetermined
 import platform.Photos.PHPhotoLibrary
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 private typealias AuthorizeStateLong = Long
 
@@ -29,18 +24,18 @@ internal class GalleryPermission : PermissionController {
         openAppSettingsPage()
     }
 
-    override suspend fun requestPermission() {
+    override suspend fun requestPermission(): PermissionState {
         val beforeStatus = PHPhotoLibrary.authorizationStatus()
 
         if (beforeStatus == PHAuthorizationStatusAuthorized ||
             beforeStatus == PHAuthorizationStatusLimited
-        ) return
+        ) return PermissionState.GRANTED
 
         return suspendCancellableCoroutine { cont ->
 
             PHPhotoLibrary.requestAuthorization { afterStatus ->
                 if (cont.isCancelled) return@requestAuthorization
-                handleAuthorizationChange(beforeStatus, afterStatus, cont)
+                cont.resume(handleAuthorizationChange(beforeStatus, afterStatus))
             }
         }
     }
@@ -57,30 +52,29 @@ internal class GalleryPermission : PermissionController {
     private fun handleAuthorizationChange(
         beforeStatus: AVAuthorizationStatus,
         afterStatus: AVAuthorizationStatus,
-        cont: CancellableContinuation<Unit>
-    ){
-        when {
+    ): PermissionState{
+        return when {
             afterStatus == PHAuthorizationStatusAuthorized ||
                     afterStatus == PHAuthorizationStatusLimited -> {
-                cont.resume(Unit)
+                PermissionState.GRANTED
             }
 
             beforeStatus == PHAuthorizationStatusNotDetermined &&
                     afterStatus == PHAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedException())
+                PermissionState.DENIED
             }
 
             beforeStatus == PHAuthorizationStatusDenied &&
                     afterStatus == PHAuthorizationStatusDenied -> {
-                cont.resumeWithException(PermissionDeniedPermanentlyException())
+                PermissionState.DENIED_PERMANENTLY
             }
 
             afterStatus == PHAuthorizationStatusNotDetermined -> {
-                cont.resumeWithException(PermissionNotDeterminedException())
+                PermissionState.NOT_DETERMINED
             }
 
             else -> {
-                cont.resumeWithException(PermissionDeniedException())
+                PermissionState.DENIED
             }
         }
     }
