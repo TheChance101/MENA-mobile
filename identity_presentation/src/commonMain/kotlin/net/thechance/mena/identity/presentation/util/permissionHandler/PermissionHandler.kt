@@ -25,8 +25,8 @@ class PermissionHandler : KoinComponent {
         getKoinPermissionController(permission).openSettingPage()
     }
 
-    suspend fun requestPermission(permission: Permissions) {
-            getKoinPermissionController(permission).requestPermission()
+    suspend fun requestPermission(permission: Permissions):PermissionState {
+            return getKoinPermissionController(permission).requestPermission()
         }
     }
 
