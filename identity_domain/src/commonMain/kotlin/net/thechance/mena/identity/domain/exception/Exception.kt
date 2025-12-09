@@ -2,7 +2,6 @@ package net.thechance.mena.identity.domain.exception
 
 abstract class AuthenticationException(message: String) : Exception(message)
 abstract class LocationException(message: String) : Exception(message)
-abstract class Permission(message:String) : Exception(message)
 
 class InvalidCountryCodeException(countryCode: String) : AuthenticationException("country code: $countryCode is not valid or not supported yet")
 
@@ -27,7 +26,4 @@ class UnableToFindLocationException() : LocationException("Unable to find locati
 class CannotOpenSettingsException() : LocationException("Cannot open settings")
 class AddressNotFoundException() : LocationException("Address not found")
 
-class PermissionDeniedException() : Permission("Permission Denied")
-class PermissionDeniedPermanentlyException() : Permission("Permission Denied Permanently")
-class PermissionNotDeterminedException() : Permission("Permission Not Determined")
 
