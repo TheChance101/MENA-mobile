@@ -20,12 +20,11 @@ import kotlinx.coroutines.launch
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.cant_save_qr_code
 import mena.identity_presentation.generated.resources.gallery_permission_required
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.presentation.screen.profile.components.share.utils.clipEntryOf
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -65,36 +64,45 @@ class ShareDialogViewModel(
     private fun requestPermission(byteArray: ByteArray) {
         tryToExecute(
             function = { galleryPermissionHandler.requestPermission(permission = Permissions.GALLERY_IMAGES) },
-            onSuccess = { onPermissionSuccess(byteArray = byteArray) },
+            onSuccess = { permissionState -> onPermissionSuccess(permissionState = permissionState, byteArray = byteArray) },
             onError = ::onPermissionError,
             dispatcher = dispatcher
         )
     }
 
-    private fun onPermissionSuccess(byteArray: ByteArray) {
-        updateState {
-            copy(isLoading = true)
+    private suspend fun onPermissionSuccess(permissionState: PermissionState, byteArray: ByteArray) {
+        when(permissionState) {
+            PermissionState.GRANTED -> {
+                saveImageToGallery(byteArray)
+            }
+
+            PermissionState.NOT_DETERMINED -> {
+                sendNewEffect(ShareQrCodeUIEffect.ShowSnackBarError(Res.string.gallery_permission_required))
+            }
+
+            PermissionState.DENIED -> {
+                sendNewEffect(ShareQrCodeUIEffect.ShowSnackBarError(Res.string.gallery_permission_required))
+            }
+
+            PermissionState.DENIED_PERMANENTLY -> {
+                galleryPermissionHandler.openSettingPage(Permissions.GALLERY_IMAGES)
+            }
         }
+    }
+
+    private fun onPermissionError(throwable: Throwable) {
+        updateState { copy(isLoading = false) }
+        onError(throwable)
+    }
+
+    private fun saveImageToGallery(byteArray: ByteArray){
+        updateState { copy(isLoading = true) }
         tryToExecute(
             function = { imagesRepository.saveImageToGallery(byteArray) },
             onSuccess = { onDownloadSuccess() },
             onError = ::onError,
             dispatcher = dispatcher
         )
-    }
-
-    private fun onPermissionError(throwable: Throwable) {
-        when (throwable) {
-            is PermissionDeniedPermanentlyException -> galleryPermissionHandler.openSettingPage(Permissions.GALLERY_IMAGES)
-            is PermissionDeniedException -> {
-                ShareQrCodeUIEffect.ShowSnackBarError(
-                    Res.string.gallery_permission_required
-                )
-            }
-
-            else -> onError(throwable)
-        }
-
     }
 
     override fun onClickCopyToClipboard(clipboard: Clipboard) {
