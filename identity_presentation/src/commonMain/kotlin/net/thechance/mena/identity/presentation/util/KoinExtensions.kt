@@ -25,6 +25,6 @@ inline fun <reified T : Any, reified P1 : Any, reified P2 : Any, reified P3 : An
 }
 
 internal fun KoinComponent.getKoinPermissionController(permission: Permissions): PermissionController {
-    val permissionDelegate by inject<PermissionController>(named(permission.name))
-    return permissionDelegate
+    val permissionController by inject<PermissionController>(named(permission.name))
+    return permissionController
 }
