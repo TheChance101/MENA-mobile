@@ -12,9 +12,7 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -29,6 +27,7 @@ import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.helper.createUser
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.test.Test
 import kotlin.uuid.ExperimentalUuidApi
@@ -315,7 +314,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `permission Manager should be granted, when onTakeImageCamera is called`() = runTest {
         coEvery {
             permissionsController.requestPermission(any())
-        } just runs
+        } returns PermissionState.GRANTED
 
         viewModel.onTakeImageFromCamera()
         testDispatcher.scheduler.advanceUntilIdle()

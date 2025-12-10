@@ -8,14 +8,11 @@ import assertk.assertions.isInstanceOf
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
@@ -50,7 +47,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onClickDownload should save image when permission is granted`() = runTest(testDispatcher) {
-        coEvery { galleryPermissionHandler.requestPermission(Permissions.GALLERY_IMAGES) } just runs
+        coEvery { galleryPermissionHandler.requestPermission(Permissions.GALLERY_IMAGES) } returns PermissionState.GRANTED
         coEvery { imagesRepository.saveImageToGallery(any()) } returns Unit
 
         viewModel.onClickDownload(byteArray)
@@ -62,7 +59,7 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
     @Test
     fun `onClickDownload should emit OnClickDownload effect when permission is granted and save succeeds`() =
         runTest(testDispatcher) {
-            every { galleryPermissionHandler.checkPermission(Permissions.GALLERY_IMAGES) } returns PermissionState.GRANTED
+            coEvery { galleryPermissionHandler.requestPermission(Permissions.GALLERY_IMAGES) } returns PermissionState.GRANTED
             coEvery { imagesRepository.saveImageToGallery(any()) } returns Unit
 
             viewModel.effect.test {
@@ -74,9 +71,9 @@ class ShareQrCodeViewModelTest : BaseCoroutineTest() {
         }
 
     @Test
-    fun `onClickDownload should open settings when permission throw PermissionDeniedPermanentlyException`() =
+    fun `onClickDownload should open settings when permission handler returns denied permanently`() =
         runTest(testDispatcher) {
-            coEvery { galleryPermissionHandler.requestPermission(Permissions.GALLERY_IMAGES) } throws PermissionDeniedPermanentlyException()
+            coEvery { galleryPermissionHandler.requestPermission(Permissions.GALLERY_IMAGES) } returns PermissionState.DENIED_PERMANENTLY
 
             viewModel.onClickDownload(byteArray)
             testDispatcher.scheduler.advanceUntilIdle()

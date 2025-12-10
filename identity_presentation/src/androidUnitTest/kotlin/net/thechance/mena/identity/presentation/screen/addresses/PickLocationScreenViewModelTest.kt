@@ -11,8 +11,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import net.thechance.mena.identity.domain.exception.PermissionDeniedException
-import net.thechance.mena.identity.domain.exception.PermissionDeniedPermanentlyException
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenViewModel
@@ -20,6 +18,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.shared.Coordina
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toCoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.toEntity
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import org.maplibre.compose.camera.CameraPosition
 import kotlin.test.AfterTest
@@ -68,7 +67,7 @@ class PickLocationScreenViewModelTest {
     fun `onClickGps should update state with current location`() = runTest {
         val coordinates = CoordinatesUiState(28.0, 29.0)
         coEvery { mobileLocationRepository.getCurrentLocation() } returns coordinates.toEntity()
-        coEvery { locationPermissionHandler.checkPermission(Permissions.LOCATION_FOREGROUND) }
+        coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } returns PermissionState.GRANTED
 
         viewModel.onClickGps()
         testDispatcher.scheduler.advanceUntilIdle()
@@ -117,9 +116,9 @@ class PickLocationScreenViewModelTest {
     }
 
     @Test
-    fun `onClickGps should show snackbar with error message when locationPermissionHandler throws`() =
+    fun `onClickGps should show snackbar with error message when locationPermissionHandler returns permission state of denied`() =
         runTest {
-            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } throws PermissionDeniedException()
+            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } returns PermissionState.DENIED
 
             viewModel.onClickGps()
 
@@ -132,9 +131,9 @@ class PickLocationScreenViewModelTest {
         }
 
     @Test
-    fun `onClickGps should navigate to enable location when permission controller throws PermissionDeniedPermanentlyException`() =
+    fun `onClickGps should navigate to enable location when locationPermissionHandler returns permission state of denied permanently `() =
         runTest {
-            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } throws PermissionDeniedPermanentlyException()
+            coEvery { locationPermissionHandler.requestPermission(Permissions.LOCATION_FOREGROUND) } returns PermissionState.DENIED_PERMANENTLY
 
             viewModel.onClickGps()
 

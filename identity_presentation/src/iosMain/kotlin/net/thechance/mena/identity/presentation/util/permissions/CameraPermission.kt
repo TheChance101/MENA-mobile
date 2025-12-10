@@ -73,7 +73,7 @@ internal class CameraPermission : PermissionController {
                 PermissionState.DENIED_PERMANENTLY
 
             afterStatus == AVAuthorizationStatusNotDetermined ->
-                PermissionState.DENIED_PERMANENTLY
+                PermissionState.NOT_DETERMINED
 
             else ->
                 PermissionState.DENIED

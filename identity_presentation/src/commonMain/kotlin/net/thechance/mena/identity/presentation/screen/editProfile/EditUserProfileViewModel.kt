@@ -405,7 +405,7 @@ class EditUserProfileViewModel(
     }
 
     private fun handleCameraPermissionError(throwable: Throwable) {
-        EditUserProfileUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable))
+        sendNewEffect(EditUserProfileUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable)))
     }
 
     private fun mapErrorMessage(throwable: Throwable): StringResource {
