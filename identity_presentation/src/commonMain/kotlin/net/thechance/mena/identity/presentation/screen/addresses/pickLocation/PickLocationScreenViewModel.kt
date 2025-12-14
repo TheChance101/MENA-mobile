@@ -8,6 +8,7 @@ import mena.identity_presentation.generated.resources.error_location_is_turned_o
 import mena.identity_presentation.generated.resources.location_permission_required
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.LocationException
+import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
@@ -170,7 +171,14 @@ class PickLocationScreenViewModel(
 
     private fun onCurrentLocationError(throwable: Throwable) {
         updateState { copy(isGpsButtonLoading = false) }
-        PickLocationScreenUIEffect.ShowSnackBarError( errorStringResource = Res.string.error_location_is_turned_off)
+        when(throwable){
+            is UnableToFindLocationException ->{
+                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError( errorStringResource = Res.string.error_location_is_turned_off))
+            }
+            else -> {
+                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable)))
+            }
+        }
     }
 
 
