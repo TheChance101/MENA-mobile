@@ -4,18 +4,16 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import mena.identity_presentation.generated.resources.Res
-import mena.identity_presentation.generated.resources.error_location_is_turned_off
 import mena.identity_presentation.generated.resources.location_permission_required
 import net.thechance.mena.identity.domain.entity.AddressType
 import net.thechance.mena.identity.domain.exception.LocationException
-import net.thechance.mena.identity.domain.exception.UnableToFindLocationException
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapLocationErrorToMessage
-import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect.*
+import net.thechance.mena.identity.presentation.screen.addresses.pickLocation.PickLocationScreenUIEffect.ShowSnackBarError
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.handleLocationException
@@ -171,14 +169,7 @@ class PickLocationScreenViewModel(
 
     private fun onCurrentLocationError(throwable: Throwable) {
         updateState { copy(isGpsButtonLoading = false) }
-        when(throwable){
-            is UnableToFindLocationException ->{
-                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError( errorStringResource = Res.string.error_location_is_turned_off))
-            }
-            else -> {
-                sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable)))
-            }
-        }
+        sendNewEffect(PickLocationScreenUIEffect.ShowSnackBarError(errorStringResource = mapErrorMessage(throwable)))
     }
 
 
