@@ -3,8 +3,8 @@ package net.thechance.mena.identity.presentation.mapper
 import mena.identity_presentation.generated.resources.Res
 import mena.identity_presentation.generated.resources.error_address_not_found
 import mena.identity_presentation.generated.resources.error_failed_to_open_settings
+import mena.identity_presentation.generated.resources.error_location_is_turned_off
 import mena.identity_presentation.generated.resources.error_location_permission_denied
-import mena.identity_presentation.generated.resources.error_permission_not_granted
 import mena.identity_presentation.generated.resources.error_something_went_wrong
 import net.thechance.mena.identity.presentation.base.errorState.LocationErrorState
 import org.junit.Test
@@ -27,7 +27,7 @@ class LocationErrorMapperTest {
 
         val result = mapLocationErrorToMessage(error)
 
-        assertEquals(Res.string.error_location_permission_denied, result)
+        assertEquals(Res.string.error_location_is_turned_off, result)
     }
 
     @Test
