@@ -21,6 +21,8 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreenViewModel
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
