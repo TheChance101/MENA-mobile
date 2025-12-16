@@ -52,6 +52,6 @@ fun UserUIState.toJsonString():String{
     return Json.encodeToString(this)
 }
 
-fun convertStringToUserUIState(jsonString:String):UserUIState{
+fun convertJsonStringToUserUIState(jsonString:String):UserUIState{
     return Json.decodeFromString(jsonString)
 }

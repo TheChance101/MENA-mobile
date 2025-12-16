@@ -44,7 +44,6 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -57,8 +56,7 @@ import net.thechance.mena.identity.presentation.screen.profile.editProfile.compo
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.dialog.GetImageDialog
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.dialog.ProfileSettingsDialog
 import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperScreen
-import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
-import net.thechance.mena.identity.presentation.screen.profile.shared.convertStringToUserUIState
+import net.thechance.mena.identity.presentation.screen.profile.shared.convertJsonStringToUserUIState
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -77,7 +75,7 @@ data class EditUserProfileScreen(
     @Composable
     override fun Content() {
         val viewModel: EditUserProfileViewModel = getScreenModel(parameters = {
-            parametersOf(convertStringToUserUIState(userUIStateJsonString))
+            parametersOf(convertJsonStringToUserUIState(userUIStateJsonString))
         })
         InitScreen(viewModel)
     }
