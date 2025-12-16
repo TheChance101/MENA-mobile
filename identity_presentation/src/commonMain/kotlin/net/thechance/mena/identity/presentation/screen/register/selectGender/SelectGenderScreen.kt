@@ -24,12 +24,13 @@ import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnac
 import net.thechance.mena.identity.presentation.screen.register.phoneEntry.RegisterPhoneEntryScreen
 import net.thechance.mena.identity.presentation.screen.register.selectGender.components.SessionExpiredDialog
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.convertJsonStringToRegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
 class SelectGenderScreen(
-    private val registerUIState: RegisterUIState
+    private val registerUIStateJsonString: String
 ) : BaseScreen<
         SelectGenderScreenViewModel,
         SelectGenderScreenUIState,
@@ -38,7 +39,7 @@ class SelectGenderScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(convertJsonStringToRegisterUIState(registerUIStateJsonString)) }))
     }
 
     @Composable

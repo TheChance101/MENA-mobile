@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.profile.profileMainScreen
 
-import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
 import org.jetbrains.compose.resources.StringResource
 

@@ -3,9 +3,6 @@ package net.thechance.mena.identity.presentation.screen.profile.editProfile
 import androidx.compose.ui.graphics.ImageBitmap
 import kotlinx.datetime.LocalDate
 import net.thechance.mena.identity.domain.entity.Gender
-import net.thechance.mena.identity.domain.entity.User
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 data class EditUserProfileUIState(
     val username: String = "",

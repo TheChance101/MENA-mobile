@@ -13,12 +13,13 @@ import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
 import org.jetbrains.compose.resources.StringResource
 
 class EnterNameViewModel(
     private val registerRepository: RegisterRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val phoneNumber: PhoneNumber,
+    private val registerUIState: RegisterUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<EnterNameUIState, EnterNameUIEffect>(EnterNameUIState()),
     EnterNameInteractionListener {
@@ -52,7 +53,7 @@ class EnterNameViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) },
             onSuccess = ::handleSavedDraft,
             onError = {},
             dispatcher = dispatcher
@@ -75,8 +76,8 @@ class EnterNameViewModel(
     private fun saveDraft(update: (RegistrationDraft) -> RegistrationDraft) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(phoneNumber, update(draft))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(registerUIState.phoneNumber.toPhoneNumber(), update(draft))
             },
             onSuccess = {},
             onError = {},
@@ -109,7 +110,7 @@ class EnterNameViewModel(
 
     private fun createNavigateToPasswordEffect() = EnterNameUIEffect.NavigateToPassword(
         registerUIState = RegisterUIState(
-            phoneNumber = phoneNumber,
+            phoneNumber = registerUIState.phoneNumber,
             firstName = state.value.firstName,
             lastName = state.value.lastName,
             username = state.value.username

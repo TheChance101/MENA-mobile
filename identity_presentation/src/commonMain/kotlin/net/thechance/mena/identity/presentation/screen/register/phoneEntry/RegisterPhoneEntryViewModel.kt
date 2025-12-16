@@ -14,6 +14,7 @@ import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.PhoneNumberUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 
@@ -102,7 +103,7 @@ class RegisterPhoneEntryViewModel(
     private fun createNavigateToOTPEffect(): RegisterPhoneEntryUIEffect.NavigateToOTP {
         return RegisterPhoneEntryUIEffect.NavigateToOTP(
             registerUIState = RegisterUIState(
-                phoneNumber = PhoneNumber(
+                phoneNumber = PhoneNumberUIState(
                     countryCode = state.value.currentCountry.callingCode,
                     localNumber = state.value.phoneNumber
                 ),

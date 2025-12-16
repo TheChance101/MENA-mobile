@@ -13,6 +13,7 @@ import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
 import org.jetbrains.compose.resources.StringResource
 
 class RegisterOtpViewModel(
@@ -47,7 +48,7 @@ class RegisterOtpViewModel(
 
     private fun createNavigateToEnterNameEffect(): RegisterOtpUIEffect.NavigateToEnterName {
         return RegisterOtpUIEffect.NavigateToEnterName(
-            phoneNumber = registerUIState.phoneNumber
+            registerUIState = registerUIState
         )
     }
 
@@ -82,7 +83,7 @@ class RegisterOtpViewModel(
 
     private suspend fun requestNewOTP() {
         registerRepository.requestOTP(
-            phoneNumber = registerUIState.phoneNumber,
+            phoneNumber = registerUIState.phoneNumber.toPhoneNumber(),
             countryCodeName = registerUIState.countryCode
         )
     }
