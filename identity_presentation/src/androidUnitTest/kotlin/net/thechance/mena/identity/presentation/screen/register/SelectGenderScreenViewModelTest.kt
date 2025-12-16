@@ -17,6 +17,7 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
 import org.junit.Before
@@ -69,7 +70,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             val effect = awaitItem()
             assert(effect is SelectGenderScreenUIEffect.NavigateToUploadProfileImage)
             val navigateEffect = effect as SelectGenderScreenUIEffect.NavigateToUploadProfileImage
-            assert(navigateEffect.authTokens == expectedTokens)
+            assert(navigateEffect.authUiState.authTokens?.toAuthenticationTokens() == expectedTokens)
         }
     }
 
