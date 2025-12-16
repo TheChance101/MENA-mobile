@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.register.otp
 
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 

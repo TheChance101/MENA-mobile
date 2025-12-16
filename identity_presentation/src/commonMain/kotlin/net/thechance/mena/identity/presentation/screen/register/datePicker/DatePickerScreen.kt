@@ -19,7 +19,6 @@ import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.convertJsonStringToRegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterJsonString
 import org.jetbrains.compose.resources.stringResource
