@@ -20,7 +20,7 @@ import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnac
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
-import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
+import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.koin.compose.koinInject

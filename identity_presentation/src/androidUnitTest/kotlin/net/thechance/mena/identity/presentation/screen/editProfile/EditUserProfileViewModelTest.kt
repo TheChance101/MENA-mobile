@@ -26,6 +26,9 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.helper.createUser
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.EditUserProfileUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.EditUserProfileViewModel
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.UserUIState
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder

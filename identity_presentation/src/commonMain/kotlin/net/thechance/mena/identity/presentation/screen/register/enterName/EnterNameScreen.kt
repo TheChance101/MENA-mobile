@@ -31,8 +31,8 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
-import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.AtPrefixTransformation
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.ProfileEditText
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordScreen
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource

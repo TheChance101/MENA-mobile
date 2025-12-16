@@ -6,6 +6,9 @@ import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperComponentEffect
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperComponentViewModel
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperUiState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

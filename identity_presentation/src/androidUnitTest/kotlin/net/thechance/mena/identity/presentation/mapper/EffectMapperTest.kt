@@ -5,7 +5,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profileMainScreen.ProfileScreenUIEffect
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi

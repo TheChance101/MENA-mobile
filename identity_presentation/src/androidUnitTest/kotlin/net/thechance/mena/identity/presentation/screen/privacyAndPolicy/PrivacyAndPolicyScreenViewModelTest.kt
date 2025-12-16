@@ -14,6 +14,8 @@ import net.thechance.mena.identity.domain.model.PrivacyAndPolicy
 import net.thechance.mena.identity.domain.model.Section
 import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.privacyAndPolicy.PrivacyAndPolicyScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.privacyAndPolicy.PrivacyAndPolicyScreenViewModel
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertTrue
