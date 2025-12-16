@@ -20,7 +20,7 @@ import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.junit.Before
 import org.junit.Test

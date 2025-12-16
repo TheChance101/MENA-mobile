@@ -13,8 +13,8 @@ import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 

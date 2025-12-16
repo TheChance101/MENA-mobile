@@ -17,9 +17,9 @@ import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToM
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterRequest
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterRequest
 import org.jetbrains.compose.resources.StringResource
 
 class SelectGenderScreenViewModel(

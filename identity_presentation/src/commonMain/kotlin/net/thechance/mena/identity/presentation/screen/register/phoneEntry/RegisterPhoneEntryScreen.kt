@@ -35,7 +35,7 @@ import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPick
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterJsonString
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

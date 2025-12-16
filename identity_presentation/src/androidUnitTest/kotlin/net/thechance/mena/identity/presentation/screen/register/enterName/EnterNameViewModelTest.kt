@@ -9,8 +9,8 @@ import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.PhoneNumberUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.PhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

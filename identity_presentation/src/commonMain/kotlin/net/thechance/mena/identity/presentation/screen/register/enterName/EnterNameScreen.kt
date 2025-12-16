@@ -34,10 +34,10 @@ import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnac
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.AtPrefixTransformation
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.ProfileEditText
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.convertJsonStringToRegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterJsonString
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToRegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

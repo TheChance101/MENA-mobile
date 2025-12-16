@@ -20,8 +20,8 @@ import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.jetbrains.compose.resources.StringResource
 

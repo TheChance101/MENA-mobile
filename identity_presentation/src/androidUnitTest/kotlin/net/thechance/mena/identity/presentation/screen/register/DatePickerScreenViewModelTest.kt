@@ -14,8 +14,8 @@ import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreenViewModel
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

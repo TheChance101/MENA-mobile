@@ -1,6 +1,6 @@
 package net.thechance.mena.identity.presentation.screen.register.phoneEntry
 
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface RegisterPhoneEntryUIEffect {

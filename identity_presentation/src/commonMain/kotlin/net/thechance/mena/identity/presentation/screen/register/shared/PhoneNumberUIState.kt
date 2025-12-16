@@ -1,4 +1,4 @@
-package net.thechance.mena.identity.presentation.screen.register.shared.uiState
+package net.thechance.mena.identity.presentation.screen.register.shared
 
 import kotlinx.serialization.Serializable
 import net.thechance.mena.identity.domain.entity.PhoneNumber

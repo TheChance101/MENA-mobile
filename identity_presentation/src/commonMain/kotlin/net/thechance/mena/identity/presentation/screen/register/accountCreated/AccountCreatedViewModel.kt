@@ -9,7 +9,7 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
 
 class AccountCreatedViewModel(
     private val authenticationRepository: AuthenticationRepository,

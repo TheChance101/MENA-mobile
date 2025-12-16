@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.PhoneNumberUIState
 
 @Serializable
 data class AuthUiState(
