@@ -22,6 +22,10 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyA
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIStateJsonString
+import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.koin.compose.koinInject
 
@@ -149,11 +153,18 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
 
         return if (imageUploadCompleted) {
-            AccountCreatedScreen(authTokens = authTokens, phoneNumber = lastPhoneNumber)
+            AccountCreatedScreen(
+                authTokensUiStateJsonString = AuthUiState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
+                ).toAuthUIStateJsonString()
+            )
         } else {
             UploadProfileImageScreen(
-                authTokens = authTokens,
-                phoneNumber = lastPhoneNumber
+                authTokensUiStateJsonString = AuthUiState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
+                ).toAuthUIStateJsonString()
             )
         }
     }

@@ -24,8 +24,8 @@ import net.thechance.mena.identity.presentation.screen.register.shared.uiState.t
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-class DatePickerScreen(
-    private val registerUIStateJsonString: String
+data class DatePickerScreen(
+    val registerUIStateJsonString: String
 ) :
     BaseScreen<
             DatePickerScreenViewModel,
