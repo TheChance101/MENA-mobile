@@ -15,7 +15,7 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
@@ -88,7 +88,7 @@ class SelectGenderScreenViewModel(
     private fun navigateToUploadScreen(authTokens: AuthenticationTokens) {
         sendNewEffect(
             SelectGenderScreenUIEffect.NavigateToUploadProfileImage(
-                AuthUiState(
+                AuthUIState(
                     authTokens = authTokens.toAuthUIState(),
                     phoneNumber = registerUIState.phoneNumber
                 )

@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 
 @Serializable
-data class AuthUiState(
+data class AuthUIState(
     val authTokens: AuthenticationTokensUiState? = null,
     val phoneNumber: PhoneNumberUIState? = null
 ){
@@ -17,22 +17,22 @@ data class AuthUiState(
     )
 }
 
-fun AuthUiState.toAuthUIStateJsonString(): String{
+fun AuthUIState.toAuthUIStateJsonString(): String{
     return Json.encodeToString(this)
 }
 
-fun AuthenticationTokens.toAuthUIState(): AuthUiState.AuthenticationTokensUiState {
-    return AuthUiState.AuthenticationTokensUiState(
+fun AuthenticationTokens.toAuthUIState(): AuthUIState.AuthenticationTokensUiState {
+    return AuthUIState.AuthenticationTokensUiState(
             accessToken = accessToken,
             refreshToken = refreshToken
     )
 }
 
-fun convertJsonStringToAuthUIState(jsonString: String): AuthUiState {
+fun convertJsonStringToAuthUIState(jsonString: String): AuthUIState {
     return Json.decodeFromString(jsonString)
 }
 
-fun AuthUiState.AuthenticationTokensUiState.toAuthenticationTokens(): AuthenticationTokens {
+fun AuthUIState.AuthenticationTokensUiState.toAuthenticationTokens(): AuthenticationTokens {
     return AuthenticationTokens(
         accessToken = accessToken,
         refreshToken = refreshToken

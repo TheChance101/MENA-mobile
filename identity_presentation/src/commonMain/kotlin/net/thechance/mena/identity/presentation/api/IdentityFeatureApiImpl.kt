@@ -22,7 +22,7 @@ import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyA
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIStateJsonString
 import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
@@ -154,14 +154,14 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
 
         return if (imageUploadCompleted) {
             AccountCreatedScreen(
-                authTokensUiStateJsonString = AuthUiState(
+                authTokensUiStateJsonString = AuthUIState(
                     authTokens = authTokens.toAuthUIState(),
                     phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
                 ).toAuthUIStateJsonString()
             )
         } else {
             UploadProfileImageScreen(
-                authTokensUiStateJsonString = AuthUiState(
+                authTokensUiStateJsonString = AuthUIState(
                     authTokens = authTokens.toAuthUIState(),
                     phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
                 ).toAuthUIStateJsonString()

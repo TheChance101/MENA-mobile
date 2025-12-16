@@ -7,14 +7,14 @@ import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
 import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
 
 class AccountCreatedViewModel(
     private val authenticationRepository: AuthenticationRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val authUiState: AuthUiState,
+    private val authUiState: AuthUIState,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : BaseScreenModel<AccountCreatedUIState, AccountCreatedUIEffect>
     (AccountCreatedUIState),

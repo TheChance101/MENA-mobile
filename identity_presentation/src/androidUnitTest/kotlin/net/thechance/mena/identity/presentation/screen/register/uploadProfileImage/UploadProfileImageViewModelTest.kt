@@ -17,7 +17,7 @@ import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
 import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
@@ -53,7 +53,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = authTokens.toAuthUIState(),
                 phoneNumber = phoneNumber.toPhoneNumberUIState()
             ),
@@ -79,7 +79,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = authTokens.toAuthUIState(),
                 phoneNumber = null
             ),
@@ -159,7 +159,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = null,
                 phoneNumber = phoneNumber.toPhoneNumberUIState()
             ),
@@ -269,7 +269,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = null,
                 phoneNumber = phoneNumber.toPhoneNumberUIState()
             ),
@@ -292,7 +292,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = authTokens.toAuthUIState(),
                 phoneNumber = null
             ),
@@ -355,7 +355,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authUiState = AuthUiState(
+            authUiState = AuthUIState(
                 authTokens = authTokens.toAuthUIState(),
                 phoneNumber = null
             ),

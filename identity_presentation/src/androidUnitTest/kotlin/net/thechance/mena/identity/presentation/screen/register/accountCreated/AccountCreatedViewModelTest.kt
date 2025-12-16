@@ -10,7 +10,7 @@ import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import org.junit.Before
 import org.junit.Test
@@ -27,8 +27,8 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            AuthUiState(
-                authTokens = AuthUiState.AuthenticationTokensUiState(
+            AuthUIState(
+                authTokens = AuthUIState.AuthenticationTokensUiState(
                     accessToken = "test_access_token",
                     refreshToken = "test_refresh_token"
                 ),
@@ -71,7 +71,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            AuthUiState(
+            AuthUIState(
                 authTokens = null,
                 phoneNumber = testPhoneNumber.toPhoneNumberUIState()
             ),
@@ -89,7 +89,7 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            AuthUiState(
+            AuthUIState(
                 authTokens = null,
                 phoneNumber = testPhoneNumber.toPhoneNumberUIState()
             ),

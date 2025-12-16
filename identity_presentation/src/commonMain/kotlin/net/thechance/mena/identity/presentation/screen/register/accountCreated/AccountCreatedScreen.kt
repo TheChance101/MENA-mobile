@@ -29,7 +29,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.register.shared.AuthUiState
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToAuthUIState
 import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIStateJsonString
 import org.jetbrains.compose.resources.painterResource
@@ -126,7 +126,7 @@ private fun SuccessMessageBlock(
 private fun Preview() {
     MenaTheme {
         AccountCreatedScreen(
-            authTokensUiStateJsonString = AuthUiState().toAuthUIStateJsonString()
+            authTokensUiStateJsonString = AuthUIState().toAuthUIStateJsonString()
         ).OnRender(
             state = AccountCreatedUIState,
             listener = object : AccountCreatedInteractionListener {
