@@ -57,20 +57,16 @@ import net.thechance.mena.identity.presentation.screen.profile.editProfile.compo
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.dialog.GetImageDialog
 import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.dialog.ProfileSettingsDialog
 import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperScreen
+import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
+import net.thechance.mena.identity.presentation.screen.profile.shared.convertStringToUserUIState
 import net.thechance.mena.identity.presentation.util.rememberCameraPicker
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
-class EditUserProfileScreen(
-    private val id: String,
-    private val firstName: String,
-    private val lastName: String,
-    private val profileImageUrl: String,
-    private val username: String,
-    private val birthDate: String,
-    private val gender: Gender
+data class EditUserProfileScreen(
+    val userUIStateJsonString: String
 ) : BaseScreen<
         EditUserProfileViewModel,
         EditUserProfileUIState,
@@ -81,17 +77,7 @@ class EditUserProfileScreen(
     @Composable
     override fun Content() {
         val viewModel: EditUserProfileViewModel = getScreenModel(parameters = {
-            parametersOf(
-                UserUIState(
-                    id = id,
-                    firstName = firstName,
-                    lastName = lastName,
-                    profileImageUrl = profileImageUrl,
-                    username = username,
-                    birthDate = birthDate,
-                    gender = gender
-                )
-            )
+            parametersOf(convertStringToUserUIState(userUIStateJsonString))
         })
         InitScreen(viewModel)
     }

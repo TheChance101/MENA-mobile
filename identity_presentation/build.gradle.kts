@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kover)
     alias(libs.plugins.cocoapods)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 kotlin {

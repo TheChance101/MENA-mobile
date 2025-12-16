@@ -29,6 +29,8 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
+import net.thechance.mena.identity.presentation.screen.profile.shared.toUser
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions

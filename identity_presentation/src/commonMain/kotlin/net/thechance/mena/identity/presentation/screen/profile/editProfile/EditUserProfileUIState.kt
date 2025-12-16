@@ -30,26 +30,3 @@ data class EditUserProfileUIState(
         NONE
     }
 }
-
-data class UserUIState(
-    val id: String,
-    val firstName: String,
-    val lastName: String,
-    val profileImageUrl: String,
-    val username: String,
-    val birthDate: String,
-    val gender: Gender
-)
-
-@OptIn(ExperimentalUuidApi::class)
-fun UserUIState.toUser(): User {
-    return User(
-        id = Uuid.parse(id),
-        username = username,
-        firstName = firstName,
-        lastName = lastName,
-        profileImageUrl = profileImageUrl,
-        birthDate = LocalDate.parse(birthDate),
-        gender = gender
-    )
-}

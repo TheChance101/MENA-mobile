@@ -2,7 +2,10 @@ package net.thechance.mena.identity.presentation.screen.profile.profileMainScree
 
 import net.thechance.mena.identity.domain.util.AppLanguage
 import net.thechance.mena.identity.domain.util.AppTheme
+import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 data class ProfileScreenUIState(
     val fullName: String = "",
     val userName: String = "",
@@ -16,7 +19,8 @@ data class ProfileScreenUIState(
     val currentLanguage: AppLanguage = AppLanguage.DEFAULT,
     val currentTheme: AppTheme = AppTheme.SYSTEM,
     val languageDialogUiState: LanguageDialogUiState = LanguageDialogUiState(),
-    val themeDialogUiState: ThemeDialogUiState = ThemeDialogUiState()
+    val themeDialogUiState: ThemeDialogUiState = ThemeDialogUiState(),
+    val userUiState: UserUIState = UserUIState()
 )
 
 data class LanguageDialogUiState(

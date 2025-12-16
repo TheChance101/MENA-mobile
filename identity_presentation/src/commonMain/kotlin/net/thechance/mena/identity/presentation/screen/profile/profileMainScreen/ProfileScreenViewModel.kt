@@ -15,6 +15,7 @@ import net.thechance.mena.identity.presentation.mapper.createNavigateToEditProfi
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.components.share.ShareDialogViewModel.Companion.SHARE_URL
+import net.thechance.mena.identity.presentation.screen.profile.shared.toUserUIState
 import org.jetbrains.compose.resources.StringResource
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -23,13 +24,8 @@ class ProfileScreenViewModel(
     private val settingsRepository: SettingsRepository,
     val appVersion: String,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) :
-    BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>(
-        ProfileScreenUIState()
-    ),
+) : BaseScreenModel<ProfileScreenUIState, ProfileScreenUIEffect>(ProfileScreenUIState()),
     ProfileScreenInteractionListener {
-
-    private var userInfo: User? = null
 
     init {
         getUserInfo()
@@ -75,10 +71,10 @@ class ProfileScreenViewModel(
                 fullName = "${user.firstName.trim()} ${user.lastName.trim()}",
                 profileImageUrl = user.profileImageUrl,
                 isSuccess = true,
-                inviteLinkUrl = "$SHARE_URL${user.id}"
+                inviteLinkUrl = "$SHARE_URL${user.id}",
+                userUiState = user.toUserUIState()
             )
         }
-        userInfo = user
     }
 
     private fun onUserInfoError(throwable: Throwable) {
@@ -93,7 +89,7 @@ class ProfileScreenViewModel(
     override fun onEditProfileInfoClicked() =
         sendNewEffect(
             createNavigateToEditProfileEffect(
-                userInfo = userInfo
+                userInfo = state.value.userUiState
             )
         )
 

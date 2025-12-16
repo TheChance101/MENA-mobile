@@ -48,6 +48,7 @@ import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.components.ThemeDialog
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.components.share.ShareQrCode
 import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.components.share.utils.ShareSheet
+import net.thechance.mena.identity.presentation.screen.profile.shared.toJsonString
 import org.jetbrains.compose.resources.stringResource
 import kotlin.uuid.ExperimentalUuidApi
 
@@ -208,15 +209,7 @@ class ProfileScreen : BaseScreen<
         when (effect) {
             is ProfileScreenUIEffect.NavigateToEditProfileScreen -> {
                 navigator.push(
-                    EditUserProfileScreen(
-                        id = effect.userInfo?.id.toString(),
-                        firstName = effect.userInfo?.firstName.toString(),
-                        lastName = effect.userInfo?.lastName.toString(),
-                        profileImageUrl = effect.userInfo?.profileImageUrl.toString(),
-                        username = effect.userInfo?.username.toString(),
-                        birthDate = effect.userInfo?.birthDate.toString(),
-                        gender = effect.userInfo?.gender!!
-                    )
+                    EditUserProfileScreen(userUIStateJsonString = effect.userInfo.toJsonString())
                 )
             }
 
