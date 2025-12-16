@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.thechance.mena.identity.domain.entity.Gender
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.RegisterRequest
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -25,12 +24,6 @@ data class RegisterUIState (
         .toLocalDateTime(TimeZone.currentSystemDefault()).date,
 )
 
-@Serializable
-data class PhoneNumberUIState(
-    val countryCode: String = "",
-    val localNumber: String = ""
-)
-
 fun RegisterUIState.toRegisterRequest(gender: Gender):RegisterRequest {
     return RegisterRequest(
         phoneNumber = phoneNumber.toPhoneNumber(),
@@ -40,20 +33,6 @@ fun RegisterUIState.toRegisterRequest(gender: Gender):RegisterRequest {
         birthDate = birthDate,
         gender = gender,
         password = password
-    )
-}
-
-fun PhoneNumberUIState.toPhoneNumber(): PhoneNumber {
-    return PhoneNumber(
-        countryCode = countryCode,
-        localNumber = localNumber
-    )
-}
-
-fun PhoneNumber.toPhoneNumberUIState(): PhoneNumberUIState {
-    return PhoneNumberUIState(
-        countryCode = countryCode,
-        localNumber = localNumber
     )
 }
 
