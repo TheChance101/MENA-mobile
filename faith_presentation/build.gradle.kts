@@ -63,6 +63,7 @@ kotlin {
             implementation(libs.krop.core)
             implementation(libs.kotlinx.datetime)
             implementation(libs.napier)
+            implementation(libs.squircle.shape)
 
             // maps
             implementation(libs.maplibre.compose)

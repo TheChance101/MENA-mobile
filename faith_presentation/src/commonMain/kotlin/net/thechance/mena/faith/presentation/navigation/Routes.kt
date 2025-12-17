@@ -53,7 +53,6 @@ internal sealed interface Route {
     @Serializable
     data object UserAddresses : Route
 
-    @S
 
     @Serializable
     data class SearchRoute(
