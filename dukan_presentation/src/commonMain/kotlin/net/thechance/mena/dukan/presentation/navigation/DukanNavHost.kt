@@ -3,6 +3,8 @@ package net.thechance.mena.dukan.presentation.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +29,8 @@ import net.thechance.mena.dukan.presentation.screen.search.SearchScreen
 import net.thechance.mena.dukan.presentation.screen.shelfDetails.ShelfDetailsScreen
 import net.thechance.mena.dukan.presentation.util.LocalImageLoader
 import net.thechance.mena.dukan.presentation.util.provideImageLoader
+import net.thechance.mena.identity.domain.service.AppThemeService
+import net.thechance.mena.identity.domain.util.AppTheme
 import net.thechance.mena.wallet.api.WalletApi
 import org.koin.compose.koinInject
 import kotlin.uuid.ExperimentalUuidApi
@@ -38,10 +42,14 @@ import net.thechance.mena.identity.api.IdentityFeatureApi as IdentityApi
 fun DukanNavHost(
     walletApi: WalletApi = koinInject(),
     identityApi: IdentityApi = koinInject(),
+    identityThemeService: AppThemeService = koinInject(),
     updateBottomNavigationVisibility: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
     val coilImageLoader = provideImageLoader()
+
+    val currentTheme by identityThemeService.observeAppTheme().collectAsStateWithLifecycle()
+    val isDarkTheme = currentTheme == AppTheme.DARK
 
     LaunchedEffect(Unit) {
         navController.currentBackStack.collectLatest {
@@ -54,7 +62,9 @@ fun DukanNavHost(
     }
 
     CompositionLocalProvider(
-        LocalNavController provides navController, LocalImageLoader provides coilImageLoader
+        LocalNavController provides navController,
+        LocalImageLoader provides coilImageLoader,
+        LocalDarkTheme provides isDarkTheme
     ) {
         NavHost(
             navController = navController,

@@ -11,14 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
-import dev.icerock.moko.permissions.compose.BindEffect
-import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.dialogs.compose.util.toImageBitmap
@@ -47,7 +44,7 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.GregorianDatePicker
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -67,27 +64,36 @@ import org.koin.core.parameter.parametersOf
 import kotlin.uuid.ExperimentalUuidApi
 
 class EditUserProfileScreen(
-    val userInfo: User?
+    private val id: String,
+    private val firstName: String,
+    private val lastName: String,
+    private val profileImageUrl: String,
+    private val username: String,
+    private val birthDate: String,
+    private val gender: Gender
 ) : BaseScreen<
-    EditUserProfileViewModel,
-    EditUserProfileUIState,
-    EditUserProfileUIEffect,
-    EditUserProfileInteractionListener>() {
+        EditUserProfileViewModel,
+        EditUserProfileUIState,
+        EditUserProfileUIEffect,
+        EditUserProfileInteractionListener>() {
 
     @OptIn(ExperimentalUuidApi::class)
     @Composable
     override fun Content() {
-        val factory = rememberPermissionsControllerFactory()
-        val controller = remember(factory) { factory.createPermissionsController() }
-        val viewModel: EditUserProfileViewModel =
-            getScreenModel(parameters = { parametersOf(controller) })
-
-        LaunchedEffect(Unit) {
-            viewModel.getInitialUserInfo(user = userInfo)
-        }
-
+        val viewModel: EditUserProfileViewModel = getScreenModel(parameters = {
+            parametersOf(
+                UserUIState(
+                    id = id,
+                    firstName = firstName,
+                    lastName = lastName,
+                    profileImageUrl = profileImageUrl,
+                    username = username,
+                    birthDate = birthDate,
+                    gender = gender
+                )
+            )
+        })
         InitScreen(viewModel)
-        BindEffect(viewModel.permissionsController)
     }
 
     @Composable

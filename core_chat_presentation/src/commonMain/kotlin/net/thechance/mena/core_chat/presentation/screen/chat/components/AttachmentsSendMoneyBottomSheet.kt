@@ -28,6 +28,7 @@ fun ScaffoldScope.attachmentsSendMoneyBottomSheet(
     isVisible: Boolean,
     value: String,
     isLoading: Boolean,
+    isSendMoneyButtonEnabled: Boolean,
     attachmentsInteractionListener: AttachmentsSendMoneyInteractionListener,
     modifier: Modifier = Modifier,
 ) {
@@ -79,7 +80,7 @@ fun ScaffoldScope.attachmentsSendMoneyBottomSheet(
                     text = stringResource(Res.string.send),
                     onClick = attachmentsInteractionListener::onSendClicked,
                     modifier = Modifier.padding(bottom = Theme.spacing._24).fillMaxWidth(),
-                    isEnabled = value.isNotEmpty(),
+                    isEnabled = isSendMoneyButtonEnabled,
                     isLoading = isLoading
                 )
             }

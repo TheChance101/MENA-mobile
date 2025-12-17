@@ -15,4 +15,7 @@ interface AddressDao {
 
     @Query("DELETE FROM Address WHERE isActive = 1")
     suspend fun deleteActiveAddress()
+
+    @Query("DELETE FROM Address")
+    suspend fun clearAddress()
 }

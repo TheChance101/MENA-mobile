@@ -14,6 +14,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.thechance.mena.dukan.data.dto.PageResponseDto
@@ -31,11 +34,17 @@ import net.thechance.mena.dukan.data.dto.shelf.ShelfDto
 import net.thechance.mena.dukan.data.repository.DukanDiscoveryRepositoryImpl
 import net.thechance.mena.dukan.data.repository.DukanManagementRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
+import net.thechance.mena.dukan.data.repository.mockEngine.MockDukanApiClient
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
+import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.model.AddressInput
+import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
+import net.thechance.mena.identity.domain.repository.AuthenticationRepository
+import net.thechance.mena.identity.domain.service.AuthorizationService
 import net.thechance.mena.identity.domain.service.LocationService
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -277,7 +286,7 @@ fun MockRequestHandleScope.defaultTopDiscountedResponse() = respond(
 fun MockRequestHandleScope.defaultDukanActivationStatusResponse() = respond(
     content = jsonSerialization.encodeToString(
         DukanActivationStatusResponse.serializer(),
-        DukanActivationStatusResponse(status = "ACTIVATED")
+        DukanActivationStatusResponse(status = "ACTIVATED" , null)
     ),
     status = HttpStatusCode.OK,
     headers = jsonHeaders
@@ -301,12 +310,12 @@ fun createDukanHttpClient(
     neastAroundDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     editorPicksDukansResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     getDukanActivationStatus: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
-): HttpClient {
+): DukanApi {
     val shelfId = "1"
     val dukanId = "dukan123"
     val categoryId = "20"
 
-    return HttpClient(MockEngine { request ->
+    val httpClient = HttpClient(MockEngine { request ->
         when (request.url.encodedPath) {
             "/dukan/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
             "/dukan/shelf/create" -> createResponse?.invoke(this) ?: defaultCreateResponse()
@@ -348,7 +357,7 @@ fun createDukanHttpClient(
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
-
+    return MockDukanApiClient(httpClient)
 }
 
 fun createShelfRepository(
@@ -408,7 +417,8 @@ fun createDukanDiscoveryRepository(
             neastAroundDukansResponse = neastAroundDukansResponse,
             editorPicksDukansResponse = editorPicksDukansResponse
         ),
-        locationService = LocationService(FakeAddressesRepository())
+        locationService = LocationService(FakeAddressesRepository()),
+        authorizationService = AuthorizationService(FakeAuthenticationRepository())
     )
 }
 
@@ -441,6 +451,8 @@ private class FakeAddressesRepository : AddressesRepository {
     }
 
     override suspend fun deleteAddress(addressId: Uuid) {}
+    override suspend fun clearAddresses() {}
+
     override suspend fun getActiveAddress(): Address? {
         return null
     }
@@ -453,5 +465,45 @@ private class FakeAddressesRepository : AddressesRepository {
 
     override suspend fun getLocationName(coordinates: Coordinates): String {
         return ""
+    }
+}
+
+private class FakeAuthenticationRepository: AuthenticationRepository {
+    override suspend fun login(
+        phoneNumber: PhoneNumber,
+        password: String
+    ) {
+    }
+
+    override suspend fun logout() {
+
+    }
+
+    override suspend fun refreshAccessToken(): String {
+        return ""
+    }
+
+    override suspend fun getAccessToken(): String {
+        return ""
+    }
+
+    override suspend fun getAuthTokens(): AuthenticationTokens? {
+        return null
+    }
+
+    override suspend fun saveAuthTokensWithoutEmit(authTokens: AuthenticationTokens) {
+
+    }
+
+    override suspend fun saveAuthTokensAndEmit(authTokens: AuthenticationTokens) {
+
+    }
+
+    override suspend fun clearAuthTokens() {
+
+    }
+
+    override fun observeTokenChange(): StateFlow<String> {
+        return MutableStateFlow("").asStateFlow()
     }
 }

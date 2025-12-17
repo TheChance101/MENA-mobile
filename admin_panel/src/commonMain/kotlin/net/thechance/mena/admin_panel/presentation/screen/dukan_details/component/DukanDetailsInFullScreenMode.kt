@@ -24,14 +24,15 @@ internal fun DukanDetailsInFullScreenMode(
 ) {
     Row(
         modifier = modifier
-            .padding(bottom = 16.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ){
         DukanDetailsCard(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
+                .padding(bottom = 16.dp)
                 .verticalScroll(rememberScrollState()),
             dukan = state.dukan,
             isLoading = state.isDukanDetailsLoading,

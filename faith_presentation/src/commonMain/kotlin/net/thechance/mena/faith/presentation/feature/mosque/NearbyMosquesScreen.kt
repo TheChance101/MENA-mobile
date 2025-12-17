@@ -28,18 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.emptyFlow
 import mena.faith_presentation.generated.resources.Res
-import mena.faith_presentation.generated.resources.add
 import mena.faith_presentation.generated.resources.add_mosque_message
-import mena.faith_presentation.generated.resources.arrow_left
-import mena.faith_presentation.generated.resources.ic_add
 import mena.faith_presentation.generated.resources.ic_gps
 import mena.faith_presentation.generated.resources.ic_outline_search
 import mena.faith_presentation.generated.resources.icon_location
-import mena.faith_presentation.generated.resources.nearby_mosques
 import mena.faith_presentation.generated.resources.no_nearby_mosques_found
 import mena.faith_presentation.generated.resources.search_area
 import mena.faith_presentation.generated.resources.search_hint
-import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
 import net.thechance.mena.designsystem.presentation.component.button.Button
 import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
@@ -51,6 +46,7 @@ import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
+import net.thechance.mena.faith.presentation.feature.mosque.component.NearbyMosqueTopbar
 import net.thechance.mena.faith.presentation.feature.mosque.component.NoMosquesFoundCard
 import net.thechance.mena.faith.presentation.feature.mosque.component.SearchResultsBottomSheet
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
@@ -104,24 +100,9 @@ private fun Content(
     Scaffold(
         statusBarColor = Theme.colorScheme.background.surfaceLow,
         topBar = {
-            AppBar(
-                modifier = Modifier.background(Theme.colorScheme.background.surfaceLow),
-                title = stringResource(Res.string.nearby_mosques),
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.arrow_left),
-                        tint = Theme.colorScheme.primary.primary,
-                        contentDescription = stringResource(Res.string.arrow_left)
-                    )
-                },
-                trailingContent = {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_add),
-                        tint = Theme.colorScheme.primary.primary,
-                        contentDescription = stringResource(Res.string.add),
-                    )
-                },
-                onLeadingClick = listener::onBackClick
+            NearbyMosqueTopbar(
+                onBackClick = listener::onBackClick,
+                onAddMosqueClick = listener::onAddMosqueClick,
             )
         },
         overlays = {
@@ -219,13 +200,15 @@ private fun Content(
                 modifier = Modifier
                     .padding(Theme.spacing._16)
                     .clip(RoundedCornerShape(Theme.radius.md))
-                    .background(Theme.colorScheme.background.surfaceLow)
-                    .clickable { listener.getUserLocation() }
+                    .background(color = Theme.colorScheme.primary.primary)
+                    .clickable {
+                        listener.getUserLocation()
+                    }
                     .padding(horizontal = Theme.spacing._16, vertical = 14.dp)
                     .align(Alignment.BottomStart),
                 painter = painterResource(Res.drawable.ic_gps),
-                tint = Theme.colorScheme.primary.primary,
-                contentDescription = stringResource(Res.string.icon_location)
+                contentDescription = stringResource(Res.string.icon_location),
+                tint = Theme.colorScheme.shadeTertiary
             )
         }
     }

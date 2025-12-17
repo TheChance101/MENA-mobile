@@ -9,8 +9,10 @@ import net.thechance.mena.dukan.data.repository.LocationRepositoryImpl
 import net.thechance.mena.dukan.data.repository.OrderRepositoryImpl
 import net.thechance.mena.dukan.data.repository.SearchRepositoryImpl
 import net.thechance.mena.dukan.data.repository.ShelfRepositoryImpl
-import net.thechance.mena.dukan.data.util.network.buildDukanApiClient
+import net.thechance.mena.dukan.data.util.network.DukanApi
+import net.thechance.mena.dukan.data.util.network.DukanApiClient
 import net.thechance.mena.dukan.data.util.network.buildDukanCoilClient
+import net.thechance.mena.dukan.data.util.network.platformHttpClientEngineFactory
 import net.thechance.mena.dukan.data.util.wrapper.GeocoderWrapper
 import net.thechance.mena.dukan.data.util.wrapper.MobileGeocoderWrapper
 import net.thechance.mena.dukan.domain.repository.CartRepository
@@ -27,11 +29,12 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 internal val dukanRepositoryModule = module {
-    single<HttpClient>(named("dukanClient")) {
-        buildDukanApiClient(
+    single<DukanApi>(named("dukanClient")) {
+        DukanApiClient(
             authorizationService = get(),
             localizationService = get(),
-            baseUrl = get<String>(named("baseUrl"))
+            baseUrl = get<String>(named("baseUrl")),
+            platformHttpClientEngineFactory
         )
     }
 
@@ -39,19 +42,19 @@ internal val dukanRepositoryModule = module {
         buildDukanCoilClient()
     }
 
-
-
     single<DukanDiscoveryRepository> {
         DukanDiscoveryRepositoryImpl(
             client = get(named("dukanClient")),
-            locationService = get()
+            locationService = get(),
+            authorizationService = get()
         )
     }
+
     single<ProductRepository> { DukanProductRepositoryImpl(get(named("dukanClient"))) }
     single<CartRepository> { CartRepositoryImpl(get(named("dukanClient"))) }
     single<ShelfRepository> { ShelfRepositoryImpl(get(named("dukanClient"))) }
     single<DukanManagementRepository> { DukanManagementRepositoryImpl(client = get(named("dukanClient"))) }
-    single<CartRepository>{ CartRepositoryImpl(client = get (named("dukanClient"))) }
+    single<CartRepository> { CartRepositoryImpl(client = get(named("dukanClient"))) }
     single<SearchRepository> { SearchRepositoryImpl(get(named("dukanClient"))) }
     single<OrderRepository> { OrderRepositoryImpl(get(named("dukanClient"))) }
     singleOf(::MobileGeocoderWrapper) { bind<GeocoderWrapper>() }

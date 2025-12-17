@@ -16,6 +16,11 @@ data class Dukan(
     val style: Style,
     val isFavorite: Boolean
 ) {
+    data class Activation(
+        val activationStatus: ActivationStatus,
+        val reason: String?
+    )
+
     data class Coordinates(
         val latitude: Double,
         val longitude: Double,

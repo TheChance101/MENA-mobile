@@ -85,6 +85,9 @@ fun TopDiscountedDukanDto.toEntity(): TopDiscountedDukanPreview{
     )
 }
 
-fun DukanActivationStatusResponse.toActivationStatus(): Dukan.ActivationStatus {
-    return Dukan.ActivationStatus.valueOf(status)
+fun DukanActivationStatusResponse.toActivationStatus(): Dukan.Activation {
+    return Dukan.Activation(
+        activationStatus = Dukan.ActivationStatus.valueOf(status),
+        reason = reason
+    )
 }

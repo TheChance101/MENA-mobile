@@ -1,6 +1,5 @@
 package net.thechance.mena.dukan.data.repository
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.accept
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
@@ -18,6 +17,7 @@ import net.thechance.mena.dukan.data.mapper.toCreateProductRequest
 import net.thechance.mena.dukan.data.mapper.toDomain
 import net.thechance.mena.dukan.data.mapper.toUpdateProductRequest
 import net.thechance.mena.dukan.data.util.constants.EndPoints.PRODUCT_BASE_PATH
+import net.thechance.mena.dukan.data.util.network.DukanApi
 import net.thechance.mena.dukan.data.util.network.buildMultiPartFormData
 import net.thechance.mena.dukan.data.util.network.buildSinglePartFormData
 import net.thechance.mena.dukan.data.util.network.safeApiCall
@@ -28,12 +28,12 @@ import net.thechance.mena.dukan.domain.repository.ProductRepository
 import net.thechance.mena.dukan.domain.util.PagedResult
 
 class DukanProductRepositoryImpl(
-    private val client: HttpClient
+    private val client: DukanApi
 ) : ProductRepository {
 
     override suspend fun createProduct(params: CreateProductParams): String {
         return safeApiCall<CreateProductResponse> {
-            client.post("${PRODUCT_BASE_PATH}/create") {
+            client.getClient().post("${PRODUCT_BASE_PATH}/create") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toCreateProductRequest())
             }
@@ -46,7 +46,7 @@ class DukanProductRepositoryImpl(
         size: Int
     ): PagedResult<Product> {
         val response: PageResponseDto<ProductDto> = safeApiCall {
-            client.get(PRODUCT_BASE_PATH) {
+            client.getClient().get(PRODUCT_BASE_PATH) {
                 parameter("page", page)
                 parameter("size", size)
                 parameter("shelfId", shelfId)
@@ -61,7 +61,7 @@ class DukanProductRepositoryImpl(
         size: Int
     ): PagedResult<Product> {
         val response: PageResponseDto<ProductDto> = safeApiCall {
-            client.get("$PRODUCT_BASE_PATH/$dukanId/best_selling") {
+            client.getClient().get("$PRODUCT_BASE_PATH/$dukanId/best_selling") {
                 parameter("page", page)
                 parameter("size", size)
             }
@@ -72,7 +72,7 @@ class DukanProductRepositoryImpl(
 
     override suspend fun getProductById(productId: String): Product {
         val response: ProductDto = safeApiCall {
-            client.get("$PRODUCT_BASE_PATH/$productId")
+            client.getClient().get("$PRODUCT_BASE_PATH/$productId")
         }
         return response.toDomain()
     }
@@ -89,7 +89,7 @@ class DukanProductRepositoryImpl(
         val parts: List<Pair<String, ByteArray>> = fileName.zip(fileBytes)
 
         return safeApiCall {
-            client.post("${PRODUCT_BASE_PATH}/images/$productId") {
+            client.getClient().post("${PRODUCT_BASE_PATH}/images/$productId") {
                 accept(ContentType.Application.Json)
                 setBody(buildMultiPartFormData(parts, fieldName = "files"))
             }
@@ -102,7 +102,7 @@ class DukanProductRepositoryImpl(
         productId: String
     ): String {
         return safeApiCall {
-            client.post("${PRODUCT_BASE_PATH}/$productId/image") {
+            client.getClient().post("${PRODUCT_BASE_PATH}/$productId/image") {
                 accept(ContentType.Application.Json)
                 setBody(buildSinglePartFormData(fileName, fileBytes, key = "file"))
             }
@@ -111,13 +111,13 @@ class DukanProductRepositoryImpl(
 
     override suspend fun getProductDetails(productId: String): Product {
         return safeApiCall<ProductDto> {
-            client.get("${PRODUCT_BASE_PATH}/$productId")
+            client.getClient().get("${PRODUCT_BASE_PATH}/$productId")
         }.toDomain()
     }
 
     override suspend fun updateProduct(productId: String, params: UpdateProductParams) {
         safeApiCall<Unit> {
-            client.put("${PRODUCT_BASE_PATH}/$productId") {
+            client.getClient().put("${PRODUCT_BASE_PATH}/$productId") {
                 contentType(ContentType.Application.Json)
                 setBody(params.toUpdateProductRequest())
             }
@@ -126,7 +126,7 @@ class DukanProductRepositoryImpl(
 
     override suspend fun deleteProductImages(productId: String, imageUrls: List<String>) {
         safeApiCall<Unit> {
-            client.post("${PRODUCT_BASE_PATH}/images/$productId/delete") {
+            client.getClient().post("${PRODUCT_BASE_PATH}/images/$productId/delete") {
                 contentType(ContentType.Application.Json)
                 setBody(DeleteProductImagesRequest(imageUrls))
             }
@@ -135,13 +135,13 @@ class DukanProductRepositoryImpl(
 
     override suspend fun deleteProduct(productId: String) {
         safeApiCall<Unit> {
-            client.delete("${PRODUCT_BASE_PATH}/$productId")
+            client.getClient().delete("${PRODUCT_BASE_PATH}/$productId")
         }
     }
 
     override suspend fun toggleProductToFavorites(productId: String) {
         safeApiCall<Unit> {
-            client.post("${PRODUCT_BASE_PATH}/$productId/favorite") {
+            client.getClient().post("${PRODUCT_BASE_PATH}/$productId/favorite") {
                 contentType(ContentType.Application.Json)
             }
         }

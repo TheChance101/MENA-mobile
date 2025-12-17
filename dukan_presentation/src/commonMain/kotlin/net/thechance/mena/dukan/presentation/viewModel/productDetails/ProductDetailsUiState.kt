@@ -12,7 +12,7 @@ data class ProductDetailsUiState(
     val isFirstQuantityOne: Boolean = false,
     val snackBarState: SnackBarUiState? = null,
     val hasProductInCart: Boolean = false,
-    val isButtonEnable: Boolean = false,
+    val isNotSameQuantity: Boolean = false,
     val dukanColor: Long = 0,
 ) {
     data class ProductInfo(

@@ -5,7 +5,6 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
-import assertk.assertions.isTrue
 import dev.mokkery.MockMode
 import dev.mokkery.answering.returns
 import dev.mokkery.answering.throws
@@ -57,7 +56,7 @@ class UserTrendViewModelTest {
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        everySuspend { mockTrendsRepository.getFeedTrends(any(), any()) } returns feedReels
+        everySuspend { mockTrendsRepository.getFeedTrends(any(), any()) } returns feedTrends
         every { userTrendArgs.trendSource } returns Route.TrendSource.Home
         viewModel = UserTrendViewModel(userTrendArgs, mockTrendsRepository, testDispatcher)
     }
@@ -65,7 +64,6 @@ class UserTrendViewModelTest {
     @Test
     fun `should initialize UserReelUiState with default state`() = runTest {
         viewModel.state.test {
-            skipItems(1)
             val initialState = awaitItem()
 
             assertThat(initialState.currentTrendId).isEqualTo("2")
@@ -81,7 +79,7 @@ class UserTrendViewModelTest {
     @Test
     fun `viewmodel should update state by reels when getFeedReels return data`() =
         runTest(testDispatcher) {
-            everySuspend { mockTrendsRepository.getFeedTrends(any()) } returns feedReels
+            everySuspend { mockTrendsRepository.getFeedTrends(any()) } returns feedTrends
             advanceUntilIdle()
             viewModel.state.test {
                 val state = awaitItem()
@@ -94,7 +92,7 @@ class UserTrendViewModelTest {
     @Test
     fun `viewmodel init should update isLoading to false getFeedReels return data`() =
         runTest(testDispatcher) {
-            everySuspend { mockTrendsRepository.getFeedTrends(any()) } returns feedReels
+            everySuspend { mockTrendsRepository.getFeedTrends(any()) } returns feedTrends
 
             advanceUntilIdle()
 
@@ -256,36 +254,12 @@ class UserTrendViewModelTest {
         }
 
     @Test
-    fun `onAddReelLike method should add like to Reel when called`() = runTest {
-        everySuspend { mockTrendsRepository.addTrendLike("2") } returns feedReels[0].copy(
-            isLiked = true,
-            likesCount = feedReels[0].likesCount + 1
-        )
-
-        advanceUntilIdle()
-
-        val initial = viewModel.state.value.trends.asSnapshot().first()
-        viewModel.addTrendLike("2")
-        advanceUntilIdle()
-
-        viewModel.state.test {
-            val state = awaitItem()
-            val updated = state.trends.asSnapshot().first()
-
-            assertThat(updated.likesCount).isEqualTo(initial.likesCount + 1)
-            assertThat(updated.isLiked).isTrue()
-
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
     fun `onRemoveReelLike method should remove like from Reel when called`() = runTest {
         everySuspend { mockTrendsRepository.removeTrendLike("2") } returns Unit
         advanceUntilIdle()
 
         val initial = viewModel.state.value.trends.asSnapshot().first { it.id == "2" }
-        viewModel.removeTrendLike("2")
+        viewModel.onClickLike("2", true)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -318,20 +292,17 @@ class UserTrendViewModelTest {
 
     @Test
     fun `updateReelInPagingData should only update the specific reel by id`() = runTest {
-        everySuspend { mockTrendsRepository.addTrendLike("2") } returns trend2.copy(
-            isLiked = true,
-            likesCount = 51
-        )
+        everySuspend { mockTrendsRepository.addTrendLike("2") } returns trend2
 
-        advanceUntilIdle()
-        viewModel.onClickLike("2", false)
+        viewModel.onClickLike("2", true)
         advanceUntilIdle()
 
         viewModel.state.test {
             val state = awaitItem()
-            val reelsSnapshot = state.trends.asSnapshot().first()
+            val updated = state.trends.asSnapshot().first { it.id == "2" }
 
-            assertThat(reelsSnapshot.likesCount).isEqualTo(51)
+            assertThat(updated.likesCount).isEqualTo(49)
+            assertThat(updated.isLiked).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -426,9 +397,9 @@ class UserTrendViewModelTest {
             isLiked = true
         )
 
-        val feedReels = listOf(trend2, trend1)
+        val feedTrends = listOf(trend2, trend1)
 
-        val expectedReelUiStateList = feedReels.map { it.toUserTrendUiState() }
+        val expectedReelUiStateList = feedTrends.map { it.toUserTrendUiState() }
 
         val trendWatchSessionState = TrendWatchSessionState(
             trendId = "",

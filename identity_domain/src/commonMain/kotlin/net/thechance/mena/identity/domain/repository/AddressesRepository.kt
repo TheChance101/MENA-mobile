@@ -12,6 +12,7 @@ interface AddressesRepository {
     suspend fun updateAddress(addressId: Uuid, addressInput: AddressInput,isActive: Boolean = false)
     @OptIn(ExperimentalUuidApi::class)
     suspend fun deleteAddress(addressId: Uuid)
+    suspend fun clearAddresses()
     suspend fun getUserAddresses(): List<Address>
 
     suspend fun getActiveAddress(): Address?

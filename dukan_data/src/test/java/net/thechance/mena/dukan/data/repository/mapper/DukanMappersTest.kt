@@ -152,10 +152,11 @@ class DukanMappersTest {
     fun `Dukan activation status is mapped correctly`() = runTest {
        val dto = DukanActivationStatusResponse(
             status = "ACTIVATED",
+           null
         )
 
-        val dukanActivationStatus = dto.toActivationStatus()
-        assertEquals(Dukan.ActivationStatus.ACTIVATED.name, dukanActivationStatus.name)
+        val dukanActivation = dto.toActivationStatus()
+        assertEquals(Dukan.ActivationStatus.ACTIVATED.name, dukanActivation.activationStatus.name)
 
     }
 }

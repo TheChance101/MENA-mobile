@@ -6,7 +6,7 @@ enum class PermissionState {
     DENIED,
     DENIED_PERMANENTLY;
 
-    fun notGranted(): Boolean {
-        return this != GRANTED
+    fun isGranted(): Boolean {
+        return this == GRANTED
     }
 }

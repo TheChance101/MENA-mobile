@@ -3,12 +3,14 @@ package net.thechance.mena.dukan.presentation.screen.dukanDetails.components.wid
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import app.cash.paging.compose.LazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
@@ -17,6 +19,7 @@ import mena.dukan_presentation.generated.resources.wide_image_shoppingcart
 import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
+import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ShelfUiState
@@ -44,8 +47,9 @@ fun BestSellingSection(
         ) {
             if (it is LoadState.NotLoading) {
                 LazyRow(
+                    modifier = Modifier.fillWidthOfParent(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),
-
+                    contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
                     items(state.bestSellingProducts.size) {
                         val product = state.bestSellingProducts[it]

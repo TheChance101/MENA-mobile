@@ -3,6 +3,7 @@ package net.thechance.mena.core_chat.data.weather
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import dev.mokkery.answering.returns
+import dev.mokkery.every
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
@@ -13,6 +14,7 @@ import net.thechance.mena.core_chat.data.repository.WeatherDetailsRepositoryImpl
 import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.CachedWeatherDao
 import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.CachedWeatherLocalDto
 import net.thechance.mena.core_chat.data.source.remote.dto.WeatherDetailsDto
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.domain.entity.WeatherDetails
 import net.thechance.mena.core_chat.domain.entity.WeatherType
 import kotlin.test.Test
@@ -23,6 +25,7 @@ import kotlin.time.ExperimentalTime
 class WeatherDetailsRepositoryImplTest {
 
     private val mockDao = mock<CachedWeatherDao>()
+    private val mockHttpClientHolder = mock<HttpClientHolder>()
 
     private val dummyWeatherDetailsDto = WeatherDetailsDto(
         currentTemperature = 1.0,
@@ -40,11 +43,14 @@ class WeatherDetailsRepositoryImplTest {
 
     @Test
     fun `should fetch from remote when local cache is empty`() = runTest {
+        every { mockHttpClientHolder.getClient() } returns mockClient {
+            mockRespond(dummyWeatherDetailsDto)
+        }
         everySuspend { mockDao.getWeatherByLocation(any(), any()) } returns null
         everySuspend { mockDao.insertWeather(any()) } returns Unit
 
         val repository = WeatherDetailsRepositoryImpl(
-            client = mockClient { mockRespond(dummyWeatherDetailsDto) },
+            clientHolder = mockHttpClientHolder,
             weatherDao = mockDao
         )
 
@@ -66,9 +72,11 @@ class WeatherDetailsRepositoryImplTest {
         )
 
         everySuspend { mockDao.getWeatherByLocation(any(), any()) } returns validCachedWeather
-
+        every { mockHttpClientHolder.getClient() } returns mockClient {
+            mockRespond(dummyWeatherDetailsDto)
+        }
         val repository = WeatherDetailsRepositoryImpl(
-            client = mockClient { mockRespond(dummyWeatherDetailsDto) },
+            clientHolder = mockHttpClientHolder,
             weatherDao = mockDao
         )
 
@@ -93,9 +101,12 @@ class WeatherDetailsRepositoryImplTest {
 
         everySuspend { mockDao.getWeatherByLocation(any(), any()) } returns expiredCachedWeather
         everySuspend { mockDao.insertWeather(any()) } returns Unit
+        every { mockHttpClientHolder.getClient() } returns mockClient {
+            mockRespond(dummyWeatherDetailsDto)
+        }
 
         val repository = WeatherDetailsRepositoryImpl(
-            client = mockClient { mockRespond(dummyWeatherDetailsDto) },
+            clientHolder = mockHttpClientHolder,
             weatherDao = mockDao
         )
 

@@ -53,7 +53,7 @@ data class PickLocationScreen(
                     onClickBack = listener::onClickBack,
                     backgroundColor = Theme.colorScheme.background.surfaceLow
                 )
-            },
+            }
         ) {
             PickLocationMap(
                 currentLocation = state.currentLocation,
@@ -80,7 +80,6 @@ data class PickLocationScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
             }
         }
     }

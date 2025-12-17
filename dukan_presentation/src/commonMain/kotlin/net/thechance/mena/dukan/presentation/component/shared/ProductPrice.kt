@@ -22,10 +22,11 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Composable
-fun ProductPrice(basePrice: Double, finalPrice: Double) {
+fun ProductPrice(basePrice: Double, finalPrice: Double, modifier: Modifier = Modifier) {
     Row(
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+        horizontalArrangement = Arrangement.Center,
     ) {
         if (basePrice > finalPrice) {
             Icon(
@@ -38,8 +39,7 @@ fun ProductPrice(basePrice: Double, finalPrice: Double) {
 
             Text(
                 modifier = Modifier
-                    .padding(end = Theme.spacing._4)
-                    .weight(1f),
+                    .padding(end = Theme.spacing._4),
                 text = basePrice.toString(),
                 style = Theme.typography.label.small.copy(
                     textDecoration = TextDecoration.LineThrough

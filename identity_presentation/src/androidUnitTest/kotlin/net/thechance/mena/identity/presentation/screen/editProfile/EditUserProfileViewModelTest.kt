@@ -10,17 +10,15 @@ import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
-import dev.icerock.moko.permissions.PermissionsController
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
+import net.thechance.mena.identity.domain.repository.AddressesRepository
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
@@ -28,6 +26,8 @@ import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.helper.createUser
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import kotlin.test.Test
 import kotlin.uuid.ExperimentalUuidApi
@@ -36,14 +36,17 @@ import kotlin.uuid.ExperimentalUuidApi
 class EditUserProfileViewModelTest() : BaseCoroutineTest() {
 
     private val userRepository = mockk<UserRepository>()
-    private val permissionsController = mockk<PermissionsController>()
+    private val permissionsController = mockk<PermissionHandler>()
     private val imagesRepository = mockk<ImagesRepository>()
     private val ageValidator = mockk<AgeValidator>()
     private val imageDecoder = mockk<ImageDecoder>()
     private val authenticationRepository = mockk<AuthenticationRepository>()
     private val registrationDraftRepository = mockk<RegistrationDraftRepository>()
+
+    private val addressesRepository = mockk<AddressesRepository>()
     private val testDispatcher = StandardTestDispatcher()
 
+    @OptIn(ExperimentalUuidApi::class)
     val viewModel by lazy {
         EditUserProfileViewModel(
             userRepository = userRepository,
@@ -52,8 +55,18 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             dispatcher = testDispatcher,
             ageValidator = ageValidator,
+            addressesRepository = addressesRepository,
             authenticationRepository = authenticationRepository,
-            registrationDraftRepository = registrationDraftRepository
+            registrationDraftRepository = registrationDraftRepository,
+            userUIState = UserUIState(
+                id = fakeUser.id.toString(),
+                firstName = fakeUser.firstName,
+                lastName = fakeUser.lastName,
+                profileImageUrl = fakeUser.profileImageUrl,
+                username = fakeUser.username,
+                birthDate = fakeUser.birthDate.toString(),
+                gender = fakeUser.gender
+            )
         )
     }
 
@@ -300,14 +313,14 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     @Test
     fun `permission Manager should be granted, when onTakeImageCamera is called`() = runTest {
         coEvery {
-            permissionsController.providePermission(any())
-        } just runs
+            permissionsController.requestPermission(any())
+        } returns PermissionState.GRANTED
 
         viewModel.onTakeImageFromCamera()
         testDispatcher.scheduler.advanceUntilIdle()
 
         coVerify(exactly = 1) {
-            permissionsController.providePermission(any())
+            permissionsController.requestPermission(any())
         }
     }
 
@@ -315,7 +328,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
     fun `ShowSnackBarError should be sent, when onTakeImageCamera is failed with Exception`() =
         runTest {
             coEvery {
-                permissionsController.providePermission(any())
+                permissionsController.requestPermission(any())
             } throws Exception()
 
             viewModel.onTakeImageFromCamera()
@@ -326,7 +339,7 @@ class EditUserProfileViewModelTest() : BaseCoroutineTest() {
             }
 
             coVerify(exactly = 1) {
-                permissionsController.providePermission(any())
+                permissionsController.requestPermission(any())
             }
         }
 

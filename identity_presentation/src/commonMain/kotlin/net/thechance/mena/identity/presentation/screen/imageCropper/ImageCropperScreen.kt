@@ -1,6 +1,5 @@
 package net.thechance.mena.identity.presentation.screen.imageCropper
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -22,6 +21,7 @@ import mena.identity_presentation.generated.resources.back
 import mena.identity_presentation.generated.resources.ic_arrow_left
 import mena.identity_presentation.generated.resources.image_preview
 import net.thechance.mena.designsystem.presentation.component.appBar.AppBar
+import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
@@ -35,10 +35,10 @@ class ImageCropperScreen(
     private val imageKey: String,
     private val onResult: (String) -> Unit,
 ) : BaseScreen<
-    ImageCropperViewModel,
-    ImageCropperScreenState,
-    ImageCropperScreenEffect,
-    ImageCropperInteractionListener>() {
+        ImageCropperViewModel,
+        ImageCropperScreenState,
+        ImageCropperScreenEffect,
+        ImageCropperInteractionListener>() {
 
     @Composable
     override fun Content() {
@@ -100,9 +100,10 @@ private fun ScreenAppBar(onNavigateBack: () -> Unit) {
         title = stringResource(Res.string.image_preview),
         modifier = Modifier.statusBarsPadding(),
         leadingContent = {
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.back),
+                tint = Theme.colorScheme.shadePrimary,
                 modifier = Modifier
                     .clip(SquircleShape(Theme.radius.md))
                     .size(40.dp)

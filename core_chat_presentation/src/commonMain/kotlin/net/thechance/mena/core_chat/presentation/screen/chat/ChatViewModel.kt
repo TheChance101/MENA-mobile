@@ -40,14 +40,12 @@ import net.thechance.mena.core_chat.domain.entity.ImageData
 import net.thechance.mena.core_chat.domain.entity.Message
 import net.thechance.mena.core_chat.domain.entity.MessageReaction
 import net.thechance.mena.core_chat.domain.entity.MessageStatus
-import net.thechance.mena.identity.domain.entity.User
 import net.thechance.mena.core_chat.domain.event.DeleteChatEvent
 import net.thechance.mena.core_chat.domain.event.MarkMessageAsReadEvent
 import net.thechance.mena.core_chat.domain.model.PagedData
 import net.thechance.mena.core_chat.domain.repository.AudioRecordRepository
 import net.thechance.mena.core_chat.domain.repository.ChatRepository
 import net.thechance.mena.core_chat.domain.repository.MessageRepository
-import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.core_chat.domain.service.ImageDownloaderService
 import net.thechance.mena.core_chat.presentation.components.snackBarHost.SnackBarData
 import net.thechance.mena.core_chat.presentation.shared.BaseViewModel
@@ -57,6 +55,8 @@ import net.thechance.mena.core_chat.presentation.utils.UiText
 import net.thechance.mena.core_chat.presentation.utils.convertAudioFileToByteArray
 import net.thechance.mena.core_chat.presentation.utils.encodeToByteArrayWithCompressionToMaxSize
 import net.thechance.mena.core_chat.presentation.utils.now
+import net.thechance.mena.identity.domain.entity.User
+import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.wallet.domain.exceptions.NoInternetException
 import net.thechance.mena.wallet.domain.repository.TransactionRepository
 import org.jetbrains.compose.resources.StringResource
@@ -161,7 +161,7 @@ class ChatViewModel(
     private fun onGetUserDataSuccess(user: User?) {
         if (user == null)
             onGetUserDataError()
-        else{
+        else {
             updateState { state ->
                 state.copy(
                     userData = UserData(
@@ -187,16 +187,16 @@ class ChatViewModel(
         tryToExecute(
             execute = { chatRepository.getChatById(chatId) },
             onSuccess = { chat ->
-        updateState { state ->
-            state.copy(
-                chatId = chat.id,
-                chatName = chat.name,
-                chatAvatarUrl = chat.imageUrl.orEmpty(),
-                chatRequesterId = chat.requesterId,
-                receiverId = chat.receiverId
-            )
-        }
-},
+                updateState { state ->
+                    state.copy(
+                        chatId = chat.id,
+                        chatName = chat.name,
+                        chatAvatarUrl = chat.imageUrl.orEmpty(),
+                        chatRequesterId = chat.requesterId,
+                        receiverId = chat.receiverId
+                    )
+                }
+            },
             onError = { onGetChatError() }
         )
     }
@@ -356,7 +356,10 @@ class ChatViewModel(
                 .distinctBy { it.id }
         }
 
-        messageRepository.markMessagesOfChatAsRead(message.chatId)
+        emitEffect(ChatScreenEffect.ScrollToBottom)
+        if (message.isMine) {
+            messageRepository.markMessagesOfChatAsRead(message.chatId)
+        }
     }
 
     private fun onCollectNewMessageFailed() {
@@ -764,9 +767,13 @@ class ChatViewModel(
 
         val remainingMs = totalDuration - currentPosition
         val isNearEnd = currentPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+
+        val wasNearEnd = lastPosition >= totalDuration * AUDIO_END_THRESHOLD_RATIO
+        val positionReset = currentPosition == 0L && wasNearEnd
+
         val isStagnant = currentPosition == lastPosition && isNearEnd
 
-        return remainingMs <= 0 || isStagnant
+        return remainingMs <= 0 || isStagnant || positionReset
     }
 
     private fun stopAnyPlayingVoiceMessage(excludeMessageId: Uuid) {
@@ -957,6 +964,7 @@ class ChatViewModel(
     override fun onGalleryClicked() {
         updateState { it.copy(isAttachmentsOverlayVisible = false) }
     }
+
     override fun onSurahClicked(surahId: Int) {
         emitEffect(ChatScreenEffect.NavigateToSurah(surahId))
     }
@@ -1105,6 +1113,7 @@ class ChatViewModel(
             )
         }
     }
+
     override fun onLinkClicked(url: String) {
         emitEffect(ChatScreenEffect.OpenUrl(url))
     }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.style.TextAlign
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.approved_dukan
+import mena.dukan_presentation.generated.resources.approved_dukan_dark
 import mena.dukan_presentation.generated.resources.dukan_approved_body
 import mena.dukan_presentation.generated.resources.dukan_approved_header
 import net.thechance.mena.designsystem.presentation.component.chip.Chip
@@ -15,14 +16,19 @@ import net.thechance.mena.designsystem.presentation.component.text.Text
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.loading.LoadingHorizontalList
 import net.thechance.mena.dukan.presentation.component.state.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ManageDukanNoShelvesContent() {
+    val isDark = LocalDarkTheme.current
+    val icon = if(isDark) Res.drawable.approved_dukan_dark else Res.drawable.approved_dukan
+
+
     ImageWithTextContainer(
-        foregroundImageRes = Res.drawable.approved_dukan,
+        foregroundImageRes = icon,
         header = {
             Text(
                 text = stringResource(Res.string.dukan_approved_header),

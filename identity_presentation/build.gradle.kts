@@ -74,10 +74,6 @@ kotlin {
             implementation(libs.maplibre.compose)
             implementation(libs.kotlinx.datetime)
 
-            //permission
-            implementation(libs.moko.permissions)
-            implementation(libs.moko.permissions.compose)
-
             // QR code
             implementation(libs.qrose)
         }

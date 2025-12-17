@@ -24,6 +24,7 @@ import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.dukans
 import mena.dukan_presentation.generated.resources.img_not_found_search
+import mena.dukan_presentation.generated.resources.img_not_found_search_dark
 import mena.dukan_presentation.generated.resources.no_result_found
 import mena.dukan_presentation.generated.resources.no_result_found_body
 import mena.dukan_presentation.generated.resources.products
@@ -34,6 +35,7 @@ import net.thechance.mena.dukan.presentation.component.loading.LoadingDukanPlace
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.shared.DukanCard
+import net.thechance.mena.dukan.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.dukan.presentation.util.animation.fadeTransitionSpec
 import net.thechance.mena.dukan.presentation.util.animation.fadeWithSlideHorizontalTransition
 import net.thechance.mena.dukan.presentation.util.stubPreviews.PreviewSearchInteractionListener
@@ -41,6 +43,7 @@ import net.thechance.mena.dukan.presentation.util.stubPreviews.previewDukansFlow
 import net.thechance.mena.dukan.presentation.util.stubPreviews.previewProductsFlow
 import net.thechance.mena.dukan.presentation.viewModel.search.SearchInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.search.SearchUiState
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -54,6 +57,10 @@ fun SearchCompleteContent(
 ) {
     val dukanPagingItems = state.dukanPagingFlow.collectAsLazyPagingItems()
     val productPagingItems = state.productPagingFlow.collectAsLazyPagingItems()
+
+    val isDark = LocalDarkTheme.current
+    val icon = if (isDark) Res.drawable.img_not_found_search_dark else Res.drawable.img_not_found_search
+
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -77,12 +84,14 @@ fun SearchCompleteContent(
                 SearchUiState.UserSelectionSearchList.Dukans -> DukansList(
                     dukanPagingItems = dukanPagingItems,
                     onDukanClicked = listener::onDukanClicked,
-                    onDukanFavoriteClicked = listener::onDukanFavoriteToggled
+                    onDukanFavoriteClicked = listener::onDukanFavoriteToggled,
+                    icon = icon
                 )
 
                 SearchUiState.UserSelectionSearchList.Products -> ProductsList(
                     productPagingItems = productPagingItems,
-                    onProductClicked = listener::onProductClicked
+                    onProductClicked = listener::onProductClicked,
+                    icon = icon
                 )
             }
         }
@@ -122,8 +131,10 @@ private fun SearchChips(
 private fun DukansList(
     dukanPagingItems: LazyPagingItems<SearchUiState.DukanUiState>,
     onDukanClicked: (dukanId: Uuid) -> Unit,
+    icon: DrawableResource,
     onDukanFavoriteClicked: (dukan: Uuid, isFavorite: Boolean) -> Unit
 ) {
+
     AnimatedContent(
         targetState = dukanPagingItems.loadState.refresh,
         label = "Search Success Content",
@@ -143,7 +154,7 @@ private fun DukansList(
             }
 
             is LoadState.Error -> SearchEmptyContent(
-                icon = painterResource(resource = Res.drawable.img_not_found_search),
+                icon = painterResource(resource = icon),
                 title = stringResource(resource = Res.string.no_result_found),
                 body = stringResource(resource = Res.string.no_result_found_body)
             )
@@ -151,7 +162,7 @@ private fun DukansList(
             is LoadState.NotLoading -> {
                 if (dukanPagingItems.itemCount == 0) {
                     SearchEmptyContent(
-                        icon = painterResource(resource = Res.drawable.img_not_found_search),
+                        icon = painterResource(resource = icon),
                         title = stringResource(resource = Res.string.no_result_found),
                         body = stringResource(resource = Res.string.no_result_found_body)
                     )
@@ -196,6 +207,7 @@ private fun DukansList(
 @Composable
 private fun ProductsList(
     productPagingItems: LazyPagingItems<SearchUiState.ProductUiState>,
+    icon: DrawableResource,
     onProductClicked: (productId: Uuid, dukanId: Uuid) -> Unit
 ) {
     AnimatedContent(
@@ -217,7 +229,7 @@ private fun ProductsList(
             }
 
             is LoadState.Error -> SearchEmptyContent(
-                icon = painterResource(resource = Res.drawable.img_not_found_search),
+                icon = painterResource(resource = icon),
                 title = stringResource(resource = Res.string.no_result_found),
                 body = stringResource(resource = Res.string.no_result_found_body)
             )
@@ -225,7 +237,7 @@ private fun ProductsList(
             is LoadState.NotLoading -> {
                 if (productPagingItems.itemCount == 0) {
                     SearchEmptyContent(
-                        icon = painterResource(resource = Res.drawable.img_not_found_search),
+                        icon = painterResource(resource = icon),
                         title = stringResource(resource = Res.string.no_result_found),
                         body = stringResource(resource = Res.string.no_result_found_body)
                     )

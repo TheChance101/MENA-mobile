@@ -12,6 +12,7 @@ import mena.dukan_presentation.generated.resources.add_product_success
 import mena.dukan_presentation.generated.resources.error_updating_favorites
 import mena.dukan_presentation.generated.resources.no_internet_connection
 import mena.dukan_presentation.generated.resources.remove_product_successfully
+import mena.dukan_presentation.generated.resources.same_quantity
 import mena.dukan_presentation.generated.resources.something_went_wrong
 import net.thechance.mena.dukan.domain.entity.Cart
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -129,8 +130,11 @@ class ProductDetailsViewModel(
 
     override fun onAddToCartClicked(productId: String) {
 
+        if (state.value.isNotSameQuantity.not()) {
+            showSnackBar(message = Res.string.same_quantity, type = SnackBarType.ERROR)
+            return
+        }
         val productQuantity = state.value.product.inCartQuantity
-
         val uiRequest =
             ProductDetailsUiState.ProductInfo(id = productId, inCartQuantity = productQuantity)
         val domainRequest = uiRequest.toDomainParams(dukanId = args.dukanId)
@@ -178,15 +182,23 @@ class ProductDetailsViewModel(
     }
 
     private fun updateAddToCartButtonIsEnable() {
-        updateState { copy(isButtonEnable = product.inCartQuantity != previousProductQuantity) }
+        updateState { copy(isNotSameQuantity = product.inCartQuantity != previousProductQuantity) }
     }
 
     fun setProductQuantity(productQuantity: Int) {
         updateState { copy(product = product.copy(inCartQuantity = productQuantity)) }
     }
+
     fun setProductQuantity(productQuantity: Int?) {
-        updateState { copy(product = product.copy(inCartQuantity = productQuantity ?: state.value.product.inCartQuantity)) }
+        updateState {
+            copy(
+                product = product.copy(
+                    inCartQuantity = productQuantity ?: state.value.product.inCartQuantity
+                )
+            )
+        }
     }
+
     private fun onErrorUpdateProductQuantity(throwable: Throwable) {
         updateState { copy(isAddToCartLoading = false) }
         val messageRes = when (throwable) {
@@ -207,7 +219,8 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                isNotSameQuantity = product.inCartQuantity != previousProductQuantity,
+                isFirstQuantityOne = false,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
@@ -219,7 +232,7 @@ class ProductDetailsViewModel(
         updateState {
             copy(
                 isAddToCartLoading = false,
-                isButtonEnable = product.inCartQuantity != previousProductQuantity,
+                isNotSameQuantity = product.inCartQuantity != previousProductQuantity,
                 product = product.copy(finalProductQuantity = product.inCartQuantity)
             )
         }
@@ -248,7 +261,7 @@ class ProductDetailsViewModel(
 
     override fun onViewCartClicked() {
         updateState { copy(snackBarState = null) }
-        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId , args.productId))
+        emitEffect(ProductDetailsEffects.NavigateToCart(args.dukanId, args.productId))
     }
 
     override fun onToggleProductToFavoriteClicked() {
@@ -270,7 +283,7 @@ class ProductDetailsViewModel(
     }
 
 
-  private fun refreshCartInfo() {
+    private fun refreshCartInfo() {
         loadCartInfo()
     }
 }

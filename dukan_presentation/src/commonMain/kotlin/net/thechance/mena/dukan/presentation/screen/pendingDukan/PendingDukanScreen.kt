@@ -14,6 +14,7 @@ import androidx.compose.ui.text.withStyle
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.back_arrow
 import mena.dukan_presentation.generated.resources.dukan_pending
+import mena.dukan_presentation.generated.resources.dukan_pending_dark
 import mena.dukan_presentation.generated.resources.dukan_request_pending
 import mena.dukan_presentation.generated.resources.dukan_waiting_approval
 import mena.dukan_presentation.generated.resources.ic_arrow_left
@@ -24,6 +25,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.shared.AnnotatedText
 import net.thechance.mena.dukan.presentation.component.state.ImageWithTextContainer
+import net.thechance.mena.dukan.presentation.navigation.LocalDarkTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -33,6 +35,10 @@ fun PendingDukanScreen(
     dukanName: String,
     onBackClick: () -> Unit,
 ) {
+    val isDark = LocalDarkTheme.current
+    val icon = if (isDark) Res.drawable.dukan_pending_dark else Res.drawable.dukan_pending
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,7 +65,7 @@ fun PendingDukanScreen(
         )
 
         ImageWithTextContainer(
-            foregroundImageRes = Res.drawable.dukan_pending,
+            foregroundImageRes = icon,
             header = {
                 AnnotatedText(
                     text = titleText,

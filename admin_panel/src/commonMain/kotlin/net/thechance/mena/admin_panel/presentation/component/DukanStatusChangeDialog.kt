@@ -53,17 +53,11 @@ internal fun ScaffoldScope.DukanStatusChangeDialog(
     if (isVisible) {
         Popup(
             alignment = Alignment.Center,
-            onDismissRequest = {
-                onReasonChanged("")
-                onDismiss()
-            },
+            onDismissRequest = { onDismiss() },
             properties = PopupProperties(focusable = true)
         ) {
             BasicDialog(
-                onDismiss = {
-                    onReasonChanged("")
-                    onDismiss()
-                },
+                onDismiss = { onDismiss() },
                 isVisible = isVisible,
                 contentColor = Theme.colorScheme.background.surface,
                 contentPadding = PaddingValues(24.dp),
@@ -76,14 +70,8 @@ internal fun ScaffoldScope.DukanStatusChangeDialog(
                     .width(400.dp)
             ) {
                 DialogContent(
-                    onDismiss = {
-                        onReasonChanged("")
-                        onDismiss()
-                    },
-                    onConfirmed = {
-                        onReasonChanged("")
-                        onConfirmed()
-                    },
+                    onDismiss = { onDismiss() },
+                    onConfirmed = { onConfirmed() },
                     reason = reason,
                     onReasonChanged = onReasonChanged,
                     title = title,

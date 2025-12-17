@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -79,6 +80,7 @@ fun NewPasswordContent(
             contentPadding = PaddingValues(vertical = 13.dp),
             modifier = Modifier.fillMaxWidth()
                 .padding(bottom = Theme.spacing._12, top = Theme.spacing._24)
+                .imePadding()
         )
     }
 }

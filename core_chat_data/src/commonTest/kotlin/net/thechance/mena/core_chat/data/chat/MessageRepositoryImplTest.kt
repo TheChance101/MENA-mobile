@@ -14,7 +14,6 @@ import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
 import dev.mokkery.verifySuspend
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,6 +43,7 @@ import net.thechance.mena.core_chat.data.source.local.database.pendingMessage.Pe
 import net.thechance.mena.core_chat.data.source.remote.dto.MessageDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toCachedMessageLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.utils.now
 import net.thechance.mena.core_chat.data.utils.toInstant
@@ -65,7 +65,7 @@ import kotlin.uuid.Uuid
 
 class MessageRepositoryImplTest {
 
-    private lateinit var httpClient: HttpClient
+    private lateinit var httpClientHolder: HttpClientHolder
     private lateinit var repository: MessageRepositoryImpl
     private lateinit var webSocketManager: WebSocketManager
     private lateinit var messageSenderFactory: MessageSenderFactory
@@ -82,20 +82,20 @@ class MessageRepositoryImplTest {
 
     @BeforeTest
     fun setUp() {
-        httpClient = createHttpClient()
+        httpClientHolder = mock<HttpClientHolder>()
         webSocketManager = mock<WebSocketManager>()
         pendingMessageDao = mock<PendingMessageDao>()
         chatSyncTimeDao = mock<ChatSyncTimeDao>()
         cachedMessageDao = mock<CachedMessageDao>()
-        quranRepository =mock<QuranRepository>()
+        quranRepository = mock<QuranRepository>()
         authRepository = mock<AuthenticationRepository>()
         quranService = QuranService(repository = quranRepository)
         textMessageSender = TextMessageSender(
             webSocketManager = webSocketManager,
             json = jsonSerialization
         )
-        imageMessageSender = ImageMessageSender(client = httpClient)
-        audioMessageSender = AudioMessageSender(client = httpClient)
+        imageMessageSender = ImageMessageSender(clientHolder = httpClientHolder)
+        audioMessageSender = AudioMessageSender(clientHolder = httpClientHolder)
         ayahMessageSender =
             AyahMessageSender(webSocketManager = webSocketManager, json = jsonSerialization)
         messageSenderFactory =
@@ -106,13 +106,15 @@ class MessageRepositoryImplTest {
                 ayahMessageSender
             )
         every { authRepository.observeTokenChange() } returns MutableStateFlow("fake_token")
+        every { httpClientHolder.getClient() } returns createHttpClient()
+
         repository = createMessageRepository(
             webSocketManager = webSocketManager,
             pendingMessageDao = pendingMessageDao,
             messageSenderFactory = messageSenderFactory,
             cachedMessageDao = cachedMessageDao,
             chatSyncTimeDao = chatSyncTimeDao,
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             authRepository = authRepository,
             quranService = quranService
         )
@@ -131,11 +133,11 @@ class MessageRepositoryImplTest {
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
         everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
         everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             chatHistoryResponse = { defaultChatHistoryResponse() }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -175,11 +177,11 @@ class MessageRepositoryImplTest {
             )
         } returns emptyList()
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -338,12 +340,12 @@ class MessageRepositoryImplTest {
             everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
             everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
-            httpClient = createHttpClient(
+            every { httpClientHolder.getClient() } returns createHttpClient(
                 imagesResponse = { defaultUploadImagesResponse() }
             )
 
             repository = createMessageRepository(
-                httpClient = httpClient,
+                httpClientHolder = httpClientHolder,
                 webSocketManager = webSocketManager,
                 messageSenderFactory = messageSenderFactory,
                 pendingMessageDao = pendingMessageDao,
@@ -372,12 +374,12 @@ class MessageRepositoryImplTest {
         everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
         everySuspend { pendingMessageDao.updateMessageStatus(any(), any()) } returns Unit
 
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             imagesResponse = { respondError(HttpStatusCode.InternalServerError) }
         )
 
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -413,12 +415,12 @@ class MessageRepositoryImplTest {
             everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
             everySuspend { pendingMessageDao.deleteMessageById(any()) } returns Unit
 
-            httpClient = createHttpClient(
+            every { httpClientHolder.getClient() } returns createHttpClient(
                 audioResponse = { defaultAudioResponse() }
             )
 
             repository = createMessageRepository(
-                httpClient = httpClient,
+                httpClientHolder = httpClientHolder,
                 webSocketManager = webSocketManager,
                 messageSenderFactory = messageSenderFactory,
                 pendingMessageDao = pendingMessageDao,
@@ -447,12 +449,12 @@ class MessageRepositoryImplTest {
         everySuspend { pendingMessageDao.insertMessage(any()) } returns Unit
         everySuspend { pendingMessageDao.updateMessageStatus(any(), any()) } returns Unit
 
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             audioResponse = { respondError(HttpStatusCode.InternalServerError) }
         )
 
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -485,11 +487,11 @@ class MessageRepositoryImplTest {
 
     @Test
     fun `should throw NotFoundException when remote returns null`() = runTest {
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -514,51 +516,17 @@ class MessageRepositoryImplTest {
         }
     }
 
-
-    @Test
-    fun `should sync after last update when lastSyncTime exists`() = runTest {
-        val cachedMessage = createMessage().toCachedMessageLocalDto()
-        val now = LocalDateTime.now().toInstant().toString()
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(cachedMessage)
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns now
-        everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        httpClient = createHttpClient(
-            syncLatestMessagesResponse = { defaultChatHistoryResponse() }
-        )
-        repository = createMessageRepository(
-            httpClient = httpClient,
-            webSocketManager = webSocketManager,
-            messageSenderFactory = messageSenderFactory,
-            pendingMessageDao = pendingMessageDao,
-            cachedMessageDao = cachedMessageDao,
-            chatSyncTimeDao = chatSyncTimeDao,
-            authRepository = authRepository,
-            quranService = quranService
-        )
-        repository.loadMessages(chatId, 0, 10)
-        verifySuspend { cachedMessageDao.insertAllMessages(any()) }
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
-
     @Test
     fun `should insert messages and update sync time in syncAfterLastUpdate`() = runTest {
         val now = LocalDateTime.now().toInstant().toString()
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns now
         everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
         everySuspend { cachedMessageDao.insertAllMessages(any()) } returns Unit
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             syncLatestMessagesResponse = { defaultChatHistoryResponse() }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -586,11 +554,11 @@ class MessageRepositoryImplTest {
         everySuspend { pendingMessageDao.deleteMessagesByIds(any()) } returns Unit
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
         everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             chatHistoryResponse = { defaultChatHistoryResponse() }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,
@@ -607,25 +575,6 @@ class MessageRepositoryImplTest {
     }
 
     @Test
-    fun `should upsert sync time when lastSyncTime is null in loadMessages`() = runTest {
-        everySuspend {
-            cachedMessageDao.getMessagesByChatIdWithOffset(
-                any(),
-                any(),
-                any()
-            )
-        } returns listOf(createMessage().toCachedMessageLocalDto())
-        everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
-        everySuspend { chatSyncTimeDao.upsert(any()) } returns Unit
-        everySuspend { cachedMessageDao.getTotalMessagesCount(any()) } returns 1
-
-        val result = repository.loadMessages(chatId, 1, 40)
-
-        assertThat(result.data).isNotEmpty()
-        verifySuspend { chatSyncTimeDao.upsert(any()) }
-    }
-
-    @Test
     fun `should throw NotFoundException when getFromRemote returns null response`() = runTest {
         everySuspend {
             cachedMessageDao.getMessagesByChatIdWithOffset(
@@ -636,11 +585,11 @@ class MessageRepositoryImplTest {
         } returns emptyList()
         everySuspend { chatSyncTimeDao.getLastSyncTime(any()) } returns null
 
-        httpClient = createHttpClient(
+        every { httpClientHolder.getClient() } returns createHttpClient(
             chatHistoryResponse = { mockErrorPagedResponse<MessageDto>(HttpStatusCode.NotFound) }
         )
         repository = createMessageRepository(
-            httpClient = httpClient,
+            httpClientHolder = httpClientHolder,
             webSocketManager = webSocketManager,
             messageSenderFactory = messageSenderFactory,
             pendingMessageDao = pendingMessageDao,

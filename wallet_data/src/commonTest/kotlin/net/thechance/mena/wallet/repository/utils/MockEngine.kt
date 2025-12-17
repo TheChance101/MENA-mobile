@@ -58,6 +58,10 @@ fun createNetworkClient(
         ): HttpResponse {
             return deleteClient.delete(urlString, requestBuilder)
         }
+
+        override fun clearCachedToken() {
+            // No-op for tests
+        }
     }
 }
 

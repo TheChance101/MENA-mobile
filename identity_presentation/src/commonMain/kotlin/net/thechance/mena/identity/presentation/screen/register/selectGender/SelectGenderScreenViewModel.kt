@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import net.thechance.mena.identity.domain.entity.Gender
 import net.thechance.mena.identity.domain.exception.AuthenticationException
+import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
@@ -40,6 +41,10 @@ class SelectGenderScreenViewModel(
     override fun onChangeGender(gender: Gender) {
         updateState { copy(gender = gender, isRegisterEnabled = true) }
         saveGender(gender)
+    }
+
+    override fun onClickOkSessionExpired() {
+        sendNewEffect(SelectGenderScreenUIEffect.NavigateBackToRegister)
     }
 
     private fun loadSavedData() {
@@ -101,16 +106,20 @@ class SelectGenderScreenViewModel(
     }
 
     private fun onRegisterError(throwable: Throwable) {
-        updateState {
-            copy(
-                isRegisterLoading = false,
-            )
+        updateState { copy(isRegisterLoading = false,) }
+        when(throwable){
+            is InvalidRequestException -> {
+                updateState { copy(showSessionExpiredDialog = true) }
+            }
+
+            else ->{
+                sendNewEffect(
+                    SelectGenderScreenUIEffect.ShowSnackBarError(
+                        errorStringResource = mapErrorMessage(throwable)
+                    )
+                )
+            }
         }
-        sendNewEffect(
-            SelectGenderScreenUIEffect.ShowSnackBarError(
-                errorStringResource = mapErrorMessage(throwable)
-            )
-        )
     }
 
     private fun saveGender(gender: Gender) {

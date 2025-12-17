@@ -58,7 +58,6 @@ class ChangePasswordScreen() : BaseScreen<ChangePasswordScreenViewModel,
                 )
             }
         ) {
-
             Column(
                 modifier = Modifier.fillMaxWidth()
                     .background(Theme.colorScheme.background.surface)

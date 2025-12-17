@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.addresses.enableLocationScreen.EnableLocationScreenViewModel
 import net.thechance.mena.identity.presentation.util.permissionHandler.PermissionHandler
+import net.thechance.mena.identity.presentation.util.permissionHandler.Permissions
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -51,10 +52,10 @@ class EnableLocationScreenViewModelTest {
 
     @Test
     fun `onClickEnablePermission should call openSettings`() = runTest {
-        coEvery { locationPermissionHandler.openSettingPage() } just Runs
+        coEvery { locationPermissionHandler.openSettingPage(Permissions.LOCATION_FOREGROUND) } just Runs
 
         viewModel.onClickEnablePermission()
 
-        verify { locationPermissionHandler.openSettingPage() }
+        verify { locationPermissionHandler.openSettingPage(Permissions.LOCATION_FOREGROUND) }
     }
 }

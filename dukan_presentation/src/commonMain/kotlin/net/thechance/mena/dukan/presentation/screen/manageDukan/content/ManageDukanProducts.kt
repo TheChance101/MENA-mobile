@@ -10,11 +10,13 @@ import androidx.paging.LoadState
 import app.cash.paging.compose.collectAsLazyPagingItems
 import mena.dukan_presentation.generated.resources.Res
 import mena.dukan_presentation.generated.resources.empty_shelf
+import mena.dukan_presentation.generated.resources.empty_shelf_dark
 import mena.dukan_presentation.generated.resources.shelf_empty_body
 import mena.dukan_presentation.generated.resources.shelf_empty_title
 import net.thechance.mena.dukan.presentation.component.loading.LoadingProductCard
 import net.thechance.mena.dukan.presentation.component.loading.LoadingVerticalList
 import net.thechance.mena.dukan.presentation.component.state.EmptyStateContent
+import net.thechance.mena.dukan.presentation.navigation.LocalDarkTheme
 import net.thechance.mena.dukan.presentation.screen.manageDukan.component.ManageDukanProductsList
 import net.thechance.mena.dukan.presentation.viewModel.manageDukan.ManageDukanUiState
 
@@ -24,6 +26,9 @@ fun ManageDukanProducts(
     onEditProductClicked: (String) -> Unit
 ) {
     val product = state.products.collectAsLazyPagingItems()
+    val isDark = LocalDarkTheme.current
+    val icon = if(isDark) Res.drawable.empty_shelf_dark else  Res.drawable.empty_shelf
+
 
     AnimatedContent(
         targetState = product.loadState.refresh,
@@ -41,7 +46,7 @@ fun ManageDukanProducts(
             is LoadState.NotLoading -> {
                 if (product.itemCount == 0) {
                     EmptyStateContent(
-                        image = Res.drawable.empty_shelf,
+                        image = icon,
                         title = Res.string.shelf_empty_title,
                         body = Res.string.shelf_empty_body
                     )

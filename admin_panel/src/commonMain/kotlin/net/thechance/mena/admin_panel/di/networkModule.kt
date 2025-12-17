@@ -26,7 +26,7 @@ val networkModule = module {
     single<Ktorfit>(named(ADMIN_PANEL_KEY)) {
         Ktorfit.Builder()
             .httpClient(client = get<HttpClient>(named(ADMIN_PANEL_KEY)))
-            .baseUrl(url = get<String>(named(BASE_URL_KEY)))
+            .baseUrl(url = get<String>(named(BASE_URL_KEY)) + "/")
             .converterFactories(ResponseConverterFactory())
             .build()
     }

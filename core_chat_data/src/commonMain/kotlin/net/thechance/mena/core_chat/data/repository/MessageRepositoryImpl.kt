@@ -38,6 +38,7 @@ import net.thechance.mena.core_chat.data.source.remote.mapper.toListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPagedListOfMessages
 import net.thechance.mena.core_chat.data.source.remote.mapper.toPendingMessageLocalDto
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.WebSocketManager
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.Message
@@ -60,7 +61,7 @@ import kotlin.uuid.Uuid
 
 @OptIn(ExperimentalUuidApi::class)
 class MessageRepositoryImpl(
-    private val client: HttpClient,
+    private val clientHolder: HttpClientHolder,
     private val webSocketManager: WebSocketManager,
     private val pendingMessageDao: PendingMessageDao,
     private val cachedMessageDao: CachedMessageDao,
@@ -70,6 +71,8 @@ class MessageRepositoryImpl(
     private val messageSenderFactory: MessageSenderFactory,
     private val json: Json,
 ) : MessageRepository {
+    private val client: HttpClient
+        get() = clientHolder.getClient()
     private val messagesFlow = MutableSharedFlow<Message>()
     private val markMessagesAsRead = MutableSharedFlow<MarkMessageAsReadEvent>()
     private val markChatAsDeleted = MutableSharedFlow<DeleteChatEvent>()
@@ -80,6 +83,7 @@ class MessageRepositoryImpl(
     init {
         observeAuthenticationState()
     }
+
     override suspend fun loadMessages(chatId: Uuid, page: Int, pageSize: Int): PagedData<Message> {
 
         val cachedMessages = cachedMessageDao.getMessagesByChatIdWithOffset(
@@ -94,20 +98,23 @@ class MessageRepositoryImpl(
             return getFromRemote(chatId, page, pageSize)
         }
 
-        val now = Clock.System.now().toString()
-        val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
-        if (lastSyncTime != null) {
-            syncAfterLastUpdate(chatId)
-        } else {
-            chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
-        }
-
         val totalCachedItems = cachedMessageDao.getTotalMessagesCount(chatId.toString())
+
         return PagedData(
             data = messages,
             totalItems = totalCachedItems,
             isLastPage = false,
-        )
+        ).also {
+            scope.launch {
+                val now = Clock.System.now().toString()
+                val lastSyncTime = chatSyncTimeDao.getLastSyncTime(chatId.toString())
+                if (lastSyncTime != null) {
+                    syncAfterLastUpdate(chatId)
+                } else {
+                    chatSyncTimeDao.upsert(ChatSyncTime(chatId.toString(), now))
+                }
+            }
+        }
     }
 
     private suspend fun getFromRemote(
@@ -130,11 +137,19 @@ class MessageRepositoryImpl(
         return page.copy(data = page.data.getSurahsNames())
     }
 
-    private suspend fun updateLocalMessages(messages: List<Message>){
+    private suspend fun updateLocalMessages(messages: List<Message>) {
         cachedMessageDao.insertAllMessages(messages.toCachedMessageLocalDto())
 
-        val messagesIds = messages.map{ it.id.toString() }
+        val messagesIds = messages.map { it.id.toString() }
         pendingMessageDao.deleteMessagesByIds(messagesIds)
+
+        val now = Clock.System.now()
+        chatSyncTimeDao.upsert(
+            ChatSyncTime(
+                messages.firstOrNull()?.chatId.toString(),
+                now.toString()
+            )
+        )
     }
 
     suspend fun syncAfterLastUpdate(chatId: Uuid) {
@@ -342,10 +357,11 @@ class MessageRepositoryImpl(
     }
 
     private suspend fun Message.getMessageWithSurahName(): Message {
-        return when(val content = this.content) {
+        return when (val content = this.content) {
             is MessageContent.Ayah -> {
                 this.copy(content = content.copy(surahName = getSurahNameById(surahId = content.surahId)))
             }
+
             else -> this
         }
     }
@@ -372,10 +388,11 @@ class MessageRepositoryImpl(
             pendingMessageDao.clearAllPendingMessages()
             chatSyncTimeDao.clearAllSyncTimes()
 
-        } catch (e:Throwable) {
+        } catch (e: Throwable) {
             println("MessageRepository ERROR: Failed to clear cache. Error: ${e.message}")
         }
     }
+
     private companion object {
         const val PAGE_NUMBER_PARAMETER = "page"
         const val PAGE_SIZE_PARAMETER = "size"

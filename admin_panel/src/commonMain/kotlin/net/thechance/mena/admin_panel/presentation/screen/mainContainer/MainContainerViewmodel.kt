@@ -61,7 +61,12 @@ class MainContainerViewmodel(
     }
 
     private fun onSuccessLoggedOut() {
-        updateState { it.copy(isLogOutDialogShown = false) }
+        updateState {
+            it.copy(
+                isLogOutDialogShown = false,
+                selectedSidebarTab = MainContainerScreenState.SelectedSidebarTab.DUKAN_MANAGEMENT
+            )
+        }
         sendEffect(MainContainerEffect.NavigateToLogInScreen)
     }
 

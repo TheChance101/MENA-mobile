@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDateTime
 import net.thechance.mena.trends.presentation.shared.base.ErrorState
+import net.thechance.mena.trends.presentation.shared.base.PagingEvents
 import net.thechance.mena.trends.presentation.shared.util.TimeAgoValue
 
 internal data class UserTrendState(
@@ -16,7 +17,7 @@ internal data class UserTrendState(
     val isConfirmationDialogVisible: Boolean = false,
     val isTrendDeleted: Boolean? = null,
     val isDescriptionExpanded: Boolean = false,
-    val trendsStateFlow: MutableStateFlow<PagingData<UserTrendUiState>> = MutableStateFlow(PagingData.empty())
+    val pagingEvents: MutableStateFlow<List<PagingEvents<UserTrendUiState>>> = MutableStateFlow(emptyList())
 )
 
 internal data class UserTrendUiState(

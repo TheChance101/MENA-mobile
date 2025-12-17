@@ -48,23 +48,6 @@ internal fun CreateMosqueScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
-    Scaffold(
-        topBar = { CreateMosqueAppBar(viewModel) },
-        bottomBar = {
-            PrimaryButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(Theme.spacing._16),
-                text = stringResource(Res.string.add),
-                onClick = viewModel::onAddClick,
-                isEnabled = uiState.isButtonEnabled,
-                contentPadding = PaddingValues(vertical = Theme.spacing._12)
-            )
-        }
-    ) {
-        Content(uiState = uiState, listener = viewModel)
-    }
-
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             CreateMosqueEffect.NavigateBack -> {
@@ -81,6 +64,7 @@ internal fun CreateMosqueScreen(
             is CreateMosqueEffect.NavigateToMap -> {}
         }
     }
+    Content(uiState = uiState, listener = viewModel)
 }
 
 
@@ -89,6 +73,20 @@ private fun Content(
     uiState: CreateMosqueUiState,
     listener: CreateMosqueInteractionListener
 ) {
+    Scaffold(
+        topBar = { CreateMosqueAppBar(onBackClick = listener::onBackClick) },
+        bottomBar = {
+            PrimaryButton(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Theme.spacing._16),
+                text = stringResource(Res.string.add),
+                onClick = listener::onAddClick,
+                isEnabled = uiState.isButtonEnabled,
+                contentPadding = PaddingValues(vertical = Theme.spacing._12)
+            )
+        }
+    ) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -106,6 +104,7 @@ private fun Content(
         item { MosqueAddressSection(uiState, listener) }
         item { UploadMosqueImage(uiState, listener) }
     }
+    }
 }
 
 
@@ -117,7 +116,8 @@ private fun MosqueLocationHeader(
     Text(
         text = stringResource(Res.string.mosque_name),
         style = Theme.typography.title.medium,
-        color = Theme.colorScheme.shadePrimary
+        color = Theme.colorScheme.shadePrimary,
+        modifier = Modifier.padding(bottom = Theme.spacing._4)
     )
     TextField(
         value = uiState.name,
@@ -148,11 +148,11 @@ private fun MosqueAddressSection(
 
 @Composable
 private fun CreateMosqueAppBar(
-    listener: CreateMosqueInteractionListener
+    onBackClick: () -> Unit
 ) {
     AppBar(
         title = stringResource(Res.string.add_new_mosque),
-        onLeadingClick = listener::onBackClick,
+        onLeadingClick = onBackClick,
         contentPadding = PaddingValues(
             horizontal = Theme.spacing._12,
             vertical = Theme.spacing._8
@@ -161,6 +161,7 @@ private fun CreateMosqueAppBar(
             Icon(
                 painter = painterResource(Res.drawable.ic_arrow_left),
                 contentDescription = stringResource(Res.string.back),
+                tint = Theme.colorScheme.primary.primary
             )
         }
     )

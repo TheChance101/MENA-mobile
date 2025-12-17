@@ -39,14 +39,11 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 const val APP_VERSION = "appVersion"
-const val LOCATION_FOREGROUND = "LOCATION_FOREGROUND"
-const val GALLERY_IMAGES = "GALLERY_IMAGES"
 
 val identityScreensModule = module {
 
     includes(platformModule())
-    factory(named(LOCATION_FOREGROUND)) { PermissionHandler(get(named(LOCATION_FOREGROUND))) }
-    factory(named(GALLERY_IMAGES)) { PermissionHandler(get(named(GALLERY_IMAGES))) }
+    factoryOf(::PermissionHandler)
     factory { ProfileScreenViewModel(get(), get(), get(named(APP_VERSION)), get()) }
     factoryOf(::ImageCropperViewModel)
     factoryOf(::LoginScreenViewModel)
@@ -76,26 +73,7 @@ val identityScreensModule = module {
         ImageCropperComponentViewModel(minScale, maxScale, initialState)
     }
     factoryOfOrNull(::LocationManagementViewModel)
-
-    factory {
-        PickLocationScreenViewModel(
-            addressesRepository = get(),
-            locationForegroundHandler = get(named(LOCATION_FOREGROUND)),
-            addressModel = getOrNull()
-        )
-    }
-
-    factory {
-        EnableLocationScreenViewModel(
-            locationForegroundHandler = get(named(LOCATION_FOREGROUND))
-        )
-    }
-
-    factory {
-        ShareDialogViewModel(
-            userRepository = get(),
-            imagesRepository = get(),
-            galleryPermissionHandler = get(named(GALLERY_IMAGES)),
-        )
-    }
+    factoryOfOrNull(::PickLocationScreenViewModel)
+    factoryOf(::EnableLocationScreenViewModel)
+    factoryOf(::ShareDialogViewModel)
 }

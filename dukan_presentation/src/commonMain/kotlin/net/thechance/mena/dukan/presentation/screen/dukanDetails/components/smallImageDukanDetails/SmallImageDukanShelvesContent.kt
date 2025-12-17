@@ -29,6 +29,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.dukan.presentation.component.product.ProductCard
 import net.thechance.mena.dukan.presentation.component.product.SmallAndWideImageDukanProductAction
 import net.thechance.mena.dukan.presentation.component.shared.ProductsHeader
+import net.thechance.mena.dukan.presentation.util.modifiers.fillWidthOfParent
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsInteractionListener
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState
 import net.thechance.mena.dukan.presentation.viewModel.dukanDetails.DukanDetailsUiState.ProductUiState
@@ -72,6 +73,8 @@ private fun ShelfContent(
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8),
         contentPadding = PaddingValues(
+            start = Theme.spacing._16,
+            end = Theme.spacing._16,
             bottom = Theme.spacing._16
         ),
     ) {
@@ -112,7 +115,9 @@ private fun ShelfProducts(
     listener: DukanDetailsInteractionListener,
 ) {
 
-    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth()
+    ) {
         val productPairs = remember(products) { products.chunked(2) }
         val lazyListState = rememberLazyListState()
         val flingBehavior = rememberSnapFlingBehavior(
@@ -121,16 +126,16 @@ private fun ShelfProducts(
         )
 
         val screenWidth = maxWidth
-        val horizontalSpacing =
-            Theme.spacing._8 * 2 + Theme.spacing._16 * 2
-        val cardWidth = when {
-            screenWidth < 500.dp -> screenWidth - horizontalSpacing - 40.dp
-            screenWidth < 800.dp -> screenWidth * 0.45f
-            else -> screenWidth * 0.3f
-        }
+        val cardMinWidth = 320.dp
+        val spacing = Theme.spacing._8
+        val cardsInRow = (screenWidth / (cardMinWidth + spacing)).toInt().coerceAtLeast(1)
+        val cardWidth = if (cardsInRow == 1) screenWidth * 0.98f else
+            (screenWidth - spacing * (cardsInRow - 1)) / cardsInRow
 
         LazyRow(
-            modifier = Modifier.padding(bottom = Theme.spacing._8),
+            modifier = Modifier
+                .fillWidthOfParent(Theme.spacing._16)
+                .padding(bottom = Theme.spacing._8),
             state = lazyListState,
             contentPadding = PaddingValues(horizontal = Theme.spacing._16),
             horizontalArrangement = Arrangement.spacedBy(Theme.spacing._8),

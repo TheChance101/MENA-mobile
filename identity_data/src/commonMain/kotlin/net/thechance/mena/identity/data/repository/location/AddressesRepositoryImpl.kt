@@ -77,6 +77,11 @@ class AddressesRepositoryImpl(
         )
     }
 
+    @OptIn(ExperimentalUuidApi::class)
+    override suspend fun clearAddresses() {
+        addressDao.deleteActiveAddress()
+    }
+
     override suspend fun getUserAddresses(): List<Address> {
         return safeWrapper<List<AddressResponseDto>> {
             client.getJson(ADDRESS_ENDPOINT)

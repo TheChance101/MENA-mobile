@@ -10,6 +10,7 @@ import net.thechance.mena.core_chat.data.source.local.database.cachedWeather.toE
 import net.thechance.mena.core_chat.data.source.remote.dto.WeatherDetailsDto
 import net.thechance.mena.core_chat.data.source.remote.mapper.toEntity
 import net.thechance.mena.core_chat.data.source.remote.mapper.toLocalWeather
+import net.thechance.mena.core_chat.data.source.remote.network.HttpClientHolder
 import net.thechance.mena.core_chat.data.source.remote.network.tryNetworkCall
 import net.thechance.mena.core_chat.domain.entity.WeatherDetails
 import net.thechance.mena.core_chat.domain.exception.NoInternetException
@@ -19,10 +20,11 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 class WeatherDetailsRepositoryImpl(
-    private val client: HttpClient,
+    private val clientHolder: HttpClientHolder,
     private val weatherDao: CachedWeatherDao
 ) : WeatherRepository {
-
+    private val client: HttpClient
+        get() = clientHolder.getClient()
     override suspend fun getWeatherDetails(latitude: Double, longitude: Double): WeatherDetails {
         val localWeather = getLocalWeatherOrNull(latitude = latitude,longitude = longitude)
         if (localWeather != null)

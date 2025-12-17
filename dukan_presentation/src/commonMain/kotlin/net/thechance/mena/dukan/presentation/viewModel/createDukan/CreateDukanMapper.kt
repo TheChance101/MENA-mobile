@@ -1,5 +1,6 @@
 package net.thechance.mena.dukan.presentation.viewModel.createDukan
 
+import io.github.dellisd.spatialk.geojson.Position
 import net.thechance.mena.dukan.domain.entity.Category
 import net.thechance.mena.dukan.domain.entity.Color
 import net.thechance.mena.dukan.domain.entity.Dukan
@@ -74,4 +75,14 @@ fun CreateDukanUiState.toEntity() = Dukan(
 fun CreateDukanUiState.CoordinatesUiState.toEntity() = Coordinates(
     latitude = latitude,
     longitude = longitude,
+)
+
+fun CreateDukanUiState.CoordinatesUiState.toPosition() = Position(
+    latitude = latitude,
+    longitude = longitude
+)
+
+fun Position.toCoordinatesUiState() = CreateDukanUiState.CoordinatesUiState(
+    latitude = latitude,
+    longitude = longitude
 )

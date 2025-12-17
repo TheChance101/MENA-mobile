@@ -34,6 +34,8 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.osmdroid.android)
             implementation(libs.androidx.media3.exoplayer.v180)
+            implementation(libs.androidx.media3.session)
+            implementation(libs.androidx.media3.ui)
         }
         commonMain.dependencies {
             implementation(libs.koin.core)

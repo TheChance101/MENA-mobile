@@ -3,6 +3,7 @@ package net.thechance.mena.identity.presentation.screen.addresses.addEditLocatio
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -77,7 +78,8 @@ class AddEditLocationScreen(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth()
                         .padding(horizontal = Theme.spacing._16)
-                        .padding(bottom = Theme.spacing._16),
+                        .padding(bottom = Theme.spacing._16)
+                        .imePadding(),
                     text = stringResource(Res.string.save),
                     onClick = listener::onClickSave,
                     isEnabled = state.isSaveEnabled,

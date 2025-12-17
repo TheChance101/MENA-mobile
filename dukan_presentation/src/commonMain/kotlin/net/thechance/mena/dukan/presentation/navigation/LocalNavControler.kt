@@ -6,3 +6,5 @@ import androidx.navigation.NavController
 val LocalNavController = staticCompositionLocalOf<NavController> {
     error("No NavController provided")
 }
+
+val LocalDarkTheme = staticCompositionLocalOf { false }

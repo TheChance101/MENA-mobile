@@ -17,8 +17,10 @@ import net.thechance.mena.dukan.data.dto.PageResponseDto
 import net.thechance.mena.dukan.data.dto.product.CreateProductResponse
 import net.thechance.mena.dukan.data.dto.product.ProductDto
 import net.thechance.mena.dukan.data.repository.DukanProductRepositoryImpl
+import net.thechance.mena.dukan.data.repository.mockEngine.MockDukanApiClient
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonHeaders
 import net.thechance.mena.dukan.data.repository.mockEngine.dukan.jsonSerialization
+import net.thechance.mena.dukan.data.util.network.DukanApi
 
 
 fun MockRequestHandleScope.defaultCreateProductResponse() = respond(
@@ -93,9 +95,10 @@ fun createProductHttpClient(
     deleteImagesResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     productDetailsResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null,
     toggleFavoriteResponse: (suspend MockRequestHandleScope.() -> HttpResponseData)? = null
-): HttpClient {
+): DukanApi {
     val dukanId = "10"
-    return HttpClient(MockEngine { request ->
+    val httpClient = HttpClient(MockEngine { request ->
+
         when {
             request.url.encodedPath == "/dukan/product/create" -> createResponse?.invoke(this)
                 ?: defaultCreateProductResponse()
@@ -144,7 +147,7 @@ fun createProductHttpClient(
         install(ContentNegotiation) { json(jsonSerialization) }
         install(DefaultRequest) { contentType(ContentType.Application.Json) }
     }
-
+    return MockDukanApiClient(httpClient)
 }
 
 

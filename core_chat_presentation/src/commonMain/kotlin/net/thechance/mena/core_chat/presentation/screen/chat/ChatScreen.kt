@@ -172,6 +172,7 @@ fun ChatScreenContent(
                     isVisible = state.isSendMoneyDialogVisible,
                     attachmentsInteractionListener = interactions,
                     value = state.amountToTransfer,
+                    isSendMoneyButtonEnabled = state.isSendMoneyButtonEnabled,
                     isLoading = state.isLoadingSendMoneyButton,
                 )
                 messageReactionDialog(
