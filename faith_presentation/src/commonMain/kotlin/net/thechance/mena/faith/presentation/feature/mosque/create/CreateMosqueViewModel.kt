@@ -2,6 +2,7 @@ package net.thechance.mena.faith.presentation.feature.mosque.create
 
 import androidx.lifecycle.viewModelScope
 import com.attafitamim.krop.core.images.ImageSrc
+import io.github.dellisd.spatialk.geojson.Position
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -12,11 +13,17 @@ import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.AddressModel
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.toCoordinates
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.toCoordinatesUiState
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.toPosition
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
+import net.thechance.mena.faith.presentation.navigation.createNavigateToMapEffect
 import net.thechance.mena.faith.presentation.utils.extentions.toByteArray
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.service.LocationService
 import org.jetbrains.compose.resources.getString
+import org.maplibre.compose.camera.CameraPosition
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -24,17 +31,32 @@ internal class CreateMosqueViewModel(
     private val repository: MosqueRepository,
     private val sharedImageViewModel: SharedImageViewModel,
     private val locationService: LocationService,
-    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) :
     BaseViewModel<CreateMosqueUiState, CreateMosqueEffect>(
         CreateMosqueUiState()
     ), CreateMosqueInteractionListener {
 
-
     init {
         sharedImageViewModel.clearImage()
         setInitialLocation()
         observeCroppedImage()
+    }
+
+    fun onLocationPicked(addressModel: AddressModel?) {
+        if (addressModel == null) return
+        updateState {
+            it.copy(
+                location = addressModel.coordinates?.toCoordinates(),
+                mosqueLocation = addressModel.coordinates?.toCoordinates(),
+                cameraPosition = CameraPosition(
+                    target = addressModel.coordinates?.toPosition() ?: Position(0.0,0.0)
+                    , zoom = 13.0
+                ),
+                address = addressModel.address,
+                name = addressModel.coordinates.toString()
+            )
+        }
     }
 
     private fun setInitialLocation() {
@@ -135,11 +157,11 @@ internal class CreateMosqueViewModel(
     }
 
     override fun onClickMap() {
-        //todo add the logic here effect to PickLocationScreen
+        sendEffect(createNavigateToMapEffect())
     }
 
     override fun onEditMarkerClick() {
-        updateState { it.copy(mosqueLocation = null, offset = null) }
+        sendEffect(createNavigateToMapEffect(uiState.value.location?.toCoordinatesUiState()))
         checkIfFormIsComplete()
     }
 

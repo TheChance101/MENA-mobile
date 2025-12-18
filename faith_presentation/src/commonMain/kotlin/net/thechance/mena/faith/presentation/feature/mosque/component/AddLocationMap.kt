@@ -41,7 +41,7 @@ fun AddLocationMap(
 
     val camera = rememberCameraState(firstPosition = cameraPosition)
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(cameraPosition) {
         camera.animateTo(
             finalPosition = cameraPosition,
         )

@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,8 +35,10 @@ import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
+import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import net.thechance.mena.faith.presentation.feature.mosque.component.MapSection
 import net.thechance.mena.faith.presentation.feature.mosque.component.UploadImageContainer
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.convertAddressStringToAddressModel
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
 import net.thechance.mena.faith.presentation.navigation.Route
 import org.jetbrains.compose.resources.painterResource
@@ -48,6 +54,19 @@ internal fun CreateMosqueScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val addressModelJsonString by savedStateHandle
+        ?.getStateFlow<String?>("address_model_json_string", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    val addressModel = convertAddressStringToAddressModel(addressModelJsonString)
+    LaunchedEffect(addressModel) {
+        if (addressModel != null) {
+            viewModel.onLocationPicked(addressModel)
+            savedStateHandle?.remove<MosqueUiState.Coordinate?>("selected_location")
+        }
+    }
+
     ObserveAsEffect(viewModel.uiEffect) { effect ->
         when (effect) {
             CreateMosqueEffect.NavigateBack -> {
@@ -61,7 +80,7 @@ internal fun CreateMosqueScreen(
 
             CreateMosqueEffect.NavigateToUploadImageRoute -> navController.navigate(Route.UploadImageRoute)
             CreateMosqueEffect.NavigateToAddressesScreen -> navController.navigate(Route.UserAddresses)
-            is CreateMosqueEffect.NavigateToMap -> {}
+            is CreateMosqueEffect.NavigateToMap -> navController.navigate(Route.PickLocationRoute(effect.coordinates?.latitude , effect.coordinates?.longitude))
         }
     }
     Content(uiState = uiState, listener = viewModel)
@@ -77,9 +96,7 @@ private fun Content(
         topBar = { CreateMosqueAppBar(onBackClick = listener::onBackClick) },
         bottomBar = {
             PrimaryButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(Theme.spacing._16),
+                modifier = Modifier.fillMaxWidth().padding(Theme.spacing._16),
                 text = stringResource(Res.string.add),
                 onClick = listener::onAddClick,
                 isEnabled = uiState.isButtonEnabled,

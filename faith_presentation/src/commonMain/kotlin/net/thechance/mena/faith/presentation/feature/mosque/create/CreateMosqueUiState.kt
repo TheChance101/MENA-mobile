@@ -18,7 +18,6 @@ data class CreateMosqueUiState(
             longitude = 22.39869322710709
         ), zoom = 1.6
     ),
-    val animateToCurrentLocation: Boolean = false,
     val offset: DpOffset? = null,
     val isButtonEnabled: Boolean = false,
     val successMessage: String? = null
