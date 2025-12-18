@@ -53,7 +53,6 @@ internal sealed interface Route {
     @Serializable
     data object UserAddresses : Route
 
-
     @Serializable
     data class SearchRoute(
         val surahId: Int? = null,
@@ -71,5 +70,11 @@ internal sealed interface Route {
         val surahId: String,
         val ayahNumber: Int,
         val ayahContent: String,
+    ) : Route
+
+    @Serializable
+    data class PickLocationRoute(
+        val latitude: Double? = null,
+        val longitude: Double? = null
     ) : Route
 }
