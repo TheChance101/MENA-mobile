@@ -1,21 +1,10 @@
 package net.thechance.mena.faith.presentation.navigation
 
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueEffect
-import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueUiState
-
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.CoordinatesUiState
 
 fun createNavigateToMapEffect(
-    addressModel: CreateMosqueUiState? = null, onSuccess: (CreateMosqueUiState) -> Unit
+    coordinates: CoordinatesUiState? = null
 ): CreateMosqueEffect {
-    return CreateMosqueEffect.NavigateToMap(addressModel, onSuccess)
+    return CreateMosqueEffect.NavigateToMap(coordinates)
 }
-
-//fun createNavigateToHomeEffect(): LoginScreenUIEffect {
-//    return LoginScreenUIEffect.NavigateToHome
-//}
-//
-//fun createNavigateToEditProfileEffect(
-//    userInfo: User?
-//): ProfileScreenUIEffect {
-//    return ProfileScreenUIEffect.NavigateToEditProfileScreen(userInfo = userInfo)
-//}
