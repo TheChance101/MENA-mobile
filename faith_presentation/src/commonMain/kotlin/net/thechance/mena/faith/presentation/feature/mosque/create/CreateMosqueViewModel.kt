@@ -54,7 +54,6 @@ internal class CreateMosqueViewModel(
                     , zoom = 13.0
                 ),
                 address = addressModel.address,
-                name = addressModel.coordinates.toString()
             )
         }
     }
