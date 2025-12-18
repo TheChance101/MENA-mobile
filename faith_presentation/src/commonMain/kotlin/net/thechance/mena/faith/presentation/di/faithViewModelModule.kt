@@ -9,6 +9,9 @@ import net.thechance.mena.faith.presentation.feature.main.MainViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.NearbyMosquesViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.create.CreateMosqueViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.mosqueImageCrop.MosqueImageCropViewModel
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.PickLocationViewModel
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.args.PickLocationArgs
+import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.args.PickLocationArgsImpl
 import net.thechance.mena.faith.presentation.feature.mosque.shared.SharedImageViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.uploadImageScreen.UploadImageViewModel
 import net.thechance.mena.faith.presentation.feature.prayertime.PrayerTimeViewModel
@@ -42,6 +45,7 @@ internal val faithViewModelModule = module {
 
     factoryOf(::SurahArgsImpl) bind SurahArgs::class
     factoryOf(::SearchArgsImpl) bind SearchArgs::class
+    factoryOf(::PickLocationArgsImpl) bind PickLocationArgs::class
     factoryOf(::DownloadedRecitersArgsImpl) bind DownloadedRecitersArgs::class
     factoryOf(::SurahRecitersArgsImpl) bind SurahRecitersArgs::class
     viewModelOf(::SurahViewModel)
@@ -60,6 +64,7 @@ internal val faithViewModelModule = module {
     viewModelOf(::CreateMosqueViewModel)
     viewModelOf(::MosqueImageCropViewModel)
     viewModelOf(::UploadImageViewModel)
+    viewModelOf(::PickLocationViewModel)
     singleOf(::SharedImageViewModel)
 
 }
