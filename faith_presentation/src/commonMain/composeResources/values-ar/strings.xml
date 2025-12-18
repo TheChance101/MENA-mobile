@@ -200,4 +200,6 @@
     <string name="remove_audio">حذف الصوت</string>
     <string name="remove_audio_message">هل أنت متأكد أنك تريد حذف صوت هذا القارئ؟</string>
 
+    <!-- PickLocation -->
+    <string name="pick_location_title">اختر منطقة</string>
 </resources>
