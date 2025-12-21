@@ -37,7 +37,7 @@ import org.maplibre.compose.style.BaseStyle
 import org.maplibre.compose.util.ClickResult
 
 @Composable
-fun PickLocationMap(
+internal fun PickLocationMap(
     currentLocation: CoordinatesUiState,
     animateToCurrentLocation: Boolean,
     showAnchor: Boolean,

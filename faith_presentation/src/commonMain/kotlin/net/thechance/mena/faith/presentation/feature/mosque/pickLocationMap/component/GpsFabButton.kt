@@ -25,7 +25,7 @@ import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun GpsFabButton(
+internal fun GpsFabButton(
     onClick: () -> Unit,
     isLoading: Boolean = false,
     modifier: Modifier = Modifier

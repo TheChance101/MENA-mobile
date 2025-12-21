@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import net.thechance.mena.faith.presentation.feature.mosque.MosqueUiState
 import net.thechance.mena.identity.domain.model.Coordinates
 
-data class PickLocationScreenUIState(
+internal data class PickLocationScreenUIState(
     val mosqueLocation: CoordinatesUiState = CoordinatesUiState(0.0, 0.0),
     val animateToCurrentLocation: Boolean = false,
     val showAnchor: Boolean = false,

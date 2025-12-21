@@ -1,7 +1,7 @@
 package net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap
 
 
-interface PickLocationScreenInteractionListener {
+internal interface PickLocationScreenInteractionListener {
     fun onClickMap(coordinates: CoordinatesUiState)
     fun onMoveCamera(coordinates: CoordinatesUiState)
     fun onClickGps()

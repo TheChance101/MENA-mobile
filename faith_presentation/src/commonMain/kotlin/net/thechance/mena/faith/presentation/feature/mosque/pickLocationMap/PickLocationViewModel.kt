@@ -8,7 +8,7 @@ import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.args
 import net.thechance.mena.identity.domain.model.Coordinates
 import net.thechance.mena.identity.domain.repository.AddressesRepository
 
-class PickLocationViewModel(
+internal class PickLocationViewModel(
     private val addressesRepository: AddressesRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val pickLocationArgs: PickLocationArgs

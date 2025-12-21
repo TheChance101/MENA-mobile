@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel()) {
+internal fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel()) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
