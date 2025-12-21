@@ -15,7 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.ic_edit
-import mena.faith_presentation.generated.resources.ic_mosque
+import mena.faith_presentation.generated.resources.mosque_pin
 import net.thechance.mena.designsystem.presentation.component.button.FabButton
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.utils.MapStyle
@@ -69,7 +69,7 @@ fun AddLocationMap(
             modifier = Modifier.align(Alignment.Center)
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_mosque),
+                painter = painterResource(Res.drawable.mosque_pin),
                 contentDescription = null,
                 contentScale = ContentScale.FillHeight,
                 modifier = Modifier.padding(bottom = 58.dp).height(58.dp)
