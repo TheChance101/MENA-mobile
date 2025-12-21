@@ -17,6 +17,6 @@ data class MosqueResponseDto @OptIn(ExperimentalUuidApi::class) constructor(
     val latitude: Double,
     @SerialName("longitude")
     val longitude: Double,
-    @SerialName("image")
+    @SerialName("imageUrl")
     val image: String,
 )
