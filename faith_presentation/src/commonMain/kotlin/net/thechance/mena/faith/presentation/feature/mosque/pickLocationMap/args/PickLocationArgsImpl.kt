@@ -3,7 +3,7 @@ package net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.arg
 import androidx.lifecycle.SavedStateHandle
 
 class PickLocationArgsImpl(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : PickLocationArgs {
     override val latitude: Double? = savedStateHandle["latitude"]
     override val longitude: Double? = savedStateHandle["longitude"]
