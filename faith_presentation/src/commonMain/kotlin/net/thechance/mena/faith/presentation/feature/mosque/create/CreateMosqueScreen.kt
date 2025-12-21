@@ -105,9 +105,7 @@ private fun Content(
         }
     ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = Theme.spacing._16)
+        modifier = Modifier.fillMaxSize().padding(horizontal = Theme.spacing._16)
     ) {
         item { MosqueLocationHeader(uiState, listener) }
         item {

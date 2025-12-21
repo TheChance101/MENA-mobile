@@ -105,7 +105,7 @@ internal class CreateMosqueViewModel(
         tryToExecute(
             execute = ::createMosque,
             onError = ::handleErrorSnackBar,
-            onFinally = {
+            onSuccess = {
                 sharedImageViewModel.clearImage()
                 sendEffect(CreateMosqueEffect.NavigateBack)
             }
@@ -117,7 +117,6 @@ internal class CreateMosqueViewModel(
         val imageBytes = getImageBytes()
 
         repository.addMosque(mosque, imageBytes)
-
         handleSuccessfulMosqueCreation()
     }
 

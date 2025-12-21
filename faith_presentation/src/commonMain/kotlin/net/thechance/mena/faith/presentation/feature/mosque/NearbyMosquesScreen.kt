@@ -18,7 +18,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +46,8 @@ import net.thechance.mena.designsystem.presentation.component.textField.TextFiel
 import net.thechance.mena.designsystem.presentation.theme.theme.MenaTheme
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.designSystem.theme.QuranTheme
 import net.thechance.mena.faith.presentation.feature.mosque.component.MapView
 import net.thechance.mena.faith.presentation.feature.mosque.component.MosqueDetailsBottomSheet
@@ -66,17 +71,18 @@ internal fun NearbyMosquesScreen(
     mapNavigator: MapNavigator = koinInject(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
-    LaunchedEffect(Unit) {
-        val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-        savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
-            ?.collect { successMessage ->
-                successMessage?.let {
-                    viewModel.showSuccessMessage(Res.string.add_mosque_message)
-                    savedStateHandle.remove<String?>("add_mosque_message")
-                }
-            }
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val successMessage by savedStateHandle?.getStateFlow<String?>("add_mosque_message", null)
+        ?.collectAsState() ?: remember { mutableStateOf(null) }
+
+    LaunchedEffect(successMessage) {
+        successMessage?.let {
+            viewModel.showSuccessMessage(Res.string.add_mosque_message)
+            savedStateHandle?.remove<String?>("add_mosque_message")
+        }
     }
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
@@ -87,13 +93,14 @@ internal fun NearbyMosquesScreen(
             is NearbyMosquesEffect.NavigateToMap -> mapNavigator.openMapAtCoordinate(coordinate = effect.coordinate)
         }
     }
-    Content(uiState = state, listener = viewModel)
+    Content(uiState = state, snackBarState = snackBarState, listener = viewModel)
 }
 
 @OptIn(ExperimentalUuidApi::class)
 @Composable
 private fun Content(
     uiState: NearbyMosquesMapUiState,
+    snackBarState: SnackBarState,
     listener: NearbyMosquesInteractionListener
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -126,6 +133,13 @@ private fun Content(
                     )
                 }
             }
+        },
+        snakeBar = {
+            FaithSnackBar(
+                message = snackBarState.message,
+                isVisible = snackBarState.isVisible,
+                status = snackBarState.status,
+            )
         }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -254,7 +268,8 @@ private fun Preview() {
                     override fun showSuccessMessage(message: StringResource) {}
                     override fun onCameraMove() {}
                     override fun onMapIdle(latitude: Double, longitude: Double) {}
-                }
+                },
+                snackBarState = SnackBarState()
             )
         }
     }
