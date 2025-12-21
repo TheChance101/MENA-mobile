@@ -18,7 +18,7 @@ suspend inline fun <reified T> executeApiSafely(
         .getOrThrow()
 
     return when (response.status) {
-        HttpStatusCode.OK -> {
+        HttpStatusCode.OK , HttpStatusCode.Created -> {
             runCatching {
                 response.body() ?: run {
                     Napier.d(message = "Response body is null")
