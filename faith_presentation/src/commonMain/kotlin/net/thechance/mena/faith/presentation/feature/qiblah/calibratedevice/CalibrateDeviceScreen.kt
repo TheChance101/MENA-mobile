@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import mena.faith_presentation.generated.resources.Res
@@ -135,6 +136,7 @@ private fun ConfigurationMessage() {
                 AsyncImage(
                     model = Res.getUri("drawable/loading_qiblah.gif"),
                     contentDescription = stringResource(Res.string.calibrate_device_animation),
+                    colorFilter = ColorFilter.tint(Theme.colorScheme.primary.primary),
                     modifier = Modifier
                         .size(64.dp)
                         .align(Alignment.Center)

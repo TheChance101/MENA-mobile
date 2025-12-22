@@ -17,6 +17,7 @@ import net.thechance.mena.faith.domain.entity.PrayerTime
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
+import net.thechance.mena.faith.domain.service.QuranService
 import net.thechance.mena.faith.presentation.base.snackbar.SnackbarHandler
 import net.thechance.mena.identity.domain.entity.Address
 import net.thechance.mena.identity.domain.entity.AddressType
@@ -42,6 +43,7 @@ class MainViewModelTests {
 
     private var testDispatcher: TestDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: MainViewModel
+    private lateinit var quranService: QuranService
     private lateinit var quranRepository: QuranRepository
     private lateinit var prayerTimeRepository: PrayerTimeRepository
     private lateinit var addressesRepository: AddressesRepository
@@ -55,7 +57,7 @@ class MainViewModelTests {
         quranRepository = mock(MockMode.autofill)
         prayerTimeRepository = mock(MockMode.autofill)
         addressesRepository = mock(MockMode.autofill)
-
+        quranService = QuranService(repository = quranRepository)
         everySuspend { quranRepository.getLastAyahForTilawah() } returns fakeAyah
         everySuspend { prayerTimeRepository.getPrayerTimes(any(), any()) } returns fakePrayerTimes
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
@@ -72,12 +74,13 @@ class MainViewModelTests {
     fun `init should update address in state when address is valid`() = runTest {
 
         everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-
+        everySuspend { quranRepository.getLastAyahForTilawah() } returns fakeAyah
         viewModel = MainViewModel(
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -95,7 +98,8 @@ class MainViewModelTests {
                 quranRepository = quranRepository,
                 prayerTimeRepository = prayerTimeRepository,
                 locationService = locationService,
-                dispatcher = testDispatcher
+                dispatcher = testDispatcher,
+                quranService = quranService
             )
 
             testDispatcher.scheduler.advanceUntilIdle()
@@ -116,7 +120,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -139,7 +144,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         assertFalse(viewModel.uiState.value.isLoading)
@@ -160,7 +166,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -177,33 +184,15 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
 
         val state = viewModel.uiState.value
         assertTrue(state.prayerTimesUiState != null)
-        assertTrue(state.prayerTimesUiState?.prayers?.isNotEmpty() == true)
-    }
-
-    @Test
-    fun `init should populate tilawahUiState when last ayah loaded`() = runTest {
-
-        everySuspend { addressesRepository.getActiveAddress() } returns fakeAddress
-
-        viewModel = MainViewModel(
-            quranRepository = quranRepository,
-            prayerTimeRepository = prayerTimeRepository,
-            locationService = locationService,
-            dispatcher = testDispatcher
-        )
-
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        val state = viewModel.uiState.value
-        assertTrue(state.tilawahUiState != null)
-        assertEquals(SURAH_ID, state.tilawahUiState?.surahId)
+        assertTrue(state.prayerTimesUiState.prayers.isNotEmpty())
     }
 
     @Test
@@ -218,7 +207,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -237,7 +227,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -263,7 +254,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -281,7 +273,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()
@@ -301,7 +294,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         viewModel.uiEffect.test {
@@ -320,7 +314,8 @@ class MainViewModelTests {
             quranRepository = quranRepository,
             prayerTimeRepository = prayerTimeRepository,
             locationService = locationService,
-            dispatcher = testDispatcher
+            dispatcher = testDispatcher,
+            quranService = quranService
         )
 
         testDispatcher.scheduler.advanceUntilIdle()

@@ -7,5 +7,4 @@ data class DownlodedSur(
     val arabicNameImg: Surah.SurahOrder,
     val surahName: String,
     val recitersName: List<String>
-
 )

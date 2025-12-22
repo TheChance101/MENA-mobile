@@ -3,6 +3,7 @@ package net.thechance.mena.faith.presentation.feature.quran.reciter.surahReciter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -75,14 +76,16 @@ private fun Content(
 
             items(uiState.reciters) { reciter ->
                 ReciterItem(
-                    reciter = reciter.name,
+                        reciter = reciter.name,
                     recitingType = reciter.recitingType,
                     isDownloaded = reciter.isDownloaded,
                     onSelect = { listener.onSelectReciterClick(reciter.id) },
                     onDownloadClick = { listener.onDownloadClick(reciter.id) },
                     isSelectReciter = reciter.id == uiState.selectedReciterId,
                     isDownloadIconVisible = true,
-                    onPlayClick = { listener.playReciterSample(reciter.id) }
+                    onPlayClick = { listener.playReciterSample(reciter.id) },
+                    modifier = Modifier.padding(horizontal = Theme.spacing._16),
+
                 )
             }
         }

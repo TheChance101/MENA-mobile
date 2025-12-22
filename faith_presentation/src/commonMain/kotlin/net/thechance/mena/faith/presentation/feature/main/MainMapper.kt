@@ -9,14 +9,12 @@ import mena.faith_presentation.generated.resources.fajr
 import mena.faith_presentation.generated.resources.isha
 import mena.faith_presentation.generated.resources.maghrib
 import mena.faith_presentation.generated.resources.sunrise
-import mena.faith_presentation.generated.resources.surah_al_fatiha
 import net.thechance.mena.faith.domain.entity.PrayerName
 import net.thechance.mena.faith.domain.entity.PrayerTime
-import net.thechance.mena.faith.domain.entity.Surah
 import net.thechance.mena.faith.domain.model.LastAyahForTilawah
+import net.thechance.mena.faith.domain.service.QuranService
 import net.thechance.mena.faith.presentation.utils.extentions.prayerTime.formatInstantToTimeString
 import org.jetbrains.compose.resources.StringResource
-import org.jetbrains.compose.resources.getString
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
@@ -80,11 +78,9 @@ private fun getCurrentPrayer(prayerTimes: List<PrayerTime>, now: Instant): Praye
     return sortedPrayers.lastOrNull { now >= it.time }?.name ?: sortedPrayers.first().name
 }
 
-suspend fun LastAyahForTilawah.toTilawahUiState(): TilawahUiState {
-    val surahName = Surah.SurahOrder.entries
-        .find { it.order == this.surahId }
-        ?.name ?: getString(Res.string.surah_al_fatiha)
-    val ayahLabel =  number
+suspend fun LastAyahForTilawah.toTilawahUiState(quranService: QuranService): TilawahUiState {
+    val surahName = quranService.getSurahDetails(this.surahId).name
+    val ayahLabel = number
     return TilawahUiState(
         surahName = surahName,
         ayahNumber = ayahLabel,

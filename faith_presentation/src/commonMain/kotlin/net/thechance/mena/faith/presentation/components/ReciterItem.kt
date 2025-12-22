@@ -52,7 +52,6 @@ fun ReciterItem(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .padding(horizontal = Theme.spacing._16)
             .border(
                 width = 1.dp,
                 color = borderColor,

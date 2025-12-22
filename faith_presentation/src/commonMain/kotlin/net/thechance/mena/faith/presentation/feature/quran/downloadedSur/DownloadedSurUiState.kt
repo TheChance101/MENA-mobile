@@ -12,7 +12,7 @@ data class DownloadedSurUiState(
         val id: Int,
         val arabicNameImg: Surah.SurahOrder,
         val surahName: String,
-        val recitersName: List<String>,
+        val recitersName: List<String>
     )
 }
 
@@ -21,6 +21,6 @@ fun DownlodedSur.toUiState(): DownloadedSurUiState.SurahDetailsUiState =
         id = id,
         arabicNameImg = arabicNameImg,
         surahName = surahName,
-        recitersName = recitersName,
+        recitersName = recitersName
     )
 

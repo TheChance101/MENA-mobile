@@ -271,7 +271,6 @@ class SurahViewModel(
     private fun togglePlayPause() {
         val currentUrl = uiState.value.currentPlayingAyahUrl ?: return
         val isPlaying = uiState.value.isAyahSoundPlaying
-
         if (isPlaying) quranPlayer.pauseAyah()
         else quranPlayer.playAyah(
             ayahUrl = currentUrl,

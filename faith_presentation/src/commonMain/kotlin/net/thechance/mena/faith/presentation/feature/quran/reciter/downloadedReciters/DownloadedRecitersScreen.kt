@@ -1,12 +1,14 @@
 package net.thechance.mena.faith.presentation.feature.quran.reciter.downloadedReciters
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -14,8 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import mena.faith_presentation.generated.resources.Res
+import mena.faith_presentation.generated.resources.ic_delete
 import mena.faith_presentation.generated.resources.reciters
 import mena.faith_presentation.generated.resources.remove_audio
 import mena.faith_presentation.generated.resources.remove_audio_message
@@ -31,6 +35,7 @@ import net.thechance.mena.faith.presentation.feature.quran.downloadedSur.compone
 import net.thechance.mena.faith.presentation.feature.quran.reciter.component.SearchReciter
 import net.thechance.mena.faith.presentation.feature.quran.search.ayah.component.SearchEmptyState
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -100,9 +105,6 @@ fun EmptyRecitersContent() {
             subtitle = Res.string.search_reciter,
             isStartState = false,
             isResultsState = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(Theme.spacing._16)
         )
     }
 }
@@ -115,7 +117,9 @@ fun RecitersListContent(
     var currentSwipedCardId by remember { mutableIntStateOf(-1) }
 
     LazyColumn(
-        modifier = Modifier.padding(top = Theme.spacing._16),
+        modifier = Modifier
+            .padding(top = Theme.spacing._16)
+            .padding(horizontal = Theme.spacing._16),
         verticalArrangement = Arrangement.spacedBy(Theme.spacing._8)
     ) {
         items(
@@ -127,6 +131,7 @@ fun RecitersListContent(
                     onClick = { listener.onDeleteReciterAudioClick(it.id) },
                     currentSwipedCardId = currentSwipedCardId,
                     onSwipeStateChange = { newId -> currentSwipedCardId = newId },
+                    backgroundIcon = painterResource(Res.drawable.ic_delete),
                     cardContent = { contentModifier ->
                         ReciterItem(
                             reciter = it.name,
@@ -136,7 +141,12 @@ fun RecitersListContent(
                             onDownloadClick = {},
                             isSelectReciter = false,
                             isDownloadIconVisible = false,
-                            modifier = contentModifier,
+                            modifier = contentModifier
+                                .background(
+                                    color = Theme.colorScheme.background.surfaceLow,
+                                    shape = RoundedCornerShape(Theme.radius.md),
+                                )
+                                .clip(shape = RoundedCornerShape(Theme.radius.md))
                         )
                     },
                     modifier = Modifier.animateItem(

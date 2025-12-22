@@ -38,7 +38,7 @@ internal fun SearchEmptyState(
     if (!(isStartState || isResultsState)) return
 
     Column(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

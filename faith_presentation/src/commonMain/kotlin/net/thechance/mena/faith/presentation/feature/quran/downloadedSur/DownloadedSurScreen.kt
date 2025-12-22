@@ -42,6 +42,7 @@ fun DownloadedSurScreen(viewModel: DownloadedSurViewModel = koinViewModel()) {
             DownloadedSurEffect.NavigateBack -> navController.navigateUp()
             is DownloadedSurEffect.NavigateToRecitersScreen ->
                 navController.navigate(Route.ReciterSelectionRoute)
+
             is DownloadedSurEffect.NavigateToDownloadedSurahReciterScreen -> {
                 navController.navigate(
                     Route.DownloadedRecitersRoute(
@@ -144,25 +145,25 @@ private fun Preview() {
                             1,
                             Surah.SurahOrder.AdDukhan,
                             "Al-Duha",
-                            listOf("Al Minshawi", "Sudais"),
+                            listOf("Al Minshawi", "Sudais")
                         ),
                         DownloadedSurUiState.SurahDetailsUiState(
                             1,
                             Surah.SurahOrder.AnNas,
                             "An-Nas",
-                            listOf("Sudais"),
+                            listOf("Sudais")
                         ),
                         DownloadedSurUiState.SurahDetailsUiState(
                             1,
                             Surah.SurahOrder.AlKahf,
                             "Al-Kahf",
-                            listOf("Al Minshawi", "Sudais"),
+                            listOf("Al Minshawi", "Sudais")
                         ),
                         DownloadedSurUiState.SurahDetailsUiState(
                             1,
                             Surah.SurahOrder.AshShams,
                             "Ash-Shams",
-                            listOf("Al Minshawi", "Sudais"),
+                            listOf("Al Minshawi", "Sudais")
                         ),
                     ),
                 ),
