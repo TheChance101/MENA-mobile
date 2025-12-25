@@ -14,6 +14,8 @@ import kotlinx.coroutines.test.setMain
 import net.thechance.mena.identity.domain.exception.NoNetworkException
 import net.thechance.mena.identity.domain.model.ContactInfo
 import net.thechance.mena.identity.domain.repository.ApplicationInfoRepository
+import net.thechance.mena.identity.presentation.screen.profile.contactUs.ContactUsUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.contactUs.ContactUsViewModel
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

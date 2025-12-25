@@ -20,8 +20,12 @@ import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnac
 import net.thechance.mena.identity.presentation.components.snackBar.LocalSnackBarController
 import net.thechance.mena.identity.presentation.screen.addresses.myAddresses.MyAddressesScreen
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
-import net.thechance.mena.identity.presentation.screen.profile.ProfileScreen
+import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIStateJsonString
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.UploadProfileImageScreen
 import org.koin.compose.koinInject
 
@@ -149,11 +153,18 @@ class IdentityFeatureApiImpl : IdentityFeatureApi {
         val imageUploadCompleted = registrationDraftRepository.isImageUploadCompleted()
 
         return if (imageUploadCompleted) {
-            AccountCreatedScreen(authTokens = authTokens, phoneNumber = lastPhoneNumber)
+            AccountCreatedScreen(
+                authTokensUiStateJsonString = AuthUIState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
+                ).toAuthUIStateJsonString()
+            )
         } else {
             UploadProfileImageScreen(
-                authTokens = authTokens,
-                phoneNumber = lastPhoneNumber
+                authTokensUiStateJsonString = AuthUIState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = lastPhoneNumber.toPhoneNumberUIState()
+                ).toAuthUIStateJsonString()
             )
         }
     }

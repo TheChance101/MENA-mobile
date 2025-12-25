@@ -17,7 +17,9 @@ import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenUIEffect
 import net.thechance.mena.identity.presentation.screen.register.selectGender.SelectGenderScreenViewModel
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -37,7 +39,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            registerUIState = RegisterUIState(phoneNumber),
+            registerUIState = RegisterUIState(phoneNumber.toPhoneNumberUIState()),
             dispatcher = testDispatcher
         )
     }
@@ -68,7 +70,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             val effect = awaitItem()
             assert(effect is SelectGenderScreenUIEffect.NavigateToUploadProfileImage)
             val navigateEffect = effect as SelectGenderScreenUIEffect.NavigateToUploadProfileImage
-            assert(navigateEffect.authTokens == expectedTokens)
+            assert(navigateEffect.authUiState.authTokens?.toAuthenticationTokens() == expectedTokens)
         }
     }
 
@@ -116,7 +118,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            registerUIState = RegisterUIState(phoneNumber),
+            registerUIState = RegisterUIState(phoneNumber.toPhoneNumberUIState()),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()
@@ -134,7 +136,7 @@ class SelectGenderScreenViewModelTest: BaseCoroutineTest() {
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
             authenticationRepository = authenticationRepository,
-            registerUIState = RegisterUIState(phoneNumber),
+            registerUIState = RegisterUIState(phoneNumber.toPhoneNumberUIState()),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()

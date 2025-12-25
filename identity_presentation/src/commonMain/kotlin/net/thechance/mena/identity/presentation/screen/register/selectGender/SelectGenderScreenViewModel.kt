@@ -15,8 +15,11 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.toRegisterRequest
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterRequest
 import org.jetbrains.compose.resources.StringResource
 
 class SelectGenderScreenViewModel(
@@ -49,7 +52,7 @@ class SelectGenderScreenViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) },
             onSuccess = ::handleSavedDraft,
             dispatcher = dispatcher
         )
@@ -85,8 +88,10 @@ class SelectGenderScreenViewModel(
     private fun navigateToUploadScreen(authTokens: AuthenticationTokens) {
         sendNewEffect(
             SelectGenderScreenUIEffect.NavigateToUploadProfileImage(
-                authTokens,
-                registerUIState.phoneNumber
+                AuthUIState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = registerUIState.phoneNumber
+                )
             )
         )
     }
@@ -100,7 +105,7 @@ class SelectGenderScreenViewModel(
 
     private fun clearDraft() {
         tryToExecute(
-            function = { registrationDraftRepository.clearDraft(registerUIState.phoneNumber) },
+            function = { registrationDraftRepository.clearDraft(registerUIState.phoneNumber.toPhoneNumber()) },
             dispatcher = dispatcher
         )
     }
@@ -125,10 +130,10 @@ class SelectGenderScreenViewModel(
     private fun saveGender(gender: Gender) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber())
                             ?: RegistrationDraft()
                 registrationDraftRepository.saveDraft(
-                    registerUIState.phoneNumber,
+                    registerUIState.phoneNumber.toPhoneNumber(),
                     draft.copy(gender = gender)
                 )
             },

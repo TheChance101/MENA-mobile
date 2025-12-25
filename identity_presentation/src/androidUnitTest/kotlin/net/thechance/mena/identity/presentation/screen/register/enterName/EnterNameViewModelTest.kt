@@ -6,10 +6,11 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
-import net.thechance.mena.identity.domain.entity.PhoneNumber
 import net.thechance.mena.identity.domain.repository.RegisterRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.register.shared.PhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,7 +26,7 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
         enterNameViewModel = EnterNameViewModel(
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = PhoneNumber("+964", "7901234567"),
+            registerUIState = RegisterUIState(phoneNumber = PhoneNumberUIState("+964", "7901234567")),
             dispatcher = testDispatcher
         )
     }
@@ -244,7 +245,7 @@ class EnterNameViewModelTest : BaseCoroutineTest() {
         val viewModel = EnterNameViewModel(
             registerRepository = registerRepository,
             registrationDraftRepository = registrationDraftRepository,
-            phoneNumber = PhoneNumber("+964", "7901234567"),
+            registerUIState = RegisterUIState(phoneNumber = PhoneNumberUIState("+964", "7901234567")),
             dispatcher = testDispatcher
         )
         testDispatcher.scheduler.advanceUntilIdle()

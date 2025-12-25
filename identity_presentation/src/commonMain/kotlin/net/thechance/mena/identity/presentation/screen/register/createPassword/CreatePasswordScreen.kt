@@ -29,13 +29,16 @@ import net.thechance.mena.identity.presentation.components.LabeledInputPassword
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.register.datePicker.DatePickerScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToRegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
-class CreatePasswordScreen(
-    private val registerUIState: RegisterUIState
+data class CreatePasswordScreen(
+    val registerUIStateJsonString: String
 ) : BaseScreen<
     CreatePasswordViewModel,
     CreatePasswordUIState,
@@ -44,7 +47,7 @@ class CreatePasswordScreen(
 
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(convertJsonStringToRegisterUIState(registerUIStateJsonString)) }))
     }
 
     @Composable
@@ -111,7 +114,7 @@ class CreatePasswordScreen(
     ) {
         when (effect) {
             is CreatePasswordUIEffect.NavigateToDatePicker -> {
-                navigator.push(DatePickerScreen(registerUIState = effect.registerUIState))
+                navigator.push(DatePickerScreen(registerUIStateJsonString = effect.registerUIState.toRegisterJsonString()))
             }
 
             is CreatePasswordUIEffect.ShowSnackBarError -> {
@@ -126,13 +129,13 @@ class CreatePasswordScreen(
 fun PreviewCreatePasswordScreen() {
     MenaTheme {
         CreatePasswordScreen(
-            registerUIState = RegisterUIState(
+            registerUIStateJsonString = RegisterUIState(
                 phoneNumber = PhoneNumber(
                     countryCode = "+971",
                     localNumber = "555555555"
-                ),
+                ).toPhoneNumberUIState(),
                 countryCode = "AE"
-            )
+            ).toRegisterJsonString()
         ).OnRender(
             state = CreatePasswordUIState(
                 newPassword = "Password123",

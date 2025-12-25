@@ -35,6 +35,7 @@ import net.thechance.mena.identity.presentation.screen.countryPicker.CountryPick
 import net.thechance.mena.identity.presentation.screen.countryPicker.menaCountries.MenaCountry
 import net.thechance.mena.identity.presentation.screen.login.LoginScreen
 import net.thechance.mena.identity.presentation.screen.register.otp.RegisterOtpScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -44,6 +45,7 @@ class RegisterPhoneEntryScreen : BaseScreen<
     RegisterPhoneEntryUIState,
     RegisterPhoneEntryUIEffect,
     RegisterPhoneEntryInteractionListener>() {
+
     @Composable
     override fun Content() {
         InitScreen(getScreenModel())
@@ -125,7 +127,7 @@ class RegisterPhoneEntryScreen : BaseScreen<
     ) {
         when (effect) {
             is RegisterPhoneEntryUIEffect.NavigateToOTP -> navigator.push(
-                item = RegisterOtpScreen(effect.registerUIState)
+                item = RegisterOtpScreen(effect.registerUIState.toRegisterJsonString())
             )
 
             is RegisterPhoneEntryUIEffect.NavigateToLogin -> navigator.push(LoginScreen())

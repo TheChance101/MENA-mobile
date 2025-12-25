@@ -6,6 +6,8 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperScreenEffect
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperViewModel
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue

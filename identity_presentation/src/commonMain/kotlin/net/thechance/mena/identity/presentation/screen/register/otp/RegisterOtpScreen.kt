@@ -30,13 +30,16 @@ import net.thechance.mena.identity.presentation.components.OtpInput
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
 import net.thechance.mena.identity.presentation.screen.register.enterName.EnterNameScreen
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToRegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
-class RegisterOtpScreen(
-    private val registerUIState: RegisterUIState
+data class RegisterOtpScreen(
+    val registerUIStateJsonString: String
 ) : BaseScreen<
     RegisterOtpViewModel,
     RegisterOtpUIState,
@@ -44,7 +47,7 @@ class RegisterOtpScreen(
     RegisterOtpInteractionListener>() {
     @Composable
     override fun Content() {
-        InitScreen(getScreenModel(parameters = { parametersOf(registerUIState) }))
+        InitScreen(getScreenModel(parameters = { parametersOf(convertJsonStringToRegisterUIState(registerUIStateJsonString)) }))
     }
 
     @Composable
@@ -58,7 +61,7 @@ class RegisterOtpScreen(
                     title = stringResource(Res.string.validation_code),
                     subtitle = stringResource(
                         Res.string.register_otp_prompt,
-                        registerUIState.phoneNumber.localNumber.takeLast(2)
+                        convertJsonStringToRegisterUIState(registerUIStateJsonString).phoneNumber.localNumber.takeLast(2)
                     )
                 )
 
@@ -111,7 +114,7 @@ class RegisterOtpScreen(
     ) {
         when (effect) {
             is RegisterOtpUIEffect.NavigateToEnterName -> {
-                navigator.push(EnterNameScreen(phoneNumber = effect.phoneNumber))
+                navigator.push(EnterNameScreen(registerUIStateJsonString = effect.registerUIState.toRegisterJsonString()))
             }
 
             is RegisterOtpUIEffect.ShowSnackBarError -> {
@@ -141,9 +144,9 @@ fun PreviewRegisterOtpScreen() {
                 phoneNumber = PhoneNumber(
                     countryCode = "+964",
                     localNumber = "790123456"
-                ),
+                ).toPhoneNumberUIState(),
                 countryCode = "+964"
-            )
+            ).toRegisterJsonString()
         ).OnRender(
             state = RegisterOtpUIState(
                 otpValue = "123456",

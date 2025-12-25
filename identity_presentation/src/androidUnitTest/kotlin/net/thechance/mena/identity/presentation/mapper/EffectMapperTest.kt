@@ -5,7 +5,8 @@ import net.thechance.mena.identity.presentation.screen.addresses.addEditLocation
 import net.thechance.mena.identity.presentation.screen.addresses.shared.AddressUIState
 import net.thechance.mena.identity.presentation.screen.addresses.shared.CoordinatesUiState
 import net.thechance.mena.identity.presentation.screen.login.LoginScreenUIEffect
-import net.thechance.mena.identity.presentation.screen.profile.ProfileScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.profileMainScreen.ProfileScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.shared.UserUIState
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.ExperimentalUuidApi
@@ -48,8 +49,9 @@ class EffectMapperTest {
 
     @Test
     fun `createNavigateToEditProfileEffect should return NavigateToEditProfileScreen effect`() {
-        val result = createNavigateToEditProfileEffect(null)
+        val userUIState = UserUIState()
+        val result = createNavigateToEditProfileEffect(userUIState)
 
-        assertEquals(ProfileScreenUIEffect.NavigateToEditProfileScreen(), result)
+        assertEquals(ProfileScreenUIEffect.NavigateToEditProfileScreen(userUIState), result)
     }
 }

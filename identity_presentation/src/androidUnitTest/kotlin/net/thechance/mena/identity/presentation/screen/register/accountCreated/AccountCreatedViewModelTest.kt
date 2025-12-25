@@ -10,6 +10,8 @@ import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.domain.repository.AuthenticationRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import org.junit.Before
 import org.junit.Test
 
@@ -25,11 +27,13 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = AuthenticationTokens(
-                accessToken = "test_access_token",
-                refreshToken = "test_refresh_token"
+            AuthUIState(
+                authTokens = AuthUIState.AuthenticationTokensUiState(
+                    accessToken = "test_access_token",
+                    refreshToken = "test_refresh_token"
+                ),
+                phoneNumber = testPhoneNumber.toPhoneNumberUIState()
             ),
-            phoneNumber = testPhoneNumber,
             dispatcher = testDispatcher
         )
     }
@@ -51,10 +55,6 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
 
     @Test
     fun `onClickGoToHome should call clearLastPhoneNumber and clearDraft`() = runTest {
-        val authTokens = AuthenticationTokens(
-            accessToken = "test_access_token",
-            refreshToken = "test_refresh_token"
-        )
         coEvery { authenticationRepository.saveAuthTokensAndEmit(any()) } returns Unit
         coEvery { registrationDraftRepository.clearLastPhoneNumber() } returns Unit
         coEvery { registrationDraftRepository.clearDraft(any()) } returns Unit
@@ -71,8 +71,10 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = null,
-            phoneNumber = testPhoneNumber,
+            AuthUIState(
+                authTokens = null,
+                phoneNumber = testPhoneNumber.toPhoneNumberUIState()
+            ),
             dispatcher = testDispatcher
         )
 
@@ -87,8 +89,10 @@ class AccountCreatedViewModelTest : BaseCoroutineTest() {
         accountCreatedViewModel = AccountCreatedViewModel(
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = null,
-            phoneNumber = testPhoneNumber,
+            AuthUIState(
+                authTokens = null,
+                phoneNumber = testPhoneNumber.toPhoneNumberUIState()
+            ),
             dispatcher = testDispatcher
         )
 

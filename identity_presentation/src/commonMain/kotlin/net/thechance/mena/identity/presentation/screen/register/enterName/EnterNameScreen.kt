@@ -31,16 +31,20 @@ import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.editProfile.components.AtPrefixTransformation
-import net.thechance.mena.identity.presentation.screen.editProfile.components.ProfileEditText
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.AtPrefixTransformation
+import net.thechance.mena.identity.presentation.screen.profile.editProfile.components.ProfileEditText
 import net.thechance.mena.identity.presentation.screen.register.createPassword.CreatePasswordScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToRegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toRegisterJsonString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.core.parameter.parametersOf
 
-class EnterNameScreen(
-    private val phoneNumber: PhoneNumber
+data class EnterNameScreen(
+    val registerUIStateJsonString: String
 ) : BaseScreen<
     EnterNameViewModel,
     EnterNameUIState,
@@ -52,7 +56,7 @@ class EnterNameScreen(
         InitScreen(
             getScreenModel(
                 parameters = {
-                    parametersOf(phoneNumber)
+                    parametersOf(convertJsonStringToRegisterUIState(registerUIStateJsonString))
                 }
             )
         )
@@ -124,7 +128,7 @@ class EnterNameScreen(
     ) {
         when (effect) {
             is EnterNameUIEffect.NavigateToPassword -> {
-                navigator.push(CreatePasswordScreen(registerUIState = effect.registerUIState))
+                navigator.push(CreatePasswordScreen(registerUIStateJsonString = effect.registerUIState.toRegisterJsonString()))
             }
 
             is EnterNameUIEffect.ShowSnackBarError -> {
@@ -141,10 +145,13 @@ class EnterNameScreen(
 private fun Preview_Empty() {
     MenaTheme {
         EnterNameScreen(
-            phoneNumber = PhoneNumber(
-                "+964",
-                "7901234567"
-            )
+            RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    "+964",
+                    "7901234567"
+                ).toPhoneNumberUIState()
+            ).toRegisterJsonString()
+
         ).OnRender(
             state = EnterNameUIState(
                 firstName = "",
@@ -168,10 +175,12 @@ private fun Preview_Empty() {
 private fun Preview_Filled() {
     MenaTheme {
         EnterNameScreen(
-            phoneNumber = PhoneNumber(
-                "+964",
-                "7901234567"
-            )
+            RegisterUIState(
+                phoneNumber = PhoneNumber(
+                    "+964",
+                    "7901234567"
+                ).toPhoneNumberUIState()
+            ).toRegisterJsonString()
         ).OnRender(
             state = EnterNameUIState(
                 firstName = "Mohammed",

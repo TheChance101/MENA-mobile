@@ -12,6 +12,9 @@ import net.thechance.mena.identity.domain.exception.InvalidRequestException
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.profile.changePassword.ChangePasswordScreenUIEffect
+import net.thechance.mena.identity.presentation.screen.profile.changePassword.ChangePasswordScreenViewModel
+import net.thechance.mena.identity.presentation.screen.profile.changePassword.PasswordPage
 import org.junit.Test
 import kotlin.test.BeforeTest
 import kotlin.test.assertFalse

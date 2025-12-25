@@ -13,7 +13,8 @@ import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.age.AgeValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -53,7 +54,7 @@ class DatePickerScreenViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) },
             onSuccess = ::handleSavedDraft,
             dispatcher = dispatcher
         )
@@ -134,8 +135,8 @@ class DatePickerScreenViewModel(
     private fun saveBirthDate(birthDate: LocalDate) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber) ?: RegistrationDraft()
-                registrationDraftRepository.saveDraft(registerUIState.phoneNumber, draft.copy(birthDate = birthDate))
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) ?: RegistrationDraft()
+                registrationDraftRepository.saveDraft(registerUIState.phoneNumber.toPhoneNumber(), draft.copy(birthDate = birthDate))
             },
             dispatcher = dispatcher
         )

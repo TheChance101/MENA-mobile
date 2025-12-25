@@ -26,26 +26,30 @@ import net.thechance.mena.designsystem.presentation.component.button.PrimaryButt
 import net.thechance.mena.designsystem.presentation.component.button.TextButton
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
-import net.thechance.mena.identity.domain.entity.PhoneNumber
-import net.thechance.mena.identity.domain.model.AuthenticationTokens
 import net.thechance.mena.identity.presentation.base.BaseScreen
 import net.thechance.mena.identity.presentation.components.AuthScreenContainer
 import net.thechance.mena.identity.presentation.components.PageDescription
 import net.thechance.mena.identity.presentation.components.snackBar.IdentitySnackBarController
-import net.thechance.mena.identity.presentation.screen.imageCropper.ImageCropperScreen
+import net.thechance.mena.identity.presentation.screen.profile.imageCropper.ImageCropperScreen
 import net.thechance.mena.identity.presentation.screen.register.accountCreated.AccountCreatedScreen
+import net.thechance.mena.identity.presentation.screen.register.shared.convertJsonStringToAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIStateJsonString
 import net.thechance.mena.identity.presentation.screen.register.uploadProfileImage.components.UploadImageContainer
 import org.jetbrains.compose.resources.stringResource
 import org.koin.core.parameter.parametersOf
 
-class UploadProfileImageScreen(
-    private val authTokens: AuthenticationTokens? = null,
-    private val phoneNumber: PhoneNumber? = null
+data class UploadProfileImageScreen(
+    val authTokensUiStateJsonString: String
 ) : BaseScreen<
     UploadProfileImageViewModel,
     UploadProfileImageUIState,
     UploadProfileImageUIEffect,
     UploadProfileImageInteractionListener>() {
+
+    @Composable
+    override fun Content() {
+        InitScreen(getScreenModel(parameters = { parametersOf(convertJsonStringToAuthUIState(authTokensUiStateJsonString)) }))
+    }
 
     @Composable
     override fun OnRender(
@@ -110,7 +114,7 @@ class UploadProfileImageScreen(
     ) {
         when (effect) {
             is UploadProfileImageUIEffect.NavigateToAccountCreated -> {
-                navigator.push(AccountCreatedScreen(authTokens = effect.authTokens, phoneNumber = phoneNumber))
+                navigator.push(AccountCreatedScreen(effect.authUiState.toAuthUIStateJsonString()))
             }
 
             is UploadProfileImageUIEffect.NavigateToCropScreen -> {
@@ -128,16 +132,5 @@ class UploadProfileImageScreen(
                 )
             }
         }
-    }
-
-    @Composable
-    override fun Content() {
-        InitScreen(
-            getScreenModel(
-                parameters = {
-                    parametersOf(authTokens, phoneNumber)
-                }
-            )
-        )
     }
 }

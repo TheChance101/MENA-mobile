@@ -17,6 +17,11 @@ import net.thechance.mena.identity.presentation.base.BaseScreenModel
 import net.thechance.mena.identity.presentation.base.errorState.ErrorState
 import net.thechance.mena.identity.presentation.mapper.mapAuthenticationErrorToMessage
 import net.thechance.mena.identity.presentation.mapper.mapErrorToMessage
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.jetbrains.compose.resources.StringResource
 
@@ -26,9 +31,8 @@ class UploadProfileImageViewModel(
     private val imageDecoder: ImageDecoder,
     private val authenticationRepository: AuthenticationRepository,
     private val registrationDraftRepository: RegistrationDraftRepository,
-    private val authTokens: AuthenticationTokens? = null,
-    private val phoneNumber: PhoneNumber? = null,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val authUiState: AuthUIState
 ) : BaseScreenModel<UploadProfileImageUIState, UploadProfileImageUIEffect>
     (UploadProfileImageUIState()),
     UploadProfileImageInteractionListener {
@@ -38,8 +42,8 @@ class UploadProfileImageViewModel(
     }
 
     private fun loadSavedImage() {
-        phoneNumber?.let { number ->
-            loadCachedImage(number)
+        authUiState.phoneNumber?.let { number ->
+            loadCachedImage(number.toPhoneNumber())
         }
     }
 
@@ -72,9 +76,9 @@ class UploadProfileImageViewModel(
 
     override fun onClickUpload() {
         val imageBitmap = state.value.imageBitmap ?: return
-        val currentAuthTokens = authTokens ?: return
+        val currentAuthTokens = authUiState.authTokens ?: return
 
-        startUpload(imageBitmap, currentAuthTokens)
+        startUpload(imageBitmap, currentAuthTokens.toAuthenticationTokens())
     }
 
     private fun startUpload(imageBitmap: ImageBitmap, authTokens: AuthenticationTokens) {
@@ -94,9 +98,9 @@ class UploadProfileImageViewModel(
         }
 
     override fun onClickSkip() {
-        authTokens?.let { tokens ->
-            phoneNumber?.let { number ->
-                handleSkipUpload(tokens, number)
+        authUiState.authTokens?.let { tokens ->
+            authUiState.phoneNumber?.let { number ->
+                handleSkipUpload(tokens.toAuthenticationTokens(), number.toPhoneNumber())
             }
         }
     }
@@ -104,7 +108,7 @@ class UploadProfileImageViewModel(
     private fun handleSkipUpload(authTokens: AuthenticationTokens, phoneNumber: PhoneNumber) {
         markImageUploadCompleted()
         clearCachedImageAfterUpload(phoneNumber)
-        navigateToAccountCreated(authTokens)
+        navigateToAccountCreated(authTokens , phoneNumber)
     }
 
     override fun onSelectImage(imageBitmap: ImageBitmap) {
@@ -123,9 +127,9 @@ class UploadProfileImageViewModel(
 
     private fun onUploadSuccess() {
         updateState { copy(isLoading = false) }
-        authTokens?.let { tokens ->
-            phoneNumber?.let { number ->
-                completeUploadFlow(tokens, number)
+        authUiState.authTokens?.let { tokens ->
+            authUiState.phoneNumber?.let { number ->
+                completeUploadFlow(tokens.toAuthenticationTokens(), number.toPhoneNumber())
             }
         }
     }
@@ -133,11 +137,21 @@ class UploadProfileImageViewModel(
     private fun completeUploadFlow(authTokens: AuthenticationTokens, phoneNumber: PhoneNumber) {
         markImageUploadCompleted()
         clearCachedImageAfterUpload(phoneNumber)
-        navigateToAccountCreated(authTokens)
+        navigateToAccountCreated(authTokens, phoneNumber)
     }
 
-    private fun navigateToAccountCreated(authTokens: AuthenticationTokens) {
-        sendNewEffect(UploadProfileImageUIEffect.NavigateToAccountCreated(authTokens))
+    private fun navigateToAccountCreated(
+        authTokens: AuthenticationTokens,
+        phoneNumber: PhoneNumber
+    ) {
+        sendNewEffect(
+            UploadProfileImageUIEffect.NavigateToAccountCreated(
+                AuthUIState(
+                    authTokens = authTokens.toAuthUIState(),
+                    phoneNumber = phoneNumber.toPhoneNumberUIState()
+                )
+            )
+        )
     }
 
     private fun markImageUploadCompleted() {
@@ -181,8 +195,8 @@ class UploadProfileImageViewModel(
     }
 
     private fun cacheRequiredCropImage(imageBitmap: ImageBitmap) {
-        phoneNumber?.let { number ->
-            cacheImageForCrop(imageBitmap, number)
+        authUiState.phoneNumber?.let { number ->
+            cacheImageForCrop(imageBitmap, number.toPhoneNumber())
         }
     }
 
@@ -202,8 +216,8 @@ class UploadProfileImageViewModel(
     }
 
     private fun saveImage(imageBitmap: ImageBitmap) {
-        phoneNumber?.let { number ->
-            saveImageForPhoneNumber(imageBitmap, number)
+        authUiState.phoneNumber?.let { number ->
+            saveImageForPhoneNumber(imageBitmap, number.toPhoneNumber())
         }
     }
 

@@ -11,7 +11,8 @@ import net.thechance.mena.identity.domain.model.RegistrationDraft
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.useCase.validation.mobileNumber.PasswordValidator
 import net.thechance.mena.identity.presentation.base.BaseScreenModel
-import net.thechance.mena.identity.presentation.screen.register.shared.uiState.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.RegisterUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumber
 
 class CreatePasswordViewModel(
     private val passwordValidator: PasswordValidator,
@@ -65,7 +66,7 @@ class CreatePasswordViewModel(
 
     private fun loadSavedData() {
         tryToExecute(
-            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber) },
+            function = { registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber()) },
             onSuccess = ::handleSavedDraft,
             dispatcher = dispatcher
         )
@@ -92,10 +93,10 @@ class CreatePasswordViewModel(
     private fun savePassword(password: String) {
         tryToExecute(
             function = {
-                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber)
+                val draft = registrationDraftRepository.getDraft(registerUIState.phoneNumber.toPhoneNumber())
                             ?: RegistrationDraft()
                 registrationDraftRepository.saveDraft(
-                    registerUIState.phoneNumber,
+                    registerUIState.phoneNumber.toPhoneNumber(),
                     draft.copy(password = password)
                 )
             },

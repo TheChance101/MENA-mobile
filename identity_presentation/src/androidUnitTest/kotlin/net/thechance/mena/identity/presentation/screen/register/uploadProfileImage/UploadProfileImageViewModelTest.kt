@@ -17,6 +17,10 @@ import net.thechance.mena.identity.domain.repository.ImagesRepository
 import net.thechance.mena.identity.domain.repository.RegistrationDraftRepository
 import net.thechance.mena.identity.domain.repository.UserRepository
 import net.thechance.mena.identity.helper.BaseCoroutineTest
+import net.thechance.mena.identity.presentation.screen.register.shared.AuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthUIState
+import net.thechance.mena.identity.presentation.screen.register.shared.toAuthenticationTokens
+import net.thechance.mena.identity.presentation.screen.register.shared.toPhoneNumberUIState
 import net.thechance.mena.identity.presentation.utils.ImageDecoder
 import org.junit.Before
 import org.junit.Test
@@ -49,8 +53,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = authTokens,
-            phoneNumber = phoneNumber,
+            authUiState = AuthUIState(
+                authTokens = authTokens.toAuthUIState(),
+                phoneNumber = phoneNumber.toPhoneNumberUIState()
+            ),
             dispatcher = testDispatcher
         )
     }
@@ -73,8 +79,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = authTokens,
-            phoneNumber = null,
+            authUiState = AuthUIState(
+                authTokens = authTokens.toAuthUIState(),
+                phoneNumber = null
+            ),
             dispatcher = testDispatcher
         )
 
@@ -151,8 +159,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = null,
-            phoneNumber = phoneNumber,
+            authUiState = AuthUIState(
+                authTokens = null,
+                phoneNumber = phoneNumber.toPhoneNumberUIState()
+            ),
             dispatcher = testDispatcher
         )
         coEvery { imageDecoder.encodeImage(imageBitmap) } returns imageBytes
@@ -214,7 +224,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             assertTrue(effect is UploadProfileImageUIEffect.NavigateToAccountCreated)
             assertEquals(
                 authTokens,
-                effect.authTokens
+                effect.authUiState.authTokens?.toAuthenticationTokens()
             )
         }
     }
@@ -259,8 +269,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = null,
-            phoneNumber = phoneNumber,
+            authUiState = AuthUIState(
+                authTokens = null,
+                phoneNumber = phoneNumber.toPhoneNumberUIState()
+            ),
             dispatcher = testDispatcher
         )
 
@@ -280,8 +292,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = authTokens,
-            phoneNumber = null,
+            authUiState = AuthUIState(
+                authTokens = authTokens.toAuthUIState(),
+                phoneNumber = null
+            ),
             dispatcher = testDispatcher
         )
 
@@ -317,7 +331,7 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             assertTrue(effect is UploadProfileImageUIEffect.NavigateToAccountCreated)
             assertEquals(
                 authTokens,
-                effect.authTokens
+                effect.authUiState.authTokens?.toAuthenticationTokens()
             )
         }
     }
@@ -341,8 +355,10 @@ class UploadProfileImageViewModelTest : BaseCoroutineTest() {
             imageDecoder = imageDecoder,
             authenticationRepository = authenticationRepository,
             registrationDraftRepository = registrationDraftRepository,
-            authTokens = authTokens,
-            phoneNumber = null,
+            authUiState = AuthUIState(
+                authTokens = authTokens.toAuthUIState(),
+                phoneNumber = null
+            ),
             dispatcher = testDispatcher
         )
 
