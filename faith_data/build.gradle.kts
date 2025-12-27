@@ -38,6 +38,8 @@ kotlin {
             implementation(libs.napier)
             implementation(libs.bundles.ktorfit)
             implementation(libs.okio)
+            implementation(libs.bundles.geoCoder)
+            implementation(libs.bundles.geoLocation)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
