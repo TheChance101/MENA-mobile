@@ -3,13 +3,13 @@ package net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import net.thechance.mena.faith.domain.entity.Mosque
+import net.thechance.mena.faith.domain.repository.LocationRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.args.PickLocationArgs
-import net.thechance.mena.identity.domain.model.Coordinates
-import net.thechance.mena.identity.domain.repository.AddressesRepository
 
 internal class PickLocationViewModel(
-    private val addressesRepository: AddressesRepository,
+    private val locationRepository: LocationRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val pickLocationArgs: PickLocationArgs
 ) : BaseViewModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(
@@ -64,30 +64,33 @@ internal class PickLocationViewModel(
     }
 
     override fun onClickGps() {
+        updateState { it.copy(isGpsButtonLoading = true) }
         tryToExecute(
-            execute = { addressesRepository.getCurrentLocation() },
-            onSuccess = { coordinates ->
-                if (coordinates != null) {
-                    updateState {
-                        it.copy(
-                            mosqueLocation = CoordinatesUiState(
-                                latitude = coordinates.latitude,
-                                longitude = coordinates.longitude
-                            ),
-                            animateToCurrentLocation = true,
-                            showAnchor = true,
-                            isGpsButtonLoading = false
-                        )
-                    }
-                    fetchLocationName()
-                }
-            },
+            execute = { locationRepository.getCurrentLocation() },
+            onSuccess = ::onGetCurrentLocationSuccess,
             onError = { error ->
                 updateState { it.copy(isGpsButtonLoading = false) }
                 handleErrorSnackBar(error)
             },
             dispatcher = dispatcher
         )
+    }
+
+    private fun onGetCurrentLocationSuccess(coordinates: Mosque.Coordinates?) {
+        if (coordinates != null) {
+            updateState {
+                it.copy(
+                    mosqueLocation = CoordinatesUiState(
+                        latitude = coordinates.latitude,
+                        longitude = coordinates.longitude
+                    ),
+                    animateToCurrentLocation = true,
+                    showAnchor = true,
+                    isGpsButtonLoading = false
+                )
+            }
+            fetchLocationName()
+        }
     }
 
     private fun fetchLocationName() {
@@ -115,8 +118,8 @@ internal class PickLocationViewModel(
     }
 
     private suspend fun getLocationName(): String {
-        return addressesRepository.getLocationName(
-            Coordinates(
+        return locationRepository.getLocationName(
+            Mosque.Coordinates(
                 latitude = uiState.value.mosqueLocation.latitude,
                 longitude = uiState.value.mosqueLocation.longitude
             )

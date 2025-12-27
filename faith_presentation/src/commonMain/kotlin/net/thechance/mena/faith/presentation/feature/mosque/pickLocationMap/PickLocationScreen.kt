@@ -22,6 +22,8 @@ import net.thechance.mena.designsystem.presentation.component.icon.Icon
 import net.thechance.mena.designsystem.presentation.component.scaffold.Scaffold
 import net.thechance.mena.designsystem.presentation.theme.theme.Theme
 import net.thechance.mena.faith.presentation.base.ObserveAsEffect
+import net.thechance.mena.faith.presentation.base.snackbar.SnackBarState
+import net.thechance.mena.faith.presentation.components.FaithSnackBar
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.component.GpsFabButton
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.component.PickLocationMap
 import net.thechance.mena.faith.presentation.navigation.LocalNavController
@@ -33,6 +35,7 @@ import org.koin.compose.viewmodel.koinViewModel
 internal fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel()) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackBarState by viewModel.snackBarState.collectAsStateWithLifecycle()
     val navController = LocalNavController.current
 
     ObserveAsEffect(viewModel.uiEffect) { effect ->
@@ -46,16 +49,24 @@ internal fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel
             }
         }
     }
-    Content(uiState = uiState, listener = viewModel)
+    Content(uiState = uiState, snackBarState = snackBarState,listener = viewModel)
 }
 
 @Composable
 private fun Content(
     uiState: PickLocationScreenUIState,
+    snackBarState: SnackBarState,
     listener: PickLocationScreenInteractionListener
 ) {
     Scaffold(
-        topBar = { PickLocationAppBar(onBackClick = listener::onClickBack) }
+        topBar = { PickLocationAppBar(onBackClick = listener::onClickBack) },
+        snakeBar = {
+            FaithSnackBar(
+                message = snackBarState.message,
+                isVisible = snackBarState.isVisible,
+                status = snackBarState.status,
+            )
+        }
     ) {
         PickLocationMap(
             currentLocation = uiState.mosqueLocation,
