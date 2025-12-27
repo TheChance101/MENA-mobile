@@ -202,4 +202,7 @@
 
     <!-- PickLocation -->
     <string name="pick_location_title">اختر منطقة</string>
+    <string name="error_address_not_found">لم يتم العثور على العنوان</string>
+    <string name="error_location_is_turned_off">الموقع مطفأ أو ليس لديك إذن</string>
+
 </resources>

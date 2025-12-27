@@ -247,4 +247,7 @@
 
     <!-- PickLocation   -->
     <string name="pick_location_title">Pick Location</string>
+    <string name="error_address_not_found">Address not found</string>
+    <string name="error_location_is_turned_off">Location is turned off or you dont have permission</string>
+
 </resources>
