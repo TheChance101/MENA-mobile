@@ -5,7 +5,9 @@ import net.thechance.mena.faith.data.repository.BookmarkRepositoryImpl
 import net.thechance.mena.faith.data.repository.MosqueRepositoryImpl
 import net.thechance.mena.faith.data.repository.PrayerTimeRepositoryImpl
 import net.thechance.mena.faith.data.repository.QuranRepositoryImpl
+import net.thechance.mena.faith.data.repository.location.LocationRepositoryImpl
 import net.thechance.mena.faith.domain.repository.BookmarkRepository
+import net.thechance.mena.faith.domain.repository.LocationRepository
 import net.thechance.mena.faith.domain.repository.MosqueRepository
 import net.thechance.mena.faith.domain.repository.PrayerTimeRepository
 import net.thechance.mena.faith.domain.repository.QuranRepository
@@ -20,4 +22,5 @@ val repositoryModule = module {
     singleOf(::BookmarkRepositoryImpl) bind BookmarkRepository::class
     singleOf(::MosqueRepositoryImpl) bind MosqueRepository::class
     singleOf(::DownloadSurahManagerImpl) bind DownloadSurahManager::class
+    singleOf(::LocationRepositoryImpl) bind LocationRepository::class
 }
