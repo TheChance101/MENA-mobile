@@ -59,7 +59,7 @@ private fun Content(
     listener: PickLocationScreenInteractionListener
 ) {
     Scaffold(
-        topBar = { PickLocationAppBar(onBackClick = listener::onClickBack) },
+        topBar = { PickLocationAppBar(onBackClick = listener::onBackClick) },
         snakeBar = {
             FaithSnackBar(
                 message = snackBarState.message,
@@ -72,7 +72,7 @@ private fun Content(
             currentLocation = uiState.mosqueLocation,
             animateToCurrentLocation = uiState.animateToCurrentLocation,
             showAnchor = uiState.showAnchor,
-            onClickMap = listener::onClickMap,
+            onClickMap = listener::onMapClick,
             onMoveCamera = listener::onMoveCamera,
         ) {
             Column(
@@ -80,13 +80,13 @@ private fun Content(
                 verticalArrangement = Arrangement.Bottom
             ) {
                 GpsFabButton(
-                    onClick = listener::onClickGps,
+                    onClick = listener::onGpsClick,
                     isLoading = uiState.isGpsButtonLoading,
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
                 PrimaryButton(
                     text = stringResource(Res.string.confirm),
-                    onClick = listener::onClickConfirm,
+                    onClick = listener::onConfirmClick,
                     isEnabled = uiState.isConfirmEnabled,
                     contentPadding = PaddingValues(vertical = 13.dp),
                     modifier = Modifier.fillMaxWidth()

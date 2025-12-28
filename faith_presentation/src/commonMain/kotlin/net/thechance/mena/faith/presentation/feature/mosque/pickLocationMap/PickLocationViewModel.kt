@@ -7,9 +7,12 @@ import net.thechance.mena.faith.domain.entity.Mosque
 import net.thechance.mena.faith.domain.repository.LocationRepository
 import net.thechance.mena.faith.presentation.base.BaseViewModel
 import net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap.args.PickLocationArgs
+import net.thechance.mena.identity.domain.entity.Address
+import net.thechance.mena.identity.domain.service.LocationService
 
 internal class PickLocationViewModel(
     private val locationRepository: LocationRepository,
+    private val locationService: LocationService,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
     private val pickLocationArgs: PickLocationArgs
 ) : BaseViewModel<PickLocationScreenUIState, PickLocationScreenUIEffect>(
@@ -17,9 +20,8 @@ internal class PickLocationViewModel(
 ), PickLocationScreenInteractionListener {
 
     init {
-        if (pickLocationArgs.latitude != null && pickLocationArgs.longitude != null) {
+        if (pickLocationArgs.latitude != null && pickLocationArgs.longitude != null)
             initCoordinates()
-        }
     }
 
     private fun initCoordinates() {
@@ -36,7 +38,7 @@ internal class PickLocationViewModel(
         fetchLocationName()
     }
 
-    override fun onClickMap(coordinates: CoordinatesUiState) {
+    override fun onMapClick(coordinates: CoordinatesUiState) {
         updateState {
             it.copy(
                 mosqueLocation = CoordinatesUiState(
@@ -63,10 +65,10 @@ internal class PickLocationViewModel(
         fetchLocationName()
     }
 
-    override fun onClickGps() {
+    override fun onGpsClick() {
         updateState { it.copy(isGpsButtonLoading = true) }
         tryToExecute(
-            execute = { locationRepository.getCurrentLocation() },
+            execute = { locationService.getActiveAddress() },
             onSuccess = ::onGetCurrentLocationSuccess,
             onError = { error ->
                 updateState { it.copy(isGpsButtonLoading = false) }
@@ -76,13 +78,13 @@ internal class PickLocationViewModel(
         )
     }
 
-    private fun onGetCurrentLocationSuccess(coordinates: Mosque.Coordinates?) {
-        if (coordinates != null) {
+    private fun onGetCurrentLocationSuccess(address: Address?) {
+        if (address != null) {
             updateState {
                 it.copy(
                     mosqueLocation = CoordinatesUiState(
-                        latitude = coordinates.latitude,
-                        longitude = coordinates.longitude
+                        latitude = address.latitude,
+                        longitude = address.longitude
                     ),
                     animateToCurrentLocation = true,
                     showAnchor = true,
@@ -126,7 +128,7 @@ internal class PickLocationViewModel(
         )
     }
 
-    override fun onClickConfirm() {
+    override fun onConfirmClick() {
         sendEffect(
             PickLocationScreenUIEffect.NavigateBackWithLocation(
                 AddressModel(
@@ -140,7 +142,7 @@ internal class PickLocationViewModel(
         )
     }
 
-    override fun onClickBack() {
+    override fun onBackClick() {
         sendEffect(PickLocationScreenUIEffect.NavigateBack)
     }
 }

@@ -21,7 +21,6 @@ import mena.faith_presentation.generated.resources.Res
 import mena.faith_presentation.generated.resources.error_address_not_found
 import mena.faith_presentation.generated.resources.error_coordinates
 import mena.faith_presentation.generated.resources.error_latitude
-import mena.faith_presentation.generated.resources.error_location_is_turned_off
 import mena.faith_presentation.generated.resources.error_longitude
 import mena.faith_presentation.generated.resources.error_network
 import mena.faith_presentation.generated.resources.error_no_internet
