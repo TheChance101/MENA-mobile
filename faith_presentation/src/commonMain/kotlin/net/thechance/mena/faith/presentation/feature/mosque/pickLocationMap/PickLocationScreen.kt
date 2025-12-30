@@ -1,6 +1,8 @@
 package net.thechance.mena.faith.presentation.feature.mosque.pickLocationMap
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -49,7 +52,7 @@ internal fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel
             }
         }
     }
-    Content(uiState = uiState, snackBarState = snackBarState,listener = viewModel)
+    Content(uiState = uiState, snackBarState = snackBarState, listener = viewModel)
 }
 
 @Composable
@@ -66,7 +69,8 @@ private fun Content(
                 isVisible = snackBarState.isVisible,
                 status = snackBarState.status,
             )
-        }
+        },
+        statusBarColor = Theme.colorScheme.background.surfaceLow,
     ) {
         PickLocationMap(
             currentLocation = uiState.mosqueLocation,
@@ -101,17 +105,22 @@ private fun PickLocationAppBar(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AppBar(
-        modifier = modifier,
-        title = stringResource(Res.string.pick_location_title),
-        leadingContent = {
-            Icon(
-                painter = painterResource(Res.drawable.arrow_left),
-                contentDescription = stringResource(Res.string.arrow_left),
-                tint = Theme.colorScheme.primary.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        },
-        onLeadingClick = onBackClick,
-    )
+    Box(
+        modifier = modifier.fillMaxWidth().background(Theme.colorScheme.background.surfaceLow),
+        contentAlignment = Alignment.Center
+    ) {
+        AppBar(
+            modifier = modifier,
+            title = stringResource(Res.string.pick_location_title),
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.arrow_left),
+                    contentDescription = stringResource(Res.string.arrow_left),
+                    tint = Theme.colorScheme.primary.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            },
+            onLeadingClick = onBackClick,
+        )
+    }
 }
