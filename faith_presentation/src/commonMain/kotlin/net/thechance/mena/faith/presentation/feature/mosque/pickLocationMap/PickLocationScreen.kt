@@ -47,7 +47,7 @@ internal fun PickLocationScreen(viewModel: PickLocationViewModel = koinViewModel
             is PickLocationScreenUIEffect.NavigateBackWithLocation -> {
                 navController.previousBackStackEntry?.savedStateHandle?.apply {
                     set("address_model_json_string", effect.mosqueLocation.toAddressJsonString())
-                    navController.popBackStack()
+                    navController.navigateUp()
                 }
             }
         }
