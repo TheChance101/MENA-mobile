@@ -76,7 +76,7 @@ private fun Content(
             currentLocation = uiState.mosqueLocation,
             animateToCurrentLocation = uiState.animateToCurrentLocation,
             showAnchor = uiState.showAnchor,
-            onClickMap = listener::onMapClick,
+            onMapClick = listener::onMapClick,
             onMoveCamera = listener::onMoveCamera,
         ) {
             Column(

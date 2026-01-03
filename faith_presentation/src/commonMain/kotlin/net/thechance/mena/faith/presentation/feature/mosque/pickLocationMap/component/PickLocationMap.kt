@@ -41,7 +41,7 @@ internal fun PickLocationMap(
     currentLocation: CoordinatesUiState,
     animateToCurrentLocation: Boolean,
     showAnchor: Boolean,
-    onClickMap: (CoordinatesUiState) -> Unit,
+    onMapClick: (CoordinatesUiState) -> Unit,
     onMoveCamera: (CoordinatesUiState) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -76,7 +76,7 @@ internal fun PickLocationMap(
             baseStyle = BaseStyle.Uri(MapStyle.BRIGHT),
             options = mapOptions(),
             onMapClick = { position, _ ->
-                onClickMap(position.toCoordinatesUiState())
+                onMapClick(position.toCoordinatesUiState())
                 ClickResult.Pass
             },
         )
